@@ -865,9 +865,28 @@ export type BailianSyncStatus = {
   steps?: Record<string, { status: string; message?: string }>
 }
 
-export async function getBailianSyncStatus(): Promise<
-  BailianSyncStatus | { synced: false }
-> {
+export type BailianScheduledStatus = {
+  started_at?: string
+  finished_at?: string
+  success: boolean
+  models: number
+  channels: number
+  written: number
+  scheduled: number
+  reviews: number
+  due_channels: number
+  changes: number
+  errors?: string[]
+}
+
+export type BailianSyncStatusResponse = {
+  synced?: boolean
+  post_create?: BailianSyncStatus
+  scheduled?: BailianScheduledStatus
+  channel_id?: number
+}
+
+export async function getBailianSyncStatus(): Promise<BailianSyncStatusResponse> {
   const res = await api.get('/api/ratio_sync/bailian/status')
   return res.data?.data ?? { synced: false }
 }
@@ -909,20 +928,36 @@ export type DreamRouterUpstreamSnapshot =
       synced: true
       summary: DreamRouterUpstreamSummary
       models: Array<Record<string, unknown>>
+      discount_group?: string
+      discount_groups?: string[]
     }
 
-export async function getDreamRouterUpstreamSnapshot(): Promise<DreamRouterUpstreamSnapshot> {
-  const res = await api.get('/api/upstream/dreamrouter/snapshot')
+export type DreamRouterSyncResult = DreamRouterUpstreamSummary & {
+  discount_group?: string
+  discount_groups?: string[]
+}
+
+export async function getDreamRouterUpstreamSnapshot(
+  channelId?: number
+): Promise<DreamRouterUpstreamSnapshot> {
+  const res = await api.get('/api/upstream/dreamrouter/snapshot', {
+    params: channelId ? { channel_id: channelId } : undefined,
+  })
   return res.data?.data ?? { synced: false }
 }
 
 export async function syncDreamRouterUpstream(
   channelId: number,
-  baseUrl?: string
-) {
-  const res = await api.post('/api/upstream/dreamrouter/sync', {
+  baseUrl?: string,
+  discountGroup?: string
+): Promise<DreamRouterSyncResult> {
+  const res = await api.post<{
+    success: boolean
+    data: DreamRouterSyncResult
+  }>('/api/upstream/dreamrouter/sync', {
     channel_id: channelId,
     base_url: baseUrl,
+    discount_group: discountGroup,
   })
   return requireServerSuccess(res.data).data
 }
@@ -950,13 +985,18 @@ export async function batchChannelModelPricing(
   body: {
     models?: string[]
     model_prefixes?: string[]
+    model_categories?: string[]
     basis: 'official' | 'channel'
     mode: string
     value: number
     dry_run: boolean
+    overwrite_manual?: boolean
   }
 ): Promise<ChannelBatchPricingResult> {
-  const res = await api.post(`/api/channel/${channelId}/model_pricing/batch`, body)
+  const res = await api.post(
+    `/api/channel/${channelId}/model_pricing/batch`,
+    body
+  )
   return requireServerSuccess(res.data).data as ChannelBatchPricingResult
 }
 
@@ -1002,7 +1042,11 @@ export async function createChannelDraft(payload: {
   models?: string
   group?: string
 }): Promise<{ success: boolean; message?: string; data?: { id: number } }> {
-  const res = await api.post('/api/channel/draft', payload, channelActionConfig())
+  const res = await api.post(
+    '/api/channel/draft',
+    payload,
+    channelActionConfig()
+  )
   return res.data
 }
 
@@ -1089,4 +1133,111 @@ export async function rollbackChannelPricingHistory(
     channelActionConfig()
   )
   return requireServerSuccess(res.data).data
+}
+
+export type ChannelPricingAuditModel = {
+  model_name: string
+  legacy_status?: string
+  channel_status?: string
+  billing_source: string
+  billable: boolean
+  conflict: boolean
+}
+
+export type ChannelPricingAuditConflict = {
+  model_name: string
+  legacy_status: string
+  channel_status: string
+  billing_source: string
+  reason: string
+}
+
+export type ChannelPricingAudit = {
+  channel_id: number
+  channel_name: string
+  authority: string
+  models: ChannelPricingAuditModel[]
+  conflicts: ChannelPricingAuditConflict[]
+  warnings?: string[]
+}
+
+export async function getChannelPricingAudit(
+  channelId: number
+): Promise<ChannelPricingAudit> {
+  const res = await api.get(`/api/channel/${channelId}/pricing_audit`)
+  return requireServerSuccess(res.data).data as ChannelPricingAudit
+}
+
+export type UpstreamCapabilityStatus =
+  | 'SUPPORTED'
+  | 'PARTIAL'
+  | 'UNSUPPORTED'
+  | 'MANUAL_ONLY'
+  | 'NEEDS_CONFIGURATION'
+
+export type UpstreamProviderCapability = {
+  status: UpstreamCapabilityStatus
+  detail?: string
+}
+
+export type UpstreamProviderCapabilities = {
+  model_discovery: UpstreamProviderCapability
+  model_metadata: UpstreamProviderCapability
+  official_pricing: UpstreamProviderCapability
+  channel_pricing: UpstreamProviderCapability
+  discount_information: UpstreamProviderCapability
+  region_pricing: UpstreamProviderCapability
+  tiered_pricing: UpstreamProviderCapability
+  media_pricing: UpstreamProviderCapability
+  scheduled_sync: UpstreamProviderCapability
+}
+
+export type ChannelSyncCapabilities = {
+  channel_id: number
+  base_url: string
+  provider: {
+    id: string
+    name: string
+    auth_type: string
+    capabilities: UpstreamProviderCapabilities
+  }
+}
+
+export async function getChannelSyncCapabilities(
+  channelId: number
+): Promise<ChannelSyncCapabilities> {
+  const res = await api.get(`/api/channel/${channelId}/sync_capabilities`)
+  return requireServerSuccess(res.data).data as ChannelSyncCapabilities
+}
+
+export type ChannelSyncDiagnosticCheck = {
+  status: string
+  source?: string
+  count: number
+  message?: string
+  error?: string
+  fetched_at?: number
+  duration_ms?: number
+  details?: Record<string, unknown>
+}
+
+export type ChannelSyncDiagnostics = {
+  channel_id: number
+  channel_name: string
+  checked_at: number
+  models: ChannelSyncDiagnosticCheck
+  official_pricing: ChannelSyncDiagnosticCheck
+  channel_pricing: ChannelSyncDiagnosticCheck
+  warnings?: string[]
+}
+
+export async function runChannelSyncDiagnostics(
+  channelId: number
+): Promise<ChannelSyncDiagnostics> {
+  const res = await api.post(
+    `/api/channel/${channelId}/sync_diagnostics`,
+    {},
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data as ChannelSyncDiagnostics
 }

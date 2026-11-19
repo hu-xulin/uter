@@ -17,13 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Calculator, RefreshCw, Save } from 'lucide-react'
+import { Activity, Calculator, RefreshCw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -39,11 +40,14 @@ import { handleServerError } from '@/lib/handle-server-error'
 import {
   batchChannelModelPricing,
   approveChannelPricingReviews,
+  getChannelPricingAudit,
   getChannelPricingHistory,
   getChannelPricingReviews,
   getChannelPricingSchedule,
+  getChannelSyncCapabilities,
   rejectChannelPricingReviews,
   rollbackChannelPricingHistory,
+  runChannelSyncDiagnostics,
   setChannelPricingSchedule,
   syncDreamRouterUpstream,
   type ChannelBatchPricingResult,
@@ -71,6 +75,14 @@ const defaultSchedule: ChannelPricingSchedule = {
   channel_sync_interval_minutes: 60,
 }
 
+const MODEL_CATEGORY_LABELS: Record<string, string> = {
+  text: 'Text model',
+  image: 'Image model',
+  video: 'Video model',
+  audio: 'Audio model',
+  embedding: 'Embedding model',
+}
+
 const PRICING_MODES = [
   { value: 'discount', label: 'Discount' },
   { value: 'markup', label: 'Markup' },
@@ -86,8 +98,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [basis, setBasis] = useState<'official' | 'channel'>('official')
   const [mode, setMode] = useState<string>('multiply')
   const [value, setValue] = useState('0.6')
-  const [scope, setScope] = useState<'all' | 'prefix'>('all')
+  const [scope, setScope] = useState<'all' | 'prefix' | 'category'>('all')
   const [prefixes, setPrefixes] = useState('')
+  const [category, setCategory] = useState('text')
+  const [overwriteManual, setOverwriteManual] = useState(false)
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
   const [schedule, setSchedule] =
@@ -114,6 +128,25 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
+  const auditQuery = useQuery({
+    queryKey: ['channel-pricing-audit', props.channelId],
+    queryFn: () => getChannelPricingAudit(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const capabilityQuery = useQuery({
+    queryKey: ['channel-sync-capabilities', props.channelId],
+    queryFn: () => getChannelSyncCapabilities(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const diagnostics = useMutation({
+    mutationFn: () => runChannelSyncDiagnostics(props.channelId ?? 0),
+    onError: (error) =>
+      handleServerError(error, t('Failed to run sync diagnostics')),
+  })
   useEffect(() => {
     if (scheduleQuery.data?.schedule) {
       setSchedule({ ...defaultSchedule, ...scheduleQuery.data.schedule })
@@ -136,6 +169,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 .map((item) => item.trim())
                 .filter(Boolean)
             : undefined,
+        model_categories: scope === 'category' ? [category] : undefined,
+        overwrite_manual: overwriteManual,
         dry_run: dryRun,
       }),
     onSuccess: (result, dryRun) => {
@@ -159,6 +194,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     mutationFn: () =>
       setChannelPricingSchedule(props.channelId ?? 0, {
         ...schedule,
+        basis: isBailian ? 'official' : schedule.basis,
         value: Number(schedule.value),
         interval_minutes: 5,
       }),
@@ -231,8 +267,44 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       handleServerError(error, t('Failed to sync upstream catalog')),
   })
 
-  const isDreamRouter = props.baseUrl.toLowerCase().includes('dreamrouter.ai')
+  const normalizedBaseUrl = props.baseUrl.toLowerCase()
+  const isDreamRouter = normalizedBaseUrl.includes('dreamrouter.ai')
+  const isBailian =
+    normalizedBaseUrl.includes('.maas.aliyuncs.com') ||
+    normalizedBaseUrl.includes('dashscope')
+  let capabilityLabel = 'Manual pricing required'
+  if (isDreamRouter) capabilityLabel = 'Ratio-only upstream prices'
+  else if (isBailian) capabilityLabel = 'Automatic official prices'
+
   const disabled = props.channelId == null
+  const authorityText = (value: string) => {
+    if (value === 'channel_model_pricing') {
+      return t('Channel pricing table')
+    }
+    if (value === 'legacy_channel_price_setting') {
+      return t('Legacy channel quotes')
+    }
+    if (value === 'global') {
+      return t('Global model pricing')
+    }
+    return value
+  }
+  const capabilityStatusText = (value?: string) => {
+    switch (value) {
+      case 'SUPPORTED':
+        return t('Supported')
+      case 'PARTIAL':
+        return t('Partial')
+      case 'UNSUPPORTED':
+        return t('Unsupported')
+      case 'MANUAL_ONLY':
+        return t('Manual only')
+      case 'NEEDS_CONFIGURATION':
+        return t('Needs configuration')
+      default:
+        return value || t('Unknown')
+    }
+  }
 
   return (
     <div className='space-y-5'>
@@ -243,12 +315,50 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             'Sync upstream prices, set the batch rule, and keep the Uter sale price separate from the upstream quote.'
           )}
         </p>
+        <div className='flex flex-wrap items-center gap-2 pt-1 text-sm'>
+          <span className='text-muted-foreground'>{t('Official price')}:</span>
+          <Badge
+            variant={
+              capabilityQuery.data?.provider.capabilities.official_pricing
+                .status === 'SUPPORTED'
+                ? 'secondary'
+                : 'warning'
+            }
+          >
+            {capabilityQuery.data
+              ? capabilityStatusText(
+                  capabilityQuery.data.provider.capabilities.official_pricing
+                    .status
+                )
+              : t(capabilityLabel)}
+          </Badge>
+          <span className='text-muted-foreground'>{t('Channel price')}:</span>
+          <Badge
+            variant={
+              capabilityQuery.data?.provider.capabilities.channel_pricing
+                .status === 'SUPPORTED' ||
+              capabilityQuery.data?.provider.capabilities.channel_pricing
+                .status === 'PARTIAL'
+                ? 'secondary'
+                : 'warning'
+            }
+          >
+            {capabilityQuery.data
+              ? capabilityStatusText(
+                  capabilityQuery.data.provider.capabilities.channel_pricing
+                    .status
+                )
+              : t(capabilityLabel)}
+          </Badge>
+        </div>
       </div>
 
       {disabled ? (
         <div className='bg-muted/20 flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm'>
           <span className='text-muted-foreground'>
-            {t('Save the channel first to sync upstream prices and configure batch pricing.')}
+            {t(
+              'Save the channel first to sync upstream prices and configure batch pricing.'
+            )}
           </span>
           {props.onCreateDraft ? (
             <Button
@@ -270,7 +380,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 }
               }}
             >
-              {creatingDraft ? t('Creating...') : t('Generate draft channel ID')}
+              {creatingDraft
+                ? t('Creating...')
+                : t('Generate draft channel ID')}
             </Button>
           ) : null}
         </div>
@@ -303,6 +415,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         </section>
       ) : null}
 
+      {!disabled && props.channelId != null ? (
+        <ChannelModelPricingSection channelId={props.channelId} />
+      ) : null}
+
       <section className='space-y-3 rounded-lg border p-3'>
         <div>
           <Label>{t('Batch pricing')}</Label>
@@ -332,7 +448,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           </div>
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-mode'>{t('Pricing rule')}</Label>
-            <Select value={mode} onValueChange={(next) => next && setMode(next)}>
+            <Select
+              value={mode}
+              onValueChange={(next) => next && setMode(next)}
+            >
               <SelectTrigger id='batch-pricing-mode' className='w-full'>
                 <SelectValue />
               </SelectTrigger>
@@ -363,9 +482,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Label htmlFor='batch-pricing-scope'>{t('Scope')}</Label>
             <Select
               value={scope}
-              onValueChange={(next) =>
-                setScope(next === 'prefix' ? 'prefix' : 'all')
-              }
+              onValueChange={(next) => {
+                if (next === 'prefix' || next === 'category') {
+                  setScope(next)
+                  return
+                }
+                setScope('all')
+              }}
             >
               <SelectTrigger id='batch-pricing-scope' className='w-full'>
                 <SelectValue />
@@ -373,6 +496,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               <SelectContent>
                 <SelectItem value='all'>{t('All models')}</SelectItem>
                 <SelectItem value='prefix'>{t('Model name prefix')}</SelectItem>
+                <SelectItem value='category'>{t('Model type')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -389,6 +513,44 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               />
             </div>
           ) : null}
+          {scope === 'category' ? (
+            <div className='space-y-1.5 sm:col-span-2'>
+              <Label htmlFor='batch-pricing-category'>{t('Model type')}</Label>
+              <Select
+                value={category}
+                onValueChange={(next) => next && setCategory(next)}
+              >
+                <SelectTrigger id='batch-pricing-category' className='w-full'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(MODEL_CATEGORY_LABELS).map(
+                    ([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {t(label)}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
+          <label className='flex items-center gap-2 text-sm sm:col-span-3'>
+            <Checkbox
+              checked={overwriteManual}
+              onCheckedChange={(checked) =>
+                setOverwriteManual(checked === true)
+              }
+            />
+            <span>
+              {t('Also overwrite manually edited model prices')}
+              <span className='text-muted-foreground block text-xs'>
+                {t(
+                  'Off by default: a single-model price always outranks a batch rule.'
+                )}
+              </span>
+            </span>
+          </label>
           <div className='flex items-end gap-2'>
             <Button
               type='button'
@@ -459,7 +621,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           </div>
           <div className='w-40'>
             <Select
-              value={schedule.basis}
+              value={isBailian ? 'official' : schedule.basis}
+              disabled={isBailian}
               onValueChange={(value) =>
                 setSchedule((current) => ({
                   ...current,
@@ -480,8 +643,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Select
               value={schedule.mode}
               onValueChange={(next) =>
-                next &&
-                setSchedule((current) => ({ ...current, mode: next }))
+                next && setSchedule((current) => ({ ...current, mode: next }))
               }
             >
               <SelectTrigger className='w-full'>
@@ -598,10 +760,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       </section>
 
       {!disabled && props.channelId != null ? (
-        <ChannelModelPricingSection channelId={props.channelId} />
-      ) : null}
-
-      {!disabled && props.channelId != null ? (
         <section className='space-y-2 rounded-lg border p-3'>
           <div className='flex flex-wrap items-center justify-between gap-2'>
             <Label>{t('Pending price reviews')}</Label>
@@ -613,8 +771,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <>
               <ul className='text-muted-foreground space-y-1 text-sm'>
                 {reviewsQuery.data.items.slice(0, 5).map((entry) => (
-                  <li key={`${entry.model_name}-${entry.field}-${entry.created_at}`}>
-                    {entry.model_name} · {entry.field} · {entry.percent.toFixed(1)}%
+                  <li
+                    key={`${entry.model_name}-${entry.field}-${entry.created_at}`}
+                  >
+                    {entry.model_name} · {entry.field} ·{' '}
+                    {entry.percent.toFixed(1)}%
                   </li>
                 ))}
               </ul>
@@ -641,6 +802,113 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           ) : (
             <p className='text-muted-foreground text-sm'>
               {t('No pending price reviews.')}
+            </p>
+          )}
+        </section>
+      ) : null}
+
+      {!disabled && props.channelId != null ? (
+        <section className='space-y-2 rounded-lg border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <div>
+              <Label>{t('Sync diagnostics')}</Label>
+              <p className='text-muted-foreground text-sm'>
+                {t(
+                  'Check model discovery, official prices and channel prices independently.'
+                )}
+              </p>
+            </div>
+            <Button
+              type='button'
+              size='sm'
+              variant='outline'
+              onClick={() => diagnostics.mutate()}
+              disabled={diagnostics.isPending}
+            >
+              <Activity className='size-4' />
+              {diagnostics.isPending ? t('Running...') : t('Run diagnostics')}
+            </Button>
+          </div>
+          {diagnostics.data ? (
+            <div className='space-y-2'>
+              {[
+                {
+                  label: t('Models'),
+                  check: diagnostics.data.models,
+                },
+                {
+                  label: t('Official price'),
+                  check: diagnostics.data.official_pricing,
+                },
+                {
+                  label: t('Channel price'),
+                  check: diagnostics.data.channel_pricing,
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className='flex flex-wrap items-center gap-2 text-sm'
+                >
+                  <span className='text-muted-foreground w-28 shrink-0'>
+                    {item.label}
+                  </span>
+                  <Badge
+                    variant={
+                      item.check.status === 'FAILED' ? 'warning' : 'secondary'
+                    }
+                  >
+                    {item.check.status || t('Unknown')}
+                  </Badge>
+                  <span className='text-muted-foreground'>
+                    {item.check.message || item.check.error}
+                  </span>
+                </div>
+              ))}
+              {diagnostics.data.warnings?.map((warning) => (
+                <p
+                  key={warning}
+                  className='text-warning-soft-foreground text-sm'
+                >
+                  {warning}
+                </p>
+              ))}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {!disabled && props.channelId != null && auditQuery.data ? (
+        <section className='space-y-2 rounded-lg border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <Label>{t('Price source audit')}</Label>
+            <Badge
+              variant={
+                auditQuery.data.conflicts.length > 0 ? 'warning' : 'secondary'
+              }
+            >
+              {authorityText(auditQuery.data.authority)}
+            </Badge>
+          </div>
+          <p className='text-muted-foreground text-sm'>
+            {t('{{models}} models · {{conflicts}} conflicts', {
+              models: auditQuery.data.models.length,
+              conflicts: auditQuery.data.conflicts.length,
+            })}
+          </p>
+          {auditQuery.data.conflicts.length > 0 ? (
+            <ul className='text-muted-foreground space-y-1 text-sm'>
+              {auditQuery.data.conflicts.slice(0, 5).map((conflict) => (
+                <li key={conflict.model_name}>
+                  <span className='text-foreground font-medium'>
+                    {conflict.model_name}
+                  </span>{' '}
+                  · {conflict.channel_status} · {t('takes precedence')}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className='text-muted-foreground text-sm'>
+              {t('No conflicting price sources.')}
             </p>
           )}
         </section>

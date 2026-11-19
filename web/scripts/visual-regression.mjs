@@ -112,7 +112,9 @@ if (browser) {
             if (labelledBy) {
               const text = labelledBy
                 .split(/\s+/)
-                .map((id) => document.querySelector(`#${id}`)?.textContent || '')
+                .map(
+                  (id) => document.querySelector(`#${id}`)?.textContent || ''
+                )
                 .join(' ')
                 .trim()
               if (text) return text

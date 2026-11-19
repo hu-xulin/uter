@@ -31,9 +31,9 @@ describe('callbackAddressWarning', () => {
     expect(callbackAddressWarning('https://localhost:3000')).toBe('private')
     expect(callbackAddressWarning('https://127.0.0.1')).toBe('private')
     expect(callbackAddressWarning('https://192.168.1.7')).toBe('private')
-    expect(callbackAddressWarning('https://uter.cc/api/user/alipay/notify')).toBe(
-      'path'
-    )
+    expect(
+      callbackAddressWarning('https://uter.cc/api/user/alipay/notify')
+    ).toBe('path')
     expect(callbackAddressWarning('not-a-url')).toBe('invalid')
   })
 })

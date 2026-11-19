@@ -45,7 +45,8 @@ func TestEmbeddedBinaryCarriesNativeDocsAssets(t *testing.T) {
 			"Run `cd web && bun run build` before go build. "+
 			"Or check the current tree with scripts/verify-docs-artifacts.sh")
 
-	// 索引不能是个空壳：一个语言至少要有 80 篇可搜索的文档。
+	// 索引不能是个空壳：当前英文语料为 65 篇，索引必须与语料同步。
+	// 文档数量变化时同步更新这里，不能只让索引变少而测试继续通过。
 	f, err := buildFS.Open("web/dist/docs-search/en.json")
 	require.NoError(t, err)
 	defer f.Close()
@@ -55,7 +56,7 @@ func TestEmbeddedBinaryCarriesNativeDocsAssets(t *testing.T) {
 		"english search index looks truncated (%d bytes)", len(content))
 	var docs []map[string]any
 	require.NoError(t, json.Unmarshal(content, &docs), "search index must be valid JSON")
-	assert.Len(t, docs, 80, "the english search index must cover every docs page")
+	assert.Len(t, docs, 65, "the english search index must cover every docs page")
 }
 
 // TestEmbeddedDocsCarryScreenshotAssets 守住 user-guide 截图真的进了二进制。

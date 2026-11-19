@@ -158,6 +158,47 @@ func TestChannelPerCallPricingAndCachedInvalidation(t *testing.T) {
 	assert.True(t, names["image-model"])
 }
 
+func TestResolveEffectiveChannelPricingIsSingleDecisionPoint(t *testing.T) {
+	setupChannelModelPricingDB(t)
+
+	// No row: exists=false, not billable.
+	absent := ResolveEffectiveChannelPricing(41, "never-synced-model")
+	assert.False(t, absent.Exists)
+	assert.False(t, absent.Billable)
+	assert.Nil(t, absent.Pricing)
+	assert.Empty(t, absent.Status)
+
+	// Official-only row: exists=true but must never be billable (no free pass).
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
+		officialRecord(42, "official-only-model", "bailian-official"),
+	})
+	require.NoError(t, err)
+	official := ResolveEffectiveChannelPricing(42, "official-only-model")
+	assert.True(t, official.Exists)
+	assert.False(t, official.Billable)
+	assert.Equal(t, ChannelPricingStatusOfficialOnly, official.Status)
+	assert.Nil(t, official.Pricing)
+
+	// Configured row: billable, and every accessor agrees with the unified result.
+	require.NoError(t, SetChannelInternalPricing(42, "official-only-model", ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(2),
+		OutputUSDPerMillion: floatPtr(8),
+	}))
+	configured := ResolveEffectiveChannelPricing(42, "official-only-model")
+	require.True(t, configured.Billable)
+	require.NotNil(t, configured.Pricing)
+	assert.Equal(t, ChannelPricingStatusConfigured, configured.Status)
+	assert.InDelta(t, 1.0, configured.Pricing.ModelRatio, 1e-9)
+
+	legacyPricing, legacyOK := ResolveChannelBillingPricing(42, "official-only-model")
+	assert.Equal(t, configured.Billable, legacyOK)
+	assert.Equal(t, configured.Pricing, legacyPricing)
+	legacyStatus, legacyExists := ChannelPricingState(42, "official-only-model")
+	assert.Equal(t, configured.Status, legacyStatus)
+	assert.Equal(t, configured.Exists, legacyExists)
+}
+
 func TestUpsertOfficialPricingPreservesInternalPrice(t *testing.T) {
 	setupChannelModelPricingDB(t)
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
@@ -196,4 +237,64 @@ func TestChannelModelPricingMigrationAndUniqueKey(t *testing.T) {
 	require.Error(t, db.Create(&duplicate).Error)
 	// The same model on another channel is a separate row.
 	require.NoError(t, db.Create(&ChannelModelPricing{ChannelId: 2, ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly}).Error)
+}
+
+func TestNormalizeChannelInternalPricingCacheWrite(t *testing.T) {
+	pricing := &ChannelInternalPricing{
+		Mode:                     ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:       floatPtr(2),
+		OutputUSDPerMillion:      floatPtr(4),
+		CacheUSDPerMillion:       floatPtr(1),
+		CreateCacheUSDPerMillion: floatPtr(2.5),
+	}
+	normalized, err := NormalizeChannelInternalPricing(pricing)
+	require.NoError(t, err)
+	require.NotNil(t, normalized.CacheRatio)
+	require.InDelta(t, 0.5, *normalized.CacheRatio, 1e-9)
+	require.NotNil(t, normalized.CreateCacheRatio)
+	require.InDelta(t, 1.25, *normalized.CreateCacheRatio, 1e-9)
+}
+
+func TestUpsertDerivedPricingPreservesManualOperatorPrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	derived := func(input float64) string {
+		encoded, err := common.Marshal(ChannelInternalPricing{
+			Mode:                ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion:  floatPtr(input),
+			OutputUSDPerMillion: floatPtr(input * 5),
+			Source:              "dreamrouter-discount",
+		})
+		require.NoError(t, err)
+		return string(encoded)
+	}
+	record := officialRecord(7, "gpt-a", "dreamrouter-official")
+	record.InternalPricing = derived(3)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+
+	row, err := GetChannelModelPricing(7, "gpt-a")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusConfigured, row.PricingStatus)
+	require.Contains(t, row.InternalPricing, `"input_per_million_usd":3`)
+
+	// A later sync may refresh a price it derived itself.
+	record.InternalPricing = derived(2.5)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(7, "gpt-a")
+	require.NoError(t, err)
+	require.Contains(t, row.InternalPricing, `"input_per_million_usd":2.5`)
+
+	// An operator-saved price is never overwritten by a sync.
+	require.NoError(t, SetChannelInternalPricing(7, "gpt-a", ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(9),
+		OutputUSDPerMillion: floatPtr(45),
+	}))
+	record.InternalPricing = derived(1)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(7, "gpt-a")
+	require.NoError(t, err)
+	require.Contains(t, row.InternalPricing, `"input_per_million_usd":9`)
 }

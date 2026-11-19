@@ -769,7 +769,8 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 
 	// 获取模型价格和倍率。渠道独立价格优先，且按任务实际执行渠道读取。
 	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
-	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(task.ChannelId, modelName)
+	effective := model.ResolveEffectiveChannelPricing(task.ChannelId, modelName)
+	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if hasChannelPricing {
 		if channelPricing.UsePrice {
 			return false

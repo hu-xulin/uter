@@ -42,11 +42,6 @@ describe('Header', () => {
     expect(header).not.toHaveClass('border-b')
 
     const divider = container.querySelector('span[aria-hidden="true"]')
-    expect(divider).toHaveClass(
-      'absolute',
-      'inset-x-0',
-      'bottom-0',
-      'h-px'
-    )
+    expect(divider).toHaveClass('absolute', 'inset-x-0', 'bottom-0', 'h-px')
   })
 })

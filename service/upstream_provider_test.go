@@ -44,3 +44,41 @@ func TestFetchUpstreamCatalogRejectsUnknownProvider(t *testing.T) {
 	_, err := FetchUpstreamCatalog(context.Background(), "unknown", UpstreamFetchConfig{})
 	require.ErrorContains(t, err, "unknown upstream provider")
 }
+
+func TestUpstreamProviderForChannelMapsTypesAndFallback(t *testing.T) {
+	bailian := UpstreamProviderForChannel(17, "https://ws.cn-beijing.maas.aliyuncs.com")
+	require.Equal(t, "alibaba-bailian", bailian.ID)
+	require.Equal(t, CapabilitySupported, bailian.Capabilities.OfficialPricing.Status)
+
+	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
+	require.Equal(t, "dreamrouter", dreamRouter.ID)
+	require.Equal(t, CapabilityPartial, dreamRouter.Capabilities.OfficialPricing.Status)
+
+	generic := UpstreamProviderForChannel(1, "https://api.example.com")
+	require.Equal(t, "newapi-compatible", generic.ID)
+	require.Equal(t, CapabilityPartial, generic.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilityNeedsConfiguration, generic.Capabilities.ScheduledSync.Status)
+}
+
+func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
+	providers := UpstreamProviders()
+	byID := make(map[string]UpstreamProvider, len(providers))
+	for _, provider := range providers {
+		byID[provider.ID] = provider
+	}
+	for _, id := range []string{"openai", "anthropic", "google-gemini", "microsoft-azure", "aws-bedrock", "tencent-hunyuan", "volcengine"} {
+		provider, ok := byID[id]
+		if !ok {
+			t.Fatalf("provider %s is not registered", id)
+		}
+		if provider.Capabilities.OfficialPricing.Status != CapabilityManualOnly {
+			t.Fatalf("provider %s official pricing = %s, want MANUAL_ONLY", id, provider.Capabilities.OfficialPricing.Status)
+		}
+		if provider.Capabilities.ChannelPricing.Status != CapabilityManualOnly {
+			t.Fatalf("provider %s channel pricing = %s, want MANUAL_ONLY", id, provider.Capabilities.ChannelPricing.Status)
+		}
+		if provider.Capabilities.ScheduledSync.Status != CapabilityUnsupported {
+			t.Fatalf("provider %s scheduled sync = %s, want UNSUPPORTED", id, provider.Capabilities.ScheduledSync.Status)
+		}
+	}
+}

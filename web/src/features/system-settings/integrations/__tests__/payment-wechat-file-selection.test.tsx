@@ -63,7 +63,7 @@ const baseDefaults = {
   CreemProducts: '[]',
   AlipayEnabled: false,
   AlipayGateway: 'https://openapi.alipay.com/gateway.do',
-    AlipayAppId: '',
+  AlipayAppId: '',
   AlipayPrivateKey: '',
   AlipayPublicKey: '',
   WechatPayEnabled: true,
@@ -201,9 +201,7 @@ describe('payment settings callback address placement', () => {
     renderPayment()
 
     await user.click(screen.getByRole('tab', { name: 'General' }))
-    expect(
-      await screen.findByLabelText('Async callback address')
-    ).toBeVisible()
+    expect(await screen.findByLabelText('Async callback address')).toBeVisible()
 
     await user.click(screen.getByRole('tab', { name: 'Epay' }))
     expect(

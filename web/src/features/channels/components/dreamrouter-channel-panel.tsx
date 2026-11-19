@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { RefreshCw } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -25,17 +26,26 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { handleServerError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 
 import {
   getDreamRouterUpstreamSnapshot,
   syncDreamRouterUpstream,
+  type DreamRouterUpstreamSnapshot,
 } from '../api'
 
 type DreamRouterChannelPanelProps = {
   channelId: number | null
   baseUrl: string
+  onCreateDraft?: () => Promise<number | null>
   onChangeBaseUrl: (value: string) => void
 }
 
@@ -50,21 +60,37 @@ type DreamRouterChannelPanelProps = {
 export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const snapshotQuery = useQuery({
-    queryKey: ['dreamrouter-upstream-snapshot'],
-    queryFn: getDreamRouterUpstreamSnapshot,
+  const [creatingDraft, setCreatingDraft] = useState(false)
+  const [pickedDiscountGroup, setPickedDiscountGroup] = useState('')
+  const snapshotQuery = useQuery<DreamRouterUpstreamSnapshot>({
+    queryKey: ['dreamrouter-upstream-snapshot', props.channelId],
+    queryFn: () => getDreamRouterUpstreamSnapshot(props.channelId ?? undefined),
     retry: false,
     meta: { errorToast: false },
   })
   const snapshot = snapshotQuery.data
   const summary = snapshot?.synced ? snapshot.summary : null
+  const discountGroups =
+    snapshot?.synced && snapshot.discount_groups?.length
+      ? snapshot.discount_groups
+      : ['default']
+  const discountGroup =
+    pickedDiscountGroup ||
+    (snapshot?.synced ? snapshot.discount_group : undefined) ||
+    'default'
 
   const sync = useMutation({
     mutationFn: () =>
-      syncDreamRouterUpstream(props.channelId ?? 0, props.baseUrl),
+      syncDreamRouterUpstream(
+        props.channelId ?? 0,
+        props.baseUrl,
+        discountGroup
+      ),
     onSuccess: (result) => {
       const written =
-        typeof result === 'object' && result && 'channel_pricing_written' in result
+        typeof result === 'object' &&
+        result &&
+        'channel_pricing_written' in result
           ? Number(
               (result as { channel_pricing_written?: number })
                 .channel_pricing_written ?? 0
@@ -76,7 +102,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
         })
       )
       void queryClient.invalidateQueries({
-        queryKey: ['dreamrouter-upstream-snapshot'],
+        queryKey: ['dreamrouter-upstream-snapshot', props.channelId],
       })
       void queryClient.invalidateQueries({
         queryKey: ['channel-model-pricing', props.channelId],
@@ -85,6 +111,16 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
     onError: (error) =>
       handleServerError(error, t('Failed to sync DreamRouter catalog')),
   })
+
+  let syncStatusLabel = t('Not synced yet')
+  let syncStatusVariant: 'secondary' | 'warning' | 'default' = 'warning'
+  if (sync.isPending || snapshotQuery.isLoading) {
+    syncStatusLabel = t('Syncing...')
+    syncStatusVariant = 'secondary'
+  } else if (snapshot?.synced) {
+    syncStatusLabel = t('Synced')
+    syncStatusVariant = 'default'
+  }
 
   return (
     <div className='space-y-3 rounded-lg border p-3'>
@@ -117,6 +153,35 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
       </div>
 
       <div className='space-y-1.5'>
+        <Label htmlFor='dreamrouter-discount-group'>
+          {t('Discount group')}
+        </Label>
+        <Select
+          value={discountGroup}
+          onValueChange={(value) => {
+            if (value) setPickedDiscountGroup(value)
+          }}
+          disabled={sync.isPending || props.channelId == null}
+        >
+          <SelectTrigger id='dreamrouter-discount-group' className='w-full'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {discountGroups.map((group) => (
+              <SelectItem key={group} value={group}>
+                {group}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'The channel price is the official price multiplied by the discount of this DreamRouter group. Manual prices are never overwritten.'
+          )}
+        </p>
+      </div>
+
+      <div className='space-y-1.5'>
         <Label htmlFor='dreamrouter-base-url'>{t('Base URL')}</Label>
         <Input
           id='dreamrouter-base-url'
@@ -134,13 +199,36 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
             size='sm'
             variant='outline'
             onClick={() => sync.mutate()}
-            disabled={sync.isPending}
+            disabled={sync.isPending || props.channelId == null}
           >
             <RefreshCw
               className={cn('size-4', sync.isPending && 'animate-spin')}
             />
             {t('Sync DreamRouter catalog')}
           </Button>
+          <Badge variant={syncStatusVariant}>{syncStatusLabel}</Badge>
+          {props.channelId == null && props.onCreateDraft ? (
+            <Button
+              type='button'
+              size='sm'
+              variant='outline'
+              disabled={creatingDraft}
+              onClick={async () => {
+                setCreatingDraft(true)
+                try {
+                  await props.onCreateDraft?.()
+                } catch (error) {
+                  handleServerError(error, t('Failed to create draft channel'))
+                } finally {
+                  setCreatingDraft(false)
+                }
+              }}
+            >
+              {creatingDraft
+                ? t('Creating...')
+                : t('Generate draft channel ID')}
+            </Button>
+          ) : null}
           {snapshot?.synced && summary ? (
             <span className='text-muted-foreground text-sm'>
               {t('{{models}} models · {{groups}} groups', {
@@ -160,7 +248,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
               {t('Synced at')}: {summary.fetched_at}
             </span>
             <span>
-              {t('Price basis')}: {summary.price_basis}
+              {t('Price basis')}: {t(summary.price_basis)}
             </span>
           </div>
         ) : (
@@ -169,6 +257,13 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
           </p>
         )}
 
+        {props.channelId == null ? (
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'Generate a draft channel ID before syncing so prices are written into this channel.'
+            )}
+          </p>
+        ) : null}
         <p className='text-muted-foreground text-sm'>
           {t(
             'Official prices are reconstructed from DreamRouter ratios; the channel sale price remains separately editable in Pricing.'

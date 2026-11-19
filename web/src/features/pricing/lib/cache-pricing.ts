@@ -16,10 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { BILLING_PRICING_VARS, type BillingVar, type ParsedTier } from './billing-expr'
+import {
+  BILLING_PRICING_VARS,
+  type BillingVar,
+  type ParsedTier,
+} from './billing-expr'
 
 export type CachePricingMode = 'generic' | 'gpt' | 'claude' | 'custom'
-
 
 /** Mixed or conflicting cache prices need the custom editor to show every item. */
 export function getCachePricingMode(
@@ -36,7 +39,9 @@ export function getCachePricingMode(
   else if (model.includes('gemini')) modelMode = 'generic'
 
   if (claudeWrite && gptWrite) return 'custom'
-  if (claudeWrite) return modelMode && modelMode !== 'claude' ? 'custom' : 'claude'
+  if (claudeWrite) {
+    return modelMode && modelMode !== 'claude' ? 'custom' : 'claude'
+  }
   if (gptWrite) return modelMode && modelMode !== 'gpt' ? 'custom' : 'gpt'
   if (used.has('cc')) {
     return modelMode === 'gpt' || modelMode === 'claude' ? modelMode : 'custom'

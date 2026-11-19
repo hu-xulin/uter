@@ -58,7 +58,7 @@ export function Search({ className = '', placeholder }: SearchProps) {
           the right; the old 4px inset made the shortcut visibly hug the edge. */}
       <kbd
         aria-hidden='true'
-        className='bg-background text-muted-foreground text-mono pointer-events-none absolute end-[9px] top-1/2 hidden h-5 -translate-y-1/2 items-center gap-1 rounded border px-1 text-xs font-mono font-medium opacity-100 select-none sm:flex'
+        className='bg-background text-muted-foreground text-mono pointer-events-none absolute end-[9px] top-1/2 hidden h-5 -translate-y-1/2 items-center gap-1 rounded border px-1 font-mono text-xs font-medium opacity-100 select-none sm:flex'
       >
         <span>⌘</span>
         {t('K')}

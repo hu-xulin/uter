@@ -1,0 +1,46 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+package controller
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/uter-ai/uter/model"
+)
+
+func TestDraftPublishBlockersRequireBillablePrices(t *testing.T) {
+	rows := []model.ChannelModelPricing{
+		{ModelName: "configured", PricingStatus: model.ChannelPricingStatusConfigured},
+		{ModelName: "official-only", PricingStatus: model.ChannelPricingStatusOfficialOnly},
+		{ModelName: "review", PricingStatus: model.ChannelPricingStatusNeedsReview},
+	}
+
+	blockers := draftPublishBlockers(rows)
+
+	require.Len(t, blockers, 2)
+	assert.Contains(t, blockers, "official-only (official_only)")
+	assert.Contains(t, blockers, "review (needs_review)")
+}
+
+func TestDraftPublishBlockersAllowChannelsWithoutPricingRows(t *testing.T) {
+	assert.Empty(t, draftPublishBlockers(nil))
+}

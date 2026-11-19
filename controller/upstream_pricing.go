@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,23 +25,37 @@ func GetUpstreamProviders(c *gin.Context) {
 // POST /api/upstream/dreamrouter/sync
 func SyncDreamRouterUpstream(c *gin.Context) {
 	var req struct {
-		BaseURL   string `json:"base_url"`
-		ChannelID int    `json:"channel_id"`
+		BaseURL       string `json:"base_url"`
+		ChannelID     int    `json:"channel_id"`
+		DiscountGroup string `json:"discount_group"`
 	}
 	_ = c.ShouldBindJSON(&req)
 
 	var channelModels []string
+	discountGroup := service.DreamRouterDiscountGroupDefault
 	if req.ChannelID > 0 {
 		channel, err := model.GetChannelById(req.ChannelID, true)
 		if err != nil || channel == nil {
 			common.ApiErrorMsg(c, "Channel not found")
 			return
 		}
-		if !strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
+		if strings.TrimSpace(req.BaseURL) == "" {
+			req.BaseURL = channel.GetBaseURL()
+		}
+		baseURLs := strings.ToLower(channel.GetBaseURL() + " " + req.BaseURL)
+		if !strings.Contains(baseURLs, "dreamrouter.ai") {
 			common.ApiErrorMsg(c, "The selected channel Base URL is not dreamrouter.ai")
 			return
 		}
 		channelModels = channel.GetModels()
+		discountGroup = service.GetDreamRouterDiscountGroup(req.ChannelID)
+		if strings.TrimSpace(req.DiscountGroup) != "" {
+			discountGroup = strings.TrimSpace(req.DiscountGroup)
+			if err := service.SetDreamRouterDiscountGroup(req.ChannelID, discountGroup); err != nil {
+				common.ApiErrorMsg(c, err.Error())
+				return
+			}
+		}
 	}
 
 	previous := service.LoadDreamRouterUpstreamSnapshot()
@@ -65,7 +80,7 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 	}
 	channelPricingWritten := 0
 	if req.ChannelID > 0 {
-		records, err := service.DreamRouterChannelPricingRecords(snapshot, req.ChannelID, channelModels)
+		records, err := service.DreamRouterChannelPricingRecords(snapshot, req.ChannelID, channelModels, discountGroup)
 		if err != nil {
 			common.ApiErrorMsg(c, err.Error())
 			return
@@ -80,6 +95,8 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 	data := dreamRouterUpstreamSummary(snapshot)
 	data["channel_id"] = req.ChannelID
 	data["channel_pricing_written"] = channelPricingWritten
+	data["discount_group"] = discountGroup
+	data["discount_groups"] = service.DreamRouterDiscountGroups(snapshot)
 	data["changes"] = len(changes)
 	data["changes_preview"] = previewChanges(changes)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": data})
@@ -95,10 +112,14 @@ func GetDreamRouterUpstreamSnapshot(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"synced": false}})
 		return
 	}
+	channelID, _ := strconv.Atoi(c.Query("channel_id"))
+	discountGroup := service.GetDreamRouterDiscountGroup(channelID)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
-		"synced":  true,
-		"summary": dreamRouterUpstreamSummary(snapshot),
-		"models":  snapshot.Models,
+		"synced":          true,
+		"summary":         dreamRouterUpstreamSummary(snapshot),
+		"models":          snapshot.Models,
+		"discount_group":  discountGroup,
+		"discount_groups": service.DreamRouterDiscountGroups(snapshot),
 	}})
 }
 

@@ -391,6 +391,7 @@ func migrateDB() error {
 		&TaskPlugin{},
 		&ChannelModelPricing{},
 		&ChannelPricingHistory{},
+		&ChannelPricingReview{},
 		&Model{},
 		&Vendor{},
 		&VendorMergeRule{},

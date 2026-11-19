@@ -52,7 +52,6 @@ import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelsProvider } from '../channels-provider'
 import { ChannelMutateDrawer } from '../drawers/channel-mutate-drawer'
 
-
 const originalAuth = useAuthStore.getState().auth
 let client: QueryClient
 let editingChannel: Channel
@@ -573,9 +572,10 @@ test('submitting a missing plugin address focuses its field without leaving crea
   await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
   await waitFor(() =>
-    expect(
-      screen.getByRole('tab', { name: /Connection/ })
-    ).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   )
   expect(
     screen.getByText('Base URL is required for this channel type')
@@ -1249,9 +1249,9 @@ test('quick options show only applicable shortcuts when the provider changes', a
   await user.click(
     await screen.findByRole('button', { name: 'Enable passthrough' })
   )
-  expect(
-    screen.getByRole('tab', { name: /Connection/ })
-  ).toHaveAccessibleName(/Incomplete/)
+  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAccessibleName(
+    /Incomplete/
+  )
 
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(screen.getByRole('option', { name: /^DeepSeek / }))
@@ -1301,9 +1301,9 @@ test('editing opens the shared configuration and omits an unchanged key on updat
   expect(screen.queryByLabelText('Type *')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Change provider' })).toBeVisible()
   expect(screen.getAllByRole('tab')).toHaveLength(6)
-  expect(
-    screen.getByRole('tab', { name: /Connection/ })
-  ).toHaveAccessibleName(/Ready/)
+  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAccessibleName(
+    /Ready/
+  )
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'Renamed channel' },
   })
@@ -1759,6 +1759,7 @@ test('select all adds every fetched upstream model and keeps saved models', asyn
 
   const selectAll = screen.getByRole('button', { name: 'Select All' })
   expect(selectAll).toBeDisabled()
+  expect(selectAll).toHaveAttribute('title', 'Fetch upstream models first')
 
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await screen.findByRole('checkbox', { name: 'upstream-model' })
@@ -1767,6 +1768,11 @@ test('select all adds every fetched upstream model and keeps saved models', asyn
   await user.click(selectAll)
   expect(screen.getByRole('button', { name: 'upstream-model' })).toBeVisible()
   expect(screen.getByRole('button', { name: 'custom-model' })).toBeVisible()
+  expect(selectAll).toBeDisabled()
+  expect(selectAll).toHaveAttribute(
+    'title',
+    'All upstream models are already selected'
+  )
 })
 
 test('model configuration replaces the selected-count badge at the right of the model field header', async () => {
@@ -2473,9 +2479,10 @@ test('on wide screens redirecting a fetched model opens the floating panel besid
   expect(document.querySelector('[data-slot="sheet-content"]')).toHaveClass(
     'sm:max-w-7xl'
   )
-  expect(
-    screen.getByRole('tab', { name: /Connection/ })
-  ).toHaveAttribute('aria-selected', 'true')
+  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAttribute(
+    'aria-selected',
+    'true'
+  )
   const request = panel.getByRole('combobox', { name: 'Request Model Name' })
   await waitFor(() => expect(request).toHaveFocus())
   expect(
@@ -2974,4 +2981,47 @@ test('the Models step hosts the model editor and quick options', async () => {
   expect(
     screen.getByRole('button', { name: 'Fetch from Upstream' })
   ).toBeVisible()
+})
+
+test('the Models step shows model sync status, fields, and a scrollable routing list', async () => {
+  editingChannel.models = Array.from(
+    { length: 12 },
+    (_, index) => `model-${index + 1}`
+  ).join(',')
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await screen.findByDisplayValue('Existing channel')
+  await user.click(screen.getByRole('tab', { name: /Models/ }))
+
+  expect(
+    screen.getAllByRole('button', { name: 'Sync model information' })[0]
+  ).toBeVisible()
+  expect(screen.getAllByText('Not synced yet')[0]).toBeVisible()
+  expect(screen.getAllByText('Model ID')[0]).toBeVisible()
+
+  const routingLists = screen.getAllByRole('group', {
+    name: 'Per-model routing',
+  })
+  expect(routingLists.length).toBeGreaterThan(0)
+  for (const list of routingLists) {
+    expect(list).toHaveClass('max-h-[27.5rem]', 'overflow-y-auto')
+  }
+})
+
+test('the review step labels the channel type, status, and group count', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await screen.findByDisplayValue('Existing channel')
+  await user.click(screen.getByRole('tab', { name: /Review & Other Settings/ }))
+
+  const typeRow = screen.getByText('Channel type').closest('div')
+  const statusRow = screen.getByText('Status').closest('div')
+  const groupLabels = screen.getAllByText('Groups')
+  const groupsRow = groupLabels.at(-1)?.closest('div')
+  expect(typeRow).not.toBeNull()
+  expect(statusRow).not.toBeNull()
+  expect(groupsRow).not.toBeNull()
+  expect(within(typeRow as HTMLElement).getByText('OpenAI')).toBeVisible()
+  expect(within(statusRow as HTMLElement).getByText('Enabled')).toBeVisible()
+  expect(within(groupsRow as HTMLElement).getByText('1')).toBeVisible()
 })

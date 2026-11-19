@@ -144,6 +144,7 @@ import {
   ADD_MODE_OPTIONS,
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   CHANNEL_STATUS_LABELS,
+  CHANNEL_TYPES,
   CHANNEL_TYPE_NEW_API,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_OPTIONS,
@@ -216,9 +217,8 @@ import {
 } from '../../lib/task-plugin-base-url'
 import type { AdvancedCustomConfig, Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
-import { ChannelPricingPanel } from '../channel-pricing-panel'
-import { DreamRouterChannelPanel } from '../dreamrouter-channel-panel'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
+import { ChannelPricingPanel } from '../channel-pricing-panel'
 import { ChannelQuickOptions } from '../channel-quick-options'
 import { ChannelTypeLogo } from '../channel-type-badge'
 import { useChannels } from '../channels-provider'
@@ -235,6 +235,7 @@ import {
   type PassthroughKind,
 } from '../dialogs/passthrough-warning-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
+import { DreamRouterChannelPanel } from '../dreamrouter-channel-panel'
 import {
   ModelMappingBatchDialog,
   type ModelMappingBatchResult,
@@ -492,9 +493,7 @@ export function ChannelMutateDrawer({
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
-    useState<ChannelConfigurationSection>(
-      'connection'
-    )
+    useState<ChannelConfigurationSection>('connection')
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
     null
   )
@@ -1308,9 +1307,15 @@ export function ChannelMutateDrawer({
   // 上游模型已全部选中时，「全部选择」不再产生任何变化。
   const allUpstreamModelsSelected =
     upstreamModelList.length > 0 &&
-    [...new Set(upstreamModelList.map(normalizeModelName).filter(Boolean))].every(
-      (model) => currentModelsArray.includes(model)
-    )
+    [
+      ...new Set(upstreamModelList.map(normalizeModelName).filter(Boolean)),
+    ].every((model) => currentModelsArray.includes(model))
+  let selectAllTitle: string | undefined
+  if (upstreamModelList.length === 0) {
+    selectAllTitle = t('Fetch upstream models first')
+  } else if (allUpstreamModelsSelected) {
+    selectAllTitle = t('All upstream models are already selected')
+  }
   const batchMappingSource: ModelMappingBatchSource =
     upstreamModelList.length > 0 ? 'upstream' : 'channel'
   const canBatchMap =
@@ -1376,9 +1381,7 @@ export function ChannelMutateDrawer({
     ]
     if (!models.length) return
     const count = updateModels(models, true)
-    toast.success(
-      t('Selected {{count}} upstream model(s)', { count })
-    )
+    toast.success(t('Selected {{count}} upstream model(s)', { count }))
   }, [upstreamModelList, updateModels, t])
 
   // Handle adding prefill group models
@@ -3194,15 +3197,124 @@ export function ChannelMutateDrawer({
     </div>
   )
 
+  const modelsBaseUrl = (form.watch('base_url') ?? '').toLowerCase()
+  const isBailianProvider = currentType === 17
+  const isDreamRouterProvider =
+    isAdvancedCustomLikeChannelType(currentType) &&
+    modelsBaseUrl.includes('dreamrouter.ai')
+  let modelSyncStatusText = t('Not synced yet')
+  let modelSyncBadgeVariant: 'secondary' | 'warning' | 'default' = 'secondary'
+  if (discovery.status === 'loading') {
+    modelSyncStatusText = t('Syncing...')
+  } else if (discovery.status === 'success') {
+    modelSyncStatusText = t('{{count}} models fetched', {
+      count: discovery.models.length,
+    })
+    modelSyncBadgeVariant = 'default'
+  } else if (discovery.status === 'error') {
+    modelSyncStatusText = t('Sync failed')
+    modelSyncBadgeVariant = 'warning'
+  } else if (discovery.status === 'stale') {
+    modelSyncStatusText = t('Needs refresh')
+    modelSyncBadgeVariant = 'warning'
+  }
+
+  const createDraftChannel = async () => {
+    const values = form.getValues()
+    const response = await createChannelDraft({
+      name: values.name,
+      type: values.type,
+      base_url: values.base_url,
+      key: values.key,
+      models: Array.isArray(values.models)
+        ? values.models.join(',')
+        : values.models,
+      group: Array.isArray(values.group)
+        ? values.group.join(',')
+        : values.group,
+    })
+    if (!response.success || !response.data?.id) {
+      throw new Error(response.message || 'Failed to create draft channel')
+    }
+    setDraftChannelId(response.data.id)
+    return response.data.id
+  }
+
   const modelsSection = (
     <div className='scroll-mt-4'>
       <ChannelModelsSection>
         <div className='space-y-5'>
-          {(currentType === 17 ||
-            (isAdvancedCustomLikeChannelType(currentType) &&
-              (form.watch('base_url') ?? '')
-                .toLowerCase()
-                .includes('dreamrouter.ai'))) && (
+          {MODEL_FETCHABLE_TYPES.has(currentType) &&
+          !isBailianProvider &&
+          !isDreamRouterProvider ? (
+            <section
+              aria-live='polite'
+              className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'
+            >
+              <div className='flex flex-wrap items-start justify-between gap-3'>
+                <div className='space-y-1'>
+                  <p className='font-medium'>{t('Model information sync')}</p>
+                  <p className='text-muted-foreground text-sm'>
+                    {t(
+                      'Sync the upstream model catalog and metadata before choosing models.'
+                    )}
+                  </p>
+                </div>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  onClick={() => void handleFetchModels()}
+                  disabled={
+                    !canDiscoverModels || discovery.status === 'loading'
+                  }
+                >
+                  <RefreshCw
+                    className={cn(
+                      'size-4',
+                      discovery.status === 'loading' && 'animate-spin'
+                    )}
+                    aria-hidden='true'
+                  />
+                  {t('Sync model information')}
+                </Button>
+              </div>
+              <div className='flex flex-wrap items-center gap-2 text-sm'>
+                <span className='text-muted-foreground'>
+                  {t('Sync status')}:
+                </span>
+                <Badge variant={modelSyncBadgeVariant}>
+                  {modelSyncStatusText}
+                </Badge>
+                {!canDiscoverModels ? (
+                  <span className='text-muted-foreground text-xs'>
+                    {t('No permission to perform this action')}
+                  </span>
+                ) : null}
+              </div>
+              <div className='flex flex-wrap items-center gap-1.5'>
+                <span className='text-muted-foreground text-xs'>
+                  {t('Synced fields')}:
+                </span>
+                {[
+                  'Model ID',
+                  'Model name',
+                  'Vendor',
+                  'Model type',
+                  'Capabilities',
+                  'Context window',
+                  'Max output',
+                  'Input modalities',
+                  'Output modalities',
+                ].map((field) => (
+                  <Badge key={field} variant='outline' className='font-normal'>
+                    {t(field)}
+                  </Badge>
+                ))}
+              </div>
+            </section>
+          ) : null}
+          {(isBailianProvider || isDreamRouterProvider) && (
             <section className='space-y-3'>
               <div>
                 <p className='font-medium'>{t('Model information sync')}</p>
@@ -3212,10 +3324,11 @@ export function ChannelMutateDrawer({
                   )}
                 </p>
               </div>
-              {currentType === 17 && (
+              {isBailianProvider && (
                 <BailianChannelPanel
                   channelId={effectiveChannelId}
                   baseUrl={form.watch('base_url') ?? ''}
+                  onCreateDraft={isEditing ? undefined : createDraftChannel}
                   onChangeBaseUrl={(value) =>
                     form.setValue('base_url', value, {
                       shouldDirty: true,
@@ -3224,21 +3337,19 @@ export function ChannelMutateDrawer({
                   }
                 />
               )}
-              {isAdvancedCustomLikeChannelType(currentType) &&
-                (form.watch('base_url') ?? '')
-                  .toLowerCase()
-                  .includes('dreamrouter.ai') && (
-                  <DreamRouterChannelPanel
-                    channelId={effectiveChannelId}
-                    baseUrl={form.watch('base_url') ?? ''}
-                    onChangeBaseUrl={(value) =>
-                      form.setValue('base_url', value, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      })
-                    }
-                  />
-                )}
+              {isDreamRouterProvider && (
+                <DreamRouterChannelPanel
+                  channelId={effectiveChannelId}
+                  baseUrl={form.watch('base_url') ?? ''}
+                  onCreateDraft={isEditing ? undefined : createDraftChannel}
+                  onChangeBaseUrl={(value) =>
+                    form.setValue('base_url', value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              )}
             </section>
           )}
           <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
@@ -3607,6 +3718,11 @@ export function ChannelMutateDrawer({
                   size='sm'
                   onClick={handleCopyModels}
                   disabled={currentModelsArray.length === 0}
+                  title={
+                    currentModelsArray.length === 0
+                      ? t('No models selected')
+                      : undefined
+                  }
                 >
                   <Copy className='mr-2 h-4.5 w-4.5' aria-hidden='true' />
                   {t('Copy All')}
@@ -3619,11 +3735,9 @@ export function ChannelMutateDrawer({
                   disabled={
                     upstreamModelList.length === 0 || allUpstreamModelsSelected
                   }
+                  title={selectAllTitle}
                 >
-                  <CheckCheck
-                    className='mr-2 h-4.5 w-4.5'
-                    aria-hidden='true'
-                  />
+                  <CheckCheck className='mr-2 h-4.5 w-4.5' aria-hidden='true' />
                   {t('Select All')}
                 </Button>
                 <Button
@@ -4874,61 +4988,80 @@ export function ChannelMutateDrawer({
       reviewMappingCount = 0
     }
   }
+  const reviewGroups = form.watch('group')
+  const reviewGroupCount = Array.isArray(reviewGroups)
+    ? reviewGroups.length
+    : String(reviewGroups || '')
+        .split(',')
+        .filter((group) => group.trim()).length
+  const reviewTypeLabel =
+    CHANNEL_TYPES[currentType as keyof typeof CHANNEL_TYPES] ??
+    String(currentType)
+  const reviewStatus = form.watch('status')
   const reviewRows = [
-      {
-        label: t('Channel name'),
-        value: form.watch('name') || '—',
-      },
-      {
-        label: t('Channel type'),
-        value: form.watch('type') || '—',
-      },
-      {
-        label: t('Base URL'),
-        value: form.watch('base_url') || '—',
-      },
-      { label: t('Models'), value: String(reviewModelCount) },
-      { label: t('Model mappings'), value: String(reviewMappingCount) },
-      {
-        label: t('Pricing'),
-        value: effectiveChannelId ? t('Configured') : t('Not configured'),
-      },
-    ]
+    {
+      label: t('Channel name'),
+      value: form.watch('name') || '—',
+    },
+    {
+      label: t('Channel type'),
+      value: t(reviewTypeLabel),
+    },
+    {
+      label: t('Status'),
+      value: t(
+        CHANNEL_STATUS_LABELS[
+          reviewStatus as keyof typeof CHANNEL_STATUS_LABELS
+        ] ?? 'Unknown'
+      ),
+    },
+    {
+      label: t('Base URL'),
+      value: form.watch('base_url') || '—',
+    },
+    { label: t('Models'), value: String(reviewModelCount) },
+    { label: t('Groups'), value: String(reviewGroupCount) },
+    { label: t('Model mappings'), value: String(reviewMappingCount) },
+    {
+      label: t('Pricing'),
+      value: effectiveChannelId ? t('Configured') : t('Not configured'),
+    },
+  ]
 
-    const reviewSection = (
-      <div className='space-y-4'>
-        <div>
-          <p className='font-medium'>{t('Review')}</p>
-          <p className='text-muted-foreground text-sm'>
-            {t('Review the configuration before creating the channel.')}
-          </p>
-        </div>
-        <dl className='overflow-hidden rounded-lg border'>
-          {reviewRows.map((row, index) => (
-            <div
-              key={row.label}
-              className={cn(
-                'flex items-start justify-between gap-4 px-4 py-3 text-sm',
-                index > 0 && 'border-t'
-              )}
-            >
-              <dt className='text-muted-foreground shrink-0'>{row.label}</dt>
-              <dd className='min-w-0 text-right font-medium break-words'>
-                {row.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <Button
-          type='button'
-          variant='outline'
-          size='sm'
-          onClick={() => setConfigurationSection('pricing')}
-        >
-          {t('Open pricing')}
-        </Button>
+  const reviewSection = (
+    <div className='space-y-4'>
+      <div>
+        <p className='font-medium'>{t('Review')}</p>
+        <p className='text-muted-foreground text-sm'>
+          {t('Review the configuration before creating the channel.')}
+        </p>
       </div>
-    )
+      <dl className='overflow-hidden rounded-lg border'>
+        {reviewRows.map((row, index) => (
+          <div
+            key={row.label}
+            className={cn(
+              'flex items-start justify-between gap-4 px-4 py-3 text-sm',
+              index > 0 && 'border-t'
+            )}
+          >
+            <dt className='text-muted-foreground shrink-0'>{row.label}</dt>
+            <dd className='min-w-0 text-right font-medium break-words'>
+              {row.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <Button
+        type='button'
+        variant='outline'
+        size='sm'
+        onClick={() => setConfigurationSection('pricing')}
+      >
+        {t('Open pricing')}
+      </Button>
+    </div>
+  )
 
   let formContent: ReactNode
   if (!isEditing && !providerTarget) {
@@ -4971,30 +5104,7 @@ export function ChannelMutateDrawer({
           <ChannelPricingPanel
             channelId={effectiveChannelId}
             baseUrl={form.watch('base_url') ?? ''}
-            onCreateDraft={
-              isEditing
-                ? undefined
-                : async () => {
-                    const values = form.getValues()
-                    const response = await createChannelDraft({
-                      name: values.name,
-                      type: values.type,
-                      base_url: values.base_url,
-                      key: values.key,
-                      models: Array.isArray(values.models)
-                        ? values.models.join(',')
-                        : values.models,
-                      group: Array.isArray(values.group)
-                        ? values.group.join(',')
-                        : values.group,
-                    })
-                    if (!response.success || !response.data?.id) {
-                      throw new Error(response.message || 'Failed to create draft channel')
-                    }
-                    setDraftChannelId(response.data.id)
-                    return response.data.id
-                  }
-            }
+            onCreateDraft={isEditing ? undefined : createDraftChannel}
           />
         }
         quickOptions={

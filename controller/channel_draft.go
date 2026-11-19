@@ -111,6 +111,19 @@ func PublishChannelDraft(c *gin.Context) {
 		return
 	}
 	other := channel.GetOtherSettings()
+	if !other.Draft {
+		common.ApiErrorMsg(c, "Only draft channels can be published")
+		return
+	}
+	rows, err := model.ListChannelModelPricing(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if blockers := draftPublishBlockers(rows); len(blockers) > 0 {
+		common.ApiErrorMsg(c, "Pricing is not billable for: "+strings.Join(blockers, "; "))
+		return
+	}
 	other.Draft = false
 	raw, err := common.Marshal(other)
 	if err != nil {
@@ -128,4 +141,18 @@ func PublishChannelDraft(c *gin.Context) {
 	model.InitChannelCache()
 	recordManageAudit(c, "channel.draft.publish", map[string]any{"id": id})
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"id": id}})
+}
+
+// draftPublishBlockers lists channel-pricing rows that cannot bill yet. A draft
+// with any official-only or needs-review row must not be published: requests
+// would reach a channel that deliberately refuses to charge.
+func draftPublishBlockers(rows []model.ChannelModelPricing) []string {
+	blockers := make([]string, 0)
+	for _, row := range rows {
+		if row.PricingStatus == model.ChannelPricingStatusConfigured {
+			continue
+		}
+		blockers = append(blockers, row.ModelName+" ("+row.PricingStatus+")")
+	}
+	return blockers
 }

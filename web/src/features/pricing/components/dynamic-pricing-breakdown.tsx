@@ -45,10 +45,13 @@ import {
   type RequestRuleTrace,
   type TierCondition,
 } from '../lib/billing-expr'
-import { getCachePriceLabels, getTierCachePricingMode } from '../lib/cache-pricing'
 import { formatBillingCondition } from '../lib/billing-expression/condition-display'
 import { compileBillingExpression } from '../lib/billing-expression/parser'
 import { isBreakdownTierMatched } from '../lib/breakdown-tier-match'
+import {
+  getCachePriceLabels,
+  getTierCachePricingMode,
+} from '../lib/cache-pricing'
 import {
   formatTaskUsageUnitPrice,
   type DynamicPriceLabelKind,

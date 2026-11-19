@@ -76,7 +76,12 @@ func acKey(dict []string) string {
 	}
 	sort.Strings(normalized)
 	hasher := fnv.New64a()
-	for _, w := range normalized {
+	previous := ""
+	for i, w := range normalized {
+		if i > 0 && w == previous {
+			continue
+		}
+		previous = w
 		hasher.Write([]byte{0})
 		hasher.Write([]byte(w))
 	}

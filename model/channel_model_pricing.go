@@ -68,14 +68,21 @@ type ChannelPricingTier struct {
 // ChannelOfficialPricing is the normalized official view for one channel
 // model. The untouched source payload is kept in ChannelModelPricing.
 type ChannelOfficialPricing struct {
-	Currency      string               `json:"currency"`
-	FXRateToUSD   float64              `json:"fx_rate_to_usd,omitempty"`
-	Unit          string               `json:"unit"`
-	Tiers         []ChannelPricingTier `json:"tiers"`
-	Source        string               `json:"source"`
-	FetchedAt     int64                `json:"fetched_at"`
-	NeedsReview   bool                 `json:"needs_review,omitempty"`
-	ReviewReasons []string             `json:"review_reasons,omitempty"`
+	Currency    string               `json:"currency"`
+	FXRateToUSD float64              `json:"fx_rate_to_usd,omitempty"`
+	Unit        string               `json:"unit"`
+	Tiers       []ChannelPricingTier `json:"tiers"`
+	// ChannelPrice is the upstream channel price after applying the provider's
+	// discount for the selected billing group. It is separate from Tiers so the
+	// official list price stays auditable.
+	ChannelPrice       *ChannelPricingTier `json:"channel_price,omitempty"`
+	DiscountGroup      string              `json:"discount_group,omitempty"`
+	DiscountModelGroup string              `json:"discount_model_group,omitempty"`
+	DiscountRatio      *float64            `json:"discount_ratio,omitempty"`
+	Source             string              `json:"source"`
+	FetchedAt          int64               `json:"fetched_at"`
+	NeedsReview        bool                `json:"needs_review,omitempty"`
+	ReviewReasons      []string            `json:"review_reasons,omitempty"`
 }
 
 // ChannelInternalPricing is the operator's flat sale price for one channel
@@ -85,22 +92,33 @@ type ChannelInternalPricing struct {
 	InputUSDPerMillion  *float64 `json:"input_per_million_usd,omitempty"`
 	OutputUSDPerMillion *float64 `json:"output_per_million_usd,omitempty"`
 	CacheUSDPerMillion  *float64 `json:"cache_per_million_usd,omitempty"`
-	PerCallUSD          *float64 `json:"per_call_usd,omitempty"`
-	Note                string   `json:"note,omitempty"`
-	UpdatedAt           int64    `json:"updated_at"`
+	// CreateCacheUSDPerMillion is the cache-write price. When omitted the
+	// global create-cache ratio remains in force.
+	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
+	PerCallUSD               *float64 `json:"per_call_usd,omitempty"`
+	Note                     string   `json:"note,omitempty"`
+	// Source records who last wrote the internal price. Automatic syncs tag
+	// their writes so a later sync may refresh them, while an operator-saved
+	// price is never overwritten.
+	Source             string  `json:"source,omitempty"`
+	DiscountGroup      string  `json:"discount_group,omitempty"`
+	DiscountModelGroup string  `json:"discount_model_group,omitempty"`
+	DiscountRatio      float64 `json:"discount_ratio,omitempty"`
+	UpdatedAt          int64   `json:"updated_at"`
 }
 
 // ChannelBillingPricing is the resolved multiplier form used by the relay.
 // CompletionRatio/CacheRatio are nil when the operator did not set an output
 // or cache price, in which case the global ratio remains in force.
 type ChannelBillingPricing struct {
-	ModelRatio      float64
-	CompletionRatio *float64
-	CacheRatio      *float64
-	ModelPrice      float64
-	UsePrice        bool
-	Version         string
-	Source          string
+	ModelRatio       float64
+	CompletionRatio  *float64
+	CacheRatio       *float64
+	CreateCacheRatio *float64
+	ModelPrice       float64
+	UsePrice         bool
+	Version          string
+	Source           string
 }
 
 // ChannelOfficialPricingRecord is one upsert input for an official sync.
@@ -113,8 +131,12 @@ type ChannelOfficialPricingRecord struct {
 	Currency          string
 	OfficialPricing   string
 	NormalizedPricing string
-	Source            string
-	FetchedAt         int64
+	// InternalPricing is an optional automatically derived channel price. It is
+	// only written when the row has no operator price, or when the existing
+	// internal price was itself derived by a previous sync.
+	InternalPricing string
+	Source          string
+	FetchedAt       int64
 }
 
 var (
@@ -175,7 +197,8 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	}
 	for _, value := range []*float64{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
-		pricing.CacheUSDPerMillion, pricing.PerCallUSD,
+		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
+		pricing.PerCallUSD,
 	} {
 		if err := validPricePointer(value); err != nil {
 			return nil, err
@@ -200,6 +223,10 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			cache := *pricing.CacheUSDPerMillion / input
 			result.CacheRatio = &cache
 		}
+		if pricing.CreateCacheUSDPerMillion != nil {
+			createCache := *pricing.CreateCacheUSDPerMillion / input
+			result.CreateCacheRatio = &createCache
+		}
 		return result, nil
 	case ChannelPricingModePerCall:
 		if pricing.PerCallUSD == nil || *pricing.PerCallUSD < 0 {
@@ -209,6 +236,20 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	default:
 		return nil, errors.New("unsupported internal pricing mode")
 	}
+}
+
+// internalPricingReplaceable reports whether a sync may rewrite the stored
+// internal price. An empty row and a previously sync-derived price are
+// replaceable; anything an operator saved is preserved.
+func internalPricingReplaceable(raw string) bool {
+	if strings.TrimSpace(raw) == "" {
+		return true
+	}
+	var pricing ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
+		return false
+	}
+	return strings.HasPrefix(pricing.Source, "dreamrouter-")
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the
@@ -239,10 +280,14 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 					Currency:          record.Currency,
 					OfficialPricing:   record.OfficialPricing,
 					NormalizedPricing: record.NormalizedPricing,
+					InternalPricing:   record.InternalPricing,
 					PricingSource:     record.Source,
 					PricingStatus:     ChannelPricingStatusOfficialOnly,
 					FetchedAt:         record.FetchedAt,
 					UpdatedAt:         now,
+				}
+				if row.InternalPricing != "" {
+					row.PricingStatus = ChannelPricingStatusConfigured
 				}
 				row.PricingVersion = channelPricingVersion(row)
 				if err := tx.Create(&row).Error; err != nil {
@@ -263,6 +308,10 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			existing.PricingSource = record.Source
 			existing.FetchedAt = record.FetchedAt
 			existing.UpdatedAt = now
+			if record.InternalPricing != "" && internalPricingReplaceable(existing.InternalPricing) {
+				existing.InternalPricing = record.InternalPricing
+				existing.PricingStatus = ChannelPricingStatusConfigured
+			}
 			if existing.PricingStatus == "" {
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
 			}
@@ -374,20 +423,53 @@ func loadChannelPricing(channelId int, modelName string) (*ChannelBillingPricing
 	return entry.pricing, entry.status, entry.exists
 }
 
+// EffectiveChannelPricing is the single authoritative resolution of one
+// (channel, model) billing price. It collapses the two lookups that billing
+// used to perform separately (ResolveChannelBillingPricing + ChannelPricingState)
+// into one cache-consistent decision, so every billing path reads the same
+// source with the same semantics.
+//
+// Billable is true only when a durable row exists, its status is configured,
+// and the normalized internal price is present. An official_only or
+// needs_review row sets Exists=true but Billable=false; callers must treat that
+// as "not configured" and must not fall back to a free price.
+type EffectiveChannelPricing struct {
+	Pricing  *ChannelBillingPricing
+	Status   string
+	Exists   bool
+	Billable bool
+}
+
+// ResolveEffectiveChannelPricing is the one authoritative entry point for
+// channel-scoped pricing. All billing paths (token, per-call, task settlement)
+// must read through it. requestContext/region/deployment dimensions will be
+// threaded in when the multimodal price schema lands (P2); today the durable
+// key is exactly (channel_id, model_name).
+func ResolveEffectiveChannelPricing(channelId int, modelName string) EffectiveChannelPricing {
+	pricing, status, exists := loadChannelPricing(channelId, modelName)
+	return EffectiveChannelPricing{
+		Pricing:  pricing,
+		Status:   status,
+		Exists:   exists,
+		Billable: exists && status == ChannelPricingStatusConfigured && pricing != nil,
+	}
+}
+
 // ResolveChannelBillingPricing returns the configured internal price for the
 // actual channel that will serve the request. Official-only rows are not
-// billable and return ok=false.
+// billable and return ok=false. It delegates to ResolveEffectiveChannelPricing
+// so there is a single decision function.
 func ResolveChannelBillingPricing(channelId int, modelName string) (*ChannelBillingPricing, bool) {
-	pricing, status, exists := loadChannelPricing(channelId, modelName)
-	return pricing, exists && status == ChannelPricingStatusConfigured && pricing != nil
+	effective := ResolveEffectiveChannelPricing(channelId, modelName)
+	return effective.Pricing, effective.Billable
 }
 
 // ChannelPricingState reports whether a channel has an isolated record and its
 // current status. Callers use it to stop an official-only row from silently
-// falling back to the global price.
+// falling back to the global price. It delegates to ResolveEffectiveChannelPricing.
 func ChannelPricingState(channelId int, modelName string) (string, bool) {
-	_, status, exists := loadChannelPricing(channelId, modelName)
-	return status, exists
+	effective := ResolveEffectiveChannelPricing(channelId, modelName)
+	return effective.Status, effective.Exists
 }
 
 // ChannelPricedModelNames returns every model that has a channel-scoped

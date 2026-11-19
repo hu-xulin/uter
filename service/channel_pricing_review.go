@@ -15,6 +15,7 @@ const channelPricingReviewLimit = 500
 // ChannelPricingReviewEntry is one upstream price change that needs approval
 // before the scheduled rule may touch the channel's effective price.
 type ChannelPricingReviewEntry struct {
+	ID        int64     `json:"id,omitempty"`
 	ChannelID int       `json:"channel_id"`
 	ModelName string    `json:"model_name"`
 	Field     string    `json:"field"`
@@ -74,11 +75,44 @@ func BuildChannelPricingReviews(
 }
 
 // AppendChannelPricingReviews adds pending entries, replacing an existing
-// pending entry for the same channel/model/field.
+// pending entry for the same channel/model/field. The durable table is primary;
+// the option log is a fallback during upgrades.
 func AppendChannelPricingReviews(entries []ChannelPricingReviewEntry) error {
 	if len(entries) == 0 {
 		return nil
 	}
+	rows := make([]model.ChannelPricingReview, 0, len(entries))
+	for _, entry := range entries {
+		rows = append(rows, model.ChannelPricingReview{
+			ChannelID: entry.ChannelID, ModelName: entry.ModelName, Field: entry.Field,
+			Old: entry.Old, New: entry.New, Percent: entry.Percent,
+			CreatedAt: entry.CreatedAt.Unix(),
+		})
+	}
+	if err := model.AppendChannelPricingReviews(rows); err == nil {
+		return nil
+	} else {
+		common.SysError("append channel pricing review table failed: " + err.Error())
+	}
+	return appendChannelPricingReviewsOption(entries)
+}
+
+func ListChannelPricingReviews(channelID int) []ChannelPricingReviewEntry {
+	if rows, err := model.ListChannelPricingReviews(channelID); err == nil {
+		out := make([]ChannelPricingReviewEntry, 0, len(rows))
+		for _, row := range rows {
+			out = append(out, ChannelPricingReviewEntry{
+				ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+				Field: row.Field, Old: row.Old, New: row.New, Percent: row.Percent,
+				CreatedAt: time.Unix(row.CreatedAt, 0).UTC(),
+			})
+		}
+		return out
+	}
+	return listChannelPricingReviewsOption(channelID)
+}
+
+func appendChannelPricingReviewsOption(entries []ChannelPricingReviewEntry) error {
 	setting := channelPricingReviewRaw()
 	for _, entry := range entries {
 		kept := setting.Entries[:0]
@@ -102,7 +136,7 @@ func AppendChannelPricingReviews(entries []ChannelPricingReviewEntry) error {
 	return model.UpdateOption(ChannelPricingReviewKey, string(raw))
 }
 
-func ListChannelPricingReviews(channelID int) []ChannelPricingReviewEntry {
+func listChannelPricingReviewsOption(channelID int) []ChannelPricingReviewEntry {
 	setting := channelPricingReviewRaw()
 	out := make([]ChannelPricingReviewEntry, 0)
 	for _, entry := range setting.Entries {
@@ -115,6 +149,14 @@ func ListChannelPricingReviews(channelID int) []ChannelPricingReviewEntry {
 
 // ClearChannelPricingReviews removes every pending entry for one channel.
 func ClearChannelPricingReviews(channelID int) error {
+	if err := model.ClearChannelPricingReviews(channelID); err == nil {
+		_ = clearChannelPricingReviewsOption(channelID)
+		return nil
+	}
+	return clearChannelPricingReviewsOption(channelID)
+}
+
+func clearChannelPricingReviewsOption(channelID int) error {
 	setting := channelPricingReviewRaw()
 	kept := setting.Entries[:0]
 	for _, entry := range setting.Entries {

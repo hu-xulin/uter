@@ -29,10 +29,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { getChannels, syncChannelPricing } from '@/features/channels/api'
-import type {
-  Channel,
-  ChannelPricingQuote,
-} from '@/features/channels/types'
+import type { Channel, ChannelPricingQuote } from '@/features/channels/types'
 import { cn } from '@/lib/utils'
 
 import {
@@ -145,7 +142,6 @@ function parseAmount(value: string): number | undefined {
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined
 }
 
-
 function rulePlaceholder(mode: RuleMode): string {
   switch (mode) {
     case 'price':
@@ -200,7 +196,9 @@ function normalizeQuotes(
     if (quote.status) entry.status = quote.status
     if (quote.raw) entry.raw = quote.raw
     if (quote.source) entry.source = quote.source
-    if (typeof quote.updated_at === 'number') entry.updated_at = quote.updated_at
+    if (typeof quote.updated_at === 'number') {
+      entry.updated_at = quote.updated_at
+    }
     normalized[model] = entry
   }
   return normalized
@@ -713,9 +711,7 @@ export function ChannelPricingSection({
                   >
                     <RefreshCw
                       data-icon='inline-start'
-                      className={cn(
-                        syncingRowId === row.id && 'animate-spin'
-                      )}
+                      className={cn(syncingRowId === row.id && 'animate-spin')}
                     />
                     <span>{t('Sync upstream prices')}</span>
                   </Button>
@@ -822,7 +818,10 @@ export function ChannelPricingSection({
                           value={quote.unit ?? 'per_1m_token'}
                           onValueChange={(value) =>
                             patchQuote(row.id, model, {
-                              unit: value === 'per_call' ? 'per_call' : 'per_1m_token',
+                              unit:
+                                value === 'per_call'
+                                  ? 'per_call'
+                                  : 'per_1m_token',
                             })
                           }
                           className='w-40'
@@ -1016,7 +1015,10 @@ export function ChannelPricingSection({
                               value: 'multiplier',
                               label: t('Multiplier'),
                             },
-                            { value: 'price', label: t('Absolute final price') },
+                            {
+                              value: 'price',
+                              label: t('Absolute final price'),
+                            },
                             {
                               value: 'fixed_base',
                               label: t('Absolute base price'),

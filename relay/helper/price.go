@@ -137,9 +137,10 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 	channelId := info.GetChannelID()
 	// A channel-isolated price is the actual channel's contract and takes
 	// precedence over the channel-level upstream pricing engine.
-	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(channelId, billingModelName)
+	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
+	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if !hasChannelPricing {
-		if _, exists := model.ChannelPricingState(channelId, billingModelName); exists {
+		if effective.Exists {
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
@@ -216,6 +217,12 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		// 固定1h和5min缓存写入价格的比例
 		cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
 		cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+		if hasChannelPricing && channelPricing.CreateCacheRatio != nil {
+			cacheCreationRatio = *channelPricing.CreateCacheRatio
+			cacheCreationRatio5m = cacheCreationRatio
+			cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
+			cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+		}
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
@@ -331,9 +338,10 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hosttypes.PriceData, error) {
 	billingModelName := info.GetBillingModelName()
 	channelId := info.GetChannelID()
-	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(channelId, billingModelName)
+	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
+	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if !hasChannelPricing {
-		if _, exists := model.ChannelPricingState(channelId, billingModelName); exists {
+		if effective.Exists {
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {

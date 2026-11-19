@@ -69,9 +69,7 @@ describe('docs sidebar user-guide folder', () => {
 
     await userEvent.click(title)
 
-    expect(
-      await screen.findByRole('link', { name: '登录' })
-    ).toBeVisible()
+    expect(await screen.findByRole('link', { name: '登录' })).toBeVisible()
     expect(screen.getByRole('link', { name: '排行' })).toBeVisible()
     expect(title).toHaveAttribute('aria-expanded', 'true')
 

@@ -7,6 +7,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"net/url"
 	"sort"
 	"strings"
 	"time"
@@ -28,13 +29,35 @@ const DreamRouterUpstreamHistoryKey = "DreamRouterUpstreamPriceHistory"
 
 const upstreamHistoryLimit = 1000
 
+type UpstreamCapabilityStatus string
+
+const (
+	CapabilitySupported          UpstreamCapabilityStatus = "SUPPORTED"
+	CapabilityPartial            UpstreamCapabilityStatus = "PARTIAL"
+	CapabilityUnsupported        UpstreamCapabilityStatus = "UNSUPPORTED"
+	CapabilityManualOnly         UpstreamCapabilityStatus = "MANUAL_ONLY"
+	CapabilityNeedsConfiguration UpstreamCapabilityStatus = "NEEDS_CONFIGURATION"
+)
+
+type UpstreamProviderCapability struct {
+	Status UpstreamCapabilityStatus `json:"status"`
+	Detail string                   `json:"detail,omitempty"`
+}
+
 type UpstreamProviderCapabilities struct {
-	Models          bool   `json:"models"`
-	ModelDetails    bool   `json:"model_details"`
-	OfficialPricing bool   `json:"official_pricing"`
-	ProviderPricing bool   `json:"provider_pricing"`
-	Discounts       bool   `json:"discounts"`
-	Status          string `json:"status"`
+	ModelDiscovery      UpstreamProviderCapability `json:"model_discovery"`
+	ModelMetadata       UpstreamProviderCapability `json:"model_metadata"`
+	OfficialPricing     UpstreamProviderCapability `json:"official_pricing"`
+	ChannelPricing      UpstreamProviderCapability `json:"channel_pricing"`
+	DiscountInformation UpstreamProviderCapability `json:"discount_information"`
+	RegionPricing       UpstreamProviderCapability `json:"region_pricing"`
+	TieredPricing       UpstreamProviderCapability `json:"tiered_pricing"`
+	MediaPricing        UpstreamProviderCapability `json:"media_pricing"`
+	ScheduledSync       UpstreamProviderCapability `json:"scheduled_sync"`
+}
+
+func capability(status UpstreamCapabilityStatus, detail string) UpstreamProviderCapability {
+	return UpstreamProviderCapability{Status: status, Detail: detail}
 }
 
 type UpstreamProvider struct {
@@ -154,6 +177,169 @@ type UpstreamPriceLine struct {
 	PerCall    bool     `json:"per_call,omitempty"`
 }
 
+// DreamRouterDiscountGroupDefault is the public billing group used when a
+// channel has not selected its DreamRouter account group.
+const DreamRouterDiscountGroupDefault = "default"
+
+// DreamRouterDiscountGroupOptionKey stores the selected upstream billing group
+// per channel ({"<channel id>": "<group>"}). It only affects that channel.
+const DreamRouterDiscountGroupOptionKey = "DreamRouterChannelDiscountGroups"
+
+// DreamRouterDiscountGroups lists the billing groups the provider publishes.
+func DreamRouterDiscountGroups(snapshot *UpstreamSnapshot) []string {
+	if snapshot == nil {
+		return nil
+	}
+	groups := make([]string, 0, len(snapshot.GroupGroupRatio))
+	for group := range snapshot.GroupGroupRatio {
+		groups = append(groups, group)
+	}
+	sort.Strings(groups)
+	return groups
+}
+
+// GetDreamRouterDiscountGroup returns the selected upstream billing group for
+// one channel.
+func GetDreamRouterDiscountGroup(channelID int) string {
+	if channelID <= 0 {
+		return DreamRouterDiscountGroupDefault
+	}
+	raw := strings.TrimSpace(common.OptionMap[DreamRouterDiscountGroupOptionKey])
+	if raw == "" {
+		return DreamRouterDiscountGroupDefault
+	}
+	groups := map[string]string{}
+	if err := common.UnmarshalJsonStr(raw, &groups); err != nil {
+		return DreamRouterDiscountGroupDefault
+	}
+	group := strings.TrimSpace(groups[fmt.Sprintf("%d", channelID)])
+	if group == "" {
+		return DreamRouterDiscountGroupDefault
+	}
+	return group
+}
+
+// SetDreamRouterDiscountGroup stores the upstream billing group for one
+// channel.
+func SetDreamRouterDiscountGroup(channelID int, group string) error {
+	if channelID <= 0 {
+		return errors.New("channel id is required")
+	}
+	group = strings.TrimSpace(group)
+	if group == "" {
+		return errors.New("discount group is required")
+	}
+	groups := map[string]string{}
+	raw := strings.TrimSpace(common.OptionMap[DreamRouterDiscountGroupOptionKey])
+	if raw != "" {
+		_ = common.UnmarshalJsonStr(raw, &groups)
+	}
+	groups[fmt.Sprintf("%d", channelID)] = group
+	encoded, err := common.Marshal(groups)
+	if err != nil {
+		return err
+	}
+	return model.UpdateOption(DreamRouterDiscountGroupOptionKey, string(encoded))
+}
+
+// DreamRouterDiscountForModel resolves the upstream discount multiplier for a
+// model under the selected billing group. It prefers the provider's
+// group-group table and falls back to the flat model-group table.
+func DreamRouterDiscountForModel(
+	snapshot *UpstreamSnapshot,
+	item UpstreamModelRecord,
+	group string,
+) (float64, string, bool) {
+	if snapshot == nil {
+		return 0, "", false
+	}
+	group = strings.TrimSpace(group)
+	if group == "" {
+		group = DreamRouterDiscountGroupDefault
+	}
+	overrides := snapshot.GroupGroupRatio[group]
+	for _, modelGroup := range item.EnableGroups {
+		if ratio, ok := overrides[modelGroup]; ok && ratio > 0 {
+			return ratio, modelGroup, true
+		}
+	}
+	for _, modelGroup := range item.EnableGroups {
+		if ratio, ok := snapshot.GroupRatio[modelGroup]; ok && ratio > 0 {
+			return ratio, modelGroup, true
+		}
+	}
+	return 0, "", false
+}
+
+// scaleUpstreamPriceLine applies an upstream discount to an absolute price.
+func scaleUpstreamPriceLine(line *UpstreamPriceLine, factor float64) *UpstreamPriceLine {
+	if line == nil || factor <= 0 {
+		return nil
+	}
+	scale := func(value *float64) *float64 {
+		if value == nil {
+			return nil
+		}
+		scaled := *value * factor
+		return &scaled
+	}
+	return &UpstreamPriceLine{
+		Input:      scale(line.Input),
+		Output:     scale(line.Output),
+		CacheRead:  scale(line.CacheRead),
+		CacheWrite: scale(line.CacheWrite),
+		Currency:   line.Currency,
+		Unit:       line.Unit,
+		PerSecond:  line.PerSecond,
+		PerImage:   line.PerImage,
+		PerCall:    line.PerCall,
+	}
+}
+
+// dreamRouterChannelInternalPricing turns a discounted absolute line into the
+// channel's default sale price. Tiered or per-second prices cannot be expressed
+// in the flat internal form and stay official-only for manual review.
+func dreamRouterChannelInternalPricing(
+	line *UpstreamPriceLine,
+	group string,
+	modelGroup string,
+	factor float64,
+) (string, bool) {
+	if line == nil || line.Input == nil || *line.Input <= 0 {
+		return "", false
+	}
+	now := time.Now().Unix()
+	if line.PerSecond {
+		return "", false
+	}
+	pricing := model.ChannelInternalPricing{
+		Source:             "dreamrouter-discount",
+		DiscountGroup:      group,
+		DiscountModelGroup: modelGroup,
+		DiscountRatio:      factor,
+		UpdatedAt:          now,
+	}
+	switch {
+	case line.PerCall:
+		pricing.Mode = model.ChannelPricingModePerCall
+		pricing.PerCallUSD = line.Input
+	case line.PerImage:
+		pricing.Mode = model.ChannelPricingModePerCall
+		pricing.PerCallUSD = line.Input
+	default:
+		pricing.Mode = model.ChannelPricingModePerMillionTokens
+		pricing.InputUSDPerMillion = line.Input
+		pricing.OutputUSDPerMillion = line.Output
+		pricing.CacheUSDPerMillion = line.CacheRead
+		pricing.CreateCacheUSDPerMillion = line.CacheWrite
+	}
+	encoded, err := common.Marshal(pricing)
+	if err != nil {
+		return "", false
+	}
+	return string(encoded), true
+}
+
 // UpstreamModelRecord is one normalized model in the isolated catalog.
 type UpstreamModelRecord struct {
 	ProviderID         string   `json:"provider_id"`
@@ -228,10 +414,8 @@ type dreamRouterPublicPricing struct {
 // it without writing any Uter model price. baseURL is injectable for tests;
 // production callers pass the empty string.
 func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSnapshot, error) {
-	if strings.TrimSpace(baseURL) == "" {
-		baseURL = "https://dreamrouter.ai"
-	}
-	endpoint := strings.TrimRight(baseURL, "/") + "/api/pricing"
+	baseURL = dreamRouterPricingOrigin(baseURL)
+	endpoint := baseURL + "/api/pricing"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -317,6 +501,21 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 		return snapshot.Models[i].UpstreamModelID < snapshot.Models[j].UpstreamModelID
 	})
 	return snapshot, nil
+}
+
+// dreamRouterPricingOrigin strips the OpenAI-compatible path operators often
+// paste into Base URL (for example https://dreamrouter.ai/v1) so the public
+// pricing endpoint is always requested at the site root.
+func dreamRouterPricingOrigin(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return "https://dreamrouter.ai"
+	}
+	parsed, err := url.Parse(raw)
+	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+		return strings.TrimRight(raw, "/")
+	}
+	return parsed.Scheme + "://" + parsed.Host
 }
 
 // SaveDreamRouterUpstreamSnapshot persists the isolated snapshot.
@@ -471,23 +670,27 @@ func LoadDreamRouterUpstreamHistory() *UpstreamPriceHistory {
 // DreamRouterNormalizedPricing is stored in the per-channel pricing row.
 // It intentionally has no absolute price: the provider publishes ratios only.
 type DreamRouterNormalizedPricing struct {
-	PriceBasis       string                        `json:"price_basis"`
-	Currency         string                        `json:"currency"`
-	Unit             string                        `json:"unit"`
-	QuotaType        int                           `json:"quota_type"`
-	ModelRatio       *float64                      `json:"model_ratio,omitempty"`
-	ModelPrice       *float64                      `json:"model_price,omitempty"`
-	CompletionRatio  *float64                      `json:"completion_ratio,omitempty"`
-	CacheRatio       *float64                      `json:"cache_ratio,omitempty"`
-	CreateCacheRatio *float64                      `json:"create_cache_ratio,omitempty"`
-	EnableGroups     []string                      `json:"enable_groups,omitempty"`
-	GroupRatio       map[string]float64            `json:"group_ratio,omitempty"`
-	GroupGroupRatio  map[string]map[string]float64 `json:"group_group_ratio,omitempty"`
-	OfficialPrice    *UpstreamPriceLine            `json:"official_price"`
-	DiscountedPrice  *UpstreamPriceLine            `json:"discounted_price"`
-	PriceStatus      string                        `json:"price_status"`
-	NeedsReview      bool                          `json:"needs_review"`
-	ReviewReasons    []string                      `json:"review_reasons,omitempty"`
+	PriceBasis         string                        `json:"price_basis"`
+	Currency           string                        `json:"currency"`
+	Unit               string                        `json:"unit"`
+	QuotaType          int                           `json:"quota_type"`
+	ModelRatio         *float64                      `json:"model_ratio,omitempty"`
+	ModelPrice         *float64                      `json:"model_price,omitempty"`
+	CompletionRatio    *float64                      `json:"completion_ratio,omitempty"`
+	CacheRatio         *float64                      `json:"cache_ratio,omitempty"`
+	CreateCacheRatio   *float64                      `json:"create_cache_ratio,omitempty"`
+	EnableGroups       []string                      `json:"enable_groups,omitempty"`
+	GroupRatio         map[string]float64            `json:"group_ratio,omitempty"`
+	GroupGroupRatio    map[string]map[string]float64 `json:"group_group_ratio,omitempty"`
+	OfficialPrice      *UpstreamPriceLine            `json:"official_price"`
+	DiscountedPrice    *UpstreamPriceLine            `json:"discounted_price"`
+	ChannelPrice       *UpstreamPriceLine            `json:"channel_price"`
+	DiscountGroup      string                        `json:"discount_group,omitempty"`
+	DiscountModelGroup string                        `json:"discount_model_group,omitempty"`
+	DiscountRatio      *float64                      `json:"discount_ratio,omitempty"`
+	PriceStatus        string                        `json:"price_status"`
+	NeedsReview        bool                          `json:"needs_review"`
+	ReviewReasons      []string                      `json:"review_reasons,omitempty"`
 }
 
 // DreamRouterChannelPricingRecords builds channel-scoped official records.
@@ -497,6 +700,7 @@ func DreamRouterChannelPricingRecords(
 	snapshot *UpstreamSnapshot,
 	channelID int,
 	channelModels []string,
+	billingGroup string,
 ) ([]model.ChannelOfficialPricingRecord, error) {
 	if snapshot == nil || channelID <= 0 {
 		return nil, errors.New("dreamrouter snapshot and channel id are required")
@@ -513,7 +717,9 @@ func DreamRouterChannelPricingRecords(
 		if len(wanted) > 0 && !wanted[item.ModelName] {
 			continue
 		}
-		officialView := dreamRouterChannelOfficialPricing(item, snapshot.FetchedAt.Unix())
+		officialView, internalPricing := dreamRouterChannelOfficialPricing(
+			snapshot, item, snapshot.FetchedAt.Unix(), billingGroup,
+		)
 		officialRaw, err := common.Marshal(item)
 		if err != nil {
 			return nil, err
@@ -529,6 +735,7 @@ func DreamRouterChannelPricingRecords(
 			Currency:          "USD",
 			OfficialPricing:   string(officialRaw),
 			NormalizedPricing: string(normalizedRaw),
+			InternalPricing:   internalPricing,
 			Source:            "dreamrouter-official",
 			FetchedAt:         snapshot.FetchedAt.Unix(),
 		})
@@ -536,26 +743,9 @@ func DreamRouterChannelPricingRecords(
 	return records, nil
 }
 
-// dreamRouterChannelOfficialPricing converts the upstream price line into the
-// channel pricing table's normalized view. Derived prices stay reviewable so an
-// operator can audit the ratio-to-price conversion before billing.
-func dreamRouterChannelOfficialPricing(
-	item UpstreamModelRecord,
-	fetchedAt int64,
-) model.ChannelOfficialPricing {
-	view := model.ChannelOfficialPricing{
-		Currency:  "USD",
-		Unit:      "unknown",
-		Source:    "dreamrouter-official",
-		FetchedAt: fetchedAt,
-	}
-	line := item.OfficialPrice
-	if line == nil || line.Input == nil {
-		view.NeedsReview = true
-		view.ReviewReasons = []string{"ABSENT_ABSOLUTE_PRICE"}
-		return view
-	}
-	view.Unit = line.Unit
+// dreamRouterPricingTier converts one absolute price line into the stored tier
+// shape shared by official and channel prices.
+func dreamRouterPricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 	tier := model.ChannelPricingTier{RangeName: "base", Unit: line.Unit}
 	switch line.Unit {
 	case "per_second":
@@ -570,10 +760,56 @@ func dreamRouterChannelOfficialPricing(
 		tier.CachePerMillionUSD = line.CacheRead
 		tier.Unit = "per_1m_token"
 	}
-	view.Tiers = []model.ChannelPricingTier{tier}
+	return tier
+}
+
+// dreamRouterChannelOfficialPricing converts the upstream price line into the
+// channel pricing table's normalized view. Derived prices stay reviewable so an
+// operator can audit the ratio-to-price conversion before billing.
+func dreamRouterChannelOfficialPricing(
+	snapshot *UpstreamSnapshot,
+	item UpstreamModelRecord,
+	fetchedAt int64,
+	billingGroup string,
+) (model.ChannelOfficialPricing, string) {
+	view := model.ChannelOfficialPricing{
+		Currency:  "USD",
+		Unit:      "unknown",
+		Source:    "dreamrouter-official",
+		FetchedAt: fetchedAt,
+	}
+	line := item.OfficialPrice
+	if line == nil || line.Input == nil {
+		view.NeedsReview = true
+		view.ReviewReasons = []string{"ABSENT_ABSOLUTE_PRICE"}
+		return view, ""
+	}
+	view.Unit = line.Unit
+	view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
 	if item.PriceStatus == "DERIVED_FROM_RATIOS" {
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"DERIVED_FROM_RATIOS"}
 	}
-	return view
+	group := strings.TrimSpace(billingGroup)
+	if group == "" {
+		group = DreamRouterDiscountGroupDefault
+	}
+	discount, modelGroup, ok := DreamRouterDiscountForModel(snapshot, item, group)
+	if !ok {
+		view.NeedsReview = true
+		view.ReviewReasons = append(view.ReviewReasons, "NO_UPSTREAM_DISCOUNT")
+		return view, ""
+	}
+	channelLine := scaleUpstreamPriceLine(line, discount)
+	internalPricing, priced := dreamRouterChannelInternalPricing(channelLine, group, modelGroup, discount)
+	if !priced {
+		view.NeedsReview = true
+		view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
+	}
+	channelTier := dreamRouterPricingTier(channelLine)
+	view.ChannelPrice = &channelTier
+	view.DiscountGroup = group
+	view.DiscountModelGroup = modelGroup
+	view.DiscountRatio = &discount
+	return view, internalPricing
 }

@@ -955,16 +955,18 @@ func TestModelPriceHelperUsesChannelIsolatedPricing(t *testing.T) {
 	assert.True(t, isChannelPricingError(err), err.Error())
 
 	require.NoError(t, model.SetChannelInternalPricing(7, "channel-priced-model", model.ChannelInternalPricing{
-		Mode:                model.ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(2),
-		OutputUSDPerMillion: floatPtr(4),
-		CacheUSDPerMillion:  floatPtr(1),
+		Mode:                     model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:       floatPtr(2),
+		OutputUSDPerMillion:      floatPtr(4),
+		CacheUSDPerMillion:       floatPtr(1),
+		CreateCacheUSDPerMillion: floatPtr(2.5),
 	}))
 	priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
 	require.NoError(t, err)
 	assert.InDelta(t, 1.0, priceData.ModelRatio, 1e-9)
 	assert.InDelta(t, 2.0, priceData.CompletionRatio, 1e-9)
 	assert.InDelta(t, 0.5, priceData.CacheRatio, 1e-9)
+	assert.InDelta(t, 1.25, priceData.CacheCreationRatio, 1e-9)
 	assert.False(t, priceData.UsePrice)
 	assert.True(t, info.ChannelPricingApplied)
 
@@ -976,9 +978,17 @@ func TestModelPriceHelperUsesChannelIsolatedPricing(t *testing.T) {
 		UsingGroup:      "default",
 		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: 8},
 	}
-	_, err = ModelPriceHelper(ctx, other, 1000, &types.TokenCountMeta{})
-	require.Error(t, err)
-	assert.True(t, isChannelPricingError(err), err.Error())
+	require.NoError(t, model.SetChannelInternalPricing(8, "channel-priced-model", model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(4),
+		OutputUSDPerMillion: floatPtr(8),
+		CacheUSDPerMillion:  floatPtr(2),
+	}))
+	otherPrice, err := ModelPriceHelper(ctx, other, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	assert.InDelta(t, 2.0, otherPrice.ModelRatio, 1e-9)
+	assert.True(t, other.ChannelPricingApplied)
+	assert.NotEqual(t, info.ChannelPricingVersion, other.ChannelPricingVersion)
 }
 
 func floatPtr(value float64) *float64 { return &value }
@@ -988,4 +998,114 @@ func isChannelPricingError(err error) bool {
 	return strings.Contains(text, i18n.MsgRelayChannelPriceNotConfigured) ||
 		strings.Contains(text, "internal sale price") ||
 		strings.Contains(text, "内部销售价")
+}
+
+func TestModelPriceHelperAppliesGroupRatioOnceToChannelPricing(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previousDB := model.DB
+	model.DB = db
+	model.InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		model.DB = previousDB
+		model.InvalidateChannelPricingCache()
+	})
+
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 11, ModelName: "group-ratio-model", Currency: "USD", Source: "test",
+	}})
+	require.NoError(t, err)
+	require.NoError(t, model.SetChannelInternalPricing(11, "group-ratio-model", model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(2),
+		OutputUSDPerMillion: floatPtr(4),
+	}))
+
+	savedGroups := ratio_setting.GetGroupRatioCopy()
+	require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(`{"default":1,"vip":0.5}`))
+	t.Cleanup(func() {
+		require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(mustGroupRatioJSON(savedGroups)))
+	})
+
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+	ctx.Set("group", "vip")
+	info := &relaycommon.RelayInfo{
+		OriginModelName: "group-ratio-model",
+		UserGroup:       "vip",
+		UsingGroup:      "vip",
+		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: 11},
+	}
+
+	priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	assert.InDelta(t, 0.5, priceData.GroupRatioInfo.GroupRatio, 1e-9)
+	assert.InDelta(t, 1.0, priceData.ModelRatio, 1e-9)
+
+	multiplier, err := operation_setting.InputPreConsumeMultiplier()
+	require.NoError(t, err)
+	expected, err := common.QuotaFromFloatStrict(1000 * multiplier * 1.0 * 0.5)
+	require.NoError(t, err)
+	assert.Equal(t, expected, priceData.QuotaToPreConsume)
+}
+
+func TestModelPriceHelperPerCallHonorsChannelFixedPriceAndGroupRatio(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previousDB := model.DB
+	model.DB = db
+	model.InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		model.DB = previousDB
+		model.InvalidateChannelPricingCache()
+	})
+
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 12, ModelName: "fixed-call-model", Currency: "USD", Source: "test",
+	}})
+	require.NoError(t, err)
+	require.NoError(t, model.SetChannelInternalPricing(12, "fixed-call-model", model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerCall, PerCallUSD: floatPtr(2),
+	}))
+
+	savedGroups := ratio_setting.GetGroupRatioCopy()
+	require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(`{"default":1,"vip":0.5}`))
+	t.Cleanup(func() {
+		require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(mustGroupRatioJSON(savedGroups)))
+	})
+
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/images/generations", nil)
+	ctx.Set("group", "vip")
+	info := &relaycommon.RelayInfo{
+		OriginModelName: "fixed-call-model",
+		UserGroup:       "vip",
+		UsingGroup:      "vip",
+		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: 12},
+	}
+
+	priceData, err := ModelPriceHelperPerCall(ctx, info)
+	require.NoError(t, err)
+	assert.True(t, priceData.UsePrice)
+	assert.InDelta(t, 2, priceData.ModelPrice, 1e-9)
+	assert.InDelta(t, 0.5, priceData.GroupRatioInfo.GroupRatio, 1e-9)
+	expected, err := common.QuotaFromFloatStrict(2 * common.QuotaPerUnit * 0.5)
+	require.NoError(t, err)
+	assert.Equal(t, expected, priceData.Quota)
+}
+
+func mustGroupRatioJSON(groups map[string]float64) string {
+	encoded, err := common.Marshal(groups)
+	if err != nil {
+		panic(err)
+	}
+	return string(encoded)
 }

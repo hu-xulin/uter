@@ -43,12 +43,12 @@ import {
   isValidPricingCurrency,
 } from '@/features/model-pricing/currency'
 import { applyPriceSyncSelections } from '@/features/model-pricing/pricing'
-import { useSystemConfigStore } from '@/stores/system-config-store'
 import { handleServerError } from '@/lib/handle-server-error'
 import {
   requireServerSuccess,
   createServerError,
 } from '@/lib/server-error-message'
+import { useSystemConfigStore } from '@/stores/system-config-store'
 
 import {
   fetchUpstreamRatios,
@@ -76,6 +76,7 @@ import {
   OPENROUTER_CHANNEL_TYPE,
   OPENROUTER_ENDPOINT,
 } from './constants'
+import { adjustSyncPrice, type PriceAdjustment } from './sync-price-adjustment'
 import {
   describeSyncPrice,
   getUpstreamDisplayName,
@@ -83,10 +84,6 @@ import {
   type PricingSourceSelections,
 } from './upstream-ratio-sync-helpers'
 import { UpstreamRatioSyncTable } from './upstream-ratio-sync-table'
-import {
-  adjustSyncPrice,
-  type PriceAdjustment,
-} from './sync-price-adjustment'
 
 function getDefaultEndpointForChannel(channel: UpstreamChannel): string {
   if (channel.id === MODELS_DEV_PRESET_ID) return MODELS_DEV_PRESET_ENDPOINT
@@ -221,9 +218,7 @@ export function UpstreamRatioSync() {
       const adjusted = adjustSyncPrice(
         values,
         priceAdjustment,
-        isValidPricingCurrency(siteCurrency)
-          ? siteCurrency.exchangeRate
-          : null
+        isValidPricingCurrency(siteCurrency) ? siteCurrency.exchangeRate : null
       )
       if (adjusted.error || !adjusted.values) {
         throw new Error(t(adjusted.error ?? 'Unset price'))

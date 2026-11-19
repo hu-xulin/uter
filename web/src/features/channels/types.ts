@@ -285,10 +285,27 @@ export interface ChannelOfficialPricingView {
   fx_rate_to_usd?: number
   unit: string
   tiers: ChannelOfficialPricingTier[]
+  channel_price?: ChannelOfficialPricingTier
+  discount_group?: string
+  discount_model_group?: string
+  discount_ratio?: number
   source: string
   fetched_at: number
   needs_review?: boolean
   review_reasons?: string[]
+}
+
+export interface ChannelUpstreamQuoteView {
+  price_basis: string
+  currency: string
+  unit: string
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  cache_per_million_usd?: number
+  per_call_usd?: number
+  source: string
+  discount_group?: string
+  discount_ratio?: number
 }
 
 export interface ChannelInternalPricingView {
@@ -296,8 +313,13 @@ export interface ChannelInternalPricingView {
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
   per_call_usd?: number
   note?: string
+  source?: string
+  discount_group?: string
+  discount_model_group?: string
+  discount_ratio?: number
   updated_at: number
 }
 
@@ -310,9 +332,12 @@ export interface ChannelModelPricingRecord {
   pricing_source: string
   pricing_status: 'official_only' | 'configured' | 'needs_review' | string
   pricing_version: string
+  price_shape?: string
+  price_supported: boolean
   fetched_at: number
   updated_at: number
   official?: ChannelOfficialPricingView
+  upstream_quote?: ChannelUpstreamQuoteView
   internal?: ChannelInternalPricingView
 }
 

@@ -156,35 +156,86 @@ func TestDiffDreamRouterUpstreamIgnoresEqualRatios(t *testing.T) {
 	require.Empty(t, DiffDreamRouterUpstream(prev, next))
 }
 
-func TestDreamRouterChannelPricingRecordsExposeDerivedOfficialPrices(t *testing.T) {
+func TestDreamRouterChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		ProviderID: "dreamrouter",
 		PriceBasis: UpstreamPriceBasisRatioOnly,
-		GroupRatio: map[string]float64{"default": 1},
+		GroupRatio: map[string]float64{"default": 1, "openai": 0.9},
+		GroupGroupRatio: map[string]map[string]float64{
+			"default": {"openai": 0.6},
+			"svip":    {"openai": 0.5},
+		},
 		Models: []UpstreamModelRecord{
 			{
-				ModelName: "gpt-a", ModelRatio: ratio(2.5),
+				ModelName: "gpt-a", ModelRatio: ratio(2.5), EnableGroups: []string{"openai"},
 				CompletionRatio: ratio(5), PriceStatus: "DERIVED_FROM_RATIOS",
 				OfficialPrice: &UpstreamPriceLine{
 					Input: ratio(5), Output: ratio(25), Currency: "USD",
 					Unit: "per_1m_token",
 				},
 			},
+			{
+				ModelName: "no-group", ModelRatio: ratio(1), PriceStatus: "DERIVED_FROM_RATIOS",
+				OfficialPrice: &UpstreamPriceLine{Input: ratio(2), Output: ratio(4), Currency: "USD", Unit: "per_1m_token"},
+			},
 			{ModelName: "not-served", ModelRatio: ratio(1), PriceStatus: "RATIO_ONLY_NO_ABSOLUTE_PRICE"},
 		},
 	}
-	records, err := DreamRouterChannelPricingRecords(snapshot, 42, []string{"gpt-a"})
+	records, err := DreamRouterChannelPricingRecords(snapshot, 42, []string{"gpt-a", "no-group"}, "default")
 	require.NoError(t, err)
-	require.Len(t, records, 1)
+	require.Len(t, records, 2)
 	record := records[0]
 	require.Equal(t, 42, record.ChannelId)
 	require.Equal(t, "dreamrouter", record.Provider)
 	require.Equal(t, "gpt-a", record.ModelName)
-	require.Equal(t, "USD", record.Currency)
 	require.Contains(t, record.NormalizedPricing, `"input_per_million_usd":5`)
 	require.Contains(t, record.NormalizedPricing, `"output_per_million_usd":25`)
 	require.Contains(t, record.NormalizedPricing, `"unit":"per_1m_token"`)
-	require.Contains(t, record.NormalizedPricing, `"needs_review":true`)
 	require.Contains(t, record.NormalizedPricing, `"DERIVED_FROM_RATIOS"`)
+
+	// Channel price is the official price times the upstream group discount,
+	// never the official price itself.
+	require.Contains(t, record.NormalizedPricing, `"input_per_million_usd":3`)
+	require.Contains(t, record.NormalizedPricing, `"output_per_million_usd":15`)
+	require.Contains(t, record.NormalizedPricing, `"discount_ratio":0.6`)
+	require.Contains(t, record.NormalizedPricing, `"discount_model_group":"openai"`)
+	require.NotEmpty(t, record.InternalPricing)
+	require.Contains(t, record.InternalPricing, `"input_per_million_usd":3`)
+	require.Contains(t, record.InternalPricing, `"output_per_million_usd":15`)
+	require.Contains(t, record.InternalPricing, `"source":"dreamrouter-discount"`)
+
+	// A model without an upstream discount group never guesses a channel price.
+	noGroup := records[1]
+	require.Empty(t, noGroup.InternalPricing)
+	require.Contains(t, noGroup.NormalizedPricing, `"NO_UPSTREAM_DISCOUNT"`)
+}
+
+func TestDreamRouterDiscountForModelFallsBackToGroupRatio(t *testing.T) {
+	snapshot := &UpstreamSnapshot{
+		GroupRatio:      map[string]float64{"claude": 0.75},
+		GroupGroupRatio: map[string]map[string]float64{"default": {}},
+	}
+	discount, group, ok := DreamRouterDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: []string{"claude"}}, "default")
+	require.True(t, ok)
+	require.Equal(t, 0.75, discount)
+	require.Equal(t, "claude", group)
+
+	discount, _, ok = DreamRouterDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: []string{"claude"}}, "svip")
+	require.True(t, ok)
+	require.Equal(t, 0.75, discount)
+}
+
+func TestFetchDreamRouterUpstreamStripsCompatibleVersionPath(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/pricing", r.URL.Path)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(dreamRouterPricingFixture))
+	}))
+	defer server.Close()
+
+	snapshot, err := FetchDreamRouterUpstream(context.Background(), server.URL+"/v1")
+	require.NoError(t, err)
+	require.Len(t, snapshot.Models, 2)
+	require.Equal(t, server.URL+"/api/pricing", snapshot.SourceEndpoint)
 }

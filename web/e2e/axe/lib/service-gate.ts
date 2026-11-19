@@ -85,7 +85,7 @@ async function globalSetup(_config: FullConfig): Promise<void> {
   const reachable = await probePort(parseTarget(BASE_URL))
   if (!reachable) {
     // eslint-disable-next-line no-console
-      console.error(BLOCKED_BANNER)
+    console.error(BLOCKED_BANNER)
     throw new Error(
       `BLOCKED: ${BASE_URL} 不可达，axe 可访问性扫描未执行（有意失败，不得当作通过）`
     )

@@ -340,10 +340,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
               </TabsTrigger>
             )}
           </TabsList>
-          <TabsContent
-            value='new'
-            className={MODEL_LIST_SCROLL_CLASS}
-          >
+          <TabsContent value='new' className={MODEL_LIST_SCROLL_CLASS}>
             {sortedModelCategories(categorized.added).map(([name, models]) => (
               <ModelCategory
                 key={name}
@@ -357,10 +354,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
               />
             ))}
           </TabsContent>
-          <TabsContent
-            value='existing'
-            className={MODEL_LIST_SCROLL_CLASS}
-          >
+          <TabsContent value='existing' className={MODEL_LIST_SCROLL_CLASS}>
             {sortedModelCategories(categorized.existing).map(
               ([name, models]) => (
                 <ModelCategory
@@ -377,10 +371,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
             )}
           </TabsContent>
           {categorized.removed.length > 0 && (
-            <TabsContent
-              value='removed'
-              className={MODEL_LIST_SCROLL_CLASS}
-            >
+            <TabsContent value='removed' className={MODEL_LIST_SCROLL_CLASS}>
               <p className='text-muted-foreground text-sm'>
                 {t(
                   'These models were not returned by the upstream. Uncheck to remove them, or select them again before saving. Model mapping source aliases are excluded.'

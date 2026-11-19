@@ -58,9 +58,7 @@ for (const theme of ['light', 'dark']) {
       )
     }
     if (typeof token.$description !== 'string' || !token.$description.trim()) {
-      throw new Error(
-        `Missing $description for themes.${theme}.brand.${key}`
-      )
+      throw new Error(`Missing $description for themes.${theme}.brand.${key}`)
     }
   }
 }

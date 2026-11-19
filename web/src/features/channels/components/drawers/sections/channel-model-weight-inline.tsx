@@ -153,10 +153,19 @@ export function ChannelModelWeightInline({
 
   return (
     <div className='bg-muted/20 space-y-3 rounded-lg border p-3'>
-      <Label className='text-muted-foreground text-sm'>
-        {t('Per-model routing')}
-      </Label>
-      <div className='space-y-2'>
+      <div className='flex items-center justify-between gap-2'>
+        <Label className='text-muted-foreground text-sm'>
+          {t('Per-model routing')}
+        </Label>
+        <span className='text-muted-foreground text-xs'>
+          {t('{{n}} model(s) selected', { n: models.length })}
+        </span>
+      </div>
+      <div
+        role='group'
+        aria-label={t('Per-model routing')}
+        className='max-h-[27.5rem] space-y-2 overflow-y-auto overscroll-contain pr-1'
+      >
         {models.map((model) => {
           const e = entryFor(model)
           return (

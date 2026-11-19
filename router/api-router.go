@@ -347,8 +347,10 @@ func SetApiRouter(router *gin.Engine) {
 		upstreamRoute := apiRouter.Group("/upstream")
 		upstreamRoute.Use(middleware.RootAuth())
 		{
+			upstreamRoute.GET("/providers", controller.GetUpstreamProviders)
 			upstreamRoute.POST("/dreamrouter/sync", controller.SyncDreamRouterUpstream)
 			upstreamRoute.GET("/dreamrouter/snapshot", controller.GetDreamRouterUpstreamSnapshot)
+			upstreamRoute.GET("/dreamrouter/history", controller.GetDreamRouterUpstreamHistory)
 		}
 		requestPluginRoute := apiRouter.Group("/request_plugin")
 		requestPluginRoute.Use(middleware.RootAuth())

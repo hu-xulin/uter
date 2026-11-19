@@ -111,3 +111,73 @@ func TestChannelPricingScheduleEffectiveIntervals(t *testing.T) {
 	require.Equal(t, 120, official)
 	require.Equal(t, 30, channel)
 }
+
+func TestClassifyModelCategory(t *testing.T) {
+	cases := map[string]string{
+		"gpt-5":             "text",
+		"text-embedding-v3": "embedding",
+		"qwen3-asr-flash":   "audio",
+		"cosyvoice-v2":      "audio",
+		"wan2.2-t2v-plus":   "video",
+		"kling-v2":          "video",
+		"qwen-image-plus":   "image",
+		"flux-1.1-pro":      "image",
+	}
+	for name, want := range cases {
+		if got := ClassifyModelCategory(name); got != want {
+			t.Fatalf("ClassifyModelCategory(%q) = %q, want %q", name, got, want)
+		}
+	}
+}
+
+func TestResolveBatchBasePriceRejectsLossyShapes(t *testing.T) {
+	cases := []struct {
+		name       string
+		normalized string
+		reason     string
+	}{
+		{
+			name: "multiple tiers",
+			normalized: `{"currency":"USD","unit":"per_1m_token","tiers":[
+				{"range_name":"short","input_per_million_usd":1,"output_per_million_usd":2,"unit":"per_1m_token"},
+				{"range_name":"long","input_per_million_usd":2,"output_per_million_usd":4,"unit":"per_1m_token"}
+			]}`,
+			reason: "multiple official price tiers",
+		},
+		{
+			name: "per second",
+			normalized: `{"currency":"USD","unit":"per_second","tiers":[
+				{"range_name":"video","per_unit_usd":0.08,"unit":"per_second"}
+			]}`,
+			reason: "media price shape",
+		},
+		{
+			name: "ambiguous shape",
+			normalized: `{"currency":"USD","unit":"mixed","tiers":[
+				{"range_name":"mixed","input_per_million_usd":1,"per_unit_usd":0.1,"unit":"mixed"}
+			]}`,
+			reason: "ambiguous official price shape",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, reason := resolveBatchBasePrice(model.ChannelModelPricing{
+				ModelName: "m", NormalizedPricing: tc.normalized,
+			}, BatchPricingBasisOfficial)
+			require.Contains(t, reason, tc.reason)
+		})
+	}
+}
+
+func TestResolveBatchBasePriceSupportsPerImageAsPerCall(t *testing.T) {
+	base, reason := resolveBatchBasePrice(model.ChannelModelPricing{
+		ModelName: "image-a",
+		NormalizedPricing: `{"currency":"USD","unit":"per_image","tiers":[
+			{"range_name":"image","per_unit_usd":0.04,"unit":"per_image"}
+		]}`,
+	}, BatchPricingBasisOfficial)
+	require.Empty(t, reason)
+	require.Equal(t, model.ChannelPricingModePerCall, base.mode)
+	require.NotNil(t, base.perCallUSD)
+	require.Equal(t, 0.04, *base.perCallUSD)
+}

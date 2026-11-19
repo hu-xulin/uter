@@ -76,7 +76,7 @@ const baseDefaults = {
   CreemProducts: '[]',
   AlipayEnabled: false,
   AlipayGateway: 'https://openapi.alipay.com/gateway.do',
-    AlipayAppId: '',
+  AlipayAppId: '',
   AlipayPrivateKey: '',
   AlipayPublicKey: '',
   WechatPayEnabled: false,

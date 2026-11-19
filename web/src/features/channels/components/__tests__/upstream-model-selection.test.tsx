@@ -275,3 +275,29 @@ test('long model names remain fully labeled and selectable in a container-respon
   await user.click(checkbox)
   expect(onChange).toHaveBeenCalledWith([model])
 })
+
+function SelectionHarness(props: { initial: string[] }) {
+  const [selected, setSelected] = useState(props.initial)
+  return (
+    <UpstreamModelSelection
+      models={['alpha', 'beta']}
+      selected={selected}
+      existingModels={[]}
+      onChange={setSelected}
+      showChanges={false}
+    />
+  )
+}
+
+test('the category select-all checkbox shows the indeterminate state', async () => {
+  const user = userEvent.setup()
+  render(<SelectionHarness initial={[]} />)
+
+  await user.click(screen.getByRole('checkbox', { name: 'alpha' }))
+  const selectAll = screen.getByRole('checkbox', {
+    name: 'Select all models in Other',
+  })
+  expect(selectAll).toBePartiallyChecked()
+  expect(selectAll).toHaveAttribute('data-indeterminate')
+  expect(selectAll.querySelector('.lucide-minus')).not.toBeNull()
+})

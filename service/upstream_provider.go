@@ -35,6 +35,9 @@ func registerUpstreamAdapter(adapter UpstreamProviderAdapter) {
 func init() {
 	registerUpstreamAdapter(dreamRouterAdapter{})
 	registerUpstreamAdapter(bailianAdapter{})
+	for _, provider := range manualPricingProviders {
+		registerUpstreamAdapter(manualProviderAdapter{provider: provider})
+	}
 }
 
 // UpstreamProviders lists registered adapters with their real capabilities.
@@ -65,7 +68,15 @@ func (dreamRouterAdapter) Descriptor() UpstreamProvider {
 		ModelsURL:  "https://dreamrouter.ai/v1/models",
 		AuthType:   "pricing_public_models_api_key",
 		Capabilities: UpstreamProviderCapabilities{
-			Models: true, ProviderPricing: true, Status: "PARTIAL_RATIO_ONLY",
+			ModelDiscovery:      capability(CapabilitySupported, "GET /v1/models with the channel key"),
+			ModelMetadata:       capability(CapabilityPartial, "model IDs and endpoint types; specs come from the metadata catalog"),
+			OfficialPricing:     capability(CapabilityPartial, "public ratios, or absolute prices from the full sync snapshot"),
+			ChannelPricing:      capability(CapabilityPartial, "group ratios and discounts; per-model ratios are reviewable"),
+			DiscountInformation: capability(CapabilitySupported, "group_ratio and group_group_ratio"),
+			RegionPricing:       capability(CapabilityUnsupported, "no region-scoped pricing"),
+			TieredPricing:       capability(CapabilityPartial, "billing_expr parsed; unparsable tiers stay needs_review"),
+			MediaPricing:        capability(CapabilityPartial, "per-call media prices when model_price is published"),
+			ScheduledSync:       capability(CapabilitySupported, "background catalog sync"),
 		},
 	}
 }
@@ -82,12 +93,56 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 		PricingURL: "/api/v1/models", ModelsURL: "/api/v1/models",
 		AuthType: "api_key",
 		Capabilities: UpstreamProviderCapabilities{
-			Models: true, ModelDetails: true, OfficialPricing: true,
-			ProviderPricing: true, Status: "SUPPORTED",
+			ModelDiscovery:      capability(CapabilitySupported, "paginated /api/v1/models"),
+			ModelMetadata:       capability(CapabilitySupported, "catalog metadata and capabilities"),
+			OfficialPricing:     capability(CapabilitySupported, "official catalog prices with regions and units"),
+			ChannelPricing:      capability(CapabilityNeedsConfiguration, "depends on the contracted workspace and region"),
+			DiscountInformation: capability(CapabilityUnsupported, "no supplier discount feed"),
+			RegionPricing:       capability(CapabilitySupported, "region comes from the workspace endpoint"),
+			TieredPricing:       capability(CapabilityPartial, "price ranges are preserved and flagged for review"),
+			MediaPricing:        capability(CapabilityPartial, "image/video/audio price items when present"),
+			ScheduledSync:       capability(CapabilitySupported, "background catalog sync"),
 		},
 	}
 }
 
 func (bailianAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
 	return FetchBailianCatalog(ctx, cfg.BaseURL, cfg.APIKey)
+}
+
+// manualPricingProviders have no supplier-level price API that Uter may call
+// with a channel credential. They stay registered so the UI can state that
+// pricing is manual instead of presenting a fake sync success.
+var manualPricingProviders = []UpstreamProvider{
+	{ID: "openai", Name: "OpenAI", AuthType: "api_key", Capabilities: manualCapabilities("OpenAI")},
+	{ID: "anthropic", Name: "Anthropic", AuthType: "api_key", Capabilities: manualCapabilities("Anthropic")},
+	{ID: "google-gemini", Name: "Google Gemini", AuthType: "api_key", Capabilities: manualCapabilities("Google Gemini")},
+	{ID: "microsoft-azure", Name: "Microsoft Azure", AuthType: "api_key", Capabilities: manualCapabilities("Azure OpenAI")},
+	{ID: "aws-bedrock", Name: "AWS Bedrock", AuthType: "aws_sigv4", Capabilities: manualCapabilities("AWS Bedrock")},
+	{ID: "tencent-hunyuan", Name: "腾讯云", AuthType: "api_key", Capabilities: manualCapabilities("腾讯云")},
+	{ID: "volcengine", Name: "火山引擎", AuthType: "api_key", Capabilities: manualCapabilities("火山引擎")},
+}
+
+func manualCapabilities(name string) UpstreamProviderCapabilities {
+	return UpstreamProviderCapabilities{
+		ModelDiscovery:      capability(CapabilitySupported, name+" model list comes from the channel adapter"),
+		ModelMetadata:       capability(CapabilityPartial, "official metadata may need manual import"),
+		OfficialPricing:     capability(CapabilityManualOnly, "no authorized supplier price API"),
+		ChannelPricing:      capability(CapabilityManualOnly, "enter the contracted quote manually"),
+		DiscountInformation: capability(CapabilityManualOnly, "contract discount must be entered manually"),
+		RegionPricing:       capability(CapabilityNeedsConfiguration, "region-specific price requires manual input"),
+		TieredPricing:       capability(CapabilityManualOnly, "tiered prices must be entered as an operator rule"),
+		MediaPricing:        capability(CapabilityManualOnly, "media prices must be entered manually"),
+		ScheduledSync:       capability(CapabilityUnsupported, "no price source to schedule"),
+	}
+}
+
+type manualProviderAdapter struct {
+	provider UpstreamProvider
+}
+
+func (m manualProviderAdapter) Descriptor() UpstreamProvider { return m.provider }
+
+func (m manualProviderAdapter) Fetch(context.Context, UpstreamFetchConfig) (any, error) {
+	return nil, errors.New("this provider has no authorized price API; enter its prices manually")
 }

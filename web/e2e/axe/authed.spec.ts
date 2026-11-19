@@ -109,7 +109,7 @@ test('axe: 鉴权页批量扫描', async ({ page }) => {
       const tag =
         v.impact && BLOCKING_IMPACTS.has(v.impact) ? 'blocking' : 'advisory'
       // eslint-disable-next-line no-console
-        console.log(
+      console.log(
         `[axe:${tag}][${route.path}] ${v.impact ?? 'unknown'} ${v.id}: ${v.help} (${v.nodes.length} nodes)`
       )
     }

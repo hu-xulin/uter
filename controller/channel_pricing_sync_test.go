@@ -26,6 +26,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/custom_pricing"
 )
 
@@ -88,6 +89,24 @@ func TestMergeChannelQuotesPreservesOperatorPolicy(t *testing.T) {
 	require.Equal(t, custom_pricing.ChannelQuoteStatusNeedsReview, cfg.Quotes["tiered"].Status)
 	require.Equal(t, "tier(...)", cfg.Quotes["tiered"].BillingExpr)
 	require.Equal(t, 4.0, *cfg.Quotes["gpt-4o"].CompletionRatio)
+}
+
+func TestFilterLegacyPricingConflictsSkipsChannelPricingModels(t *testing.T) {
+	entries := []upstreamPricingEntry{
+		{ModelName: "gpt-a", ModelRatio: 2},
+		{ModelName: "gpt-b", ModelRatio: 3},
+		{ModelName: " gpt-c "},
+	}
+	rows := []model.ChannelModelPricing{
+		{ModelName: "gpt-a", PricingStatus: model.ChannelPricingStatusConfigured},
+		{ModelName: "gpt-c", PricingStatus: model.ChannelPricingStatusNeedsReview},
+	}
+
+	filtered, skipped := filterLegacyPricingConflicts(entries, rows)
+
+	require.Len(t, filtered, 1)
+	assert.Equal(t, "gpt-b", filtered[0].ModelName)
+	assert.ElementsMatch(t, []string{"gpt-a", "gpt-c"}, skipped)
 }
 
 func TestFetchUpstreamPricingRejectsInvalidResponses(t *testing.T) {

@@ -384,5 +384,4 @@ describe('pricing controls', () => {
       expect(chip.querySelector('svg, img, div')).not.toBeNull()
     }
   })
-
 })

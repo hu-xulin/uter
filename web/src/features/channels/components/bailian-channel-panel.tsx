@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { RefreshCw, Sparkles } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -71,6 +71,7 @@ function parseWorkspaceBase(baseUrl: string): {
 type BailianChannelPanelProps = {
   channelId: number | null
   baseUrl: string
+  onCreateDraft?: () => Promise<number | null>
   onChangeBaseUrl: (value: string) => void
 }
 
@@ -84,6 +85,7 @@ type BailianChannelPanelProps = {
 export function BailianChannelPanel(props: BailianChannelPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const [creatingDraft, setCreatingDraft] = useState(false)
   const parsed = useMemo(
     () => parseWorkspaceBase(props.baseUrl),
     [props.baseUrl]
@@ -125,10 +127,20 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
       handleServerError(error, t('Failed to apply catalog metadata')),
   })
 
-  const status =
-    statusQuery.data && 'channel_id' in statusQuery.data
-      ? (statusQuery.data as BailianSyncStatus)
-      : null
+  const payload = statusQuery.data
+  const status: BailianSyncStatus | null =
+    payload?.post_create ??
+    (payload?.channel_id != null ? (payload as BailianSyncStatus) : null)
+  const scheduled = payload?.scheduled ?? null
+  let bailianSyncLabel = t('Not synced yet')
+  let bailianSyncVariant: 'secondary' | 'warning' | 'default' = 'warning'
+  if (refresh.isPending || apply.isPending || statusQuery.isLoading) {
+    bailianSyncLabel = t('Syncing...')
+    bailianSyncVariant = 'secondary'
+  } else if (status?.finished_at || scheduled?.finished_at) {
+    bailianSyncLabel = t('Synced')
+    bailianSyncVariant = 'default'
+  }
 
   return (
     <div className='space-y-3 rounded-lg border p-3'>
@@ -155,11 +167,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
             'Output modalities',
             'Reference prices',
           ].map((field) => (
-            <Badge
-              key={field}
-              variant='outline'
-              className='font-normal'
-            >
+            <Badge key={field} variant='outline' className='font-normal'>
               {t(field)}
             </Badge>
           ))}
@@ -209,7 +217,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               size='sm'
               variant='outline'
               onClick={() => refresh.mutate()}
-              disabled={refresh.isPending}
+              disabled={refresh.isPending || props.channelId == null}
             >
               <RefreshCw
                 className={cn('size-4', refresh.isPending && 'animate-spin')}
@@ -221,12 +229,45 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               size='sm'
               variant='outline'
               onClick={() => apply.mutate()}
-              disabled={apply.isPending}
+              disabled={apply.isPending || props.channelId == null}
             >
               <Sparkles className='size-4' />
               {t('Apply catalog metadata')}
             </Button>
+            <Badge variant={bailianSyncVariant}>{bailianSyncLabel}</Badge>
+            {props.channelId == null && props.onCreateDraft ? (
+              <Button
+                type='button'
+                size='sm'
+                variant='outline'
+                disabled={creatingDraft}
+                onClick={async () => {
+                  setCreatingDraft(true)
+                  try {
+                    await props.onCreateDraft?.()
+                  } catch (error) {
+                    handleServerError(
+                      error,
+                      t('Failed to create draft channel')
+                    )
+                  } finally {
+                    setCreatingDraft(false)
+                  }
+                }}
+              >
+                {creatingDraft
+                  ? t('Creating...')
+                  : t('Generate draft channel ID')}
+              </Button>
+            ) : null}
           </div>
+          {props.channelId == null ? (
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Generate a draft channel ID before syncing so prices are written into this channel.'
+              )}
+            </p>
+          ) : null}
           <div className='text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3'>
             <span>
               {t('Actual models')}: {status?.actual_models ?? 0}
@@ -250,6 +291,31 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               {t('Pricing records')}: {status?.pricing_records ?? 0}
             </span>
           </div>
+          {scheduled ? (
+            <div className='text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 border-t pt-2 text-sm sm:grid-cols-3'>
+              <span className='flex items-center gap-1.5'>
+                {t('Scheduled sync')}:
+                <Badge variant={scheduled.success ? 'default' : 'warning'}>
+                  {t(scheduled.success ? 'Success' : 'Failed')}
+                </Badge>
+              </span>
+              <span>
+                {t('Models')}: {scheduled.models}
+              </span>
+              <span>
+                {t('Prices written')}: {scheduled.written}
+              </span>
+              <span>
+                {t('Price changes')}: {scheduled.changes}
+              </span>
+              <span>
+                {t('Reviews')}: {scheduled.reviews}
+              </span>
+              <span>
+                {t('Due channels')}: {scheduled.due_channels}
+              </span>
+            </div>
+          ) : null}
         </div>
       )}
     </div>

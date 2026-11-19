@@ -62,12 +62,16 @@ type batchBasePrice struct {
 // BatchPricingOptions selects the models and rule for one batch operation.
 // ModelPrefixes supports series-level rules such as "gpt-" or "claude-".
 type BatchPricingOptions struct {
-	Models        []string
-	ModelPrefixes []string
-	Basis         string
-	Mode          string
-	Value         float64
-	DryRun        bool
+	Models          []string
+	ModelPrefixes   []string
+	ModelCategories []string
+	Basis           string
+	Mode            string
+	Value           float64
+	DryRun          bool
+	// OverwriteManual lets a batch rule replace a hand-edited model price.
+	// The default keeps the single-model rule as the highest priority.
+	OverwriteManual bool
 }
 
 func ApplyChannelBatchPricing(
@@ -127,6 +131,13 @@ func ApplyChannelBatchPricingWithOptions(
 			selected[name] = true
 		}
 	}
+	categories := make(map[string]bool, len(options.ModelCategories))
+	for _, category := range options.ModelCategories {
+		category = strings.ToLower(strings.TrimSpace(category))
+		if category != "" {
+			categories[category] = true
+		}
+	}
 	prefixes := make([]string, 0, len(options.ModelPrefixes))
 	for _, prefix := range options.ModelPrefixes {
 		prefix = strings.ToLower(strings.TrimSpace(prefix))
@@ -143,6 +154,15 @@ func ApplyChannelBatchPricingWithOptions(
 			continue
 		}
 		if len(prefixes) > 0 && !matchesModelPrefixes(row.ModelName, prefixes) {
+			continue
+		}
+		if len(categories) > 0 && !categories[ClassifyModelCategory(row.ModelName)] {
+			continue
+		}
+		if !options.OverwriteManual && manualModelPrice(row) {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{
+				ModelName: row.ModelName, Reason: "manual model price preserved",
+			})
 			continue
 		}
 		base, reason := resolveBatchBasePrice(row, basis)
@@ -217,7 +237,16 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 	var official model.ChannelOfficialPricing
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
 		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &official); err == nil && len(official.Tiers) > 0 {
+			if len(official.Tiers) > 1 {
+				return batchBasePrice{}, "multiple official price tiers require review"
+			}
 			for _, tier := range official.Tiers {
+				if tier.Unit == "per_second" {
+					return batchBasePrice{}, "official media price shape is not supported by batch pricing"
+				}
+				if tier.InputPerMillionUSD != nil && tier.PerUnitUSD != nil {
+					return batchBasePrice{}, "ambiguous official price shape requires review"
+				}
 				if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
 					base := batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, inputUSD: tier.InputPerMillionUSD}
 					if tier.OutputPerMillionUSD != nil {
@@ -275,6 +304,44 @@ func applyBatchRule(base float64, mode string, value float64) (float64, bool) {
 		return 0, false
 	}
 	return out, true
+}
+
+// ClassifyModelCategory is a name-based fallback for model-type scopes. It is
+// deliberately labelled heuristic: the authoritative type still comes from
+// model metadata and the task plugin schema.
+func ClassifyModelCategory(name string) string {
+	lower := strings.ToLower(name)
+	switch {
+	case strings.Contains(lower, "embedding"), strings.Contains(lower, "embed"):
+		return "embedding"
+	case strings.Contains(lower, "tts"), strings.Contains(lower, "asr"),
+		strings.Contains(lower, "whisper"), strings.Contains(lower, "speech"),
+		strings.Contains(lower, "cosyvoice"), strings.Contains(lower, "sensevoice"),
+		strings.Contains(lower, "paraformer"), strings.Contains(lower, "audio"):
+		return "audio"
+	case strings.Contains(lower, "video"), strings.Contains(lower, "t2v"),
+		strings.Contains(lower, "i2v"), strings.Contains(lower, "kf2v"),
+		strings.Contains(lower, "s2v"), strings.Contains(lower, "sora"),
+		strings.Contains(lower, "veo"), strings.Contains(lower, "kling"):
+		return "video"
+	case strings.Contains(lower, "image"), strings.Contains(lower, "dall-e"),
+		strings.Contains(lower, "flux"), strings.Contains(lower, "seedream"),
+		strings.Contains(lower, "wanx"), strings.Contains(lower, "z-image"):
+		return "image"
+	default:
+		return "text"
+	}
+}
+
+func manualModelPrice(row model.ChannelModelPricing) bool {
+	if row.PricingStatus != model.ChannelPricingStatusConfigured || strings.TrimSpace(row.InternalPricing) == "" {
+		return false
+	}
+	var internal model.ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
+		return true
+	}
+	return !strings.HasPrefix(strings.TrimSpace(internal.Note), "batch:")
 }
 
 func matchesModelPrefixes(name string, prefixes []string) bool {

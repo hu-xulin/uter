@@ -21,6 +21,7 @@ package controller
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -28,6 +29,19 @@ import (
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
 )
+
+type channelUpstreamQuoteView struct {
+	PriceBasis          string   `json:"price_basis"`
+	Currency            string   `json:"currency"`
+	Unit                string   `json:"unit"`
+	InputPerMillionUSD  *float64 `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD *float64 `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD  *float64 `json:"cache_per_million_usd,omitempty"`
+	PerCallUSD          *float64 `json:"per_call_usd,omitempty"`
+	Source              string   `json:"source"`
+	DiscountGroup       string   `json:"discount_group,omitempty"`
+	DiscountRatio       *float64 `json:"discount_ratio,omitempty"`
+}
 
 type channelModelPricingView struct {
 	ChannelID      int                           `json:"channel_id"`
@@ -38,10 +52,46 @@ type channelModelPricingView struct {
 	PricingSource  string                        `json:"pricing_source"`
 	PricingStatus  string                        `json:"pricing_status"`
 	PricingVersion string                        `json:"pricing_version"`
+	PriceShape     string                        `json:"price_shape,omitempty"`
+	PriceSupported bool                          `json:"price_supported"`
 	FetchedAt      int64                         `json:"fetched_at"`
 	UpdatedAt      int64                         `json:"updated_at"`
 	Official       *model.ChannelOfficialPricing `json:"official,omitempty"`
+	UpstreamQuote  *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
 	Internal       *model.ChannelInternalPricing `json:"internal,omitempty"`
+}
+
+// classifyOfficialPricingShape tells the UI whether the official price can be
+// executed by the current billing engine. Storable but unexecutable shapes
+// (multi-tier, per-second, per-image) must stay visibly unsupported.
+func classifyOfficialPricingShape(official *model.ChannelOfficialPricing) (string, bool) {
+	if official == nil || len(official.Tiers) == 0 {
+		return "", false
+	}
+	if len(official.Tiers) > 1 {
+		return "multi_tier", false
+	}
+	tier := official.Tiers[0]
+	switch tier.Unit {
+	case "per_1m_token":
+		return "per_1m_token", tier.InputPerMillionUSD != nil
+	case "per_call":
+		return "per_call", tier.PerUnitUSD != nil
+	case "per_second":
+		return "per_second", false
+	case "per_image":
+		// A per-image price is a fixed amount per request, which the per-call
+		// billing mode can execute without flattening a duration-dependent price.
+		return "per_image", tier.PerUnitUSD != nil
+	default:
+		if tier.InputPerMillionUSD != nil {
+			return "per_1m_token", true
+		}
+		if tier.PerUnitUSD != nil {
+			return "per_call", true
+		}
+		return tier.Unit, false
+	}
 }
 
 func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricingView {
@@ -61,8 +111,10 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 		var official model.ChannelOfficialPricing
 		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &official); err == nil {
 			view.Official = &official
+			view.PriceShape, view.PriceSupported = classifyOfficialPricingShape(&official)
 		}
 	}
+	view.UpstreamQuote = channelUpstreamQuote(row, view.Official)
 	if strings.TrimSpace(row.InternalPricing) != "" {
 		var internal model.ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err == nil {
@@ -72,7 +124,152 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 	return view
 }
 
+// channelUpstreamQuote exposes the provider's purchase quote separately from
+// the official list price. DreamRouter publishes ratios, so its quote is
+// converted with Uter's documented ratio convention; absolute providers reuse
+// the first normalized tier.
+func channelUpstreamQuote(row model.ChannelModelPricing, official *model.ChannelOfficialPricing) *channelUpstreamQuoteView {
+	if official != nil && official.ChannelPrice != nil {
+		tier := official.ChannelPrice
+		quote := &channelUpstreamQuoteView{
+			PriceBasis:    "CHANNEL_DISCOUNT",
+			Currency:      official.Currency,
+			Unit:          tier.Unit,
+			Source:        "dreamrouter-discount",
+			DiscountGroup: official.DiscountGroup,
+			DiscountRatio: official.DiscountRatio,
+		}
+		switch tier.Unit {
+		case "per_call", "per_second", "per_image", "per_minute":
+			quote.PerCallUSD = tier.PerUnitUSD
+		default:
+			quote.InputPerMillionUSD = tier.InputPerMillionUSD
+			quote.OutputPerMillionUSD = tier.OutputPerMillionUSD
+			quote.CachePerMillionUSD = tier.CachePerMillionUSD
+		}
+		return quote
+	}
+	if row.Provider == "dreamrouter" && strings.TrimSpace(row.OfficialPricing) != "" {
+		var record service.UpstreamModelRecord
+		if err := common.UnmarshalJsonStr(row.OfficialPricing, &record); err == nil {
+			quote := &channelUpstreamQuoteView{
+				PriceBasis: "DERIVED_FROM_RATIOS", Currency: "USD",
+				Source: "dreamrouter-official",
+			}
+			if record.QuotaType == 1 && record.ModelPrice != nil && *record.ModelPrice > 0 {
+				quote.Unit = "per_call"
+				quote.PerCallUSD = record.ModelPrice
+				return quote
+			}
+			if record.ModelRatio != nil && *record.ModelRatio > 0 {
+				input := *record.ModelRatio * 2
+				quote.Unit = "per_1m_token"
+				quote.InputPerMillionUSD = &input
+				if record.CompletionRatio != nil && *record.CompletionRatio > 0 {
+					output := input * *record.CompletionRatio
+					quote.OutputPerMillionUSD = &output
+				}
+				if record.CacheRatio != nil && *record.CacheRatio > 0 {
+					cache := input * *record.CacheRatio
+					quote.CachePerMillionUSD = &cache
+				}
+				return quote
+			}
+		}
+	}
+	if official == nil || len(official.Tiers) == 0 {
+		return nil
+	}
+	tier := official.Tiers[0]
+	quote := &channelUpstreamQuoteView{
+		PriceBasis: "OFFICIAL_REFERENCE", Currency: official.Currency,
+		Unit: tier.Unit, Source: official.Source,
+	}
+	switch tier.Unit {
+	case "per_call", "per_second", "per_image", "per_minute":
+		quote.PerCallUSD = tier.PerUnitUSD
+	default:
+		quote.InputPerMillionUSD = tier.InputPerMillionUSD
+		quote.OutputPerMillionUSD = tier.OutputPerMillionUSD
+		quote.CachePerMillionUSD = tier.CachePerMillionUSD
+	}
+	return quote
+}
+
 // GetChannelModelPricing lists one channel's isolated price records.
+type channelPricingImportRow struct {
+	ModelName string                       `json:"model_name"`
+	Pricing   model.ChannelInternalPricing `json:"pricing"`
+}
+
+type channelPricingImportSkipped struct {
+	ModelName string `json:"model_name"`
+	Reason    string `json:"reason"`
+}
+
+// ImportChannelModelPricing imports operator-provided sale prices. The dry-run
+// mode validates every row without writing so a CSV/JSON import can be checked
+// before it changes billing.
+// POST /api/channel/:id/model_pricing/import
+func ImportChannelModelPricing(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	var req struct {
+		DryRun bool                      `json:"dry_run"`
+		Rows   []channelPricingImportRow `json:"rows"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	imported := make([]string, 0, len(req.Rows))
+	skipped := make([]channelPricingImportSkipped, 0)
+	for _, row := range req.Rows {
+		name := strings.TrimSpace(row.ModelName)
+		if name == "" {
+			skipped = append(skipped, channelPricingImportSkipped{Reason: "model name is required"})
+			continue
+		}
+		row.Pricing.UpdatedAt = time.Now().Unix()
+		if _, err := model.NormalizeChannelInternalPricing(&row.Pricing); err != nil {
+			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
+			continue
+		}
+		if req.DryRun {
+			imported = append(imported, name)
+			continue
+		}
+		var oldPricing *model.ChannelInternalPricing
+		if previous, err := model.GetChannelModelPricing(channelID, name); err == nil && strings.TrimSpace(previous.InternalPricing) != "" {
+			var parsed model.ChannelInternalPricing
+			if err := common.UnmarshalJsonStr(previous.InternalPricing, &parsed); err == nil {
+				oldPricing = &parsed
+			}
+		}
+		if err := model.SetChannelInternalPricing(channelID, name, row.Pricing); err != nil {
+			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
+			continue
+		}
+		pricing := row.Pricing
+		if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
+			ChannelID: channelID, ModelName: name, Source: "import",
+			OldPricing: oldPricing, NewPricing: &pricing,
+		}); err != nil {
+			common.SysError("append imported pricing history failed: " + err.Error())
+		}
+		imported = append(imported, name)
+	}
+	common.ApiSuccess(c, gin.H{
+		"channel_id": channelID,
+		"dry_run":    req.DryRun,
+		"imported":   imported,
+		"skipped":    skipped,
+	})
+}
+
 func GetChannelModelPricing(c *gin.Context) {
 	channelID, err := strconv.Atoi(c.Param("id"))
 	if err != nil || channelID <= 0 {
@@ -152,13 +349,15 @@ func BatchChannelModelPricing(c *gin.Context) {
 		return
 	}
 	var req struct {
-		Models        []string `json:"models"`
-		ModelPrefixes []string `json:"model_prefixes"`
-		Basis         string   `json:"basis"`
-		Mode          string   `json:"mode"`
-		Value         float64  `json:"value"`
-		Factor        float64  `json:"factor"`
-		DryRun        bool     `json:"dry_run"`
+		Models          []string `json:"models"`
+		ModelPrefixes   []string `json:"model_prefixes"`
+		ModelCategories []string `json:"model_categories"`
+		Basis           string   `json:"basis"`
+		Mode            string   `json:"mode"`
+		Value           float64  `json:"value"`
+		Factor          float64  `json:"factor"`
+		DryRun          bool     `json:"dry_run"`
+		OverwriteManual bool     `json:"overwrite_manual"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
@@ -170,6 +369,7 @@ func BatchChannelModelPricing(c *gin.Context) {
 	}
 	result, err := service.ApplyChannelBatchPricingWithOptions(channelID, service.BatchPricingOptions{
 		Models: req.Models, ModelPrefixes: req.ModelPrefixes,
+		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
 		Basis: req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
 	})
 	if err != nil {

@@ -114,3 +114,46 @@ func TestApplyChannelBatchPricingSupportsFixedAmountAndFixedPrice(t *testing.T) 
 	require.True(t, ok)
 	assert.InDelta(t, 2.0, pricing.ModelRatio, 1e-9) // fixed $4 / 2
 }
+
+func TestApplyChannelBatchPricingHonorsCategoryAndManualPriority(t *testing.T) {
+	setupBatchPricingDB(t)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		batchOfficialRecord(4, "gpt-chat"),
+		batchOfficialRecord(4, "qwen-image-plus"),
+	})
+	require.NoError(t, err)
+
+	// Category scope only touches image models.
+	result, err := ApplyChannelBatchPricingWithOptions(4, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ModelCategories: []string{"image"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	if _, ok := model.ResolveChannelBillingPricing(4, "gpt-chat"); ok {
+		t.Fatal("text model must not match the image category")
+	}
+
+	// A hand-edited price outranks a later batch rule.
+	input, output := 1.25, 2.5
+	require.NoError(t, model.SetChannelInternalPricing(4, "gpt-chat", model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+	}))
+	_, err = ApplyChannelBatchPricingWithOptions(4, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+	})
+	require.NoError(t, err)
+	pricing, ok := model.ResolveChannelBillingPricing(4, "gpt-chat")
+	require.True(t, ok)
+	assert.InDelta(t, 0.625, pricing.ModelRatio, 1e-9) // manual $1.25 / 2
+
+	// Explicit opt-in replaces the manual price; batch-owned rows keep updating.
+	_, err = ApplyChannelBatchPricingWithOptions(4, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	pricing, ok = model.ResolveChannelBillingPricing(4, "gpt-chat")
+	require.True(t, ok)
+	assert.InDelta(t, 0.75, pricing.ModelRatio, 1e-9) // $3 * 0.5 / 2
+}

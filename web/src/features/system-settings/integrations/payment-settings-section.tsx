@@ -73,13 +73,13 @@ import { useUpdateOption } from '../hooks/use-update-option'
 import { safeNumberFieldProps } from '../utils/numeric-field'
 import { formatPriceAdjustment } from '../utils/price-adjustment'
 import { AlipaySettingsSection } from './alipay-settings-section'
+import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
+import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
+import { CreemProductsVisualEditor } from './creem-products-visual-editor'
 import {
   callbackAddressWarning,
   callbackAddressWarningText,
 } from './payment-callback-address'
-import { AmountDiscountVisualEditor } from './amount-discount-visual-editor'
-import { AmountOptionsVisualEditor } from './amount-options-visual-editor'
-import { CreemProductsVisualEditor } from './creem-products-visual-editor'
 import { PaymentMethodsVisualEditor } from './payment-methods-visual-editor'
 import {
   formatJsonForEditor,
@@ -120,10 +120,6 @@ function isHttpOriginUrl(value: string) {
 // 前缀上限为 100 字符。
 const ORDER_TITLE_PREFIX_MAX_LENGTH = 100
 const ORDER_TITLE_PREFIX_FORBIDDEN_CHARS = /[/=&?#%+<>"'|]/
-
-
-
-
 
 const paymentSchema = z.object({
   PayAddress: z.string().refine((value) => {
@@ -1592,7 +1588,6 @@ export function PaymentSettingsSection({
                       </FormItem>
                     )}
                   />
-
                 </div>
 
                 <div className='flex flex-col gap-6'>

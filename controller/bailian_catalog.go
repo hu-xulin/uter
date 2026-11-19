@@ -169,11 +169,16 @@ func ApplyBailianCatalog(c *gin.Context) {
 // GetBailianSyncStatus returns the last automatic post-create sync result.
 func GetBailianSyncStatus(c *gin.Context) {
 	status := service.LoadBailianSyncStatus()
+	scheduled := service.LoadBailianUpstreamSyncStatus()
 	if status == nil {
-		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"synced": false}})
+		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
+			"synced": false, "scheduled": scheduled,
+		}})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": status})
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
+		"post_create": status, "scheduled": scheduled,
+	}})
 }
 
 // syncBailianAfterCreate runs after an Alibaba channel is created. Every step

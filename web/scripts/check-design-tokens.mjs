@@ -574,9 +574,7 @@ for (const abs of walk(SRC)) {
       /\b(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y)-\[[^\]]*\]/g
     ) ?? []) {
       const inner = hit.slice(hit.indexOf('[') + 1, -1)
-      if (
-        /\b(?:var|calc|env)\(/.test(inner)
-      ) {
+      if (/\b(?:var|calc|env)\(/.test(inner)) {
         continue
       }
       report('T17', rel, line, rawText)

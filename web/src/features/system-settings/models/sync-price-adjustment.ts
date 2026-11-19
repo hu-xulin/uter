@@ -115,7 +115,9 @@ export function adjustSyncPrice(
   let expression = source
   for (const patch of patches.sort((a, b) => b.start - a.start)) {
     expression =
-      expression.slice(0, patch.start) + patch.text + expression.slice(patch.end)
+      expression.slice(0, patch.start) +
+      patch.text +
+      expression.slice(patch.end)
   }
   if (compileBillingExpression(expression).status !== 'ready') {
     return unsupported

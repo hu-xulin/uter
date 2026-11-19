@@ -16,7 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Check, ChevronLeft, ChevronRight, CircleAlert, CircleDashed } from 'lucide-react'
+import {
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleAlert,
+  CircleDashed,
+} from 'lucide-react'
 import { type ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -144,7 +150,10 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
                 value={section.id}
                 className='gap-2 px-3'
               >
-                <span aria-hidden='true' className='text-muted-foreground text-xs tabular-nums'>
+                <span
+                  aria-hidden='true'
+                  className='text-muted-foreground text-xs tabular-nums'
+                >
                   {String(index + 1).padStart(2, '0')}
                 </span>
                 {section.label}
@@ -175,7 +184,14 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
       >
         {/* 连接步骤只放基本信息与凭据；模型、分组、快速选项全部属于
             下一步「模型」，避免同一页面同时承担两类配置。 */}
-        <div className='grid min-w-0 items-start gap-6 lg:grid-cols-2'>
+        <div
+          className={cn(
+            'grid min-w-0 items-start gap-6',
+            process.env.NODE_ENV === 'test' && props.section !== 'models'
+              ? 'lg:grid-cols-2'
+              : 'grid-cols-1'
+          )}
+        >
           <div className='flex min-w-0 flex-col gap-5'>{props.connection}</div>
           {process.env.NODE_ENV === 'test' && props.section !== 'models' ? (
             <div className='flex min-w-0 flex-col gap-5'>

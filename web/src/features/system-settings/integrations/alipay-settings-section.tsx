@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import {
   FormControl,
   FormDescription,
@@ -31,16 +32,11 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { Switch } from '@/components/ui/switch'
 
-import {
-  getAlipayCallbackDiagnostics,
-  type AlipayCallbackEvent,
-} from '../api'
-
+import { getAlipayCallbackDiagnostics, type AlipayCallbackEvent } from '../api'
 import {
   SettingsSwitchContent,
   SettingsSwitchItem,
@@ -310,7 +306,6 @@ export function AlipaySettingsSection() {
   )
 }
 
-
 function AlipayCallbackDiagnosticsCard() {
   const { t } = useTranslation()
   const diagnostics = useQuery({
@@ -325,7 +320,9 @@ function AlipayCallbackDiagnosticsCard() {
     <div className='space-y-3 rounded-lg border p-4'>
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div>
-          <h4 className='text-base font-semibold'>{t('Callback diagnostics')}</h4>
+          <h4 className='text-base font-semibold'>
+            {t('Callback diagnostics')}
+          </h4>
           <p className='text-muted-foreground text-sm'>
             {t(
               'Checks the notify URL Alipay will call and lists callbacks received by this process.'
@@ -387,9 +384,7 @@ function AlipayCallbackDiagnosticsCard() {
             )}
           </p>
           <div>
-            <span className='text-muted-foreground'>
-              {t('HTTP status')}:{' '}
-            </span>
+            <span className='text-muted-foreground'>{t('HTTP status')}: </span>
             <span>
               {data.http_status || '—'} {data.content_type || ''}{' '}
               {data.http_server ? `(${data.http_server})` : ''}
@@ -425,11 +420,11 @@ function AlipayCallbackDiagnosticsCard() {
             </Alert>
           )}
           <div className='space-y-1'>
-            <div className='text-muted-foreground'>
-              {t('Recent callbacks')}
-            </div>
+            <div className='text-muted-foreground'>{t('Recent callbacks')}</div>
             {data.events.length === 0 ? (
-              <p className='text-muted-foreground'>{t('No callbacks received')}</p>
+              <p className='text-muted-foreground'>
+                {t('No callbacks received')}
+              </p>
             ) : (
               <ul className='space-y-1'>
                 {data.events.map((event: AlipayCallbackEvent) => (

@@ -99,7 +99,8 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
         'group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent',
         'data-active:bg-primary data-active:text-primary-foreground group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground dark:data-active:bg-primary dark:data-active:text-primary-foreground dark:group-data-[variant=default]/tabs-list:data-active:hover:text-primary-foreground',
         'group-data-[variant=line]/tabs-list:data-active:text-fg-link group-data-[variant=line]/tabs-list:data-active:hover:text-fg-link dark:group-data-[variant=line]/tabs-list:data-active:text-fg-link dark:group-data-[variant=line]/tabs-list:data-active:hover:text-fg-link',
-        'after:bg-foreground after:absolute after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100',
+        // UDS 17 §Tabs：线型激活态用 2px brand-1 指示条，不使用 foreground 黑线。
+        'after:bg-primary after:absolute after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100',
         className
       )}
       {...props}

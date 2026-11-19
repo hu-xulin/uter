@@ -101,8 +101,19 @@ func SyncChannelPricing(c *gin.Context) {
 		return
 	}
 
+	rows, err := model.ListChannelModelPricing(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	filtered, skipped := filterLegacyPricingConflicts(payload.Data, rows)
+	if len(filtered) == 0 {
+		common.ApiErrorT(c, "Every upstream model already uses channel_model_pricing; legacy sync was skipped")
+		return
+	}
+
 	next, imported := mergeChannelQuotes(
-		custom_pricing.GetChannelPriceSetting(), id, payload.Data, time.Now().Unix(),
+		custom_pricing.GetChannelPriceSetting(), id, filtered, time.Now().Unix(),
 	)
 	encoded, err := common.Marshal(next)
 	if err != nil {
@@ -114,11 +125,40 @@ func SyncChannelPricing(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, gin.H{
-		"channel_id": id,
-		"imported":   imported,
-		"quotes":     next.Channels[strconv.Itoa(id)].Quotes,
-		"enabled":    next.Enabled,
+		"channel_id":        id,
+		"imported":          imported,
+		"skipped_conflicts": skipped,
+		"quotes":            next.Channels[strconv.Itoa(id)].Quotes,
+		"enabled":           next.Enabled,
 	})
+}
+
+// filterLegacyPricingConflicts prevents the legacy option writer from creating
+// a second price source for a model that already has a channel_model_pricing
+// row. ChannelModelPricing is authoritative; the skipped names are reported to
+// the operator instead of being silently ignored.
+func filterLegacyPricingConflicts(
+	entries []upstreamPricingEntry,
+	rows []model.ChannelModelPricing,
+) ([]upstreamPricingEntry, []string) {
+	if len(rows) == 0 {
+		return entries, nil
+	}
+	authoritative := make(map[string]struct{}, len(rows))
+	for _, row := range rows {
+		authoritative[row.ModelName] = struct{}{}
+	}
+	filtered := make([]upstreamPricingEntry, 0, len(entries))
+	skipped := make([]string, 0)
+	for _, entry := range entries {
+		name := strings.TrimSpace(entry.ModelName)
+		if _, exists := authoritative[name]; exists {
+			skipped = append(skipped, name)
+			continue
+		}
+		filtered = append(filtered, entry)
+	}
+	return filtered, skipped
 }
 
 // mergeChannelQuotes replaces one channel's quote sheet while preserving the

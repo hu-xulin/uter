@@ -199,6 +199,9 @@ func main() {
 	// 按「创梦默认组折扣价 +1 折」规则重算倍率并对齐渠道模型清单。
 	go service.DreamRouterSyncTask()
 	go service.DreamRouterUpstreamSyncTask()
+	go service.BailianUpstreamSyncTask()
+	go service.GenericUpstreamSyncTask()
+	go service.DraftChannelCleanupTask()
 	service.RunDreamRouterSyncOnStart()
 
 	// 周期性重载授权策略，保证多节点/多 master 部署下权限变更能传播到每个实例

@@ -48,7 +48,7 @@ async function globalSetup(_config: FullConfig): Promise<void> {
   const reachable = await probePort(parseTarget(BASE_URL))
   if (!reachable) {
     // eslint-disable-next-line no-console
-      console.error(
+    console.error(
       [
         '',
         '  ===================== BLOCKED =====================',

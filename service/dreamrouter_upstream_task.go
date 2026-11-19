@@ -53,6 +53,8 @@ type dreamRouterChannelSyncState struct {
 	ModelSyncAt    int64 `json:"model_sync_at"`
 	OfficialSyncAt int64 `json:"official_sync_at"`
 	ChannelSyncAt  int64 `json:"channel_sync_at"`
+	Failures       int   `json:"failures,omitempty"`
+	NextAttemptAt  int64 `json:"next_attempt_at,omitempty"`
 }
 
 type dreamRouterChannelSyncStateSetting struct {
@@ -101,6 +103,15 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 	}
 	defer dreamRouterUpstreamSyncMu.Unlock()
 
+	releaseLock, acquired, err := acquireUpstreamSyncLock(ctx, "dreamrouter-upstream")
+	if err != nil {
+		return nil, err
+	}
+	if !acquired {
+		return nil, fmt.Errorf("dreamrouter upstream sync is running on another instance")
+	}
+	defer releaseLock()
+
 	status := &DreamRouterUpstreamSyncStatus{StartedAt: time.Now().UTC()}
 	channels, err := dreamRouterUpstreamChannels()
 	if err != nil {
@@ -124,6 +135,9 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 		schedule, _ := GetChannelPricingSchedule(channel.Id)
 		modelInterval, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
+		if !force && state.NextAttemptAt > now.Unix() {
+			continue
+		}
 		due := dreamRouterDueChannel{channel: channel, schedule: schedule}
 		if force {
 			due.modelDue, due.officialDue, due.channelDue = true, true, true
@@ -177,7 +191,9 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 			state.ModelSyncAt = now.Unix()
 		}
 		if due.officialDue || due.channelDue {
-			records, recordErr := DreamRouterChannelPricingRecords(snapshot, channel.Id, channel.GetModels())
+			records, recordErr := DreamRouterChannelPricingRecords(
+				snapshot, channel.Id, channel.GetModels(), GetDreamRouterDiscountGroup(channel.Id),
+			)
 			if recordErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, recordErr))
 				continue
