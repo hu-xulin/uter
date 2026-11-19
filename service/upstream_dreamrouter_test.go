@@ -85,7 +85,7 @@ func TestFetchDreamRouterUpstreamKeepsRatiosIsolated(t *testing.T) {
 	require.Equal(t, 0.5, *gpt.OfficialPrice.CacheRead)
 	require.Equal(t, 6.25, *gpt.OfficialPrice.CacheWrite)
 	require.Equal(t, "per_1m_token", gpt.OfficialPrice.Unit)
-	require.Equal(t, "DERIVED_FROM_RATIOS", gpt.PriceStatus)
+	require.Equal(t, "OFFICIAL_API", gpt.PriceStatus)
 
 	image := byName["image-a"]
 	require.Equal(t, 1, image.QuotaType)
@@ -169,14 +169,14 @@ func TestDreamRouterChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testi
 		Models: []UpstreamModelRecord{
 			{
 				ModelName: "gpt-a", ModelRatio: ratio(2.5), EnableGroups: []string{"openai"},
-				CompletionRatio: ratio(5), PriceStatus: "DERIVED_FROM_RATIOS",
+				CompletionRatio: ratio(5), PriceStatus: "OFFICIAL_API",
 				OfficialPrice: &UpstreamPriceLine{
 					Input: ratio(5), Output: ratio(25), Currency: "USD",
 					Unit: "per_1m_token",
 				},
 			},
 			{
-				ModelName: "no-group", ModelRatio: ratio(1), PriceStatus: "DERIVED_FROM_RATIOS",
+				ModelName: "no-group", ModelRatio: ratio(1), PriceStatus: "OFFICIAL_API",
 				OfficialPrice: &UpstreamPriceLine{Input: ratio(2), Output: ratio(4), Currency: "USD", Unit: "per_1m_token"},
 			},
 			{ModelName: "not-served", ModelRatio: ratio(1), PriceStatus: "RATIO_ONLY_NO_ABSOLUTE_PRICE"},
@@ -192,7 +192,7 @@ func TestDreamRouterChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testi
 	require.Contains(t, record.NormalizedPricing, `"input_per_million_usd":5`)
 	require.Contains(t, record.NormalizedPricing, `"output_per_million_usd":25`)
 	require.Contains(t, record.NormalizedPricing, `"unit":"per_1m_token"`)
-	require.Contains(t, record.NormalizedPricing, `"DERIVED_FROM_RATIOS"`)
+	require.Contains(t, record.NormalizedPricing, `"OFFICIAL_API"`)
 
 	// Channel price is the official price times the upstream group discount,
 	// never the official price itself.

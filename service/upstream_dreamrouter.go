@@ -29,6 +29,10 @@ const DreamRouterUpstreamHistoryKey = "DreamRouterUpstreamPriceHistory"
 
 const upstreamHistoryLimit = 1000
 
+// dreamRouterPlaceholderModelRatio marks models whose public model_ratio is a
+// placeholder because their real price lives in billing_expr (tiered/media).
+const dreamRouterPlaceholderModelRatio = 37.5
+
 type UpstreamCapabilityStatus string
 
 const (
@@ -107,6 +111,33 @@ func dreamRouterOfficialLine(
 	item UpstreamModelRecord,
 	legacy map[string]DreamRouterModelRow,
 ) (*UpstreamPriceLine, string) {
+	if item.QuotaType == 1 && item.ModelPrice != nil && *item.ModelPrice > 0 {
+		value := *item.ModelPrice
+		return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_call", PerCall: true}, "OFFICIAL_API"
+	}
+	// The live public pricing document is the provider's current list price.
+	// The full-sync snapshot is a fallback: it is rebuilt from billing
+	// expressions and can lag behind a price change, and it must be the only
+	// source for media/tiered models whose model_ratio is a placeholder.
+	if item.ModelRatio != nil && *item.ModelRatio > 0 &&
+		*item.ModelRatio != dreamRouterPlaceholderModelRatio &&
+		!dreamRouterRecordUsesMediaEndpoint(item) {
+		input := *item.ModelRatio * 2
+		line := &UpstreamPriceLine{Input: &input, Currency: "USD", Unit: "per_1m_token"}
+		if item.CompletionRatio != nil && *item.CompletionRatio > 0 {
+			output := input * *item.CompletionRatio
+			line.Output = &output
+		}
+		if item.CacheRatio != nil && *item.CacheRatio > 0 {
+			cache := input * *item.CacheRatio
+			line.CacheRead = &cache
+		}
+		if item.CreateCacheRatio != nil && *item.CreateCacheRatio > 0 {
+			createCache := input * *item.CreateCacheRatio
+			line.CacheWrite = &createCache
+		}
+		return line, "OFFICIAL_API"
+	}
 	if row, ok := legacy[item.ModelName]; ok && row.Official.Input > 0 {
 		value := row.Official.Input
 		switch {
@@ -124,28 +155,7 @@ func dreamRouterOfficialLine(
 			}, "OFFICIAL_REFERENCE"
 		}
 	}
-	if item.QuotaType == 1 && item.ModelPrice != nil && *item.ModelPrice > 0 {
-		value := *item.ModelPrice
-		return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_call", PerCall: true}, "DERIVED_FROM_RATIOS"
-	}
-	if item.ModelRatio == nil || *item.ModelRatio <= 0 || dreamRouterRecordUsesMediaEndpoint(item) {
-		return nil, "RATIO_ONLY_NO_ABSOLUTE_PRICE"
-	}
-	input := *item.ModelRatio * 2
-	line := &UpstreamPriceLine{Input: &input, Currency: "USD", Unit: "per_1m_token"}
-	if item.CompletionRatio != nil && *item.CompletionRatio > 0 {
-		output := input * *item.CompletionRatio
-		line.Output = &output
-	}
-	if item.CacheRatio != nil && *item.CacheRatio > 0 {
-		cache := input * *item.CacheRatio
-		line.CacheRead = &cache
-	}
-	if item.CreateCacheRatio != nil && *item.CreateCacheRatio > 0 {
-		createCache := input * *item.CreateCacheRatio
-		line.CacheWrite = &createCache
-	}
-	return line, "DERIVED_FROM_RATIOS"
+	return nil, "RATIO_ONLY_NO_ABSOLUTE_PRICE"
 }
 
 // dreamRouterRecordUsesMediaEndpoint marks video/audio/image endpoints whose

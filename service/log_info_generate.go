@@ -76,6 +76,14 @@ func AppendRelayLogAdminInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo,
 		if billingModel := relayInfo.GetBillingModelName(); billingModel != "" && billingModel != relayInfo.OriginModelName {
 			other.SetAdmin("billing_model", billingModel)
 		}
+		if relayInfo.ChannelPricingApplied {
+			other.SetAdmin("channel_pricing_version", relayInfo.ChannelPricingVersion)
+			other.SetAdmin("channel_pricing_model_ratio", relayInfo.ChannelPricingModelRatio)
+			other.SetAdmin("channel_pricing_completion_ratio", relayInfo.ChannelPricingCompletionRatio)
+			other.SetAdmin("channel_pricing_cache_ratio", relayInfo.ChannelPricingCacheRatio)
+			other.SetAdmin("channel_pricing_model_price", relayInfo.ChannelPricingModelPrice)
+			other.SetAdmin("channel_pricing_use_price", relayInfo.ChannelPricingUsePrice)
+		}
 		if diagnostics := relayInfo.ConversionDiagnostics(); len(diagnostics) > 0 {
 			other.SetAdmin("conversion_diagnostics", diagnostics)
 		}
