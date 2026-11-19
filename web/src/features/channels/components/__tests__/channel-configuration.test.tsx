@@ -1751,6 +1751,23 @@ test('ordinary edits discover models with saved settings and keep removed draft 
   expect(put).not.toHaveBeenCalled()
 })
 
+test('select all adds every fetched upstream model and keeps saved models', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await screen.findByDisplayValue('Existing channel')
+
+  const selectAll = screen.getByRole('button', { name: 'Select All' })
+  expect(selectAll).toBeDisabled()
+
+  await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
+  await screen.findByRole('checkbox', { name: 'upstream-model' })
+  await waitFor(() => expect(selectAll).toBeEnabled())
+
+  await user.click(selectAll)
+  expect(screen.getByRole('button', { name: 'upstream-model' })).toBeVisible()
+  expect(screen.getByRole('button', { name: 'custom-model' })).toBeVisible()
+})
+
 test('model configuration replaces the selected-count badge at the right of the model field header', async () => {
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')

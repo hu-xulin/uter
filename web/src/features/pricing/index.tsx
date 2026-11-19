@@ -47,6 +47,7 @@ export function Pricing() {
   const {
     models,
     vendors,
+    channels: channelMetadata,
     groupRatio,
     usableGroup,
     endpointMap,
@@ -105,6 +106,14 @@ export function Pricing() {
 
   // 渠道筛选的可选值来自目录里每个模型实际承载的启用渠道（管理-渠道的
   // name），只保留能在当前目录命中的渠道，避免出现点了必然为空的选项。
+  const channelTypes = useMemo(
+    () =>
+      Object.fromEntries(
+        (channelMetadata ?? []).map((channel) => [channel.name, channel.type])
+      ) as Record<string, number>,
+    [channelMetadata]
+  )
+
   const availableChannels = useMemo(() => {
     const seen = new Set<string>()
     for (const model of models || []) {
@@ -219,6 +228,7 @@ export function Pricing() {
               onTagChange={setTagFilter}
               vendors={vendors || []}
               channels={availableChannels}
+              channelTypes={channelTypes}
               tags={availableTags}
               models={models || []}
               hasActiveFilters={hasActiveFilters}
@@ -250,6 +260,7 @@ export function Pricing() {
                 onTagChange={setTagFilter}
                 vendors={vendors || []}
                 channels={availableChannels}
+                channelTypes={channelTypes}
                 tags={availableTags}
                 models={models || []}
                 hasActiveFilters={hasActiveFilters}

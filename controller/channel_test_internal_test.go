@@ -498,6 +498,13 @@ func TestTestAllChannelsRejectsExistingActiveTask(t *testing.T) {
 	require.Contains(t, recorder.Body.String(), "A channel-test task is already running or queued")
 }
 
+func TestValidateChannelNormalizesBareHostBaseURL(t *testing.T) {
+	base := "ws-ssc8bd9i0yuj89n4.cn-beijing.maas.aliyuncs.com"
+	channel := &model.Channel{Type: constant.ChannelTypeAli, BaseURL: &base}
+	require.NoError(t, validateChannel(channel, false))
+	assert.Equal(t, "https://"+base, channel.GetBaseURL())
+}
+
 func TestNormalizeBailianChannelBaseURL(t *testing.T) {
 	testCases := []struct{ name, input, want string }{
 		{"empty", "", ""},

@@ -79,8 +79,17 @@ type PricingVendor struct {
 	Icon        string `json:"icon,omitempty"`
 }
 
+// PricingChannel is the pricing page's channel filter metadata. Type is the
+// channel type number, so the console renders the same ChannelTypeLogo used by
+// channel creation instead of guessing from the models that channel serves.
+type PricingChannel struct {
+	Name string `json:"name"`
+	Type int    `json:"type"`
+}
+
 var (
 	pricingMap           []Pricing
+	pricingChannelsList  []PricingChannel
 	vendorsList          []PricingVendor
 	supportedEndpointMap map[string]common.EndpointInfo
 	lastGetPricingTime   time.Time
@@ -116,6 +125,7 @@ func InvalidatePricingCache() {
 	defer updatePricingLock.Unlock()
 
 	pricingMap = nil
+	pricingChannelsList = nil
 	vendorsList = nil
 	lastGetPricingTime = time.Time{}
 }
@@ -127,6 +137,15 @@ func GetVendors() []PricingVendor {
 		GetPricing()
 	}
 	return vendorsList
+}
+
+// GetPricingChannels returns the channel filter metadata for the same cache
+// generation as GetPricing.
+func GetPricingChannels() []PricingChannel {
+	if time.Since(lastGetPricingTime) > time.Minute*1 || len(pricingMap) == 0 {
+		GetPricing()
+	}
+	return append([]PricingChannel(nil), pricingChannelsList...)
 }
 
 func GetModelSupportEndpointTypes(model string) []constant.EndpointType {
@@ -251,6 +270,7 @@ func updatePricing() {
 
 	modelGroupsMap := make(map[string]*types.Set[string])
 	modelChannelsMap := make(map[string]*types.Set[string])
+	channelTypeByName := make(map[string]int)
 
 	for _, ability := range enableAbilities {
 		groups, ok := modelGroupsMap[ability.Model]
@@ -270,6 +290,19 @@ func updatePricing() {
 			modelChannelsMap[ability.Model] = channels
 		}
 		channels.Add(channelName)
+		if existing, ok := channelTypeByName[channelName]; !ok || ability.ChannelType < existing {
+			channelTypeByName[channelName] = ability.ChannelType
+		}
+	}
+
+	pricingChannelsList = make([]PricingChannel, 0, len(channelTypeByName))
+	channelNames := make([]string, 0, len(channelTypeByName))
+	for name := range channelTypeByName {
+		channelNames = append(channelNames, name)
+	}
+	slices.Sort(channelNames)
+	for _, name := range channelNames {
+		pricingChannelsList = append(pricingChannelsList, PricingChannel{Name: name, Type: channelTypeByName[name]})
 	}
 
 	//这里使用切片而不是Set，因为一个模型可能支持多个端点类型，并且第一个端点是优先使用端点

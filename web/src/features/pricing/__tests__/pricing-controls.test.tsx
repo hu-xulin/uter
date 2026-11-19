@@ -355,4 +355,34 @@ describe('pricing controls', () => {
       'h-(--ds-button-height-sm)'
     )
   })
+  it('shows a mark on every channel chip, including vendor-derived and fallback ones', () => {
+    cleanup()
+    const props = toolbarProps()
+    const base: PricingModel = {
+      id: 1,
+      model_name: 'qwen',
+      vendor_name: 'Alibaba',
+      vendor_icon: 'Alibaba.Color',
+      quota_type: 0,
+      model_ratio: 1,
+      completion_ratio: 1,
+      enable_groups: ['default'],
+      channels: ['阿里百炼'],
+    }
+    render(
+      <PricingSidebar
+        {...props}
+        channels={['优特渠道', '阿里百炼', '未知渠道']}
+        vendors={[]}
+        tags={[]}
+        models={[base]}
+      />
+    )
+
+    for (const name of [/优特渠道/, /阿里百炼/, /未知渠道/]) {
+      const chip = screen.getByRole('button', { name })
+      expect(chip.querySelector('svg, img, div')).not.toBeNull()
+    }
+  })
+
 })

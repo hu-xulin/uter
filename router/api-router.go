@@ -39,6 +39,7 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/uptime/status", middleware.UserAuth(), controller.GetUptimeKumaStatus)
 		apiRouter.GET("/models", middleware.UserAuth(), controller.DashboardListModels)
 		apiRouter.GET("/status/test", middleware.AdminAuth(), controller.TestStatus)
+		apiRouter.GET("/option/alipay_callback_diagnostics", middleware.AdminAuth(), controller.GetAlipayCallbackDiagnostics)
 		apiRouter.GET("/notice", controller.GetNotice)
 		apiRouter.GET("/user-agreement", controller.GetUserAgreement)
 		apiRouter.GET("/privacy-policy", controller.GetPrivacyPolicy)
@@ -341,6 +342,10 @@ func SetApiRouter(router *gin.Engine) {
 			ratioSyncRoute.POST("/dreamrouter/run", controller.RunDreamRouterSync)
 			ratioSyncRoute.GET("/dreamrouter/status", controller.GetDreamRouterSyncStatus)
 			ratioSyncRoute.GET("/dreamrouter/models", controller.GetDreamRouterSyncModels)
+			ratioSyncRoute.GET("/bailian/catalog", controller.GetBailianCatalog)
+			ratioSyncRoute.POST("/bailian/catalog/refresh", controller.RefreshBailianCatalog)
+			ratioSyncRoute.POST("/bailian/catalog/apply", controller.ApplyBailianCatalog)
+			ratioSyncRoute.GET("/bailian/status", controller.GetBailianSyncStatus)
 		}
 		requestPluginRoute := apiRouter.Group("/request_plugin")
 		requestPluginRoute.Use(middleware.RootAuth())

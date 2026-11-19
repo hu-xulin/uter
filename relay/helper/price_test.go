@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	relaycommon "github.com/uter-ai/uter/relay/common"
@@ -18,6 +19,7 @@ import (
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/config"
+	"github.com/uter-ai/uter/setting/custom_pricing"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
@@ -860,4 +862,44 @@ func TestUpstreamPricingEngineMatchesPerCallStack(t *testing.T) {
 	assert.Equal(t, uterPrice.QuotaToPreConsume, upstreamPrice.QuotaToPreConsume)
 	assert.Equal(t, uterPrice.UsePrice, upstreamPrice.UsePrice)
 	assert.Equal(t, uterPrice.ModelPrice, upstreamPrice.ModelPrice)
+}
+
+func TestHandleGroupRatioAppliesChannelPricing(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+
+	saved := common.OptionMap
+	common.OptionMap = map[string]string{
+		custom_pricing.ChannelPriceOptionKey: `{
+			"enabled": true,
+			"channels": {
+				"7": {
+					"enabled": true,
+					"ratio": 0.8,
+					"models": {"gpt-4o": {"mode": "ratio", "value": 0.5}}
+				}
+			}
+		}`,
+	}
+	t.Cleanup(func() { common.OptionMap = saved })
+
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Set(string(constant.ContextKeyChannelId), 7)
+
+	infoFor := func(name string) *relaycommon.RelayInfo {
+		return &relaycommon.RelayInfo{
+			OriginModelName: name,
+			UserGroup:       "default",
+			UsingGroup:      "default",
+		}
+	}
+
+	// Model and channel discounts multiply: 0.8 * 0.5 = 0.4.
+	modelRule := HandleGroupRatio(ctx, infoFor("gpt-4o"))
+	require.InDelta(t, 0.4, modelRule.GroupRatio, 1e-9)
+
+	// A model without its own rule inherits the channel-wide ratio.
+	channelRule := HandleGroupRatio(ctx, infoFor("gpt-4o-mini"))
+	require.InDelta(t, 0.8, channelRule.GroupRatio, 1e-9)
 }

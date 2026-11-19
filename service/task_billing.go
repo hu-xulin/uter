@@ -19,6 +19,7 @@ import (
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/setting/custom_pricing"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/uter-ai/uter/types"
 	"gorm.io/gorm"
@@ -797,6 +798,18 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 	} else {
 		finalGroupRatio = groupRatio
 	}
+
+	// Mirror the multiplier HandleGroupRatio applied at pre-consume. Without it
+	// the token re-billing would refund the channel/model discount and the user
+	// tier discount on every async task.
+	finalGroupRatio *= customPricingMultiplier(custom_pricing.ChargeContext{
+		ChannelId:  task.ChannelId,
+		UserId:     task.UserId,
+		ModelName:  modelName,
+		BaseRatio:  modelRatio,
+		UsePrice:   false,
+		MonthlyUSD: monthToDateUSD(task.UserId),
+	})
 
 	// 计算 OtherRatios 乘积（视频折扣、时长等）
 	otherMultiplier := 1.0

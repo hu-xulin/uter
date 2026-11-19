@@ -29,6 +29,7 @@ import { GrokSettingsCard } from './grok-settings-card'
 import { ModelDescriptionLocalizationSection } from './model-description-localization-section'
 import { PricingEngineSection } from './pricing-engine-section'
 import { PricingIssuesSection } from './pricing-issues-section'
+import { TaskPluginPricingSection } from './task-plugin-pricing-section'
 
 function formatJsonForEditor(value: string, fallback: string) {
   const raw = (value ?? '').toString().trim()
@@ -81,6 +82,11 @@ const MODELS_SECTIONS = [
     id: 'pricing-issues',
     titleKey: 'Pricing Issues',
     build: () => <PricingIssuesSection />,
+  },
+  {
+    id: 'task-plugin-pricing',
+    titleKey: 'Task plugin pricing',
+    build: () => <TaskPluginPricingSection />,
   },
   {
     id: 'gemini',

@@ -570,12 +570,20 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 	if channel == nil {
 		return fmt.Errorf("channel cannot be empty")
 	}
-
+	// A bare host is accepted from the form but every relay path concatenates a
+	// path onto it, which fails with `unsupported protocol scheme ""`. Persist a
+	// normalised absolute URL instead.
+	if channel.BaseURL != nil {
+		if base := strings.TrimSpace(*channel.BaseURL); base != "" && !strings.Contains(base, "://") {
+			base = "https://" + base
+			channel.BaseURL = &base
+		}
+	}
 	// Bailian paths are appended to the host root, so a pasted
 	// `/compatible-mode/v1` suffix or the bare Alibaba Cloud host must not be
 	// persisted as the destination.
 	if channel.Type == constant.ChannelTypeAli && channel.BaseURL != nil {
-		if base := normalizeBailianChannelBaseURL(strings.TrimSpace(*channel.BaseURL)); base != "" {
+		if base := normalizeBailianChannelBaseURL(*channel.BaseURL); base != "" {
 			channel.BaseURL = &base
 		}
 	}
@@ -939,6 +947,11 @@ func AddChannel(c *gin.Context) {
 		"message": "",
 		"data":    data,
 	})
+	for i, channel := range channels {
+		if channel.Type == constant.ChannelTypeAli && ids[i] > 0 {
+			go syncBailianAfterCreate(ids[i])
+		}
+	}
 	return
 }
 

@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { ChevronDown, Combine, RotateCcw } from 'lucide-react'
+import { ChevronDown, Combine, Layers, RotateCcw } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -28,6 +28,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { Heading } from '@/design-system'
+import { ChannelTypeLogo } from '@/features/channels/components/channel-type-badge'
 import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
 import { cn } from '@/lib/utils'
 
@@ -77,6 +78,8 @@ export interface PricingSidebarProps {
   vendors: PricingVendor[]
   /** 可筛选的渠道展示名（来自管理-渠道，已由目录数据过滤）。 */
   channels: string[]
+  /** 渠道名 → 渠道类型，用于复用创建渠道时的 ChannelTypeLogo。 */
+  channelTypes?: Record<string, number>
   tags: string[]
   models: PricingModel[]
   hasActiveFilters: boolean
@@ -120,7 +123,17 @@ function FilterChip(props: FilterChipProps) {
       title={props.option.label}
     >
       {props.option.icon && (
-        <span className='shrink-0'>{props.option.icon}</span>
+        <span
+          className={cn(
+            'flex size-3.5 shrink-0 items-center justify-center',
+            // 选中态是品牌主色底：彩色/深色品牌图标需要转成白色剪影，
+            // 否则像阿里百炼的紫色图标会与紫底融为一体。
+            props.active &&
+              '[&_img]:brightness-0 [&_img]:invert [&_svg]:brightness-0 [&_svg]:invert'
+          )}
+        >
+          {props.option.icon}
+        </span>
       )}
       <span className='truncate'>{props.option.label}</span>
       {props.option.count != null && (
@@ -223,12 +236,48 @@ export function PricingSidebar(props: PricingSidebarProps) {
       ),
     }))
     .sort((a, b) => b.count - a.count || a.channel.localeCompare(b.channel))
-  // 内部固定渠道的识别标：聚合渠道用合并图标，Uter 自营渠道用品牌 Logo。
-  // 渠道名来自管理端的展示名，因此按名称映射而不是按供应商或类型猜测。
+  // 每个渠道都带一枚标识：优特/内部渠道用品牌 Logo，聚合渠道用合并图标；
+  // 其余渠道按它承载模型的供应商图标推断（同名渠道取出现最多的供应商），
+  // 没有供应商图标时退回通用渠道图标。图标尺寸统一为 14px，由 FilterChip
+  // 的 14px flex 容器负责上下居中，与厂商列表完全一致。
   const channelMarks: Record<string, ReactNode> = {
-    聚合渠道: <Combine className='size-4.5' aria-hidden='true' />,
-    优特渠道: <img src='/logo.png' alt='' className='size-4.5 rounded-sm' />,
-    内部渠道: <img src='/logo.png' alt='' className='size-4.5 rounded-sm' />,
+    聚合渠道: <Combine className='size-4' aria-hidden='true' />,
+    优特渠道: (
+      <img
+        src='/logo.png'
+        alt=''
+        className='size-3.5 rounded-sm object-contain'
+      />
+    ),
+    内部渠道: (
+      <img
+        src='/logo.png'
+        alt=''
+        className='size-3.5 rounded-sm object-contain'
+      />
+    ),
+  }
+  const channelMarkOf = (channel: string): ReactNode => {
+    const channelType = props.channelTypes?.[channel]
+    if (channelType !== undefined) {
+      return <ChannelTypeLogo type={channelType} size={14} />
+    }
+    const fixed = channelMarks[channel]
+    if (fixed) return fixed
+    const vendorCounts = new Map<string, number>()
+    for (const model of props.models) {
+      if (!model.channels?.includes(channel) || !model.vendor_icon) continue
+      const icon = monoIconName(model.vendor_icon)
+      vendorCounts.set(icon, (vendorCounts.get(icon) ?? 0) + 1)
+    }
+    const topVendor = [...vendorCounts.entries()].sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+    )[0]
+    return topVendor ? (
+      getLobeIcon(topVendor[0], 16)
+    ) : (
+      <Layers className='size-4' aria-hidden='true' />
+    )
   }
   const channelOptions: FilterOption[] = [
     {
@@ -240,7 +289,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
       value: channel,
       label: channel,
       count,
-      icon: channelMarks[channel],
+      icon: channelMarkOf(channel),
     })),
   ]
 

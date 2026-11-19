@@ -143,11 +143,17 @@ export type ModelCapability =
   | 'caching'
   | 'embeddings'
 
+export type PricingChannel = {
+  name: string
+  type: number
+}
+
 export type PricingData = {
   success: boolean
   message?: string
   data: PricingModel[]
   vendors: PricingVendor[]
+  channels?: PricingChannel[]
   group_ratio: Record<string, number>
   usable_group: Record<string, { desc: string; ratio: number }>
   supported_endpoint: Record<string, string>

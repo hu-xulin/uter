@@ -24,6 +24,7 @@ import {
   ArrowRightLeft,
   PanelLeftOpen,
   AlertCircle,
+  CheckCheck,
   ChevronDown,
   ClipboardPaste,
   Loader2,
@@ -178,6 +179,7 @@ import {
   getKeyPromptForType,
   parseModelsString,
   formatModelsArray,
+  normalizeModelName,
   mergeModelMappingPairs,
   type ModelMappingPair,
   extractRedirectModels,
@@ -212,6 +214,7 @@ import {
   nextTaskPluginBaseUrl,
 } from '../../lib/task-plugin-base-url'
 import type { AdvancedCustomConfig, Channel } from '../../types'
+import { BailianChannelPanel } from '../bailian-channel-panel'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelQuickOptions } from '../channel-quick-options'
 import { ChannelTypeLogo } from '../channel-type-badge'
@@ -1347,6 +1350,19 @@ export function ChannelMutateDrawer({
     }
     await copyToClipboard(models)
   }, [form, copyToClipboard, t])
+
+  // Select every model returned by upstream discovery without dropping
+  // manually added or previously saved models.
+  const handleSelectAllUpstreamModels = useCallback(() => {
+    const models = [
+      ...new Set(upstreamModelList.map(normalizeModelName).filter(Boolean)),
+    ]
+    if (!models.length) return
+    const count = updateModels(models, true)
+    toast.success(
+      t('Selected {{count}} upstream model(s)', { count })
+    )
+  }, [upstreamModelList, updateModels, t])
 
   // Handle adding prefill group models
   const handleAddPrefillGroup = useCallback(
@@ -3535,6 +3551,19 @@ export function ChannelMutateDrawer({
                 </Button>
                 <Button
                   type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={handleSelectAllUpstreamModels}
+                  disabled={upstreamModelList.length === 0}
+                >
+                  <CheckCheck
+                    className='mr-2 h-4.5 w-4.5'
+                    aria-hidden='true'
+                  />
+                  {t('Select All')}
+                </Button>
+                <Button
+                  type='button'
                   variant='ghost'
                   size='sm'
                   onClick={handleClearModels}
@@ -4269,6 +4298,19 @@ export function ChannelMutateDrawer({
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+            )}
+
+            {currentType === 17 && (
+              <BailianChannelPanel
+                channelId={channelId}
+                baseUrl={form.watch('base_url') ?? ''}
+                onChangeBaseUrl={(value) =>
+                  form.setValue('base_url', value, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
               />
             )}
 

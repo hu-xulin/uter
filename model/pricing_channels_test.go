@@ -15,10 +15,10 @@ import (
 func TestPricingIncludesServingChannelNames(t *testing.T) {
 	resetPricingEndpointTestTables(t)
 
-	insertChannelWithModels := func(id int, name string, status int, models ...string) {
+	insertChannelWithModels := func(id int, name string, status int, channelType int, models ...string) {
 		require.NoError(t, DB.Create(&Channel{
 			Id:     id,
-			Type:   constant.ChannelTypeOpenAI,
+			Type:   channelType,
 			Key:    fmt.Sprintf("key-%d", id),
 			Status: status,
 			Name:   name,
@@ -28,10 +28,10 @@ func TestPricingIncludesServingChannelNames(t *testing.T) {
 		}
 	}
 
-	insertChannelWithModels(201, "优特渠道", common.ChannelStatusEnabled, "gpt-4o", "claude-3")
-	insertChannelWithModels(202, "聚合渠道", common.ChannelStatusEnabled, "gpt-4o")
-	insertChannelWithModels(203, "", common.ChannelStatusEnabled, "gpt-4o")
-	insertChannelWithModels(204, "禁用渠道", common.ChannelStatusManuallyDisabled, "gpt-4o")
+	insertChannelWithModels(201, "优特渠道", common.ChannelStatusEnabled, constant.ChannelTypeAdvancedCustom, "gpt-4o", "claude-3")
+	insertChannelWithModels(202, "聚合渠道", common.ChannelStatusEnabled, constant.ChannelTypeUter, "gpt-4o")
+	insertChannelWithModels(203, "", common.ChannelStatusEnabled, constant.ChannelTypeOpenAI, "gpt-4o")
+	insertChannelWithModels(204, "禁用渠道", common.ChannelStatusManuallyDisabled, constant.ChannelTypeOpenAI, "gpt-4o")
 
 	channelsByModel := make(map[string][]string)
 	for _, pricing := range GetPricing() {
@@ -40,4 +40,13 @@ func TestPricingIncludesServingChannelNames(t *testing.T) {
 
 	assert.Equal(t, []string{"优特渠道", "聚合渠道"}, channelsByModel["gpt-4o"])
 	assert.Equal(t, []string{"优特渠道"}, channelsByModel["claude-3"])
+
+	channelTypes := make(map[string]int)
+	for _, channel := range GetPricingChannels() {
+		channelTypes[channel.Name] = channel.Type
+	}
+	assert.Equal(t, map[string]int{
+		"优特渠道": constant.ChannelTypeAdvancedCustom,
+		"聚合渠道": constant.ChannelTypeUter,
+	}, channelTypes)
 }

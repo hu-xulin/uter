@@ -413,6 +413,16 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	if channel.GetBaseURL() != "" {
 		baseURL = channel.GetBaseURL()
 	}
+	baseURL = strings.TrimRight(strings.TrimSpace(baseURL), "/")
+	if baseURL == "" {
+		return nil, fmt.Errorf("channel base URL is empty")
+	}
+	// Administrators routinely paste a bare host (`ws-xxx.aliyuncs.com`). Joined
+	// with a path it parses as a relative URL and every request fails with the
+	// opaque `unsupported protocol scheme ""`, so default the scheme here.
+	if !strings.Contains(baseURL, "://") {
+		baseURL = "https://" + baseURL
+	}
 	if channel.Type == constant.ChannelTypeAli {
 		baseURL = normalizeBailianChannelBaseURL(baseURL)
 	}

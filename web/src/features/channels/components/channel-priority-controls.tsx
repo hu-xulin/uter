@@ -115,7 +115,7 @@ export function ChannelSortControl(props: {
           // 右侧操作区统一走紧凑档 --ds-button-height-sm（32px），下拉若吃
           // default 档的 --ds-control-height-md（40px），整条工具栏就会参差 8px。
           size='sm'
-          className='bg-background min-w-24'
+          className='bg-background h-(--ds-button-height-sm)! min-w-24'
         >
           <SelectValue />
         </SelectTrigger>
@@ -192,6 +192,7 @@ export function ChannelPriorityModeToggle(props: {
         >
           <Button
             type='button'
+            size='sm'
             variant='outline'
             className='text-muted-foreground aria-pressed:border-primary/30 aria-pressed:bg-primary-subtle aria-pressed:text-sidebar-active-foreground aria-pressed:hover:bg-primary-subtle-hover'
             aria-pressed={props.active}

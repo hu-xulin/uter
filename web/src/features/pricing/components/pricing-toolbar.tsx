@@ -87,6 +87,7 @@ export interface PricingToolbarProps {
   onTagChange: (value: string) => void
   vendors: PricingVendor[]
   channels: string[]
+  channelTypes?: Record<string, number>
   tags: string[]
   models: PricingModel[]
   hasActiveFilters: boolean
@@ -113,7 +114,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
             <Filter className='size-4.5' />
             {t('Filter')}
             {props.activeFilterCount > 0 && (
-              <Badge className='ml-0.5 size-5 justify-center p-0 text-sm'>
+              <Badge className='ml-0.5 size-5 justify-center p-0 text-xs'>
                 {props.activeFilterCount}
               </Badge>
             )}
@@ -251,6 +252,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
               onTagChange={props.onTagChange}
               vendors={props.vendors}
               channels={props.channels}
+              channelTypes={props.channelTypes ?? {}}
               tags={props.tags}
               models={props.models}
               hasActiveFilters={props.hasActiveFilters}

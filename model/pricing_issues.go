@@ -6,6 +6,7 @@ import (
 
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/ratio_setting"
 )
 
 // Reasons a model served by a provider plugin cannot be charged with the saved
@@ -63,7 +64,7 @@ func GetModelPricingIssues(pluginKey string) ([]ModelPricingIssue, error) {
 			}
 			schema, _ := plugin.Meta.UsageForModel(name)
 			expression, configured := billing_setting.ResolveTaskBillingExpr(plugin.Meta.Key, name, "")
-			reason := modelPricingIssueReason(expression, configured, schema)
+			reason := modelPricingIssueReason(name, expression, configured, schema)
 			if reason != "" {
 				add(name, plugin.Meta.Key, plugin.Meta.Name, reason)
 			}
@@ -106,8 +107,11 @@ func GetModelPricingIssues(pluginKey string) ([]ModelPricingIssue, error) {
 // modelPricingIssueReason classifies one provider price: "" when it can charge
 // the model, unconfigured when no expression resolves and incompatible when
 // the expression reads usage the provider's schema lacks.
-func modelPricingIssueReason(expression string, configured bool, schema map[string]jsplugin.UsageFieldSchema) string {
+func modelPricingIssueReason(modelName, expression string, configured bool, schema map[string]jsplugin.UsageFieldSchema) string {
 	if !configured {
+		if hasLegacyModelPrice(modelName) {
+			return ""
+		}
 		return ModelPricingIssueUnconfigured
 	}
 	if !billing_setting.TaskExprCompatible(expression, schema) {
@@ -128,4 +132,18 @@ func installedTaskPluginModels(key string) ([]string, error) {
 		return nil, nil
 	}
 	return append([]string(nil), loaded.Meta.Models...), nil
+}
+
+// hasLegacyModelPrice reports whether the model already has a per-call price
+// or ratio. Task plugins can be billed by the legacy per-call path; treating
+// those models as unconfigured hides a working price and sends operators to
+// configure a duplicate expression.
+func hasLegacyModelPrice(modelName string) bool {
+	if _, ok := ratio_setting.GetModelPrice(modelName, false); ok {
+		return true
+	}
+	if _, ok, _ := ratio_setting.GetModelRatio(modelName); ok {
+		return true
+	}
+	return false
 }

@@ -29,6 +29,7 @@ import type {
   Channel,
   ChannelBalanceResponse,
   ChannelOpsResponse,
+  ChannelPricingSyncResponse,
   ChannelTestResponse,
   CopyChannelParams,
   CopyChannelResponse,
@@ -106,7 +107,13 @@ export async function getTaskPluginOptions(): Promise<TaskPluginOption[]> {
     success: boolean
     data: TaskPluginOption[]
   }>('/api/task_plugin_options')
-  return requireServerSuccess(response.data).data
+  // Go marshals a nil slice as JSON null. Plugins that declare no models are
+  // still listed (so they can be bound and configured), so normalise the field
+  // once here instead of letting every consumer dereference null.
+  return requireServerSuccess(response.data).data.map((plugin) => ({
+    ...plugin,
+    models: plugin.models ?? [],
+  }))
 }
 
 export type CodexUsageResponse = {
@@ -322,6 +329,20 @@ export async function fetchUpstreamModels(
 ): Promise<FetchModelsResponse> {
   const res = await api.get(
     `/api/channel/fetch_models/${id}`,
+    channelActionConfig()
+  )
+  return res.data
+}
+
+/**
+ * Import the upstream model price sheet (new-api `/api/pricing`) for a channel.
+ */
+export async function syncChannelPricing(
+  id: number
+): Promise<ChannelPricingSyncResponse> {
+  const res = await api.post<ChannelPricingSyncResponse>(
+    `/api/channel/${id}/pricing/sync`,
+    {},
     channelActionConfig()
   )
   return res.data
@@ -802,4 +823,39 @@ export async function continuePluginLogin(
     channelActionConfig()
   )
   return requireServerSuccess(res.data)
+}
+
+export type BailianSyncStatus = {
+  channel_id: number
+  started_at?: string
+  finished_at?: string
+  actual_models?: number
+  catalog_models?: number
+  matched_models?: number
+  reference_prices?: number
+  metadata_created?: number
+  metadata_updated?: number
+  unmatched_models?: string[]
+  steps?: Record<string, { status: string; message?: string }>
+}
+
+export async function getBailianSyncStatus(): Promise<
+  BailianSyncStatus | { synced: false }
+> {
+  const res = await api.get('/api/ratio_sync/bailian/status')
+  return res.data?.data ?? { synced: false }
+}
+
+export async function refreshBailianCatalog(channelId: number) {
+  const res = await api.post('/api/ratio_sync/bailian/catalog/refresh', {
+    channel_id: channelId,
+  })
+  return res.data
+}
+
+export async function applyBailianCatalog(channelId: number) {
+  const res = await api.post('/api/ratio_sync/bailian/catalog/apply', {
+    channel_id: channelId,
+  })
+  return res.data?.data
 }

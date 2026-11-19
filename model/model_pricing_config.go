@@ -241,6 +241,7 @@ func GetModelPricingSnapshot(names []string) (*ModelPricingSnapshot, error) {
 	if err != nil {
 		return nil, err
 	}
+	generation := jsplugin.DefaultRegistry.Generation()
 	if len(names) == 0 {
 		nameSet := make(map[string]bool)
 		for key, entries := range values {
@@ -258,13 +259,20 @@ func GetModelPricingSnapshot(names []string) (*ModelPricingSnapshot, error) {
 		for name := range billing_setting.GetBuiltinBillingExprCopy() {
 			nameSet[name] = true
 		}
+		// Task-plugin models are not rows in the models table, but they still
+		// need an admin pricing entry: without this they appear in Pricing
+		// Issues with no way to configure a price.
+		for _, plugin := range generation.Plugins() {
+			for _, name := range plugin.Meta.Models {
+				nameSet[name] = true
+			}
+		}
 		for name := range nameSet {
 			names = append(names, name)
 		}
 	}
 	sort.Strings(names)
 	result := &ModelPricingSnapshot{Entries: make([]ModelPricingEntry, 0, len(names)), Options: make(map[string]string), EmptyVersion: ModelPricingVersion(PricingValues{})}
-	generation := jsplugin.DefaultRegistry.Generation()
 	for _, name := range names {
 		configured := modelPricingValues(values, name)
 		entry := ModelPricingEntry{ModelName: name, Version: ModelPricingVersion(configured), Configured: configured,

@@ -75,6 +75,7 @@ export function usePricingData(enabled = true) {
   return {
     models,
     vendors: data?.vendors ?? [],
+    channels: data?.channels ?? [],
     groupRatio: data?.group_ratio ?? {},
     usableGroup: data?.usable_group ?? {},
     endpointMap: data?.supported_endpoint ?? {},

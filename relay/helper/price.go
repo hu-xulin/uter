@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/logger"
 	"github.com/uter-ai/uter/model"
@@ -15,6 +16,7 @@ import (
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 	"github.com/uter-ai/uter/relaykit/types"
 	"github.com/uter-ai/uter/setting/billing_setting"
+	"github.com/uter-ai/uter/setting/custom_pricing"
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/pricing_engine"
@@ -59,7 +61,55 @@ func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) hostty
 		groupRatioInfo.GroupRatio = ratio_setting.GetGroupRatio(relayInfo.UsingGroup)
 	}
 
+	applyCustomPricing(ctx, relayInfo, &groupRatioInfo)
+
 	return groupRatioInfo
+}
+
+// applyCustomPricing folds 渠道定价 and 用户定价 into the group ratio, the one
+// multiplier shared by per-token, per-request and task-expression billing.
+// Both features are off by default, so this is a cheap no-op then.
+func applyCustomPricing(
+	ctx *gin.Context,
+	relayInfo *relaycommon.RelayInfo,
+	groupRatioInfo *hosttypes.GroupRatioInfo,
+) {
+	if !custom_pricing.ChannelPricingEnabled() && !custom_pricing.UserPricingEnabled() {
+		return
+	}
+	if relayInfo == nil {
+		return
+	}
+
+	modelName := relayInfo.GetBillingModelName()
+	baseValue, usePrice, exists := ratio_setting.GetModelRatioOrPrice(modelName)
+	if !exists {
+		baseValue, usePrice = 0, false
+	}
+	channelId := common.GetContextKeyInt(ctx, constant.ContextKeyChannelId)
+
+	multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
+		ChannelId:  channelId,
+		UserId:     relayInfo.UserId,
+		ModelName:  modelName,
+		BaseRatio:  baseValue,
+		UsePrice:   usePrice,
+		MonthlyUSD: monthlyUSDForUser(relayInfo.UserId),
+	})
+	if applied {
+		groupRatioInfo.GroupRatio *= multiplier
+		logger.LogDebug(ctx, "custom pricing: channel=%d user=%d model=%s multiplier=%.6f groupRatio=%.6f",
+			channelId, relayInfo.UserId, modelName, multiplier, groupRatioInfo.GroupRatio)
+	}
+}
+
+// monthlyUSDForUser resolves month-to-date spend only when 用户定价 is enabled,
+// so deployments that do not use it never query the log store on this path.
+func monthlyUSDForUser(userId int) float64 {
+	if !custom_pricing.UserPricingEnabled() || userId <= 0 {
+		return 0
+	}
+	return model.GetUserMonthConsumedUSD(userId)
 }
 
 func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (hosttypes.PriceData, error) {
@@ -121,6 +171,23 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
+		// Channel-scoped quotes may carry their own completion/cache ratios.
+		// Applying them here keeps two channels that serve the same model name
+		// independently priced without touching the global model ratios.
+		if quote, ok := custom_pricing.GetChannelQuote(info.ChannelId, billingModelName, false); ok {
+			if quote.CompletionRatio != nil {
+				completionRatio = *quote.CompletionRatio
+			}
+			if quote.CacheRatio != nil {
+				cacheRatio = *quote.CacheRatio
+			}
+			if quote.CreateCacheRatio != nil {
+				cacheCreationRatio = *quote.CreateCacheRatio
+				cacheCreationRatio5m = cacheCreationRatio
+				cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
+				cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+			}
+		}
 		ratio := modelRatio * groupRatioInfo.GroupRatio
 		quota, err := common.QuotaFromFloatStrict(preConsumedTokens * ratio)
 		if err != nil {
