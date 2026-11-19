@@ -260,3 +260,53 @@ func RejectChannelPricingReviews(c *gin.Context) {
 	}
 	common.ApiSuccess(c, gin.H{"channel_id": channelID})
 }
+
+// RollbackChannelPricingHistory restores the previous internal sale price
+// recorded by one history entry. The rollback itself creates a new history row
+// instead of rewriting the past.
+func RollbackChannelPricingHistory(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	historyID, err := service.ParseHistoryID(c.Param("history_id"))
+	if err != nil || historyID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	entry, err := service.GetChannelPricingHistoryEntry(historyID)
+	if err != nil || entry == nil || entry.ChannelID != channelID {
+		common.ApiErrorMsg(c, "History entry not found for this channel")
+		return
+	}
+	if entry.OldPricing == nil {
+		common.ApiErrorMsg(c, "History entry has no previous price to restore")
+		return
+	}
+
+	var currentPricing *model.ChannelInternalPricing
+	if current, err := model.GetChannelModelPricing(channelID, entry.ModelName); err == nil && strings.TrimSpace(current.InternalPricing) != "" {
+		var parsed model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(current.InternalPricing, &parsed); err == nil {
+			currentPricing = &parsed
+		}
+	}
+	restored := *entry.OldPricing
+	if err := model.SetChannelInternalPricing(channelID, entry.ModelName, restored); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
+	if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
+		ChannelID: channelID, ModelName: entry.ModelName, Source: "rollback",
+		OldPricing: currentPricing, NewPricing: &restored,
+	}); err != nil {
+		common.SysError("append rollback history failed: " + err.Error())
+	}
+	row, err := model.GetChannelModelPricing(channelID, entry.ModelName)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, channelModelPricingToView(*row))
+}
