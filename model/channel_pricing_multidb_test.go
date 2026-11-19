@@ -57,7 +57,7 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 
 			row := ChannelModelPricing{
 				ChannelId: 7, Provider: "test", ModelName: "gpt-a",
-				PricingStatus: ChannelPricingStatusOfficialOnly,
+				PricingStatus:   ChannelPricingStatusOfficialOnly,
 				InternalPricing: `{"mode":"per_second","per_second_usd":0.08}`,
 			}
 			require.NoError(t, db.Create(&row).Error)
