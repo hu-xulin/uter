@@ -20,38 +20,6 @@ import { BILLING_PRICING_VARS, type BillingVar, type ParsedTier } from './billin
 
 export type CachePricingMode = 'generic' | 'gpt' | 'claude' | 'custom'
 
-export const CACHE_PRICING_MODES: Record<
-  CachePricingMode,
-  { label: string; hint: string; description: string; variables: readonly string[] }
-> = {
-  generic: {
-    label: 'Generic / Gemini',
-    hint: 'Cache reads',
-    description: 'Charge for cache hits reported by the upstream, including Gemini.',
-    variables: ['cr'],
-  },
-  gpt: {
-    label: 'GPT',
-    hint: '30 minutes / 12 hours',
-    description:
-      'For GPT models that report cache writes, set separate prices for 30-minute and 12-hour writes.',
-    variables: ['cr', 'cc', 'cc12h'],
-  },
-  claude: {
-    label: 'Claude',
-    hint: '5 minutes / 1 hour',
-    description:
-      'Charge separately for 5-minute and 1-hour cache writes reported by the upstream.',
-    variables: ['cr', 'cc', 'cc1h'],
-  },
-  custom: {
-    label: 'Custom',
-    hint: 'Choose usage categories',
-    description:
-      'Choose prices for the cache usage reported by the upstream. Standard writes, Claude 1-hour writes, and GPT 12-hour writes are separate categories.',
-    variables: ['cr', 'cc', 'cc1h', 'cc12h'],
-  },
-}
 
 /** Mixed or conflicting cache prices need the custom editor to show every item. */
 export function getCachePricingMode(
