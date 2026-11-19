@@ -865,7 +865,8 @@ func SetupContextForSelectedChannel(c *gin.Context, channel *model.Channel, mode
 // 输出: gemini-2.0-flash
 func extractModelNameFromGeminiPath(path string) string {
 	// 模型名位于 "/models/" 之后、首个 ":" 之前。
-	after, _, found := strings.Cut(path, "/models/")
+	// strings.Cut 的第一个返回值是分隔符**之前**的部分；这里要的是之后的部分。
+	_, after, found := strings.Cut(path, "/models/")
 	if !found || after == "" {
 		return ""
 	}

@@ -362,3 +362,20 @@ func TestSharedEndpointRebindsToBoundNewAPIExtension(t *testing.T) {
 	assert.Equal(t, "alpha", c.GetString("task_plugin_key"), "the first bound candidate executes regardless of the earlier pin")
 	assert.Equal(t, "alpha", c.MustGet(jsplugin.ContextKeyPinnedEndpoint).(jsplugin.PinnedEndpoint).Plugin.Meta.Key)
 }
+
+func TestExtractModelNameFromGeminiPath(t *testing.T) {
+	cases := []struct {
+		path string
+		want string
+	}{
+		{"/v1beta/models/gemini-3.5-flash-lite:generateContent", "gemini-3.5-flash-lite"},
+		{"/v1beta/models/gemini-3.5-flash-lite:streamGenerateContent", "gemini-3.5-flash-lite"},
+		{"/v1beta/models/gemini-3.5-flash-lite", "gemini-3.5-flash-lite"},
+		{"/v1/models/striped-model:generateContent", "striped-model"},
+		{"/v1beta/models/", ""},
+		{"/v1beta/model-list", ""},
+	}
+	for _, tc := range cases {
+		assert.Equal(t, tc.want, extractModelNameFromGeminiPath(tc.path), tc.path)
+	}
+}
