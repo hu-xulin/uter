@@ -297,7 +297,6 @@ func SetApiRouter(router *gin.Engine) {
 			optionRoute.POST("/exchange_rate/sync", controller.SyncExchangeRate)
 			optionRoute.PUT("/passkey/domains", controller.UpdatePasskeyDomains)
 			optionRoute.GET("/model_pricing", controller.GetModelPricingConfig)
-			optionRoute.GET("/model_pricing/issues", controller.GetModelPricingIssues)
 			optionRoute.PATCH("/model_pricing", controller.UpdateModelPricingConfig)
 			optionRoute.POST("/model_pricing/convert", controller.PreviewModelPricingConversion)
 			optionRoute.POST("/model_pricing/preview", controller.PreviewModelPricing)
@@ -340,12 +339,16 @@ func SetApiRouter(router *gin.Engine) {
 			ratioSyncRoute.POST("/fetch", controller.FetchUpstreamRatios)
 			ratioSyncRoute.GET("/preset_prices", controller.GetPresetPrices)
 			ratioSyncRoute.POST("/dreamrouter/run", controller.RunDreamRouterSync)
-			ratioSyncRoute.GET("/dreamrouter/status", controller.GetDreamRouterSyncStatus)
 			ratioSyncRoute.GET("/dreamrouter/models", controller.GetDreamRouterSyncModels)
-			ratioSyncRoute.GET("/bailian/catalog", controller.GetBailianCatalog)
 			ratioSyncRoute.POST("/bailian/catalog/refresh", controller.RefreshBailianCatalog)
 			ratioSyncRoute.POST("/bailian/catalog/apply", controller.ApplyBailianCatalog)
 			ratioSyncRoute.GET("/bailian/status", controller.GetBailianSyncStatus)
+		}
+		upstreamRoute := apiRouter.Group("/upstream")
+		upstreamRoute.Use(middleware.RootAuth())
+		{
+			upstreamRoute.POST("/dreamrouter/sync", controller.SyncDreamRouterUpstream)
+			upstreamRoute.GET("/dreamrouter/snapshot", controller.GetDreamRouterUpstreamSnapshot)
 		}
 		requestPluginRoute := apiRouter.Group("/request_plugin")
 		requestPluginRoute.Use(middleware.RootAuth())
@@ -502,7 +505,6 @@ func SetApiRouter(router *gin.Engine) {
 		{
 			modelsRoute.GET("/sync_upstream/preview", controller.SyncUpstreamPreview)
 			modelsRoute.POST("/sync_upstream", controller.SyncUpstreamModels)
-			modelsRoute.POST("/sync_upstream/auto_fill", controller.AutoFillChannelOfficialData)
 			modelsRoute.POST("/delete", controller.BatchDeleteModelMeta)
 			modelsRoute.GET("/missing", controller.GetMissingModels)
 			modelsRoute.GET("/", controller.GetAllModelsMeta)

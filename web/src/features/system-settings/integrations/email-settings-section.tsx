@@ -662,9 +662,7 @@ export function EmailSettingsSection({
                                 <Input
                                   autoComplete='off'
                                   mono
-                                  placeholder={t(
-                                    'New API &lt;noreply@example.com&gt;'
-                                  )}
+                                  placeholder={t('Uter <noreply@example.com>')}
                                   disabled={isSaving}
                                   {...field}
                                 />

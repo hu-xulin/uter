@@ -105,9 +105,19 @@ type RelayInfo struct {
 	IsGeminiBatchEmbedding bool
 	IsPlayground           bool
 	UsePrice               bool
-	RelayMode              int
-	OriginModelName        string
-	ResponseModel          *ResponseModel
+	// ChannelPricingApplied marks a request whose price came from the actual
+	// serving channel's isolated record instead of the global model price.
+	// Settlement must reuse these fields so pre-consume and final billing agree.
+	ChannelPricingApplied         bool
+	ChannelPricingModelRatio      float64
+	ChannelPricingCompletionRatio *float64
+	ChannelPricingCacheRatio      *float64
+	ChannelPricingModelPrice      float64
+	ChannelPricingUsePrice        bool
+	ChannelPricingVersion         string
+	RelayMode                     int
+	OriginModelName               string
+	ResponseModel                 *ResponseModel
 
 	// BillingModelName is the pricing identity for this request. It is kept
 	// separate from OriginModelName and UpstreamModelName so virtual pricing
@@ -332,6 +342,13 @@ func (info *RelayInfo) RequestedImageCount() int {
 }
 
 func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
+	info.ChannelPricingApplied = false
+	info.ChannelPricingModelRatio = 0
+	info.ChannelPricingCompletionRatio = nil
+	info.ChannelPricingCacheRatio = nil
+	info.ChannelPricingModelPrice = 0
+	info.ChannelPricingUsePrice = false
+	info.ChannelPricingVersion = ""
 	info.ResponseModel = nil
 	info.FinalRequestRelayFormat = ""
 	info.RequestConversionChain = nil

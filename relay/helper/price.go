@@ -35,6 +35,15 @@ func modelPriceNotConfiguredError(c *gin.Context, modelName string, userId int) 
 	return errors.New(i18n.T(c, key, map[string]any{"Model": modelName}))
 }
 
+// channelPriceNotConfiguredError blocks a channel with an official-only or
+// needs-review record from silently falling back to the global model price.
+func channelPriceNotConfiguredError(c *gin.Context, channelId int, modelName string) error {
+	return errors.New(i18n.T(c, i18n.MsgRelayChannelPriceNotConfigured, map[string]any{
+		"Channel": channelId,
+		"Model":   modelName,
+	}))
+}
+
 // HandleGroupRatio checks for "auto_group" in the context and updates the group ratio and relayInfo.UsingGroup if present
 func HandleGroupRatio(ctx *gin.Context, relayInfo *relaycommon.RelayInfo) hosttypes.GroupRatioInfo {
 	groupRatioInfo := hosttypes.GroupRatioInfo{
@@ -87,6 +96,12 @@ func applyCustomPricing(
 		baseValue, usePrice = 0, false
 	}
 	channelId := common.GetContextKeyInt(ctx, constant.ContextKeyChannelId)
+	// A resolved channel_model_pricing override already replaced the base
+	// price. Do not fold the legacy option quote on top of it; user-tier
+	// pricing still applies.
+	if relayInfo.ChannelPricingApplied {
+		channelId = 0
+	}
 
 	multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
 		ChannelId:  channelId,
@@ -113,21 +128,44 @@ func monthlyUSDForUser(userId int) float64 {
 }
 
 func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens int, meta *types.TokenCountMeta) (hosttypes.PriceData, error) {
-	if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
-		return ModelPriceHelperUpstream(c, info, promptTokens, meta)
-	}
 	if info != nil {
 		if matched := resolveBillingModelName(info.GetOriginModelName()); matched != "" && matched != info.OriginModelName {
 			info.BillingModelName = matched
 		}
 	}
 	billingModelName := info.GetBillingModelName()
+	channelId := info.GetChannelID()
+	// A channel-isolated price is the actual channel's contract and takes
+	// precedence over the channel-level upstream pricing engine.
+	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(channelId, billingModelName)
+	if !hasChannelPricing {
+		if _, exists := model.ChannelPricingState(channelId, billingModelName); exists {
+			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
+		}
+		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
+			return ModelPriceHelperUpstream(c, info, promptTokens, meta)
+		}
+	}
+	if hasChannelPricing {
+		info.ChannelPricingApplied = true
+		info.ChannelPricingModelRatio = channelPricing.ModelRatio
+		info.ChannelPricingCompletionRatio = channelPricing.CompletionRatio
+		info.ChannelPricingCacheRatio = channelPricing.CacheRatio
+		info.ChannelPricingModelPrice = channelPricing.ModelPrice
+		info.ChannelPricingUsePrice = channelPricing.UsePrice
+		info.ChannelPricingVersion = channelPricing.Version
+	}
 	modelPrice, usePrice := ratio_setting.GetModelPrice(billingModelName, false)
+	if hasChannelPricing {
+		usePrice = channelPricing.UsePrice
+		modelPrice = channelPricing.ModelPrice
+	}
 
 	groupRatioInfo := HandleGroupRatio(c, info)
 
-	// Check if this model uses tiered_expr billing
-	if billing_setting.GetBillingMode(billingModelName) == billing_setting.BillingModeTieredExpr {
+	// A configured channel price overrides the global tiered expression. An
+	// official-only or needs-review tiered row never reaches this branch.
+	if !hasChannelPricing && billing_setting.GetBillingMode(billingModelName) == billing_setting.BillingModeTieredExpr {
 		return modelPriceHelperTiered(c, info, billingModelName, promptTokens, groupRatioInfo)
 	}
 
@@ -149,20 +187,30 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 			return hosttypes.PriceData{}, err
 		}
 		preConsumedTokens := float64(promptTokens) * preConsumeMultiplier
-		var success bool
-		var matchName string
-		modelRatio, success, matchName = ratio_setting.GetModelRatio(billingModelName)
-		if !success {
-			acceptUnsetRatio := false
-			if info.UserSetting.AcceptUnsetRatioModel {
-				acceptUnsetRatio = true
-			}
-			if !acceptUnsetRatio {
-				return hosttypes.PriceData{}, modelPriceNotConfiguredError(c, matchName, info.UserId)
+		if hasChannelPricing {
+			modelRatio = channelPricing.ModelRatio
+		} else {
+			var success bool
+			var matchName string
+			modelRatio, success, matchName = ratio_setting.GetModelRatio(billingModelName)
+			if !success {
+				acceptUnsetRatio := false
+				if info.UserSetting.AcceptUnsetRatioModel {
+					acceptUnsetRatio = true
+				}
+				if !acceptUnsetRatio {
+					return hosttypes.PriceData{}, modelPriceNotConfiguredError(c, matchName, info.UserId)
+				}
 			}
 		}
 		completionRatio = ratio_setting.GetCompletionRatio(billingModelName)
+		if hasChannelPricing && channelPricing.CompletionRatio != nil {
+			completionRatio = *channelPricing.CompletionRatio
+		}
 		cacheRatio, _ = ratio_setting.GetCacheRatio(billingModelName)
+		if hasChannelPricing && channelPricing.CacheRatio != nil {
+			cacheRatio = *channelPricing.CacheRatio
+		}
 		cacheCreationRatio, _ = ratio_setting.GetCreateCacheRatio(billingModelName)
 		cacheCreationRatio5m = cacheCreationRatio
 		// 固定1h和5min缓存写入价格的比例
@@ -171,22 +219,21 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
-		// Channel metadata is absent in price-only and pre-selection billing probes.
-		// Apply channel-scoped quotes only after a concrete channel is selected.
-		if info.ChannelMeta != nil {
-			if quote, ok := custom_pricing.GetChannelQuote(info.ChannelId, billingModelName, false); ok {
-				if quote.CompletionRatio != nil {
-					completionRatio = *quote.CompletionRatio
-				}
-				if quote.CacheRatio != nil {
-					cacheRatio = *quote.CacheRatio
-				}
-				if quote.CreateCacheRatio != nil {
-					cacheCreationRatio = *quote.CreateCacheRatio
-					cacheCreationRatio5m = cacheCreationRatio
-					cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
-					cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
-				}
+		// Channel-scoped quotes may carry their own completion/cache ratios.
+		// Applying them here keeps two channels that serve the same model name
+		// independently priced without touching the global model ratios.
+		if quote, ok := custom_pricing.GetChannelQuote(channelId, billingModelName, false); ok && !hasChannelPricing {
+			if quote.CompletionRatio != nil {
+				completionRatio = *quote.CompletionRatio
+			}
+			if quote.CacheRatio != nil {
+				cacheRatio = *quote.CacheRatio
+			}
+			if quote.CreateCacheRatio != nil {
+				cacheCreationRatio = *quote.CreateCacheRatio
+				cacheCreationRatio5m = cacheCreationRatio
+				cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
+				cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
 			}
 		}
 		ratio := modelRatio * groupRatioInfo.GroupRatio
@@ -282,14 +329,37 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 
 // ModelPriceHelperPerCall 按次/按量计费的 PriceHelper (MJ、Task)
 func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hosttypes.PriceData, error) {
-	if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
-		return ModelPriceHelperPerCallUpstream(c, info)
+	billingModelName := info.GetBillingModelName()
+	channelId := info.GetChannelID()
+	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(channelId, billingModelName)
+	if !hasChannelPricing {
+		if _, exists := model.ChannelPricingState(channelId, billingModelName); exists {
+			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
+		}
+		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
+			return ModelPriceHelperPerCallUpstream(c, info)
+		}
+	}
+	if hasChannelPricing {
+		info.ChannelPricingApplied = true
+		info.ChannelPricingModelRatio = channelPricing.ModelRatio
+		info.ChannelPricingCompletionRatio = channelPricing.CompletionRatio
+		info.ChannelPricingCacheRatio = channelPricing.CacheRatio
+		info.ChannelPricingModelPrice = channelPricing.ModelPrice
+		info.ChannelPricingUsePrice = channelPricing.UsePrice
+		info.ChannelPricingVersion = channelPricing.Version
 	}
 	groupRatioInfo := HandleGroupRatio(c, info)
 
 	modelPrice, success := ratio_setting.GetModelPrice(info.OriginModelName, true)
 	usePrice := success
 	var modelRatio float64
+	if hasChannelPricing {
+		modelPrice = channelPricing.ModelPrice
+		usePrice = channelPricing.UsePrice
+		modelRatio = channelPricing.ModelRatio
+		success = true
+	}
 
 	if !success {
 		defaultPrice, ok := ratio_setting.GetDefaultModelPriceMap()[info.OriginModelName]

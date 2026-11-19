@@ -10,15 +10,6 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-func GetModelPricingIssues(c *gin.Context) {
-	issues, err := model.GetModelPricingIssues(c.Query("plugin_key"))
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	common.ApiSuccess(c, issues)
-}
-
 func GetModelPricingConfig(c *gin.Context) {
 	snapshot, err := model.GetModelPricingSnapshot(c.QueryArray("model"))
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -14,7 +13,6 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting/custom_pricing"
 )
 
 type bailianCatalogSummary struct {
@@ -27,21 +25,6 @@ type bailianCatalogSummary struct {
 	ChannelModels   int      `json:"channel_models"`
 	MatchedModels   int      `json:"matched_models"`
 	UnmatchedModels []string `json:"unmatched_models"`
-}
-
-// GetBailianCatalog returns the last saved official catalog snapshot. The
-// snapshot is reference data only; reading it never changes billing.
-func GetBailianCatalog(c *gin.Context) {
-	catalog := service.LoadBailianCatalogSnapshot()
-	if catalog == nil {
-		c.JSON(http.StatusOK, gin.H{"success": true, "data": bailianCatalogSummary{Synced: false}})
-		return
-	}
-	summary := buildBailianCatalogSummary(catalog)
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
-		"summary": summary,
-		"models":  catalog.Models,
-	}})
 }
 
 // RefreshBailianCatalog pulls all pages of GET /api/v1/models for one Bailian
@@ -166,20 +149,20 @@ func ApplyBailianCatalog(c *gin.Context) {
 		common.ApiErrorMsg(c, "Bailian catalog has not been synced yet")
 		return
 	}
+	catalog.ChannelID = channel.Id
 	result, err := service.ApplyBailianCatalog(catalog, channel.GetModels())
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
-	applied, review, err := applyBailianChannelQuotes(channel.Id, catalog)
-	if err != nil {
-		common.ApiErrorMsg(c, err.Error())
-		return
+	pricingRecords, pricingErr := applyBailianChannelPricing(catalog, channel.GetModels())
+	if pricingErr != nil {
+		common.SysError("persist bailian channel pricing: " + pricingErr.Error())
 	}
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
-		"apply":          result,
-		"quotes_applied": applied,
-		"quotes_review":  review,
+		"apply":           result,
+		"pricing_records": pricingRecords,
+		"pricing_error":   errorText(pricingErr),
 	}})
 }
 
@@ -261,9 +244,10 @@ func syncBailianAfterCreate(channelID int) {
 		mark("apply_metadata", "failed", err.Error())
 		return
 	}
-	if _, _, quoteErr := applyBailianChannelQuotes(channelID, catalog); quoteErr != nil {
-		mark("apply_prices", "failed", quoteErr.Error())
+	if records, pricingErr := applyBailianChannelPricing(catalog, channel.GetModels()); pricingErr != nil {
+		mark("apply_prices", "failed", pricingErr.Error())
 	} else {
+		status.PricingRecords = records
 		mark("apply_prices", "ok", "")
 	}
 	status.MatchedModels = result.MatchedModels
@@ -275,48 +259,29 @@ func syncBailianAfterCreate(channelID int) {
 	mark("apply_metadata", "ok", "")
 }
 
-// applyBailianChannelQuotes merges official quotes into this channel only.
-// Other channels keep their own quotes, and global ModelRatio/ModelPrice are
-// never modified.
-func applyBailianChannelQuotes(channelID int, catalog *service.BailianCatalog) (int, int, error) {
-	quotes, review := service.BailianChannelQuotes(catalog)
-	if len(quotes) == 0 {
-		return 0, review, nil
+func errorText(err error) string {
+	if err == nil {
+		return ""
 	}
-	previous := custom_pricing.GetChannelPriceSetting()
-	next := custom_pricing.ChannelPriceSetting{Enabled: true, Channels: map[string]custom_pricing.ChannelPriceConfig{}}
-	if previous != nil {
-		for id, cfg := range previous.Channels {
-			copied := custom_pricing.ChannelPriceConfig{Enabled: cfg.Enabled, Ratio: cfg.Ratio,
-				Quotes: map[string]custom_pricing.ChannelQuote{}, Models: map[string]custom_pricing.ChannelModelRule{}}
-			for name, quote := range cfg.Quotes {
-				copied.Quotes[name] = quote
-			}
-			for name, rule := range cfg.Models {
-				copied.Models[name] = rule
-			}
-			next.Channels[id] = copied
-		}
+	return err.Error()
+}
+
+// applyBailianChannelPricing persists official data into the channel-isolated
+// pricing table. It never writes the operator's internal sale price.
+func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels []string) (int, error) {
+	records := service.BailianPricingRecords(catalog, channelModels)
+	return model.UpsertChannelOfficialPricing(records)
+}
+
+// GetBailianCatalog returns the last saved official catalog snapshot.
+func GetBailianCatalog(c *gin.Context) {
+	catalog := service.LoadBailianCatalogSnapshot()
+	if catalog == nil {
+		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"synced": false}})
+		return
 	}
-	cfg, exists := next.Channels[strconv.Itoa(channelID)]
-	if !exists {
-		cfg = custom_pricing.ChannelPriceConfig{Enabled: true,
-			Quotes: map[string]custom_pricing.ChannelQuote{}, Models: map[string]custom_pricing.ChannelModelRule{}}
-	}
-	cfg.Enabled = true
-	if cfg.Quotes == nil {
-		cfg.Quotes = map[string]custom_pricing.ChannelQuote{}
-	}
-	for model, quote := range quotes {
-		cfg.Quotes[model] = quote
-	}
-	next.Channels[strconv.Itoa(channelID)] = cfg
-	encoded, err := common.Marshal(next)
-	if err != nil {
-		return 0, review, err
-	}
-	if err := model.UpdateOption(custom_pricing.ChannelPriceOptionKey, string(encoded)); err != nil {
-		return 0, review, err
-	}
-	return len(quotes), review, nil
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
+		"summary": buildBailianCatalogSummary(catalog),
+		"models":  catalog.Models,
+	}})
 }

@@ -198,6 +198,7 @@ func main() {
 	// 创梦渠道（DreamRouter）每日价格同步：每天 0 点后首次 tick 触发，
 	// 按「创梦默认组折扣价 +1 折」规则重算倍率并对齐渠道模型清单。
 	go service.DreamRouterSyncTask()
+	go service.DreamRouterUpstreamSyncTask()
 	service.RunDreamRouterSyncOnStart()
 
 	// 周期性重载授权策略，保证多节点/多 master 部署下权限变更能传播到每个实例

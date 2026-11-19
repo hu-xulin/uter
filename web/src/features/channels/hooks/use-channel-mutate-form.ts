@@ -29,7 +29,7 @@ import { handleServerError } from '@/lib/handle-server-error'
 import { createServerError } from '@/lib/server-error-message'
 import { useAuthStore } from '@/stores/auth-store'
 
-import { createChannel, updateChannel } from '../api'
+import { createChannel, publishChannelDraft, updateChannel } from '../api'
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
 import {
   transformFormDataToCreatePayload,
@@ -42,6 +42,7 @@ type UseChannelMutateFormParams = {
   currentRow?: Channel | null
   isEditing: boolean
   isMultiKeyChannel: boolean
+  draftChannelId?: number | null
   onSuccess: () => void
 }
 
@@ -102,6 +103,28 @@ export function useChannelMutateForm(props: UseChannelMutateFormParams) {
           throw createServerError(response, t(ERROR_MESSAGES.UPDATE_FAILED))
         }
         return SUCCESS_MESSAGES.UPDATED
+      }
+
+      if (props.draftChannelId) {
+        const draftID = props.draftChannelId
+        const payload = transformFormDataToUpdatePayload(data, draftID)
+        if (!data.key?.trim()) {
+          delete payload.key
+        }
+        if (!canEditSensitive) {
+          for (const field of SENSITIVE_UPDATE_FIELDS) {
+            delete payload[field]
+          }
+        }
+        const response = await updateChannel(draftID, payload)
+        if (!response.success) {
+          throw createServerError(response, t(ERROR_MESSAGES.UPDATE_FAILED))
+        }
+        const published = await publishChannelDraft(draftID)
+        if (!published.success) {
+          throw createServerError(published, t(ERROR_MESSAGES.CREATE_FAILED))
+        }
+        return SUCCESS_MESSAGES.CREATED
       }
 
       const payload = transformFormDataToCreatePayload(data)

@@ -43,6 +43,11 @@ import {
   normalizeModelName,
 } from '../lib'
 
+// 模型列表固定展示约 10 行，其余内容在列表内滚动，避免一次展开几十个
+// 模型把抽屉整体撑长、需要多次滚动页面才能看到底部。
+const MODEL_LIST_SCROLL_CLASS =
+  'max-h-[17.5rem] space-y-2 overflow-y-auto overscroll-contain'
+
 function sortedModelCategories(models: string[]): [string, string[]][] {
   return Object.entries(categorizeModels(models)).sort(([a], [b]) => {
     if (a === 'Other') return 1
@@ -337,7 +342,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
           </TabsList>
           <TabsContent
             value='new'
-            className='max-h-96 space-y-2 overflow-y-auto'
+            className={MODEL_LIST_SCROLL_CLASS}
           >
             {sortedModelCategories(categorized.added).map(([name, models]) => (
               <ModelCategory
@@ -354,7 +359,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
           </TabsContent>
           <TabsContent
             value='existing'
-            className='max-h-96 space-y-2 overflow-y-auto'
+            className={MODEL_LIST_SCROLL_CLASS}
           >
             {sortedModelCategories(categorized.existing).map(
               ([name, models]) => (
@@ -374,7 +379,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
           {categorized.removed.length > 0 && (
             <TabsContent
               value='removed'
-              className='max-h-96 space-y-2 overflow-y-auto'
+              className={MODEL_LIST_SCROLL_CLASS}
             >
               <p className='text-muted-foreground text-sm'>
                 {t(
@@ -394,7 +399,7 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
           )}
         </Tabs>
       ) : (
-        <div className='max-h-96 space-y-2 overflow-y-auto'>
+        <div className={MODEL_LIST_SCROLL_CLASS}>
           {sortedModelCategories(categorized.filtered).map(([name, models]) => (
             <ModelCategory
               key={name}

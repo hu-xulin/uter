@@ -30,13 +30,14 @@ type TokenDetails struct {
 }
 
 type QuotaInfo struct {
-	InputDetails  TokenDetails
-	OutputDetails TokenDetails
-	ModelName     string
-	UsePrice      bool
-	ModelPrice    float64
-	ModelRatio    float64
-	GroupRatio    float64
+	InputDetails    TokenDetails
+	OutputDetails   TokenDetails
+	ModelName       string
+	UsePrice        bool
+	ModelPrice      float64
+	ModelRatio      float64
+	GroupRatio      float64
+	CompletionRatio *float64
 }
 
 func hasCustomModelRatio(modelName string, currentRatio float64) bool {
@@ -57,7 +58,11 @@ func calculateAudioQuota(info QuotaInfo) (int, *common.QuotaClamp) {
 		return common.QuotaFromDecimalChecked(quota)
 	}
 
-	completionRatio := decimal.NewFromFloat(ratio_setting.GetCompletionRatio(info.ModelName))
+	completionValue := ratio_setting.GetCompletionRatio(info.ModelName)
+	if info.CompletionRatio != nil {
+		completionValue = *info.CompletionRatio
+	}
+	completionRatio := decimal.NewFromFloat(completionValue)
 	audioRatio := decimal.NewFromFloat(ratio_setting.GetAudioRatio(info.ModelName))
 	audioCompletionRatio := decimal.NewFromFloat(ratio_setting.GetAudioCompletionRatio(info.ModelName))
 
@@ -112,6 +117,9 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	audioOutTokens := usage.OutputTokenDetails.AudioTokens
 	groupRatio := ratio_setting.GetGroupRatio(relayInfo.UsingGroup)
 	modelRatio, _, _ := ratio_setting.GetModelRatio(modelName)
+	if relayInfo.ChannelPricingApplied {
+		modelRatio = relayInfo.ChannelPricingModelRatio
+	}
 
 	autoGroup, exists := common.GetContextKey(ctx, constant.ContextKeyAutoGroup)
 	if exists {
@@ -129,8 +137,12 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 	// Keep this path aligned with HandleGroupRatio: per-channel and per-user
 	// tier pricing are billed on the pre-consume path, so realtime follow-up
 	// consumption must use the same multiplier.
+	channelId := common.GetContextKeyInt(ctx, constant.ContextKeyChannelId)
+	if relayInfo.ChannelPricingApplied {
+		channelId = 0
+	}
 	if multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
-		ChannelId:  common.GetContextKeyInt(ctx, constant.ContextKeyChannelId),
+		ChannelId:  channelId,
 		UserId:     relayInfo.UserId,
 		ModelName:  modelName,
 		BaseRatio:  modelRatio,
@@ -149,10 +161,11 @@ func PreWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, usag
 			TextTokens:  textOutTokens,
 			AudioTokens: audioOutTokens,
 		},
-		ModelName:  modelName,
-		UsePrice:   relayInfo.UsePrice,
-		ModelRatio: modelRatio,
-		GroupRatio: actualGroupRatio,
+		ModelName:       modelName,
+		UsePrice:        relayInfo.UsePrice,
+		ModelRatio:      modelRatio,
+		GroupRatio:      actualGroupRatio,
+		CompletionRatio: relayInfo.ChannelPricingCompletionRatio,
 	}
 
 	quota, clamp := calculateAudioQuota(quotaInfo)
@@ -236,10 +249,11 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 			TextTokens:  textOutTokens,
 			AudioTokens: audioOutTokens,
 		},
-		ModelName:  modelName,
-		UsePrice:   usePrice,
-		ModelRatio: modelRatio,
-		GroupRatio: groupRatio,
+		ModelName:       modelName,
+		UsePrice:        usePrice,
+		ModelRatio:      modelRatio,
+		GroupRatio:      groupRatio,
+		CompletionRatio: relayInfo.ChannelPricingCompletionRatio,
 	}
 
 	quota, clamp := calculateAudioQuota(quotaInfo)
@@ -375,10 +389,11 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 			TextTokens:  textOutTokens,
 			AudioTokens: audioOutTokens,
 		},
-		ModelName:  billingModelName,
-		UsePrice:   usePrice,
-		ModelRatio: modelRatio,
-		GroupRatio: groupRatio,
+		ModelName:       billingModelName,
+		UsePrice:        usePrice,
+		ModelRatio:      modelRatio,
+		GroupRatio:      groupRatio,
+		CompletionRatio: relayInfo.ChannelPricingCompletionRatio,
 	}
 
 	quota, clamp := calculateAudioQuota(quotaInfo)

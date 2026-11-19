@@ -767,8 +767,16 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 
 	modelName := taskModelName(task)
 
-	// 获取模型价格和倍率
+	// 获取模型价格和倍率。渠道独立价格优先，且按任务实际执行渠道读取。
 	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
+	channelPricing, hasChannelPricing := model.ResolveChannelBillingPricing(task.ChannelId, modelName)
+	if hasChannelPricing {
+		if channelPricing.UsePrice {
+			return false
+		}
+		modelRatio = channelPricing.ModelRatio
+		hasRatioSetting = true
+	}
 	// 只有配置了倍率(非固定价格)时才按 token 重新计费
 	if !hasRatioSetting || modelRatio <= 0 {
 		return false
@@ -802,8 +810,12 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 	// Mirror the multiplier HandleGroupRatio applied at pre-consume. Without it
 	// the token re-billing would refund the channel/model discount and the user
 	// tier discount on every async task.
+	channelId := task.ChannelId
+	if hasChannelPricing {
+		channelId = 0
+	}
 	finalGroupRatio *= customPricingMultiplier(custom_pricing.ChargeContext{
-		ChannelId:  task.ChannelId,
+		ChannelId:  channelId,
 		UserId:     task.UserId,
 		ModelName:  modelName,
 		BaseRatio:  modelRatio,

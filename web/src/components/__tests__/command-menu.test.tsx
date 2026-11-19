@@ -23,8 +23,9 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import i18next from 'i18next'
 import { afterAll, afterEach, beforeAll, expect, test } from 'vitest'
 
 import { SearchProvider } from '@/context/search-provider'
@@ -66,6 +67,58 @@ afterAll(() => {
 afterEach(() => {
   useAuthStore.setState(useAuthStore.getInitialState(), true)
   window.localStorage.clear()
+})
+
+async function renderOpenMenu() {
+  useAuthStore
+    .getState()
+    .auth.setUser({ id: 1, username: 'alice', role: ROLE.USER })
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  const router = createRouter({
+    routeTree: createRootRoute({
+      component: () => (
+        <SearchProvider>
+          <Search />
+          <CommandMenu />
+        </SearchProvider>
+      ),
+    }),
+    history: createMemoryHistory({ initialEntries: ['/dashboard/overview'] }),
+  })
+  await router.load()
+  render(
+    <QueryClientProvider client={client}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  )
+  await userEvent.click(await screen.findByRole('button', { name: /Search/ }))
+}
+
+test('command dialog title and description render through translated keys', async () => {
+  // Distinct bundle values prove the dialog surface is fed by t() rather than
+  // the raw English defaults baked into CommandDialog.
+  i18next.addResourceBundle(
+    'en',
+    'translation',
+    {
+      'Command Palette': 'Translated Palette',
+      'Search for a command to run...': 'Translated search hint',
+    },
+    true,
+    true
+  )
+  try {
+    await act(() => i18next.changeLanguage('en'))
+    await renderOpenMenu()
+    expect(await screen.findByText('Translated Palette')).toBeTruthy()
+    expect(screen.getByText('Translated search hint')).toBeTruthy()
+  } finally {
+    await act(() => i18next.changeLanguage('en'))
+    i18next.removeResourceBundle('en', 'translation')
+    i18next.addResourceBundle('en', 'translation', {}, true, true)
+  }
 })
 
 async function searchEntriesFor(role: number, sidebarModulesAdmin = '') {

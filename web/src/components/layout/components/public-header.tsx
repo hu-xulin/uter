@@ -218,11 +218,18 @@ export function PublicHeader(props: PublicHeaderProps) {
           // so moving between the public area and the console shifted the
           // header's bottom edge by one pixel.
           'fixed inset-x-0 top-0 z-50 h-[var(--app-header-height,4rem)] transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-marketing-fast',
-          solidHeader
-            ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
-            : 'border-b border-transparent bg-transparent'
+          solidHeader ? 'bg-background/85 backdrop-blur-xl' : 'bg-transparent'
         )}
       >
+        {/* 与后台 Header 一致：底线叠加在盒内，不占布局高度，
+            控件中心才是 64px 顶栏的真实中心 32px。 */}
+        <span
+          aria-hidden='true'
+          className={cn(
+            'pointer-events-none absolute inset-x-0 bottom-0 h-px transition-colors ds-motion-marketing-fast',
+            solidHeader ? 'bg-border/60' : 'bg-transparent'
+          )}
+        />
         <div className='mx-auto h-full max-w-7xl px-4 md:px-6'>
           <nav className='flex h-full items-center justify-between gap-2 px-2'>
             {/* Logo */}

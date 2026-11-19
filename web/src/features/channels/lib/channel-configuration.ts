@@ -45,9 +45,12 @@ export type ChannelProviderTarget =
 
 export type ChannelConfigurationSection =
   | 'connection'
+  | 'models'
+  | 'pricing'
   | 'routing'
   | 'request'
   | 'other'
+  | 'review'
 
 export type ChannelConfigurationStatus =
   | 'idle'
@@ -56,6 +59,7 @@ export type ChannelConfigurationStatus =
   | 'error'
 
 const CONFIGURATION_BLOCKS = {
+  modelList: { section: 'models', fields: ['models'] },
   modelMapping: { section: 'routing', fields: ['model_mapping'] },
   routingStrategy: {
     section: 'routing',
@@ -90,7 +94,7 @@ const CONFIGURATION_BLOCKS = {
     ],
   },
   extraSettings: {
-    section: 'other',
+    section: 'review',
     fields: [
       'proxy',
       'http_protocol',
@@ -100,14 +104,14 @@ const CONFIGURATION_BLOCKS = {
     ],
   },
   upstreamModelDetection: {
-    section: 'other',
+    section: 'models',
     fields: [
       'upstream_model_update_check_enabled',
       'upstream_model_update_auto_sync_enabled',
       'upstream_model_update_ignored_models',
     ],
   },
-  internalNotes: { section: 'other', fields: ['tag', 'remark'] },
+  internalNotes: { section: 'review', fields: ['tag', 'remark'] },
 } as const satisfies Record<
   string,
   {
@@ -150,6 +154,7 @@ export function getChannelConfigurationState(
   const openaiPassthrough = OPENAI_FIELD_PASSTHROUGH_TYPES.has(values.type)
   const claudePassthrough = CLAUDE_FIELD_PASSTHROUGH_TYPES.has(values.type)
   const configured: Record<ChannelConfigurationBlock, boolean> = {
+    modelList: Boolean(values.models.trim()),
     modelMapping: hasConfiguredJson(values.model_mapping),
     routingStrategy: Boolean(
       values.priority ||
@@ -208,9 +213,12 @@ export function getChannelConfigurationState(
     ChannelConfigurationStatus
   > = {
     connection: 'idle',
+    models: 'idle',
+    pricing: 'idle',
     routing: 'idle',
     request: 'idle',
     other: 'idle',
+    review: 'idle',
   }
   for (const id of Object.keys(
     CONFIGURATION_BLOCKS
@@ -236,7 +244,6 @@ export function getChannelConfigurationState(
     !connectionInvalid &&
     values.name.trim() &&
     values.type > 0 &&
-    values.models.trim() &&
     (isEditing || values.key?.trim())
   ) {
     sections.connection = 'ready'
@@ -247,6 +254,9 @@ export function getChannelConfigurationState(
     )
   ) {
     sections.connection = 'error'
+  }
+  if (sections.models === 'idle' && values.models.trim()) {
+    sections.models = 'configured'
   }
   return { blocks, sections }
 }

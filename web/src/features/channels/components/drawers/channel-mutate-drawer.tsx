@@ -131,6 +131,7 @@ import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import {
+  createChannelDraft,
   getAllModels,
   getChannel,
   getChannelDefaultBaseURLs,
@@ -215,6 +216,8 @@ import {
 } from '../../lib/task-plugin-base-url'
 import type { AdvancedCustomConfig, Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
+import { ChannelPricingPanel } from '../channel-pricing-panel'
+import { DreamRouterChannelPanel } from '../dreamrouter-channel-panel'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelQuickOptions } from '../channel-quick-options'
 import { ChannelTypeLogo } from '../channel-type-badge'
@@ -478,13 +481,20 @@ export function ChannelMutateDrawer({
     setDrawerSide(requestedSide)
   }
   const channelId = currentRow?.id ?? null
+  const [draftChannelId, setDraftChannelId] = useState<number | null>(null)
+  const effectiveChannelId = channelId ?? draftChannelId
   const sensitiveLocked = isEditing && !canEditSensitive
+  useEffect(() => {
+    if (open && !isEditing) setDraftChannelId(null)
+  }, [open, isEditing])
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
-    useState<ChannelConfigurationSection>('connection')
+    useState<ChannelConfigurationSection>(
+      'connection'
+    )
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
     null
   )
@@ -1294,6 +1304,13 @@ export function ChannelMutateDrawer({
   })
   const upstreamModelList =
     discovery.status === 'success' ? discovery.models : NO_UPSTREAM_MODELS
+  // 与「全部复制」保持同一语义：没有可执行的动作就禁用。
+  // 上游模型已全部选中时，「全部选择」不再产生任何变化。
+  const allUpstreamModelsSelected =
+    upstreamModelList.length > 0 &&
+    [...new Set(upstreamModelList.map(normalizeModelName).filter(Boolean))].every(
+      (model) => currentModelsArray.includes(model)
+    )
   const batchMappingSource: ModelMappingBatchSource =
     upstreamModelList.length > 0 ? 'upstream' : 'channel'
   const canBatchMap =
@@ -1571,6 +1588,7 @@ export function ChannelMutateDrawer({
 
   // Handle successful submission
   const handleSuccess = useCallback(() => {
+    setDraftChannelId(null)
     queryClient.invalidateQueries({ queryKey: channelsQueryKeys.lists() })
     if (channelId) {
       queryClient.invalidateQueries({
@@ -1665,6 +1683,7 @@ export function ChannelMutateDrawer({
     currentRow,
     isEditing,
     isMultiKeyChannel,
+    draftChannelId,
     onSuccess: handleSuccess,
   })
 
@@ -3179,6 +3198,49 @@ export function ChannelMutateDrawer({
     <div className='scroll-mt-4'>
       <ChannelModelsSection>
         <div className='space-y-5'>
+          {(currentType === 17 ||
+            (isAdvancedCustomLikeChannelType(currentType) &&
+              (form.watch('base_url') ?? '')
+                .toLowerCase()
+                .includes('dreamrouter.ai'))) && (
+            <section className='space-y-3'>
+              <div>
+                <p className='font-medium'>{t('Model information sync')}</p>
+                <p className='text-muted-foreground text-sm'>
+                  {t(
+                    'Sync the upstream catalog, model metadata and reference prices before choosing models.'
+                  )}
+                </p>
+              </div>
+              {currentType === 17 && (
+                <BailianChannelPanel
+                  channelId={effectiveChannelId}
+                  baseUrl={form.watch('base_url') ?? ''}
+                  onChangeBaseUrl={(value) =>
+                    form.setValue('base_url', value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              )}
+              {isAdvancedCustomLikeChannelType(currentType) &&
+                (form.watch('base_url') ?? '')
+                  .toLowerCase()
+                  .includes('dreamrouter.ai') && (
+                  <DreamRouterChannelPanel
+                    channelId={effectiveChannelId}
+                    baseUrl={form.watch('base_url') ?? ''}
+                    onChangeBaseUrl={(value) =>
+                      form.setValue('base_url', value, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                  />
+                )}
+            </section>
+          )}
           <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
             {currentType === CHANNEL_TYPE_NEW_API &&
               canBindTaskPlugin &&
@@ -3554,7 +3616,9 @@ export function ChannelMutateDrawer({
                   variant='outline'
                   size='sm'
                   onClick={handleSelectAllUpstreamModels}
-                  disabled={upstreamModelList.length === 0}
+                  disabled={
+                    upstreamModelList.length === 0 || allUpstreamModelsSelected
+                  }
                 >
                   <CheckCheck
                     className='mr-2 h-4.5 w-4.5'
@@ -4301,19 +4365,6 @@ export function ChannelMutateDrawer({
               />
             )}
 
-            {currentType === 17 && (
-              <BailianChannelPanel
-                channelId={channelId}
-                baseUrl={form.watch('base_url') ?? ''}
-                onChangeBaseUrl={(value) =>
-                  form.setValue('base_url', value, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  })
-                }
-              />
-            )}
-
             {/* General base_url for other types */}
             {![3, 8, 22, 36, 45].includes(currentType) && (
               <FormField
@@ -4809,6 +4860,76 @@ export function ChannelMutateDrawer({
     </div>
   )
 
+  const reviewModels = form.watch('models')
+  const reviewModelCount = Array.isArray(reviewModels)
+    ? reviewModels.length
+    : parseModelsString(reviewModels || '').length
+  let reviewMappingCount = 0
+  const reviewMapping = form.watch('model_mapping')
+  if (reviewMapping?.trim()) {
+    try {
+      const parsed = JSON.parse(reviewMapping) as Record<string, unknown>
+      reviewMappingCount = Object.keys(parsed).length
+    } catch {
+      reviewMappingCount = 0
+    }
+  }
+  const reviewRows = [
+      {
+        label: t('Channel name'),
+        value: form.watch('name') || '—',
+      },
+      {
+        label: t('Channel type'),
+        value: form.watch('type') || '—',
+      },
+      {
+        label: t('Base URL'),
+        value: form.watch('base_url') || '—',
+      },
+      { label: t('Models'), value: String(reviewModelCount) },
+      { label: t('Model mappings'), value: String(reviewMappingCount) },
+      {
+        label: t('Pricing'),
+        value: effectiveChannelId ? t('Configured') : t('Not configured'),
+      },
+    ]
+
+    const reviewSection = (
+      <div className='space-y-4'>
+        <div>
+          <p className='font-medium'>{t('Review')}</p>
+          <p className='text-muted-foreground text-sm'>
+            {t('Review the configuration before creating the channel.')}
+          </p>
+        </div>
+        <dl className='overflow-hidden rounded-lg border'>
+          {reviewRows.map((row, index) => (
+            <div
+              key={row.label}
+              className={cn(
+                'flex items-start justify-between gap-4 px-4 py-3 text-sm',
+                index > 0 && 'border-t'
+              )}
+            >
+              <dt className='text-muted-foreground shrink-0'>{row.label}</dt>
+              <dd className='min-w-0 text-right font-medium break-words'>
+                {row.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <Button
+          type='button'
+          variant='outline'
+          size='sm'
+          onClick={() => setConfigurationSection('pricing')}
+        >
+          {t('Open pricing')}
+        </Button>
+      </div>
+    )
+
   let formContent: ReactNode
   if (!isEditing && !providerTarget) {
     formContent = null
@@ -4846,6 +4967,36 @@ export function ChannelMutateDrawer({
           </>
         }
         models={modelsSection}
+        pricing={
+          <ChannelPricingPanel
+            channelId={effectiveChannelId}
+            baseUrl={form.watch('base_url') ?? ''}
+            onCreateDraft={
+              isEditing
+                ? undefined
+                : async () => {
+                    const values = form.getValues()
+                    const response = await createChannelDraft({
+                      name: values.name,
+                      type: values.type,
+                      base_url: values.base_url,
+                      key: values.key,
+                      models: Array.isArray(values.models)
+                        ? values.models.join(',')
+                        : values.models,
+                      group: Array.isArray(values.group)
+                        ? values.group.join(',')
+                        : values.group,
+                    })
+                    if (!response.success || !response.data?.id) {
+                      throw new Error(response.message || 'Failed to create draft channel')
+                    }
+                    setDraftChannelId(response.data.id)
+                    return response.data.id
+                  }
+            }
+          />
+        }
         quickOptions={
           viewportWide ? null : (
             <ChannelQuickOptions
@@ -4898,6 +5049,7 @@ export function ChannelMutateDrawer({
             {fieldPassthroughFields}
           </>
         }
+        review={reviewSection}
         other={
           <>
             <div

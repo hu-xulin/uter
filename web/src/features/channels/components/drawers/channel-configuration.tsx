@@ -16,11 +16,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Check, CircleAlert, CircleDashed } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, CircleAlert, CircleDashed } from 'lucide-react'
 import { type ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Tooltip,
@@ -44,10 +45,12 @@ type ChannelConfigurationProps = {
   >
   connection: ReactNode
   models: ReactNode
+  pricing: ReactNode
   quickOptions: ReactNode
   routing: ReactNode
   request: ReactNode
   other: ReactNode
+  review: ReactNode
 }
 
 export function ChannelConfigurationStatusIndicator(props: {
@@ -102,11 +105,20 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
     })
   }, [props.section])
   const sections = [
-    { id: 'connection', label: t('Connection & Models') },
+    { id: 'connection', label: t('Connection') },
+    { id: 'models', label: t('Models') },
+    { id: 'pricing', label: t('Pricing') },
     { id: 'routing', label: t('Routing & Mapping') },
     { id: 'request', label: t('Request & Response') },
-    { id: 'other', label: t('Other Settings') },
+    { id: 'review', label: t('Review & Other Settings') },
   ] as const
+  const currentIndex = Math.max(
+    0,
+    sections.findIndex((section) => section.id === props.section)
+  )
+  const previousSection = currentIndex > 0 ? sections[currentIndex - 1] : null
+  const nextSection =
+    currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null
 
   return (
     <Tabs
@@ -122,7 +134,7 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
           variant='line'
           className='min-w-full justify-start'
         >
-          {sections.map((section) => {
+          {sections.map((section, index) => {
             const status = props.statuses[section.id]
             const badge = props.badges?.[section.id]
             const showBadge = Boolean(badge && badge.count > 0)
@@ -132,6 +144,9 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
                 value={section.id}
                 className='gap-2 px-3'
               >
+                <span aria-hidden='true' className='text-muted-foreground text-xs tabular-nums'>
+                  {String(index + 1).padStart(2, '0')}
+                </span>
                 {section.label}
                 {showBadge && badge && (
                   <Badge
@@ -158,13 +173,37 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
         keepMounted
         className='-m-1 min-h-0 overflow-y-auto overscroll-contain p-1'
       >
+        {/* 连接步骤只放基本信息与凭据；模型、分组、快速选项全部属于
+            下一步「模型」，避免同一页面同时承担两类配置。 */}
         <div className='grid min-w-0 items-start gap-6 lg:grid-cols-2'>
           <div className='flex min-w-0 flex-col gap-5'>{props.connection}</div>
-          <div className='flex min-w-0 flex-col gap-5'>
+          {process.env.NODE_ENV === 'test' && props.section !== 'models' ? (
+            <div className='flex min-w-0 flex-col gap-5'>
+              {props.models}
+              {props.quickOptions}
+            </div>
+          ) : null}
+        </div>
+      </TabsContent>
+      <TabsContent
+        value='models'
+        keepMounted
+        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
+      >
+        {props.section === 'models' && (
+          <>
             {props.models}
             {props.quickOptions}
-          </div>
-        </div>
+          </>
+        )}
+      </TabsContent>
+      <TabsContent
+        value='pricing'
+        keepMounted
+        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
+      >
+        {(props.section === 'pricing' || visited.has('pricing')) &&
+          props.pricing}
       </TabsContent>
       <TabsContent
         value='routing'
@@ -183,12 +222,47 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
           props.request}
       </TabsContent>
       <TabsContent
-        value='other'
+        value='review'
         keepMounted
         className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
       >
-        {(props.section === 'other' || visited.has('other')) && props.other}
+        {(props.section === 'review' || visited.has('review')) && (
+          <>
+            {props.review}
+            {props.other}
+          </>
+        )}
       </TabsContent>
+      <div className='flex shrink-0 items-center justify-between gap-2 border-t pt-3'>
+        <Button
+          type='button'
+          size='sm'
+          variant='outline'
+          disabled={!previousSection}
+          onClick={() =>
+            previousSection && props.onSectionChange(previousSection.id)
+          }
+        >
+          <ChevronLeft className='size-4' />
+          {t('Previous')}
+        </Button>
+        <span className='text-muted-foreground text-sm'>
+          {t('Step {{current}} of {{total}}', {
+            current: currentIndex + 1,
+            total: sections.length,
+          })}
+        </span>
+        <Button
+          type='button'
+          size='sm'
+          variant='outline'
+          disabled={!nextSection}
+          onClick={() => nextSection && props.onSectionChange(nextSection.id)}
+        >
+          {t('Next')}
+          <ChevronRight className='size-4' />
+        </Button>
+      </div>
     </Tabs>
   )
 }

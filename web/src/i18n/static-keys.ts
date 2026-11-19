@@ -830,6 +830,10 @@ export const STATIC_I18N_KEYS = [
   // 缺失时中文界面会直接漏出英文（2026-10-25 修复）。在此登记，让
   // check-i18n-keys 能一并守住。
   'Save customer service settings',
+  // 定价来源页的保存按钮文案。同样经 `saveLabel` prop 传给
+  // SettingsPageFormActions 再由那里 t(saveLabel)，源码无字面量 t('...')，
+  // 门禁扫不到——在此登记，缺失时中文界面会漏出英文。
+  'Save pricing source',
   // Channel priority ordering API errors.
   'Channel priorities changed. Refresh and try again.',
   'Invalid channel priority move',

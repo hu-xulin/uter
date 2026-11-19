@@ -22,6 +22,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -116,6 +117,9 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
     onSuccess: () => {
       toast.success(t('Catalog metadata applied'))
       void queryClient.invalidateQueries({ queryKey: ['bailian-sync-status'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['channel-model-pricing', props.channelId],
+      })
     },
     onError: (error) =>
       handleServerError(error, t('Failed to apply catalog metadata')),
@@ -133,6 +137,33 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
         <p className='text-muted-foreground text-sm'>
           {t('Build the workspace endpoint from region and workspace ID.')}
         </p>
+        <div className='flex flex-wrap items-center gap-1.5 pt-1'>
+          <span className='text-muted-foreground text-xs'>
+            {t('Synced fields')}:
+          </span>
+          {[
+            'Description',
+            'Icon',
+            'Tags',
+            'Vendor',
+            'Endpoints',
+            'Context window',
+            'Max output',
+            'Knowledge cutoff',
+            'Release date',
+            'Input modalities',
+            'Output modalities',
+            'Reference prices',
+          ].map((field) => (
+            <Badge
+              key={field}
+              variant='outline'
+              className='font-normal'
+            >
+              {t(field)}
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <div className='grid gap-3 sm:grid-cols-2'>
@@ -214,6 +245,9 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
             </span>
             <span>
               {t('Metadata updated')}: {status?.metadata_updated ?? 0}
+            </span>
+            <span>
+              {t('Pricing records')}: {status?.pricing_records ?? 0}
             </span>
           </div>
         </div>

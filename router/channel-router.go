@@ -55,6 +55,8 @@ func registerChannelRoutes(apiRouter *gin.RouterGroup) {
 }
 
 var channelPermissionRoutes = []permissionRoute{
+	{method: http.MethodPost, path: "/draft", permission: authz.ChannelSensitiveWrite, handler: controller.CreateChannelDraft},
+	{method: http.MethodPost, path: "/draft/:id/publish", permission: authz.ChannelSensitiveWrite, handler: controller.PublishChannelDraft},
 	{method: http.MethodGet, path: "/priority/order", permission: authz.ChannelRead, handler: controller.GetChannelPriorityOrder},
 	{method: http.MethodPost, path: "/priority/reorder", permission: authz.ChannelWrite, handler: controller.ReorderChannelPriority},
 	{method: http.MethodGet, path: "/", permission: authz.ChannelRead, handler: controller.GetAllChannels},
@@ -100,6 +102,15 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPost, path: "/copy/:id", permission: authz.ChannelSensitiveWrite, handler: controller.CopyChannel},
 	{method: http.MethodPost, path: "/multi_key/manage", permission: authz.ChannelOperate, handler: controller.ManageMultiKeys},
 	{method: http.MethodPost, path: "/:id/pricing/sync", permission: authz.ChannelSensitiveWrite, handler: controller.SyncChannelPricing},
+	{method: http.MethodGet, path: "/:id/model_pricing", permission: authz.ChannelRead, handler: controller.GetChannelModelPricing},
+	{method: http.MethodPut, path: "/:id/model_pricing", permission: authz.ChannelSensitiveWrite, handler: controller.SetChannelModelPricing},
+	{method: http.MethodPost, path: "/:id/model_pricing/batch", permission: authz.ChannelSensitiveWrite, handler: controller.BatchChannelModelPricing},
+	{method: http.MethodGet, path: "/:id/model_pricing/history", permission: authz.ChannelRead, handler: controller.GetChannelPricingHistory},
+	{method: http.MethodGet, path: "/:id/model_pricing/reviews", permission: authz.ChannelRead, handler: controller.GetChannelPricingReviews},
+	{method: http.MethodPost, path: "/:id/model_pricing/reviews/approve", permission: authz.ChannelSensitiveWrite, handler: controller.ApproveChannelPricingReviews},
+	{method: http.MethodPost, path: "/:id/model_pricing/reviews/reject", permission: authz.ChannelSensitiveWrite, handler: controller.RejectChannelPricingReviews},
+	{method: http.MethodGet, path: "/:id/model_pricing/schedule", permission: authz.ChannelRead, handler: controller.GetChannelPricingSchedule},
+	{method: http.MethodPut, path: "/:id/model_pricing/schedule", permission: authz.ChannelSensitiveWrite, handler: controller.SetChannelPricingSchedule},
 	{method: http.MethodPost, path: "/upstream_updates/apply", permission: authz.ChannelWrite, handler: controller.ApplyChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/apply_all", permission: authz.ChannelWrite, handler: controller.ApplyAllChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/detect", permission: authz.ChannelOperate, handler: controller.DetectChannelUpstreamModelUpdates},

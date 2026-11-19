@@ -456,7 +456,7 @@ export function WaffoSettingsSection({
             <Label required>{t('Display name')}</Label>
             <Input
               autoComplete='off'
-              placeholder='Credit Card'
+              placeholder={t('Credit Card')}
               value={methodForm.name}
               onChange={(e) =>
                 setMethodForm((p) => ({ ...p, name: e.target.value }))
@@ -530,7 +530,7 @@ export function WaffoSettingsSection({
             <Label>{t('Payment method name')}</Label>
             <Input
               autoComplete='off'
-              placeholder='Credit Card'
+              placeholder={t('Credit Card')}
               value={methodForm.payMethodName}
               onChange={(e) =>
                 setMethodForm((p) => ({

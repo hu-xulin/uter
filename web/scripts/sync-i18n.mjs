@@ -116,6 +116,15 @@ const BRAND_AND_LITERAL_KEYS = new Set([
   'uter-key-tool',
   'price_xxx',
   'whsec_xxx',
+  'notify_url',
+  'return_url',
+  'ratio_config',
+  'example.com\nblocked-site.com',
+  'example.com\ncompany.com',
+  'Mantle (Messages API)',
+  'Alibaba Bailian',
+  'DreamRouter',
+  'Uter <noreply@example.com>',
 ])
 
 function isPlainObject(v) {

@@ -56,7 +56,13 @@ export function CommandMenu() {
   )
 
   return (
-    <CommandDialog modal open={open} onOpenChange={setOpen}>
+    <CommandDialog
+      modal
+      open={open}
+      onOpenChange={setOpen}
+      title={t('Command Palette')}
+      description={t('Search for a command to run...')}
+    >
       <Command>
         <CommandInput placeholder={t('Type a command or search...')} />
         <CommandList>

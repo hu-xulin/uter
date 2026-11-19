@@ -149,6 +149,10 @@ type ChannelOtherSettings struct {
 	// PluginConfig is the config a type-61 channel gives its plugin, checked
 	// against the plugin's meta.channelConfig when the channel is saved.
 	PluginConfig json.RawMessage `json:"plugin_config,omitempty"`
+	// Draft marks a disabled channel created before the operator finishes the
+	// create wizard. Drafts are hidden from the channel list and are published
+	// (status=1, draft=false) by the final save step.
+	Draft bool `json:"draft,omitempty"`
 }
 
 func (s *ChannelOtherSettings) IsOpenRouterEnterprise() bool {

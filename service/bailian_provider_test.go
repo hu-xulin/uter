@@ -7,8 +7,8 @@ import (
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting/custom_pricing"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
@@ -163,41 +163,79 @@ func TestApplyBailianCatalogKeepsManualFieldsAndChannelScope(t *testing.T) {
 	assert.Zero(t, len(second.Metadata.UpdatedModels), "repeat apply must be idempotent")
 }
 
-func TestBailianChannelQuotesArePerChannelAndKeepRanges(t *testing.T) {
+func TestBailianPricingRecordsStayChannelScoped(t *testing.T) {
 	previousRate := operation_setting.USDExchangeRate
-	operation_setting.USDExchangeRate = 7
+	operation_setting.USDExchangeRate = 7.3
 	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
 
 	catalog := &BailianCatalog{
+		ChannelID: 5,
 		Region:    BailianRegionBeijing,
 		FetchedAt: time.Date(2026, 11, 19, 0, 0, 0, 0, time.UTC),
 		Models: []BailianModel{
 			{
-				Model: "qwen4-max", Provider: "qwen",
-				Prices: []BailianPriceRange{{RangeName: "Default", Prices: []BailianPrice{
-					{Type: "input_token", Price: "70", PriceUnit: "每百万tokens", TimeBand: "standard"},
-					{Type: "output_token", Price: "210", PriceUnit: "每百万tokens", TimeBand: "standard"},
-					{Type: "input_token_cache", Price: "3.5", PriceUnit: "每百万tokens", TimeBand: "standard"},
-				}}},
+				Model: "qwen-plus", Provider: "qwen", InferenceProvider: "aliyun-bailian",
+				Prices: []BailianPriceRange{{
+					RangeName: "Default",
+					Prices: []BailianPrice{
+						{Type: "input_token", Price: "10", PriceUnit: "每百万tokens", TimeBand: "standard"},
+						{Type: "output_token", Price: "30", PriceUnit: "每百万tokens", TimeBand: "standard"},
+					},
+				}},
 			},
 			{
-				Model: "tiered-model", Provider: "qwen",
-				Prices: []BailianPriceRange{
-					{RangeName: "0-32K", Prices: []BailianPrice{{Type: "input_token", Price: "7", PriceUnit: "每百万tokens", TimeBand: "standard"}}},
-					{RangeName: "32K-128K", Prices: []BailianPrice{{Type: "input_token", Price: "14", PriceUnit: "每百万tokens", TimeBand: "standard"}}},
-				},
+				Model: "not-served", Provider: "qwen", InferenceProvider: "aliyun-bailian",
 			},
 		},
 	}
-	quotes, review := BailianChannelQuotes(catalog)
-	require.Contains(t, quotes, "qwen4-max")
-	quote := quotes["qwen4-max"]
-	require.NotNil(t, quote.ChannelPrice)
-	assert.InDelta(t, 10, *quote.ChannelPrice, 0.0001, "CNY is converted to USD per 1M tokens")
-	assert.InDelta(t, 3, *quote.CompletionRatio, 0.0001)
-	assert.InDelta(t, 0.05, *quote.CacheRatio, 0.0001)
-	assert.Equal(t, "per_1m_token", quote.Unit)
-	assert.Equal(t, "bailian-official", quote.Source)
-	assert.Equal(t, custom_pricing.ChannelQuoteStatusNeedsReview, quotes["tiered-model"].Status)
-	assert.Equal(t, 1, review)
+	records := BailianPricingRecords(catalog, []string{"qwen-plus"})
+	require.Len(t, records, 1)
+	assert.Equal(t, 5, records[0].ChannelId)
+	assert.Equal(t, "aliyun-bailian", records[0].Provider)
+	assert.Contains(t, records[0].OfficialPricing, "qwen-plus")
+
+	var normalized model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
+	require.Len(t, normalized.Tiers, 1)
+	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
+	require.NotNil(t, normalized.Tiers[0].OutputPerMillionUSD)
+	assert.InDelta(t, 10.0/7.3, *normalized.Tiers[0].InputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 30.0/7.3, *normalized.Tiers[0].OutputPerMillionUSD, 1e-9)
+	assert.False(t, normalized.NeedsReview)
+}
+
+func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 7.3
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	catalog := &BailianCatalog{
+		ChannelID: 6,
+		Region:    BailianRegionBeijing,
+		FetchedAt: time.Now(),
+		Models: []BailianModel{{
+			Model: "qwen-tiered", Provider: "qwen", InferenceProvider: "aliyun-bailian",
+			Prices: []BailianPriceRange{
+				{RangeName: "0-32K", Prices: []BailianPrice{
+					{Type: "input_token", Price: "10", PriceUnit: "每百万tokens"},
+					{Type: "output_token", Price: "30", PriceUnit: "每百万tokens"},
+				}},
+				{RangeName: "32K-128K", Prices: []BailianPrice{
+					{Type: "input_token", Price: "20", PriceUnit: "每百万tokens"},
+					{Type: "output_token", Price: "60", PriceUnit: "每百万tokens"},
+				}},
+			},
+		}},
+	}
+	records := BailianPricingRecords(catalog, []string{"qwen-tiered"})
+	require.Len(t, records, 1)
+	var normalized model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
+	require.Len(t, normalized.Tiers, 2)
+	assert.True(t, normalized.NeedsReview)
+	assert.Contains(t, normalized.ReviewReasons, "multiple price ranges")
+	assert.Equal(t, int64(0), normalized.Tiers[0].MinInputTokens)
+	assert.Equal(t, int64(32*1024), normalized.Tiers[0].MaxInputTokens)
+	assert.Equal(t, int64(32*1024), normalized.Tiers[1].MinInputTokens)
+	assert.Equal(t, int64(128*1024), normalized.Tiers[1].MaxInputTokens)
 }

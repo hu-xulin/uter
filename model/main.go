@@ -389,6 +389,7 @@ func migrateDB() error {
 		&QuotaData{},
 		&Task{},
 		&TaskPlugin{},
+		&ChannelModelPricing{},
 		&Model{},
 		&Vendor{},
 		&VendorMergeRule{},

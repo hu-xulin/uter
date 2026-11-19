@@ -459,6 +459,7 @@ relay.group_saturated: The current group is at capacity. Please try again later,
 relay.group_upstream_saturated: The upstream of the current group is at capacity. Please try again later
 relay.model_price_not_configured: Model {{.Model}} has not been priced by the administrator yet. Please contact the site administrator to enable this model.
 relay.model_price_not_configured_admin: Model {{.Model}} price not configured. Go to System Settings → Operation Settings to enable self-use mode, or configure the model price in System Settings → Group & Model Pricing.
+relay.channel_price_not_configured: Для модели {{.Model}} в канале {{.Channel}} есть официальная цена, но не задана внутренняя цена продажи. Задайте её в панели цен канала перед использованием модели.
 relay.shared_task_price_needs_override: 'Модель {{.Model}} обслуживается плагином {{.Plugin}}; перед тарификацией нужна отдельная цена для этого плагина.'
 relay.task_usage_price_unsupported: 'Модель {{.Model}} использует цену по расходу задачи (u()) и не может тарифицировать обычные запросы; настройте обычное выражение.'
 relay.retry_get_channel_failed: 'Failed to get available channel for model {{.Model}} under group {{.Group}} (retry): {{.Error}}'

@@ -153,6 +153,10 @@ func applyChannelStatusFilter(query *gorm.DB, statusFilter int) *gorm.DB {
 
 func buildChannelListQuery(group string, statusFilter int, typeFilter int) *gorm.DB {
 	query := model.DB.Model(&model.Channel{})
+	// Draft channels are disabled rows created before the create wizard is
+	// finished. They stay addressable by ID for pricing, but never appear as
+	// ordinary disabled channels in the list.
+	query = query.Where("(settings IS NULL OR settings NOT LIKE ?)", "%\"draft\":true%")
 	query = model.ApplyChannelGroupFilter(query, group)
 	query = applyChannelStatusFilter(query, statusFilter)
 	if typeFilter >= 0 {

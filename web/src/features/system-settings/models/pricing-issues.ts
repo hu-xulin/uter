@@ -16,12 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useQuery } from '@tanstack/react-query'
-
-import { useCanEditModelPricing } from '@/features/model-pricing/api'
-import { api } from '@/lib/api'
-import { requireServerSuccess } from '@/lib/server-error-message'
-
 export type ModelPricingIssue = {
   model_name: string
   plugin_key: string
@@ -36,23 +30,4 @@ export const PRICING_ISSUE_REASONS: Record<
   unconfigured: 'No price set',
   incompatible: 'The price uses usage the plugin no longer provides',
   stale: 'The plugin no longer offers this model',
-}
-
-export const MODEL_PRICING_ISSUES_QUERY_KEY = ['model-pricing-issues'] as const
-
-export async function getModelPricingIssues(): Promise<ModelPricingIssue[]> {
-  const res = await api.get<{
-    success: boolean
-    data?: ModelPricingIssue[]
-  }>('/api/option/model_pricing/issues')
-  return requireServerSuccess(res.data).data ?? []
-}
-
-export function useModelPricingIssues() {
-  const canEdit = useCanEditModelPricing()
-  return useQuery({
-    queryKey: MODEL_PRICING_ISSUES_QUERY_KEY,
-    queryFn: getModelPricingIssues,
-    enabled: canEdit,
-  })
 }

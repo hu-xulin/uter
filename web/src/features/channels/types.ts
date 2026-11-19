@@ -267,6 +267,70 @@ export interface ChannelPricingSyncResponse {
   data?: ChannelPricingSyncData
 }
 
+export interface ChannelOfficialPricingTier {
+  range_name: string
+  time_band?: string
+  min_input_tokens?: number
+  max_input_tokens?: number
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  cache_per_million_usd?: number
+  per_unit_usd?: number
+  unit: string
+  raw_price_types?: string[]
+}
+
+export interface ChannelOfficialPricingView {
+  currency: string
+  fx_rate_to_usd?: number
+  unit: string
+  tiers: ChannelOfficialPricingTier[]
+  source: string
+  fetched_at: number
+  needs_review?: boolean
+  review_reasons?: string[]
+}
+
+export interface ChannelInternalPricingView {
+  mode: 'per_1m_token' | 'per_call'
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  cache_per_million_usd?: number
+  per_call_usd?: number
+  note?: string
+  updated_at: number
+}
+
+export interface ChannelModelPricingRecord {
+  channel_id: number
+  model_name: string
+  provider: string
+  region: string
+  currency: string
+  pricing_source: string
+  pricing_status: 'official_only' | 'configured' | 'needs_review' | string
+  pricing_version: string
+  fetched_at: number
+  updated_at: number
+  official?: ChannelOfficialPricingView
+  internal?: ChannelInternalPricingView
+}
+
+export interface ChannelModelPricingListResponse {
+  success: boolean
+  message?: string
+  data?: {
+    channel_id: number
+    items: ChannelModelPricingRecord[]
+  }
+}
+
+export interface ChannelModelPricingUpdateResponse {
+  success: boolean
+  message?: string
+  data?: ChannelModelPricingRecord
+}
+
 export interface CopyChannelResponse {
   success: boolean
   message?: string

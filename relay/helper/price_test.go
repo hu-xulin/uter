@@ -3,8 +3,14 @@ package helper
 import (
 	"fmt"
 	"net/http"
-	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"github.com/glebarez/sqlite"
+	"github.com/uter-ai/uter/model"
+	"gorm.io/gorm"
+
+	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -902,4 +908,84 @@ func TestHandleGroupRatioAppliesChannelPricing(t *testing.T) {
 	// A model without its own rule inherits the channel-wide ratio.
 	channelRule := HandleGroupRatio(ctx, infoFor("gpt-4o-mini"))
 	require.InDelta(t, 0.8, channelRule.GroupRatio, 1e-9)
+}
+
+func TestModelPriceHelperUsesChannelIsolatedPricing(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previousDB := model.DB
+	model.DB = db
+	model.InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		model.DB = previousDB
+		model.InvalidateChannelPricingCache()
+	})
+
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 7,
+		ModelName: "channel-priced-model",
+		Currency:  "USD",
+		Source:    "bailian-official",
+	}})
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 8,
+		ModelName: "channel-priced-model",
+		Currency:  "USD",
+		Source:    "bailian-official",
+	}})
+	require.NoError(t, err)
+
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+	ctx.Set("group", "default")
+	info := &relaycommon.RelayInfo{
+		OriginModelName: "channel-priced-model",
+		UserGroup:       "default",
+		UsingGroup:      "default",
+		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: 7},
+	}
+
+	_, err = ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.Error(t, err)
+	assert.True(t, isChannelPricingError(err), err.Error())
+
+	require.NoError(t, model.SetChannelInternalPricing(7, "channel-priced-model", model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(2),
+		OutputUSDPerMillion: floatPtr(4),
+		CacheUSDPerMillion:  floatPtr(1),
+	}))
+	priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	assert.InDelta(t, 1.0, priceData.ModelRatio, 1e-9)
+	assert.InDelta(t, 2.0, priceData.CompletionRatio, 1e-9)
+	assert.InDelta(t, 0.5, priceData.CacheRatio, 1e-9)
+	assert.False(t, priceData.UsePrice)
+	assert.True(t, info.ChannelPricingApplied)
+
+	// The same model on another channel has no internal price and must not
+	// inherit channel 7's numbers.
+	other := &relaycommon.RelayInfo{
+		OriginModelName: "channel-priced-model",
+		UserGroup:       "default",
+		UsingGroup:      "default",
+		ChannelMeta:     &relaycommon.ChannelMeta{ChannelId: 8},
+	}
+	_, err = ModelPriceHelper(ctx, other, 1000, &types.TokenCountMeta{})
+	require.Error(t, err)
+	assert.True(t, isChannelPricingError(err), err.Error())
+}
+
+func floatPtr(value float64) *float64 { return &value }
+
+func isChannelPricingError(err error) bool {
+	text := err.Error()
+	return strings.Contains(text, i18n.MsgRelayChannelPriceNotConfigured) ||
+		strings.Contains(text, "internal sale price") ||
+		strings.Contains(text, "内部销售价")
 }

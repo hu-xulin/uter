@@ -531,6 +531,7 @@ const (
 	MsgQuotaSubscriptionInsufficient     = "quota.subscription_insufficient"
 	MsgRelayModelPriceNotConfigured      = "relay.model_price_not_configured"
 	MsgRelayModelPriceNotConfiguredAdmin = "relay.model_price_not_configured_admin"
+	MsgRelayChannelPriceNotConfigured    = "relay.channel_price_not_configured"
 	MsgRelayTaskUsagePriceUnsupported    = "relay.task_usage_price_unsupported"
 	MsgRelaySharedTaskPriceNeedsOverride = "relay.shared_task_price_needs_override"
 	MsgRelayTaskChannelDisabled          = "relay.task_channel_disabled"

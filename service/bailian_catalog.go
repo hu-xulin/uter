@@ -135,6 +135,12 @@ func fetchBailianCatalogFromBase(ctx context.Context, baseURL, apiKey string) (*
 		query := url.Values{}
 		query.Set("page_no", fmt.Sprintf("%d", page))
 		query.Set("page_size", fmt.Sprintf("%d", bailianCatalogPageSize))
+		// Official Model Studio catalog scope: only models this channel can
+		// actually serve. The response remains authoritative; pagination and
+		// all price ranges are preserved.
+		query.Set("language", "zh-CN")
+		query.Set("inference_providers", "aliyun-bailian")
+		query.Set("supports", "inference")
 
 		body, err := bailianGETWithRetry(ctx, client, endpoint+"?"+query.Encode(), apiKey)
 		if err != nil {
@@ -238,6 +244,12 @@ func normalizeBailianBaseURL(raw string) string {
 	if !strings.Contains(raw, "://") {
 		raw = "https://" + raw
 	}
+	raw = strings.TrimRight(raw, "/")
+	// A channel may store the OpenAI-compatible base
+	// (https://host/compatible-mode/v1). The official catalog lives at
+	// https://host/api/v1/models, so the compatible suffix must not be part of
+	// the catalog host.
+	raw = strings.TrimSuffix(raw, "/compatible-mode/v1")
 	return strings.TrimRight(raw, "/")
 }
 
@@ -314,19 +326,6 @@ func LoadBailianCatalogSnapshot() *BailianCatalog {
 		return nil
 	}
 	return &catalog
-}
-
-// BailianCatalogModelNames returns the model IDs in the snapshot.
-func BailianCatalogModelNames(catalog *BailianCatalog) []string {
-	if catalog == nil {
-		return nil
-	}
-	names := make([]string, 0, len(catalog.Models))
-	for _, item := range catalog.Models {
-		names = append(names, item.Model)
-	}
-	sort.Strings(names)
-	return names
 }
 
 // bareAliyunHost reports whether the configured base is the generic Aliyun

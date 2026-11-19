@@ -28,13 +28,20 @@ export function Header({ className, children, ...props }: HeaderProps) {
     <header
       className={cn(
         'sticky top-0 z-40 h-[var(--app-header-height,3rem)] w-full shrink-0 transition-[background-color,box-shadow,border-color,backdrop-filter] ds-motion-base',
-        scrolled
-          ? 'bg-background/85 border-b border-border/60 backdrop-blur-xl'
-          : 'border-b border-transparent bg-transparent',
+        scrolled ? 'bg-background/85 backdrop-blur-xl' : 'bg-transparent',
         className
       )}
       {...props}
     >
+      {/* 底线用叠加层而非 border：border 会占掉 1px 盒内高度，
+          使整行控件的中心落在 31.5px，而不是 64px 顶栏的真实中心 32px。 */}
+      <span
+        aria-hidden='true'
+        className={cn(
+          'pointer-events-none absolute inset-x-0 bottom-0 h-px transition-colors ds-motion-base',
+          scrolled ? 'bg-border/60' : 'bg-transparent'
+        )}
+      />
       <div className='flex h-full items-center gap-1.5 px-2 sm:gap-2 sm:px-3'>
         <SidebarTrigger variant='ghost' className='size-10' />
         {children}

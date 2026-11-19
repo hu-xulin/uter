@@ -28,6 +28,9 @@ import type {
   BatchSetTagParams,
   Channel,
   ChannelBalanceResponse,
+  ChannelInternalPricingView,
+  ChannelModelPricingListResponse,
+  ChannelModelPricingUpdateResponse,
   ChannelOpsResponse,
   ChannelPricingSyncResponse,
   ChannelTestResponse,
@@ -343,6 +346,28 @@ export async function syncChannelPricing(
   const res = await api.post<ChannelPricingSyncResponse>(
     `/api/channel/${id}/pricing/sync`,
     {},
+    channelActionConfig()
+  )
+  return res.data
+}
+
+export async function getChannelModelPricing(
+  id: number
+): Promise<ChannelModelPricingListResponse> {
+  const res = await api.get<ChannelModelPricingListResponse>(
+    `/api/channel/${id}/model_pricing`
+  )
+  return res.data
+}
+
+export async function setChannelModelPricing(
+  id: number,
+  modelName: string,
+  pricing: ChannelInternalPricingView
+): Promise<ChannelModelPricingUpdateResponse> {
+  const res = await api.put<ChannelModelPricingUpdateResponse>(
+    `/api/channel/${id}/model_pricing`,
+    { model_name: modelName, pricing },
     channelActionConfig()
   )
   return res.data
@@ -833,6 +858,7 @@ export type BailianSyncStatus = {
   catalog_models?: number
   matched_models?: number
   reference_prices?: number
+  pricing_records?: number
   metadata_created?: number
   metadata_updated?: number
   unmatched_models?: string[]
@@ -858,4 +884,196 @@ export async function applyBailianCatalog(channelId: number) {
     channel_id: channelId,
   })
   return res.data?.data
+}
+
+export type DreamRouterUpstreamSummary = {
+  provider_id: string
+  fetched_at: string
+  pricing_version?: string
+  source_endpoint: string
+  price_basis: string
+  models: number
+  groups: number
+  group_overrides: number
+  auto_groups: number
+  official_prices: string
+  discounted_prices: string
+  channel_id?: number
+  channel_pricing_written?: number
+  changes?: number
+}
+
+export type DreamRouterUpstreamSnapshot =
+  | { synced: false }
+  | {
+      synced: true
+      summary: DreamRouterUpstreamSummary
+      models: Array<Record<string, unknown>>
+    }
+
+export async function getDreamRouterUpstreamSnapshot(): Promise<DreamRouterUpstreamSnapshot> {
+  const res = await api.get('/api/upstream/dreamrouter/snapshot')
+  return res.data?.data ?? { synced: false }
+}
+
+export async function syncDreamRouterUpstream(
+  channelId: number,
+  baseUrl?: string
+) {
+  const res = await api.post('/api/upstream/dreamrouter/sync', {
+    channel_id: channelId,
+    base_url: baseUrl,
+  })
+  return requireServerSuccess(res.data).data
+}
+
+export type ChannelBatchPricingItem = {
+  model_name: string
+  mode: 'per_1m_token' | 'per_call' | string
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  per_call_usd?: number
+}
+
+export type ChannelBatchPricingResult = {
+  basis: 'official' | 'channel'
+  mode: string
+  value: number
+  dry_run: boolean
+  updated: number
+  items: ChannelBatchPricingItem[]
+  skipped: Array<{ model_name: string; reason: string }>
+}
+
+export async function batchChannelModelPricing(
+  channelId: number,
+  body: {
+    models?: string[]
+    model_prefixes?: string[]
+    basis: 'official' | 'channel'
+    mode: string
+    value: number
+    dry_run: boolean
+  }
+): Promise<ChannelBatchPricingResult> {
+  const res = await api.post(`/api/channel/${channelId}/model_pricing/batch`, body)
+  return requireServerSuccess(res.data).data as ChannelBatchPricingResult
+}
+
+export type ChannelPricingSchedule = {
+  enabled: boolean
+  basis: 'official' | 'channel'
+  mode: string
+  value: number
+  apply_on_sync: boolean
+  interval_minutes: number
+  review_mode: 'auto' | 'manual'
+  threshold_percent: number
+  model_sync_interval_minutes: number
+  official_sync_interval_minutes: number
+  channel_sync_interval_minutes: number
+}
+
+export async function getChannelPricingSchedule(channelId: number): Promise<{
+  channel_id: number
+  enabled: boolean
+  schedule: ChannelPricingSchedule
+}> {
+  const res = await api.get(`/api/channel/${channelId}/model_pricing/schedule`)
+  return requireServerSuccess(res.data).data
+}
+
+export async function setChannelPricingSchedule(
+  channelId: number,
+  schedule: ChannelPricingSchedule
+) {
+  const res = await api.put(
+    `/api/channel/${channelId}/model_pricing/schedule`,
+    schedule
+  )
+  return requireServerSuccess(res.data).data
+}
+
+export async function createChannelDraft(payload: {
+  name?: string
+  type: number
+  base_url?: string
+  key?: string
+  models?: string
+  group?: string
+}): Promise<{ success: boolean; message?: string; data?: { id: number } }> {
+  const res = await api.post('/api/channel/draft', payload, channelActionConfig())
+  return res.data
+}
+
+export async function publishChannelDraft(
+  channelId: number
+): Promise<{ success: boolean; message?: string; data?: { id: number } }> {
+  const res = await api.post(
+    `/api/channel/draft/${channelId}/publish`,
+    {},
+    channelActionConfig()
+  )
+  return res.data
+}
+
+export type ChannelPricingHistoryEntry = {
+  channel_id: number
+  model_name: string
+  source: string
+  old_pricing?: {
+    mode: string
+    input_per_million_usd?: number
+    output_per_million_usd?: number
+    per_call_usd?: number
+  }
+  new_pricing?: {
+    mode: string
+    input_per_million_usd?: number
+    output_per_million_usd?: number
+    per_call_usd?: number
+  }
+  changed_at: string
+}
+
+export async function getChannelPricingHistory(
+  channelId: number
+): Promise<{ channel_id: number; items: ChannelPricingHistoryEntry[] }> {
+  const res = await api.get(`/api/channel/${channelId}/model_pricing/history`)
+  return requireServerSuccess(res.data).data
+}
+
+export type ChannelPricingReview = {
+  channel_id: number
+  model_name: string
+  field: string
+  old: number
+  new: number
+  percent: number
+  created_at: string
+}
+
+export async function getChannelPricingReviews(
+  channelId: number
+): Promise<{ channel_id: number; items: ChannelPricingReview[] }> {
+  const res = await api.get(`/api/channel/${channelId}/model_pricing/reviews`)
+  return requireServerSuccess(res.data).data
+}
+
+export async function approveChannelPricingReviews(channelId: number) {
+  const res = await api.post(
+    `/api/channel/${channelId}/model_pricing/reviews/approve`,
+    {},
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data
+}
+
+export async function rejectChannelPricingReviews(channelId: number) {
+  const res = await api.post(
+    `/api/channel/${channelId}/model_pricing/reviews/reject`,
+    {},
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data
 }
