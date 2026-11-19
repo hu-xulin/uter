@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "Chưa công bố giá tuyệt đối",
     "NO_UPSTREAM_DISCOUNT": "Chưa công bố giảm giá nguồn",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "Không thể tự động suy ra giá kênh",
-    "Upstream discount {{group}} ×{{ratio}}": "Giảm giá nguồn {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "Giảm giá nguồn {{group}} ×{{ratio}}",
+    "FETCHED": "Đã lấy",
+    "FAILED": "Thất bại",
+    "NOT_CONFIGURED": "Chưa cấu hình",
+    "NEEDS_REVIEW": "Cần xem xét",
+    "OFFICIAL_ONLY": "Chỉ giá chính thức",
+    "UNSUPPORTED": "Không hỗ trợ",
+    "OK": "OK",
+    "model_ratio": "Tỷ lệ mô hình",
+    "completion_ratio": "Tỷ lệ đầu ra",
+    "cache_ratio": "Tỷ lệ bộ nhớ đệm",
+    "create_cache_ratio": "Tỷ lệ ghi bộ nhớ đệm",
+    "Discovered {{count}} upstream model(s)": "Đã phát hiện {{count}} mô hình nguồn",
+    "{{count}} of {{total}} models expose an official price": "{{count}}/{{total}} mô hình công bố giá chính thức",
+    "Catalog contains {{count}} model(s)": "Danh mục có {{count}} mô hình",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "{{total}} bản ghi: {{configured}} đã cấu hình, {{officialOnly}} chỉ giá chính thức, {{needsReview}} cần xem xét",
+    "No catalog synced yet.": "Chưa đồng bộ danh mục.",
+    "Model discovery failed; check Base URL, key and channel type.": "Không phát hiện được mô hình; hãy kiểm tra Base URL, khóa và loại kênh.",
+    "Official pricing is unavailable; do not treat it as verified.": "Giá chính thức không khả dụng; đừng coi là đã xác minh.",
+    "Channel pricing failed; existing prices were not changed.": "Lấy giá kênh thất bại; giá hiện có không bị thay đổi."
   }
 }

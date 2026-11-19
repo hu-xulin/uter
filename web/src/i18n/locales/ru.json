@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "Абсолютная цена не опубликована",
     "NO_UPSTREAM_DISCOUNT": "Скидка источника не опубликована",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "Цену канала нельзя рассчитать автоматически",
-    "Upstream discount {{group}} ×{{ratio}}": "Скидка источника {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "Скидка источника {{group}} ×{{ratio}}",
+    "FETCHED": "Получено",
+    "FAILED": "Ошибка",
+    "NOT_CONFIGURED": "Не настроено",
+    "NEEDS_REVIEW": "Требует проверки",
+    "OFFICIAL_ONLY": "Только официальная цена",
+    "UNSUPPORTED": "Не поддерживается",
+    "OK": "OK",
+    "model_ratio": "Коэффициент модели",
+    "completion_ratio": "Коэффициент вывода",
+    "cache_ratio": "Коэффициент кэша",
+    "create_cache_ratio": "Коэффициент записи кэша",
+    "Discovered {{count}} upstream model(s)": "Обнаружено моделей источника: {{count}}",
+    "{{count}} of {{total}} models expose an official price": "Официальную цену публикуют {{count}} из {{total}} моделей",
+    "Catalog contains {{count}} model(s)": "Каталог содержит моделей: {{count}}",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "Записей: {{total}}; настроено {{configured}}, только официальные {{officialOnly}}, требуют проверки {{needsReview}}",
+    "No catalog synced yet.": "Каталог ещё не синхронизирован.",
+    "Model discovery failed; check Base URL, key and channel type.": "Не удалось обнаружить модели; проверьте Base URL, ключ и тип канала.",
+    "Official pricing is unavailable; do not treat it as verified.": "Официальная цена недоступна; не считайте её проверенной.",
+    "Channel pricing failed; existing prices were not changed.": "Не удалось получить цену канала; существующие цены не изменены."
   }
 }

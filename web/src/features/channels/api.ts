@@ -1212,6 +1212,7 @@ export async function getChannelSyncCapabilities(
 
 export type ChannelSyncDiagnosticCheck = {
   status: string
+  code?: string
   source?: string
   count: number
   message?: string
@@ -1229,6 +1230,7 @@ export type ChannelSyncDiagnostics = {
   official_pricing: ChannelSyncDiagnosticCheck
   channel_pricing: ChannelSyncDiagnosticCheck
   warnings?: string[]
+  warning_codes?: string[]
 }
 
 export async function runChannelSyncDiagnostics(

@@ -33,6 +33,7 @@ import (
 
 type syncDiagnosticCheck struct {
 	Status     string         `json:"status"`
+	Code       string         `json:"code,omitempty"`
 	Source     string         `json:"source,omitempty"`
 	Count      int            `json:"count"`
 	Message    string         `json:"message,omitempty"`
@@ -51,6 +52,7 @@ type channelSyncDiagnostics struct {
 	Official     syncDiagnosticCheck      `json:"official_pricing"`
 	ChannelPrice syncDiagnosticCheck      `json:"channel_pricing"`
 	Warnings     []string                 `json:"warnings,omitempty"`
+	WarningCodes []string                 `json:"warning_codes,omitempty"`
 }
 
 // ChannelSyncDiagnostics probes the real model and price sources of one
@@ -90,9 +92,11 @@ func ChannelSyncDiagnostics(c *gin.Context) {
 	}
 	if modelErr != nil {
 		result.Models.Status = "FAILED"
+		result.Models.Code = "failed"
 		result.Models.Error = sanitizeFetchModelsError(modelErr, channel.Key).Error()
 	} else {
 		result.Models.Status = "FETCHED"
+		result.Models.Code = "discovered"
 		result.Models.Message = fmt.Sprintf("Discovered %d upstream model(s)", len(modelIDs))
 		sample := modelIDs
 		if len(sample) > 20 {
@@ -116,12 +120,15 @@ func ChannelSyncDiagnostics(c *gin.Context) {
 
 	if result.Models.Status == "FAILED" {
 		result.Warnings = append(result.Warnings, "Model discovery failed; check Base URL, key and channel type.")
+		result.WarningCodes = append(result.WarningCodes, "model_discovery_failed")
 	}
 	if result.Official.Status == "UNSUPPORTED" || result.Official.Status == "FAILED" {
 		result.Warnings = append(result.Warnings, "Official pricing is unavailable; do not treat it as verified.")
+		result.WarningCodes = append(result.WarningCodes, "official_pricing_unavailable")
 	}
 	if result.ChannelPrice.Status == "FAILED" {
 		result.Warnings = append(result.Warnings, "Channel pricing failed; existing prices were not changed.")
+		result.WarningCodes = append(result.WarningCodes, "channel_pricing_failed")
 	}
 	common.ApiSuccess(c, result)
 }
@@ -132,6 +139,7 @@ func dreamRouterDiagnostics() (syncDiagnosticCheck, syncDiagnosticCheck) {
 	snapshot := service.LoadDreamRouterUpstreamSnapshot()
 	if snapshot == nil {
 		official.Status = "NOT_CONFIGURED"
+		official.Code = "not_configured"
 		official.Message = "No DreamRouter catalog synced yet."
 		return official, channel
 	}
@@ -146,10 +154,11 @@ func dreamRouterDiagnostics() (syncDiagnosticCheck, syncDiagnosticCheck) {
 		}
 	}
 	official.Status = "FETCHED"
+	official.Code = "official_prices"
 	official.Count = withPrice
 	official.FetchedAt = snapshot.FetchedAt.Unix()
 	official.Message = fmt.Sprintf("%d of %d models expose an official price", withPrice, len(snapshot.Models))
-	official.Details = map[string]any{"derived_from_ratios": derived}
+	official.Details = map[string]any{"derived_from_ratios": derived, "total": len(snapshot.Models)}
 	return official, channel
 }
 
@@ -162,10 +171,12 @@ func bailianDiagnostics(channelID int) (syncDiagnosticCheck, syncDiagnosticCheck
 	}
 	if catalog == nil {
 		official.Status = "NOT_CONFIGURED"
+		official.Code = "not_configured"
 		official.Message = "No Bailian catalog synced yet."
 		return official, channel
 	}
 	official.Status = "FETCHED"
+	official.Code = "catalog"
 	official.Count = len(catalog.Models)
 	official.FetchedAt = catalog.FetchedAt.Unix()
 	official.Message = fmt.Sprintf("Catalog contains %d model(s)", len(catalog.Models))
@@ -247,6 +258,7 @@ func applyChannelPricingStatus(check *syncDiagnosticCheck, details map[string]an
 	officialOnly, _ := details["official_only"].(int)
 	needsReview, _ := details["needs_review"].(int)
 	check.Count = total
+	check.Code = "records"
 	check.Message = fmt.Sprintf(
 		"%d records: %d configured, %d official-only, %d needs review",
 		total, configured, officialOnly, needsReview,

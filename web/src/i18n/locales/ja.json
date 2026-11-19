@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "絶対価格は未公開",
     "NO_UPSTREAM_DISCOUNT": "上流割引は未公開",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "チャネル価格を自動算出できません",
-    "Upstream discount {{group}} ×{{ratio}}": "上流割引 {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "上流割引 {{group}} ×{{ratio}}",
+    "FETCHED": "取得済み",
+    "FAILED": "失敗",
+    "NOT_CONFIGURED": "未設定",
+    "NEEDS_REVIEW": "要確認",
+    "OFFICIAL_ONLY": "公式価格のみ",
+    "UNSUPPORTED": "未対応",
+    "OK": "OK",
+    "model_ratio": "モデル比率",
+    "completion_ratio": "出力比率",
+    "cache_ratio": "キャッシュ比率",
+    "create_cache_ratio": "キャッシュ書き込み比率",
+    "Discovered {{count}} upstream model(s)": "上流モデルを {{count}} 件検出",
+    "{{count}} of {{total}} models expose an official price": "{{total}} 件中 {{count}} 件が公式価格を公開",
+    "Catalog contains {{count}} model(s)": "カタログに {{count}} 件のモデルがあります",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "{{total}} 件：{{configured}} 件設定済み、{{officialOnly}} 件公式価格のみ、{{needsReview}} 件要確認",
+    "No catalog synced yet.": "カタログはまだ同期されていません。",
+    "Model discovery failed; check Base URL, key and channel type.": "モデル検出に失敗しました。Base URL、キー、チャネル種別を確認してください。",
+    "Official pricing is unavailable; do not treat it as verified.": "公式価格を取得できません。検証済みとして扱わないでください。",
+    "Channel pricing failed; existing prices were not changed.": "チャネル価格の取得に失敗しました。既存の価格は変更されていません。"
   }
 }

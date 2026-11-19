@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "Aucun prix absolu publié",
     "NO_UPSTREAM_DISCOUNT": "Aucune remise amont publiée",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "Le prix du canal ne peut pas être calculé automatiquement",
-    "Upstream discount {{group}} ×{{ratio}}": "Remise amont {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "Remise amont {{group}} ×{{ratio}}",
+    "FETCHED": "Récupéré",
+    "FAILED": "Échec",
+    "NOT_CONFIGURED": "Non configuré",
+    "NEEDS_REVIEW": "À vérifier",
+    "OFFICIAL_ONLY": "Officiel uniquement",
+    "UNSUPPORTED": "Non pris en charge",
+    "OK": "OK",
+    "model_ratio": "Ratio du modèle",
+    "completion_ratio": "Ratio de sortie",
+    "cache_ratio": "Ratio du cache",
+    "create_cache_ratio": "Ratio d'écriture du cache",
+    "Discovered {{count}} upstream model(s)": "{{count}} modèle(s) amont découvert(s)",
+    "{{count}} of {{total}} models expose an official price": "{{count}} modèle(s) sur {{total}} exposent un prix officiel",
+    "Catalog contains {{count}} model(s)": "Le catalogue contient {{count}} modèle(s)",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "{{total}} enregistrements : {{configured}} configurés, {{officialOnly}} officiels uniquement, {{needsReview}} à vérifier",
+    "No catalog synced yet.": "Aucun catalogue synchronisé pour le moment.",
+    "Model discovery failed; check Base URL, key and channel type.": "Échec de la découverte des modèles ; vérifiez l’URL de base, la clé et le type de canal.",
+    "Official pricing is unavailable; do not treat it as verified.": "Le prix officiel est indisponible ; ne le considérez pas comme vérifié.",
+    "Channel pricing failed; existing prices were not changed.": "La récupération des prix du canal a échoué ; les prix existants n’ont pas été modifiés."
   }
 }

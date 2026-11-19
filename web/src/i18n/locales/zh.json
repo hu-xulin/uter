@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "未公布绝对价格",
     "NO_UPSTREAM_DISCOUNT": "未公布上游折扣",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "无法自动推导渠道价",
-    "Upstream discount {{group}} ×{{ratio}}": "上游折扣 {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "上游折扣 {{group}} ×{{ratio}}",
+    "FETCHED": "已获取",
+    "FAILED": "失败",
+    "NOT_CONFIGURED": "未配置",
+    "NEEDS_REVIEW": "需人工确认",
+    "OFFICIAL_ONLY": "仅官方价",
+    "UNSUPPORTED": "不支持",
+    "OK": "正常",
+    "model_ratio": "模型倍率",
+    "completion_ratio": "输出倍率",
+    "cache_ratio": "缓存倍率",
+    "create_cache_ratio": "缓存写入倍率",
+    "Discovered {{count}} upstream model(s)": "发现 {{count}} 个上游模型",
+    "{{count}} of {{total}} models expose an official price": "{{total}} 个模型中有 {{count}} 个提供官方价",
+    "Catalog contains {{count}} model(s)": "目录包含 {{count}} 个模型",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "{{total}} 条记录：{{configured}} 条已配置，{{officialOnly}} 条仅官方价，{{needsReview}} 条需确认",
+    "No catalog synced yet.": "尚未同步目录。",
+    "Model discovery failed; check Base URL, key and channel type.": "模型发现失败；请检查 Base URL、密钥和渠道类型。",
+    "Official pricing is unavailable; do not treat it as verified.": "官方价格不可用；不要视为已验证。",
+    "Channel pricing failed; existing prices were not changed.": "渠道价格获取失败；现有价格未被修改。"
   }
 }

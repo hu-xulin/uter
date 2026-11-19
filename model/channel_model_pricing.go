@@ -489,3 +489,47 @@ func ChannelPricedModelNames() (map[string]bool, error) {
 	}
 	return out, nil
 }
+
+// UpdateChannelOfficialPricingView rewrites only the normalized official view
+// (including the separate upstream channel-price block). Internal sale price,
+// status and official raw payload are preserved.
+func UpdateChannelOfficialPricingView(channelId int, modelName string, view ChannelOfficialPricing) error {
+	modelName = strings.TrimSpace(modelName)
+	if channelId <= 0 || modelName == "" {
+		return errors.New("channel id and model name are required")
+	}
+	normalized, err := common.Marshal(view)
+	if err != nil {
+		return err
+	}
+	now := time.Now().Unix()
+	var row ChannelModelPricing
+	err = DB.Where("channel_id = ? AND model_name = ?", channelId, modelName).First(&row).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		row = ChannelModelPricing{
+			ChannelId: channelId, Provider: "legacy", ModelName: modelName,
+			Currency: view.Currency, OfficialPricing: "{}",
+			NormalizedPricing: string(normalized),
+			PricingSource:     "legacy:ChannelPriceSetting",
+			PricingStatus:     ChannelPricingStatusOfficialOnly,
+			FetchedAt:         now, UpdatedAt: now,
+		}
+		row.PricingVersion = channelPricingVersion(row)
+		if err := DB.Create(&row).Error; err != nil {
+			return err
+		}
+		invalidateChannelPricingCache(channelId, modelName)
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	row.NormalizedPricing = string(normalized)
+	row.UpdatedAt = now
+	row.PricingVersion = channelPricingVersion(row)
+	if err := DB.Save(&row).Error; err != nil {
+		return err
+	}
+	invalidateChannelPricingCache(channelId, modelName)
+	return nil
+}

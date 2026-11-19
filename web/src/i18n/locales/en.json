@@ -8355,6 +8355,25 @@
     "ABSENT_ABSOLUTE_PRICE": "No absolute price published",
     "NO_UPSTREAM_DISCOUNT": "No upstream discount published",
     "UNSUPPORTED_CHANNEL_PRICE_SHAPE": "Channel price cannot be derived automatically",
-    "Upstream discount {{group}} ×{{ratio}}": "Upstream discount {{group}} ×{{ratio}}"
+    "Upstream discount {{group}} ×{{ratio}}": "Upstream discount {{group}} ×{{ratio}}",
+    "FETCHED": "FETCHED",
+    "FAILED": "FAILED",
+    "NOT_CONFIGURED": "NOT_CONFIGURED",
+    "NEEDS_REVIEW": "NEEDS_REVIEW",
+    "OFFICIAL_ONLY": "OFFICIAL_ONLY",
+    "UNSUPPORTED": "UNSUPPORTED",
+    "OK": "OK",
+    "model_ratio": "model_ratio",
+    "completion_ratio": "completion_ratio",
+    "cache_ratio": "cache_ratio",
+    "create_cache_ratio": "create_cache_ratio",
+    "Discovered {{count}} upstream model(s)": "Discovered {{count}} upstream model(s)",
+    "{{count}} of {{total}} models expose an official price": "{{count}} of {{total}} models expose an official price",
+    "Catalog contains {{count}} model(s)": "Catalog contains {{count}} model(s)",
+    "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review": "{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review",
+    "No catalog synced yet.": "No catalog synced yet.",
+    "Model discovery failed; check Base URL, key and channel type.": "Model discovery failed; check Base URL, key and channel type.",
+    "Official pricing is unavailable; do not treat it as verified.": "Official pricing is unavailable; do not treat it as verified.",
+    "Channel pricing failed; existing prices were not changed.": "Channel pricing failed; existing prices were not changed."
   }
 }

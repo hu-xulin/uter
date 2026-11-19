@@ -92,6 +92,69 @@ const PRICING_MODES = [
   { value: 'none', label: 'No change' },
 ] as const
 
+function diagnosticMessage(
+  check: {
+    code?: string
+    status?: string
+    count: number
+    message?: string
+    error?: string
+    details?: Record<string, unknown>
+  },
+  kind: 'models' | 'official' | 'channel',
+  t: (key: string, options?: Record<string, unknown>) => string
+) {
+  if (check.error) return check.error
+  const details = check.details ?? {}
+  const number = (key: string) => Number(details[key] ?? 0)
+  switch (check.code) {
+    case 'discovered':
+      return t('Discovered {{count}} upstream model(s)', { count: check.count })
+    case 'official_prices':
+      return t('{{count}} of {{total}} models expose an official price', {
+        count: check.count,
+        total: number('total') || check.count,
+      })
+    case 'catalog':
+      return t('Catalog contains {{count}} model(s)', { count: check.count })
+    case 'records':
+      return t(
+        '{{total}} records: {{configured}} configured, {{officialOnly}} official-only, {{needsReview}} needs review',
+        {
+          total: number('total'),
+          configured: number('configured'),
+          officialOnly: number('official_only'),
+          needsReview: number('needs_review'),
+        }
+      )
+    case 'not_configured':
+      return t('No catalog synced yet.')
+    default:
+      break
+  }
+  if (kind === 'models' && check.status === 'FETCHED') {
+    return t('Discovered {{count}} upstream model(s)', { count: check.count })
+  }
+  return check.message || ''
+}
+
+function diagnosticWarning(
+  code: string | undefined,
+  fallback: string,
+  t: (key: string) => string
+) {
+  switch (code) {
+    case 'model_discovery_failed':
+      return t('Model discovery failed; check Base URL, key and channel type.')
+    case 'official_pricing_unavailable':
+      return t('Official pricing is unavailable; do not treat it as verified.')
+    case 'channel_pricing_failed':
+      return t('Channel pricing failed; existing prices were not changed.')
+    default:
+      return fallback
+  }
+}
+
 export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -774,7 +837,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                   <li
                     key={`${entry.model_name}-${entry.field}-${entry.created_at}`}
                   >
-                    {entry.model_name} · {entry.field} ·{' '}
+                    {entry.model_name} · {t(entry.field)} ·{' '}
                     {entry.percent.toFixed(1)}%
                   </li>
                 ))}
@@ -835,14 +898,17 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 {
                   label: t('Models'),
                   check: diagnostics.data.models,
+                  kind: 'models' as const,
                 },
                 {
                   label: t('Official price'),
                   check: diagnostics.data.official_pricing,
+                  kind: 'official' as const,
                 },
                 {
                   label: t('Channel price'),
                   check: diagnostics.data.channel_pricing,
+                  kind: 'channel' as const,
                 },
               ].map((item) => (
                 <div
@@ -857,19 +923,23 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                       item.check.status === 'FAILED' ? 'warning' : 'secondary'
                     }
                   >
-                    {item.check.status || t('Unknown')}
+                    {item.check.status ? t(item.check.status) : t('Unknown')}
                   </Badge>
                   <span className='text-muted-foreground'>
-                    {item.check.message || item.check.error}
+                    {diagnosticMessage(item.check, item.kind, t)}
                   </span>
                 </div>
               ))}
-              {diagnostics.data.warnings?.map((warning) => (
+              {diagnostics.data.warnings?.map((warning, index) => (
                 <p
                   key={warning}
                   className='text-warning-soft-foreground text-sm'
                 >
-                  {warning}
+                  {diagnosticWarning(
+                    diagnostics.data?.warning_codes?.[index],
+                    warning,
+                    t
+                  )}
                 </p>
               ))}
             </div>
