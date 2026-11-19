@@ -43,6 +43,7 @@ import {
   getChannelPricingReviews,
   getChannelPricingSchedule,
   rejectChannelPricingReviews,
+  rollbackChannelPricingHistory,
   setChannelPricingSchedule,
   syncDreamRouterUpstream,
   type ChannelBatchPricingResult,
@@ -196,6 +197,22 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     },
     onError: (error) =>
       handleServerError(error, t('Failed to reject pending prices')),
+  })
+
+  const rollback = useMutation({
+    mutationFn: (historyId: number) =>
+      rollbackChannelPricingHistory(props.channelId ?? 0, historyId),
+    onSuccess: () => {
+      toast.success(t('Price rolled back'))
+      void queryClient.invalidateQueries({
+        queryKey: ['channel-pricing-history', props.channelId],
+      })
+      void queryClient.invalidateQueries({
+        queryKey: ['channel-model-pricing', props.channelId],
+      })
+    },
+    onError: (error) =>
+      handleServerError(error, t('Failed to roll back price')),
   })
 
   const syncUpstream = useMutation({
@@ -635,8 +652,24 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           {historyQuery.data?.items?.length ? (
             <ul className='text-muted-foreground space-y-1 text-sm'>
               {historyQuery.data.items.slice(0, 5).map((entry) => (
-                <li key={`${entry.model_name}-${entry.source}-${entry.changed_at}`}>
-                  {entry.model_name} · {entry.source} · {entry.changed_at}
+                <li
+                  key={`${entry.model_name}-${entry.source}-${entry.changed_at}`}
+                  className='flex flex-wrap items-center gap-2'
+                >
+                  <span className='min-w-0 flex-1 truncate'>
+                    {entry.model_name} · {entry.source} · {entry.changed_at}
+                  </span>
+                  {entry.id ? (
+                    <Button
+                      type='button'
+                      size='sm'
+                      variant='outline'
+                      disabled={rollback.isPending}
+                      onClick={() => rollback.mutate(entry.id as number)}
+                    >
+                      {t('Rollback')}
+                    </Button>
+                  ) : null}
                 </li>
               ))}
             </ul>

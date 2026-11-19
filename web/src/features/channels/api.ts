@@ -1018,6 +1018,7 @@ export async function publishChannelDraft(
 }
 
 export type ChannelPricingHistoryEntry = {
+  id?: number
   channel_id: number
   model_name: string
   source: string
@@ -1072,6 +1073,18 @@ export async function approveChannelPricingReviews(channelId: number) {
 export async function rejectChannelPricingReviews(channelId: number) {
   const res = await api.post(
     `/api/channel/${channelId}/model_pricing/reviews/reject`,
+    {},
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data
+}
+
+export async function rollbackChannelPricingHistory(
+  channelId: number,
+  historyId: number
+) {
+  const res = await api.post(
+    `/api/channel/${channelId}/model_pricing/history/${historyId}/rollback`,
     {},
     channelActionConfig()
   )

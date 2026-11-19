@@ -106,6 +106,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPut, path: "/:id/model_pricing", permission: authz.ChannelSensitiveWrite, handler: controller.SetChannelModelPricing},
 	{method: http.MethodPost, path: "/:id/model_pricing/batch", permission: authz.ChannelSensitiveWrite, handler: controller.BatchChannelModelPricing},
 	{method: http.MethodGet, path: "/:id/model_pricing/history", permission: authz.ChannelRead, handler: controller.GetChannelPricingHistory},
+	{method: http.MethodPost, path: "/:id/model_pricing/history/:history_id/rollback", permission: authz.ChannelSensitiveWrite, handler: controller.RollbackChannelPricingHistory},
 	{method: http.MethodGet, path: "/:id/model_pricing/reviews", permission: authz.ChannelRead, handler: controller.GetChannelPricingReviews},
 	{method: http.MethodPost, path: "/:id/model_pricing/reviews/approve", permission: authz.ChannelSensitiveWrite, handler: controller.ApproveChannelPricingReviews},
 	{method: http.MethodPost, path: "/:id/model_pricing/reviews/reject", permission: authz.ChannelSensitiveWrite, handler: controller.RejectChannelPricingReviews},
