@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-EXCEPTIONS",
   "version": "8.0.0",
-  "generated_at": "2026-11-16T23:48:33.944Z",
+  "generated_at": "2026-11-18T18:06:27.863Z",
   "policy": "禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件",
   "items": [
     {

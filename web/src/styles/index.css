@@ -790,6 +790,18 @@ a {
   text-decoration: none;
 }
 
+/*
+ * 正文里的内联链接是例外：WCAG 1.4.1（axe `link-in-text-block`）要求链接
+ * 不能只靠颜色与周围文字区分。导航、按钮、菜单仍遵循上面的全站无下划线规则；
+ * 只有文档 / 法务的散文容器 `.uter-prose` 内的链接补下划线。
+ * `!important` 是必要的：上面的规则刻意不带 layer，优先级高于所有 Tailwind
+ * utilities（与 Shiki 语法色同样的处理方式）。
+ */
+.uter-prose a {
+  text-decoration: underline !important;
+  text-underline-offset: 2px;
+}
+
 /* UDS 8.0.0 §1（审计 AUDIT-004）：H5 输入文字 ≥16px。
  * 移动端浏览器（iOS Safari）聚焦 font-size < 16px 的输入框时会自动放大视口，
  * 且规范要求 H5 输入文字至少 16px —— 这里统一兜底，组件层无需逐个处理。 */
