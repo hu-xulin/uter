@@ -74,8 +74,10 @@ export function egress() { return {action: "continue"}; }`
 func setupPlugins(t *testing.T, instances string) {
 	t.Helper()
 	require.NoError(t, i18n.Init())
+	// A small test-only budget reaches the memory guard quickly under -race;
+	// production callers keep the 512 MiB default.
 	for _, source := range []string{stagePlugin, optionalPlugin, egressPlugin} {
-		plugin, err := jsplugin.DefaultRegistry.Register(source, jsplugin.Options{})
+		plugin, err := jsplugin.DefaultRegistry.Register(source, jsplugin.Options{MemoryLimitBytes: 16 << 20})
 		require.NoError(t, err)
 		t.Cleanup(func() { _ = jsplugin.DefaultRegistry.Unregister(plugin.Meta.Key) })
 	}
