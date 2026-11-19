@@ -135,6 +135,11 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 	}
 	billingModelName := info.GetBillingModelName()
 	channelId := info.GetChannelID()
+	if channelId <= 0 {
+		// Distributor selects the channel before billing but RelayInfo may not
+		// have ChannelMeta yet; read the already-selected channel from context.
+		channelId = common.GetContextKeyInt(c, constant.ContextKeyChannelId)
+	}
 	// A channel-isolated price is the actual channel's contract and takes
 	// precedence over the channel-level upstream pricing engine.
 	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
@@ -341,6 +346,11 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hosttypes.PriceData, error) {
 	billingModelName := info.GetBillingModelName()
 	channelId := info.GetChannelID()
+	if channelId <= 0 {
+		// Distributor selects the channel before billing but RelayInfo may not
+		// have ChannelMeta yet; read the already-selected channel from context.
+		channelId = common.GetContextKeyInt(c, constant.ContextKeyChannelId)
+	}
 	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
 	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if !hasChannelPricing {
