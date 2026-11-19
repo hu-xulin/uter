@@ -171,21 +171,22 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
-		// Channel-scoped quotes may carry their own completion/cache ratios.
-		// Applying them here keeps two channels that serve the same model name
-		// independently priced without touching the global model ratios.
-		if quote, ok := custom_pricing.GetChannelQuote(info.ChannelId, billingModelName, false); ok {
-			if quote.CompletionRatio != nil {
-				completionRatio = *quote.CompletionRatio
-			}
-			if quote.CacheRatio != nil {
-				cacheRatio = *quote.CacheRatio
-			}
-			if quote.CreateCacheRatio != nil {
-				cacheCreationRatio = *quote.CreateCacheRatio
-				cacheCreationRatio5m = cacheCreationRatio
-				cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
-				cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+		// Channel metadata is absent in price-only and pre-selection billing probes.
+		// Apply channel-scoped quotes only after a concrete channel is selected.
+		if info.ChannelMeta != nil {
+			if quote, ok := custom_pricing.GetChannelQuote(info.ChannelId, billingModelName, false); ok {
+				if quote.CompletionRatio != nil {
+					completionRatio = *quote.CompletionRatio
+				}
+				if quote.CacheRatio != nil {
+					cacheRatio = *quote.CacheRatio
+				}
+				if quote.CreateCacheRatio != nil {
+					cacheCreationRatio = *quote.CreateCacheRatio
+					cacheCreationRatio5m = cacheCreationRatio
+					cacheCreationRatio1h = cacheCreationRatio * hosttypes.ClaudeCacheCreation1hMultiplier
+					cacheCreationRatio12h = cacheCreationRatio * hosttypes.OpenAICacheCreation12hMultiplier
+				}
 			}
 		}
 		ratio := modelRatio * groupRatioInfo.GroupRatio
