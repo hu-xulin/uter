@@ -26,10 +26,6 @@ import { CostOptimizationSection } from './cost-optimization-section'
 import { GeminiSettingsCard } from './gemini-settings-card'
 import { GlobalSettingsCard } from './global-settings-card'
 import { GrokSettingsCard } from './grok-settings-card'
-import { ModelDescriptionLocalizationSection } from './model-description-localization-section'
-import { PricingEngineSection } from './pricing-engine-section'
-import { PricingIssuesSection } from './pricing-issues-section'
-import { TaskPluginPricingSection } from './task-plugin-pricing-section'
 
 function formatJsonForEditor(value: string, fallback: string) {
   const raw = (value ?? '').toString().trim()
@@ -71,23 +67,6 @@ const MODELS_SECTIONS = [
     ),
   },
 
-  {
-    id: 'pricing-engine',
-    titleKey: 'Pricing Engine',
-    build: (settings: ModelSettings) => (
-      <PricingEngineSection defaultValue={settings.PricingEngine} />
-    ),
-  },
-  {
-    id: 'pricing-issues',
-    titleKey: 'Pricing Issues',
-    build: () => <PricingIssuesSection />,
-  },
-  {
-    id: 'task-plugin-pricing',
-    titleKey: 'Task plugin pricing',
-    build: () => <TaskPluginPricingSection />,
-  },
   {
     id: 'gemini',
     titleKey: 'Gemini',
@@ -166,28 +145,6 @@ const MODELS_SECTIONS = [
         defaultValues={Object.fromEntries(
           COST_OPTIMIZATION_KEYS.map((k) => [k, settings[k]])
         )}
-      />
-    ),
-  },
-  {
-    // 模型描述多语化：上游同步后把定价卡片描述按访客语言本地化。
-    id: 'model-description-localization',
-    titleKey: 'Model Description Localization',
-    build: (settings: ModelSettings) => (
-      <ModelDescriptionLocalizationSection
-        defaultValues={{
-          ModelDescriptionSyncEnabled: settings.ModelDescriptionSyncEnabled,
-          ModelDescriptionTranslateEnabled:
-            settings.ModelDescriptionTranslateEnabled,
-          ModelDescriptionTranslateBaseURL:
-            settings.ModelDescriptionTranslateBaseURL,
-          ModelDescriptionTranslateApiKey:
-            settings.ModelDescriptionTranslateApiKey,
-          ModelDescriptionTranslateModel:
-            settings.ModelDescriptionTranslateModel,
-          ModelDescriptionTranslateLocales:
-            settings.ModelDescriptionTranslateLocales,
-        }}
       />
     ),
   },

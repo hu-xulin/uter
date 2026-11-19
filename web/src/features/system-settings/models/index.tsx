@@ -25,7 +25,6 @@ import {
 } from './section-registry.tsx'
 
 const defaultModelSettings: ModelSettings = {
-  PricingEngine: 'uter',
   'global.pass_through_request_enabled': false,
   'global.thinking_model_blacklist': '[]',
   'global.chat_completions_to_responses_policy': '{}',
@@ -150,15 +149,6 @@ const defaultModelSettings: ModelSettings = {
   'costopt_setting.spike_alert_multiplier': 5,
   'costopt_setting.anomaly_alert_enabled': true,
   'costopt_setting.cache_warmup_enabled': false,
-  // ===== 模型描述多语化：默认全关，开启后才会产生外部请求与 LLM 调用 =====
-  ModelDescriptionSyncEnabled: false,
-  ModelDescriptionTranslateEnabled: false,
-  ModelDescriptionTranslateBaseURL: '',
-  ModelDescriptionTranslateApiKey: '',
-  ModelDescriptionTranslateModel: '',
-  // 待补译语种 = 除英语外的全部 6 语。上游目录只提供 zh/en/ja 且覆盖不全，
-  // 故 zh/ja 也纳入兜底；补译只填空白位，已存在的描述不会被覆盖。
-  ModelDescriptionTranslateLocales: 'zh, zh-TW, fr, ja, ru, vi',
   // ===== 渠道登录与同步（默认值与后端 service/dreamrouter_sync.go 对齐）=====
   // 默认开启同步：上游口径的模型与折扣每日一变，不开同步会让定价长期滞后。
   // 口令默认空串 = 未配置；后端会明确报错提示去后台填，不会用明文兜底。

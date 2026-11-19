@@ -43,6 +43,15 @@ const defaultContentSettings: ContentSettings = {
   MjForwardUrlEnabled: false,
   MjModeClearEnabled: false,
   MjActionCheckSuccessEnabled: false,
+  // ===== 多语言：默认全关，开启后才会产生外部请求与 LLM 调用 =====
+  ModelDescriptionSyncEnabled: false,
+  ModelDescriptionTranslateEnabled: false,
+  ModelDescriptionTranslateBaseURL: '',
+  ModelDescriptionTranslateApiKey: '',
+  ModelDescriptionTranslateModel: '',
+  // 待补译语种 = 除英语外的全部 6 语。上游目录只提供 zh/en/ja 且覆盖不全，
+  // 故 zh/ja 也纳入兜底；补译只填空白位，已存在的描述不会被覆盖。
+  ModelDescriptionTranslateLocales: 'zh, zh-TW, fr, ja, ru, vi',
 }
 
 function resolveContentSettings(

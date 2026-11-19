@@ -180,7 +180,7 @@ export function useSidebarData(): SidebarData {
             requiredRole: ROLE.SUPER_ADMIN,
           },
           {
-            title: t('Task Plugins'),
+            title: t('Plugins'),
             url: '/task-plugins',
             icon: PlugZap,
             requiredRole: ROLE.SUPER_ADMIN,

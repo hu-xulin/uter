@@ -168,7 +168,7 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
   }
 
   return (
-    <SettingsSection title={t('Model Description Localization')}>
+    <SettingsSection title={t('Multilingual')}>
       <p className='text-muted-foreground text-sm'>
         {t(
           'After syncing upstream channel data, automatically fetch the official Chinese, English and Japanese descriptions, then use the site LLM to fill in the other six languages (zh, zh-TW, fr, ja, ru, vi). The upstream catalog does not cover every model, so Chinese and Japanese are included as a safety net. Only missing entries are filled in — existing text is never overwritten.'

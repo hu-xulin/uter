@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { ModelDescriptionLocalizationSection } from '../models/model-description-localization-section'
 import type { ContentSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
 import { AnnouncementsSection } from './announcements-section'
@@ -112,6 +113,28 @@ const CONTENT_SECTIONS = [
           MjForwardUrlEnabled: settings.MjForwardUrlEnabled,
           MjModeClearEnabled: settings.MjModeClearEnabled,
           MjActionCheckSuccessEnabled: settings.MjActionCheckSuccessEnabled,
+        }}
+      />
+    ),
+  },
+  {
+    // 多语言：上游同步后把定价卡片描述按访客语言本地化。
+    id: 'multilingual',
+    titleKey: 'Multilingual',
+    build: (settings: ContentSettings) => (
+      <ModelDescriptionLocalizationSection
+        defaultValues={{
+          ModelDescriptionSyncEnabled: settings.ModelDescriptionSyncEnabled,
+          ModelDescriptionTranslateEnabled:
+            settings.ModelDescriptionTranslateEnabled,
+          ModelDescriptionTranslateBaseURL:
+            settings.ModelDescriptionTranslateBaseURL,
+          ModelDescriptionTranslateApiKey:
+            settings.ModelDescriptionTranslateApiKey,
+          ModelDescriptionTranslateModel:
+            settings.ModelDescriptionTranslateModel,
+          ModelDescriptionTranslateLocales:
+            settings.ModelDescriptionTranslateLocales,
         }}
       />
     ),

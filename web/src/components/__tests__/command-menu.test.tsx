@@ -36,7 +36,7 @@ import { CommandMenu } from '../command-menu'
 import { Search } from '../search'
 
 const adminEntries = ['Channels', 'Models', 'Users', 'Redemption Codes']
-const superAdminEntries = ['System Info', 'Task Plugins', 'System Settings']
+const superAdminEntries = ['System Info', 'Plugins', 'System Settings']
 
 // jsdom lacks the Web Animations API the menu's scroll area waits on.
 const getAnimationsDescriptor = Object.getOwnPropertyDescriptor(
