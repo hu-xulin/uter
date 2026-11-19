@@ -186,6 +186,8 @@ export type AlipayCallbackDiagnostics = {
 }
 
 export async function getAlipayCallbackDiagnostics() {
-  const res = await api.get('/api/option/alipay_callback_diagnostics')
+  const res = await api.get<{ data: AlipayCallbackDiagnostics }>(
+    '/api/option/alipay_callback_diagnostics'
+  )
   return res.data
 }
