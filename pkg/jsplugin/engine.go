@@ -115,18 +115,22 @@ type Options struct {
 	Key         string
 	Version     string
 	Timeout     time.Duration
-	Concurrency int
-	Now         func() time.Time
-	Log         func(string)
+	// MemoryLimitBytes bounds JavaScript allocations per call. Zero uses the
+	// production default so callers cannot accidentally disable the heap guard.
+	MemoryLimitBytes int64
+	Concurrency      int
+	Now              func() time.Time
+	Log              func(string)
 }
 
 type Engine struct {
-	key       string
-	version   string
-	timeout   time.Duration
-	now       func() time.Time
-	log       func(string)
-	module    *moejs.Module
+	key              string
+	version          string
+	timeout          time.Duration
+	memoryLimitBytes int64
+	now              func() time.Time
+	log              func(string)
+	module           *moejs.Module
 	pool      chan *runtimeInstance
 	semaphore chan struct{}
 	// parked bounds the runtimes that lent their slot to other calls while
@@ -205,12 +209,17 @@ func Compile(source string, options Options) (*Engine, error) {
 	if now == nil {
 		now = time.Now
 	}
+	memoryLimitBytes := options.MemoryLimitBytes
+	if memoryLimitBytes <= 0 {
+		memoryLimitBytes = DefaultHeapLimitBytes
+	}
 
 	engine := &Engine{
 		key:       options.Key,
 		version:   options.Version,
-		timeout:   timeout,
-		now:       now,
+		timeout:          timeout,
+		memoryLimitBytes: memoryLimitBytes,
+		now:              now,
 		log:       options.Log,
 		module:    moeModule,
 		semaphore: make(chan struct{}, concurrency),
@@ -908,7 +917,7 @@ func (e *Engine) newRuntime(ctx context.Context) (*runtimeInstance, error) {
 	// so eval and the Function constructors throw an EvalError.
 	runtime := moejs.NewRuntime(moejs.Options{
 		DisableDynamicCode: true,
-		MemoryLimit:        DefaultHeapLimitBytes,
+		MemoryLimit:        e.memoryLimitBytes,
 	})
 	logContext := &runtimeLogContext{context: ctx}
 	instance := &runtimeInstance{runtime: runtime, logContext: logContext}
