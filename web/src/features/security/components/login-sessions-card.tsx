@@ -183,7 +183,6 @@ export function LoginSessionsCard() {
             <Button
               type='button'
               variant='outline'
-              size='sm'
               disabled={!hasOtherSessions || revokeOthersMutation.isPending}
               onClick={() => setConfirmOthers(true)}
             >

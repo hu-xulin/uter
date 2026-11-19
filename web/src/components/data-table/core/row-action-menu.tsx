@@ -42,7 +42,7 @@ export function DataTableRowActionMenu(props: DataTableRowActionMenuProps) {
         render={
           <Button
             variant='ghost'
-            size='icon'
+            size='icon-sm'
             className='data-popup-open:bg-muted'
             aria-label={props.ariaLabel}
           />

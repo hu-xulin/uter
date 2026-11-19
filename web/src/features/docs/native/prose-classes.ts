@@ -45,7 +45,7 @@ For commercial licensing, please contact support@uter.ai
  * export plain constants.
  */
 export const PROSE_CLASSES = [
-  'max-w-[72ch] text-long text-(--ds-color-text-secondary)',
+  'uter-prose max-w-[72ch] text-long text-(--ds-color-text-secondary)',
   '[&_h1]:mt-6 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-semibold [&_h1]:text-(--ds-color-text-primary) [&_h1]:scroll-mt-20',
   '[&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:text-(--ds-color-text-primary) [&_h2]:scroll-mt-20',
   '[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-(--ds-color-text-primary) [&_h3]:scroll-mt-20',

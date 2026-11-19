@@ -339,7 +339,7 @@ export function CommonLogsFilterBar<TData>(
         render={
           <Button
             variant='ghost'
-            size='icon'
+            size='icon-lg'
             onClick={() => setSensitiveVisible(!sensitiveVisible)}
             aria-label={sensitiveVisible ? t('Hide') : t('Show')}
             className='text-muted-foreground hover:text-foreground'

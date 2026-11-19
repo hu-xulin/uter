@@ -386,7 +386,11 @@ test('mounts sandbox on first visit and preserves input when switching tabs', as
   ).toBeNull()
   await user.click(screen.getByRole('tab', { name: 'Plugin sandbox' }))
   const editor = screen.getByRole('textbox', { name: 'Arguments JSON' })
-  const editable = editor.querySelector<HTMLElement>('[contenteditable=true]')
+  // CodeMirror puts role=textbox and contenteditable on the same `.cm-content`
+  // node; older versions nested the editable node inside the textbox.
+  const editable = editor.matches('[contenteditable=true]')
+    ? editor
+    : editor.querySelector<HTMLElement>('[contenteditable=true]')
   if (!editable) throw new Error('Missing editable sandbox input')
   act(() => editable.focus())
   await user.paste('42')

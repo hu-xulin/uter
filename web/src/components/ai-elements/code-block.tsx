@@ -717,6 +717,10 @@ function CodeMirrorCodeView({
       parent: editorHost,
     })
     editorViewRef.current = editorView
+    // A long code block scrolls its `.cm-scroller`. Without a tab stop the
+    // region is unreachable by keyboard (axe `scrollable-region-focusable`),
+    // so allow focusing the scroller itself.
+    editorView.scrollDOM.tabIndex = 0
     if (autoFocus) {
       editorView.focus()
     }

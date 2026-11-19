@@ -92,7 +92,7 @@ export function PlaygroundInputControls({
       </PromptInputButton>
     ) : (
       <PromptInputButton
-        className='bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground h-8 px-3 font-medium'
+        className='bg-primary text-primary-foreground hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground px-3 font-medium'
         disabled={!canSubmit}
         type='submit'
         variant='default'

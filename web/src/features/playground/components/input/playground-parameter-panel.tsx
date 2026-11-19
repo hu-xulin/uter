@@ -199,18 +199,11 @@ function PlaygroundParameterContent({
 export function PlaygroundParameterPanel(props: PlaygroundParameterPanelProps) {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const activeCount = PLAYGROUND_PARAMETER_CONTROLS.filter(
-    (control) => props.parameterEnabled[control.key]
-  ).length
 
   const trigger = (
     <PromptInputButton
-      // 可访问名称必须包含可见文本 tokens（axe label-content-name-mismatch）：
-      // 右上角的计数徽标是可见文本，aria-label 必须把计数一并纳入。
-      aria-label={
-        activeCount > 0 ? `${t('Parameters')} ${activeCount}` : t('Parameters')
-      }
-      className='text-muted-foreground hover:text-foreground hover:bg-muted/70 relative font-medium'
+      aria-label={t('Parameters')}
+      className='text-muted-foreground hover:text-foreground hover:bg-muted/70 font-medium'
       disabled={props.disabled}
       variant='ghost'
     >
@@ -219,11 +212,6 @@ export function PlaygroundParameterPanel(props: PlaygroundParameterPanelProps) {
           `[&_svg:not([class*='size-'])]:size-4.5` 兜底，CSS 会盖掉 lucide
           的 width/height 属性，`size={16}` 实际渲染成 18px。 */}
       <SlidersHorizontalIcon className='size-4' />
-      {activeCount > 0 && (
-        <span className='bg-primary text-primary-foreground absolute -top-1 -right-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-xs font-semibold'>
-          {activeCount}
-        </span>
-      )}
     </PromptInputButton>
   )
 

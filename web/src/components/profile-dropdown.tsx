@@ -62,7 +62,7 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger
           render={
             <Button
-              size='icon-xs'
+              size='icon'
               variant='ghost'
               className='relative p-0'
               aria-label={t('Open menu')}

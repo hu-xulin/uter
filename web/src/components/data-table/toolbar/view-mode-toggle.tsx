@@ -71,8 +71,8 @@ export function DataTableViewModeToggle(props: DataTableViewModeToggleProps) {
       aria-label={t('View mode')}
       className={cn(
         // 与同一行的输入框 / 选择器同高：跟 --ds-control-height-md 走，
-        // 密度切换时一起变。
-        'bg-muted/60 inline-flex h-(--ds-control-height-md) items-center rounded-lg border p-0.5',
+        // 密度切换时一起变。gap-1 拉开两个图标，避免选中块贴住另一个图标。
+        'bg-muted/60 inline-flex h-(--ds-control-height-md) items-center gap-1 rounded-lg border p-0.5',
         props.className
       )}
     >
@@ -90,7 +90,9 @@ export function DataTableViewModeToggle(props: DataTableViewModeToggleProps) {
                   onClick={() => props.onChange(segment.value)}
                   aria-label={segment.tooltip}
                   aria-pressed={isActive}
-                  className='h-full w-7'
+                  // 选中色块必须是正方形：高度跟随内容区，宽度由
+                  // aspect-square 反推，图标上下左右留白才一致。
+                  className='aspect-square h-full w-auto'
                 >
                   <Icon className='size-4' />
                 </Button>
