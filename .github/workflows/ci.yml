@@ -311,6 +311,21 @@ jobs:
           test "$VALIDATE_OUTCOME" = success
           test "$TEST_OUTCOME" = success
 
+      - name: Upload UAP evidence reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uap-evidence-${{ github.sha }}
+          path: |
+            .uap/reports/*.json
+            .uap/reports/PHASE-2-REMEDIATION-REPORT.md
+            docs/design-system/audit/uds8-final-acceptance.json
+            docs/design-system/audit/uds8-final-scan.json
+            docs/design-system/audit/uds8-legacy-reference-report.json
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 30
+
   ueqe-review:
     name: UEQE review engine (all modules)
     runs-on: ubuntu-latest
@@ -567,6 +582,7 @@ jobs:
             middleware=62
 
       - name: Upload coverage report
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: go-coverage
