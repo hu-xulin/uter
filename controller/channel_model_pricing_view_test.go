@@ -2,6 +2,7 @@ package controller
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
@@ -26,6 +27,20 @@ func TestChannelModelPricingViewExposesDreamRouterQuote(t *testing.T) {
 	require.Equal(t, 5.0, *view.UpstreamQuote.InputPerMillionUSD)
 	require.Equal(t, 25.0, *view.UpstreamQuote.OutputPerMillionUSD)
 	require.Equal(t, 0.5, *view.UpstreamQuote.CachePerMillionUSD)
+}
+
+func TestChannelModelPricingViewFlagsStaleUpstreamPrice(t *testing.T) {
+	fresh := channelModelPricingToView(model.ChannelModelPricing{FetchedAt: time.Now().Unix()})
+	require.False(t, fresh.Stale)
+
+	stale := channelModelPricingToView(model.ChannelModelPricing{
+		FetchedAt: time.Now().Add(-72 * time.Hour).Unix(),
+	})
+	require.True(t, stale.Stale)
+	require.GreaterOrEqual(t, stale.FetchedAgeHours, int64(71))
+
+	unknown := channelModelPricingToView(model.ChannelModelPricing{})
+	require.False(t, unknown.Stale, "a record without a fetch time is not labelled stale")
 }
 
 func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {

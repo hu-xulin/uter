@@ -44,22 +44,30 @@ type channelUpstreamQuoteView struct {
 }
 
 type channelModelPricingView struct {
-	ChannelID      int                           `json:"channel_id"`
-	ModelName      string                        `json:"model_name"`
-	Provider       string                        `json:"provider"`
-	Region         string                        `json:"region"`
-	Currency       string                        `json:"currency"`
-	PricingSource  string                        `json:"pricing_source"`
-	PricingStatus  string                        `json:"pricing_status"`
-	PricingVersion string                        `json:"pricing_version"`
-	PriceShape     string                        `json:"price_shape,omitempty"`
-	PriceSupported bool                          `json:"price_supported"`
-	FetchedAt      int64                         `json:"fetched_at"`
-	UpdatedAt      int64                         `json:"updated_at"`
-	Official       *model.ChannelOfficialPricing `json:"official,omitempty"`
-	UpstreamQuote  *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
-	Internal       *model.ChannelInternalPricing `json:"internal,omitempty"`
+	ChannelID      int    `json:"channel_id"`
+	ModelName      string `json:"model_name"`
+	Provider       string `json:"provider"`
+	Region         string `json:"region"`
+	Currency       string `json:"currency"`
+	PricingSource  string `json:"pricing_source"`
+	PricingStatus  string `json:"pricing_status"`
+	PricingVersion string `json:"pricing_version"`
+	PriceShape     string `json:"price_shape,omitempty"`
+	PriceSupported bool   `json:"price_supported"`
+	FetchedAt      int64  `json:"fetched_at"`
+	UpdatedAt      int64  `json:"updated_at"`
+	// Stale marks an upstream price older than the official sync cadence, so
+	// an operator does not treat yesterday's quote as current.
+	Stale           bool                          `json:"stale"`
+	FetchedAgeHours int64                         `json:"fetched_age_hours"`
+	Official        *model.ChannelOfficialPricing `json:"official,omitempty"`
+	UpstreamQuote   *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
+	Internal        *model.ChannelInternalPricing `json:"internal,omitempty"`
 }
+
+// channelPricingStaleAfter is twice the default official sync interval: a
+// price that misses one scheduled refresh is flagged, not hidden.
+const channelPricingStaleAfter = 48 * time.Hour
 
 // classifyOfficialPricingShape tells the UI whether the official price can be
 // executed by the current billing engine. Storable but unexecutable shapes
@@ -106,6 +114,11 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 		PricingVersion: row.PricingVersion,
 		FetchedAt:      row.FetchedAt,
 		UpdatedAt:      row.UpdatedAt,
+	}
+	if row.FetchedAt > 0 {
+		age := time.Since(time.Unix(row.FetchedAt, 0))
+		view.FetchedAgeHours = int64(age / time.Hour)
+		view.Stale = age > channelPricingStaleAfter
 	}
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
 		var official model.ChannelOfficialPricing
