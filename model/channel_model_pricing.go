@@ -156,6 +156,10 @@ type ChannelBillingPricing struct {
 	// resolution time, so the consume log can snapshot procurement next to the
 	// sale price.
 	PurchaseUSD *float64
+	// Currency and FXRate snapshot the official source currency and the rate
+	// used to convert it, so a historical bill can be reproduced.
+	Currency string
+	FXRate   float64
 }
 
 // ChannelOfficialPricingRecord is one upsert input for an official sync.
@@ -798,6 +802,13 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 			pricing.Version = row.PricingVersion
 			pricing.Source = row.PricingSource
 			pricing.PurchaseUSD = channelPurchasePrimaryUSD(row.NormalizedPricing)
+			if strings.TrimSpace(row.NormalizedPricing) != "" {
+				var view ChannelOfficialPricing
+				if err := common.UnmarshalJsonStr(row.NormalizedPricing, &view); err == nil {
+					pricing.Currency = view.Currency
+					pricing.FXRate = view.FXRateToUSD
+				}
+			}
 			entry.pricing = pricing
 		}
 	}

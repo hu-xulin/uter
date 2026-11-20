@@ -119,6 +119,8 @@ type RelayInfo struct {
 	ChannelPricingRegion          string
 	ChannelPricingDeployment      string
 	ChannelPricingPurchaseUSD     *float64
+	ChannelPricingCurrency        string
+	ChannelPricingFXRate          float64
 	ChannelPricingVersion         string
 	RelayMode                     int
 	OriginModelName               string

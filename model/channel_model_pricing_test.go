@@ -789,8 +789,9 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 	setupChannelModelPricingDB(t)
 	purchase := 0.5
 	normalized, _ := common.Marshal(ChannelOfficialPricing{
-		Currency: "USD",
-		Unit:     "per_1m_token",
+		Currency:    "CNY",
+		FXRateToUSD: 7.3,
+		Unit:        "per_1m_token",
 		ChannelPrice: &ChannelPricingTier{
 			RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &purchase,
 		},
@@ -813,4 +814,6 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 	require.True(t, effective.Billable)
 	require.NotNil(t, effective.Pricing.PurchaseUSD)
 	assert.InDelta(t, 0.5, *effective.Pricing.PurchaseUSD, 1e-9)
+	assert.Equal(t, "CNY", effective.Pricing.Currency)
+	assert.InDelta(t, 7.3, effective.Pricing.FXRate, 1e-9)
 }

@@ -76,12 +76,26 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 		if info.ChannelPricingPurchaseUSD != nil {
 			other.SetAdmin("channel_pricing_purchase_usd", *info.ChannelPricingPurchaseUSD)
 		}
+		if info.ChannelPricingCurrency != "" {
+			other.SetAdmin("channel_pricing_currency", info.ChannelPricingCurrency)
+		}
+		if info.ChannelPricingFXRate > 0 {
+			other.SetAdmin("channel_pricing_fx_rate", info.ChannelPricingFXRate)
+		}
+		if snap := info.TieredBillingSnapshot; snap != nil && snap.ExprVersion != 0 {
+			other.SetAdmin("billing_expr_version", snap.ExprVersion)
+			other.SetAdmin("billing_expr_hash", snap.ExprHash)
+		}
 	}
 	if info.IsModelMapped {
 		other.SetPublic("is_model_mapped", true)
 		other.SetPublic("upstream_model_name", info.UpstreamModelName)
 	}
 	if snap := info.TieredBillingSnapshot; snap != nil {
+		if snap.ExprVersion != 0 {
+			other.SetAdmin("billing_expr_version", snap.ExprVersion)
+			other.SetAdmin("billing_expr_hash", snap.ExprHash)
+		}
 		other.SetPublic("billing_mode", "tiered_expr")
 		other.SetPublic("expr_b64", base64.StdEncoding.EncodeToString([]byte(snap.ExprString)))
 		other.SetPublic("matched_tier", snap.EstimatedTier)

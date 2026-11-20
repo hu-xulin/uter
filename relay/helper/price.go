@@ -196,6 +196,8 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		info.ChannelPricingRegion = identity.Region
 		info.ChannelPricingDeployment = identity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
+		info.ChannelPricingCurrency = channelPricing.Currency
+		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
 	}
 	modelPrice, usePrice := ratio_setting.GetModelPrice(billingModelName, false)
@@ -407,6 +409,8 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		info.ChannelPricingRegion = identity.Region
 		info.ChannelPricingDeployment = identity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
+		info.ChannelPricingCurrency = channelPricing.Currency
+		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
 	}
 	groupRatioInfo := HandleGroupRatio(c, info)

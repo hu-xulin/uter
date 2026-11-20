@@ -310,6 +310,8 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
+		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -357,6 +359,8 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
+		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(unitPrice * count * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -403,6 +407,8 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
+		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)

@@ -89,7 +89,17 @@ func AppendRelayLogAdminInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo,
 			if relayInfo.ChannelPricingPurchaseUSD != nil {
 				other.SetAdmin("channel_pricing_purchase_usd", *relayInfo.ChannelPricingPurchaseUSD)
 			}
+			if relayInfo.ChannelPricingCurrency != "" {
+				other.SetAdmin("channel_pricing_currency", relayInfo.ChannelPricingCurrency)
+			}
+			if relayInfo.ChannelPricingFXRate > 0 {
+				other.SetAdmin("channel_pricing_fx_rate", relayInfo.ChannelPricingFXRate)
+			}
 			other.SetAdmin("channel_pricing_use_price", relayInfo.ChannelPricingUsePrice)
+		}
+		if snapshot := relayInfo.TieredBillingSnapshot; snapshot != nil && snapshot.ExprVersion != 0 {
+			other.SetAdmin("billing_expr_version", snapshot.ExprVersion)
+			other.SetAdmin("billing_expr_hash", snapshot.ExprHash)
 		}
 		if diagnostics := relayInfo.ConversionDiagnostics(); len(diagnostics) > 0 {
 			other.SetAdmin("conversion_diagnostics", diagnostics)
