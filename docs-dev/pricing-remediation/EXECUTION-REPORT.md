@@ -35,7 +35,12 @@
 | `c9905236a` | 百炼目录价格来源收敛与旧价格重放 |
 | `02d994a9e` | 清理未使用符号，复用 DreamRouter URL 常量 |
 | `99e365e20` | oxfmt 统一渠道/定价页格式 |
-| `54a41c9ef` | UAP doctor/validate 与质量门禁证据
+| `54a41c9ef` | UAP doctor/validate 与质量门禁证据 |
+| `c80e860ba` | 百炼组件价格/更多价格类型；Apiko 同步返回跳过原因 |
+| `e205dab65` | 百炼品牌图标、渠道深色 Logo 与同步跳过原因 UI |
+| `230a06109` | 版本 `v1.6.41` |
+| `e51627de2` | 渠道品牌名称与 Logo 的服务端校验 |
+| `a128ee1b9` | 价格同步页导入顺序修正 |
 
 > 报告提交本身在其后追加，不再包含代码变更。
 
@@ -62,8 +67,8 @@
 
 ### 2.3 供应商适配与识别安全（Phase 3）
 
-- `service/upstream_provider.go`：适配器注册表；DreamRouter、百炼可拉取；OpenAI、Anthropic、Gemini、Azure、AWS、腾讯、火山、Apiko 明确声明 MANUAL_ONLY，不伪造同步。
-- `service/upstream_capability.go`：按渠道类型/官方 host 返回逐维度能力矩阵（token/图片/视频/音频/按次/按秒/按分钟/部署/阶梯/地区/计划同步）。
+- `service/upstream_provider.go`：适配器注册表；DreamRouter、百炼、Apiko（公开控制面目录）可拉取；OpenAI、Anthropic、Gemini、Azure、AWS、腾讯、火山明确声明 MANUAL_ONLY，不伪造同步。
+- `service/upstream_capability.go`：按渠道类型/官方 host 返回逐维度能力矩阵（token/图片/视频/音频/按次/按秒/按分钟/部署/阶梯/地区/计划同步）；Apiko 依据公开目录声明为可同步。
 - `service/upstream_host.go`：严格 hostname 匹配（exact 或 `.domain` 后缀，拒绝 `dreamrouter.ai.evil.example` 一类仿冒）；上游请求校验 http(s)、禁止内嵌凭据、屏蔽云元数据地址（169.254.169.254、metadata.google.internal、100.100.100.200、link-local）、重定向最多 3 次且禁止换 host，解析后再次校验（DNS rebinding 缓解）。
 - DreamRouter：公开 `/api/pricing` + 折扣组 + 阶梯表达式；修复上游把 `(…duration…) * x` 改为裸 `duration * x` 导致的解析失败（`service/dreamrouter_pricing_expr.go`）。
 - 百炼：原生 `/api/v1/models` 分页目录，保留人民币原值、显式记录 `FXRateToUSD` 与 `CurrencyInferred` 后换算美元；区域由 workspace/区域 host 判定。
@@ -104,7 +109,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | DreamRouter | 公开接口可用 | 公开 `/api/pricing` | 折扣组可解析；账户采购价无授权接口 | token/缓存/按次/按秒/阶梯/时段 | 86 个模型中 78 个解析出绝对价；8 个仅 ratio | 真实线上拉取 |
 | 阿里云百炼 | `/api/v1/models` 分页 | 原生目录含价格（人民币，按区域） | workspace 合同价无接口，需人工 | token/缓存/按次/按秒/阶梯/多档 | 379 个模型；真实请求走通并正确计费 | 真实线上拉取 + 真实请求 |
-| Apiko | 渠道类型与目录适配已接入 | 无可合法调用的价格接口 | 人工 | 按渠道类型通用 | 声明 MANUAL_ONLY | 未使用真实价格（无授权来源） |
+| Apiko | 渠道 `/v1/models` 与控制面目录 | 公开控制面 `https://apiko.app/api/public/models?billing=all`（免密钥，USD） | 合同价需人工 | token/上下文阶梯/按次；分辨率或时长档跳过并给出原因 | 68 个模型实拉成功，价格转为计费表达式 | 真实线上拉取 |
 | OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山 | 使用各自渠道适配 | 无供应商价格 API | 人工 | 按渠道类型通用 | 声明 MANUAL_ONLY | 不适用 |
 
 DreamRouter 仅 ratio、无绝对价的 8 个模型（2026-11-20 线上数据）：
@@ -162,7 +167,7 @@ DreamRouter 仅 ratio、无绝对价的 8 个模型（2026-11-20 线上数据）
 ## 5. 未完成事项与外部限制
 
 1. **采购价（BLOCKED_BY_MISSING_CREDENTIALS）**
-   - 除 DreamRouter 公开折扣组外，各供应商不提供可用渠道凭据调用的“账户合同价”接口；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山/Apiko 按 MANUAL_ONLY 处理，销售价由运营录入。
+   - 除 DreamRouter 公开折扣组外，各供应商不提供可用渠道凭据调用的“账户合同价”接口；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山按 MANUAL_ONLY 处理；Apiko 官方目录价可同步，但合同采购价仍需人工，销售价由运营确认。
    - 影响：无法自动计算“账户专属采购成本”；系统明确标记而不是猜测。
 2. **DreamRouter 8 个视频模型仅发布 ratio**
    - 上游无绝对价、无表达式，系统保留原始 ratio 并标记 `RATIO_ONLY_NO_ABSOLUTE_PRICE`；不按 token 价强行换算。
