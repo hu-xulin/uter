@@ -283,12 +283,12 @@ export function PrefillGroupFormDrawer({
                         value: type.value,
                         label: (
                           <div className='flex flex-col text-left'>
-                            <span className='font-medium'>{type.label}</span>
+                            <span className='font-medium'>{t(type.label)}</span>
                             <span
                               data-prefill-description
                               className='text-muted-foreground text-xs'
                             >
-                              {type.description}
+                              {t(type.description)}
                             </span>
                           </div>
                         ),
@@ -310,13 +310,13 @@ export function PrefillGroupFormDrawer({
                             <SelectItem key={type.value} value={type.value}>
                               <div className='flex flex-col text-left'>
                                 <span className='font-medium'>
-                                  {type.label}
+                                  {t(type.label)}
                                 </span>
                                 <span
                                   data-prefill-description
                                   className='text-muted-foreground text-xs'
                                 >
-                                  {type.description}
+                                  {t(type.description)}
                                 </span>
                               </div>
                             </SelectItem>
@@ -338,7 +338,7 @@ export function PrefillGroupFormDrawer({
                     {t('Project')}
                   </Heading>
                   <StatusBadge
-                    label={meta.label}
+                    label={t(meta.label)}
                     variant={meta.badge}
                     size='sm'
                     copyable={false}

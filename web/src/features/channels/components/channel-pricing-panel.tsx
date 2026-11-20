@@ -104,6 +104,12 @@ const PRICE_COVERAGE = [
   { key: 'deployment_pricing', label: 'Deployment' },
 ] as const
 
+const BILLING_UNIT_LABELS: Record<string, string> = {
+  per_1m_token: 'Per 1M tokens',
+  per_call: 'Per call',
+  per_second: 'Per second',
+}
+
 const PRICE_DIMENSIONS = [
   { value: 'input', label: 'Input' },
   { value: 'output', label: 'Output' },
@@ -178,6 +184,17 @@ function diagnosticWarning(
 
 export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const { t } = useTranslation()
+  const pricingModeLabel = (value: string) => {
+    const mode = PRICING_MODES.find((item) => item.value === value)
+    return mode ? t(mode.label) : value
+  }
+  const priceBasisLabel = (value: string) => {
+    if (value === 'channel') return t('Channel price')
+    if (value === 'current') return t('Current channel price')
+    return t('Official price')
+  }
+  const billingUnitLabel = (value: string) =>
+    BILLING_UNIT_LABELS[value] ? t(BILLING_UNIT_LABELS[value]) : value
   const queryClient = useQueryClient()
   const [basis, setBasis] = useState<'official' | 'channel' | 'current'>(
     'official'
@@ -619,6 +636,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-basis'>{t('Price basis')}</Label>
             <Select
+              items={[
+                { value: 'official', label: t('Official price') },
+                { value: 'channel', label: t('Channel price') },
+                { value: 'current', label: t('Current channel price') },
+              ]}
               value={basis}
               onValueChange={(next) =>
                 setBasis(
@@ -637,10 +659,17 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>
+              {t('Price basis hint')}
+            </p>
           </div>
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-mode'>{t('Pricing rule')}</Label>
             <Select
+              items={PRICING_MODES.map((item) => ({
+                value: item.value,
+                label: t(item.label),
+              }))}
               value={mode}
               onValueChange={(next) => next && setMode(next)}
             >
@@ -655,6 +684,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 ))}
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>
+              {t('Pricing rule hint')}
+            </p>
           </div>
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-value'>{t('Value')}</Label>
@@ -667,7 +699,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               disabled={mode === 'none'}
             />
             <p className='text-muted-foreground text-sm'>
-              {t('Discount: 0.6 = 40% off; markup: 0.1 = 10%')}
+              {t('Rule value hint')}
             </p>
           </div>
           <div className='space-y-1.5 sm:col-span-3'>
@@ -702,6 +734,12 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-scope'>{`3. ${t('Scope')}`}</Label>
             <Select
+              items={[
+                { value: 'all', label: t('All models') },
+                { value: 'models', label: t('Specific models') },
+                { value: 'prefix', label: t('Model name prefix') },
+                { value: 'category', label: t('Model type') },
+              ]}
               value={scope}
               onValueChange={(next) => {
                 if (
@@ -725,6 +763,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 <SelectItem value='category'>{t('Model type')}</SelectItem>
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>{t('Scope hint')}</p>
           </div>
           {scope === 'prefix' ? (
             <div className='space-y-1.5 sm:col-span-2'>
@@ -743,6 +782,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <div className='space-y-1.5 sm:col-span-2'>
               <Label htmlFor='batch-pricing-category'>{t('Model type')}</Label>
               <Select
+                items={Object.entries(MODEL_CATEGORY_LABELS).map(
+                  ([value, label]) => ({ value, label: t(label) })
+                )}
                 value={category}
                 onValueChange={(next) => next && setCategory(next)}
               >
@@ -780,6 +822,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                     {t('Price status')}
                   </Label>
                   <Select
+                    items={[
+                      { value: 'all', label: t('All price states') },
+                      { value: 'missing', label: t('Missing sale price') },
+                      { value: 'needs_review', label: t('Needs review') },
+                    ]}
                     value={priceFilter}
                     onValueChange={(next) =>
                       setPriceFilter(
@@ -941,7 +988,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 </Badge>
               ) : null}
               <span className='text-muted-foreground'>
-                {preview.basis} · {preview.mode} {preview.value}
+                {priceBasisLabel(preview.basis)} ·{' '}
+                {pricingModeLabel(preview.mode)} {preview.value}
               </span>
             </div>
             {preview.items.length > 0 ? (
@@ -1000,7 +1048,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                           className='border-t align-top'
                         >
                           <td className='px-2 py-1'>{item.model_name}</td>
-                          <td className='px-2 py-1'>{item.mode}</td>
+                          <td className='px-2 py-1'>
+                            {billingUnitLabel(item.mode)}
+                          </td>
                           <td className='px-2 py-1'>{parts.join(' · ')}</td>
                           <td className='px-2 py-1'>
                             {item.purchase_usd != null
@@ -1046,18 +1096,29 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             )}
           </p>
         </div>
-        <div className='flex flex-wrap items-center gap-4'>
-          <div className='flex items-center gap-2'>
+        <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
+          <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
             <Switch
               checked={schedule.enabled}
               onCheckedChange={(checked) =>
                 setSchedule((current) => ({ ...current, enabled: checked }))
               }
             />
-            <Label>{t('Enabled')}</Label>
+            <div className='space-y-0.5'>
+              <Label>{t('Enabled')}</Label>
+              <p className='text-muted-foreground text-sm'>
+                {t('Run this schedule automatically after upstream syncs.')}
+              </p>
+            </div>
           </div>
-          <div className='w-40'>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-basis'>{t('Price basis')}</Label>
             <Select
+              items={[
+                { value: 'official', label: t('Official price') },
+                { value: 'channel', label: t('Channel price') },
+              ]}
               value={isBailian ? 'official' : schedule.basis}
               disabled={isBailian}
               onValueChange={(value) =>
@@ -1067,7 +1128,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 }))
               }
             >
-              <SelectTrigger className='w-full'>
+              <SelectTrigger id='schedule-basis' className='w-full'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1075,15 +1136,26 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 <SelectItem value='channel'>{t('Channel price')}</SelectItem>
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>
+              {isBailian
+                ? t('Bailian schedules always use official catalog prices.')
+                : t('Price basis hint')}
+            </p>
           </div>
-          <div className='w-44'>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-mode'>{t('Pricing rule')}</Label>
             <Select
+              items={PRICING_MODES.map((item) => ({
+                value: item.value,
+                label: t(item.label),
+              }))}
               value={schedule.mode}
               onValueChange={(next) =>
                 next && setSchedule((current) => ({ ...current, mode: next }))
               }
             >
-              <SelectTrigger className='w-full'>
+              <SelectTrigger id='schedule-mode' className='w-full'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1094,22 +1166,38 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 ))}
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>
+              {t('Pricing rule hint')}
+            </p>
           </div>
-          <Input
-            className='w-28'
-            inputMode='decimal'
-            value={String(schedule.value)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                value: Number(event.target.value),
-              }))
-            }
-            placeholder='0.6'
-            disabled={schedule.mode === 'none'}
-          />
-          <div className='w-36'>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-value'>{t('Rule value')}</Label>
+            <Input
+              id='schedule-value'
+              inputMode='decimal'
+              value={String(schedule.value)}
+              onChange={(event) =>
+                setSchedule((current) => ({
+                  ...current,
+                  value: Number(event.target.value),
+                }))
+              }
+              placeholder='0.6'
+              disabled={schedule.mode === 'none'}
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t('Rule value hint')}
+            </p>
+          </div>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-review-mode'>{t('Review mode')}</Label>
             <Select
+              items={[
+                { value: 'auto', label: t('Auto apply') },
+                { value: 'manual', label: t('Manual review') },
+              ]}
               value={schedule.review_mode}
               onValueChange={(next) =>
                 next &&
@@ -1119,7 +1207,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 }))
               }
             >
-              <SelectTrigger className='w-full'>
+              <SelectTrigger id='schedule-review-mode' className='w-full'>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -1127,72 +1215,111 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 <SelectItem value='manual'>{t('Manual review')}</SelectItem>
               </SelectContent>
             </Select>
+            <p className='text-muted-foreground text-sm'>
+              {t('Review mode hint')}
+            </p>
           </div>
-          <Input
-            className='w-28'
-            inputMode='decimal'
-            value={String(schedule.threshold_percent)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                threshold_percent: Number(event.target.value),
-              }))
-            }
-            placeholder='20'
-          />
-          <Input
-            className='w-36'
-            inputMode='numeric'
-            value={String(schedule.model_sync_interval_minutes)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                model_sync_interval_minutes: Number(event.target.value),
-              }))
-            }
-            placeholder={t('Model sync minutes')}
-            aria-label={t('Model sync minutes')}
-          />
-          <Input
-            className='w-36'
-            inputMode='numeric'
-            value={String(schedule.official_sync_interval_minutes)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                official_sync_interval_minutes: Number(event.target.value),
-              }))
-            }
-            placeholder={t('Official sync minutes')}
-            aria-label={t('Official sync minutes')}
-          />
-          <Input
-            className='w-36'
-            inputMode='numeric'
-            value={String(schedule.channel_sync_interval_minutes)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                channel_sync_interval_minutes: Number(event.target.value),
-              }))
-            }
-            placeholder={t('Channel sync minutes')}
-            aria-label={t('Channel sync minutes')}
-          />
-          <Button
-            type='button'
-            size='sm'
-            variant='outline'
-            disabled={
-              disabled ||
-              (schedule.mode !== 'none' && schedule.value < 0) ||
-              saveSchedule.isPending
-            }
-            onClick={() => saveSchedule.mutate()}
-          >
-            <Save className='size-4' />
-            {t('Save schedule')}
-          </Button>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-threshold'>
+              {t('Review threshold (%)')}
+            </Label>
+            <Input
+              id='schedule-threshold'
+              inputMode='decimal'
+              value={String(schedule.threshold_percent)}
+              onChange={(event) =>
+                setSchedule((current) => ({
+                  ...current,
+                  threshold_percent: Number(event.target.value),
+                }))
+              }
+              placeholder='20'
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t('Review threshold hint')}
+            </p>
+          </div>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-model-interval'>
+              {t('Model sync interval (minutes)')}
+            </Label>
+            <Input
+              id='schedule-model-interval'
+              inputMode='numeric'
+              value={String(schedule.model_sync_interval_minutes)}
+              onChange={(event) =>
+                setSchedule((current) => ({
+                  ...current,
+                  model_sync_interval_minutes: Number(event.target.value),
+                }))
+              }
+              placeholder='360'
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t('Model sync interval hint')}
+            </p>
+          </div>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-official-interval'>
+              {t('Official price interval (minutes)')}
+            </Label>
+            <Input
+              id='schedule-official-interval'
+              inputMode='numeric'
+              value={String(schedule.official_sync_interval_minutes)}
+              onChange={(event) =>
+                setSchedule((current) => ({
+                  ...current,
+                  official_sync_interval_minutes: Number(event.target.value),
+                }))
+              }
+              placeholder='1440'
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t('Official price interval hint')}
+            </p>
+          </div>
+
+          <div className='space-y-1.5'>
+            <Label htmlFor='schedule-channel-interval'>
+              {t('Channel price interval (minutes)')}
+            </Label>
+            <Input
+              id='schedule-channel-interval'
+              inputMode='numeric'
+              value={String(schedule.channel_sync_interval_minutes)}
+              onChange={(event) =>
+                setSchedule((current) => ({
+                  ...current,
+                  channel_sync_interval_minutes: Number(event.target.value),
+                }))
+              }
+              placeholder='60'
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t('Channel price interval hint')}
+            </p>
+          </div>
+
+          <div className='flex items-end'>
+            <Button
+              type='button'
+              size='sm'
+              variant='outline'
+              disabled={
+                disabled ||
+                (schedule.mode !== 'none' && schedule.value < 0) ||
+                saveSchedule.isPending
+              }
+              onClick={() => saveSchedule.mutate()}
+            >
+              <Save className='size-4' />
+              {t('Save schedule')}
+            </Button>
+          </div>
         </div>
       </section>
 

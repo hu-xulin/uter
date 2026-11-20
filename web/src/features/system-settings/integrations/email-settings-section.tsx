@@ -383,7 +383,7 @@ export function EmailSettingsSection({
                         {...field}
                         autoComplete='off'
                         disabled={isSaving}
-                        placeholder='New API'
+                        placeholder='Uter'
                       />
                     </FormControl>
                     <FormDescription>
