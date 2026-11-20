@@ -29,6 +29,9 @@ const (
 // BatchPricingItem is one previewed/written internal price.
 type BatchPricingItem struct {
 	ModelName     string   `json:"model_name"`
+	Provider      string   `json:"provider,omitempty"`
+	Region        string   `json:"region,omitempty"`
+	DeploymentId  string   `json:"deployment_id,omitempty"`
 	Mode          string   `json:"mode"`
 	InputUSD      *float64 `json:"input_per_million_usd,omitempty"`
 	OutputUSD     *float64 `json:"output_per_million_usd,omitempty"`
@@ -230,11 +233,14 @@ func ApplyChannelBatchPricingWithOptions(
 			continue
 		}
 		item := BatchPricingItem{
-			ModelName:   row.ModelName,
-			Mode:        base.mode,
-			Version:     row.PricingVersion,
-			PurchaseUSD: resolvePurchasePrimaryPrice(row),
-			PreviousUSD: resolveCurrentPrimaryPrice(row),
+			ModelName:    row.ModelName,
+			Provider:     row.Provider,
+			Region:       row.Region,
+			DeploymentId: row.DeploymentId,
+			Mode:         base.mode,
+			Version:      row.PricingVersion,
+			PurchaseUSD:  resolvePurchasePrimaryPrice(row),
+			PreviousUSD:  resolveCurrentPrimaryPrice(row),
 		}
 		internal := model.ChannelInternalPricing{
 			Mode:      base.mode,
@@ -328,8 +334,16 @@ func ApplyChannelBatchPricingWithOptions(
 					oldPricing = &parsed
 				}
 			}
-			expectedVersion := options.ExpectedVersions[row.ModelName]
-			err := model.SetChannelInternalPricingIfVersion(channelID, row.ModelName, internal, expectedVersion)
+			identityKey := row.ModelName + "|" + row.Provider + "|" + row.Region + "|" + row.DeploymentId
+			expectedVersion := options.ExpectedVersions[identityKey]
+			if expectedVersion == "" {
+				expectedVersion = options.ExpectedVersions[row.ModelName]
+			}
+			pricingIdentity := model.ChannelPricingIdentity{
+				ChannelId: channelID, Provider: row.Provider, Region: row.Region,
+				DeploymentId: row.DeploymentId, ModelName: row.ModelName,
+			}
+			err := model.SetChannelInternalPricingIfVersionFor(pricingIdentity, internal, expectedVersion)
 			if errors.Is(err, model.ErrChannelPricingVersionConflict) {
 				result.Conflicts = append(result.Conflicts, row.ModelName)
 				result.Skipped = append(result.Skipped, BatchPricingSkipped{
@@ -342,8 +356,9 @@ func ApplyChannelBatchPricingWithOptions(
 				continue
 			}
 			if err := AppendChannelPricingHistory(ChannelPricingHistoryEntry{
-				ChannelID: channelID, ModelName: row.ModelName, Source: "batch",
-				OldPricing: oldPricing, NewPricing: &internal,
+				ChannelID: channelID, ModelName: row.ModelName,
+				Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
+				Source: "batch", OldPricing: oldPricing, NewPricing: &internal,
 			}); err != nil {
 				common.SysError("append batch pricing history failed: " + err.Error())
 			}

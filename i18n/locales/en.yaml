@@ -524,3 +524,4 @@ relay.task_channel_disabled: The channel of this task has been disabled
 relay.request_rejected: "Request rejected by policy"
 relay.request_plugin_failed: "A request plugin failed"
 relay.response_rejected: "Response stopped by policy"
+relay.channel_price_identity_unmatched: Channel {{.Channel}} has multiple region or deployment prices for model {{.Model}}, and this request cannot be matched to one ({{.Reason}}). Make the channel identity explicit before billing.

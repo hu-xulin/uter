@@ -19,7 +19,10 @@ For commercial licensing, please contact support@uter.ai
 package service
 
 import (
+	"strings"
+
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 )
 
 // UpstreamProviderForChannel resolves a channel to a provider capability
@@ -104,5 +107,29 @@ func uterProviderDescriptor() UpstreamProvider {
 			PerMinutePricing:    capability(CapabilitySupported, "stored per minute and normalized to seconds"),
 			DeploymentPricing:   capability(CapabilitySupported, "deployment price estimation via /api/deployments/price-estimation"),
 		},
+	}
+}
+
+// ChannelPricingIdentityForRequest builds the full identity a request is billed
+// under. The provider comes from the channel capability (host-aware), and the
+// region from the Bailian workspace endpoint; deployment stays explicit so a
+// future router can pass the deployment it selected.
+func ChannelPricingIdentityForRequest(channelType int, baseURL, deploymentID, modelName string) model.ChannelPricingIdentity {
+	provider := UpstreamProviderForChannel(channelType, baseURL).ID
+	region := ""
+	if provider == "alibaba-bailian" {
+		// Only a recognised workspace/intl/generic Beijing host yields a
+		// region; an unknown DashScope host must not default to Beijing and
+		// silently select that region's price.
+		if _, parsed, ok := ParseBailianWorkspace(baseURL); ok {
+			region = string(parsed)
+		}
+	}
+	return model.ChannelPricingIdentity{
+		ChannelId:    0,
+		Provider:     provider,
+		Region:       region,
+		DeploymentId: strings.TrimSpace(deploymentID),
+		ModelName:    strings.TrimSpace(modelName),
 	}
 }

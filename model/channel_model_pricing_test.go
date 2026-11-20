@@ -1,6 +1,9 @@
 package model
 
 import (
+	"math"
+	"strings"
+	"sync"
 	"testing"
 
 	"github.com/glebarez/sqlite"
@@ -626,4 +629,188 @@ func TestOfficialPricingReviewStateRequiresOperatorConfiguration(t *testing.T) {
 	row, err = GetChannelModelPricing(12, "deepseek-v4-flash")
 	require.NoError(t, err)
 	assert.Equal(t, ChannelPricingStatusOfficialOnly, row.PricingStatus)
+}
+
+func TestResolveEffectiveChannelPricingUsesFullIdentity(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	input := func(value float64) *float64 { v := value; return &v }
+	makeRecord := func(region, deployment string) ChannelOfficialPricingRecord {
+		record := officialRecord(1, "qwen-max", "bailian-official")
+		record.Provider = "aliyun-bailian"
+		record.Region = region
+		record.DeploymentId = deployment
+		return record
+	}
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
+		makeRecord("cn-beijing", ""),
+		makeRecord("cn-beijing", "deploy-x"),
+		makeRecord("ap-southeast-1", ""),
+		makeRecord("ap-southeast-1", "deploy-x"),
+	})
+	require.NoError(t, err)
+
+	prices := map[string]float64{
+		"cn-beijing/":             1.0,
+		"cn-beijing/deploy-x":     2.0,
+		"ap-southeast-1/":         3.0,
+		"ap-southeast-1/deploy-x": 4.0,
+	}
+	for key, price := range prices {
+		parts := strings.SplitN(key, "/", 2)
+		out := price * 2
+		require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
+			ChannelId: 1, Provider: "aliyun-bailian", Region: parts[0], DeploymentId: parts[1], ModelName: "qwen-max",
+		}, ChannelInternalPricing{
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: input(price), OutputUSDPerMillion: &out,
+		}))
+	}
+	for key, price := range prices {
+		parts := strings.SplitN(key, "/", 2)
+		effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
+			ChannelId: 1, Provider: "aliyun-bailian", Region: parts[0], DeploymentId: parts[1], ModelName: "qwen-max",
+		})
+		require.True(t, effective.Billable, key)
+		require.NotNil(t, effective.Pricing)
+		assert.InDelta(t, price/2, effective.Pricing.ModelRatio, 1e-9, key)
+	}
+
+	unknown := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "eu-central-1", ModelName: "qwen-max",
+	})
+	assert.True(t, unknown.Exists)
+	assert.False(t, unknown.Billable)
+	assert.Equal(t, ChannelPricingReasonIdentityMissing, unknown.Reason)
+
+	legacy := ResolveEffectiveChannelPricing(1, "qwen-max")
+	assert.False(t, legacy.Billable, "legacy lookup must not pick one of several identities")
+	assert.NotEmpty(t, legacy.Reason)
+}
+
+// Bailian rows store the model's inference provider, not the channel vendor.
+// A single region/deployment row must still match without guessing between
+// different identities.
+func TestResolveIdentityAcceptsSingleBailianInferenceProviderRow(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	record := officialRecord(1, "qwen-plus", "bailian-official")
+	record.Provider = "qwen"
+	record.Region = "cn-beijing"
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	input, output := 2.0, 4.0
+	require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
+		ChannelId: 1, Provider: "alibaba-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
+	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output}))
+
+	effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
+		ChannelId: 1, Provider: "alibaba-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
+	})
+	require.True(t, effective.Billable)
+	assert.InDelta(t, 1.0, effective.Pricing.ModelRatio, 1e-9)
+}
+
+func TestResolveChannelPricingIdentityConcurrentIsolation(t *testing.T) {
+	// A file-backed database keeps every pooled connection on the same data;
+	// :memory: opens a separate empty database per connection.
+	db, err := gorm.Open(sqlite.Open(t.TempDir()+"/pricing-concurrent.db"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}))
+	previous := DB
+	DB = db
+	InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		DB = previous
+		InvalidateChannelPricingCache()
+	})
+	input := func(value float64) *float64 { v := value; return &v }
+	identities := []struct {
+		region     string
+		deployment string
+		price      float64
+	}{
+		{"cn-beijing", "", 1},
+		{"cn-beijing", "deploy-x", 2},
+		{"ap-southeast-1", "", 3},
+		{"ap-southeast-1", "deploy-x", 4},
+	}
+	for _, item := range identities {
+		record := officialRecord(1, "qwen-max", "bailian-official")
+		record.Provider = "aliyun-bailian"
+		record.Region = item.region
+		record.DeploymentId = item.deployment
+		_, upsertErr := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+		require.NoError(t, upsertErr)
+		out := item.price * 2
+		require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
+			ChannelId: 1, Provider: "aliyun-bailian", Region: item.region, DeploymentId: item.deployment, ModelName: "qwen-max",
+		}, ChannelInternalPricing{
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: input(item.price), OutputUSDPerMillion: &out,
+		}))
+	}
+
+	var wg sync.WaitGroup
+	failures := make(chan string, 1)
+	report := func(reason string) {
+		select {
+		case failures <- reason:
+		default:
+		}
+	}
+	for i := 0; i < 8; i++ {
+		for _, item := range identities {
+			item := item
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for j := 0; j < 5; j++ {
+					effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
+						ChannelId: 1, Provider: "aliyun-bailian",
+						Region: item.region, DeploymentId: item.deployment, ModelName: "qwen-max",
+					})
+					if !effective.Billable || effective.Pricing == nil {
+						report("not billable")
+						return
+					}
+					if math.Abs(effective.Pricing.ModelRatio-item.price/2) > 1e-9 {
+						report("cross-region price")
+						return
+					}
+				}
+			}()
+		}
+	}
+	wg.Wait()
+	close(failures)
+	for failure := range failures {
+		t.Fatal(failure)
+	}
+}
+
+func TestResolveSnapshotsPurchasePrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	purchase := 0.5
+	normalized, _ := common.Marshal(ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		ChannelPrice: &ChannelPricingTier{
+			RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &purchase,
+		},
+		Tiers: []ChannelPricingTier{{RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &purchase}},
+	})
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
+		Source: "bailian-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	input, output := 1.0, 2.0
+	require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
+		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
+	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output}))
+
+	effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
+		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
+	})
+	require.True(t, effective.Billable)
+	require.NotNil(t, effective.Pricing.PurchaseUSD)
+	assert.InDelta(t, 0.5, *effective.Pricing.PurchaseUSD, 1e-9)
 }

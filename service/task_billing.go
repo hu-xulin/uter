@@ -68,8 +68,14 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 	if info.ChannelPricingApplied {
 		other.SetAdmin("channel_pricing_version", info.ChannelPricingVersion)
 		other.SetAdmin("channel_pricing_mode", info.ChannelPricingMode)
+		other.SetAdmin("channel_pricing_provider", info.ChannelPricingProvider)
+		other.SetAdmin("channel_pricing_region", info.ChannelPricingRegion)
+		other.SetAdmin("channel_pricing_deployment", info.ChannelPricingDeployment)
 		other.SetAdmin("channel_pricing_model_ratio", info.ChannelPricingModelRatio)
 		other.SetAdmin("channel_pricing_model_price", info.ChannelPricingModelPrice)
+		if info.ChannelPricingPurchaseUSD != nil {
+			other.SetAdmin("channel_pricing_purchase_usd", *info.ChannelPricingPurchaseUSD)
+		}
 	}
 	if info.IsModelMapped {
 		other.SetPublic("is_model_mapped", true)
@@ -778,7 +784,19 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 
 	// 获取模型价格和倍率。渠道独立价格优先，且按任务实际执行渠道读取。
 	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
-	effective := model.ResolveEffectiveChannelPricing(task.ChannelId, modelName)
+	pricingIdentity := model.ChannelPricingIdentity{ChannelId: task.ChannelId, ModelName: modelName}
+	if channel, err := model.GetChannelById(task.ChannelId, true); err == nil && channel != nil {
+		pricingIdentity = ChannelPricingIdentityForRequest(channel.Type, channel.GetBaseURL(), "", modelName)
+		pricingIdentity.ChannelId = task.ChannelId
+	}
+	effective := model.ResolveEffectiveChannelPricingFor(pricingIdentity)
+	if effective.Exists && effective.Reason != "" {
+		common.SysError(common.LogText(
+			"task %s channel %d model %s pricing identity unmatched (%s); keeping the pre-consumed quota",
+			task.TaskID, task.ChannelId, modelName, effective.Reason,
+		))
+		return false
+	}
 	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if hasChannelPricing {
 		if channelPricing.UsePrice {

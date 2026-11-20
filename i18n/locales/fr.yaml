@@ -471,3 +471,4 @@ user.default_token_name: '{{.Username}}''s initial token'
 relay.request_rejected: "Requête refusée par la politique"
 relay.request_plugin_failed: "Un plugin de requête a échoué"
 relay.response_rejected: "Réponse arrêtée par la politique"
+relay.channel_price_identity_unmatched: Le canal {{.Channel}} a plusieurs prix de région ou de déploiement pour le modèle {{.Model}}, et cette requête ne correspond à aucun ({{.Reason}}). Rendez l'identité du canal explicite avant la facturation.

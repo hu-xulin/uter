@@ -525,3 +525,4 @@ relay.task_channel_disabled: 該任務所屬管道已被停用
 relay.request_rejected: "請求被策略拒絕"
 relay.request_plugin_failed: "請求外掛執行失敗"
 relay.response_rejected: "回應被策略終止"
+relay.channel_price_identity_unmatched: 渠道 {{.Channel}} 的模型 {{.Model}} 存在多個區域或部署價格，本次請求無法匹配到唯一價格（{{.Reason}}）。請先明確渠道身分再計費。

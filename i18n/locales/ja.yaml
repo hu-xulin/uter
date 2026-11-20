@@ -471,3 +471,4 @@ user.default_token_name: '{{.Username}}''s initial token'
 relay.request_rejected: "ポリシーによりリクエストが拒否されました"
 relay.request_plugin_failed: "リクエストプラグインが失敗しました"
 relay.response_rejected: "ポリシーにより応答が停止されました"
+relay.channel_price_identity_unmatched: チャネル {{.Channel}} のモデル {{.Model}} には複数のリージョンまたはデプロイ価格があり、このリクエストは一意に一致しません（{{.Reason}}）。課金前にチャネル識別情報を明確にしてください。

@@ -271,7 +271,20 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 	if pinnedPlugin.Plugin != nil {
 		pluginKey = pinnedPlugin.Plugin.Meta.Key
 	}
-	channelPricing := model.ResolveEffectiveChannelPricing(info.GetChannelID(), modelName)
+	channelType := common.GetContextKeyInt(c, constant.ContextKeyChannelType)
+	channelBaseURL := common.GetContextKeyString(c, constant.ContextKeyChannelBaseUrl)
+	if info.ChannelMeta != nil {
+		channelType = info.ChannelType
+		channelBaseURL = info.ChannelBaseUrl
+	}
+	pricingIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, "", modelName)
+	pricingIdentity.ChannelId = info.GetChannelID()
+	channelPricing := model.ResolveEffectiveChannelPricingFor(pricingIdentity)
+	if channelPricing.Exists && channelPricing.Reason != "" {
+		return nil, service.TaskErrorWrapper(fmt.Errorf(
+			"channel %d model %s pricing identity unmatched: %s", pricingIdentity.ChannelId, modelName, channelPricing.Reason,
+		), "model_price_error", http.StatusBadRequest)
+	}
 	if channelPricing.Billable && channelPricing.Pricing.UsePerSecond {
 		provider, supported := adaptor.(channel.TaskUsageFactsProvider)
 		if !supported {
@@ -293,6 +306,10 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		unitPrice := channelPricing.Pricing.PerSecondPrice
 		info.ChannelPricingApplied = true
 		info.ChannelPricingMode = channelPricing.Pricing.Mode
+		info.ChannelPricingProvider = pricingIdentity.Provider
+		info.ChannelPricingRegion = pricingIdentity.Region
+		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
+		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -336,6 +353,10 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		}
 		info.ChannelPricingApplied = true
 		info.ChannelPricingMode = channelPricing.Pricing.Mode
+		info.ChannelPricingProvider = pricingIdentity.Provider
+		info.ChannelPricingRegion = pricingIdentity.Region
+		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
+		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(unitPrice * count * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -378,6 +399,10 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		}
 		info.ChannelPricingApplied = true
 		info.ChannelPricingMode = channelPricing.Pricing.Mode
+		info.ChannelPricingProvider = pricingIdentity.Provider
+		info.ChannelPricingRegion = pricingIdentity.Region
+		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
+		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -432,7 +457,9 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			groupRatioInfo := helper.HandleGroupRatio(c, info)
 			// 渠道价按官方价×上游折扣反推；任务按秒/按张计费走表达式，折扣以倍率
 			// 形式并入有效组倍率，结算快照沿用同一数值，避免预扣与结算口径漂移。
-			effectiveGroupRatio := groupRatioInfo.GroupRatio * model.ResolveChannelUsageDiscount(info.ChannelId, modelName)
+			usageIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, "", modelName)
+			usageIdentity.ChannelId = info.ChannelId
+			effectiveGroupRatio := groupRatioInfo.GroupRatio * model.ResolveChannelUsageDiscountFor(usageIdentity)
 			quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * effectiveGroupRatio)
 			noteTaskQuotaClamp(info, clamp)
 			priceData = types.PriceData{Quota: quota, QuotaToPreConsume: quota, GroupRatioInfo: groupRatioInfo}

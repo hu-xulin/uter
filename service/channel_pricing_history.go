@@ -14,13 +14,16 @@ const channelPricingHistoryLimit = 1000
 
 // ChannelPricingHistoryEntry records one internal sale-price change.
 type ChannelPricingHistoryEntry struct {
-	ID         int64                         `json:"id,omitempty"`
-	ChannelID  int                           `json:"channel_id"`
-	ModelName  string                        `json:"model_name"`
-	Source     string                        `json:"source"`
-	OldPricing *model.ChannelInternalPricing `json:"old_pricing,omitempty"`
-	NewPricing *model.ChannelInternalPricing `json:"new_pricing,omitempty"`
-	ChangedAt  time.Time                     `json:"changed_at"`
+	ID           int64                         `json:"id,omitempty"`
+	ChannelID    int                           `json:"channel_id"`
+	ModelName    string                        `json:"model_name"`
+	Provider     string                        `json:"provider,omitempty"`
+	Region       string                        `json:"region,omitempty"`
+	DeploymentId string                        `json:"deployment_id,omitempty"`
+	Source       string                        `json:"source"`
+	OldPricing   *model.ChannelInternalPricing `json:"old_pricing,omitempty"`
+	NewPricing   *model.ChannelInternalPricing `json:"new_pricing,omitempty"`
+	ChangedAt    time.Time                     `json:"changed_at"`
 }
 
 // AppendChannelPricingHistory writes to the durable table; the option log is a
@@ -33,7 +36,9 @@ func AppendChannelPricingHistory(entry ChannelPricingHistoryEntry) error {
 	oldJSON, _ := common.Marshal(entry.OldPricing)
 	newJSON, _ := common.Marshal(entry.NewPricing)
 	if err := model.AppendChannelPricingHistory(model.ChannelPricingHistory{
-		ChannelID: entry.ChannelID, ModelName: entry.ModelName, Source: entry.Source,
+		ChannelID: entry.ChannelID, ModelName: entry.ModelName,
+		Provider: entry.Provider, Region: entry.Region, DeploymentId: entry.DeploymentId,
+		Source:     entry.Source,
 		OldPricing: string(oldJSON), NewPricing: string(newJSON),
 		ChangedAt: entry.ChangedAt.Unix(),
 	}); err == nil {
@@ -73,6 +78,7 @@ func GetChannelPricingHistoryEntry(id int64) (*ChannelPricingHistoryEntry, error
 func channelPricingHistoryEntryFromModel(row model.ChannelPricingHistory) ChannelPricingHistoryEntry {
 	entry := ChannelPricingHistoryEntry{
 		ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+		Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
 		Source: row.Source, ChangedAt: time.Unix(row.ChangedAt, 0).UTC(),
 	}
 	if strings.TrimSpace(row.OldPricing) != "" {

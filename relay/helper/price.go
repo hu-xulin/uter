@@ -15,6 +15,7 @@ import (
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/relaykit/relayconvert/reasoning"
 	"github.com/uter-ai/uter/relaykit/types"
+	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 	"github.com/uter-ai/uter/setting/custom_pricing"
 	"github.com/uter-ai/uter/setting/model_setting"
@@ -42,6 +43,29 @@ func channelPriceNotConfiguredError(c *gin.Context, channelId int, modelName str
 		"Channel": channelId,
 		"Model":   modelName,
 	}))
+}
+
+// channelPriceIdentityError blocks a charge whose channel has several region
+// or deployment prices that this request cannot be matched to.
+func channelPriceIdentityError(c *gin.Context, channelId int, modelName, reason string) error {
+	return errors.New(i18n.T(c, i18n.MsgRelayChannelPriceIdentityUnmatched, map[string]any{
+		"Channel": channelId,
+		"Model":   modelName,
+		"Reason":  reason,
+	}))
+}
+
+// channelPricingIdentity resolves the request identity without assuming the
+// RelayInfo has a ChannelMeta yet (the distributor may not have attached one on
+// the pre-consume path).
+func channelPricingIdentity(c *gin.Context, info *relaycommon.RelayInfo, modelName string) model.ChannelPricingIdentity {
+	channelType := common.GetContextKeyInt(c, constant.ContextKeyChannelType)
+	baseURL := common.GetContextKeyString(c, constant.ContextKeyChannelBaseUrl)
+	if info.ChannelMeta != nil {
+		channelType = info.ChannelType
+		baseURL = info.ChannelBaseUrl
+	}
+	return service.ChannelPricingIdentityForRequest(channelType, baseURL, "", modelName)
 }
 
 // HandleGroupRatio checks for "auto_group" in the context and updates the group ratio and relayInfo.UsingGroup if present
@@ -142,10 +166,15 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 	}
 	// A channel-isolated price is the actual channel's contract and takes
 	// precedence over the channel-level upstream pricing engine.
-	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
+	identity := channelPricingIdentity(c, info, billingModelName)
+	identity.ChannelId = channelId
+	effective := model.ResolveEffectiveChannelPricingFor(identity)
 	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if !hasChannelPricing {
 		if effective.Exists {
+			if effective.Reason != "" {
+				return hosttypes.PriceData{}, channelPriceIdentityError(c, channelId, billingModelName, effective.Reason)
+			}
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
@@ -163,6 +192,10 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		info.ChannelPricingModelPrice = channelPricing.ModelPrice
 		info.ChannelPricingUsePrice = channelPricing.UsePrice
 		info.ChannelPricingMode = channelPricing.Mode
+		info.ChannelPricingProvider = identity.Provider
+		info.ChannelPricingRegion = identity.Region
+		info.ChannelPricingDeployment = identity.DeploymentId
+		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
 		info.ChannelPricingVersion = channelPricing.Version
 	}
 	modelPrice, usePrice := ratio_setting.GetModelPrice(billingModelName, false)
@@ -344,10 +377,15 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		// have ChannelMeta yet; read the already-selected channel from context.
 		channelId = common.GetContextKeyInt(c, constant.ContextKeyChannelId)
 	}
-	effective := model.ResolveEffectiveChannelPricing(channelId, billingModelName)
+	identity := channelPricingIdentity(c, info, billingModelName)
+	identity.ChannelId = channelId
+	effective := model.ResolveEffectiveChannelPricingFor(identity)
 	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
 	if !hasChannelPricing {
 		if effective.Exists {
+			if effective.Reason != "" {
+				return hosttypes.PriceData{}, channelPriceIdentityError(c, channelId, billingModelName, effective.Reason)
+			}
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
@@ -365,6 +403,10 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		info.ChannelPricingModelPrice = channelPricing.ModelPrice
 		info.ChannelPricingUsePrice = channelPricing.UsePrice
 		info.ChannelPricingMode = channelPricing.Mode
+		info.ChannelPricingProvider = identity.Provider
+		info.ChannelPricingRegion = identity.Region
+		info.ChannelPricingDeployment = identity.DeploymentId
+		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
 		info.ChannelPricingVersion = channelPricing.Version
 	}
 	groupRatioInfo := HandleGroupRatio(c, info)

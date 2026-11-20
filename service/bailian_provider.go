@@ -406,7 +406,10 @@ func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) 
 			skipped++
 			continue
 		}
-		if err := model.SetChannelInternalPricing(channelID, row.ModelName, internal); err != nil {
+		if err := model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+			ChannelId: channelID, Provider: row.Provider, Region: row.Region,
+			DeploymentId: row.DeploymentId, ModelName: row.ModelName,
+		}, internal); err != nil {
 			skipped++
 			continue
 		}

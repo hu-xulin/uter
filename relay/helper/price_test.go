@@ -29,6 +29,7 @@ import (
 	"github.com/uter-ai/uter/setting/model_setting"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
+	hosttypes "github.com/uter-ai/uter/types"
 )
 
 func TestModelPriceHelperTieredUsesPreloadedRequestInput(t *testing.T) {
@@ -1109,4 +1110,66 @@ func mustGroupRatioJSON(groups map[string]float64) string {
 		panic(err)
 	}
 	return string(encoded)
+}
+
+// A channel with the same model priced per region must bill the region its
+// request actually targets; another region's price is never a fallback.
+func TestModelPriceHelperUsesRequestRegionIdentity(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previous := model.DB
+	model.DB = db
+	model.InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		model.DB = previous
+		model.InvalidateChannelPricingCache()
+	})
+
+	for _, item := range []struct {
+		region string
+		input  float64
+	}{
+		{"cn-beijing", 2},
+		{"ap-southeast-1", 4},
+	} {
+		output := item.input * 2
+		_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+			ChannelId: 7, Provider: "alibaba-bailian", Region: item.region, ModelName: "regional-model",
+			Currency: "USD", Source: "bailian-official", FetchedAt: 100,
+		}})
+		require.NoError(t, err)
+		require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+			ChannelId: 7, Provider: "alibaba-bailian", Region: item.region, ModelName: "regional-model",
+		}, model.ChannelInternalPricing{
+			Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &item.input, OutputUSDPerMillion: &output,
+		}))
+	}
+
+	priceFor := func(baseURL string) (hosttypes.PriceData, error) {
+		ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+		ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+		ctx.Set("group", "default")
+		info := &relaycommon.RelayInfo{
+			OriginModelName: "regional-model",
+			UserGroup:       "default",
+			UsingGroup:      "default",
+			ChannelMeta: &relaycommon.ChannelMeta{
+				ChannelId: 7, ChannelType: constant.ChannelTypeAli, ChannelBaseUrl: baseURL,
+			},
+		}
+		return ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	}
+
+	beijing, err := priceFor("https://ws-1.cn-beijing.maas.aliyuncs.com")
+	require.NoError(t, err)
+	assert.InDelta(t, 1.0, beijing.ModelRatio, 1e-9)
+
+	singapore, err := priceFor("https://dashscope-intl.aliyuncs.com")
+	require.NoError(t, err)
+	assert.InDelta(t, 2.0, singapore.ModelRatio, 1e-9)
+
+	_, err = priceFor("https://dashscope-us.aliyuncs.com")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "identity_missing")
 }

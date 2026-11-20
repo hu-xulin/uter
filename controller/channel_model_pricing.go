@@ -48,6 +48,7 @@ type channelModelPricingView struct {
 	ModelName      string `json:"model_name"`
 	Provider       string `json:"provider"`
 	Region         string `json:"region"`
+	DeploymentID   string `json:"deployment_id"`
 	Currency       string `json:"currency"`
 	PricingSource  string `json:"pricing_source"`
 	PricingStatus  string `json:"pricing_status"`
@@ -108,6 +109,7 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 		ModelName:      row.ModelName,
 		Provider:       row.Provider,
 		Region:         row.Region,
+		DeploymentID:   row.DeploymentId,
 		Currency:       row.Currency,
 		PricingSource:  row.PricingSource,
 		PricingStatus:  row.PricingStatus,
@@ -219,8 +221,11 @@ func quoteFromTier(tier model.ChannelPricingTier, basis, source string, discount
 
 // GetChannelModelPricing lists one channel's isolated price records.
 type channelPricingImportRow struct {
-	ModelName string                       `json:"model_name"`
-	Pricing   model.ChannelInternalPricing `json:"pricing"`
+	ModelName    string                       `json:"model_name"`
+	Provider     string                       `json:"provider"`
+	Region       string                       `json:"region"`
+	DeploymentID string                       `json:"deployment_id"`
+	Pricing      model.ChannelInternalPricing `json:"pricing"`
 }
 
 type channelPricingImportSkipped struct {
@@ -263,21 +268,31 @@ func ImportChannelModelPricing(c *gin.Context) {
 			imported = append(imported, name)
 			continue
 		}
+		identity := model.ChannelPricingIdentity{
+			ChannelId: channelID, Provider: row.Provider, Region: row.Region,
+			DeploymentId: row.DeploymentID, ModelName: name,
+		}
 		var oldPricing *model.ChannelInternalPricing
-		if previous, err := model.GetChannelModelPricing(channelID, name); err == nil && strings.TrimSpace(previous.InternalPricing) != "" {
+		if previous, err := model.GetChannelModelPricingFor(identity); err == nil && strings.TrimSpace(previous.InternalPricing) != "" {
 			var parsed model.ChannelInternalPricing
 			if err := common.UnmarshalJsonStr(previous.InternalPricing, &parsed); err == nil {
 				oldPricing = &parsed
 			}
 		}
-		if err := model.SetChannelInternalPricing(channelID, name, row.Pricing); err != nil {
+		if err := model.SetChannelInternalPricingFor(identity, row.Pricing); err != nil {
+			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
+			continue
+		}
+		stored, err := model.GetChannelModelPricingFor(identity)
+		if err != nil {
 			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
 			continue
 		}
 		pricing := row.Pricing
 		if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-			ChannelID: channelID, ModelName: name, Source: "import",
-			OldPricing: oldPricing, NewPricing: &pricing,
+			ChannelID: channelID, ModelName: name,
+			Provider: stored.Provider, Region: stored.Region, DeploymentId: stored.DeploymentId,
+			Source: "import", OldPricing: oldPricing, NewPricing: &pricing,
 		}); err != nil {
 			common.SysError("append imported pricing history failed: " + err.Error())
 		}
@@ -318,32 +333,40 @@ func SetChannelModelPricing(c *gin.Context) {
 		return
 	}
 	var req struct {
-		ModelName string                       `json:"model_name"`
-		Pricing   model.ChannelInternalPricing `json:"pricing"`
+		ModelName    string                       `json:"model_name"`
+		Provider     string                       `json:"provider"`
+		Region       string                       `json:"region"`
+		DeploymentID string                       `json:"deployment_id"`
+		Pricing      model.ChannelInternalPricing `json:"pricing"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
 		return
 	}
+	identity := model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: req.Provider, Region: req.Region,
+		DeploymentId: req.DeploymentID, ModelName: req.ModelName,
+	}
 	var oldPricing *model.ChannelInternalPricing
-	if previous, err := model.GetChannelModelPricing(channelID, req.ModelName); err == nil && strings.TrimSpace(previous.InternalPricing) != "" {
+	if previous, err := model.GetChannelModelPricingFor(identity); err == nil && strings.TrimSpace(previous.InternalPricing) != "" {
 		var parsed model.ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(previous.InternalPricing, &parsed); err == nil {
 			oldPricing = &parsed
 		}
 	}
-	if err := model.SetChannelInternalPricing(channelID, req.ModelName, req.Pricing); err != nil {
+	if err := model.SetChannelInternalPricingFor(identity, req.Pricing); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
-	row, err := model.GetChannelModelPricing(channelID, req.ModelName)
+	row, err := model.GetChannelModelPricingFor(identity)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
 	if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-		ChannelID: channelID, ModelName: req.ModelName, Source: "manual",
-		OldPricing: oldPricing, NewPricing: &req.Pricing,
+		ChannelID: channelID, ModelName: req.ModelName,
+		Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
+		Source: "manual", OldPricing: oldPricing, NewPricing: &req.Pricing,
 	}); err != nil {
 		common.SysError("append channel pricing history failed: " + err.Error())
 	}
@@ -513,25 +536,30 @@ func RollbackChannelPricingHistory(c *gin.Context) {
 		return
 	}
 
+	identity := model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: entry.Provider, Region: entry.Region,
+		DeploymentId: entry.DeploymentId, ModelName: entry.ModelName,
+	}
 	var currentPricing *model.ChannelInternalPricing
-	if current, err := model.GetChannelModelPricing(channelID, entry.ModelName); err == nil && strings.TrimSpace(current.InternalPricing) != "" {
+	if current, err := model.GetChannelModelPricingFor(identity); err == nil && strings.TrimSpace(current.InternalPricing) != "" {
 		var parsed model.ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(current.InternalPricing, &parsed); err == nil {
 			currentPricing = &parsed
 		}
 	}
 	restored := *entry.OldPricing
-	if err := model.SetChannelInternalPricing(channelID, entry.ModelName, restored); err != nil {
+	if err := model.SetChannelInternalPricingFor(identity, restored); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
 	if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-		ChannelID: channelID, ModelName: entry.ModelName, Source: "rollback",
-		OldPricing: currentPricing, NewPricing: &restored,
+		ChannelID: channelID, ModelName: entry.ModelName,
+		Provider: entry.Provider, Region: entry.Region, DeploymentId: entry.DeploymentId,
+		Source: "rollback", OldPricing: currentPricing, NewPricing: &restored,
 	}); err != nil {
 		common.SysError("append rollback history failed: " + err.Error())
 	}
-	row, err := model.GetChannelModelPricing(channelID, entry.ModelName)
+	row, err := model.GetChannelModelPricingFor(identity)
 	if err != nil {
 		common.ApiError(c, err)
 		return

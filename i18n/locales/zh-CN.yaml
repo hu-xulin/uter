@@ -525,3 +525,4 @@ relay.task_channel_disabled: 该任务所属渠道已被禁用
 relay.request_rejected: "请求被策略拒绝"
 relay.request_plugin_failed: "请求插件执行失败"
 relay.response_rejected: "响应被策略终止"
+relay.channel_price_identity_unmatched: 渠道 {{.Channel}} 的模型 {{.Model}} 存在多个区域或部署价格，本次请求无法匹配到唯一价格（{{.Reason}}）。请先明确渠道身份再计费。

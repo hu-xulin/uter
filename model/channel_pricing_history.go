@@ -11,13 +11,16 @@ import (
 // sale price is stored as JSON so old/new entries stay comparable even when the
 // pricing shape evolves.
 type ChannelPricingHistory struct {
-	ID         int64  `gorm:"primaryKey;autoIncrement"`
-	ChannelID  int    `gorm:"index:idx_channel_pricing_history_channel"`
-	ModelName  string `gorm:"size:255;index:idx_channel_pricing_history_model"`
-	Source     string `gorm:"size:32"`
-	OldPricing string `gorm:"type:text"`
-	NewPricing string `gorm:"type:text"`
-	ChangedAt  int64  `gorm:"index:idx_channel_pricing_history_time"`
+	ID           int64  `gorm:"primaryKey;autoIncrement"`
+	ChannelID    int    `gorm:"index:idx_channel_pricing_history_channel"`
+	ModelName    string `gorm:"size:255;index:idx_channel_pricing_history_model"`
+	Provider     string `gorm:"size:64;index:idx_channel_pricing_history_provider"`
+	Region       string `gorm:"size:64"`
+	DeploymentId string `gorm:"size:128"`
+	Source       string `gorm:"size:32"`
+	OldPricing   string `gorm:"type:text"`
+	NewPricing   string `gorm:"type:text"`
+	ChangedAt    int64  `gorm:"index:idx_channel_pricing_history_time"`
 }
 
 func (ChannelPricingHistory) TableName() string { return "channel_pricing_history" }

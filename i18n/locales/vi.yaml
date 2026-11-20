@@ -471,3 +471,4 @@ user.default_token_name: '{{.Username}}''s initial token'
 relay.request_rejected: "Yêu cầu bị chính sách từ chối"
 relay.request_plugin_failed: "Plugin xử lý yêu cầu gặp lỗi"
 relay.response_rejected: "Phản hồi bị chính sách dừng"
+relay.channel_price_identity_unmatched: Kênh {{.Channel}} có nhiều mức giá theo khu vực hoặc triển khai cho mô hình {{.Model}} và yêu cầu này không khớp được ({{.Reason}}). Hãy xác định rõ danh tính kênh trước khi tính phí.

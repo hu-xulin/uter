@@ -152,6 +152,10 @@ type ChannelBillingPricing struct {
 	PerSecondPrice       float64
 	Version              string
 	Source               string
+	// PurchaseUSD is the upstream channel quote for the primary dimension at
+	// resolution time, so the consume log can snapshot procurement next to the
+	// sale price.
+	PurchaseUSD *float64
 }
 
 // ChannelOfficialPricingRecord is one upsert input for an official sync.
@@ -180,19 +184,82 @@ var (
 type channelPricingCacheEntry struct {
 	pricing   *ChannelBillingPricing
 	status    string
+	reason    string
 	exists    bool
 	expiresAt time.Time
 }
 
 const channelPricingCacheTTL = 30 * time.Second
 
-func channelPricingCacheKey(channelId int, modelName string) string {
-	return fmt.Sprintf("%d\x00%s", channelId, modelName)
+// ChannelPricingIdentity is the full upstream identity a request is billed
+// under. Provider, Region and Deployment select the price row; a request that
+// cannot be matched must not fall back to another identity's price.
+type ChannelPricingIdentity struct {
+	ChannelId    int
+	Provider     string
+	Region       string
+	DeploymentId string
+	ModelName    string
 }
 
+// Identity resolution outcomes that are not a plain "row missing".
+const (
+	ChannelPricingReasonIdentityMissing   = "identity_missing"
+	ChannelPricingReasonIdentityAmbiguous = "identity_ambiguous"
+)
+
+// channelPurchasePrimaryUSD returns the channel quote for the primary
+// dimension (input per 1M, or the per-call/second/minute amount). Nil means the
+// provider published no purchase quote.
+func channelPurchasePrimaryUSD(raw string) *float64 {
+	if strings.TrimSpace(raw) == "" {
+		return nil
+	}
+	var view ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(raw, &view); err != nil {
+		return nil
+	}
+	quote := view.ChannelPrice
+	if quote == nil && len(view.ChannelPriceTiers) > 0 {
+		quote = &view.ChannelPriceTiers[0]
+	}
+	if quote == nil {
+		return nil
+	}
+	if quote.InputPerMillionUSD != nil {
+		return quote.InputPerMillionUSD
+	}
+	if quote.PerUnitUSD != nil {
+		return quote.PerUnitUSD
+	}
+	return nil
+}
+
+func normalizePricingIdentity(identity ChannelPricingIdentity) ChannelPricingIdentity {
+	identity.Provider = strings.TrimSpace(identity.Provider)
+	identity.Region = strings.TrimSpace(identity.Region)
+	identity.DeploymentId = strings.TrimSpace(identity.DeploymentId)
+	identity.ModelName = strings.TrimSpace(identity.ModelName)
+	return identity
+}
+
+func channelPricingCacheKey(identity ChannelPricingIdentity) string {
+	identity = normalizePricingIdentity(identity)
+	return fmt.Sprintf("%d\x00%s\x00%s\x00%s\x00%s",
+		identity.ChannelId, identity.Provider, identity.Region, identity.DeploymentId, identity.ModelName)
+}
+
+// invalidateChannelPricingCache drops every identity cached for this model, so
+// a write to one region cannot leave another region's price stale.
 func invalidateChannelPricingCache(channelId int, modelName string) {
+	prefix := fmt.Sprintf("%d\x00", channelId)
+	suffix := "\x00" + strings.TrimSpace(modelName)
 	channelPricingCacheMu.Lock()
-	delete(channelPricingCache, channelPricingCacheKey(channelId, modelName))
+	for key := range channelPricingCache {
+		if strings.HasPrefix(key, prefix) && strings.HasSuffix(key, suffix) {
+			delete(channelPricingCache, key)
+		}
+	}
 	channelPricingCacheMu.Unlock()
 }
 
@@ -473,11 +540,16 @@ func ClearAutoDerivedChannelPricing(channelId int, sourcePrefix string) (int, er
 	return cleared, nil
 }
 
-// SetChannelInternalPricing stores an operator price for one channel model.
-// Official data must have been synced first so the row is auditable.
-func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelInternalPricing) error {
-	modelName = strings.TrimSpace(modelName)
-	if channelId <= 0 || modelName == "" {
+// ErrChannelPricingIdentityRequired marks a write whose channel/model has more
+// than one region or deployment identity. The caller must state which identity
+// it edits instead of letting "configured first" pick one.
+var ErrChannelPricingIdentityRequired = errors.New("channel has multiple region or deployment prices; specify the pricing identity")
+
+// SetChannelInternalPricingFor stores an operator price on the exact identity
+// row. It never edits another region's or deployment's price.
+func SetChannelInternalPricingFor(identity ChannelPricingIdentity, pricing ChannelInternalPricing) error {
+	identity = normalizePricingIdentity(identity)
+	if identity.ChannelId <= 0 || identity.ModelName == "" {
 		return errors.New("channel and model are required")
 	}
 	if _, err := NormalizeChannelInternalPricing(&pricing); err != nil {
@@ -488,44 +560,50 @@ func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelI
 	if err != nil {
 		return err
 	}
-	var row ChannelModelPricing
-	if err := DB.Where("channel_id = ? AND model_name = ?", channelId, modelName).
-		Order("CASE WHEN pricing_status = 'configured' THEN 0 ELSE 1 END").
-		Order("fetched_at DESC").Order("updated_at DESC").Order("id DESC").
-		First(&row).Error; err != nil {
-		return fmt.Errorf("channel pricing record not found: %w", err)
+	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
+	if err != nil {
+		return err
+	}
+	row, reason := selectChannelPricingRow(rows, identity)
+	if row == nil {
+		if reason != "" {
+			return ErrChannelPricingIdentityRequired
+		}
+		return fmt.Errorf("channel pricing record not found: %w", gorm.ErrRecordNotFound)
 	}
 	row.InternalPricing = string(encoded)
 	row.PricingStatus = ChannelPricingStatusConfigured
 	row.UpdatedAt = pricing.UpdatedAt
-	row.PricingVersion = channelPricingVersion(row)
-	if err := DB.Save(&row).Error; err != nil {
+	row.PricingVersion = channelPricingVersion(*row)
+	if err := DB.Save(row).Error; err != nil {
 		return err
 	}
-	invalidateChannelPricingCache(channelId, modelName)
+	invalidateChannelPricingCache(identity.ChannelId, identity.ModelName)
 	InvalidatePricingCache()
 	return nil
+}
+
+// SetChannelInternalPricing is the legacy identity-free variant.
+func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelInternalPricing) error {
+	return SetChannelInternalPricingFor(ChannelPricingIdentity{ChannelId: channelId, ModelName: modelName}, pricing)
 }
 
 // ErrChannelPricingVersionConflict marks a batch apply whose price inputs
 // changed after the preview that produced them.
 var ErrChannelPricingVersionConflict = errors.New("channel pricing changed since preview")
 
-// SetChannelInternalPricingIfVersion stores an operator price only while the
-// row still carries expectedVersion. An empty expectedVersion keeps the
-// unconditional behaviour. The row is read and written under one transaction
-// so a concurrent sync or batch cannot slip between the check and the write.
-func SetChannelInternalPricingIfVersion(
-	channelId int,
-	modelName string,
+// SetChannelInternalPricingIfVersionFor stores an operator price on the exact
+// identity row only while it still carries expectedVersion.
+func SetChannelInternalPricingIfVersionFor(
+	identity ChannelPricingIdentity,
 	pricing ChannelInternalPricing,
 	expectedVersion string,
 ) error {
 	if expectedVersion == "" {
-		return SetChannelInternalPricing(channelId, modelName, pricing)
+		return SetChannelInternalPricingFor(identity, pricing)
 	}
-	modelName = strings.TrimSpace(modelName)
-	if channelId <= 0 || modelName == "" {
+	identity = normalizePricingIdentity(identity)
+	if identity.ChannelId <= 0 || identity.ModelName == "" {
 		return errors.New("channel and model are required")
 	}
 	if _, err := NormalizeChannelInternalPricing(&pricing); err != nil {
@@ -537,13 +615,18 @@ func SetChannelInternalPricingIfVersion(
 		return err
 	}
 	err = DB.Transaction(func(tx *gorm.DB) error {
-		var row ChannelModelPricing
+		var rows []ChannelModelPricing
 		if err := lockForUpdate(tx).
-			Where("channel_id = ? AND model_name = ?", channelId, modelName).
-			Order("CASE WHEN pricing_status = 'configured' THEN 0 ELSE 1 END").
-			Order("fetched_at DESC").Order("updated_at DESC").Order("id DESC").
-			First(&row).Error; err != nil {
-			return fmt.Errorf("channel pricing record not found: %w", err)
+			Where("channel_id = ? AND model_name = ?", identity.ChannelId, identity.ModelName).
+			Order("id").Find(&rows).Error; err != nil {
+			return err
+		}
+		row, reason := selectChannelPricingRow(rows, identity)
+		if row == nil {
+			if reason != "" {
+				return ErrChannelPricingIdentityRequired
+			}
+			return fmt.Errorf("channel pricing record not found: %w", gorm.ErrRecordNotFound)
 		}
 		if row.PricingVersion != expectedVersion {
 			return ErrChannelPricingVersionConflict
@@ -551,15 +634,27 @@ func SetChannelInternalPricingIfVersion(
 		row.InternalPricing = string(encoded)
 		row.PricingStatus = ChannelPricingStatusConfigured
 		row.UpdatedAt = pricing.UpdatedAt
-		row.PricingVersion = channelPricingVersion(row)
-		return tx.Save(&row).Error
+		row.PricingVersion = channelPricingVersion(*row)
+		return tx.Save(row).Error
 	})
 	if err != nil {
 		return err
 	}
-	invalidateChannelPricingCache(channelId, modelName)
+	invalidateChannelPricingCache(identity.ChannelId, identity.ModelName)
 	InvalidatePricingCache()
 	return nil
+}
+
+// SetChannelInternalPricingIfVersion is the legacy identity-free variant.
+func SetChannelInternalPricingIfVersion(
+	channelId int,
+	modelName string,
+	pricing ChannelInternalPricing,
+	expectedVersion string,
+) error {
+	return SetChannelInternalPricingIfVersionFor(
+		ChannelPricingIdentity{ChannelId: channelId, ModelName: modelName}, pricing, expectedVersion,
+	)
 }
 
 // GetChannelModelPricing returns one channel's price record. Several upstream
@@ -578,6 +673,25 @@ func GetChannelModelPricing(channelId int, modelName string) (*ChannelModelPrici
 	return &row, nil
 }
 
+// GetChannelModelPricingFor returns the row for an exact identity. When several
+// identities exist and this one cannot be matched, it returns
+// ErrChannelPricingIdentityRequired instead of another region's row.
+func GetChannelModelPricingFor(identity ChannelPricingIdentity) (*ChannelModelPricing, error) {
+	identity = normalizePricingIdentity(identity)
+	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
+	if err != nil {
+		return nil, err
+	}
+	row, reason := selectChannelPricingRow(rows, identity)
+	if row == nil {
+		if reason != "" {
+			return nil, ErrChannelPricingIdentityRequired
+		}
+		return nil, gorm.ErrRecordNotFound
+	}
+	return row, nil
+}
+
 // ListChannelModelPricing returns a channel's records ordered by model name.
 func ListChannelModelPricing(channelId int) ([]ChannelModelPricing, error) {
 	var rows []ChannelModelPricing
@@ -585,33 +699,95 @@ func ListChannelModelPricing(channelId int) ([]ChannelModelPricing, error) {
 	return rows, err
 }
 
-// loadChannelPricing reads and caches one channel/model record. A missing row
-// is cached too so hot billing paths do not query the database repeatedly.
-func loadChannelPricing(channelId int, modelName string) (*ChannelBillingPricing, string, bool) {
-	modelName = strings.TrimSpace(modelName)
-	if DB == nil || channelId <= 0 || modelName == "" {
-		return nil, "", false
+// selectChannelPricingRow picks the row for one request identity. It never
+// resolves an ambiguity by "configured first" or "newest": when several rows
+// exist and the identity cannot be matched, the caller must fail the charge.
+func selectChannelPricingRow(rows []ChannelModelPricing, identity ChannelPricingIdentity) (*ChannelModelPricing, string) {
+	if len(rows) == 0 {
+		return nil, ""
 	}
-	key := channelPricingCacheKey(channelId, modelName)
+	identity = normalizePricingIdentity(identity)
+	var exact []ChannelModelPricing
+	for _, row := range rows {
+		if row.Provider == identity.Provider && row.Region == identity.Region && row.DeploymentId == identity.DeploymentId {
+			exact = append(exact, row)
+		}
+	}
+	if len(exact) == 1 {
+		return &exact[0], ""
+	}
+	if len(exact) > 1 {
+		return nil, ChannelPricingReasonIdentityAmbiguous
+	}
+	// Bailian stores the model's inference provider on the row rather than the
+	// channel vendor, so the request cannot know it. A single row matching the
+	// same region and deployment is still unambiguous.
+	var geo []ChannelModelPricing
+	for _, row := range rows {
+		if row.Region == identity.Region && row.DeploymentId == identity.DeploymentId {
+			geo = append(geo, row)
+		}
+	}
+	if len(geo) == 1 {
+		return &geo[0], ""
+	}
+	if len(geo) > 1 {
+		return nil, ChannelPricingReasonIdentityAmbiguous
+	}
+	// Legacy single-row channel or an admin lookup without a region: only safe
+	// when there is exactly one identity to choose from.
+	if identity.Region == "" && identity.DeploymentId == "" && len(rows) == 1 {
+		return &rows[0], ""
+	}
+	return nil, ChannelPricingReasonIdentityMissing
+}
+
+func loadChannelPricingRows(channelId int, modelName string) ([]ChannelModelPricing, error) {
+	var rows []ChannelModelPricing
+	err := DB.Where("channel_id = ? AND model_name = ?", channelId, strings.TrimSpace(modelName)).
+		Order("id").Find(&rows).Error
+	return rows, err
+}
+
+// loadChannelPricingFor resolves one identity and caches the decision. A
+// missing row and an unmatched identity are cached too, so hot billing paths
+// do not query the database repeatedly while the configuration stays broken.
+func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPricing, string, bool, string) {
+	identity = normalizePricingIdentity(identity)
+	if DB == nil || identity.ChannelId <= 0 || identity.ModelName == "" {
+		return nil, "", false, ""
+	}
+	key := channelPricingCacheKey(identity)
 	channelPricingCacheMu.RLock()
 	if entry, ok := channelPricingCache[key]; ok && time.Now().Before(entry.expiresAt) {
 		channelPricingCacheMu.RUnlock()
-		return entry.pricing, entry.status, entry.exists
+		return entry.pricing, entry.status, entry.exists, entry.reason
 	}
 	channelPricingCacheMu.RUnlock()
 
-	row, err := GetChannelModelPricing(channelId, modelName)
+	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
 	if err != nil {
+		return nil, "", false, ""
+	}
+	if len(rows) == 0 {
 		channelPricingCacheMu.Lock()
 		channelPricingCache[key] = channelPricingCacheEntry{expiresAt: time.Now().Add(channelPricingCacheTTL)}
 		channelPricingCacheMu.Unlock()
-		return nil, "", false
+		return nil, "", false, ""
 	}
+	row, reason := selectChannelPricingRow(rows, identity)
 	entry := channelPricingCacheEntry{
-		status:    row.PricingStatus,
 		exists:    true,
+		reason:    reason,
 		expiresAt: time.Now().Add(channelPricingCacheTTL),
 	}
+	if row == nil {
+		channelPricingCacheMu.Lock()
+		channelPricingCache[key] = entry
+		channelPricingCacheMu.Unlock()
+		return nil, "", true, reason
+	}
+	entry.status = row.PricingStatus
 	if row.PricingStatus == ChannelPricingStatusConfigured && row.InternalPricing != "" {
 		var internal ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
@@ -621,13 +797,14 @@ func loadChannelPricing(channelId int, modelName string) (*ChannelBillingPricing
 		} else {
 			pricing.Version = row.PricingVersion
 			pricing.Source = row.PricingSource
+			pricing.PurchaseUSD = channelPurchasePrimaryUSD(row.NormalizedPricing)
 			entry.pricing = pricing
 		}
 	}
 	channelPricingCacheMu.Lock()
 	channelPricingCache[key] = entry
 	channelPricingCacheMu.Unlock()
-	return entry.pricing, entry.status, entry.exists
+	return entry.pricing, entry.status, entry.exists, entry.reason
 }
 
 // EffectiveChannelPricing is the single authoritative resolution of one
@@ -645,6 +822,9 @@ type EffectiveChannelPricing struct {
 	Status   string
 	Exists   bool
 	Billable bool
+	// Reason is set when rows exist but this request identity cannot select one
+	// (identity_missing / identity_ambiguous). Callers must block the charge.
+	Reason string
 }
 
 // ResolveEffectiveChannelPricing is the one authoritative entry point for
@@ -652,26 +832,39 @@ type EffectiveChannelPricing struct {
 // must read through it. requestContext/region/deployment dimensions will be
 // threaded in when the multimodal price schema lands (P2); today the durable
 // key is exactly (channel_id, model_name).
-func ResolveEffectiveChannelPricing(channelId int, modelName string) EffectiveChannelPricing {
-	pricing, status, exists := loadChannelPricing(channelId, modelName)
+func ResolveEffectiveChannelPricingFor(identity ChannelPricingIdentity) EffectiveChannelPricing {
+	pricing, status, exists, reason := loadChannelPricingFor(identity)
 	return EffectiveChannelPricing{
 		Pricing:  pricing,
 		Status:   status,
 		Exists:   exists,
-		Billable: exists && status == ChannelPricingStatusConfigured && pricing != nil,
+		Reason:   reason,
+		Billable: exists && reason == "" && status == ChannelPricingStatusConfigured && pricing != nil,
 	}
+}
+
+// ResolveEffectiveChannelPricing is the legacy identity-free entry point. It is
+// only safe when the channel has a single identity; multiple identities make it
+// return Exists=true, Billable=false with a Reason instead of guessing.
+func ResolveEffectiveChannelPricing(channelId int, modelName string) EffectiveChannelPricing {
+	return ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{ChannelId: channelId, ModelName: modelName})
 }
 
 // ResolveChannelUsageDiscount returns the channel-vs-official ratio for task
 // usage billing (per-second, per-image or per-call tasks). Token prices are
 // handled by ResolveChannelBillingPricing and always return 1 here so a task
 // discount is never applied twice.
-func ResolveChannelUsageDiscount(channelId int, modelName string) float64 {
-	if DB == nil || channelId <= 0 || strings.TrimSpace(modelName) == "" {
+func ResolveChannelUsageDiscountFor(identity ChannelPricingIdentity) float64 {
+	identity = normalizePricingIdentity(identity)
+	if DB == nil || identity.ChannelId <= 0 || identity.ModelName == "" {
 		return 1
 	}
-	row, err := GetChannelModelPricing(channelId, modelName)
-	if err != nil || row == nil {
+	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
+	if err != nil {
+		return 1
+	}
+	row, reason := selectChannelPricingRow(rows, identity)
+	if row == nil || reason != "" {
 		return 1
 	}
 	var view ChannelOfficialPricing
@@ -696,11 +889,16 @@ func ResolveChannelUsageDiscount(channelId int, modelName string) float64 {
 	if math.IsNaN(ratio) || math.IsInf(ratio, 0) || ratio <= 0 || ratio > 100 {
 		common.SysError(fmt.Sprintf(
 			"ignored invalid channel usage discount %.4f for channel %d model %s",
-			ratio, channelId, modelName,
+			ratio, identity.ChannelId, identity.ModelName,
 		))
 		return 1
 	}
 	return ratio
+}
+
+// ResolveChannelUsageDiscount is the legacy identity-free variant.
+func ResolveChannelUsageDiscount(channelId int, modelName string) float64 {
+	return ResolveChannelUsageDiscountFor(ChannelPricingIdentity{ChannelId: channelId, ModelName: modelName})
 }
 
 // ResolveChannelBillingPricing returns the configured internal price for the

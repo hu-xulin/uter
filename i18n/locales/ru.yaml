@@ -471,3 +471,4 @@ user.default_token_name: '{{.Username}}''s initial token'
 relay.request_rejected: "Запрос отклонён политикой"
 relay.request_plugin_failed: "Плагин запроса завершился ошибкой"
 relay.response_rejected: "Ответ остановлен политикой"
+relay.channel_price_identity_unmatched: Для модели {{.Model}} в канале {{.Channel}} есть несколько цен по регионам или развёртываниям, и этот запрос не удаётся сопоставить ({{.Reason}}). Укажите идентичность канала перед выставлением счёта.
