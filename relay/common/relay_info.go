@@ -114,6 +114,7 @@ type RelayInfo struct {
 	ChannelPricingCacheRatio      *float64
 	ChannelPricingModelPrice      float64
 	ChannelPricingUsePrice        bool
+	ChannelPricingMode            string
 	ChannelPricingVersion         string
 	RelayMode                     int
 	OriginModelName               string

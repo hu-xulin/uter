@@ -292,6 +292,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		}
 		unitPrice := channelPricing.Pricing.PerSecondPrice
 		info.ChannelPricingApplied = true
+		info.ChannelPricingMode = channelPricing.Pricing.Mode
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -334,6 +335,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			}
 		}
 		info.ChannelPricingApplied = true
+		info.ChannelPricingMode = channelPricing.Pricing.Mode
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(unitPrice * count * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
@@ -375,6 +377,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			return nil, service.TaskErrorWrapper(runErr, "model_price_error", http.StatusBadRequest)
 		}
 		info.ChannelPricingApplied = true
+		info.ChannelPricingMode = channelPricing.Pricing.Mode
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
 		groupRatioInfo := helper.HandleGroupRatio(c, info)
 		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)

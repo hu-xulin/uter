@@ -124,6 +124,7 @@ type ChannelInternalPricing struct {
 // CompletionRatio/CacheRatio are nil when the operator did not set an output
 // or cache price, in which case the global ratio remains in force.
 type ChannelBillingPricing struct {
+	Mode                 string
 	ModelRatio           float64
 	CompletionRatio      *float64
 	CacheRatio           *float64
@@ -232,6 +233,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 		}
 		input := *pricing.InputUSDPerMillion
 		result := &ChannelBillingPricing{
+			Mode: ChannelPricingModePerMillionTokens,
 			// USD/1M = ratio * (1_000_000 / QuotaPerUnit) = ratio * 2.
 			ModelRatio: input / 2,
 		}
@@ -252,12 +254,12 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 		if pricing.PerCallUSD == nil || *pricing.PerCallUSD < 0 {
 			return nil, errors.New("per-call price is required")
 		}
-		return &ChannelBillingPricing{UsePrice: true, ModelPrice: *pricing.PerCallUSD}, nil
+		return &ChannelBillingPricing{Mode: ChannelPricingModePerCall, UsePrice: true, ModelPrice: *pricing.PerCallUSD}, nil
 	case ChannelPricingModeTieredExpr:
 		if strings.TrimSpace(pricing.BillingExpr) == "" {
 			return nil, errors.New("tiered billing expression is required")
 		}
-		return &ChannelBillingPricing{BillingExpr: pricing.BillingExpr}, nil
+		return &ChannelBillingPricing{Mode: ChannelPricingModeTieredExpr, BillingExpr: pricing.BillingExpr}, nil
 	case ChannelPricingModePerSecond:
 		// Per-second prices bill through the task usage expression. A billing
 		// form is still returned so the price can be stored; token/per-call
@@ -265,7 +267,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 		if pricing.PerSecondUSD == nil || *pricing.PerSecondUSD <= 0 {
 			return nil, errors.New("per-second price is required")
 		}
-		return &ChannelBillingPricing{UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
+		return &ChannelBillingPricing{Mode: ChannelPricingModePerSecond, UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
 	case ChannelPricingModePerMinute:
 		// Seconds are the task usage unit. A per-minute quote is normalized to
 		// its per-second equivalent so the same duration billing path applies.
@@ -273,7 +275,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			return nil, errors.New("per-minute price is required")
 		}
 		return &ChannelBillingPricing{
-			UsePerSecond: true, PerSecondPrice: *pricing.PerMinuteUSD / 60,
+			Mode: ChannelPricingModePerMinute, UsePerSecond: true, PerSecondPrice: *pricing.PerMinuteUSD / 60,
 		}, nil
 	default:
 		return nil, errors.New("unsupported internal pricing mode")

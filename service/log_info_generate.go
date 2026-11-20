@@ -78,6 +78,7 @@ func AppendRelayLogAdminInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo,
 		}
 		if relayInfo.ChannelPricingApplied {
 			other.SetAdmin("channel_pricing_version", relayInfo.ChannelPricingVersion)
+			other.SetAdmin("channel_pricing_mode", relayInfo.ChannelPricingMode)
 			other.SetAdmin("channel_pricing_model_ratio", relayInfo.ChannelPricingModelRatio)
 			other.SetAdmin("channel_pricing_completion_ratio", relayInfo.ChannelPricingCompletionRatio)
 			other.SetAdmin("channel_pricing_cache_ratio", relayInfo.ChannelPricingCacheRatio)

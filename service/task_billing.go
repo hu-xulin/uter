@@ -67,6 +67,7 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 	}
 	if info.ChannelPricingApplied {
 		other.SetAdmin("channel_pricing_version", info.ChannelPricingVersion)
+		other.SetAdmin("channel_pricing_mode", info.ChannelPricingMode)
 		other.SetAdmin("channel_pricing_model_ratio", info.ChannelPricingModelRatio)
 		other.SetAdmin("channel_pricing_model_price", info.ChannelPricingModelPrice)
 	}

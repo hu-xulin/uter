@@ -969,6 +969,7 @@ func TestModelPriceHelperUsesChannelIsolatedPricing(t *testing.T) {
 	assert.InDelta(t, 1.25, priceData.CacheCreationRatio, 1e-9)
 	assert.False(t, priceData.UsePrice)
 	assert.True(t, info.ChannelPricingApplied)
+	assert.Equal(t, model.ChannelPricingModePerMillionTokens, info.ChannelPricingMode)
 
 	// The same model on another channel has no internal price and must not
 	// inherit channel 7's numbers.
