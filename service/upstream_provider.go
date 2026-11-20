@@ -64,9 +64,11 @@ type dreamRouterAdapter struct{}
 func (dreamRouterAdapter) Descriptor() UpstreamProvider {
 	return UpstreamProvider{
 		ID: "dreamrouter", Name: "DreamRouter",
-		PricingURL: "https://dreamrouter.ai/api/pricing",
-		ModelsURL:  "https://dreamrouter.ai/v1/models",
-		AuthType:   "pricing_public_models_api_key",
+		PricingURL:          "https://dreamrouter.ai/api/pricing",
+		ModelsURL:           "https://dreamrouter.ai/v1/models",
+		AuthType:            "pricing_public_models_api_key",
+		SourceDocumentation: "https://dreamrouter.ai/api/pricing",
+		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "GET /v1/models with the channel key"),
 			ModelMetadata:       capability(CapabilityPartial, "model IDs and endpoint types; specs come from the metadata catalog"),
@@ -77,6 +79,14 @@ func (dreamRouterAdapter) Descriptor() UpstreamProvider {
 			TieredPricing:       capability(CapabilityPartial, "billing_expr parsed; unparsable tiers stay needs_review"),
 			MediaPricing:        capability(CapabilityPartial, "per-call media prices when model_price is published"),
 			ScheduledSync:       capability(CapabilitySupported, "background catalog sync"),
+			TokenPricing:        capability(CapabilityPartial, "ratios by default; absolute USD only when the snapshot carries it"),
+			ImagePricing:        capability(CapabilityPartial, "per-call model_price"),
+			VideoPricing:        capability(CapabilityPartial, "per-second billing expressions"),
+			AudioPricing:        capability(CapabilityPartial, "audio prices only when the pricing document publishes them"),
+			PerCallPricing:      capability(CapabilityPartial, "model_price"),
+			PerSecondPricing:    capability(CapabilityPartial, "duration billing expressions"),
+			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
+			DeploymentPricing:   capability(CapabilityUnsupported, "no deployment dimension"),
 		},
 	}
 }
@@ -91,7 +101,9 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 	return UpstreamProvider{
 		ID: "alibaba-bailian", Name: "阿里云百炼",
 		PricingURL: "/api/v1/models", ModelsURL: "/api/v1/models",
-		AuthType: "api_key",
+		AuthType:            "api_key",
+		SourceDocumentation: "/api/v1/models",
+		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "paginated /api/v1/models"),
 			ModelMetadata:       capability(CapabilitySupported, "catalog metadata and capabilities"),
@@ -102,6 +114,14 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 			TieredPricing:       capability(CapabilityPartial, "price ranges are preserved and flagged for review"),
 			MediaPricing:        capability(CapabilityPartial, "image/video/audio price items when present"),
 			ScheduledSync:       capability(CapabilitySupported, "background catalog sync"),
+			TokenPricing:        capability(CapabilitySupported, "official catalog token prices"),
+			ImagePricing:        capability(CapabilityPartial, "per-image catalog items"),
+			VideoPricing:        capability(CapabilityPartial, "catalog items; per-second only when published"),
+			AudioPricing:        capability(CapabilityPartial, "audio catalog items when present"),
+			PerCallPricing:      capability(CapabilityPartial, "per-call catalog items"),
+			PerSecondPricing:    capability(CapabilityPartial, "only when the catalog publishes a per-second item"),
+			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
+			DeploymentPricing:   capability(CapabilityNeedsConfiguration, "deployment prices require the contracted workspace"),
 		},
 	}
 }
@@ -135,6 +155,14 @@ func manualCapabilities(name string) UpstreamProviderCapabilities {
 		TieredPricing:       capability(CapabilityManualOnly, "tiered prices must be entered as an operator rule"),
 		MediaPricing:        capability(CapabilityManualOnly, "media prices must be entered manually"),
 		ScheduledSync:       capability(CapabilityUnsupported, "no price source to schedule"),
+		TokenPricing:        capability(CapabilityManualOnly, "enter token prices manually"),
+		ImagePricing:        capability(CapabilityManualOnly, "enter image prices manually"),
+		VideoPricing:        capability(CapabilityManualOnly, "enter video prices manually"),
+		AudioPricing:        capability(CapabilityManualOnly, "enter audio prices manually"),
+		PerCallPricing:      capability(CapabilityManualOnly, "enter per-call prices manually"),
+		PerSecondPricing:    capability(CapabilityManualOnly, "enter per-second prices manually"),
+		PerMinutePricing:    capability(CapabilityManualOnly, "enter per-minute prices manually"),
+		DeploymentPricing:   capability(CapabilityManualOnly, "enter deployment prices manually"),
 	}
 }
 

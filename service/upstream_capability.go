@@ -54,6 +54,14 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 			TieredPricing:       capability(CapabilityPartial, "billing_expr is preserved; unparsable tiers need review"),
 			MediaPricing:        capability(CapabilityPartial, "per-call prices when published"),
 			ScheduledSync:       capability(CapabilityNeedsConfiguration, "configure the channel sync schedule"),
+			TokenPricing:        capability(CapabilityPartial, "ratios or absolute prices when published"),
+			ImagePricing:        capability(CapabilityPartial, "per-call prices when published"),
+			VideoPricing:        capability(CapabilityPartial, "only when the pricing document publishes it"),
+			AudioPricing:        capability(CapabilityPartial, "only when the pricing document publishes it"),
+			PerCallPricing:      capability(CapabilityPartial, "model_price"),
+			PerSecondPricing:    capability(CapabilityPartial, "only through billing_expr"),
+			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
+			DeploymentPricing:   capability(CapabilityUnsupported, "no deployment dimension"),
 		},
 	}
 }

@@ -85,5 +85,30 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 		if provider.Capabilities.ScheduledSync.Status != CapabilityUnsupported {
 			t.Fatalf("provider %s scheduled sync = %s, want UNSUPPORTED", id, provider.Capabilities.ScheduledSync.Status)
 		}
+		for dimension, capability := range map[string]UpstreamProviderCapability{
+			"token": provider.Capabilities.TokenPricing, "image": provider.Capabilities.ImagePricing,
+			"video": provider.Capabilities.VideoPricing, "audio": provider.Capabilities.AudioPricing,
+			"per_call": provider.Capabilities.PerCallPricing, "per_second": provider.Capabilities.PerSecondPricing,
+			"per_minute": provider.Capabilities.PerMinutePricing, "deployment": provider.Capabilities.DeploymentPricing,
+		} {
+			if capability.Status != CapabilityManualOnly {
+				t.Fatalf("provider %s %s pricing = %s, want MANUAL_ONLY", id, dimension, capability.Status)
+			}
+		}
+		if provider.SourceDocumentation != "" {
+			t.Fatalf("provider %s must not claim a price source documentation", id)
+		}
 	}
+}
+
+func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
+	bailian := UpstreamProviderForChannel(17, "")
+	require.Equal(t, CapabilitySupported, bailian.Capabilities.TokenPricing.Status)
+	require.Equal(t, CapabilityUnsupported, bailian.Capabilities.PerMinutePricing.Status)
+
+	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
+	require.Equal(t, CapabilityPartial, dreamRouter.Capabilities.PerSecondPricing.Status)
+	require.Equal(t, CapabilityUnsupported, dreamRouter.Capabilities.DeploymentPricing.Status)
+	require.NotEmpty(t, dreamRouter.SourceDocumentation)
+	require.NotEmpty(t, dreamRouter.SyncFrequency)
 }

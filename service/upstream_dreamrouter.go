@@ -58,6 +58,17 @@ type UpstreamProviderCapabilities struct {
 	TieredPricing       UpstreamProviderCapability `json:"tiered_pricing"`
 	MediaPricing        UpstreamProviderCapability `json:"media_pricing"`
 	ScheduledSync       UpstreamProviderCapability `json:"scheduled_sync"`
+
+	// Per-dimension pricing coverage. A provider may publish token prices but
+	// no per-second media price, so these stay separate from MediaPricing.
+	TokenPricing      UpstreamProviderCapability `json:"token_pricing"`
+	ImagePricing      UpstreamProviderCapability `json:"image_pricing"`
+	VideoPricing      UpstreamProviderCapability `json:"video_pricing"`
+	AudioPricing      UpstreamProviderCapability `json:"audio_pricing"`
+	PerCallPricing    UpstreamProviderCapability `json:"per_call_pricing"`
+	PerSecondPricing  UpstreamProviderCapability `json:"per_second_pricing"`
+	PerMinutePricing  UpstreamProviderCapability `json:"per_minute_pricing"`
+	DeploymentPricing UpstreamProviderCapability `json:"deployment_pricing"`
 }
 
 func capability(status UpstreamCapabilityStatus, detail string) UpstreamProviderCapability {
@@ -71,6 +82,13 @@ type UpstreamProvider struct {
 	ModelsURL    string                       `json:"models_url"`
 	AuthType     string                       `json:"auth_type"`
 	Capabilities UpstreamProviderCapabilities `json:"capabilities"`
+	// SourceDocumentation names the endpoint the prices actually come from.
+	// Empty means the provider has no authorized price source.
+	SourceDocumentation string `json:"source_documentation,omitempty"`
+	// SyncFrequency summarizes the scheduler cadence, not a promise per model.
+	SyncFrequency string `json:"sync_frequency,omitempty"`
+	// LastVerifiedAt is a Unix timestamp set only by a real verification run.
+	LastVerifiedAt int64 `json:"last_verified_at,omitempty"`
 }
 
 const (
