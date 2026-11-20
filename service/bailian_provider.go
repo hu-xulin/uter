@@ -648,6 +648,14 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	unknownTypes := make(map[string]bool)
 	unknownUnits := make(map[string]bool)
 	componentByTier := make(map[*model.ChannelPricingTier]model.ChannelPricingComponent)
+	audioASR := false
+	for _, capability := range item.Capabilities {
+		lower := strings.ToLower(strings.TrimSpace(capability))
+		if strings.Contains(lower, "asr") || strings.Contains(lower, "speech_recognition") {
+			audioASR = true
+			break
+		}
+	}
 
 	toUSD := func(value float64, unit string) float64 {
 		if result.Currency == "CNY" && rate > 0 {
@@ -785,6 +793,13 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				addPerUnitPrice(tier, normalizedUnit, usd, price, priceType)
 			default:
 				unknownTypes[priceType] = true
+			}
+			// Synchronous ASR is billed by audio duration, but the relay's
+			// audio-transcription path has no duration-based settlement. Only the
+			// async task path supports per-second prices, so auto-configuring an
+			// ASR model would produce a billable row that every request rejects.
+			if audioASR && (normalizedUnit == "per_second" || normalizedUnit == "per_minute") {
+				result.ReviewReasons = append(result.ReviewReasons, "duration-based audio requires task billing")
 			}
 		}
 	}

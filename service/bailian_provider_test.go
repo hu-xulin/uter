@@ -512,3 +512,35 @@ func TestBailianTimeBandPricesStayReviewOnly(t *testing.T) {
 	assert.Contains(t, normalized.ReviewReasons, "multiple time bands")
 	assert.Empty(t, bailianInternalPricing(normalized))
 }
+
+func TestBailianSynchronousASRDurationPriceStaysReviewOnly(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	asr := BailianModel{
+		Model: "qwen-audio-3.0-asr-flash", Capabilities: []string{"ASR"},
+		Prices: []BailianPriceRange{{
+			RangeName: "Default",
+			Prices: []BailianPrice{{
+				Type: "content_duration", Price: "0.00022", PriceUnit: "每秒",
+			}},
+		}},
+	}
+	normalized := bailianOfficialPricing(asr, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, normalized.ReviewReasons, "duration-based audio requires task billing")
+	assert.Empty(t, bailianInternalPricing(normalized), "the relay cannot settle ASR duration per second")
+
+	video := BailianModel{
+		Model: "wan-video", Capabilities: []string{"Video-Generation"},
+		Prices: []BailianPriceRange{{
+			RangeName: "Default",
+			Prices: []BailianPrice{{
+				Type: "content_duration", Price: "0.08", PriceUnit: "每秒",
+			}},
+		}},
+	}
+	normalized = bailianOfficialPricing(video, BailianRegionBeijing, 1, 100)
+	assert.NotContains(t, normalized.ReviewReasons, "duration-based audio requires task billing")
+	assert.NotEmpty(t, bailianInternalPricing(normalized), "async video tasks support per-second settlement")
+}
