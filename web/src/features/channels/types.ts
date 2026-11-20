@@ -254,6 +254,8 @@ export interface ChannelOfficialPricingTier {
   output_per_million_usd?: number
   cache_per_million_usd?: number
   create_cache_per_million_usd?: number
+  audio_input_per_million_usd?: number
+  audio_output_per_million_usd?: number
   per_unit_usd?: number
   unit: string
   raw_price_types?: string[]
@@ -272,6 +274,7 @@ export interface ChannelOfficialPricingView {
   unit: string
   tiers: ChannelOfficialPricingTier[]
   channel_price?: ChannelOfficialPricingTier
+  channel_price_tiers?: ChannelOfficialPricingTier[]
   component_prices?: ChannelPricingComponentView[]
   discount_group?: string
   discount_model_group?: string

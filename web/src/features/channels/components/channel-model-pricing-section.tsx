@@ -45,6 +45,7 @@ import {
 import type {
   ChannelInternalPricingView,
   ChannelModelPricingRecord,
+  ChannelOfficialPricingTier,
 } from '../types'
 
 type EditDraft = {
@@ -254,19 +255,44 @@ export function ChannelModelPricingSection(
     }
   }
 
+  const formatTierPrice = (tier: ChannelOfficialPricingTier) => {
+    if (
+      tier.unit === 'per_call' ||
+      tier.unit === 'per_image' ||
+      tier.unit === 'per_second' ||
+      tier.unit === 'per_minute'
+    ) {
+      return `${formatUsd(tier.per_unit_usd)} · ${unitLabel(tier.unit)}`
+    }
+    const parts = [
+      `${t('Input')} ${formatUsd(tier.input_per_million_usd)}`,
+      `${t('Output')} ${formatUsd(tier.output_per_million_usd)}`,
+    ]
+    if (tier.cache_per_million_usd != null) {
+      parts.push(`${t('Cache read')} ${formatUsd(tier.cache_per_million_usd)}`)
+    }
+    if (tier.create_cache_per_million_usd != null) {
+      parts.push(
+        `${t('Cache write')} ${formatUsd(tier.create_cache_per_million_usd)}`
+      )
+    }
+    if (tier.audio_input_per_million_usd != null) {
+      parts.push(
+        `${t('Audio input')} ${formatUsd(tier.audio_input_per_million_usd)}`
+      )
+    }
+    if (tier.audio_output_per_million_usd != null) {
+      parts.push(
+        `${t('Audio output')} ${formatUsd(tier.audio_output_per_million_usd)}`
+      )
+    }
+    return parts.join(' · ')
+  }
+
   const officialPriceLabel = (item: ChannelModelPricingRecord) => {
     const tier = item.official?.tiers?.[0]
     if (!tier) return t('Not available')
-    if (tier.unit === 'per_call') {
-      return `${formatUsd(tier.per_unit_usd)} · ${t('Per call')}`
-    }
-    if (tier.unit === 'per_second') {
-      return `${formatUsd(tier.per_unit_usd)} · ${t('Per second')}`
-    }
-    if (tier.unit === 'per_minute') {
-      return `${formatUsd(tier.per_unit_usd)} · ${t('Per minute')}`
-    }
-    return `${formatUsd(tier.input_per_million_usd)} / ${formatUsd(tier.output_per_million_usd)}`
+    return formatTierPrice(tier)
   }
 
   const renderPricingList = () => {
@@ -316,6 +342,54 @@ export function ChannelModelPricingSection(
                 <span>
                   {t('Upstream official price')}: {officialPriceLabel(item)}
                 </span>
+                {item.official?.review_reasons?.length ? (
+                  <span className='text-destructive w-full text-sm'>
+                    {t('Review reasons')}:{' '}
+                    {item.official.review_reasons.join(' · ')}
+                  </span>
+                ) : null}
+                {item.official?.tiers?.length ? (
+                  <details className='w-full'>
+                    <summary className='text-muted-foreground cursor-pointer text-sm'>
+                      {t('All price tiers ({{count}})', {
+                        count: item.official.tiers.length,
+                      })}
+                    </summary>
+                    <ul className='mt-1 space-y-0.5'>
+                      {item.official.tiers.map((tier) => (
+                        <li
+                          key={`${tier.range_name}|${tier.time_band ?? ''}|${tier.unit}|${tier.min_input_tokens ?? 0}-${tier.max_input_tokens ?? 0}|${tier.input_per_million_usd ?? ''}-${tier.output_per_million_usd ?? ''}-${tier.per_unit_usd ?? ''}`}
+                          className='text-muted-foreground font-mono text-sm'
+                        >
+                          {tier.range_name || t('Default')}
+                          {tier.time_band ? ` · ${tier.time_band}` : ''} ·{' '}
+                          {formatTierPrice(tier)}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
+                {item.official?.channel_price_tiers?.length ? (
+                  <details className='w-full'>
+                    <summary className='text-muted-foreground cursor-pointer text-sm'>
+                      {t('Upstream channel price tiers ({{count}})', {
+                        count: item.official.channel_price_tiers.length,
+                      })}
+                    </summary>
+                    <ul className='mt-1 space-y-0.5'>
+                      {item.official.channel_price_tiers.map((tier) => (
+                        <li
+                          key={`channel|${tier.range_name}|${tier.time_band ?? ''}|${tier.unit}|${tier.min_input_tokens ?? 0}-${tier.max_input_tokens ?? 0}|${tier.input_per_million_usd ?? ''}-${tier.output_per_million_usd ?? ''}-${tier.per_unit_usd ?? ''}`}
+                          className='text-muted-foreground font-mono text-sm'
+                        >
+                          {tier.range_name || t('Default')}
+                          {tier.time_band ? ` · ${tier.time_band}` : ''} ·{' '}
+                          {formatTierPrice(tier)}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
                 {item.official?.component_prices?.length ? (
                   <span>
                     {t('Additional service price')}:{' '}

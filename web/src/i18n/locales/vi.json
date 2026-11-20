@@ -8515,6 +8515,9 @@
     "Below minimum margin": "Dưới tỷ suất tối thiểu",
     "Zero sale price": "Giá bán bằng không",
     "Purchase price missing": "Thiếu giá mua",
-    "{{count}} blocked": "{{count}} bị chặn"
+    "{{count}} blocked": "{{count}} bị chặn",
+    "All price tiers ({{count}})": "Tất cả bậc giá ({{count}})",
+    "Upstream channel price tiers ({{count}})": "Bậc giá kênh thượng nguồn ({{count}})",
+    "Review reasons": "Lý do cần xem xét"
   }
 }

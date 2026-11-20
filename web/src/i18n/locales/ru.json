@@ -8515,6 +8515,9 @@
     "Below minimum margin": "Ниже минимальной маржи",
     "Zero sale price": "Нулевая цена продажи",
     "Purchase price missing": "Нет цены закупки",
-    "{{count}} blocked": "Заблокировано: {{count}}"
+    "{{count}} blocked": "Заблокировано: {{count}}",
+    "All price tiers ({{count}})": "Все ценовые диапазоны ({{count}})",
+    "Upstream channel price tiers ({{count}})": "Ценовые диапазоны канала поставщика ({{count}})",
+    "Review reasons": "Причины проверки"
   }
 }

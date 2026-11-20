@@ -8515,6 +8515,9 @@
     "Below minimum margin": "低于最低毛利率",
     "Zero sale price": "售价为零",
     "Purchase price missing": "缺少采购价",
-    "{{count}} blocked": "{{count}} 个被阻止"
+    "{{count}} blocked": "{{count}} 个被阻止",
+    "All price tiers ({{count}})": "全部价格档位（{{count}}）",
+    "Upstream channel price tiers ({{count}})": "上游渠道价格档位（{{count}}）",
+    "Review reasons": "复核原因"
   }
 }

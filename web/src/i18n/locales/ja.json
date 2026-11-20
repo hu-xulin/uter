@@ -8515,6 +8515,9 @@
     "Below minimum margin": "最低マージン未満",
     "Zero sale price": "販売価格がゼロ",
     "Purchase price missing": "仕入価格がありません",
-    "{{count}} blocked": "{{count}} 件ブロック"
+    "{{count}} blocked": "{{count}} 件ブロック",
+    "All price tiers ({{count}})": "すべての価格帯（{{count}}）",
+    "Upstream channel price tiers ({{count}})": "上流チャネルの価格帯（{{count}}）",
+    "Review reasons": "確認理由"
   }
 }

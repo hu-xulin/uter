@@ -8515,6 +8515,9 @@
     "Below minimum margin": "Below minimum margin",
     "Zero sale price": "Zero sale price",
     "Purchase price missing": "Purchase price missing",
-    "{{count}} blocked": "{{count}} blocked"
+    "{{count}} blocked": "{{count}} blocked",
+    "All price tiers ({{count}})": "All price tiers ({{count}})",
+    "Upstream channel price tiers ({{count}})": "Upstream channel price tiers ({{count}})",
+    "Review reasons": "Review reasons"
   }
 }

@@ -8515,6 +8515,9 @@
     "Below minimum margin": "Sous la marge minimale",
     "Zero sale price": "Prix de vente nul",
     "Purchase price missing": "Prix d'achat manquant",
-    "{{count}} blocked": "{{count}} bloqués"
+    "{{count}} blocked": "{{count}} bloqués",
+    "All price tiers ({{count}})": "Toutes les tranches de prix ({{count}})",
+    "Upstream channel price tiers ({{count}})": "Tranches de prix du canal amont ({{count}})",
+    "Review reasons": "Motifs de révision"
   }
 }
