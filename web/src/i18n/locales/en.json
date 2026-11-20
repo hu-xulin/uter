@@ -8394,6 +8394,8 @@
     "Gross margin": "Gross margin",
     "Price status": "Price status",
     "All price states": "All price states",
-    "Missing sale price": "Missing sale price"
+    "Missing sale price": "Missing sale price",
+    "Price dimensions": "Price dimensions",
+    "Leave all unchecked to apply to every dimension.": "Leave all unchecked to apply to every dimension."
   }
 }

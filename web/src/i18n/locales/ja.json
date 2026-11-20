@@ -8394,6 +8394,8 @@
     "Gross margin": "粗利益",
     "Price status": "価格状態",
     "All price states": "すべての価格状態",
-    "Missing sale price": "販売価格が未設定"
+    "Missing sale price": "販売価格が未設定",
+    "Price dimensions": "価格の次元",
+    "Leave all unchecked to apply to every dimension.": "すべて未選択の場合、すべての次元に適用されます。"
   }
 }

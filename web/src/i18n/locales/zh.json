@@ -8394,6 +8394,8 @@
     "Gross margin": "毛利",
     "Price status": "价格状态",
     "All price states": "全部价格状态",
-    "Missing sale price": "缺少销售价格"
+    "Missing sale price": "缺少销售价格",
+    "Price dimensions": "价格维度",
+    "Leave all unchecked to apply to every dimension.": "全部不勾选时应用于所有维度。"
   }
 }

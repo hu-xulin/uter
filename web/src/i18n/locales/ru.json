@@ -8394,6 +8394,8 @@
     "Gross margin": "Валовая маржа",
     "Price status": "Статус цены",
     "All price states": "Все статусы цены",
-    "Missing sale price": "Нет цены продажи"
+    "Missing sale price": "Нет цены продажи",
+    "Price dimensions": "Измерения цены",
+    "Leave all unchecked to apply to every dimension.": "Оставьте всё неотмеченным, чтобы применить ко всем измерениям."
   }
 }

@@ -973,6 +973,7 @@ export type ChannelBatchPricingResult = {
   items: ChannelBatchPricingItem[]
   skipped: Array<{ model_name: string; reason: string }>
   conflicts?: string[]
+  dimensions?: string[]
 }
 
 export async function batchChannelModelPricing(
@@ -987,6 +988,7 @@ export async function batchChannelModelPricing(
     dry_run: boolean
     overwrite_manual?: boolean
     versions?: Record<string, string>
+    dimensions?: string[]
   }
 ): Promise<ChannelBatchPricingResult> {
   const res = await api.post(

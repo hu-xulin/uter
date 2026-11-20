@@ -8394,6 +8394,8 @@
     "Gross margin": "Lợi nhuận gộp",
     "Price status": "Trạng thái giá",
     "All price states": "Tất cả trạng thái giá",
-    "Missing sale price": "Thiếu giá bán"
+    "Missing sale price": "Thiếu giá bán",
+    "Price dimensions": "Chiều giá",
+    "Leave all unchecked to apply to every dimension.": "Để trống tất cả để áp dụng cho mọi chiều giá."
   }
 }

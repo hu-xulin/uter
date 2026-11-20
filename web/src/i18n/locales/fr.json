@@ -8394,6 +8394,8 @@
     "Gross margin": "Marge brute",
     "Price status": "État du prix",
     "All price states": "Tous les états de prix",
-    "Missing sale price": "Prix de vente manquant"
+    "Missing sale price": "Prix de vente manquant",
+    "Price dimensions": "Dimensions de prix",
+    "Leave all unchecked to apply to every dimension.": "Laissez tout décoché pour appliquer à toutes les dimensions."
   }
 }

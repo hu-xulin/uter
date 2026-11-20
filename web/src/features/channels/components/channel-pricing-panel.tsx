@@ -93,6 +93,15 @@ const PRICING_MODES = [
   { value: 'none', label: 'No change' },
 ] as const
 
+const PRICE_DIMENSIONS = [
+  { value: 'input', label: 'Input' },
+  { value: 'output', label: 'Output' },
+  { value: 'cache_read', label: 'Cache read' },
+  { value: 'cache_write', label: 'Cache write' },
+  { value: 'per_call', label: 'Per call' },
+  { value: 'per_second', label: 'Per second' },
+] as const
+
 function diagnosticMessage(
   check: {
     code?: string
@@ -175,6 +184,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     'all' | 'missing' | 'needs_review'
   >('all')
   const [confirmZeroFixed, setConfirmZeroFixed] = useState(false)
+  const [dimensions, setDimensions] = useState<string[]>([])
   const [overwriteManual, setOverwriteManual] = useState(false)
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
@@ -261,6 +271,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     prefixes,
     category,
     selectedModels,
+    dimensions,
     overwriteManual,
   ])
 
@@ -294,6 +305,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             : undefined,
         model_categories: scope === 'category' ? [category] : undefined,
         overwrite_manual: overwriteManual,
+        dimensions: dimensions.length > 0 ? dimensions : undefined,
         dry_run: dryRun,
         versions:
           !dryRun && preview && preview.dry_run
@@ -564,6 +576,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           </p>
         </div>
         <div className='grid gap-3 sm:grid-cols-3'>
+          <div className='text-sm font-medium sm:col-span-3'>
+            {`1. ${t('Price basis')} · ${t('Pricing rule')}`}
+          </div>
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-basis'>{t('Price basis')}</Label>
             <Select
@@ -618,8 +633,37 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               {t('Discount: 0.6 = 40% off; markup: 0.1 = 10%')}
             </p>
           </div>
+          <div className='space-y-1.5 sm:col-span-3'>
+            <Label>{`2. ${t('Price dimensions')}`}</Label>
+            <div className='flex flex-wrap gap-x-4 gap-y-1'>
+              {PRICE_DIMENSIONS.map((dimension) => {
+                const checked = dimensions.includes(dimension.value)
+                return (
+                  <label
+                    key={dimension.value}
+                    className='flex items-center gap-2 text-sm'
+                  >
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(next) =>
+                        setDimensions((current) =>
+                          next === true
+                            ? [...current, dimension.value]
+                            : current.filter((item) => item !== dimension.value)
+                        )
+                      }
+                    />
+                    <span>{t(dimension.label)}</span>
+                  </label>
+                )
+              })}
+            </div>
+            <p className='text-muted-foreground text-sm'>
+              {t('Leave all unchecked to apply to every dimension.')}
+            </p>
+          </div>
           <div className='space-y-1.5'>
-            <Label htmlFor='batch-pricing-scope'>{t('Scope')}</Label>
+            <Label htmlFor='batch-pricing-scope'>{`3. ${t('Scope')}`}</Label>
             <Select
               value={scope}
               onValueChange={(next) => {
