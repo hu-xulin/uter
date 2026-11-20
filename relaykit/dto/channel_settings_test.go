@@ -3,6 +3,7 @@ package dto
 import (
 	"encoding/json"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -735,4 +736,27 @@ func TestChannelOtherSettingsValidateToolLossPolicy(t *testing.T) {
 	err := (&ChannelOtherSettings{ToolLossPolicy: "drop"}).ValidateToolLossPolicy()
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "tool_loss_policy")
+}
+
+func TestChannelBrandingValidation(t *testing.T) {
+	valid := ChannelBranding{
+		DisplayName: "Uter",
+		Logo:        "https://cdn.example/logo.svg",
+		LogoDark:    "data:image/svg+xml;base64,PHN2Zy8+",
+	}
+	if err := valid.Validate(); err != nil {
+		t.Fatalf("valid branding rejected: %v", err)
+	}
+	for name, branding := range map[string]ChannelBranding{
+		"long name":  {DisplayName: strings.Repeat("x", 51)},
+		"bad scheme": {Logo: "javascript:alert(1)"},
+		"no host":    {Logo: "https:///logo.svg"},
+	} {
+		if err := branding.Validate(); err == nil {
+			t.Fatalf("%s branding must be rejected", name)
+		}
+	}
+	if err := (*ChannelBranding)(nil).Validate(); err != nil {
+		t.Fatalf("nil branding must be allowed: %v", err)
+	}
 }

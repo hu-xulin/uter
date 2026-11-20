@@ -115,6 +115,43 @@ const (
 	AwsApiTypeMantle      AwsApiType = "mantle"
 )
 
+type ChannelBranding struct {
+	DisplayName string `json:"display_name,omitempty"`
+	Logo        string `json:"logo,omitempty"`
+	LogoDark    string `json:"logo_dark,omitempty"`
+}
+
+const (
+	channelBrandingNameMax = 50
+	channelBrandingLogoMax = 700 * 1024
+)
+
+func (b *ChannelBranding) Validate() error {
+	if b == nil {
+		return nil
+	}
+	if len([]rune(strings.TrimSpace(b.DisplayName))) > channelBrandingNameMax {
+		return fmt.Errorf("branding display name must be at most %d characters", channelBrandingNameMax)
+	}
+	for _, logo := range []string{b.Logo, b.LogoDark} {
+		logo = strings.TrimSpace(logo)
+		if logo == "" {
+			continue
+		}
+		if len(logo) > channelBrandingLogoMax {
+			return fmt.Errorf("branding logo exceeds %d bytes", channelBrandingLogoMax)
+		}
+		if strings.HasPrefix(logo, "data:image/") {
+			continue
+		}
+		parsed, err := url.Parse(logo)
+		if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Host == "" {
+			return fmt.Errorf("branding logo must be an http(s) URL or an image data URL")
+		}
+	}
+	return nil
+}
+
 type ChannelOtherSettings struct {
 	AzureResponsesVersion                 string                `json:"azure_responses_version,omitempty"`
 	VertexKeyType                         VertexKeyType         `json:"vertex_key_type,omitempty"`    // "json" or "api_key"
@@ -138,6 +175,7 @@ type ChannelOtherSettings struct {
 	UpstreamModelUpdateLastRemovedModels  []string              `json:"upstream_model_update_last_removed_models,omitempty"`  // 上次检测到的可删除模型
 	UpstreamModelUpdateIgnoredModels      []string              `json:"upstream_model_update_ignored_models,omitempty"`       // 手动忽略的模型
 	AdvancedCustom                        *AdvancedCustomConfig `json:"advanced_custom,omitempty"`
+	Branding                              *ChannelBranding      `json:"branding,omitempty"`
 	// OllamaOpenAIChat routes Ollama chat completions to the OpenAI-compatible
 	// /v1/chat/completions endpoint. When unset, chat completions keep using
 	// the native /api/chat protocol.
