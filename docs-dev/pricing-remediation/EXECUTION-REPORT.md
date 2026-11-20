@@ -96,6 +96,15 @@
 - 阶梯/时段/媒体/部署价格在官方视图中完整保留（`ChannelPricingTier`、`ChannelPriceTiers`、`ChannelOfficialPricing.PerUnitUSD`），不强行折算成 token 价；无法表示为单一金额的形状标记 `needs_review`。
 - 批次执行记录、审计与历史：`service/channel_pricing_audit.go`、`model/channel_pricing_history.go`、`model/channel_pricing_review.go`。
 
+### 2.4.1 逐维毛利与保护策略
+
+- 批量预览按 input / output / cache_read / cache_write / per_call / per_second / per_minute 逐维比较采购价与售价，返回每个维度的毛利与问题（低于最低毛利、售价为零、采购价缺失）。
+- 采购价独立从官方渠道报价解析；`current` 基准不再把当前售价误当采购成本。
+- 三种策略：strict（任一维度违规则整批零写入）、partial（仅跳过违规模型）、approval（填写审批说明后写入，历史来源记为 batch-approved）。
+- 最低毛利率按百分比输入（0–100），空值关闭；非法值、负值、NaN/Inf 拒绝。
+- 预览/执行返回 blocked 数，前端展示逐维问题、被阻止数量与审批说明输入。
+- 证据：缓存亏损模型仅在该维度被拦截、其余模型正常写入；strict 整批零写入；approval 缺失说明被阻止、填写后写入并留痕；历史表迁移后校验来源。
+
 ### 2.5 B2B / C 端差异定价（Phase 5，等价实现）
 
 - 复用既有体系，未另造身份系统：用户组倍率（B2B/C 分组）、模型倍率、渠道价、用户月度消费分层价。
