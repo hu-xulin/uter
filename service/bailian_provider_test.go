@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
@@ -235,8 +236,8 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
 	require.Len(t, normalized.Tiers, 2)
 	require.Len(t, normalized.ChannelPriceTiers, 2)
-	assert.True(t, normalized.NeedsReview)
-	assert.Contains(t, normalized.ReviewReasons, "multiple price ranges")
+	// Token tiers are fully representable by one tiered expression.
+	assert.False(t, normalized.NeedsReview, normalized.ReviewReasons)
 	assert.Equal(t, int64(0), normalized.ChannelPriceTiers[0].MinInputTokens)
 	assert.Equal(t, int64(32*1024), normalized.ChannelPriceTiers[0].MaxInputTokens)
 	assert.Equal(t, int64(32*1024), normalized.ChannelPriceTiers[1].MinInputTokens)
@@ -543,4 +544,65 @@ func TestBailianSynchronousASRDurationPriceStaysReviewOnly(t *testing.T) {
 	normalized = bailianOfficialPricing(video, BailianRegionBeijing, 1, 100)
 	assert.NotContains(t, normalized.ReviewReasons, "duration-based audio requires task billing")
 	assert.NotEmpty(t, bailianInternalPricing(normalized), "async video tasks support per-second settlement")
+}
+
+func TestBailianMultiTierAudioStaysReviewOnly(t *testing.T) {
+	item := BailianModel{Model: "qwen-audio-tiered", Prices: []BailianPriceRange{
+		{RangeName: "0-32k", Prices: []BailianPrice{
+			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "standard"},
+			{Type: "audio_input_token", Price: "2", PriceUnit: "每百万tokens", TimeBand: "standard"},
+		}},
+		{RangeName: "32k-128k", Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens", TimeBand: "standard"},
+			{Type: "audio_input_token", Price: "4", PriceUnit: "每百万tokens", TimeBand: "standard"},
+		}},
+	}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.True(t, view.NeedsReview)
+	assert.Contains(t, view.ReviewReasons, "multi-tier audio prices need manual pricing")
+	assert.Empty(t, bailianInternalPricing(view))
+	for _, tier := range view.ChannelPriceTiers {
+		require.NotNil(t, tier.AudioInputPerMillionUSD, "the audio dimension must stay visible")
+	}
+}
+
+func TestBailianMultiTierMixedUnitsStayReviewOnly(t *testing.T) {
+	item := BailianModel{Model: "mixed-units", Prices: []BailianPriceRange{
+		{RangeName: "0-32k", Prices: []BailianPrice{
+			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "standard"},
+		}},
+		{RangeName: "32k-128k", Prices: []BailianPrice{
+			{Type: "video_duration", Price: "0.3", PriceUnit: "每秒", TimeBand: "standard"},
+		}},
+	}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.True(t, view.NeedsReview, view.ReviewReasons)
+	assert.Contains(t, view.ReviewReasons, "mixed price units across tiers need manual pricing")
+	assert.Empty(t, bailianInternalPricing(view))
+}
+
+func TestBailianTokenTiersBecomeCompleteExpression(t *testing.T) {
+	item := BailianModel{Model: "qwen-long-context", Prices: []BailianPriceRange{
+		{RangeName: "0-32k", Prices: []BailianPrice{
+			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "standard"},
+			{Type: "output_token", Price: "4", PriceUnit: "每百万tokens", TimeBand: "standard"},
+		}},
+		{RangeName: "32k-128k", Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens", TimeBand: "standard"},
+			{Type: "output_token", Price: "8", PriceUnit: "每百万tokens", TimeBand: "standard"},
+		}},
+	}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.False(t, view.NeedsReview, view.ReviewReasons)
+	encoded := bailianInternalPricing(view)
+	require.NotEmpty(t, encoded)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(encoded, &internal))
+	assert.Equal(t, model.ChannelPricingModeTieredExpr, internal.Mode)
+	assert.Contains(t, internal.BillingExpr, `tier("0-32k"`)
+	assert.Contains(t, internal.BillingExpr, `tier("32k-128k"`)
+	assert.Contains(t, internal.BillingExpr, "len <= 32768")
+	if _, err := billingexpr.CompileFromCache(internal.BillingExpr); err != nil {
+		t.Fatalf("tiered expression does not compile: %v", err)
+	}
 }

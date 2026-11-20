@@ -825,11 +825,38 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		result.ChannelPrice = &first
 		result.Tiers = append([]model.ChannelPricingTier(nil), result.ChannelPriceTiers...)
 	}
-	if len(countRanges) > 1 {
+	// Context-length ranges are executable when every tier is a token tier;
+	// the sale price then becomes one tiered expression. Mixed units or media
+	// dimensions cannot be flattened and are named below.
+	tokenTiersOnly := true
+	for _, tier := range result.ChannelPriceTiers {
+		if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
+			tokenTiersOnly = false
+			break
+		}
+	}
+	if len(countRanges) > 1 && !tokenTiersOnly {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")
 	}
 	if len(countBands) > 1 {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple time bands")
+	}
+	// Multi-tier rows are only executable when every tier is a token tier. Audio
+	// or media dimensions mixed into several ranges cannot be flattened into one
+	// expression, so name the reason instead of leaving a silent empty sale price.
+	if len(result.ChannelPriceTiers) > 1 {
+		for _, tier := range result.ChannelPriceTiers {
+			if tier.AudioInputPerMillionUSD != nil || tier.AudioOutputPerMillionUSD != nil {
+				result.ReviewReasons = append(result.ReviewReasons, "multi-tier audio prices need manual pricing")
+				break
+			}
+		}
+		for _, tier := range result.ChannelPriceTiers {
+			if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
+				result.ReviewReasons = append(result.ReviewReasons, "mixed price units across tiers need manual pricing")
+				break
+			}
+		}
 	}
 	for priceType := range unknownTypes {
 		result.ReviewReasons = append(result.ReviewReasons, "unsupported price type: "+priceType)
