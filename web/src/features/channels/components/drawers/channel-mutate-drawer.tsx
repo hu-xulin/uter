@@ -106,8 +106,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { useTheme } from '@/context/theme-provider'
+import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -832,11 +832,7 @@ export function ChannelMutateDrawer({
   )?.trim()
   const channelHeaderLabel = brandingDisplayName || providerLabel
   let channelHeaderIcon = (
-    <ChannelTypeLogo
-      type={currentType}
-      plugin={boundTaskPlugin}
-      size={18}
-    />
+    <ChannelTypeLogo type={currentType} plugin={boundTaskPlugin} size={18} />
   )
   if (brandingLogo) {
     channelHeaderIcon = (

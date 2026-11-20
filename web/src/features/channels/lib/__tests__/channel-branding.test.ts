@@ -63,9 +63,7 @@ test('custom channel branding round-trips through settings', () => {
   const defaults = transformChannelToFormDefaults(channel)
   expect(defaults.branding_display_name).toBe('Uter 官方渠道')
   expect(defaults.branding_logo).toBe('https://cdn.example/uter-light.svg')
-  expect(defaults.branding_logo_dark).toBe(
-    'https://cdn.example/uter-dark.svg'
-  )
+  expect(defaults.branding_logo_dark).toBe('https://cdn.example/uter-dark.svg')
 })
 
 test('clearing custom branding removes it without touching other settings', () => {
