@@ -68,15 +68,6 @@ import type {
   UpstreamConfig,
   UpstreamSkippedModel,
 } from '../types'
-
-// Reasons the backend reports for catalogue rows it did not price. Keys are
-// i18n source strings.
-const SKIP_REASON_KEYS: Record<string, string> = {
-  resolution_tiered: 'Priced by resolution; set it manually',
-  duration_tiered: 'Priced by resolution and duration; set it manually',
-  no_direct_price: 'No direct price in the catalogue',
-  invalid_expression: 'Pricing expression failed validation',
-}
 import { ChannelSelectorDialog } from './channel-selector-dialog'
 import {
   ConflictConfirmDialog,
@@ -99,6 +90,15 @@ import {
   type PricingSourceSelections,
 } from './upstream-ratio-sync-helpers'
 import { UpstreamRatioSyncTable } from './upstream-ratio-sync-table'
+
+// Reasons the backend reports for catalogue rows it did not price. Keys are
+// i18n source strings.
+const SKIP_REASON_KEYS: Record<string, string> = {
+  resolution_tiered: 'Priced by resolution; set it manually',
+  duration_tiered: 'Priced by resolution and duration; set it manually',
+  no_direct_price: 'No direct price in the catalogue',
+  invalid_expression: 'Pricing expression failed validation',
+}
 
 function getDefaultEndpointForChannel(channel: UpstreamChannel): string {
   if (channel.id === MODELS_DEV_PRESET_ID) return MODELS_DEV_PRESET_ENDPOINT
