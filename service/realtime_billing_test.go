@@ -183,3 +183,20 @@ func sumRealtimeUsage(events []*dto.RealtimeUsage) *dto.RealtimeUsage {
 	}
 	return total
 }
+
+// A channel price may carry its own audio multipliers. The settlement helper
+// must use them instead of the global audio ratios, otherwise the same
+// realtime usage is priced differently from the pre-consume estimate.
+func TestCalculateAudioQuotaUsesChannelAudioRatios(t *testing.T) {
+	quota, clamp := calculateAudioQuota(QuotaInfo{
+		InputDetails:         TokenDetails{AudioTokens: 100},
+		OutputDetails:        TokenDetails{AudioTokens: 100},
+		ModelName:            "audio-price-test",
+		ModelRatio:           1,
+		GroupRatio:           1,
+		AudioRatio:           2,
+		AudioCompletionRatio: 3,
+	})
+	require.Nil(t, clamp)
+	assert.Equal(t, 800, quota) // 100*2 + 100*2*3
+}

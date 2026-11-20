@@ -159,6 +159,7 @@ func ApplyBailianCatalog(c *gin.Context) {
 	if pricingErr != nil {
 		common.SysError("persist bailian channel pricing: " + pricingErr.Error())
 	}
+	go syncLocalizedDescriptions(context.Background(), channel.GetModels())
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
 		"apply":           result,
 		"pricing_records": pricingRecords,
@@ -255,6 +256,7 @@ func syncBailianAfterCreate(channelID int) {
 		status.PricingRecords = records
 		mark("apply_prices", "ok", "")
 	}
+	go syncLocalizedDescriptions(context.Background(), channel.GetModels())
 	status.MatchedModels = result.MatchedModels
 	status.UnmatchedModels = result.UnmatchedModels
 	if result.Metadata != nil {
@@ -271,9 +273,12 @@ func errorText(err error) string {
 	return err.Error()
 }
 
-// applyBailianChannelPricing persists official data into the channel-isolated
-// pricing table. It never writes the operator's internal sale price.
+// applyBailianChannelPricing persists the Bailian channel quote into the
+// channel-isolated pricing table. It never writes the operator's sale price.
 func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels []string) (int, error) {
+	if _, err := model.ClearAutoDerivedChannelPricing(catalog.ChannelID, "bailian-"); err != nil {
+		return 0, err
+	}
 	records := service.BailianPricingRecords(catalog, channelModels)
 	return model.UpsertChannelOfficialPricing(records)
 }

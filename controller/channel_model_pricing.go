@@ -142,25 +142,30 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 // converted with Uter's documented ratio convention; absolute providers reuse
 // the first normalized tier.
 func channelUpstreamQuote(row model.ChannelModelPricing, official *model.ChannelOfficialPricing) *channelUpstreamQuoteView {
-	if official != nil && official.ChannelPrice != nil {
-		tier := official.ChannelPrice
-		quote := &channelUpstreamQuoteView{
-			PriceBasis:    "CHANNEL_DISCOUNT",
-			Currency:      official.Currency,
-			Unit:          tier.Unit,
-			Source:        "dreamrouter-discount",
-			DiscountGroup: official.DiscountGroup,
-			DiscountRatio: official.DiscountRatio,
+	if official != nil {
+		switch {
+		case len(official.ChannelPriceTiers) > 0:
+			return quoteFromTier(official.ChannelPriceTiers[0], "CHANNEL_CATALOG", official.Source, nil)
+		case official.ChannelPrice != nil:
+			quote := &channelUpstreamQuoteView{
+				PriceBasis:    "CHANNEL_DISCOUNT",
+				Currency:      official.Currency,
+				Unit:          official.ChannelPrice.Unit,
+				Source:        "dreamrouter-discount",
+				DiscountGroup: official.DiscountGroup,
+				DiscountRatio: official.DiscountRatio,
+			}
+			tier := *official.ChannelPrice
+			switch tier.Unit {
+			case "per_call", "per_second", "per_image", "per_minute":
+				quote.PerCallUSD = tier.PerUnitUSD
+			default:
+				quote.InputPerMillionUSD = tier.InputPerMillionUSD
+				quote.OutputPerMillionUSD = tier.OutputPerMillionUSD
+				quote.CachePerMillionUSD = tier.CachePerMillionUSD
+			}
+			return quote
 		}
-		switch tier.Unit {
-		case "per_call", "per_second", "per_image", "per_minute":
-			quote.PerCallUSD = tier.PerUnitUSD
-		default:
-			quote.InputPerMillionUSD = tier.InputPerMillionUSD
-			quote.OutputPerMillionUSD = tier.OutputPerMillionUSD
-			quote.CachePerMillionUSD = tier.CachePerMillionUSD
-		}
-		return quote
 	}
 	if row.Provider == "dreamrouter" && strings.TrimSpace(row.OfficialPricing) != "" {
 		var record service.UpstreamModelRecord
@@ -193,10 +198,13 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 	if official == nil || len(official.Tiers) == 0 {
 		return nil
 	}
-	tier := official.Tiers[0]
+	return quoteFromTier(official.Tiers[0], "OFFICIAL_REFERENCE", official.Source, nil)
+}
+
+func quoteFromTier(tier model.ChannelPricingTier, basis, source string, discount *float64) *channelUpstreamQuoteView {
 	quote := &channelUpstreamQuoteView{
-		PriceBasis: "OFFICIAL_REFERENCE", Currency: official.Currency,
-		Unit: tier.Unit, Source: official.Source,
+		PriceBasis: basis, Currency: "USD",
+		Unit: tier.Unit, Source: source, DiscountRatio: discount,
 	}
 	switch tier.Unit {
 	case "per_call", "per_second", "per_image", "per_minute":
@@ -529,4 +537,29 @@ func RollbackChannelPricingHistory(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, channelModelPricingToView(*row))
+}
+
+// SeedChannelModelPricing adopts synced official prices as internal sale prices.
+// This is explicit: catalog sync itself never creates a billable price.
+func SeedChannelModelPricing(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	var req struct {
+		Models    []string `json:"models"`
+		Overwrite bool     `json:"overwrite"`
+	}
+	_ = c.ShouldBindJSON(&req)
+	seeded, skipped, err := service.SeedBailianInternalPricing(channelID, req.Models, req.Overwrite)
+	if err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
+	common.ApiSuccess(c, gin.H{
+		"channel_id": channelID,
+		"seeded":     seeded,
+		"skipped":    skipped,
+	})
 }

@@ -8,22 +8,25 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-func TestResolveBatchBasePriceBailianOfficial(t *testing.T) {
+func TestResolveBatchBasePriceBailianUsesChannelCatalog(t *testing.T) {
 	row := model.ChannelModelPricing{
 		ModelName: "qwen-plus",
 		NormalizedPricing: `{
-			"currency":"USD","unit":"per_1m_token","tiers":[
+			"currency":"USD","unit":"per_1m_token","channel_price_tiers":[
 				{"range_name":"Default","input_per_million_usd":0.8,"output_per_million_usd":2,"unit":"per_1m_token"}
 			]
 		}`,
 	}
-	base, reason := resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	base, reason := resolveBatchBasePrice(row, BatchPricingBasisChannel)
 	require.Empty(t, reason)
 	require.Equal(t, model.ChannelPricingModePerMillionTokens, base.mode)
 	require.NotNil(t, base.inputUSD)
 	require.Equal(t, 0.8, *base.inputUSD)
 	require.NotNil(t, base.outputUSD)
 	require.Equal(t, 2.0, *base.outputUSD)
+
+	_, reason = resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	require.NotEmpty(t, reason, "Bailian must not present its channel quote as an official vendor price")
 }
 
 func TestResolveBatchBasePriceDreamRouterRejectsOfficialBasis(t *testing.T) {

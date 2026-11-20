@@ -145,7 +145,7 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 					RawUnit:          price.PriceUnit,
 					RangeName:        priceRange.RangeName,
 					TimeBand:         price.TimeBand,
-					Source:           "bailian-official",
+					Source:           "bailian-channel",
 					FetchedAt:        catalog.FetchedAt,
 				}
 				if parseErr == nil {
@@ -305,28 +305,35 @@ func ApplyBailianCatalog(catalog *BailianCatalog, channelModels []string) (*Bail
 	return result, nil
 }
 
-// BailianPricingRecords builds one channel-scoped official pricing record for
-// every requested model. Only models the channel actually serves are written;
+// BailianPricingRecords builds one channel-scoped catalog quote for every
+// requested model. Bailian publishes the channel price, not the vendor list. Only models the channel actually serves are written;
 // the untouched official payload is preserved on the row.
 func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []model.ChannelOfficialPricingRecord {
 	if catalog == nil || len(channelModels) == 0 {
 		return nil
 	}
-	wanted := make(map[string]bool, len(channelModels))
-	for _, name := range channelModels {
-		name = strings.TrimSpace(name)
-		if name != "" {
-			wanted[name] = true
-		}
+	byName := make(map[string]BailianModel, len(catalog.Models))
+	for _, item := range catalog.Models {
+		byName[item.Model] = item
 	}
 	rate := operation_setting.USDExchangeRate
 	if rate <= 0 {
 		rate = operation_setting.DefaultUSDExchangeRate
 	}
 	records := make([]model.ChannelOfficialPricingRecord, 0, len(channelModels))
-	for _, item := range catalog.Models {
-		if !wanted[item.Model] {
+	seen := make(map[string]bool, len(channelModels))
+	for _, rawName := range channelModels {
+		name := strings.TrimSpace(rawName)
+		if name == "" || seen[name] {
 			continue
+		}
+		seen[name] = true
+		item, ok := byName[name]
+		if !ok {
+			item, ok = resolveBailianCatalogAlias(name, byName)
+			if !ok {
+				continue
+			}
 		}
 		raw, err := common.Marshal(item)
 		if err != nil {
@@ -341,15 +348,217 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 			ChannelId:         catalog.ChannelID,
 			Provider:          firstNonEmpty(item.InferenceProvider, item.Provider, "aliyun-bailian"),
 			Region:            string(catalog.Region),
-			ModelName:         item.Model,
+			ModelName:         name,
 			Currency:          normalized.Currency,
 			OfficialPricing:   string(raw),
 			NormalizedPricing: string(encoded),
-			Source:            "bailian-official",
+			Source:            "bailian-channel",
 			FetchedAt:         catalog.FetchedAt.Unix(),
 		})
 	}
 	return records
+}
+
+// SeedBailianInternalPricing adopts synced channel catalog prices as explicit sale
+// prices. Catalog sync itself never makes an official row billable.
+func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) (int, int, error) {
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return 0, 0, err
+	}
+	wanted := make(map[string]bool, len(models))
+	for _, name := range models {
+		if trimmed := strings.TrimSpace(name); trimmed != "" {
+			wanted[trimmed] = true
+		}
+	}
+	seeded, skipped := 0, 0
+	for _, row := range rows {
+		if len(wanted) > 0 && !wanted[row.ModelName] {
+			continue
+		}
+		if !overwrite && strings.TrimSpace(row.InternalPricing) != "" {
+			skipped++
+			continue
+		}
+		var view model.ChannelOfficialPricing
+		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &view); err != nil {
+			skipped++
+			continue
+		}
+		encoded := bailianInternalPricing(view)
+		if encoded == "" {
+			skipped++
+			continue
+		}
+		var internal model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(encoded, &internal); err != nil {
+			skipped++
+			continue
+		}
+		if err := model.SetChannelInternalPricing(channelID, row.ModelName, internal); err != nil {
+			skipped++
+			continue
+		}
+		seeded++
+	}
+	return seeded, skipped, nil
+}
+
+// resolveBailianCatalogAlias matches channel model names that differ from the
+// catalog only by a known envelope: the `cmaas-` prefix, a vendor scope before
+// `/`, or a trailing date. It never guesses by substring.
+func resolveBailianCatalogAlias(name string, byName map[string]BailianModel) (BailianModel, bool) {
+	candidates := []string{name}
+	if strings.HasPrefix(name, "cmaas-") {
+		candidates = append(candidates, strings.TrimPrefix(name, "cmaas-"))
+	}
+	if index := strings.LastIndex(name, "/"); index >= 0 && index+1 < len(name) {
+		candidates = append(candidates, name[index+1:])
+	}
+	if match := bailianVersionSuffixPattern.FindStringSubmatch(name); len(match) == 2 {
+		candidates = append(candidates, match[1])
+	}
+	for _, candidate := range candidates[1:] {
+		if item, ok := byName[candidate]; ok {
+			return item, true
+		}
+	}
+	return BailianModel{}, false
+}
+
+var bailianVersionSuffixPattern = regexp.MustCompile(`^(.+?)-\d{4}(?:-\d{2}){0,2}$`)
+
+// bailianInternalPricing builds the channel's default sale price from the
+// Bailian channel catalog quote. A single
+// executable tier becomes a flat price; multiple token tiers become a tiered
+// billing expression so context-length pricing is preserved instead of being
+// flattened. Shapes that cannot be represented (audio dimensions, per-character
+// units, multiple time bands) return "" and stay review-only.
+func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
+	tiers := normalized.ChannelPriceTiers
+	if len(tiers) == 0 && normalized.ChannelPrice != nil {
+		tiers = []model.ChannelPricingTier{*normalized.ChannelPrice}
+	}
+	if len(tiers) == 0 {
+		tiers = normalized.Tiers
+	}
+	if len(tiers) == 0 {
+		return ""
+	}
+	if len(tiers) == 1 {
+		tier := tiers[0]
+		internal := model.ChannelInternalPricing{Source: "bailian-channel", UpdatedAt: normalized.FetchedAt}
+		switch tier.Unit {
+		case "per_1m_token", "per_1m_tokens":
+			if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
+				return ""
+			}
+			internal.Mode = model.ChannelPricingModePerMillionTokens
+			internal.InputUSDPerMillion = tier.InputPerMillionUSD
+			if tier.OutputPerMillionUSD != nil {
+				internal.OutputUSDPerMillion = tier.OutputPerMillionUSD
+			} else {
+				zero := 0.0
+				internal.OutputUSDPerMillion = &zero
+			}
+			internal.CacheUSDPerMillion = tier.CachePerMillionUSD
+			if tier.AudioInputPerMillionUSD != nil && *tier.AudioInputPerMillionUSD > 0 {
+				ratio := *tier.AudioInputPerMillionUSD / *tier.InputPerMillionUSD
+				internal.AudioRatio = &ratio
+			}
+			if tier.AudioOutputPerMillionUSD != nil && tier.OutputPerMillionUSD != nil &&
+				*tier.AudioOutputPerMillionUSD > 0 && *tier.OutputPerMillionUSD > 0 {
+				ratio := *tier.AudioOutputPerMillionUSD / *tier.OutputPerMillionUSD
+				internal.AudioCompletionRatio = &ratio
+			}
+		case "per_image", "per_call":
+			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {
+				return ""
+			}
+			internal.Mode = model.ChannelPricingModePerCall
+			internal.PerCallUSD = tier.PerUnitUSD
+		case "per_second":
+			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {
+				return ""
+			}
+			internal.Mode = model.ChannelPricingModePerSecond
+			internal.PerSecondUSD = tier.PerUnitUSD
+		default:
+			return ""
+		}
+		encoded, err := common.Marshal(internal)
+		if err != nil {
+			return ""
+		}
+		return string(encoded)
+	}
+	if expr := bailianTierExpression(tiers); expr != "" {
+		internal := model.ChannelInternalPricing{
+			Mode:        model.ChannelPricingModeTieredExpr,
+			BillingExpr: expr,
+			Source:      "bailian-channel",
+			UpdatedAt:   normalized.FetchedAt,
+		}
+		encoded, err := common.Marshal(internal)
+		if err != nil {
+			return ""
+		}
+		return string(encoded)
+	}
+	return ""
+}
+
+// bailianTierExpression converts context-length tiers into the expression
+// language used by the billing engine. Coefficients are USD per 1M tokens; the
+// engine multiplies them by token counts and converts to quota.
+func bailianTierExpression(tiers []model.ChannelPricingTier) string {
+	sorted := append([]model.ChannelPricingTier(nil), tiers...)
+	sort.Slice(sorted, func(i, j int) bool {
+		mi, mj := sorted[i].MaxInputTokens, sorted[j].MaxInputTokens
+		if mi == 0 {
+			return false
+		}
+		if mj == 0 {
+			return true
+		}
+		return mi < mj
+	})
+	parts := make([]string, 0, len(sorted))
+	for _, tier := range sorted {
+		if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
+			return ""
+		}
+		if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
+			return ""
+		}
+		terms := []string{fmt.Sprintf("p * %s", formatExprNumber(*tier.InputPerMillionUSD))}
+		if tier.OutputPerMillionUSD != nil && *tier.OutputPerMillionUSD > 0 {
+			terms = append(terms, fmt.Sprintf("c * %s", formatExprNumber(*tier.OutputPerMillionUSD)))
+		}
+		if tier.CachePerMillionUSD != nil && *tier.CachePerMillionUSD > 0 {
+			terms = append(terms, fmt.Sprintf("cr * %s", formatExprNumber(*tier.CachePerMillionUSD)))
+		}
+		name := tier.RangeName
+		if strings.TrimSpace(name) == "" {
+			name = "tier"
+		}
+		parts = append(parts, fmt.Sprintf(`tier("%s", %s)`, strings.ReplaceAll(name, `"`, ""), strings.Join(terms, " + ")))
+	}
+	expr := parts[len(parts)-1]
+	for i := len(parts) - 2; i >= 0; i-- {
+		limit := sorted[i].MaxInputTokens
+		condition := "true"
+		if limit > 0 {
+			condition = fmt.Sprintf("len <= %d", limit)
+		}
+		expr = fmt.Sprintf("%s ? %s : %s", condition, parts[i], expr)
+	}
+	return expr
+}
+
+func formatExprNumber(value float64) string {
+	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 func firstNonEmpty(values ...string) string {
@@ -361,14 +570,16 @@ func firstNonEmpty(values ...string) string {
 	return ""
 }
 
-// bailianOfficialPricing groups the official price items into ranges. Multiple
-// ranges/time bands are preserved as separate tiers and flagged for review;
-// they are never averaged or collapsed into one number.
+// bailianOfficialPricing groups the Bailian catalog price items into ranges.
+// Bailian publishes the supplier/channel quote, not the model vendor's own
+// list price, so these tiers are stored in ChannelPriceTiers and the official
+// tier list stays empty. Multiple ranges/time bands remain separate and are
+// flagged for review; they are never averaged into one number.
 func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float64, fetchedAt int64) model.ChannelOfficialPricing {
 	result := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "per_1m_token",
-		Source:    "bailian-official",
+		Source:    "bailian-channel",
 		FetchedAt: fetchedAt,
 	}
 	if region == BailianRegionBeijing || region == BailianRegionHongKong {
@@ -424,12 +635,27 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			priceType := strings.ToLower(strings.TrimSpace(price.Type))
 			tier.RawPriceTypes = append(tier.RawPriceTypes, priceType)
 			switch {
-			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input":
+			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input" ||
+				priceType == "embedding_token" || priceType == "translate_audio_input_token" ||
+				priceType == "omni_no_audio_input_token" || priceType == "audio_text_input_token" ||
+				priceType == "omni_input_token":
 				tier.InputPerMillionUSD = &usd
 				result.Unit = "per_1m_token"
-			case priceType == "output_token" || priceType == "output_tokens" || priceType == "text_output":
+			case priceType == "output_token" || priceType == "output_tokens" || priceType == "text_output" ||
+				priceType == "translate_multi_text_output_token" || priceType == "translate_multi_output_token" ||
+				priceType == "omni_no_audio_output_token" || priceType == "audio_text_output_token" ||
+				priceType == "omni_output_token" || priceType == "purein_text_output_token" ||
+				priceType == "omni_text_output_token":
 				tier.OutputPerMillionUSD = &usd
 				result.Unit = "per_1m_token"
+			case priceType == "audio_input_token" || priceType == "omni_audio_input_token":
+				tier.AudioInputPerMillionUSD = &usd
+				result.Unit = "per_1m_token"
+			case priceType == "audio_output_token" || priceType == "omni_audio_output_token" || priceType == "multi_output_token":
+				tier.AudioOutputPerMillionUSD = &usd
+				result.Unit = "per_1m_token"
+			case priceType == "omni_input_token_cache":
+				tier.CachePerMillionUSD = &usd
 			case strings.Contains(priceType, "cache") && strings.Contains(priceType, "read"):
 				tier.CachePerMillionUSD = &usd
 			case normalizedUnit == "per_image" || normalizedUnit == "per_second" || normalizedUnit == "per_minute":
@@ -441,7 +667,11 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		}
 	}
 	for _, key := range order {
-		result.Tiers = append(result.Tiers, *tiers[key])
+		result.ChannelPriceTiers = append(result.ChannelPriceTiers, *tiers[key])
+	}
+	if len(result.ChannelPriceTiers) > 0 {
+		first := result.ChannelPriceTiers[0]
+		result.ChannelPrice = &first
 	}
 	if len(countRanges) > 1 {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")
@@ -460,13 +690,15 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	return result
 }
 
-var bailianTokenRangePattern = regexp.MustCompile(`(?i)(\d+(?:\.\d+)?)\s*([km]?)\s*[-~至]\s*(\d+(?:\.\d+)?)\s*([km]?)`)
+var (
+	bailianTokenRangePattern = regexp.MustCompile(`(?i)(\d+(?:\.\d+)?)\s*([km]?)\s*[-~至]\s*(\d+(?:\.\d+)?)\s*([km]?)`)
+	// "32k<输入<=128k"
+	bailianBoundedRangePattern = regexp.MustCompile(`(?i)^\s*(\d+(?:\.\d+)?)\s*([km]?)\s*<\s*(?:输入|tokens?)?\s*<=?\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
+	// "输入<=128k"
+	bailianUpperRangePattern = regexp.MustCompile(`(?i)^\s*(?:输入|tokens?)?\s*<=?\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
+)
 
 func parseBailianTokenRange(name string) (int64, int64) {
-	match := bailianTokenRangePattern.FindStringSubmatch(name)
-	if len(match) != 5 {
-		return 0, 0
-	}
 	parse := func(raw, suffix string) int64 {
 		value, err := strconv.ParseFloat(raw, 64)
 		if err != nil {
@@ -480,7 +712,16 @@ func parseBailianTokenRange(name string) (int64, int64) {
 		}
 		return int64(value)
 	}
-	return parse(match[1], match[2]), parse(match[3], match[4])
+	if match := bailianBoundedRangePattern.FindStringSubmatch(name); len(match) == 5 {
+		return parse(match[1], match[2]), parse(match[3], match[4])
+	}
+	if match := bailianUpperRangePattern.FindStringSubmatch(name); len(match) == 3 {
+		return 0, parse(match[1], match[2])
+	}
+	if match := bailianTokenRangePattern.FindStringSubmatch(name); len(match) == 5 {
+		return parse(match[1], match[2]), parse(match[3], match[4])
+	}
+	return 0, 0
 }
 
 func bailianVendorName(item BailianModel) string {

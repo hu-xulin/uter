@@ -508,6 +508,29 @@ func FetchUpstreamRatios(c *gin.Context) {
 				uniqueName = fmt.Sprintf("%s(%d)", chItem.Name, chItem.ID)
 			}
 
+			// APIKO 只有 /v1/* 中转，没有 new-api 的 /api/pricing；模型与价格
+			// 在控制面的公开目录接口，见 upstream_catalog_apiko.go。
+			if controlPlane, isApiko := apikoControlPlaneFor(chItem.BaseURL); isApiko {
+				syncCtx, cancelSync := context.WithTimeout(c.Request.Context(), time.Duration(req.Timeout)*time.Second)
+				converted, skipped, syncErr := fetchApikoPricingData(syncCtx, controlPlane)
+				cancelSync()
+				if syncErr != nil {
+					logger.LogWarn(c.Request.Context(), "apiko catalogue failed on "+chItem.Name+": "+syncErr.Error())
+					ch <- upstreamResult{Name: uniqueName, Err: syncErr.Error()}
+					return
+				}
+				converted, renames := aliasResolvers[chItem.ID].apply(converted)
+				for _, rename := range renames {
+					logger.LogInfo(c.Request.Context(), "price sync alias resolved on "+uniqueName+": "+rename)
+				}
+				logger.LogInfo(c.Request.Context(), fmt.Sprintf(
+					"apiko catalogue synced on %s: %d models, %d skipped (media pricing needs request parameters)",
+					uniqueName, len(valueMap(converted[billing_setting.BillingExprField])), skipped,
+				))
+				ch <- upstreamResult{Name: uniqueName, Data: converted}
+				return
+			}
+
 			ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(req.Timeout)*time.Second)
 			defer cancel()
 

@@ -231,12 +231,124 @@ func TestChannelModelPricingMigrationAndUniqueKey(t *testing.T) {
 	// Running migration again must be a no-op.
 	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}))
 
-	row := ChannelModelPricing{ChannelId: 1, ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly}
+	row := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing",
+		ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly,
+	}
 	require.NoError(t, db.Create(&row).Error)
-	duplicate := ChannelModelPricing{ChannelId: 1, ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly}
+	duplicate := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing",
+		ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly,
+	}
 	require.Error(t, db.Create(&duplicate).Error)
-	// The same model on another channel is a separate row.
-	require.NoError(t, db.Create(&ChannelModelPricing{ChannelId: 2, ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly}).Error)
+	// The same model in another region or on another channel is a separate row.
+	require.NoError(t, db.Create(&ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "ap-southeast-1",
+		ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly,
+	}).Error)
+	require.NoError(t, db.Create(&ChannelModelPricing{
+		ChannelId: 2, ModelName: "qwen-plus", PricingStatus: ChannelPricingStatusOfficialOnly,
+	}).Error)
+}
+
+func TestPrepareChannelModelPricingIdentityMergesLegacyDuplicates(t *testing.T) {
+	path := t.TempDir() + "/channel-pricing-migrate.db"
+	db, err := gorm.Open(sqlite.Open(path), &gorm.Config{})
+	require.NoError(t, err)
+
+	// Build the legacy shape: unique (channel, model), no identity columns in
+	// the index. Dropping the new index afterwards reproduces a pre-migration
+	// database that already contains duplicate identities.
+	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}))
+	if db.Migrator().HasIndex(&ChannelModelPricing{}, "idx_channel_model_pricing_identity") {
+		require.NoError(t, db.Migrator().DropIndex(&ChannelModelPricing{}, "idx_channel_model_pricing_identity"))
+	}
+	internal, _ := common.Marshal(ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: floatPtr(2), UpdatedAt: 10,
+	})
+	older := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
+		PricingStatus: ChannelPricingStatusOfficialOnly, FetchedAt: 10, UpdatedAt: 10,
+	}
+	newer := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
+		PricingStatus: ChannelPricingStatusConfigured, InternalPricing: string(internal), FetchedAt: 20, UpdatedAt: 20,
+	}
+	require.NoError(t, db.Create(&older).Error)
+	require.NoError(t, db.Create(&newer).Error)
+
+	require.NoError(t, PrepareChannelModelPricingIdentity(db))
+	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}))
+
+	var rows []ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ?", 1).Find(&rows).Error)
+	require.Len(t, rows, 1)
+	assert.Equal(t, ChannelPricingStatusConfigured, rows[0].PricingStatus)
+	assert.False(t, db.Migrator().HasIndex(&ChannelModelPricing{}, legacyChannelPricingIndex))
+	assert.True(t, db.Migrator().HasIndex(&ChannelModelPricing{}, "idx_channel_model_pricing_identity"))
+}
+
+func TestUpsertKeepsRegionAndDeploymentIsolated(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	beijing := officialRecord(1, "qwen-plus", "bailian-official")
+	singapore := officialRecord(1, "qwen-plus", "bailian-official")
+	singapore.Region = "ap-southeast-1"
+	deployment := officialRecord(1, "qwen-plus", "bailian-official")
+	deployment.DeploymentId = "deploy-2"
+
+	written, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{beijing, singapore, deployment})
+	require.NoError(t, err)
+	assert.Equal(t, 3, written)
+
+	var rows []ChannelModelPricing
+	require.NoError(t, DB.Where("channel_id = ? AND model_name = ?", 1, "qwen-plus").Find(&rows).Error)
+	require.Len(t, rows, 3)
+	regions := map[string]bool{}
+	for _, row := range rows {
+		regions[row.Region+"/"+row.DeploymentId] = true
+	}
+	assert.Contains(t, regions, "cn-beijing/")
+	assert.Contains(t, regions, "ap-southeast-1/")
+	assert.Contains(t, regions, "cn-beijing/deploy-2")
+
+	// Re-syncing one identity updates only that row.
+	updated := singapore
+	updated.Source = "bailian-official-v2"
+	written, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{updated})
+	require.NoError(t, err)
+	assert.Equal(t, 1, written)
+	var refreshed []ChannelModelPricing
+	require.NoError(t, DB.Where("channel_id = ? AND model_name = ?", 1, "qwen-plus").Find(&refreshed).Error)
+	require.Len(t, refreshed, 3)
+	for _, row := range refreshed {
+		if row.Region == "ap-southeast-1" {
+			assert.Equal(t, "bailian-official-v2", row.PricingSource)
+		} else {
+			assert.Equal(t, "bailian-official", row.PricingSource)
+		}
+	}
+}
+
+func TestGetChannelModelPricingPrefersConfiguredIdentity(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	official := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
+		PricingStatus: ChannelPricingStatusOfficialOnly, FetchedAt: 200, UpdatedAt: 200,
+	}
+	internal, _ := common.Marshal(ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: floatPtr(2), UpdatedAt: 10,
+	})
+	configured := ChannelModelPricing{
+		ChannelId: 1, Provider: "aliyun-bailian", Region: "ap-southeast-1", ModelName: "qwen-plus",
+		PricingStatus: ChannelPricingStatusConfigured, InternalPricing: string(internal), FetchedAt: 100, UpdatedAt: 100,
+	}
+	require.NoError(t, DB.Create(&official).Error)
+	require.NoError(t, DB.Create(&configured).Error)
+
+	row, err := GetChannelModelPricing(1, "qwen-plus")
+	require.NoError(t, err)
+	assert.Equal(t, ChannelPricingStatusConfigured, row.PricingStatus)
+	assert.Equal(t, "ap-southeast-1", row.Region)
 }
 
 func TestNormalizeChannelInternalPricingCacheWrite(t *testing.T) {
@@ -378,7 +490,7 @@ func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
 		{ChannelId: 2, Provider: "dreamrouter", ModelName: "m", Currency: "USD", InternalPricing: internal(0.2, 0.8), Source: "dreamrouter-official"},
 	})
 	require.NoError(t, err)
-	prices := loadChannelInternalPrices([]AbilityWithChannel{
+	prices, _ := loadChannelInternalPrices([]AbilityWithChannel{
 		{Ability: Ability{ChannelId: 1, Model: "m", Enabled: true}, ChannelName: "渠道一", ChannelStatus: common.ChannelStatusEnabled},
 		{Ability: Ability{ChannelId: 2, Model: "m", Enabled: true}, ChannelName: "渠道二", ChannelStatus: common.ChannelStatusEnabled},
 		{Ability: Ability{ChannelId: 3, Model: "m", Enabled: true}, ChannelName: "停用渠道", ChannelStatus: common.ChannelStatusManuallyDisabled},
@@ -388,4 +500,96 @@ func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
 	require.Equal(t, "渠道二", price.channelName)
 	require.InDelta(t, 0.1, price.modelRatio, 0.0001)
 	require.InDelta(t, 4, price.completionRatio, 0.0001)
+}
+
+func TestNormalizeChannelInternalPricingPerMinuteConvertsToSeconds(t *testing.T) {
+	price := 6.0
+	normalized, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
+		Mode: ChannelPricingModePerMinute, PerMinuteUSD: &price,
+	})
+	require.NoError(t, err)
+	require.True(t, normalized.UsePerSecond)
+	require.InDelta(t, 0.1, normalized.PerSecondPrice, 1e-9)
+}
+
+func TestNormalizeChannelInternalPricingRejectsNonPositivePerMinute(t *testing.T) {
+	zero := 0.0
+	_, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
+		Mode: ChannelPricingModePerMinute, PerMinuteUSD: &zero,
+	})
+	require.ErrorContains(t, err, "per-minute price is required")
+}
+
+func TestOfficialSyncClearsOnlyAutoDerivedInternalPrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	derived := `{"mode":"per_1m_token","input_per_million_usd":3,"output_per_million_usd":6,"source":"bailian-official"}`
+	record := officialRecord(51, "qwen-auto", "bailian-official")
+	record.InternalPricing = derived
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err := GetChannelModelPricing(51, "qwen-auto")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusConfigured, row.PricingStatus)
+
+	// The next official sync carries no internal price; the auto-derived one
+	// must not stay billable.
+	record.InternalPricing = ""
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(51, "qwen-auto")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusOfficialOnly, row.PricingStatus)
+	require.Empty(t, row.InternalPricing)
+
+	// An operator price (source empty) is preserved across the same sync.
+	require.NoError(t, SetChannelInternalPricing(51, "qwen-auto", ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(1),
+		OutputUSDPerMillion: floatPtr(2),
+	}))
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(51, "qwen-auto")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusConfigured, row.PricingStatus)
+	require.Contains(t, row.InternalPricing, `"per_1m_token"`)
+}
+
+func TestClearAutoDerivedChannelPricingPreservesOperatorAndOtherChannels(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	derived, _ := common.Marshal(ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(3),
+		OutputUSDPerMillion: floatPtr(6),
+		Source:              "bailian-official",
+	})
+	autoA := officialRecord(61, "auto-a", "bailian-official")
+	autoA.InternalPricing = string(derived)
+	autoB := officialRecord(61, "auto-b", "bailian-official")
+	autoB.InternalPricing = string(derived)
+	other := officialRecord(62, "auto-a", "bailian-official")
+	other.InternalPricing = string(derived)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{autoA, autoB, other})
+	require.NoError(t, err)
+	require.NoError(t, SetChannelInternalPricing(61, "auto-a", ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(1),
+		OutputUSDPerMillion: floatPtr(2),
+	}))
+
+	cleared, err := ClearAutoDerivedChannelPricing(61, "bailian-")
+	require.NoError(t, err)
+	require.Equal(t, 1, cleared)
+
+	manual, err := GetChannelModelPricing(61, "auto-a")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusConfigured, manual.PricingStatus)
+	derivedRow, err := GetChannelModelPricing(61, "auto-b")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusOfficialOnly, derivedRow.PricingStatus)
+	require.Empty(t, derivedRow.InternalPricing)
+	otherRow, err := GetChannelModelPricing(62, "auto-a")
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingStatusConfigured, otherRow.PricingStatus,
+		"another channel must not be cleared")
 }

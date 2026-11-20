@@ -57,6 +57,7 @@ func FetchGenericUpstreamPricing(ctx context.Context, baseURL string, keys []str
 	if err != nil {
 		return nil, err
 	}
+	client := newUpstreamHTTPClient(20 * time.Second)
 	var lastErr error
 	for _, key := range keys {
 		key = strings.TrimSpace(key)
@@ -71,7 +72,7 @@ func FetchGenericUpstreamPricing(ctx context.Context, baseURL string, keys []str
 		}
 		req.Header.Set("Authorization", "Bearer "+key)
 		req.Header.Set("Accept", "application/json")
-		res, err := (&http.Client{Timeout: 20 * time.Second}).Do(req)
+		res, err := client.Do(req)
 		if err != nil {
 			cancel()
 			lastErr = err
@@ -115,6 +116,9 @@ func genericPricingEndpoint(baseURL string) (string, error) {
 	parsed, err := url.Parse(base + "/api/pricing")
 	if err != nil || parsed.Host == "" || (parsed.Scheme != "http" && parsed.Scheme != "https") {
 		return "", errors.New("invalid channel base URL")
+	}
+	if _, err := validateUpstreamEndpoint(parsed.String()); err != nil {
+		return "", err
 	}
 	return parsed.String(), nil
 }

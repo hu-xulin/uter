@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 package service
 
 import (
-	"strings"
+	"github.com/uter-ai/uter/constant"
 )
 
 // UpstreamProviderForChannel resolves a channel to a provider capability
@@ -28,15 +28,17 @@ import (
 func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvider {
 	id := ""
 	switch {
-	case channelType == 17:
-		id = "alibaba-bailian"
-	// A New API/Uter relay pointed at DreamRouter still speaks DreamRouter's
-	// public pricing document. Match the host before the generic type so its
-	// official prices are not downgraded to "ratio-only".
-	case strings.Contains(strings.ToLower(baseURL), "dreamrouter.ai"):
-		id = "dreamrouter"
-	case channelType == 60:
+	// A Uter channel is Uter's own upstream contract even when its Base URL
+	// points at a DreamRouter-compatible relay. Its price dimensions are fully
+	// supported by Uter's own pricing engine.
+	case channelType == constant.ChannelTypeUter:
 		return uterProviderDescriptor()
+	case IsDreamRouterHost(baseURL):
+		id = "dreamrouter"
+	case channelType == constant.ChannelTypeAli:
+		id = "alibaba-bailian"
+	default:
+		id = manualUpstreamProviderForHost(baseURL)
 	}
 	if id != "" {
 		for _, provider := range UpstreamProviders() {
@@ -98,7 +100,7 @@ func uterProviderDescriptor() UpstreamProvider {
 			PerCallPricing:      capability(CapabilitySupported, "fixed price per request"),
 			PerSecondPricing:    capability(CapabilitySupported, "duration-based task billing"),
 			PerMinutePricing:    capability(CapabilitySupported, "stored per minute and normalized to seconds"),
-			DeploymentPricing:   capability(CapabilitySupported, "deployment price estimation and deployment-scoped rows"),
+			DeploymentPricing:   capability(CapabilitySupported, "deployment price estimation via /api/deployments/price-estimation"),
 		},
 	}
 }

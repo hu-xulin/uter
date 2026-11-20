@@ -25,7 +25,11 @@ func TestBailianSyncAfterCreateLive(t *testing.T) {
 	_ = godotenv.Load("../.env")
 	absDB, err := os.Getwd()
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("SQLITE_PATH", absDB+"/../one-api.db"))
+	liveDB := os.Getenv("BAILIAN_LIVE_DB")
+	if liveDB == "" {
+		liveDB = absDB + "/../one-api.db"
+	}
+	require.NoError(t, os.Setenv("SQLITE_PATH", liveDB))
 	common.InitEnv()
 	require.NoError(t, model.InitDB())
 	model.InitOptionMap()
@@ -58,4 +62,11 @@ func TestBailianSyncAfterCreateLive(t *testing.T) {
 	t.Logf("sync: actual=%d catalog=%d matched=%d refs=%d created=%d updated=%d",
 		status.ActualModels, status.CatalogModels, status.MatchedModels,
 		status.ReferencePrices, status.MetadataCreated, status.MetadataUpdated)
+
+	if os.Getenv("BAILIAN_SEED") != "" {
+		seeded, skipped, err := service.SeedBailianInternalPricing(channel.Id, nil, false)
+		require.NoError(t, err)
+		require.Greater(t, seeded, 0)
+		t.Logf("seed: adopted=%d skipped=%d", seeded, skipped)
+	}
 }

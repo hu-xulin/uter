@@ -26,18 +26,21 @@ const (
 	ChannelPricingModePerMillionTokens = "per_1m_token"
 	ChannelPricingModePerCall          = "per_call"
 	ChannelPricingModePerSecond        = "per_second"
+	ChannelPricingModeTieredExpr       = "tiered_expr"
+	ChannelPricingModePerMinute        = "per_minute"
 )
 
 // ChannelModelPricing is one channel's independent price record for one model.
-// The unique key is (channel_id, model_name): the same model served by another
-// channel is a different row and cannot be overwritten by a sync.
+// The unique key is the full upstream identity (channel, provider, region,
+// deployment, model): the same model served by another channel, region or
+// deployment is a different row and cannot be overwritten by a sync.
 type ChannelModelPricing struct {
 	Id                int64  `gorm:"primaryKey;autoIncrement"`
-	ChannelId         int    `gorm:"uniqueIndex:idx_channel_model_pricing,priority:1;index"`
-	Provider          string `gorm:"size:64;index"`
-	ModelName         string `gorm:"size:255;uniqueIndex:idx_channel_model_pricing,priority:2"`
-	Region            string `gorm:"size:64"`
-	DeploymentId      string `gorm:"size:128"`
+	ChannelId         int    `gorm:"uniqueIndex:idx_channel_model_pricing_identity,priority:1;index:idx_channel_model_lookup,priority:1"`
+	Provider          string `gorm:"size:64;uniqueIndex:idx_channel_model_pricing_identity,priority:2"`
+	ModelName         string `gorm:"size:255;uniqueIndex:idx_channel_model_pricing_identity,priority:5;index:idx_channel_model_lookup,priority:2"`
+	Region            string `gorm:"size:64;uniqueIndex:idx_channel_model_pricing_identity,priority:3"`
+	DeploymentId      string `gorm:"size:128;uniqueIndex:idx_channel_model_pricing_identity,priority:4"`
 	Currency          string `gorm:"size:16"`
 	OfficialPricing   string `gorm:"type:text"`
 	NormalizedPricing string `gorm:"type:text"`
@@ -62,6 +65,8 @@ type ChannelPricingTier struct {
 	OutputPerMillionUSD      *float64 `json:"output_per_million_usd,omitempty"`
 	CachePerMillionUSD       *float64 `json:"cache_per_million_usd,omitempty"`
 	CreateCachePerMillionUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
 	PerUnitUSD               *float64 `json:"per_unit_usd,omitempty"`
 	Unit                     string   `json:"unit"`
 	RawPriceTypes            []string `json:"raw_price_types,omitempty"`
@@ -77,28 +82,33 @@ type ChannelOfficialPricing struct {
 	// ChannelPrice is the upstream channel price after applying the provider's
 	// discount for the selected billing group. It is separate from Tiers so the
 	// official list price stays auditable.
-	ChannelPrice       *ChannelPricingTier `json:"channel_price,omitempty"`
-	DiscountGroup      string              `json:"discount_group,omitempty"`
-	DiscountModelGroup string              `json:"discount_model_group,omitempty"`
-	DiscountRatio      *float64            `json:"discount_ratio,omitempty"`
-	Source             string              `json:"source"`
-	FetchedAt          int64               `json:"fetched_at"`
-	NeedsReview        bool                `json:"needs_review,omitempty"`
-	ReviewReasons      []string            `json:"review_reasons,omitempty"`
+	ChannelPrice       *ChannelPricingTier  `json:"channel_price,omitempty"`
+	ChannelPriceTiers  []ChannelPricingTier `json:"channel_price_tiers,omitempty"`
+	DiscountGroup      string               `json:"discount_group,omitempty"`
+	DiscountModelGroup string               `json:"discount_model_group,omitempty"`
+	DiscountRatio      *float64             `json:"discount_ratio,omitempty"`
+	Source             string               `json:"source"`
+	FetchedAt          int64                `json:"fetched_at"`
+	NeedsReview        bool                 `json:"needs_review,omitempty"`
+	ReviewReasons      []string             `json:"review_reasons,omitempty"`
 }
 
 // ChannelInternalPricing is the operator's flat sale price for one channel
 // model. Tiered official prices are never flattened into this structure.
 type ChannelInternalPricing struct {
-	Mode                string   `json:"mode"`
-	InputUSDPerMillion  *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSDPerMillion *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSDPerMillion  *float64 `json:"cache_per_million_usd,omitempty"`
+	Mode                 string   `json:"mode"`
+	InputUSDPerMillion   *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSDPerMillion  *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSDPerMillion   *float64 `json:"cache_per_million_usd,omitempty"`
+	AudioRatio           *float64 `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio *float64 `json:"audio_completion_ratio,omitempty"`
 	// CreateCacheUSDPerMillion is the cache-write price. When omitted the
 	// global create-cache ratio remains in force.
 	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
 	PerCallUSD               *float64 `json:"per_call_usd,omitempty"`
 	PerSecondUSD             *float64 `json:"per_second_usd,omitempty"`
+	PerMinuteUSD             *float64 `json:"per_minute_usd,omitempty"`
+	BillingExpr              string   `json:"billing_expr,omitempty"`
 	Note                     string   `json:"note,omitempty"`
 	// Source records who last wrote the internal price. Automatic syncs tag
 	// their writes so a later sync may refresh them, while an operator-saved
@@ -114,16 +124,19 @@ type ChannelInternalPricing struct {
 // CompletionRatio/CacheRatio are nil when the operator did not set an output
 // or cache price, in which case the global ratio remains in force.
 type ChannelBillingPricing struct {
-	ModelRatio       float64
-	CompletionRatio  *float64
-	CacheRatio       *float64
-	CreateCacheRatio *float64
-	ModelPrice       float64
-	UsePrice         bool
-	UsePerSecond     bool
-	PerSecondPrice   float64
-	Version          string
-	Source           string
+	ModelRatio           float64
+	CompletionRatio      *float64
+	CacheRatio           *float64
+	CreateCacheRatio     *float64
+	AudioRatio           *float64
+	AudioCompletionRatio *float64
+	ModelPrice           float64
+	BillingExpr          string
+	UsePrice             bool
+	UsePerSecond         bool
+	PerSecondPrice       float64
+	Version              string
+	Source               string
 }
 
 // ChannelOfficialPricingRecord is one upsert input for an official sync.
@@ -203,7 +216,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	for _, value := range []*float64{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
 		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
-		pricing.PerCallUSD, pricing.PerSecondUSD,
+		pricing.PerCallUSD, pricing.PerSecondUSD, pricing.PerMinuteUSD,
 	} {
 		if err := validPricePointer(value); err != nil {
 			return nil, err
@@ -232,12 +245,19 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			createCache := *pricing.CreateCacheUSDPerMillion / input
 			result.CreateCacheRatio = &createCache
 		}
+		result.AudioRatio = pricing.AudioRatio
+		result.AudioCompletionRatio = pricing.AudioCompletionRatio
 		return result, nil
 	case ChannelPricingModePerCall:
 		if pricing.PerCallUSD == nil || *pricing.PerCallUSD < 0 {
 			return nil, errors.New("per-call price is required")
 		}
 		return &ChannelBillingPricing{UsePrice: true, ModelPrice: *pricing.PerCallUSD}, nil
+	case ChannelPricingModeTieredExpr:
+		if strings.TrimSpace(pricing.BillingExpr) == "" {
+			return nil, errors.New("tiered billing expression is required")
+		}
+		return &ChannelBillingPricing{BillingExpr: pricing.BillingExpr}, nil
 	case ChannelPricingModePerSecond:
 		// Per-second prices bill through the task usage expression. A billing
 		// form is still returned so the price can be stored; token/per-call
@@ -246,6 +266,15 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			return nil, errors.New("per-second price is required")
 		}
 		return &ChannelBillingPricing{UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
+	case ChannelPricingModePerMinute:
+		// Seconds are the task usage unit. A per-minute quote is normalized to
+		// its per-second equivalent so the same duration billing path applies.
+		if pricing.PerMinuteUSD == nil || *pricing.PerMinuteUSD <= 0 {
+			return nil, errors.New("per-minute price is required")
+		}
+		return &ChannelBillingPricing{
+			UsePerSecond: true, PerSecondPrice: *pricing.PerMinuteUSD / 60,
+		}, nil
 	default:
 		return nil, errors.New("unsupported internal pricing mode")
 	}
@@ -254,6 +283,17 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 // internalPricingReplaceable reports whether a sync may rewrite the stored
 // internal price. An empty row and a previously sync-derived price are
 // replaceable; anything an operator saved is preserved.
+func internalPricingSource(raw string) string {
+	if strings.TrimSpace(raw) == "" {
+		return ""
+	}
+	var pricing ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
+		return ""
+	}
+	return pricing.Source
+}
+
 func internalPricingReplaceable(raw string) bool {
 	if strings.TrimSpace(raw) == "" {
 		return true
@@ -262,7 +302,7 @@ func internalPricingReplaceable(raw string) bool {
 	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
 		return false
 	}
-	return strings.HasPrefix(pricing.Source, "dreamrouter-")
+	return strings.HasPrefix(pricing.Source, "dreamrouter-") || strings.HasPrefix(pricing.Source, "bailian-")
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the
@@ -281,8 +321,19 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			}
 			now := time.Now().Unix()
 			var existing ChannelModelPricing
-			err := tx.Where("channel_id = ? AND model_name = ?", record.ChannelId, record.ModelName).
-				First(&existing).Error
+			err := tx.Where(
+				"channel_id = ? AND provider = ? AND region = ? AND deployment_id = ? AND model_name = ?",
+				record.ChannelId, record.Provider, record.Region, record.DeploymentId, record.ModelName,
+			).First(&existing).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// Rows written before identity scoping have an empty provider,
+				// region and deployment. Adopt that row instead of creating a
+				// duplicate for the same model.
+				err = tx.Where(
+					"channel_id = ? AND provider = ? AND region = ? AND deployment_id = ? AND model_name = ?",
+					record.ChannelId, "", "", "", record.ModelName,
+				).First(&existing).Error
+			}
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				row := ChannelModelPricing{
 					ChannelId:         record.ChannelId,
@@ -325,6 +376,14 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 				existing.InternalPricing = record.InternalPricing
 				existing.PricingStatus = ChannelPricingStatusConfigured
 			}
+			// Official catalog syncs no longer derive a sale price. A row whose
+			// previous internal price was auto-derived by the same provider
+			// returns to official_only instead of silently staying billable.
+			if record.InternalPricing == "" && strings.HasPrefix(record.Source, "bailian-") &&
+				strings.HasPrefix(internalPricingSource(existing.InternalPricing), "bailian-") {
+				existing.InternalPricing = ""
+				existing.PricingStatus = ChannelPricingStatusOfficialOnly
+			}
 			if existing.PricingStatus == "" {
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
 			}
@@ -344,6 +403,40 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 	return written, nil
 }
 
+// ClearAutoDerivedChannelPricing removes internal prices that a previous
+// provider sync derived automatically. Operator, batch and scheduled prices are
+// preserved. Returns the number of rows returned to official_only.
+func ClearAutoDerivedChannelPricing(channelId int, sourcePrefix string) (int, error) {
+	if DB == nil || channelId <= 0 || strings.TrimSpace(sourcePrefix) == "" {
+		return 0, nil
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("channel_id = ? AND pricing_status = ?", channelId, ChannelPricingStatusConfigured).
+		Find(&rows).Error; err != nil {
+		return 0, err
+	}
+	cleared := 0
+	for i := range rows {
+		row := &rows[i]
+		if !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+			continue
+		}
+		row.InternalPricing = ""
+		row.PricingStatus = ChannelPricingStatusOfficialOnly
+		row.UpdatedAt = time.Now().Unix()
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := DB.Save(row).Error; err != nil {
+			return cleared, err
+		}
+		cleared++
+	}
+	if cleared > 0 {
+		InvalidateChannelPricingCache()
+		InvalidatePricingCache()
+	}
+	return cleared, nil
+}
+
 // SetChannelInternalPricing stores an operator price for one channel model.
 // Official data must have been synced first so the row is auditable.
 func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelInternalPricing) error {
@@ -360,7 +453,10 @@ func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelI
 		return err
 	}
 	var row ChannelModelPricing
-	if err := DB.Where("channel_id = ? AND model_name = ?", channelId, modelName).First(&row).Error; err != nil {
+	if err := DB.Where("channel_id = ? AND model_name = ?", channelId, modelName).
+		Order("CASE WHEN pricing_status = 'configured' THEN 0 ELSE 1 END").
+		Order("fetched_at DESC").Order("updated_at DESC").Order("id DESC").
+		First(&row).Error; err != nil {
 		return fmt.Errorf("channel pricing record not found: %w", err)
 	}
 	row.InternalPricing = string(encoded)
@@ -408,6 +504,8 @@ func SetChannelInternalPricingIfVersion(
 		var row ChannelModelPricing
 		if err := lockForUpdate(tx).
 			Where("channel_id = ? AND model_name = ?", channelId, modelName).
+			Order("CASE WHEN pricing_status = 'configured' THEN 0 ELSE 1 END").
+			Order("fetched_at DESC").Order("updated_at DESC").Order("id DESC").
 			First(&row).Error; err != nil {
 			return fmt.Errorf("channel pricing record not found: %w", err)
 		}
@@ -428,10 +526,15 @@ func SetChannelInternalPricingIfVersion(
 	return nil
 }
 
-// GetChannelModelPricing returns one channel's price record.
+// GetChannelModelPricing returns one channel's price record. Several upstream
+// identities may share (channel, model), for example after the channel moved
+// to another region; a configured internal price wins, then the most recently
+// synced identity.
 func GetChannelModelPricing(channelId int, modelName string) (*ChannelModelPricing, error) {
 	var row ChannelModelPricing
 	err := DB.Where("channel_id = ? AND model_name = ?", channelId, strings.TrimSpace(modelName)).
+		Order("CASE WHEN pricing_status = 'configured' THEN 0 ELSE 1 END").
+		Order("fetched_at DESC").Order("updated_at DESC").Order("id DESC").
 		First(&row).Error
 	if err != nil {
 		return nil, err
@@ -616,10 +719,9 @@ func UpdateChannelOfficialPricingView(channelId int, modelName string, view Chan
 		return err
 	}
 	now := time.Now().Unix()
-	var row ChannelModelPricing
-	err = DB.Where("channel_id = ? AND model_name = ?", channelId, modelName).First(&row).Error
+	row, err := GetChannelModelPricing(channelId, modelName)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		row = ChannelModelPricing{
+		legacy := ChannelModelPricing{
 			ChannelId: channelId, Provider: "legacy", ModelName: modelName,
 			Currency: view.Currency, OfficialPricing: "{}",
 			NormalizedPricing: string(normalized),
@@ -627,8 +729,8 @@ func UpdateChannelOfficialPricingView(channelId int, modelName string, view Chan
 			PricingStatus:     ChannelPricingStatusOfficialOnly,
 			FetchedAt:         now, UpdatedAt: now,
 		}
-		row.PricingVersion = channelPricingVersion(row)
-		if err := DB.Create(&row).Error; err != nil {
+		legacy.PricingVersion = channelPricingVersion(legacy)
+		if err := DB.Create(&legacy).Error; err != nil {
 			return err
 		}
 		invalidateChannelPricingCache(channelId, modelName)
@@ -639,8 +741,8 @@ func UpdateChannelOfficialPricingView(channelId int, modelName string, view Chan
 	}
 	row.NormalizedPricing = string(normalized)
 	row.UpdatedAt = now
-	row.PricingVersion = channelPricingVersion(row)
-	if err := DB.Save(&row).Error; err != nil {
+	row.PricingVersion = channelPricingVersion(*row)
+	if err := DB.Save(row).Error; err != nil {
 		return err
 	}
 	invalidateChannelPricingCache(channelId, modelName)

@@ -109,10 +109,13 @@ func ChannelSyncDiagnostics(c *gin.Context) {
 		result.Models.Details = map[string]any{"sample": sample}
 	}
 
-	switch provider.ID {
-	case "dreamrouter":
+	// Diagnostics follow the price source, not the channel's capability
+	// descriptor: a Uter channel hosted on DreamRouter still reads official
+	// prices from the DreamRouter snapshot.
+	switch {
+	case service.IsDreamRouterHost(baseURL):
 		result.Official, result.ChannelPrice = dreamRouterDiagnostics()
-	case "alibaba-bailian":
+	case provider.ID == "alibaba-bailian":
 		result.Official, result.ChannelPrice = bailianDiagnostics(channel.Id)
 	default:
 		result.Official, result.ChannelPrice = genericPriceDiagnostics(c, channel)

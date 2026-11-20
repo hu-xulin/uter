@@ -70,6 +70,16 @@ type Pricing struct {
 	ChannelOfficialCreateCacheRatio float64 `json:"channel_official_create_cache_ratio,omitempty"`
 	ChannelOfficialModelPrice       float64 `json:"channel_official_model_price,omitempty"`
 	ChannelOfficialPerSecondUSD     float64 `json:"channel_official_per_second_usd,omitempty"`
+	// ChannelInternalPerSecondUSD is the channel's configured sale price for a
+	// per-second media model. The card shows it as the Uter price instead of
+	// the global usage expression.
+	ChannelInternalPerSecondUSD float64 `json:"channel_internal_per_second_usd,omitempty"`
+	// ChannelPrices keeps every enabled channel's configured sale price, keyed
+	// by channel display name. The plaza picks the selected channel's entry.
+	ChannelPrices               map[string]PricingChannelPrice `json:"channel_prices,omitempty"`
+	ChannelInternalPerMinuteUSD float64                        `json:"channel_internal_per_minute_usd,omitempty"`
+	ChannelPricingTiered        bool                           `json:"channel_pricing_tiered,omitempty"`
+	ChannelPricingStatus        string                         `json:"channel_pricing_status,omitempty"`
 
 	// 目录规格：定价页模型详情的「上下文 / 最大输出 / 知识截止 / 发布于 / 模态」
 	// 五格直接消费这五个字段。
@@ -83,6 +93,29 @@ type Pricing struct {
 	ReleaseDate      string   `json:"release_date,omitempty"`
 	InputModalities  []string `json:"input_modalities,omitempty"`
 	OutputModalities []string `json:"output_modalities,omitempty"`
+}
+
+// PricingChannelPrice is one channel's configured sale price for a model. The
+// plaza uses the selected channel's entry when a channel filter is active, so
+// the same model can show a different price per channel.
+type PricingChannelPrice struct {
+	Name                    string  `json:"name"`
+	ModelRatio              float64 `json:"model_ratio,omitempty"`
+	CompletionRatio         float64 `json:"completion_ratio,omitempty"`
+	ModelPrice              float64 `json:"model_price,omitempty"`
+	PerSecondUSD            float64 `json:"per_second_usd,omitempty"`
+	OfficialModelRatio      float64 `json:"official_model_ratio,omitempty"`
+	OfficialCompletionRatio float64 `json:"official_completion_ratio,omitempty"`
+	OfficialCacheRatio      float64 `json:"official_cache_ratio,omitempty"`
+	OfficialModelPrice      float64 `json:"official_model_price,omitempty"`
+	OfficialPerSecondUSD    float64 `json:"official_per_second_usd,omitempty"`
+	BillingExpr             string  `json:"billing_expr,omitempty"`
+	CacheRatio              float64 `json:"cache_ratio,omitempty"`
+	CreateCacheRatio        float64 `json:"create_cache_ratio,omitempty"`
+	AudioRatio              float64 `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio    float64 `json:"audio_completion_ratio,omitempty"`
+	Status                  string  `json:"status,omitempty"`
+	QuotaType               int     `json:"quota_type"`
 }
 
 type PricingVendor struct {
@@ -247,15 +280,23 @@ func appendPricingEndpoint(endpoints []string, endpoint string) []string {
 // only to display the model square's price and discount. Billing resolves the
 // same row per request, so the plaza and the invoice agree.
 type channelInternalPrice struct {
-	channelName     string
-	pricing         ChannelInternalPricing
-	quotaType       int
-	modelRatio      float64
-	completionRatio float64
-	modelPrice      float64
-	inputUSD        float64
-	officialTier    *ChannelPricingTier
-	officialUnit    string
+	channelName      string
+	pricing          ChannelInternalPricing
+	quotaType        int
+	modelRatio       float64
+	completionRatio  float64
+	modelPrice       float64
+	inputUSD         float64
+	officialTier     *ChannelPricingTier
+	officialUnit     string
+	perSecondUSD     float64
+	perMinuteUSD     float64
+	billingExpr      string
+	audioRatio       float64
+	audioCompletion  float64
+	cacheRatio       float64
+	createCacheRatio float64
+	status           string
 }
 
 type channelOfficialView struct {
@@ -280,7 +321,7 @@ func channelPricingOfficialView(raw string) (channelOfficialView, error) {
 
 // loadChannelInternalPrices returns the lowest configured channel price per
 // model. Channels that are disabled or unnamed are ignored.
-func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channelInternalPrice {
+func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]channelInternalPrice, map[string]map[string]channelInternalPrice) {
 	channelNames := make(map[int]string)
 	for _, ability := range abilities {
 		name := strings.TrimSpace(ability.ChannelName)
@@ -292,24 +333,42 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channe
 		}
 	}
 	if len(channelNames) == 0 {
-		return nil
+		return nil, nil
 	}
 	var rows []ChannelModelPricing
-	if err := DB.Where("pricing_status = ?", ChannelPricingStatusConfigured).Find(&rows).Error; err != nil {
+	if err := DB.Find(&rows).Error; err != nil {
 		common.SysLog(common.LogText("load channel internal prices failed: %v", err))
-		return nil
+		return nil, nil
 	}
 	best := make(map[string]channelInternalPrice)
+	byChannel := make(map[string]map[string]channelInternalPrice)
 	for _, row := range rows {
 		channelName, enabled := channelNames[row.ChannelId]
-		if !enabled || strings.TrimSpace(row.InternalPricing) == "" {
+		if !enabled {
+			continue
+		}
+		if strings.TrimSpace(row.InternalPricing) == "" {
+			if row.PricingStatus == ChannelPricingStatusConfigured {
+				continue
+			}
+			entry := channelInternalPrice{
+				channelName: channelName, quotaType: -1, status: row.PricingStatus,
+			}
+			if view, viewErr := channelPricingOfficialView(row.NormalizedPricing); viewErr == nil {
+				entry.officialTier = view.tier
+				entry.officialUnit = view.unit
+			}
+			if byChannel[row.ModelName] == nil {
+				byChannel[row.ModelName] = map[string]channelInternalPrice{}
+			}
+			byChannel[row.ModelName][channelName] = entry
 			continue
 		}
 		var internal ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
 			continue
 		}
-		candidate := channelInternalPrice{channelName: channelName, pricing: internal}
+		candidate := channelInternalPrice{channelName: channelName, pricing: internal, status: row.PricingStatus}
 		if view, err := channelPricingOfficialView(row.NormalizedPricing); err == nil {
 			candidate.officialTier = view.tier
 			candidate.officialUnit = view.unit
@@ -324,6 +383,18 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channe
 			candidate.inputUSD = *internal.InputUSDPerMillion
 			candidate.modelRatio = candidate.inputUSD / 2
 			candidate.completionRatio = *internal.OutputUSDPerMillion / candidate.inputUSD
+			if internal.CacheUSDPerMillion != nil && candidate.inputUSD > 0 {
+				candidate.cacheRatio = *internal.CacheUSDPerMillion / candidate.inputUSD
+			}
+			if internal.CreateCacheUSDPerMillion != nil && candidate.inputUSD > 0 {
+				candidate.createCacheRatio = *internal.CreateCacheUSDPerMillion / candidate.inputUSD
+			}
+			if internal.AudioRatio != nil {
+				candidate.audioRatio = *internal.AudioRatio
+			}
+			if internal.AudioCompletionRatio != nil {
+				candidate.audioCompletion = *internal.AudioCompletionRatio
+			}
 		case ChannelPricingModePerCall:
 			if internal.PerCallUSD == nil || *internal.PerCallUSD < 0 {
 				continue
@@ -331,17 +402,44 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channe
 			candidate.quotaType = 1
 			candidate.modelPrice = *internal.PerCallUSD
 			candidate.inputUSD = *internal.PerCallUSD
+		case ChannelPricingModePerSecond:
+			if internal.PerSecondUSD == nil || *internal.PerSecondUSD <= 0 {
+				continue
+			}
+			candidate.quotaType = 2
+			candidate.perSecondUSD = *internal.PerSecondUSD
+			candidate.inputUSD = *internal.PerSecondUSD
+		case ChannelPricingModeTieredExpr:
+			if strings.TrimSpace(internal.BillingExpr) == "" {
+				continue
+			}
+			candidate.quotaType = 4
+			candidate.billingExpr = internal.BillingExpr
+			candidate.inputUSD = 1
+		case ChannelPricingModePerMinute:
+			if internal.PerMinuteUSD == nil || *internal.PerMinuteUSD <= 0 {
+				continue
+			}
+			candidate.quotaType = 3
+			candidate.perMinuteUSD = *internal.PerMinuteUSD
+			candidate.inputUSD = *internal.PerMinuteUSD
 		default:
 			// Per-second media prices are billed through usage expressions and
 			// have no single card price.
 			continue
+		}
+		if byChannel[row.ModelName] == nil {
+			byChannel[row.ModelName] = map[string]channelInternalPrice{}
+		}
+		if previous, exists := byChannel[row.ModelName][channelName]; !exists || candidate.inputUSD < previous.inputUSD {
+			byChannel[row.ModelName][channelName] = candidate
 		}
 		current, exists := best[row.ModelName]
 		if !exists || candidate.inputUSD < current.inputUSD {
 			best[row.ModelName] = candidate
 		}
 	}
-	return best
+	return best, byChannel
 }
 
 func updatePricing() {
@@ -504,7 +602,7 @@ func updatePricing() {
 		}
 	}
 
-	channelPrices := loadChannelInternalPrices(enableAbilities)
+	channelPrices, channelPricesByChannel := loadChannelInternalPrices(enableAbilities)
 	pricingMap = make([]Pricing, 0)
 	pluginGeneration := jsplugin.DefaultRegistry.Generation()
 	for model, groups := range modelGroupsMap {
@@ -610,6 +708,18 @@ func updatePricing() {
 				}
 			}
 			switch channelPrice.quotaType {
+			case 4:
+				pricing.ChannelPricingTiered = true
+				pricing.BillingMode = billing_setting.BillingModeTieredExpr
+				pricing.BillingExpr = channelPrice.billingExpr
+				pricing.ModelRatio = 0
+				pricing.ModelPrice = 0
+				pricing.CompletionRatio = 0
+				pricing.QuotaType = 0
+			case 2:
+				pricing.ChannelInternalPerSecondUSD = channelPrice.perSecondUSD
+			case 3:
+				pricing.ChannelInternalPerMinuteUSD = channelPrice.perMinuteUSD
 			case 1:
 				pricing.ModelPrice = channelPrice.modelPrice
 				pricing.ModelRatio = 0
@@ -622,6 +732,42 @@ func updatePricing() {
 				pricing.QuotaType = 0
 			}
 		}
+		if perChannel := channelPricesByChannel[model]; len(perChannel) > 0 {
+			entries := make(map[string]PricingChannelPrice, len(perChannel))
+			for name, candidate := range perChannel {
+				entry := PricingChannelPrice{
+					Name: name, ModelRatio: candidate.modelRatio,
+					CompletionRatio: candidate.completionRatio,
+					ModelPrice:      candidate.modelPrice, PerSecondUSD: candidate.perSecondUSD,
+					QuotaType: candidate.quotaType,
+				}
+				if tier := candidate.officialTier; tier != nil {
+					switch candidate.officialUnit {
+					case "per_call", "per_image", "per_minute":
+						if tier.PerUnitUSD != nil {
+							entry.OfficialModelPrice = *tier.PerUnitUSD
+						}
+					case "per_second":
+						if tier.PerUnitUSD != nil {
+							entry.OfficialPerSecondUSD = *tier.PerUnitUSD
+						}
+					default:
+						if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
+							input := *tier.InputPerMillionUSD
+							entry.OfficialModelRatio = input / 2
+							if tier.OutputPerMillionUSD != nil {
+								entry.OfficialCompletionRatio = *tier.OutputPerMillionUSD / input
+							}
+							if tier.CachePerMillionUSD != nil {
+								entry.OfficialCacheRatio = *tier.CachePerMillionUSD / input
+							}
+						}
+					}
+				}
+				entries[name] = entry
+			}
+			pricing.ChannelPrices = entries
+		}
 		if ratio_setting.ContainsAudioRatio(model) {
 			audioRatio := ratio_setting.GetAudioRatio(model)
 			pricing.AudioRatio = &audioRatio
@@ -629,6 +775,16 @@ func updatePricing() {
 		if ratio_setting.ContainsAudioCompletionRatio(model) {
 			audioCompletionRatio := ratio_setting.GetAudioCompletionRatio(model)
 			pricing.AudioCompletionRatio = &audioCompletionRatio
+		}
+		if channelPrice, ok := channelPrices[model]; ok {
+			if channelPrice.audioRatio > 0 {
+				audioRatio := channelPrice.audioRatio
+				pricing.AudioRatio = &audioRatio
+			}
+			if channelPrice.audioCompletion > 0 {
+				audioCompletion := channelPrice.audioCompletion
+				pricing.AudioCompletionRatio = &audioCompletion
+			}
 		}
 		if billingMode := billing_setting.GetBillingMode(model); billingMode == "tiered_expr" {
 			if expr, ok := billing_setting.GetBillingExpr(model); ok && strings.TrimSpace(expr) != "" {
@@ -643,7 +799,7 @@ func updatePricing() {
 				}
 			}
 		}
-		if channelPrice, ok := channelPrices[model]; ok && channelPrice.quotaType == 0 {
+		if channelPrice, ok := channelPrices[model]; ok && channelPrice.quotaType == 0 && channelPrice.billingExpr == "" {
 			// A flat token price configured for the channel is what the relay
 			// actually charges, so the plaza must not keep rendering the global
 			// tiered expression (which would ignore the channel discount).

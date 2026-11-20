@@ -310,6 +310,84 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			TaskUsageBilling:          true,
 			UsageFacts:                facts,
 		}
+	} else if channelPricing.Billable && channelPricing.Pricing.UsePrice {
+		provider, supported := adaptor.(channel.TaskUsageFactsProvider)
+		if !supported {
+			return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s does not provide usage facts for per-request pricing", modelName), "model_price_error", http.StatusBadRequest)
+		}
+		var facts map[string]any
+		if validatedProvider, ok := adaptor.(channel.TaskValidatedUsageFactsProvider); ok {
+			facts, err = validatedProvider.ExtractUsageFactsValidated(c, info)
+			if err != nil {
+				return nil, service.TaskErrorWrapperLocal(err, "plugin_usage_invalid", http.StatusBadRequest)
+			}
+		} else {
+			facts = provider.ExtractUsageFacts(c, info)
+		}
+		unitPrice := channelPricing.Pricing.ModelPrice
+		count := 1.0
+		exprBody := strconv.FormatFloat(unitPrice, 'f', -1, 64)
+		if raw, ok := facts["image_count"]; ok {
+			if value, parsed := raw.(float64); parsed && value > 0 {
+				count = value
+				exprBody = `u("image_count") * ` + exprBody
+			}
+		}
+		info.ChannelPricingApplied = true
+		info.ChannelPricingVersion = channelPricing.Pricing.Version
+		groupRatioInfo := helper.HandleGroupRatio(c, info)
+		quota, clamp := common.QuotaRoundChecked(unitPrice * count * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
+		noteTaskQuotaClamp(info, clamp)
+		priceData = types.PriceData{Quota: quota, QuotaToPreConsume: quota, GroupRatioInfo: groupRatioInfo}
+		exprStr := "tier(\"channel\", " + exprBody + ")"
+		info.TieredBillingSnapshot = &billingexpr.BillingSnapshot{
+			BillingMode: billing_setting.BillingModeTieredExpr,
+			ModelName:   modelName, ExprString: exprStr,
+			ExprHash:                  billingexpr.ExprHashString(exprStr),
+			GroupRatio:                groupRatioInfo.GroupRatio,
+			EstimatedQuotaBeforeGroup: unitPrice * count * common.QuotaPerUnit,
+			EstimatedQuotaAfterGroup:  quota,
+			QuotaPerUnit:              common.QuotaPerUnit,
+			ExprVersion:               billingexpr.ExprVersion(exprStr),
+			TaskUsageBilling:          true,
+			UsageFacts:                facts,
+		}
+	} else if channelPricing.Billable && channelPricing.Pricing.BillingExpr != "" {
+		exprStr := channelPricing.Pricing.BillingExpr
+		provider, supported := adaptor.(channel.TaskUsageFactsProvider)
+		if !supported {
+			return nil, service.TaskErrorWrapper(fmt.Errorf("task model %s does not provide usage facts for tiered pricing", modelName), "model_price_error", http.StatusBadRequest)
+		}
+		var facts map[string]any
+		if validatedProvider, ok := adaptor.(channel.TaskValidatedUsageFactsProvider); ok {
+			facts, err = validatedProvider.ExtractUsageFactsValidated(c, info)
+			if err != nil {
+				return nil, service.TaskErrorWrapperLocal(err, "plugin_usage_invalid", http.StatusBadRequest)
+			}
+		} else {
+			facts = provider.ExtractUsageFacts(c, info)
+		}
+		cost, trace, runErr := billingexpr.RunExprWithRequest(exprStr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(facts))
+		if runErr != nil || cost < 0 {
+			if runErr == nil {
+				runErr = fmt.Errorf("negative task expression result")
+			}
+			return nil, service.TaskErrorWrapper(runErr, "model_price_error", http.StatusBadRequest)
+		}
+		info.ChannelPricingApplied = true
+		info.ChannelPricingVersion = channelPricing.Pricing.Version
+		groupRatioInfo := helper.HandleGroupRatio(c, info)
+		quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * groupRatioInfo.GroupRatio)
+		noteTaskQuotaClamp(info, clamp)
+		priceData = types.PriceData{Quota: quota, QuotaToPreConsume: quota, GroupRatioInfo: groupRatioInfo}
+		info.TieredBillingSnapshot = &billingexpr.BillingSnapshot{
+			BillingMode: billing_setting.BillingModeTieredExpr, ModelName: modelName,
+			ExprString: exprStr, ExprHash: billingexpr.ExprHashString(exprStr),
+			GroupRatio: groupRatioInfo.GroupRatio, EstimatedQuotaBeforeGroup: cost * common.QuotaPerUnit,
+			EstimatedQuotaAfterGroup: quota, EstimatedTier: trace.MatchedTier,
+			QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(exprStr),
+			TaskUsageBilling: true, UsageFacts: facts,
+		}
 	} else {
 		exprStr, exists := billing_setting.ResolveTaskBillingExpr(pluginKey, modelName, info.UpstreamModelName)
 		useTiered := exists || billing_setting.GetBillingMode(modelName) == billing_setting.BillingModeTieredExpr

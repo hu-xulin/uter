@@ -328,3 +328,34 @@ func TestApplyChannelBatchPricingHonorsCategoryAndManualPriority(t *testing.T) {
 	require.True(t, ok)
 	assert.InDelta(t, 0.75, pricing.ModelRatio, 1e-9) // $3 * 0.5 / 2
 }
+
+func TestApplyChannelBatchPricingSupportsPerMinute(t *testing.T) {
+	setupBatchPricingDB(t)
+	perMinute := 6.0
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_minute",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName: "Default", Unit: "per_minute", PerUnitUSD: &perMinute,
+		}},
+	})
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 5, Provider: "uter", ModelName: "video-per-minute", Currency: "USD",
+		NormalizedPricing: string(normalized), Source: "uter-official",
+	}})
+	require.NoError(t, err)
+
+	result, err := ApplyChannelBatchPricingWithOptions(5, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeMultiply, Value: 0.5,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.NotNil(t, result.Items[0].PerMinuteUSD)
+	assert.InDelta(t, 3.0, *result.Items[0].PerMinuteUSD, 1e-9)
+
+	effective := model.ResolveEffectiveChannelPricing(5, "video-per-minute")
+	require.True(t, effective.Billable)
+	require.True(t, effective.Pricing.UsePerSecond)
+	assert.InDelta(t, 0.05, effective.Pricing.PerSecondPrice, 1e-9)
+}

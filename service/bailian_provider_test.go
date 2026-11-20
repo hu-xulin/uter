@@ -75,7 +75,7 @@ func TestBailianPriceNormalization(t *testing.T) {
 	assert.Equal(t, 0.0, prices[4].PriceValue, "unparsable numbers keep raw and report 0")
 	assert.Equal(t, "not-a-number", prices[4].Price)
 	assert.Equal(t, "per_image", prices[5].Unit)
-	assert.Equal(t, "bailian-official", prices[0].Source)
+	assert.Equal(t, "bailian-channel", prices[0].Source)
 }
 
 func TestBailianMetadataMapping(t *testing.T) {
@@ -193,14 +193,16 @@ func TestBailianPricingRecordsStayChannelScoped(t *testing.T) {
 	assert.Equal(t, 5, records[0].ChannelId)
 	assert.Equal(t, "aliyun-bailian", records[0].Provider)
 	assert.Contains(t, records[0].OfficialPricing, "qwen-plus")
+	assert.Empty(t, records[0].InternalPricing, "official sync must not create a sale price")
 
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Len(t, normalized.Tiers, 1)
-	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
-	require.NotNil(t, normalized.Tiers[0].OutputPerMillionUSD)
-	assert.InDelta(t, 10.0/7.3, *normalized.Tiers[0].InputPerMillionUSD, 1e-9)
-	assert.InDelta(t, 30.0/7.3, *normalized.Tiers[0].OutputPerMillionUSD, 1e-9)
+	require.Empty(t, normalized.Tiers, "Bailian publishes the channel quote, not the vendor official list")
+	require.Len(t, normalized.ChannelPriceTiers, 1)
+	require.NotNil(t, normalized.ChannelPriceTiers[0].InputPerMillionUSD)
+	require.NotNil(t, normalized.ChannelPriceTiers[0].OutputPerMillionUSD)
+	assert.InDelta(t, 10.0/7.3, *normalized.ChannelPriceTiers[0].InputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 30.0/7.3, *normalized.ChannelPriceTiers[0].OutputPerMillionUSD, 1e-9)
 	assert.False(t, normalized.NeedsReview)
 }
 
@@ -231,11 +233,69 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	require.Len(t, records, 1)
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Len(t, normalized.Tiers, 2)
+	require.Empty(t, normalized.Tiers)
+	require.Len(t, normalized.ChannelPriceTiers, 2)
 	assert.True(t, normalized.NeedsReview)
 	assert.Contains(t, normalized.ReviewReasons, "multiple price ranges")
-	assert.Equal(t, int64(0), normalized.Tiers[0].MinInputTokens)
-	assert.Equal(t, int64(32*1024), normalized.Tiers[0].MaxInputTokens)
-	assert.Equal(t, int64(32*1024), normalized.Tiers[1].MinInputTokens)
-	assert.Equal(t, int64(128*1024), normalized.Tiers[1].MaxInputTokens)
+	assert.Equal(t, int64(0), normalized.ChannelPriceTiers[0].MinInputTokens)
+	assert.Equal(t, int64(32*1024), normalized.ChannelPriceTiers[0].MaxInputTokens)
+	assert.Equal(t, int64(32*1024), normalized.ChannelPriceTiers[1].MinInputTokens)
+	assert.Equal(t, int64(128*1024), normalized.ChannelPriceTiers[1].MaxInputTokens)
 }
+
+func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output := 3.0, 6.0
+	normalized, _ := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName:           "Default",
+			InputPerMillionUSD:  &input,
+			OutputPerMillionUSD: &output,
+			Unit:                "per_1m_token",
+		}},
+	})
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 41, Provider: "aliyun-bailian", ModelName: "qwen-plus",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
+		Source: "bailian-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	row, err := model.GetChannelModelPricing(41, "qwen-plus")
+	require.NoError(t, err)
+	require.Equal(t, model.ChannelPricingStatusOfficialOnly, row.PricingStatus)
+	require.Empty(t, row.InternalPricing)
+	if _, ok := model.ResolveChannelBillingPricing(41, "qwen-plus"); ok {
+		t.Fatal("official-only row must not bill before an explicit seed")
+	}
+
+	seeded, skipped, err := SeedBailianInternalPricing(41, nil, false)
+	require.NoError(t, err)
+	require.Equal(t, 1, seeded)
+	require.Zero(t, skipped)
+	pricing, ok := model.ResolveChannelBillingPricing(41, "qwen-plus")
+	require.True(t, ok)
+	assert.InDelta(t, 1.5, pricing.ModelRatio, 1e-9)
+
+	// A later sync does not create a sale price, but an operator-seeded one is
+	// retained because its source is no longer the automatic provider value.
+	manual := model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerCall, PerCallUSD: floatPtr64(0.1),
+	}
+	require.NoError(t, model.SetChannelInternalPricing(41, "qwen-plus", manual))
+	updated := model.ChannelOfficialPricingRecord{
+		ChannelId: 41, Provider: "aliyun-bailian", ModelName: "qwen-plus",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
+		Source: "bailian-official", FetchedAt: 200,
+	}
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{updated})
+	require.NoError(t, err)
+	row, err = model.GetChannelModelPricing(41, "qwen-plus")
+	require.NoError(t, err)
+	require.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus)
+	require.Contains(t, row.InternalPricing, `"per_call"`)
+}
+
+func floatPtr64(value float64) *float64 { return &value }

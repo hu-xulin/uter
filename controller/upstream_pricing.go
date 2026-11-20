@@ -37,8 +37,18 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 		if strings.TrimSpace(req.BaseURL) == "" {
 			req.BaseURL = channel.GetBaseURL()
 		}
-		baseURLs := strings.ToLower(channel.GetBaseURL() + " " + req.BaseURL)
-		if !strings.Contains(baseURLs, "dreamrouter.ai") {
+		baseURLs := []string{channel.GetBaseURL()}
+		if strings.TrimSpace(req.BaseURL) != "" {
+			baseURLs = append(baseURLs, req.BaseURL)
+		}
+		matched := false
+		for _, candidate := range baseURLs {
+			if service.IsDreamRouterHost(candidate) {
+				matched = true
+				break
+			}
+		}
+		if !matched {
 			common.ApiErrorMsg(c, "The selected channel Base URL is not dreamrouter.ai")
 			return
 		}

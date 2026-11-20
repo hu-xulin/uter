@@ -107,6 +107,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPost, path: "/:id/sync_diagnostics", permission: authz.ChannelOperate, handler: controller.ChannelSyncDiagnostics},
 	{method: http.MethodGet, path: "/:id/model_pricing", permission: authz.ChannelRead, handler: controller.GetChannelModelPricing},
 	{method: http.MethodPut, path: "/:id/model_pricing", permission: authz.ChannelSensitiveWrite, handler: controller.SetChannelModelPricing},
+	{method: http.MethodPost, path: "/:id/model_pricing/seed", permission: authz.ChannelSensitiveWrite, handler: controller.SeedChannelModelPricing},
 	{method: http.MethodPost, path: "/:id/model_pricing/import", permission: authz.ChannelSensitiveWrite, handler: controller.ImportChannelModelPricing},
 	{method: http.MethodPost, path: "/:id/model_pricing/batch", permission: authz.ChannelSensitiveWrite, handler: controller.BatchChannelModelPricing},
 	{method: http.MethodGet, path: "/:id/model_pricing/history", permission: authz.ChannelRead, handler: controller.GetChannelPricingHistory},

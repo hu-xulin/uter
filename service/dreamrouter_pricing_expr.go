@@ -115,18 +115,17 @@ var dreamRouterExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]
 // dreamRouterExprDurationTerm 匹配「按秒计费」的视频模型计价项：
 //
 //	tier("720p", (duration > 0 ? duration : 5) * 0.0895522)
+//	tier("768p", duration * 0.0746268657)
 //
-// 即 `(…duration…) * <每秒单价>`。上游（创梦）的视频模型（wan3.0-video 等，
-// supported_endpoint_types = ["ali-video"]）用这种表达式描述「分辨率档 ×
-// 视频时长」计费：ternary 链按请求参数选分辨率档，每一档的单价是
-// 美元/秒 × duration（缺省 5 秒）。这类表达式没有 p/c token 系数，
-// dreamRouterOfficialUnitPrices 解不出来，历史上被标记 tiered_unparsable
-// 跳过——模型价格永远停在「未配置」。
+// 即 `(…duration…) * <每秒单价>` 或裸 `duration * <每秒单价>`。上游（创梦）
+// 的视频模型用这种表达式描述「分辨率档 × 视频时长」计费：ternary 链按请求
+// 参数选分辨率档，每一档的单价是美元/秒 × duration（缺省 5 秒）。这类表达式
+// 没有 p/c token 系数，dreamRouterOfficialUnitPrices 解不出来，历史上被标记
+// tiered_unparsable 跳过——模型价格永远停在「未配置」。
 //
-// 与 dreamRouterExprTerm 的区别：系数前面不是标识符而是右括号，因此
-// 两个正则互不重叠；分组内容必须含 `duration` 标识符，token 表达式
-// 不会误中。
-var dreamRouterExprDurationTerm = regexp.MustCompile(`\(([^()]*\bduration\b[^()]*)\)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+// 2026-11 起上游把括号省略成裸 `duration * 0.1194029851`，因此两种写法都要
+// 支持；否则 MiniMax-H3 一类模型会再次被判为无价格。
+var dreamRouterExprDurationTerm = regexp.MustCompile(`(?:\(([^()]*\bduration\b[^()]*)\)|\bduration\b)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
 
 // dreamRouterDurationUnitPrices 从按秒计费的表达式里解出官方单价（美元/秒）。
 //
@@ -171,8 +170,27 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 		return "", false
 	}
 	scaled := false
-	result := dreamRouterExprUnitTermScaled.ReplaceAllStringFunc(expr, func(term string) string {
+	// 第一遍：按秒计费项 `(…duration…) * <数字>` 与裸 `duration * <数字>`。
+	result := dreamRouterExprDurationTerm.ReplaceAllStringFunc(expr, func(term string) string {
+		match := dreamRouterExprDurationTerm.FindStringSubmatch(term)
+		value, err := strconv.ParseFloat(match[2], 64)
+		if err != nil {
+			return term
+		}
+		scaled = true
+		scaledValue := strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
+		if match[1] == "" {
+			return "duration * " + scaledValue
+		}
+		return "(" + match[1] + ") * " + scaledValue
+	})
+	// 第二遍：标识符计价项 `p * <数字>`。duration 已由第一遍处理，这里必须
+	// 跳过，否则裸 duration 会被缩放两次。
+	result = dreamRouterExprUnitTermScaled.ReplaceAllStringFunc(result, func(term string) string {
 		match := dreamRouterExprUnitTermScaled.FindStringSubmatch(term)
+		if match[1] == "duration" {
+			return term
+		}
 		value, err := strconv.ParseFloat(match[2], 64)
 		if err != nil {
 			return term
@@ -181,18 +199,6 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 		// 'f' 而不是默认的 'g'：billing_expr 的语法不接受 `1e-05` 这种指数
 		// 写法，小系数会被编译失败。
 		return match[1] + " * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
-	})
-	// 第二遍：按秒计费项 `(…duration…) * <数字>`。必须在标识符遍之后跑：
-	// 两类模式的计价项互不重叠（一个系数前是标识符，一个是右括号），
-	// 先后顺序不影响结果，但都成功时 scaled 必须为 true。
-	result = dreamRouterExprDurationTerm.ReplaceAllStringFunc(result, func(term string) string {
-		match := dreamRouterExprDurationTerm.FindStringSubmatch(term)
-		value, err := strconv.ParseFloat(match[2], 64)
-		if err != nil {
-			return term
-		}
-		scaled = true
-		return "(" + match[1] + ") * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
 	})
 	if !scaled {
 		return "", false

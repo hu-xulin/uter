@@ -110,6 +110,24 @@ func TestTokenAndImageBillingUseChannelPrices(t *testing.T) {
 	assert.InDelta(t, 0.04, imagePrice.ModelPrice, 1e-9)
 }
 
+func TestChannelTieredExpressionPricesTheRequest(t *testing.T) {
+	setupBillingConsistencyDB(t)
+	seedChannelModel(t, 7, "gpt-a", model.ChannelInternalPricing{
+		Mode:        model.ChannelPricingModeTieredExpr,
+		BillingExpr: `len <= 1000 ? tier("short", p * 2) : tier("long", p * 1)`,
+	})
+
+	ctx, info := consistencyContext()
+	priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	assert.True(t, info.ChannelPricingApplied)
+	assert.Positive(t, priceData.QuotaToPreConsume)
+	require.NotNil(t, info.TieredBillingSnapshot)
+	assert.Equal(t, "short", info.TieredBillingSnapshot.EstimatedTier)
+	assert.Equal(t, `len <= 1000 ? tier("short", p * 2) : tier("long", p * 1)`, info.TieredBillingSnapshot.ExprString)
+	assert.NotEmpty(t, info.ChannelPricingVersion)
+}
+
 func TestBCustomerGroupsPayDifferentFinalQuota(t *testing.T) {
 	setupBillingConsistencyDB(t)
 	seedChannelModel(t, 7, "gpt-a", model.ChannelInternalPricing{

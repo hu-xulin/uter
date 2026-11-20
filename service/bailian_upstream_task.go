@@ -125,7 +125,7 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 			status.Written += written
 
 			if item.schedule.Enabled && item.schedule.ApplyOnSync {
-				item.schedule.Basis = BatchPricingBasisOfficial
+				item.schedule.Basis = BatchPricingBasisChannel
 				applied, reviewCount := applyProviderSyncSchedule(channel.Id, item.schedule, changes)
 				status.Scheduled += applied
 				status.Reviews += reviewCount
@@ -287,10 +287,20 @@ func bailianNormalizedPrices(catalog *BailianCatalog, channelModels []string) ma
 	out := make(map[string]map[string]*float64)
 	for _, record := range BailianPricingRecords(catalog, channelModels) {
 		var normalized model.ChannelOfficialPricing
-		if err := common.UnmarshalJsonStr(record.NormalizedPricing, &normalized); err != nil || len(normalized.Tiers) == 0 {
+		if err := common.UnmarshalJsonStr(record.NormalizedPricing, &normalized); err != nil {
 			continue
 		}
-		tier := normalized.Tiers[0]
+		tiers := normalized.ChannelPriceTiers
+		if len(tiers) == 0 && normalized.ChannelPrice != nil {
+			tiers = []model.ChannelPricingTier{*normalized.ChannelPrice}
+		}
+		if len(tiers) == 0 {
+			tiers = normalized.Tiers
+		}
+		if len(tiers) == 0 {
+			continue
+		}
+		tier := tiers[0]
 		out[record.ModelName] = map[string]*float64{
 			"input": tier.InputPerMillionUSD, "output": tier.OutputPerMillionUSD, "per_call": tier.PerUnitUSD,
 		}

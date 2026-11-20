@@ -127,7 +127,10 @@ func FetchBailianCatalog(ctx context.Context, baseURL, apiKey string) (*BailianC
 
 func fetchBailianCatalogFromBase(ctx context.Context, baseURL, apiKey string) (*BailianCatalog, error) {
 	endpoint := strings.TrimRight(baseURL, "/") + bailianModelsPath
-	client := &http.Client{Timeout: bailianRequestTimeout}
+	if _, err := validateUpstreamEndpoint(endpoint); err != nil {
+		return nil, err
+	}
+	client := newUpstreamHTTPClient(bailianRequestTimeout)
 	catalog := &BailianCatalog{FetchedAt: time.Now().UTC()}
 	seen := make(map[string]struct{})
 

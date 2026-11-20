@@ -531,13 +531,16 @@ type dreamRouterPublicPricing struct {
 func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSnapshot, error) {
 	baseURL = dreamRouterPricingOrigin(baseURL)
 	endpoint := baseURL + "/api/pricing"
+	if _, err := validateUpstreamEndpoint(endpoint); err != nil {
+		return nil, err
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/json")
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := newUpstreamHTTPClient(30 * time.Second)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetch dreamrouter pricing: %w", err)

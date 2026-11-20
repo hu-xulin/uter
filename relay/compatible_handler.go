@@ -312,7 +312,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 		}
 
 		var containAudioTokens = usage.CompletionTokenDetails.AudioTokens > 0 || usage.PromptTokensDetails.AudioTokens > 0
-		var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) || ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
+		var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) ||
+			ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName) ||
+			info.PriceData.AudioRatio > 0 || info.PriceData.AudioCompletionRatio > 0
 
 		if containAudioTokens && containsAudioRatios {
 			service.PostAudioConsumeQuota(c, info, usage, nil)
@@ -454,7 +456,9 @@ func TextHelper(c *gin.Context, info *relaycommon.RelayInfo) (uterError *types.U
 
 	u := usage.(*dto.Usage)
 	var containAudioTokens = u.CompletionTokenDetails.AudioTokens > 0 || u.PromptTokensDetails.AudioTokens > 0
-	var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) || ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName)
+	var containsAudioRatios = ratio_setting.ContainsAudioRatio(info.OriginModelName) ||
+		ratio_setting.ContainsAudioCompletionRatio(info.OriginModelName) ||
+		info.PriceData.AudioRatio > 0 || info.PriceData.AudioCompletionRatio > 0
 
 	if containAudioTokens && containsAudioRatios {
 		service.PostAudioConsumeQuota(c, info, u, nil)

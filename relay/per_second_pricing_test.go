@@ -21,6 +21,9 @@ package relay
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
@@ -42,6 +45,20 @@ func TestPerSecondTaskCostUsesDurationFacts(t *testing.T) {
 	if _, ok := perSecondTaskCost(map[string]any{"duration": float64(10)}, 0); ok {
 		t.Fatal("missing unit price must be rejected")
 	}
+}
+
+func TestPerMinutePriceBillsByDurationSeconds(t *testing.T) {
+	quoted := 1.2
+	billing, err := model.NormalizeChannelInternalPricing(&model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMinute, PerMinuteUSD: &quoted,
+	})
+	require.NoError(t, err)
+	require.True(t, billing.UsePerSecond)
+	assert.InDelta(t, 0.02, billing.PerSecondPrice, 1e-12)
+
+	cost, ok := perSecondTaskCost(map[string]any{"duration": float64(120)}, billing.PerSecondPrice)
+	require.True(t, ok)
+	assert.InDelta(t, 2.4, cost, 1e-12)
 }
 
 func TestPerSecondSettlementExpressionUsesSameDuration(t *testing.T) {

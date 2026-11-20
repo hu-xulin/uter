@@ -53,7 +53,7 @@ func TestManualProviderFetchNeverPretendsToSync(t *testing.T) {
 func TestUpstreamProviderForChannelMapsTypesAndFallback(t *testing.T) {
 	bailian := UpstreamProviderForChannel(17, "https://ws.cn-beijing.maas.aliyuncs.com")
 	require.Equal(t, "alibaba-bailian", bailian.ID)
-	require.Equal(t, CapabilitySupported, bailian.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilityManualOnly, bailian.Capabilities.OfficialPricing.Status)
 
 	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
 	require.Equal(t, "dreamrouter", dreamRouter.ID)
@@ -104,7 +104,7 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
 	bailian := UpstreamProviderForChannel(17, "")
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.TokenPricing.Status)
-	require.Equal(t, CapabilityUnsupported, bailian.Capabilities.PerMinutePricing.Status)
+	require.Equal(t, CapabilitySupported, bailian.Capabilities.PerMinutePricing.Status)
 
 	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
 	require.Equal(t, CapabilityPartial, dreamRouter.Capabilities.PerSecondPricing.Status)
@@ -114,27 +114,28 @@ func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
 }
 
 func TestUterProviderSupportsEveryPriceDimension(t *testing.T) {
-	provider := UpstreamProviderForChannel(60, "https://api.uter.ai")
-	require.Equal(t, "uter", provider.ID)
-	require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status)
-	require.Equal(t, CapabilitySupported, provider.Capabilities.ChannelPricing.Status)
-	for dimension, capability := range map[string]UpstreamProviderCapability{
-		"token": provider.Capabilities.TokenPricing, "image": provider.Capabilities.ImagePricing,
-		"video": provider.Capabilities.VideoPricing, "audio": provider.Capabilities.AudioPricing,
-		"per_call": provider.Capabilities.PerCallPricing, "per_second": provider.Capabilities.PerSecondPricing,
-		"per_minute": provider.Capabilities.PerMinutePricing, "deployment": provider.Capabilities.DeploymentPricing,
-	} {
-		if capability.Status != CapabilitySupported {
-			t.Fatalf("Uter %s pricing = %s, want SUPPORTED", dimension, capability.Status)
+	for _, baseURL := range []string{"https://api.uter.ai", "https://api.dreamrouter.ai"} {
+		provider := UpstreamProviderForChannel(60, baseURL)
+		require.Equal(t, "uter", provider.ID, baseURL)
+		require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status, baseURL)
+		require.Equal(t, CapabilitySupported, provider.Capabilities.ChannelPricing.Status, baseURL)
+		for dimension, capability := range map[string]UpstreamProviderCapability{
+			"token": provider.Capabilities.TokenPricing, "image": provider.Capabilities.ImagePricing,
+			"video": provider.Capabilities.VideoPricing, "audio": provider.Capabilities.AudioPricing,
+			"per_call": provider.Capabilities.PerCallPricing, "per_second": provider.Capabilities.PerSecondPricing,
+			"per_minute": provider.Capabilities.PerMinutePricing, "deployment": provider.Capabilities.DeploymentPricing,
+		} {
+			if capability.Status != CapabilitySupported {
+				t.Fatalf("Uter %s pricing = %s, want SUPPORTED (base %s)", dimension, capability.Status, baseURL)
+			}
 		}
 	}
 }
 
-// A New API relay whose base URL is DreamRouter must keep DreamRouter's
-// pricing adapter; otherwise its absolute official prices are misread as a
-// ratio-only New API document.
-func TestDreamRouterHostWinsOverGenericRelayType(t *testing.T) {
-	provider := UpstreamProviderForChannel(60, "https://api.dreamrouter.ai")
+// A non-Uter relay whose base URL is DreamRouter keeps DreamRouter's pricing
+// adapter so its official price document is read with the right semantics.
+func TestDreamRouterHostWinsOverNonUterRelayType(t *testing.T) {
+	provider := UpstreamProviderForChannel(58, "https://api.dreamrouter.ai")
 	require.Equal(t, "dreamrouter", provider.ID)
 	require.Equal(t, CapabilityPartial, provider.Capabilities.OfficialPricing.Status)
 	require.Equal(t, CapabilityPartial, provider.Capabilities.PerSecondPricing.Status)

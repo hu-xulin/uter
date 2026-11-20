@@ -25,7 +25,11 @@ func TestPullBailianCatalogLive(t *testing.T) {
 	_ = godotenv.Load("../.env")
 	absDB, err := os.Getwd()
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("SQLITE_PATH", absDB+"/../one-api.db"))
+	liveDB := os.Getenv("BAILIAN_LIVE_DB")
+	if liveDB == "" {
+		liveDB = absDB + "/../one-api.db"
+	}
+	require.NoError(t, os.Setenv("SQLITE_PATH", liveDB))
 	common.InitEnv()
 	require.NoError(t, model.InitDB())
 	model.InitOptionMap()

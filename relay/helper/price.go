@@ -174,6 +174,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 
 	// A configured channel price overrides the global tiered expression. An
 	// official-only or needs-review tiered row never reaches this branch.
+	if hasChannelPricing && channelPricing.BillingExpr != "" {
+		return modelPriceHelperChannelTiered(c, info, billingModelName, promptTokens, groupRatioInfo, channelPricing.BillingExpr)
+	}
 	if !hasChannelPricing && billing_setting.GetBillingMode(billingModelName) == billing_setting.BillingModeTieredExpr {
 		return modelPriceHelperTiered(c, info, billingModelName, promptTokens, groupRatioInfo)
 	}
@@ -234,6 +237,12 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		imageRatio, _ = ratio_setting.GetImageRatio(billingModelName)
 		audioRatio = ratio_setting.GetAudioRatio(billingModelName)
 		audioCompletionRatio = ratio_setting.GetAudioCompletionRatio(billingModelName)
+		if hasChannelPricing && channelPricing.AudioRatio != nil {
+			audioRatio = *channelPricing.AudioRatio
+		}
+		if hasChannelPricing && channelPricing.AudioCompletionRatio != nil {
+			audioCompletionRatio = *channelPricing.AudioCompletionRatio
+		}
 		ratio := modelRatio * groupRatioInfo.GroupRatio
 		quota, err := common.QuotaFromFloatStrict(preConsumedTokens * ratio)
 		if err != nil {
@@ -497,6 +506,20 @@ func modelPriceHelperTiered(c *gin.Context, info *relaycommon.RelayInfo, billing
 	if !ok {
 		return hosttypes.PriceData{}, fmt.Errorf("model %s is configured as tiered_expr but has no billing expression", billingModelName)
 	}
+	return modelPriceHelperTieredExpr(c, info, billingModelName, promptTokens, groupRatioInfo, exprStr)
+}
+
+// modelPriceHelperChannelTiered prices a request with a channel-scoped tiered
+// expression, mirroring the global tiered path so pre-consume and settlement
+// bind the same expression.
+func modelPriceHelperChannelTiered(c *gin.Context, info *relaycommon.RelayInfo, billingModelName string, promptTokens int, groupRatioInfo hosttypes.GroupRatioInfo, exprStr string) (hosttypes.PriceData, error) {
+	if strings.TrimSpace(exprStr) == "" {
+		return hosttypes.PriceData{}, fmt.Errorf("model %s channel tiered expression is empty", billingModelName)
+	}
+	return modelPriceHelperTieredExpr(c, info, billingModelName, promptTokens, groupRatioInfo, exprStr)
+}
+
+func modelPriceHelperTieredExpr(c *gin.Context, info *relaycommon.RelayInfo, billingModelName string, promptTokens int, groupRatioInfo hosttypes.GroupRatioInfo, exprStr string) (hosttypes.PriceData, error) {
 	exprHash := billingexpr.ExprHashString(exprStr)
 	if info.RelayFormat == types.RelayFormatOpenAIRealtime && billingexpr.UsesFixedPricingByHash(exprStr, exprHash) {
 		return hosttypes.PriceData{}, fmt.Errorf("fixed pricing is not supported for Realtime requests")

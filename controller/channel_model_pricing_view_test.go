@@ -47,7 +47,7 @@ func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {
 	input, output := 2.0, 4.0
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD",
-		Tiers: []model.ChannelPricingTier{{
+		ChannelPriceTiers: []model.ChannelPricingTier{{
 			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
 		}},
 	})
@@ -58,7 +58,35 @@ func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {
 		NormalizedPricing: string(normalized),
 	})
 	require.NotNil(t, view.UpstreamQuote)
-	require.Equal(t, "OFFICIAL_REFERENCE", view.UpstreamQuote.PriceBasis)
+	require.Equal(t, "CHANNEL_CATALOG", view.UpstreamQuote.PriceBasis)
 	require.Equal(t, 2.0, *view.UpstreamQuote.InputPerMillionUSD)
 	require.Equal(t, 4.0, *view.UpstreamQuote.OutputPerMillionUSD)
+}
+
+func floatPtr(value float64) *float64 { return &value }
+
+func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
+	input, output, discount := 6.0, 30.0, 0.6
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Tiers: []model.ChannelPricingTier{{
+			Unit: "per_1m_token", InputPerMillionUSD: floatPtr(10), OutputPerMillionUSD: floatPtr(50),
+		}},
+		ChannelPrice: &model.ChannelPricingTier{
+			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+		},
+		DiscountRatio: &discount,
+		Source:        "dreamrouter-official",
+	})
+	require.NoError(t, err)
+
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 9, ModelName: "claude-a", Provider: "dreamrouter",
+		NormalizedPricing: string(normalized),
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.Equal(t, "CHANNEL_DISCOUNT", view.UpstreamQuote.PriceBasis)
+	require.Equal(t, 6.0, *view.UpstreamQuote.InputPerMillionUSD)
+	require.Equal(t, 30.0, *view.UpstreamQuote.OutputPerMillionUSD)
+	require.Equal(t, 0.6, *view.UpstreamQuote.DiscountRatio)
 }

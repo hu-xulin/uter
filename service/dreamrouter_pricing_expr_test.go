@@ -190,6 +190,19 @@ func TestDreamRouterDurationUnitPrices(t *testing.T) {
 		t.Errorf("video models have no output/cache pricing: %+v", prices)
 	}
 
+	// 2026-11 起上游省略了 duration 的括号（MiniMax-H3 真实记录），裸
+	// `duration * <单价>` 必须解析出兜底档，不能再次被判为无价格。
+	const miniMaxH3 = `has(lower(param("metadata.parameters.resolution")), "2k") || has(lower(param("metadata.resolution")), "2k")
+  ? tier("2k", duration * 0.1194029851)
+  : tier("768p", duration * 0.0746268657)`
+	barePrices, ok := dreamRouterDurationUnitPrices(miniMaxH3)
+	if !ok {
+		t.Fatal("bare duration term not parsed")
+	}
+	if !nearlyEqualSync(barePrices.Input, 0.0746268657) {
+		t.Errorf("bare duration input = %v, want 0.0746268657", barePrices.Input)
+	}
+
 	// token 表达式没有 duration 计价项，解不出来。
 	if _, ok := dreamRouterDurationUnitPrices(`tier("base", p * 5 + c * 30)`); ok {
 		t.Error("token expression should not parse as duration-priced")
@@ -233,6 +246,19 @@ func TestDreamRouterScaleExprDuration(t *testing.T) {
 	}
 	if !nearlyEqualSync(got.Input, official.Input*1.1) {
 		t.Errorf("input = %v, want %v", got.Input, official.Input*1.1)
+	}
+
+	// 裸 duration 形式也要缩放，否则同步规则对 MiniMax-H3 无效。
+	const bareVideo = `tier("2k", duration * 0.1194029851)`
+	scaledBare, ok := dreamRouterScaleExpr(bareVideo, 2)
+	if !ok {
+		t.Fatal("bare scale: ok = false")
+	}
+	if !strings.Contains(scaledBare, "0.2388059702") {
+		t.Errorf("bare scaled expression missing doubled coefficient: %s", scaledBare)
+	}
+	if _, err := billingexpr.CompileFromCache(scaledBare); err != nil {
+		t.Errorf("bare scaled expression does not compile: %v", err)
 	}
 }
 

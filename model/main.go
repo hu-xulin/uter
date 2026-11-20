@@ -367,6 +367,12 @@ func migrateDB() error {
 	// 存量库若已有同一聚合键的多行（多实例刷盘、或旧的「先查后写」在竞态下双写），
 	// 建索引会因约束冲突失败，把启动卡死。去重累加统计量后只保留一行，不丢数据。
 	dedupeQuotaDataAggregatesOnce()
+	// The channel price identity now includes provider, region and deployment.
+	// Merge any duplicate identity rows and drop the legacy (channel, model)
+	// unique index before AutoMigrate creates the new one.
+	if err := PrepareChannelModelPricingIdentity(DB); err != nil {
+		return fmt.Errorf("failed to prepare channel pricing identity: %w", err)
+	}
 
 	err := DB.AutoMigrate(
 		&Channel{},
