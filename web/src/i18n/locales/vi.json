@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "Xác nhận giá bán bằng 0",
     "A fixed price of 0 makes every selected model free. Check to continue.": "Giá cố định bằng 0 sẽ khiến mọi mô hình đã chọn miễn phí. Đánh dấu để tiếp tục.",
     "Purchase price": "Giá mua",
-    "Gross margin": "Lợi nhuận gộp"
+    "Gross margin": "Lợi nhuận gộp",
+    "Price status": "Trạng thái giá",
+    "All price states": "Tất cả trạng thái giá",
+    "Missing sale price": "Thiếu giá bán"
   }
 }

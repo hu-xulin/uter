@@ -171,6 +171,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [category, setCategory] = useState('text')
   const [selectedModels, setSelectedModels] = useState<string[]>([])
   const [modelSearch, setModelSearch] = useState('')
+  const [priceFilter, setPriceFilter] = useState<
+    'all' | 'missing' | 'needs_review'
+  >('all')
   const [confirmZeroFixed, setConfirmZeroFixed] = useState(false)
   const [overwriteManual, setOverwriteManual] = useState(false)
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
@@ -220,9 +223,21 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
-  const availableModels = (modelsQuery.data?.data?.items ?? []).map(
-    (item) => item.model_name
-  )
+  const pricingRows = modelsQuery.data?.data?.items ?? []
+  const filteredModels = pricingRows
+    .filter((item) => {
+      if (!item.model_name.toLowerCase().includes(modelSearch.toLowerCase())) {
+        return false
+      }
+      if (priceFilter === 'missing') {
+        return item.pricing_status !== 'configured'
+      }
+      if (priceFilter === 'needs_review') {
+        return item.pricing_status === 'needs_review'
+      }
+      return true
+    })
+    .map((item) => item.model_name)
   const diagnostics = useMutation({
     mutationFn: () => runChannelSyncDiagnostics(props.channelId ?? 0),
     onError: (error) =>
@@ -679,6 +694,39 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                     placeholder='gpt-4o, qwen-plus'
                   />
                 </div>
+                <div className='w-40 space-y-1.5'>
+                  <Label htmlFor='batch-pricing-price-filter'>
+                    {t('Price status')}
+                  </Label>
+                  <Select
+                    value={priceFilter}
+                    onValueChange={(next) =>
+                      setPriceFilter(
+                        next === 'missing' || next === 'needs_review'
+                          ? next
+                          : 'all'
+                      )
+                    }
+                  >
+                    <SelectTrigger
+                      id='batch-pricing-price-filter'
+                      className='w-full'
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='all'>
+                        {t('All price states')}
+                      </SelectItem>
+                      <SelectItem value='missing'>
+                        {t('Missing sale price')}
+                      </SelectItem>
+                      <SelectItem value='needs_review'>
+                        {t('Needs review')}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Badge variant='secondary'>
                   {t('{{count}} selected', { count: selectedModels.length })}
                 </Badge>
@@ -687,11 +735,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                   variant='outline'
                   size='sm'
                   onClick={() => {
-                    const filtered = availableModels.filter((name) =>
-                      name.toLowerCase().includes(modelSearch.toLowerCase())
-                    )
                     setSelectedModels((current) => [
-                      ...new Set([...current, ...filtered]),
+                      ...new Set([...current, ...filteredModels]),
                     ])
                   }}
                 >
@@ -712,36 +757,32 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                     {t('Loading')}
                   </p>
                 ) : null}
-                {!modelsQuery.isFetching && availableModels.length === 0 ? (
+                {!modelsQuery.isFetching && filteredModels.length === 0 ? (
                   <p className='text-muted-foreground text-sm'>
                     {t('No models priced on this channel yet')}
                   </p>
                 ) : null}
-                {availableModels
-                  .filter((name) =>
-                    name.toLowerCase().includes(modelSearch.toLowerCase())
+                {filteredModels.map((name) => {
+                  const checked = selectedModels.includes(name)
+                  return (
+                    <label
+                      key={name}
+                      className='flex items-center gap-2 text-sm'
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={(next) =>
+                          setSelectedModels((current) =>
+                            next === true
+                              ? [...current, name]
+                              : current.filter((item) => item !== name)
+                          )
+                        }
+                      />
+                      <span>{name}</span>
+                    </label>
                   )
-                  .map((name) => {
-                    const checked = selectedModels.includes(name)
-                    return (
-                      <label
-                        key={name}
-                        className='flex items-center gap-2 text-sm'
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={(next) =>
-                            setSelectedModels((current) =>
-                              next === true
-                                ? [...current, name]
-                                : current.filter((item) => item !== name)
-                            )
-                          }
-                        />
-                        <span>{name}</span>
-                      </label>
-                    )
-                  })}
+                })}
               </div>
             </div>
           ) : null}

@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "販売価格0を確認",
     "A fixed price of 0 makes every selected model free. Check to continue.": "固定価格0では選択したすべてのモデルが無料になります。続行するにはチェックしてください。",
     "Purchase price": "仕入価格",
-    "Gross margin": "粗利益"
+    "Gross margin": "粗利益",
+    "Price status": "価格状態",
+    "All price states": "すべての価格状態",
+    "Missing sale price": "販売価格が未設定"
   }
 }

@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "確認零售價",
     "A fixed price of 0 makes every selected model free. Check to continue.": "固定價格為 0 會使所有已選模型免費。勾選後繼續。",
     "Purchase price": "採購價格",
-    "Gross margin": "毛利"
+    "Gross margin": "毛利",
+    "Price status": "價格狀態",
+    "All price states": "全部價格狀態",
+    "Missing sale price": "缺少售價"
   }
 }

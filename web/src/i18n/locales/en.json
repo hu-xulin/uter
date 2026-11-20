@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "Confirm zero sale price",
     "A fixed price of 0 makes every selected model free. Check to continue.": "A fixed price of 0 makes every selected model free. Check to continue.",
     "Purchase price": "Purchase price",
-    "Gross margin": "Gross margin"
+    "Gross margin": "Gross margin",
+    "Price status": "Price status",
+    "All price states": "All price states",
+    "Missing sale price": "Missing sale price"
   }
 }

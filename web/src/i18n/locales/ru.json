@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "Подтвердить нулевую цену",
     "A fixed price of 0 makes every selected model free. Check to continue.": "Фиксированная цена 0 сделает все выбранные модели бесплатными. Отметьте, чтобы продолжить.",
     "Purchase price": "Цена закупки",
-    "Gross margin": "Валовая маржа"
+    "Gross margin": "Валовая маржа",
+    "Price status": "Статус цены",
+    "All price states": "Все статусы цены",
+    "Missing sale price": "Нет цены продажи"
   }
 }

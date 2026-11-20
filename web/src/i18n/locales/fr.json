@@ -8391,6 +8391,9 @@
     "Confirm zero sale price": "Confirmer un prix de vente nul",
     "A fixed price of 0 makes every selected model free. Check to continue.": "Un prix fixe de 0 rend tous les modèles sélectionnés gratuits. Cochez pour continuer.",
     "Purchase price": "Prix d’achat",
-    "Gross margin": "Marge brute"
+    "Gross margin": "Marge brute",
+    "Price status": "État du prix",
+    "All price states": "Tous les états de prix",
+    "Missing sale price": "Prix de vente manquant"
   }
 }
