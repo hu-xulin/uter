@@ -80,9 +80,9 @@ describe('faceted pricing filters', () => {
     )
     expect(facets.tag.map((m) => m.tags)).toEqual(['chat', 'image'])
     expect(facets.quotaType.map((m) => m.quota_type)).toEqual([0, 1])
-    expect(facets.endpointType.map((m) => m.supported_endpoint_types?.[0])).toEqual(
-      ['openai', 'image-generation']
-    )
+    expect(
+      facets.endpointType.map((m) => m.supported_endpoint_types?.[0])
+    ).toEqual(['openai', 'image-generation'])
   })
 
   it('combines channel and vendor filters for the other dimensions', () => {
@@ -100,8 +100,8 @@ describe('faceted pricing filters', () => {
     )
     expect(facets.tag.map((m) => m.tags)).toEqual(['chat'])
     expect(facets.quotaType.map((m) => m.quota_type)).toEqual([0])
-    expect(facets.endpointType.map((m) => m.supported_endpoint_types?.[0])).toEqual(
-      ['openai']
-    )
+    expect(
+      facets.endpointType.map((m) => m.supported_endpoint_types?.[0])
+    ).toEqual(['openai'])
   })
 })

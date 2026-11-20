@@ -359,9 +359,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
       if (!tagDisplay.has(key)) tagDisplay.set(key, key)
     }
   }
-  const facetTags = [...tagDisplay.values()].sort((a, b) =>
-    a.localeCompare(b)
-  )
+  const facetTags = [...tagDisplay.values()].sort((a, b) => a.localeCompare(b))
   const selectedTagKey =
     props.tagFilter === FILTER_ALL ? '' : props.tagFilter.toLowerCase()
   const tagNames =

@@ -151,15 +151,11 @@ describe('pricing controls', () => {
     expect(screen.queryByRole('button', { name: /^Vendor B\s*1$/ })).toBeNull()
     expect(screen.getByRole('button', { name: /^Chat\s*1$/i })).toBeVisible()
     expect(screen.queryByRole('button', { name: /^Video/ })).toBeNull()
-    expect(
-      screen.queryByRole('button', { name: /^Token-based/ })
-    ).toBeNull()
+    expect(screen.queryByRole('button', { name: /^Token-based/ })).toBeNull()
     expect(
       screen.getByRole('button', { name: /^Per Request\s*1$/ })
     ).toBeVisible()
-    expect(
-      screen.queryByRole('button', { name: /^Task billing/ })
-    ).toBeNull()
+    expect(screen.queryByRole('button', { name: /^Task billing/ })).toBeNull()
   })
 
   // 「所有…」chip 的徽标统一表示该分区的**可选项数量**（渠道数、厂商数、

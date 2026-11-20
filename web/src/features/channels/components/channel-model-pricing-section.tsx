@@ -256,9 +256,7 @@ export function ChannelModelPricingSection(
     if (items.length === 0) {
       return (
         <p className='text-muted-foreground text-sm'>
-          {t(
-            'No channel pricing records yet. Sync the channel catalog first.'
-          )}
+          {t('No channel pricing records yet. Sync the channel catalog first.')}
         </p>
       )
     }

@@ -340,7 +340,7 @@ export function Pricing() {
                 vendors={vendors || []}
                 channels={availableChannels}
                 channelTypes={channelTypes}
-                  models={models || []}
+                models={models || []}
                 facetModels={facetModels}
                 hasActiveFilters={hasActiveFilters}
                 activeFilterCount={activeFilterCount}
