@@ -18,7 +18,13 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { CHANNEL_TYPE_APIKO } from '../../constants'
+import {
+  CHANNEL_TYPE_APIKO,
+  CLAUDE_FIELD_PASSTHROUGH_TYPES,
+  FIELD_PASSTHROUGH_TYPES,
+  MODEL_FETCHABLE_TYPES,
+  OPENAI_FIELD_PASSTHROUGH_TYPES,
+} from '../../constants'
 import { CHANNEL_FORM_DEFAULT_VALUES, channelFormSchema } from '../channel-form'
 import { getChannelTypeConfig } from '../channel-type-config'
 import { getChannelTypeIcon } from '../channel-utils'
@@ -56,5 +62,12 @@ describe('Apiko channel type', () => {
   test('keeps a dedicated icon instead of the generic placeholder', () => {
     expect(getChannelTypeIcon(CHANNEL_TYPE_APIKO)).toBe('Apiko')
     expect(getChannelTypeConfig(CHANNEL_TYPE_APIKO).icon).toBe('Apiko')
+  })
+
+  test('is offered by the model-fetch and passthrough controls', () => {
+    expect(MODEL_FETCHABLE_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
+    expect(FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
+    expect(OPENAI_FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
+    expect(CLAUDE_FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
   })
 })
