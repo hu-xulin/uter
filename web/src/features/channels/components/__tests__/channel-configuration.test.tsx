@@ -420,6 +420,20 @@ test('model mapping help supports keyboard activation and wraps long model names
   expect(trigger).toHaveAttribute('aria-expanded', 'false')
 })
 
+async function expandAdvancedSettings(
+  user: ReturnType<typeof userEvent.setup>
+) {
+  const trigger = screen.queryByRole('button', { name: 'Advanced settings' })
+  if (trigger && trigger.getAttribute('aria-expanded') !== 'true') {
+    await user.click(trigger)
+  }
+}
+
+async function openReviewTab(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole('tab', { name: /Review/ }))
+  await expandAdvancedSettings(user)
+}
+
 test('selecting a plugin opens a prefilled channel and creates its explicit binding', async () => {
   const post = vi
     .spyOn(api, 'post')
@@ -569,7 +583,7 @@ test('submitting a missing plugin address focuses its field without leaving crea
   fireEvent.change(screen.getByLabelText('API Key *'), {
     target: { value: 'test-key' },
   })
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
   await waitFor(() =>
     expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAttribute(
@@ -997,7 +1011,7 @@ test('an invalid setting in another category is revealed and focused on submissi
   fireEvent.change(screen.getByLabelText('API Key *'), {
     target: { value: 'secret' },
   })
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   fireEvent.change(screen.getByLabelText('Proxy Address'), {
     target: { value: 'invalid-proxy' },
   })
@@ -1006,7 +1020,7 @@ test('an invalid setting in another category is revealed and focused on submissi
   await waitFor(() =>
     expect(screen.getByLabelText('Proxy Address')).toHaveFocus()
   )
-  expect(screen.getByRole('tab', { name: /Other Settings/ })).toHaveAttribute(
+  expect(screen.getByRole('tab', { name: /Review/ })).toHaveAttribute(
     'aria-selected',
     'true'
   )
@@ -1188,7 +1202,7 @@ test('quick options and detailed settings share changes across tabs and save the
     screen.getByRole('switch', { name: 'Allow service_tier passthrough' })
   ).toBeVisible()
 
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   const modelCheck = screen.getByRole('switch', {
     name: 'Upstream Model Update Check',
   })
@@ -1491,9 +1505,9 @@ test('request processing configuration does not mark the network category as con
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')
-  expect(
-    screen.getByRole('tab', { name: /Other Settings/ })
-  ).not.toHaveAccessibleName(/Configured/)
+  expect(screen.getByRole('tab', { name: /Review/ })).not.toHaveAccessibleName(
+    /Configured/
+  )
   await user.click(screen.getByRole('tab', { name: /Request & Response/ }))
   expect(
     within(screen.getByRole('group', { name: 'Override Rules' })).queryByRole(
@@ -1528,7 +1542,7 @@ test.each([1, 57, 58, 59, 60])(
     const requestTab = screen.getByRole('tab', { name: /Request & Response/ })
     expect(requestTab).toHaveAccessibleName(/Configured/)
     expect(
-      screen.getByRole('tab', { name: /Other Settings/ })
+      screen.getByRole('tab', { name: /Review/ })
     ).not.toHaveAccessibleName(/Configured/)
     await user.click(requestTab)
     const toggle = screen.getByRole('switch', {
@@ -1580,9 +1594,9 @@ test('configuration from fields unsupported by the selected provider stays unmar
   expect(
     screen.getByRole('tab', { name: /Request & Response/ })
   ).not.toHaveAccessibleName(/Configured/)
-  expect(
-    screen.getByRole('tab', { name: /Other Settings/ })
-  ).not.toHaveAccessibleName(/Configured/)
+  expect(screen.getByRole('tab', { name: /Review/ })).not.toHaveAccessibleName(
+    /Configured/
+  )
   expect(
     screen.queryByRole('switch', {
       name: 'Use OpenAI-compatible Ollama chat API',
@@ -1631,9 +1645,10 @@ test('a saved upstream TLS verification skip marks Other Settings and turning it
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')
-  const otherTab = screen.getByRole('tab', { name: /Other Settings/ })
+  const otherTab = screen.getByRole('tab', { name: /Review/ })
   expect(otherTab).toHaveAccessibleName(/Configured/)
   await user.click(otherTab)
+  await expandAdvancedSettings(user)
   const toggle = screen.getByRole('switch', {
     name: 'Skip Upstream TLS Verification',
   })
@@ -1656,7 +1671,7 @@ test('turning on the upstream TLS verification skip saves it in the channel sett
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   const toggle = screen.getByRole('switch', {
     name: 'Skip Upstream TLS Verification',
   })
@@ -1674,7 +1689,7 @@ test('an invalid edit switches categories and replaces configured styling with t
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   fireEvent.change(screen.getByLabelText('Proxy Address'), {
     target: { value: 'invalid-proxy' },
   })
@@ -1683,9 +1698,9 @@ test('an invalid edit switches categories and replaces configured styling with t
   await waitFor(() =>
     expect(screen.getByLabelText('Proxy Address')).toHaveFocus()
   )
-  expect(
-    screen.getByRole('tab', { name: /Other Settings/ })
-  ).toHaveAccessibleName(/Error/)
+  expect(screen.getByRole('tab', { name: /Review/ })).toHaveAccessibleName(
+    /Error/
+  )
   const block = screen.getByRole('group', { name: 'Channel Extra Settings' })
   expect(within(block).getByRole('img', { name: 'Error' })).toBeVisible()
   expect(
@@ -1772,6 +1787,54 @@ test('select all adds every fetched upstream model and keeps saved models', asyn
   expect(selectAll).toHaveAttribute(
     'title',
     'All upstream models are already selected'
+  )
+})
+
+test('create mode keeps pricing optional until the operator opts in', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness />)
+  await user.click(await screen.findByRole('option', { name: /OpenAI/ }))
+  await user.click(screen.getByRole('tab', { name: /Pricing/ }))
+
+  expect(screen.getByText('Pricing is optional')).toBeVisible()
+  expect(
+    screen.queryByRole('button', { name: 'Create draft channel' })
+  ).not.toBeInTheDocument()
+
+  await user.click(
+    screen.getByRole('button', { name: 'Configure pricing now' })
+  )
+  expect(
+    await screen.findByRole('button', { name: 'Create draft channel' })
+  ).toBeVisible()
+})
+
+test('advanced settings stay collapsed in review until requested', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await screen.findByDisplayValue('Existing channel')
+  await user.click(screen.getByRole('tab', { name: /Review/ }))
+
+  const trigger = screen.getByRole('button', { name: 'Advanced settings' })
+  expect(trigger).toHaveAttribute('aria-expanded', 'false')
+  expect(screen.queryByLabelText('Proxy Address')).not.toBeInTheDocument()
+
+  await user.click(trigger)
+  expect(trigger).toHaveAttribute('aria-expanded', 'true')
+  expect(screen.getByLabelText('Proxy Address')).toBeVisible()
+})
+
+test('the review step exposes pricing as a header action', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await screen.findByDisplayValue('Existing channel')
+  await user.click(screen.getByRole('tab', { name: /Review/ }))
+  const openPricing = screen.getByRole('button', { name: 'Open pricing' })
+  expect(openPricing).toBeVisible()
+  await user.click(openPricing)
+  expect(screen.getByRole('tab', { name: /Pricing/ })).toHaveAttribute(
+    'aria-selected',
+    'true'
   )
 })
 
@@ -2069,7 +2132,7 @@ test('an operator without sensitive write permission can discover saved models a
   expect(thinking).toHaveAttribute('aria-disabled', 'true')
   await user.click(thinking)
   expect(thinking).not.toBeChecked()
-  await user.click(screen.getByRole('tab', { name: /Other Settings/ }))
+  await openReviewTab(user)
   expect(screen.getByLabelText('Proxy Address')).toBeDisabled()
   await user.click(screen.getByRole('tab', { name: /Routing & Mapping/ }))
   fireEvent.change(screen.getByLabelText('Priority'), {
@@ -2709,12 +2772,18 @@ test('on wide screens the quick options move into the header as a compact toggle
   const quick = screen.getByRole('group', { name: 'Quick options' })
   expect(quick.closest('[data-slot="sheet-header"]')).not.toBeNull()
   expect(within(quick).getAllByRole('switch')).toHaveLength(5)
-  // Second header row: status badge and description on the left, toggles right.
-  const statusRow = quick.parentElement
-  if (!statusRow) throw new Error('status row missing')
-  expect(within(statusRow).getByText('Enabled')).toBeVisible()
+  // Quick options now occupy their own labelled header row, below the
+  // description, so the description can use the full width.
+  const quickRow = quick.parentElement
+  if (!quickRow) throw new Error('quick options row missing')
+  expect(within(quickRow).getByText('Quick options')).toBeVisible()
+  const header = quick.closest('[data-slot="sheet-header"]')
+  if (!header) throw new Error('sheet header missing')
+  expect(within(header as HTMLElement).getByText('Enabled')).toBeVisible()
   expect(
-    within(statusRow).queryByRole('heading', { name: /Edit Channel/ })
+    within(quickRow).queryByRole('heading', {
+      name: /Edit Channel/,
+    })
   ).not.toBeInTheDocument()
   expect(
     screen.queryByText(
@@ -3012,7 +3081,7 @@ test('the review step labels the channel type, status, and group count', async (
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
   await screen.findByDisplayValue('Existing channel')
-  await user.click(screen.getByRole('tab', { name: /Review & Other Settings/ }))
+  await openReviewTab(user)
 
   const typeRow = screen.getByText('Channel type').closest('div')
   const statusRow = screen.getByText('Status').closest('div')

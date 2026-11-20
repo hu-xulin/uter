@@ -25,7 +25,7 @@ import {
   CONTEXT_SIZE_TAG_PATTERN,
   type SortOption,
 } from '../constants'
-import type { PricingModel } from '../types'
+import type { PricingFacetModels, PricingModel } from '../types'
 import {
   getCardExamplePrice,
   getDynamicPricingSummary,
@@ -223,6 +223,39 @@ export function filterAndSortModels(
   result = sortModels(result, filters.sortBy)
 
   return result
+}
+
+/**
+ * Build one model set per filter section for faceted option counts. Each set
+ * keeps every other active filter but resets the section's own filter, so a
+ * selected channel narrows vendors/tags/pricing types/endpoints without
+ * eliminating the channel list itself.
+ */
+export function buildFacetModels(
+  models: PricingModel[],
+  filters: {
+    search: string
+    vendor: string
+    channel: string
+    quotaType: string
+    endpointType: string
+    tag: string
+  }
+): PricingFacetModels {
+  const base = { ...filters, sortBy: SORT_OPTIONS.NAME }
+  return {
+    channel: filterAndSortModels(models, { ...base, channel: FILTER_ALL }),
+    vendor: filterAndSortModels(models, { ...base, vendor: FILTER_ALL }),
+    tag: filterAndSortModels(models, { ...base, tag: FILTER_ALL }),
+    quotaType: filterAndSortModels(models, {
+      ...base,
+      quotaType: QUOTA_TYPES.ALL,
+    }),
+    endpointType: filterAndSortModels(models, {
+      ...base,
+      endpointType: ENDPOINT_TYPES.ALL,
+    }),
+  }
 }
 
 /**

@@ -1,0 +1,172 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, expect, test, vi } from 'vitest'
+
+import { api } from '@/lib/api'
+
+import { ChannelPricingPanel } from '../channel-pricing-panel'
+
+beforeEach(() => {
+  vi.restoreAllMocks()
+  vi.spyOn(api, 'get').mockImplementation(async (url) => {
+    if (url.endsWith('/model_pricing/schedule')) {
+      return {
+        data: {
+          success: true,
+          data: { channel_id: 7, enabled: false, schedule: {} },
+        },
+      }
+    }
+    if (url.endsWith('/model_pricing/reviews')) {
+      return { data: { success: true, data: { channel_id: 7, items: [] } } }
+    }
+    if (url.endsWith('/model_pricing/history')) {
+      return { data: { success: true, data: { channel_id: 7, items: [] } } }
+    }
+    if (url.endsWith('/sync_capabilities')) {
+      return {
+        data: {
+          success: true,
+          data: {
+            provider: {
+              capabilities: {
+                official_pricing: { status: 'SUPPORTED' },
+                channel_pricing: { status: 'SUPPORTED' },
+                token_pricing: { status: 'SUPPORTED' },
+                image_pricing: { status: 'SUPPORTED' },
+                video_pricing: { status: 'SUPPORTED' },
+                audio_pricing: { status: 'SUPPORTED' },
+                per_call_pricing: { status: 'SUPPORTED' },
+                per_second_pricing: { status: 'SUPPORTED' },
+                per_minute_pricing: { status: 'SUPPORTED' },
+                deployment_pricing: { status: 'SUPPORTED' },
+              },
+              sync_frequency: '',
+            },
+          },
+        },
+      }
+    }
+    if (url.endsWith('/pricing_audit')) {
+      return { data: { success: true, data: null } }
+    }
+    if (url.endsWith('/model_pricing')) {
+      return {
+        data: {
+          success: true,
+          data: {
+            channel_id: 7,
+            items: [
+              {
+                channel_id: 7,
+                model_name: 'qwen-plus',
+                provider: 'aliyun-bailian',
+                region: 'cn-beijing',
+                currency: 'CNY',
+                pricing_source: 'bailian-official',
+                pricing_status: 'official_only',
+                pricing_version: 'v1',
+                fetched_at: 1,
+                updated_at: 2,
+                official: {
+                  currency: 'CNY',
+                  unit: 'per_1m_token',
+                  tiers: [
+                    {
+                      range_name: 'Default',
+                      input_per_million_usd: 2,
+                      output_per_million_usd: 4,
+                      unit: 'per_1m_token',
+                    },
+                  ],
+                  source: 'bailian-official',
+                  fetched_at: 1,
+                },
+              },
+            ],
+          },
+        },
+      }
+    }
+    return { data: { success: true, data: { items: [] } } }
+  })
+})
+
+function renderPanel() {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={client}>
+      <ChannelPricingPanel channelId={7} baseUrl='https://example.com' />
+    </QueryClientProvider>
+  )
+}
+
+test('pricing selects render translated labels instead of raw enum values', async () => {
+  renderPanel()
+
+  expect(
+    (await screen.findAllByText('Fixed multiplier')).length
+  ).toBeGreaterThan(0)
+  expect(screen.getAllByText('Official price').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('All models').length).toBeGreaterThan(0)
+  expect(screen.getAllByText('Auto apply').length).toBeGreaterThan(0)
+  expect(screen.queryByText('multiply')).not.toBeInTheDocument()
+  expect(screen.queryByText('official')).not.toBeInTheDocument()
+})
+
+test('scheduled update fields expose labels and descriptions', async () => {
+  renderPanel()
+
+  expect(await screen.findByText('Scheduled price update')).toBeVisible()
+  for (const label of [
+    'Review mode',
+    'Review threshold (%)',
+    'Model sync interval (minutes)',
+    'Official price interval (minutes)',
+    'Channel price interval (minutes)',
+  ]) {
+    expect(screen.getByText(label)).toBeVisible()
+  }
+  expect(screen.getAllByText('Rule value hint').length).toBeGreaterThan(0)
+  expect(screen.getByText('Review mode hint')).toBeVisible()
+  expect(screen.getByText('Model sync interval hint')).toBeVisible()
+})
+test('official-only rows expose an explicit adopt-official-price action', async () => {
+  const post = vi.spyOn(api, 'post').mockResolvedValue({
+    data: { success: true, data: { seeded: 1, skipped: 0 } },
+  })
+  renderPanel()
+
+  const button = await screen.findByRole('button', {
+    name: 'Use official prices',
+  })
+  await waitFor(() => expect(button).toBeEnabled())
+  await button.click()
+  await waitFor(() =>
+    expect(post).toHaveBeenCalledWith(
+      '/api/channel/7/model_pricing/seed',
+      { overwrite: false },
+      expect.anything()
+    )
+  )
+})

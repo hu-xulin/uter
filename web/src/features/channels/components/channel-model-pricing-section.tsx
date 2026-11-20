@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Pencil } from 'lucide-react'
+import { Pencil, Sparkles } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -34,22 +34,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { toIntlLocale } from '@/i18n/languages'
 import { handleServerError } from '@/lib/handle-server-error'
 
-import { getChannelModelPricing, setChannelModelPricing } from '../api'
+import {
+  getChannelModelPricing,
+  seedChannelModelPricing,
+  setChannelModelPricing,
+} from '../api'
 import type {
   ChannelInternalPricingView,
   ChannelModelPricingRecord,
 } from '../types'
 
 type EditDraft = {
-  mode: 'per_1m_token' | 'per_call' | 'per_second'
+  mode: 'per_1m_token' | 'per_call' | 'per_second' | 'per_minute'
   input: string
   output: string
   cache: string
   cacheWrite: string
   perCall: string
   perSecond: string
+  perMinute: string
   note: string
 }
 
@@ -61,6 +67,7 @@ function formatUsd(value: number | undefined): string {
 function modeFromInternal(mode: string | undefined): EditDraft['mode'] {
   if (mode === 'per_call') return 'per_call'
   if (mode === 'per_second') return 'per_second'
+  if (mode === 'per_minute') return 'per_minute'
   return 'per_1m_token'
 }
 
@@ -74,6 +81,7 @@ function draftFrom(record: ChannelModelPricingRecord): EditDraft {
     cacheWrite: internal?.create_cache_per_million_usd?.toString() ?? '',
     perCall: internal?.per_call_usd?.toString() ?? '',
     perSecond: internal?.per_second_usd?.toString() ?? '',
+    perMinute: internal?.per_minute_usd?.toString() ?? '',
     note: internal?.note ?? '',
   }
 }
@@ -100,6 +108,18 @@ function pricingRuleLabel(
   internal: NonNullable<ChannelModelPricingRecord['internal']>,
   t: (key: string, options?: Record<string, unknown>) => string
 ) {
+  if (
+    internal.source === 'bailian-official' ||
+    internal.source === 'bailian-channel'
+  ) {
+    return t('Channel catalog default')
+  }
+  if (internal.source === 'batch') {
+    return internal.note || t('Batch rule')
+  }
+  if (internal.source === 'schedule') {
+    return internal.note || t('Scheduled rule')
+  }
   if (internal.source === 'dreamrouter-discount') {
     return t('Upstream discount {{group}} ×{{ratio}}', {
       group:
@@ -113,7 +133,8 @@ function pricingRuleLabel(
 export function ChannelModelPricingSection(
   props: ChannelModelPricingSectionProps
 ) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const intlLocale = toIntlLocale(i18n.resolvedLanguage || i18n.language)
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<ChannelModelPricingRecord | null>(null)
   const [draft, setDraft] = useState<EditDraft | null>(null)
@@ -156,6 +177,8 @@ export function ChannelModelPricingSection(
         pricing.per_call_usd = parsePrice(draft.perCall)
       } else if (draft.mode === 'per_second') {
         pricing.per_second_usd = parsePrice(draft.perSecond)
+      } else if (draft.mode === 'per_minute') {
+        pricing.per_minute_usd = parsePrice(draft.perMinute)
       } else {
         pricing.input_per_million_usd = parsePrice(draft.input)
         pricing.output_per_million_usd = parsePrice(draft.output)
@@ -220,6 +243,9 @@ export function ChannelModelPricingSection(
     if (tier.unit === 'per_second') {
       return `${formatUsd(tier.per_unit_usd)} · ${t('Per second')}`
     }
+    if (tier.unit === 'per_minute') {
+      return `${formatUsd(tier.per_unit_usd)} · ${t('Per minute')}`
+    }
     return `${formatUsd(tier.input_per_million_usd)} / ${formatUsd(tier.output_per_million_usd)}`
   }
 
@@ -231,7 +257,7 @@ export function ChannelModelPricingSection(
       return (
         <p className='text-muted-foreground text-sm'>
           {t(
-            'No channel pricing records yet. Sync the official catalog first.'
+            'No channel pricing records yet. Sync the channel catalog first.'
           )}
         </p>
       )
@@ -302,21 +328,33 @@ export function ChannelModelPricingSection(
                     ? pricingRuleLabel(item.internal, t)
                     : t('No rule')}
                 </span>
-                {item.internal?.mode === 'per_second' ? null : (
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='outline'
-                    className='ml-auto'
-                    onClick={() => {
-                      setEditing(item)
-                      setDraft(draftFrom(item))
-                    }}
-                  >
-                    <Pencil className='size-4' aria-hidden='true' />
-                    {t('Edit')}
-                  </Button>
-                )}
+                <span className='text-muted-foreground'>
+                  {t('Provider')}: {item.provider || '—'}
+                </span>
+                <span className='text-muted-foreground'>
+                  {t('Region')}: {item.region || '—'}
+                </span>
+                <span className='text-muted-foreground'>
+                  {t('Updated')}:{' '}
+                  {item.updated_at
+                    ? new Date(item.updated_at * 1000).toLocaleString(
+                        intlLocale
+                      )
+                    : '—'}
+                </span>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  className='ml-auto'
+                  onClick={() => {
+                    setEditing(item)
+                    setDraft(draftFrom(item))
+                  }}
+                >
+                  <Pencil className='size-4' aria-hidden='true' />
+                  {t('Edit')}
+                </Button>
               </div>
             </div>
           )
@@ -324,6 +362,26 @@ export function ChannelModelPricingSection(
       </div>
     )
   }
+
+  const seed = useMutation({
+    mutationFn: () => seedChannelModelPricing(props.channelId),
+    onSuccess: (response) => {
+      if (!response.success || !response.data) {
+        toast.error(response.message || t('Failed to seed official prices'))
+        return
+      }
+      toast.success(
+        t('Seeded {{count}} official price(s)', {
+          count: response.data.seeded,
+        })
+      )
+      void queryClient.invalidateQueries({
+        queryKey: ['channel-model-pricing', props.channelId],
+      })
+    },
+    onError: (error) =>
+      handleServerError(error, t('Failed to seed official prices')),
+  })
 
   if (props.channelId <= 0) return null
 
@@ -338,16 +396,32 @@ export function ChannelModelPricingSection(
             )}
           </p>
         </div>
-        <span className='text-muted-foreground text-sm'>
-          {t(
-            '{{total}} models · {{configured}} configured · {{review}} review',
-            {
-              total: items.length,
-              configured: summary.configured,
-              review: summary.review,
-            }
+        <div className='flex flex-wrap items-center gap-2'>
+          <span className='text-muted-foreground text-sm'>
+            {t(
+              '{{total}} models · {{configured}} configured · {{review}} review',
+              {
+                total: items.length,
+                configured: summary.configured,
+                review: summary.review,
+              }
+            )}
+            {' · '}
+            {t('Channel #{{id}}', { id: props.channelId })}
+          </span>
+          {summary.officialOnly > 0 && (
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              disabled={seed.isPending}
+              onClick={() => seed.mutate()}
+            >
+              <Sparkles className='size-4' aria-hidden='true' />
+              {t('Use official prices')}
+            </Button>
           )}
-        </span>
+        </div>
       </div>
 
       {renderPricingList()}
@@ -397,7 +471,9 @@ export function ChannelModelPricingSection(
                       ? {
                           ...prev,
                           mode:
-                            value === 'per_call' || value === 'per_second'
+                            value === 'per_call' ||
+                            value === 'per_second' ||
+                            value === 'per_minute'
                               ? value
                               : 'per_1m_token',
                         }
@@ -414,6 +490,7 @@ export function ChannelModelPricingSection(
                   </SelectItem>
                   <SelectItem value='per_call'>{t('Per call')}</SelectItem>
                   <SelectItem value='per_second'>{t('Per second')}</SelectItem>
+                  <SelectItem value='per_minute'>{t('Per minute')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -445,60 +522,76 @@ export function ChannelModelPricingSection(
                 />
               </div>
             )}
-            {draft.mode !== 'per_call' && draft.mode !== 'per_second' && (
-              <div className='grid gap-3 sm:grid-cols-2'>
-                <div className='space-y-1.5'>
-                  <Label>{t('Input / 1M (USD)')}</Label>
-                  <Input
-                    inputMode='decimal'
-                    value={draft.input}
-                    onChange={(event) =>
-                      setDraft((prev) =>
-                        prev ? { ...prev, input: event.target.value } : prev
-                      )
-                    }
-                  />
-                </div>
-                <div className='space-y-1.5'>
-                  <Label>{t('Output / 1M (USD)')}</Label>
-                  <Input
-                    inputMode='decimal'
-                    value={draft.output}
-                    onChange={(event) =>
-                      setDraft((prev) =>
-                        prev ? { ...prev, output: event.target.value } : prev
-                      )
-                    }
-                  />
-                </div>
-                <div className='space-y-1.5'>
-                  <Label>{t('Cache / 1M (USD)')}</Label>
-                  <Input
-                    inputMode='decimal'
-                    value={draft.cache}
-                    onChange={(event) =>
-                      setDraft((prev) =>
-                        prev ? { ...prev, cache: event.target.value } : prev
-                      )
-                    }
-                  />
-                </div>
-                <div className='space-y-1.5'>
-                  <Label>{t('Cache write / 1M (USD)')}</Label>
-                  <Input
-                    inputMode='decimal'
-                    value={draft.cacheWrite}
-                    onChange={(event) =>
-                      setDraft((prev) =>
-                        prev
-                          ? { ...prev, cacheWrite: event.target.value }
-                          : prev
-                      )
-                    }
-                  />
-                </div>
+            {draft.mode === 'per_minute' && (
+              <div className='space-y-1.5'>
+                <Label>{t('Price per minute (USD)')}</Label>
+                <Input
+                  inputMode='decimal'
+                  value={draft.perMinute}
+                  onChange={(event) =>
+                    setDraft((prev) =>
+                      prev ? { ...prev, perMinute: event.target.value } : prev
+                    )
+                  }
+                />
               </div>
             )}
+            {draft.mode !== 'per_call' &&
+              draft.mode !== 'per_second' &&
+              draft.mode !== 'per_minute' && (
+                <div className='grid gap-3 sm:grid-cols-2'>
+                  <div className='space-y-1.5'>
+                    <Label>{t('Input / 1M (USD)')}</Label>
+                    <Input
+                      inputMode='decimal'
+                      value={draft.input}
+                      onChange={(event) =>
+                        setDraft((prev) =>
+                          prev ? { ...prev, input: event.target.value } : prev
+                        )
+                      }
+                    />
+                  </div>
+                  <div className='space-y-1.5'>
+                    <Label>{t('Output / 1M (USD)')}</Label>
+                    <Input
+                      inputMode='decimal'
+                      value={draft.output}
+                      onChange={(event) =>
+                        setDraft((prev) =>
+                          prev ? { ...prev, output: event.target.value } : prev
+                        )
+                      }
+                    />
+                  </div>
+                  <div className='space-y-1.5'>
+                    <Label>{t('Cache / 1M (USD)')}</Label>
+                    <Input
+                      inputMode='decimal'
+                      value={draft.cache}
+                      onChange={(event) =>
+                        setDraft((prev) =>
+                          prev ? { ...prev, cache: event.target.value } : prev
+                        )
+                      }
+                    />
+                  </div>
+                  <div className='space-y-1.5'>
+                    <Label>{t('Cache write / 1M (USD)')}</Label>
+                    <Input
+                      inputMode='decimal'
+                      value={draft.cacheWrite}
+                      onChange={(event) =>
+                        setDraft((prev) =>
+                          prev
+                            ? { ...prev, cacheWrite: event.target.value }
+                            : prev
+                        )
+                      }
+                    />
+                  </div>
+                </div>
+              )}
             <div className='space-y-1.5'>
               <Label>{t('Note')}</Label>
               <Input

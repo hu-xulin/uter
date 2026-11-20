@@ -42,7 +42,7 @@ import {
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
 import { orderVendorsByModelCount } from '../lib/vendor-order'
-import type { PricingModel, PricingVendor } from '../types'
+import type { PricingFacetModels, PricingModel, PricingVendor } from '../types'
 
 type FilterOption = {
   value: string
@@ -80,8 +80,8 @@ export interface PricingSidebarProps {
   channels: string[]
   /** 渠道名 → 渠道类型，用于复用创建渠道时的 ChannelTypeLogo。 */
   channelTypes?: Record<string, number>
-  tags: string[]
   models: PricingModel[]
+  facetModels: PricingFacetModels
   hasActiveFilters: boolean
   onClearFilters: () => void
   className?: string
@@ -199,19 +199,27 @@ export function PricingSidebar(props: PricingSidebarProps) {
   // so the largest providers surface at the top. Equal counts fall back to
   // name order to keep the list deterministic. "All Vendors" stays pinned
   // first because it resets the filter.
-  const orderedVendors = orderVendorsByModelCount(props.models, props.vendors)
+  const orderedVendors = orderVendorsByModelCount(
+    props.facetModels.vendor,
+    props.vendors,
+    false
+  )
 
   // 「所有…」chip 的徽标统一表示**该分区里可选项的数量**，不是模型总数。
   // 此前五个分区（渠道/厂商/标签/计费类型/端点类型）的「所有…」都显示模型
   // 总数：同一串数字重复 5 遍，既看不出这一分区有多少个可选项，也和旁边
   // 展示模型数的具体项混在一起。现在各分区各说各的：渠道数、厂商数、
   // 标签数、计费类型数、端点类型数。
+  const hasVendor = orderedVendors.some(
+    (vendor) => vendor.name === props.vendorFilter
+  )
   const vendorOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Vendors'),
-      // 与下方列出的具体供应商数量一致（列表已剔除 0 模型的供应商）。
-      count: orderedVendors.length,
+      count:
+        orderedVendors.length +
+        (props.vendorFilter !== FILTER_ALL && !hasVendor ? 1 : 0),
     },
     ...orderedVendors.map((vendor) => ({
       value: vendor.name,
@@ -223,6 +231,9 @@ export function PricingSidebar(props: PricingSidebarProps) {
         ? getLobeIcon(monoIconName(vendor.icon), 14)
         : undefined,
     })),
+    ...(!hasVendor && props.vendorFilter !== FILTER_ALL
+      ? [{ value: props.vendorFilter, label: props.vendorFilter, count: 0 }]
+      : []),
   ]
 
   // 渠道来自管理-渠道的展示名（`channels`），按承载模型数降序、同数量按名称排序。
@@ -231,11 +242,20 @@ export function PricingSidebar(props: PricingSidebarProps) {
     .map((channel) => ({
       channel,
       count: countBy(
-        props.models,
+        props.facetModels.channel,
         (model) => model.channels?.includes(channel) ?? false
       ),
     }))
+    .filter(
+      ({ channel, count }) => count > 0 || channel === props.channelFilter
+    )
     .sort((a, b) => b.count - a.count || a.channel.localeCompare(b.channel))
+  if (
+    props.channelFilter !== FILTER_ALL &&
+    !channelCounts.some(({ channel }) => channel === props.channelFilter)
+  ) {
+    channelCounts.push({ channel: props.channelFilter, count: 0 })
+  }
   // 每个渠道都带一枚标识：优特/内部渠道用品牌 Logo，聚合渠道用合并图标；
   // 其余渠道按它承载模型的供应商图标推断（同名渠道取出现最多的供应商），
   // 没有供应商图标时退回通用渠道图标。图标尺寸统一为 14px，由 FilterChip
@@ -298,7 +318,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
       value: QUOTA_TYPES.TOKEN,
       label: quotaTypeLabels[QUOTA_TYPES.TOKEN],
       count: countBy(
-        props.models,
+        props.facetModels.quotaType,
         (model) => model.quota_type === 0 && !hasTaskUsageSchema(model)
       ),
     },
@@ -306,36 +326,58 @@ export function PricingSidebar(props: PricingSidebarProps) {
       value: QUOTA_TYPES.REQUEST,
       label: quotaTypeLabels[QUOTA_TYPES.REQUEST],
       count: countBy(
-        props.models,
+        props.facetModels.quotaType,
         (model) => model.quota_type === 1 && !hasTaskUsageSchema(model)
       ),
     },
     {
       value: QUOTA_TYPES.TASK,
       label: quotaTypeLabels[QUOTA_TYPES.TASK],
-      count: countBy(props.models, (model) => hasTaskUsageSchema(model)),
+      count: countBy(props.facetModels.quotaType, (model) =>
+        hasTaskUsageSchema(model)
+      ),
     },
-  ]
+  ].filter(
+    (option) => option.count > 0 || option.value === props.quotaTypeFilter
+  )
 
   const quotaOptions: FilterOption[] = [
     {
       value: QUOTA_TYPES.ALL,
       label: quotaTypeLabels[QUOTA_TYPES.ALL],
-      count: quotaTypeOptions.length,
+      count: quotaTypeOptions.filter(
+        (option) => option.value !== QUOTA_TYPES.ALL
+      ).length,
     },
     ...quotaTypeOptions,
   ]
 
+  const tagDisplay = new Map<string, string>()
+  for (const model of props.facetModels.tag) {
+    for (const tag of parseTags(model.tags)) {
+      const key = tag.toLowerCase()
+      if (!tagDisplay.has(key)) tagDisplay.set(key, key)
+    }
+  }
+  const facetTags = [...tagDisplay.values()].sort((a, b) =>
+    a.localeCompare(b)
+  )
+  const selectedTagKey =
+    props.tagFilter === FILTER_ALL ? '' : props.tagFilter.toLowerCase()
+  const tagNames =
+    !selectedTagKey || tagDisplay.has(selectedTagKey)
+      ? facetTags
+      : [...facetTags, props.tagFilter]
   const tagOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
       label: t('All Tags'),
-      count: props.tags.length,
+      count: tagNames.length,
     },
-    ...props.tags.map((tag) => ({
+    ...tagNames.map((tag) => ({
       value: tag,
       label: tag,
-      count: countBy(props.models, (model) =>
+      count: countBy(props.facetModels.tag, (model) =>
         parseTags(model.tags)
           .map((item) => item.toLowerCase())
           .includes(tag.toLowerCase())
@@ -349,10 +391,13 @@ export function PricingSidebar(props: PricingSidebarProps) {
       value,
       label,
       count: countBy(
-        props.models,
+        props.facetModels.endpointType,
         (model) => model.supported_endpoint_types?.includes(value) ?? false
       ),
     }))
+    .filter(
+      (option) => option.count > 0 || option.value === props.endpointTypeFilter
+    )
 
   const endpointOptions: FilterOption[] = [
     {

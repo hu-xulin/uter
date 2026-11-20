@@ -83,12 +83,91 @@ export function Pricing() {
     setViewMode,
     setShowRechargePrice,
     filteredModels,
+    facetModels,
     hasActiveFilters,
     activeFilterCount,
-    availableTags,
     clearFilters,
     clearSearch,
   } = useFilters(models || [])
+
+  // When a channel filter is active, show that channel's configured sale
+  // price and official basis instead of the cheapest price across channels.
+  const channelView = useMemo(() => {
+    if (channelFilter === FILTER_ALL) {
+      return { models: filteredModels, officialPrices }
+    }
+    const official = { ...officialPrices }
+    const models = filteredModels.map((model) => {
+      const channelPrice = model.channel_prices?.[channelFilter]
+      if (!channelPrice) {
+        if (model.channels?.includes(channelFilter)) {
+          return { ...model, channel_pricing_status: 'missing' }
+        }
+        return model
+      }
+      const merged = { ...model }
+      if (merged.channel_prices) delete merged.channel_prices
+      if (channelPrice.quota_type < 0) {
+        merged.channel_pricing_status = channelPrice.status ?? 'needs_review'
+        if (channelPrice.official_model_ratio) {
+          merged.model_ratio = channelPrice.official_model_ratio
+          merged.completion_ratio = channelPrice.official_completion_ratio ?? 1
+          merged.quota_type = 0
+        } else if (channelPrice.official_model_price) {
+          merged.model_price = channelPrice.official_model_price
+          merged.quota_type = 1
+        }
+      } else if (channelPrice.quota_type === 4) {
+        merged.billing_mode = 'tiered_expr'
+        merged.billing_expr = channelPrice.billing_expr ?? ''
+        merged.model_ratio = 0
+        merged.model_price = 0
+        merged.channel_internal_per_second_usd = undefined
+      } else if (channelPrice.quota_type === 2) {
+        merged.channel_internal_per_second_usd = channelPrice.per_second_usd
+      } else if (channelPrice.quota_type === 1) {
+        merged.quota_type = 1
+        merged.model_price = channelPrice.model_price ?? 0
+        merged.model_ratio = 0
+        merged.completion_ratio = 0
+        merged.channel_internal_per_second_usd = undefined
+      } else {
+        merged.quota_type = 0
+        merged.model_ratio = channelPrice.model_ratio ?? 0
+        merged.completion_ratio = channelPrice.completion_ratio ?? 1
+        merged.model_price = 0
+        merged.billing_expr = ''
+        merged.billing_mode = ''
+        merged.channel_internal_per_second_usd = undefined
+        merged.cache_ratio = channelPrice.cache_ratio || undefined
+        merged.create_cache_ratio = channelPrice.create_cache_ratio || undefined
+        merged.audio_ratio = channelPrice.audio_ratio || undefined
+        merged.audio_completion_ratio =
+          channelPrice.audio_completion_ratio || undefined
+      }
+      if (channelPrice.quota_type !== 4) {
+        official[model.model_name] = {
+          ...(channelPrice.official_model_ratio
+            ? {
+                model_ratio: channelPrice.official_model_ratio,
+                completion_ratio: channelPrice.official_completion_ratio,
+                cache_ratio: channelPrice.official_cache_ratio,
+              }
+            : {}),
+          ...(channelPrice.official_model_price
+            ? { model_price: channelPrice.official_model_price }
+            : {}),
+          ...(channelPrice.official_per_second_usd
+            ? {
+                official_price_per_second: channelPrice.official_per_second_usd,
+              }
+            : {}),
+        }
+      }
+      return merged
+    })
+    return { models, officialPrices: official }
+  }, [filteredModels, channelFilter, officialPrices])
 
   const handleModelClick = useCallback((modelName: string) => {
     setSelectedModelName(modelName)
@@ -97,11 +176,11 @@ export function Pricing() {
   const selectedModel = useMemo(
     () =>
       selectedModelName
-        ? (models || []).find(
+        ? channelView.models.find(
             (model) => model.model_name === selectedModelName
           ) || null
         : null,
-    [models, selectedModelName]
+    [channelView.models, selectedModelName]
   )
 
   // 渠道筛选的可选值来自目录里每个模型实际承载的启用渠道（管理-渠道的
@@ -128,7 +207,7 @@ export function Pricing() {
   }, [clearFilters, clearSearch])
 
   const renderPricingContent = () => {
-    if (filteredModels.length === 0) {
+    if (channelView.models.length === 0) {
       return (
         <EmptyState
           searchQuery={searchInput}
@@ -141,7 +220,7 @@ export function Pricing() {
     if (viewMode === VIEW_MODES.CARD) {
       return (
         <ModelCardGrid
-          models={filteredModels}
+          models={channelView.models}
           onModelClick={handleModelClick}
           priceRate={priceRate}
           usdExchangeRate={usdExchangeRate}
@@ -149,7 +228,7 @@ export function Pricing() {
           showRechargePrice={showRechargePrice}
           selectedGroup={FILTER_ALL}
           pricingSource={pricingSource}
-          officialPrices={officialPrices}
+          officialPrices={channelView.officialPrices}
           isSuperAdmin={isSuperAdmin}
         />
       )
@@ -157,14 +236,14 @@ export function Pricing() {
 
     return (
       <PricingTable
-        models={filteredModels}
+        models={channelView.models}
         priceRate={priceRate}
         usdExchangeRate={usdExchangeRate}
         tokenUnit={tokenUnit}
         showRechargePrice={showRechargePrice}
         selectedGroup={FILTER_ALL}
         pricingSource={pricingSource}
-        officialPrices={officialPrices}
+        officialPrices={channelView.officialPrices}
         isSuperAdmin={isSuperAdmin}
         onModelClick={handleModelClick}
       />
@@ -229,8 +308,8 @@ export function Pricing() {
               vendors={vendors || []}
               channels={availableChannels}
               channelTypes={channelTypes}
-              tags={availableTags}
               models={models || []}
+              facetModels={facetModels}
               hasActiveFilters={hasActiveFilters}
               onClearFilters={clearFilters}
               className='hover-scrollbar sticky top-20 hidden max-h-[calc(100dvh-6rem)] self-start overflow-y-auto xl:block'
@@ -261,8 +340,8 @@ export function Pricing() {
                 vendors={vendors || []}
                 channels={availableChannels}
                 channelTypes={channelTypes}
-                tags={availableTags}
-                models={models || []}
+                  models={models || []}
+                facetModels={facetModels}
                 hasActiveFilters={hasActiveFilters}
                 activeFilterCount={activeFilterCount}
                 onClearFilters={clearFilters}
@@ -293,7 +372,7 @@ export function Pricing() {
               tokenUnit={tokenUnit}
               showRechargePrice={showRechargePrice}
               pricingSource={pricingSource}
-              officialPrices={officialPrices}
+              officialPrices={channelView.officialPrices}
               isSuperAdmin={isSuperAdmin}
             />
           )}

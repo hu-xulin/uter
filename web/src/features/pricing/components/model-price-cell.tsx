@@ -143,6 +143,97 @@ export function ModelPriceCell(props: {
     unit: tokenUnitLabel,
   })
 
+  if (
+    props.model.channel_pricing_status &&
+    props.model.channel_pricing_status !== 'configured'
+  ) {
+    const statusLabel =
+      props.model.channel_pricing_status === 'missing'
+        ? t('Not listed upstream')
+        : t('Needs review')
+    const statusHint =
+      props.model.channel_pricing_status === 'missing'
+        ? t('The upstream catalog has no price for this model.')
+        : t('Pricing requires manual review')
+    const official = options.officialPrices?.[props.model.model_name]
+    const officialRatio = official?.model_ratio
+    const officialPrice = official?.model_price
+    const officialSecond = official?.official_price_per_second
+    let officialLabel = '—'
+    if (typeof officialRatio === 'number' && officialRatio > 0) {
+      const input = officialRatio * 2
+      const output = input * (official?.completion_ratio ?? 1)
+      officialLabel = `$${Number(input.toFixed(6))} / $${Number(output.toFixed(6))}`
+    } else if (typeof officialPrice === 'number') {
+      officialLabel = `$${Number(officialPrice.toFixed(6))}`
+    } else if (typeof officialSecond === 'number') {
+      officialLabel = t('{{price}} / second', {
+        price: `$${Number(officialSecond.toFixed(6))}`,
+      })
+    }
+    return (
+      <span className='block w-full max-w-full min-w-0 space-y-1'>
+        <span className='text-warning block text-sm font-semibold'>
+          {statusLabel}
+        </span>
+        <span className='text-muted-foreground block text-sm tabular-nums'>
+          {t('Official')}: {officialLabel}
+        </span>
+        <span className='text-muted-foreground block text-sm'>
+          {statusHint}
+        </span>
+      </span>
+    )
+  }
+  const perSecondPrice = props.model.channel_internal_per_second_usd
+  if (typeof perSecondPrice === 'number' && perSecondPrice > 0) {
+    const officialPerSecond =
+      options.officialPrices?.[props.model.model_name]?.[
+        'official_price_per_second'
+      ]
+    const perSecondDiscount =
+      typeof officialPerSecond === 'number' &&
+      officialPerSecond > 0 &&
+      perSecondPrice < officialPerSecond
+        ? Math.round((1 - perSecondPrice / officialPerSecond) * 100)
+        : 0
+    const perSecondMarkup = getMarkupMultiplier(
+      perSecondPrice,
+      officialPerSecond ?? Number.NaN
+    )
+    const fmt = (value: number) => `$${Number(value.toFixed(6))}`
+    return (
+      <span className='block w-full max-w-full min-w-0 space-y-1.5'>
+        <span className='grid grid-cols-2 gap-x-4 gap-y-1'>
+          <span className='text-muted-foreground text-sm'>
+            {t('Uter price')}
+          </span>
+          <span className='text-sm font-semibold tabular-nums'>
+            {t('{{price}} / second', { price: fmt(perSecondPrice) })}
+          </span>
+          <span className='text-muted-foreground text-sm'>{t('Official')}</span>
+          <span className='text-muted-foreground text-sm tabular-nums'>
+            {typeof officialPerSecond === 'number'
+              ? t('{{price}} / second', { price: fmt(officialPerSecond) })
+              : '—'}
+            {perSecondDiscount > 0 && (
+              <span className='text-success ml-1 font-bold'>
+                -{perSecondDiscount}%
+              </span>
+            )}
+            {perSecondMarkup != null && (
+              <span className='text-warning ml-1 font-bold'>
+                x{perSecondMarkup}
+              </span>
+            )}
+          </span>
+        </span>
+        <span className='text-muted-foreground block text-sm'>
+          {t('USD / second')}
+        </span>
+      </span>
+    )
+  }
   if (dynamic) {
     if (dynamic.isSpecialExpression) {
       return (

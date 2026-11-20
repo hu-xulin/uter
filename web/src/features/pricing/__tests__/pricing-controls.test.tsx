@@ -25,7 +25,17 @@ import {
   PricingToolbar,
   type PricingToolbarProps,
 } from '../components/pricing-toolbar'
-import type { PricingModel } from '../types'
+import type { PricingFacetModels, PricingModel } from '../types'
+
+function facetsOf(models: PricingModel[]): PricingFacetModels {
+  return {
+    channel: models,
+    vendor: models,
+    tag: models,
+    quotaType: models,
+    endpointType: models,
+  }
+}
 
 function toolbarProps(): PricingToolbarProps {
   return {
@@ -51,8 +61,8 @@ function toolbarProps(): PricingToolbarProps {
     onTagChange: vi.fn(),
     vendors: [],
     channels: ['优特渠道', '聚合渠道'],
-    tags: [],
     models: [],
+    facetModels: facetsOf([]),
     hasActiveFilters: false,
     activeFilterCount: 0,
     onClearFilters: vi.fn(),
@@ -102,7 +112,11 @@ describe('pricing controls', () => {
       tags: ['Chat', 'Image', 'Video'],
     }
     const { rerender } = render(
-      <PricingSidebar {...sidebarProps} models={models} />
+      <PricingSidebar
+        {...sidebarProps}
+        models={models}
+        facetModels={facetsOf(models)}
+      />
     )
 
     // 「所有厂商」统计的是**厂商数量**（2 个有模型的厂商），不是模型总数。
@@ -111,8 +125,7 @@ describe('pricing controls', () => {
     ).toBeVisible()
     expect(screen.getByRole('button', { name: /^Vendor A\s*2$/ })).toBeVisible()
     expect(screen.getByRole('button', { name: /^Vendor B\s*1$/ })).toBeVisible()
-    expect(screen.getByRole('button', { name: /^Chat\s*2$/ })).toBeVisible()
-    expect(screen.getByRole('button', { name: /^Chat\s*1$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: /^Chat\s*2$/i })).toBeVisible()
     expect(
       screen.getByRole('button', { name: /^Token-based\s*1$/ })
     ).toBeVisible()
@@ -123,21 +136,30 @@ describe('pricing controls', () => {
       screen.getByRole('button', { name: /^Task billing\s*1$/ })
     ).toBeVisible()
 
-    rerender(<PricingSidebar {...sidebarProps} models={[models[1]]} />)
+    rerender(
+      <PricingSidebar
+        {...sidebarProps}
+        models={[models[1]]}
+        facetModels={facetsOf([models[1]])}
+      />
+    )
     // 厂商数量随目录变化：Vendor B 已无模型，被移出列表，剩 1 个。
     expect(
       screen.getByRole('button', { name: /^All Vendors\s*1$/ })
     ).toBeVisible()
     expect(screen.getByRole('button', { name: /^Vendor A\s*1$/ })).toBeVisible()
     expect(screen.queryByRole('button', { name: /^Vendor B\s*1$/ })).toBeNull()
-    expect(screen.getByRole('button', { name: /^Chat\s*1$/ })).toBeVisible()
-    expect(screen.getByRole('button', { name: /^Chat\s*0$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: /^Chat\s*1$/i })).toBeVisible()
+    expect(screen.queryByRole('button', { name: /^Video/ })).toBeNull()
     expect(
-      screen.getByRole('button', { name: /^Token-based\s*0$/ })
+      screen.queryByRole('button', { name: /^Token-based/ })
+    ).toBeNull()
+    expect(
+      screen.getByRole('button', { name: /^Per Request\s*1$/ })
     ).toBeVisible()
     expect(
-      screen.getByRole('button', { name: /^Task billing\s*0$/ })
-    ).toBeVisible()
+      screen.queryByRole('button', { name: /^Task billing/ })
+    ).toBeNull()
   })
 
   // 「所有…」chip 的徽标统一表示该分区的**可选项数量**（渠道数、厂商数、
@@ -156,7 +178,28 @@ describe('pricing controls', () => {
       enable_groups: ['default'],
       tags: 'Chat',
       supported_endpoint_types: ['openai'],
+      channels: ['优特渠道', '聚合渠道'],
     }
+    const facetModels: PricingModel[] = [
+      base,
+      {
+        ...base,
+        id: 2,
+        quota_type: 1,
+        tags: 'Image',
+        supported_endpoint_types: ['image-generation'],
+        channels: ['共享渠道', '代理渠道'],
+      },
+      {
+        ...base,
+        id: 3,
+        vendor_name: 'Vendor B',
+        tags: 'Video',
+        supported_endpoint_types: ['openai-video'],
+        channels: ['内部渠道', '测试渠道'],
+        billing_usage_schema: { seconds: { type: 'number', unit: 'second' } },
+      },
+    ]
     render(
       <PricingSidebar
         {...props}
@@ -172,12 +215,8 @@ describe('pricing controls', () => {
           { id: 1, name: 'Vendor A' },
           { id: 2, name: 'Vendor B' },
         ]}
-        tags={['Chat', 'Image', 'Video', 'Reasoning']}
-        models={[
-          base,
-          { ...base, id: 2 },
-          { ...base, id: 3, vendor_name: 'Vendor B' },
-        ]}
+        models={facetModels}
+        facetModels={facetsOf(facetModels)}
       />
     )
 
@@ -189,16 +228,12 @@ describe('pricing controls', () => {
     expect(
       screen.getByRole('button', { name: /^All Vendors\s*2$/ })
     ).toBeVisible()
-    // 标签数
-    expect(screen.getByRole('button', { name: /^All Tags\s*4$/ })).toBeVisible()
-    // 计费类型数：按量 / 按次 / 任务计费共 3 种，标题也统一为「所有类型」。
+    // 标签数：目录里实际出现的 3 个标签
+    expect(screen.getByRole('button', { name: /^All Tags\s*3$/ })).toBeVisible()
+    // 计费类型与端点类型当前都只有 3 个可选项，两个分区各有一枚「所有类型」。
     expect(
-      screen.getByRole('button', { name: /^All Types\s*3$/ })
-    ).toBeVisible()
-    // 端点类型数
-    expect(
-      screen.getByRole('button', { name: /^All Types\s*8$/ })
-    ).toBeVisible()
+      screen.getAllByRole('button', { name: /^All Types\s*3$/ })
+    ).toHaveLength(2)
   })
 
   it('changes the token unit and keeps the selected unit pressed when clicked again', async () => {
@@ -260,7 +295,21 @@ describe('pricing controls', () => {
   })
 
   it('opens mobile filters from the left, selects a channel, and restores focus on close', async () => {
-    const props = toolbarProps()
+    const base: PricingModel = {
+      id: 1,
+      model_name: 'text-model',
+      vendor_name: 'Vendor A',
+      quota_type: 0,
+      model_ratio: 1,
+      completion_ratio: 1,
+      enable_groups: ['default'],
+      channels: ['优特渠道', '聚合渠道'],
+    }
+    const props = {
+      ...toolbarProps(),
+      models: [base],
+      facetModels: facetsOf([base]),
+    }
     const user = userEvent.setup()
     const { rerender } = render(<PricingToolbar {...props} />)
     await user.click(screen.getByRole('button', { name: 'Filter' }))
@@ -301,15 +350,17 @@ describe('pricing controls', () => {
       model_ratio: 1,
       completion_ratio: 1,
       enable_groups: ['default'],
-      tags: 'Chat',
+      tags: 'Chat,Image',
       supported_endpoint_types: ['openai'],
+      channels: ['优特渠道', '聚合渠道'],
     }
+    const stackModels = [base, { ...base, id: 2 }, { ...base, id: 3 }]
     render(
       <PricingSidebar
         {...props}
         vendors={[{ id: 1, name: 'Vendor A' }]}
-        tags={['Chat']}
-        models={[base, { ...base, id: 2 }, { ...base, id: 3 }]}
+        models={stackModels}
+        facetModels={facetsOf(stackModels)}
       />
     )
 
@@ -367,15 +418,15 @@ describe('pricing controls', () => {
       model_ratio: 1,
       completion_ratio: 1,
       enable_groups: ['default'],
-      channels: ['阿里百炼'],
+      channels: ['优特渠道', '阿里百炼', '未知渠道'],
     }
     render(
       <PricingSidebar
         {...props}
         channels={['优特渠道', '阿里百炼', '未知渠道']}
         vendors={[]}
-        tags={[]}
         models={[base]}
+        facetModels={facetsOf([base])}
       />
     )
 

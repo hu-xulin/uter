@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import {
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
@@ -28,6 +29,11 @@ import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Tooltip,
@@ -116,7 +122,7 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
     { id: 'pricing', label: t('Pricing') },
     { id: 'routing', label: t('Routing & Mapping') },
     { id: 'request', label: t('Request & Response') },
-    { id: 'review', label: t('Review & Other Settings') },
+    { id: 'review', label: t('Review') },
   ] as const
   const currentIndex = Math.max(
     0,
@@ -125,6 +131,9 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
   const previousSection = currentIndex > 0 ? sections[currentIndex - 1] : null
   const nextSection =
     currentIndex < sections.length - 1 ? sections[currentIndex + 1] : null
+  const errorSections = sections.filter(
+    (section) => props.statuses[section.id] === 'error'
+  )
 
   return (
     <Tabs
@@ -192,7 +201,9 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
               : 'grid-cols-1'
           )}
         >
-          <div className='flex min-w-0 flex-col gap-5'>{props.connection}</div>
+          <div className='flex max-w-4xl min-w-0 flex-col gap-5'>
+            {props.connection}
+          </div>
           {process.env.NODE_ENV === 'test' && props.section !== 'models' ? (
             <div className='flex min-w-0 flex-col gap-5'>
               {props.models}
@@ -245,7 +256,15 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
         {(props.section === 'review' || visited.has('review')) && (
           <>
             {props.review}
-            {props.other}
+            <Collapsible className='rounded-lg border'>
+              <CollapsibleTrigger className='hover:bg-muted/40 flex w-full items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm font-medium'>
+                <span>{t('Advanced settings')}</span>
+                <ChevronDown className='size-4' aria-hidden='true' />
+              </CollapsibleTrigger>
+              <CollapsibleContent className='border-t p-4'>
+                {props.other}
+              </CollapsibleContent>
+            </Collapsible>
           </>
         )}
       </TabsContent>
@@ -262,22 +281,43 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
           <ChevronLeft className='size-4' />
           {t('Previous')}
         </Button>
-        <span className='text-muted-foreground text-sm'>
-          {t('Step {{current}} of {{total}}', {
-            current: currentIndex + 1,
-            total: sections.length,
-          })}
-        </span>
-        <Button
-          type='button'
-          size='sm'
-          variant='outline'
-          disabled={!nextSection}
-          onClick={() => nextSection && props.onSectionChange(nextSection.id)}
-        >
-          {t('Next')}
-          <ChevronRight className='size-4' />
-        </Button>
+        <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm'>
+          <span className='text-muted-foreground'>
+            {t('Step {{current}} of {{total}}', {
+              current: currentIndex + 1,
+              total: sections.length,
+            })}
+          </span>
+          {errorSections.length > 0 && (
+            <Button
+              type='button'
+              variant='link'
+              size='sm'
+              className='text-destructive h-auto p-0'
+              onClick={() => props.onSectionChange(errorSections[0].id)}
+            >
+              {t('{{count}} section(s) need attention', {
+                count: errorSections.length,
+              })}
+            </Button>
+          )}
+        </div>
+        {nextSection ? (
+          <Button
+            type='button'
+            size='sm'
+            variant='outline'
+            onClick={() => props.onSectionChange(nextSection.id)}
+          >
+            {t('Next')}
+            <ChevronRight className='size-4' />
+          </Button>
+        ) : (
+          <span className='text-success inline-flex items-center gap-1.5 text-sm font-medium'>
+            <Check className='size-4' aria-hidden='true' />
+            {t('Ready to create')}
+          </span>
+        )}
       </div>
     </Tabs>
   )

@@ -108,6 +108,7 @@ const BILLING_UNIT_LABELS: Record<string, string> = {
   per_1m_token: 'Per 1M tokens',
   per_call: 'Per call',
   per_second: 'Per second',
+  per_minute: 'Per minute',
 }
 
 const PRICE_DIMENSIONS = [
@@ -117,7 +118,15 @@ const PRICE_DIMENSIONS = [
   { value: 'cache_write', label: 'Cache write' },
   { value: 'per_call', label: 'Per call' },
   { value: 'per_second', label: 'Per second' },
+  { value: 'per_minute', label: 'Per minute' },
 ] as const
+
+function scheduleNumberValid(text: string): boolean {
+  const trimmed = text.trim()
+  if (trimmed === '') return false
+  const value = Number(trimmed)
+  return Number.isFinite(value) && value >= 0
+}
 
 function diagnosticMessage(
   check: {
@@ -218,6 +227,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [creatingDraft, setCreatingDraft] = useState(false)
   const [schedule, setSchedule] =
     useState<ChannelPricingSchedule>(defaultSchedule)
+  // Numeric fields keep the typed text so a decimal point survives the
+  // keystroke that has no digits after it yet ("0." must not collapse to "0").
+  const [scheduleValueText, setScheduleValueText] = useState('0.6')
+  const [thresholdText, setThresholdText] = useState('20')
 
   const historyQuery = useQuery({
     queryKey: ['channel-pricing-history', props.channelId],
@@ -283,7 +296,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   })
   useEffect(() => {
     if (scheduleQuery.data?.schedule) {
-      setSchedule({ ...defaultSchedule, ...scheduleQuery.data.schedule })
+      const loaded = { ...defaultSchedule, ...scheduleQuery.data.schedule }
+      setSchedule(loaded)
+      setScheduleValueText(String(loaded.value))
+      setThresholdText(String(loaded.threshold_percent))
     }
   }, [scheduleQuery.data])
 
@@ -372,8 +388,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     mutationFn: () =>
       setChannelPricingSchedule(props.channelId ?? 0, {
         ...schedule,
-        basis: isBailian ? 'official' : schedule.basis,
-        value: Number(schedule.value),
+        basis: isBailian ? 'channel' : schedule.basis,
+        value: Number(scheduleValueText),
+        threshold_percent: Number(thresholdText),
         interval_minutes: 5,
       }),
     onSuccess: () => {
@@ -450,6 +467,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const isBailian =
     normalizedBaseUrl.includes('.maas.aliyuncs.com') ||
     normalizedBaseUrl.includes('dashscope')
+  useEffect(() => {
+    if (isBailian) setBasis('channel')
+  }, [isBailian])
   let capabilityLabel = 'Manual pricing required'
   if (isDreamRouter) capabilityLabel = 'Ratio-only upstream prices'
   else if (isBailian) capabilityLabel = 'Automatic official prices'
@@ -558,7 +578,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         <div className='bg-muted/20 flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm'>
           <span className='text-muted-foreground'>
             {t(
-              'Save the channel first to sync upstream prices and configure batch pricing.'
+              'Create a draft channel to configure pricing before final creation. The draft stays disabled until you finish.'
             )}
           </span>
           {props.onCreateDraft ? (
@@ -581,9 +601,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 }
               }}
             >
-              {creatingDraft
-                ? t('Creating...')
-                : t('Generate draft channel ID')}
+              {creatingDraft ? t('Creating...') : t('Create draft channel')}
             </Button>
           ) : null}
         </div>
@@ -652,7 +670,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='official'>{t('Official price')}</SelectItem>
+                <SelectItem value='official' disabled={isBailian}>
+                  {t('Official price')}
+                </SelectItem>
                 <SelectItem value='channel'>{t('Channel price')}</SelectItem>
                 <SelectItem value='current'>
                   {t('Current channel price')}
@@ -1042,6 +1062,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                       if (item.per_second_usd != null) {
                         parts.push(`${t('Per second')} $${item.per_second_usd}`)
                       }
+                      if (item.per_minute_usd != null) {
+                        parts.push(`${t('Per minute')} $${item.per_minute_usd}`)
+                      }
                       return (
                         <tr
                           key={item.model_name}
@@ -1119,12 +1142,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 { value: 'official', label: t('Official price') },
                 { value: 'channel', label: t('Channel price') },
               ]}
-              value={isBailian ? 'official' : schedule.basis}
+              value={isBailian ? 'channel' : schedule.basis}
               disabled={isBailian}
               onValueChange={(value) =>
                 setSchedule((current) => ({
                   ...current,
-                  basis: value === 'channel' ? 'channel' : 'official',
+                  basis:
+                    value === 'official' && !isBailian ? 'official' : 'channel',
                 }))
               }
             >
@@ -1132,13 +1156,15 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value='official'>{t('Official price')}</SelectItem>
+                <SelectItem value='official' disabled={isBailian}>
+                  {t('Official price')}
+                </SelectItem>
                 <SelectItem value='channel'>{t('Channel price')}</SelectItem>
               </SelectContent>
             </Select>
             <p className='text-muted-foreground text-sm'>
               {isBailian
-                ? t('Bailian schedules always use official catalog prices.')
+                ? t('Bailian schedules always use channel catalog prices.')
                 : t('Price basis hint')}
             </p>
           </div>
@@ -1176,13 +1202,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Input
               id='schedule-value'
               inputMode='decimal'
-              value={String(schedule.value)}
-              onChange={(event) =>
-                setSchedule((current) => ({
-                  ...current,
-                  value: Number(event.target.value),
-                }))
-              }
+              value={scheduleValueText}
+              onChange={(event) => setScheduleValueText(event.target.value)}
               placeholder='0.6'
               disabled={schedule.mode === 'none'}
             />
@@ -1227,13 +1248,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Input
               id='schedule-threshold'
               inputMode='decimal'
-              value={String(schedule.threshold_percent)}
-              onChange={(event) =>
-                setSchedule((current) => ({
-                  ...current,
-                  threshold_percent: Number(event.target.value),
-                }))
-              }
+              value={thresholdText}
+              onChange={(event) => setThresholdText(event.target.value)}
               placeholder='20'
             />
             <p className='text-muted-foreground text-sm'>
@@ -1311,7 +1327,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               variant='outline'
               disabled={
                 disabled ||
-                (schedule.mode !== 'none' && schedule.value < 0) ||
+                !scheduleNumberValid(scheduleValueText) ||
+                !scheduleNumberValid(thresholdText) ||
                 saveSchedule.isPending
               }
               onClick={() => saveSchedule.mutate()}

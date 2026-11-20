@@ -31,7 +31,7 @@ import {
   type ViewMode,
   CONTEXT_SIZE_TAG_PATTERN,
 } from '../constants'
-import { filterAndSortModels, extractAllTags } from '../lib/filters'
+import { buildFacetModels, filterAndSortModels } from '../lib/filters'
 import type { PricingModel, TokenUnit } from '../types'
 
 type FilterState = {
@@ -147,10 +147,29 @@ export function useFilters(models: PricingModel[]) {
     [updateFilters]
   )
 
-  const availableTags = useMemo(() => {
-    if (!models || models.length === 0) return []
-    return extractAllTags(models)
-  }, [models])
+  // Faceted options: each section is computed with every other active filter
+  // applied, but its own filter reset. Selecting a channel therefore narrows
+  // vendors/tags/pricing types/endpoints to what that channel actually serves.
+  const facetModels = useMemo(
+    () =>
+      buildFacetModels(models, {
+        search: debouncedSearchInput,
+        vendor: vendorFilter,
+        channel: channelFilter,
+        quotaType: quotaTypeFilter,
+        endpointType: endpointTypeFilter,
+        tag: tagFilter,
+      }),
+    [
+      models,
+      debouncedSearchInput,
+      vendorFilter,
+      channelFilter,
+      quotaTypeFilter,
+      endpointTypeFilter,
+      tagFilter,
+    ]
+  )
 
   const filteredModels = useMemo(() => {
     if (!models || models.length === 0) return []
@@ -243,9 +262,9 @@ export function useFilters(models: PricingModel[]) {
     setViewMode,
     setShowRechargePrice,
     filteredModels,
+    facetModels,
     hasActiveFilters,
     activeFilterCount,
-    availableTags,
     clearFilters,
     clearSearch,
   }

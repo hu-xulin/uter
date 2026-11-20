@@ -80,7 +80,7 @@ type BailianChannelPanelProps = {
  *
  * The Base URL is composed from region + workspace so the channel stores one
  * auditable endpoint. The sync panel only reports reference data: applying the
- * official catalog fills blank metadata and never writes billing prices.
+ * channel catalog fills blank metadata and never overwrites the Uter sale price.
  */
 export function BailianChannelPanel(props: BailianChannelPanelProps) {
   const { t } = useTranslation()
@@ -107,11 +107,11 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
   const refresh = useMutation({
     mutationFn: () => refreshBailianCatalog(props.channelId ?? 0),
     onSuccess: () => {
-      toast.success(t('Official catalog synchronized'))
+      toast.success(t('Channel catalog synchronized'))
       void queryClient.invalidateQueries({ queryKey: ['bailian-sync-status'] })
     },
     onError: (error) =>
-      handleServerError(error, t('Failed to sync official catalog')),
+      handleServerError(error, t('Failed to sync channel catalog')),
   })
 
   const apply = useMutation({
@@ -165,7 +165,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
             'Release date',
             'Input modalities',
             'Output modalities',
-            'Reference prices',
+            'Channel prices',
           ].map((field) => (
             <Badge key={field} variant='outline' className='font-normal'>
               {t(field)}
@@ -222,7 +222,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               <RefreshCw
                 className={cn('size-4', refresh.isPending && 'animate-spin')}
               />
-              {t('Sync official catalog')}
+              {t('Sync channel catalog')}
             </Button>
             <Button
               type='button'
@@ -279,7 +279,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               {t('Matched models')}: {status?.matched_models ?? 0}
             </span>
             <span>
-              {t('Reference prices')}: {status?.reference_prices ?? 0}
+              {t('Channel prices')}: {status?.reference_prices ?? 0}
             </span>
             <span>
               {t('Metadata created')}: {status?.metadata_created ?? 0}

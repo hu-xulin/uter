@@ -66,6 +66,26 @@ export type BillingPluginVariant = {
   billing_usage_examples?: BillingUsageExample[]
 }
 
+export type PricingChannelPrice = {
+  name: string
+  model_ratio?: number
+  completion_ratio?: number
+  model_price?: number
+  per_second_usd?: number
+  billing_expr?: string
+  cache_ratio?: number
+  create_cache_ratio?: number
+  audio_ratio?: number
+  audio_completion_ratio?: number
+  status?: string
+  official_model_ratio?: number
+  official_completion_ratio?: number
+  official_cache_ratio?: number
+  official_model_price?: number
+  official_per_second_usd?: number
+  quota_type: number
+}
+
 export type PricingModel = {
   billing_plugin_variants?: BillingPluginVariant[]
   id: number
@@ -105,6 +125,14 @@ export type PricingModel = {
   billing_mode?: string
   /** Raw expression describing dynamic / tiered billing */
   billing_expr?: string
+  /** Channel-configured per-second sale price (media/task models). */
+  channel_internal_per_second_usd?: number
+  /** Same channel's official per-second list price for comparison. */
+  channel_official_per_second_usd?: number
+  /** Per-channel configured sale prices keyed by channel display name. */
+  channel_prices?: Record<string, PricingChannelPrice>
+  /** When the selected channel has a price row that is not billable. */
+  channel_pricing_status?: string
   /** Task-plugin usage facts and their billing units. */
   billing_usage_schema?: BillingUsageSchema
   /** Display-only labeled usage vectors for pricing examples. */
@@ -142,6 +170,15 @@ export type ModelCapability =
   | 'code_interpreter'
   | 'caching'
   | 'embeddings'
+
+/** Per-section model sets used to build faceted filter options. */
+export type PricingFacetModels = {
+  channel: PricingModel[]
+  vendor: PricingModel[]
+  tag: PricingModel[]
+  quotaType: PricingModel[]
+  endpointType: PricingModel[]
+}
 
 export type PricingChannel = {
   name: string

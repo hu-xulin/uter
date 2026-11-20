@@ -494,6 +494,7 @@ export function ChannelMutateDrawer({
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
     useState<ChannelConfigurationSection>('connection')
+  const [showDraftPricing, setShowDraftPricing] = useState(false)
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
     null
   )
@@ -920,6 +921,7 @@ export function ChannelMutateDrawer({
       }
       setProviderTarget(target)
       setChoosingProvider(false)
+      setShowDraftPricing(false)
     },
     [
       canBindTaskPlugin,
@@ -1097,6 +1099,7 @@ export function ChannelMutateDrawer({
       setProviderTarget(null)
       setChoosingProvider(true)
       setConfigurationSection('connection')
+      setShowDraftPricing(false)
       setPendingErrorFocus(null)
       return
     }
@@ -1125,6 +1128,7 @@ export function ChannelMutateDrawer({
         setModelConfiguration(null)
         setChoosingProvider(false)
         setConfigurationSection('connection')
+        setShowDraftPricing(false)
         setPendingErrorFocus(null)
       }
       // Store initial values for comparison
@@ -5030,18 +5034,28 @@ export function ChannelMutateDrawer({
 
   const reviewSection = (
     <div className='space-y-4'>
-      <div>
-        <p className='font-medium'>{t('Review')}</p>
-        <p className='text-muted-foreground text-sm'>
-          {t('Review the configuration before creating the channel.')}
-        </p>
+      <div className='flex flex-wrap items-start justify-between gap-3'>
+        <div>
+          <p className='font-medium'>{t('Review')}</p>
+          <p className='text-muted-foreground text-sm'>
+            {t('Review the configuration before creating the channel.')}
+          </p>
+        </div>
+        <Button
+          type='button'
+          variant='outline'
+          size='sm'
+          onClick={() => setConfigurationSection('pricing')}
+        >
+          {t('Open pricing')}
+        </Button>
       </div>
       <dl className='overflow-hidden rounded-lg border'>
         {reviewRows.map((row, index) => (
           <div
             key={row.label}
             className={cn(
-              'flex items-start justify-between gap-4 px-4 py-3 text-sm',
+              'flex items-start justify-between gap-4 px-4 py-2.5 text-sm',
               index > 0 && 'border-t'
             )}
           >
@@ -5052,14 +5066,6 @@ export function ChannelMutateDrawer({
           </div>
         ))}
       </dl>
-      <Button
-        type='button'
-        variant='outline'
-        size='sm'
-        onClick={() => setConfigurationSection('pricing')}
-      >
-        {t('Open pricing')}
-      </Button>
     </div>
   )
 
@@ -5101,11 +5107,30 @@ export function ChannelMutateDrawer({
         }
         models={modelsSection}
         pricing={
-          <ChannelPricingPanel
-            channelId={effectiveChannelId}
-            baseUrl={form.watch('base_url') ?? ''}
-            onCreateDraft={isEditing ? undefined : createDraftChannel}
-          />
+          effectiveChannelId || showDraftPricing ? (
+            <ChannelPricingPanel
+              channelId={effectiveChannelId}
+              baseUrl={form.watch('base_url') ?? ''}
+              onCreateDraft={isEditing ? undefined : createDraftChannel}
+            />
+          ) : (
+            <div className='space-y-3 rounded-lg border p-4'>
+              <p className='font-medium'>{t('Pricing is optional')}</p>
+              <p className='text-muted-foreground text-sm'>
+                {t(
+                  'Create the channel first, then configure official and internal sale prices in the channel pricing tab.'
+                )}
+              </p>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                onClick={() => setShowDraftPricing(true)}
+              >
+                {t('Configure pricing now')}
+              </Button>
+            </div>
+          )
         }
         quickOptions={
           viewportWide ? null : (
@@ -5340,8 +5365,8 @@ export function ChannelMutateDrawer({
                   </Button>
                 )}
               </div>
-              <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-                <div className='flex min-w-0 flex-wrap items-center gap-2 sm:flex-1'>
+              <div className='flex flex-col gap-2.5'>
+                <div className='flex min-w-0 flex-wrap items-center gap-2'>
                   {isEditing && channelData?.data && (
                     <Badge variant='secondary' className='shrink-0'>
                       {t(
@@ -5353,6 +5378,7 @@ export function ChannelMutateDrawer({
                   )}
                   <SheetDescription
                     className={cn(
+                      'max-w-3xl',
                       showProviderPicker && providerTarget && 'truncate'
                     )}
                     title={
@@ -5368,15 +5394,20 @@ export function ChannelMutateDrawer({
                   !showProviderPicker &&
                   !channelError &&
                   !isChannelDetailLoading && (
-                    <ChannelQuickOptions
-                      form={form}
-                      layout='inline'
-                      channelType={currentType}
-                      sensitiveLocked={sensitiveLocked}
-                      disabled={isSubmitting}
-                      className='sm:justify-end'
-                      confirmEnablePassthrough={confirmEnablePassthrough}
-                    />
+                    <div className='flex flex-col gap-1.5 border-t pt-2'>
+                      <span className='text-muted-foreground text-xs font-medium'>
+                        {t('Quick options')}
+                      </span>
+                      <ChannelQuickOptions
+                        form={form}
+                        layout='inline'
+                        channelType={currentType}
+                        sensitiveLocked={sensitiveLocked}
+                        disabled={isSubmitting}
+                        className='justify-start'
+                        confirmEnablePassthrough={confirmEnablePassthrough}
+                      />
+                    </div>
                   )}
               </div>
             </div>

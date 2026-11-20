@@ -46,7 +46,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 
 import { getSortLabels, type SortOption, type ViewMode } from '../constants'
-import type { PricingModel, PricingVendor, TokenUnit } from '../types'
+import type {
+  PricingFacetModels,
+  PricingModel,
+  PricingVendor,
+  TokenUnit,
+} from '../types'
 import { PricingSidebar } from './pricing-sidebar'
 
 // 选中态配色对齐「卡片/表格视图」切换按钮（Button variant='default' = bg-primary）。
@@ -88,8 +93,8 @@ export interface PricingToolbarProps {
   vendors: PricingVendor[]
   channels: string[]
   channelTypes?: Record<string, number>
-  tags: string[]
   models: PricingModel[]
+  facetModels: PricingFacetModels
   hasActiveFilters: boolean
   activeFilterCount: number
   onClearFilters: () => void
@@ -253,8 +258,8 @@ export function PricingToolbar(props: PricingToolbarProps) {
               vendors={props.vendors}
               channels={props.channels}
               channelTypes={props.channelTypes ?? {}}
-              tags={props.tags}
               models={props.models}
+              facetModels={props.facetModels}
               hasActiveFilters={props.hasActiveFilters}
               onClearFilters={props.onClearFilters}
               className='border-0 bg-transparent p-0 shadow-none'

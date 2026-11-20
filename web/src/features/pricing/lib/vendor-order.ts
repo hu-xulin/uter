@@ -48,13 +48,16 @@ export type OrderedVendor = {
  */
 export function orderVendorsByModelCount(
   models: PricingModel[],
-  vendors: PricingVendor[]
+  vendors: PricingVendor[],
+  preferBackendCounts = true
 ): OrderedVendor[] {
   // 后端口径（管理页同款）的关联模型数，按供应商名索引。
   const backendCounts = new Map<string, number>()
-  for (const vendor of vendors) {
-    if (typeof vendor.model_count === 'number' && vendor.model_count > 0) {
-      backendCounts.set(vendor.name, vendor.model_count)
+  if (preferBackendCounts) {
+    for (const vendor of vendors) {
+      if (typeof vendor.model_count === 'number' && vendor.model_count > 0) {
+        backendCounts.set(vendor.name, vendor.model_count)
+      }
     }
   }
 

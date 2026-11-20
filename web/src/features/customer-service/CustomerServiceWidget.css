@@ -22,6 +22,15 @@ For commercial licensing, please contact support@uter.ai
    原本散落在组件里的内联 style 已集中到此文件，减少内联样式数量、便于审计与维护。
    唯一保留内联的是 BotIcon 的 SVG `fill`（品牌色跟随主题，var() 注入）。 */
 
+/* A sheet/dialog footer owns the bottom-right corner while it is open; the
+   floating support entry must not cover its primary action. */
+body:has([data-slot='sheet-content'][data-open]) .cs-fab,
+body:has([data-slot='sheet-content'][data-open]) .cs-panel,
+body:has([data-slot='dialog-content'][data-open]) .cs-fab,
+body:has([data-slot='dialog-content'][data-open]) .cs-panel {
+  display: none;
+}
+
 .cs-fab {
   position: fixed;
   right: 20px;
