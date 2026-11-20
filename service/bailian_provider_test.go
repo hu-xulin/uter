@@ -243,6 +243,66 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	assert.Equal(t, int64(128*1024), normalized.ChannelPriceTiers[1].MaxInputTokens)
 }
 
+func TestBailianTTSUnitsBecomeExecutablePrices(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 7.3
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	price := func(unit string) []BailianPriceRange {
+		return []BailianPriceRange{{
+			RangeName: "Default",
+			Prices: []BailianPrice{{
+				Type: "cosy_tts_number", Price: "7.3", PriceUnit: unit, TimeBand: "standard",
+			}},
+		}}
+	}
+	catalog := &BailianCatalog{
+		ChannelID: 7,
+		Region:    BailianRegionBeijing,
+		FetchedAt: time.Now(),
+		Models: []BailianModel{
+			{Model: "tts-per-10k-chars", Prices: price("每万字符")},
+			{Model: "tts-per-call", Prices: price("每次")},
+		},
+	}
+	records := BailianPricingRecords(catalog, []string{"tts-per-10k-chars", "tts-per-call"})
+	require.Len(t, records, 2)
+
+	var chars model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &chars))
+	require.Len(t, chars.Tiers, 1)
+	require.NotNil(t, chars.Tiers[0].InputPerMillionUSD)
+	assert.InDelta(t, 100, *chars.Tiers[0].InputPerMillionUSD, 1e-9, "one character bills as one token, so 1 USD per 10k chars is 100 USD per 1M")
+	assert.Equal(t, "per_1m_tokens", chars.Tiers[0].Unit)
+	assert.False(t, chars.NeedsReview)
+
+	var call model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[1].NormalizedPricing, &call))
+	require.Len(t, call.Tiers, 1)
+	require.NotNil(t, call.Tiers[0].PerUnitUSD)
+	assert.InDelta(t, 1, *call.Tiers[0].PerUnitUSD, 1e-9)
+	assert.Equal(t, "per_call", call.Tiers[0].Unit)
+	assert.False(t, call.NeedsReview)
+
+	internal := bailianInternalPricing(chars)
+	require.NotEmpty(t, internal)
+	assert.Contains(t, internal, `"mode":"per_1m_token"`)
+	internal = bailianInternalPricing(call)
+	require.NotEmpty(t, internal)
+	assert.Contains(t, internal, `"mode":"per_call"`)
+}
+
+func TestBailianInternalPricingRejectsConflictingPerCallPrices(t *testing.T) {
+	two := 2.0
+	normalized := model.ChannelOfficialPricing{
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName: "Default", Unit: "per_call", PerUnitUSD: &two,
+		}},
+		ReviewReasons: []string{"multiple per-call prices"},
+	}
+	assert.Empty(t, bailianInternalPricing(normalized))
+}
+
 func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
 	setupBatchPricingDB(t)
 	input, output := 3.0, 6.0

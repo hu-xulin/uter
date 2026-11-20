@@ -188,6 +188,10 @@ func normalizeBailianPriceUnit(raw string) (string, bool) {
 		return "per_second", true
 	case "每分钟", "per minute":
 		return "per_minute", true
+	case "每次", "per call", "per request":
+		return "per_call", true
+	case "每万字符", "per 10k characters", "per 10k chars":
+		return "per_10k_chars", true
 	default:
 		return "", false
 	}
@@ -436,12 +440,20 @@ func resolveBailianCatalogAlias(name string, byName map[string]BailianModel) (Ba
 var bailianVersionSuffixPattern = regexp.MustCompile(`^(.+?)-\d{4}(?:-\d{2}){0,2}$`)
 
 // bailianInternalPricing builds the channel's default sale price from the
-// Bailian channel catalog quote. A single
-// executable tier becomes a flat price; multiple token tiers become a tiered
-// billing expression so context-length pricing is preserved instead of being
-// flattened. Shapes that cannot be represented (audio dimensions, per-character
-// units, multiple time bands) return "" and stay review-only.
+// Bailian official catalog price. A single executable tier becomes a flat
+// price; multiple token tiers become a tiered billing expression so
+// context-length pricing is preserved instead of being flattened. Per-character
+// TTS prices are already normalized to per-1M-token. Shapes that cannot be
+// represented (separate audio dimensions, conflicting per-call prices, multiple
+// time bands) return "" and stay review-only.
 func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
+	// Conflicting per-call prices cannot be flattened without charging one of
+	// them wrongly; leave the row to operator review.
+	for _, reason := range normalized.ReviewReasons {
+		if reason == "multiple per-call prices" {
+			return ""
+		}
+	}
 	tiers := normalized.ChannelPriceTiers
 	if len(tiers) == 0 && normalized.ChannelPrice != nil {
 		tiers = []model.ChannelPricingTier{*normalized.ChannelPrice}
@@ -665,7 +677,32 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				tier.CachePerMillionUSD = &usd
 			case strings.Contains(priceType, "cache") && strings.Contains(priceType, "read"):
 				tier.CachePerMillionUSD = &usd
-			case normalizedUnit == "per_image" || normalizedUnit == "per_second" || normalizedUnit == "per_minute":
+			// TTS models publish one price per synthesis call or per ten thousand
+			// characters. The relay bills TTS usage as tokens where one character
+			// is one token (the usage_characters convention), so a per-10k-character
+			// price becomes a per-1M-token price. Two different per-call prices on
+			// one model stay review-only instead of silently picking one.
+			case priceType == "cosy_tts_number" || priceType == "tts_vc_model":
+				switch normalizedUnit {
+				case "per_call":
+					if tier.PerUnitUSD != nil && *tier.PerUnitUSD != usd {
+						result.ReviewReasons = append(result.ReviewReasons, "multiple per-call prices")
+					}
+					tier.PerUnitUSD = &usd
+					tier.Unit = "per_call"
+					result.Unit = "per_call"
+				case "per_10k_chars":
+					perMillion := usd * 100
+					tier.InputPerMillionUSD = &perMillion
+					tier.Unit = "per_1m_tokens"
+					result.Unit = "per_1m_token"
+				default:
+					unknownTypes[priceType] = true
+				}
+			case normalizedUnit == "per_image" || normalizedUnit == "per_second" || normalizedUnit == "per_minute" || normalizedUnit == "per_call":
+				if tier.PerUnitUSD != nil && *tier.PerUnitUSD != usd {
+					result.ReviewReasons = append(result.ReviewReasons, "multiple per-call prices")
+				}
 				tier.PerUnitUSD = &usd
 				result.Unit = normalizedUnit
 			default:
