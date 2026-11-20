@@ -251,6 +251,16 @@ export function ChannelModelPricingSection(
                 <Badge variant={statusVariant(item.pricing_status)}>
                   {t(item.pricing_status)}
                 </Badge>
+                {item.stale ? (
+                  <Badge
+                    variant='warning'
+                    title={t('Last fetched {{hours}} hours ago', {
+                      hours: item.fetched_age_hours,
+                    })}
+                  >
+                    {t('Stale price')}
+                  </Badge>
+                ) : null}
                 {item.price_shape && !item.price_supported ? (
                   <Badge variant='warning'>
                     {t('Unsupported price shape')}: {item.price_shape}

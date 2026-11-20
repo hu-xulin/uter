@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "Leave all unchecked to apply to every dimension.",
     "Price coverage": "Price coverage",
     "Sync cadence": "Sync cadence",
-    "Deployment": "Deployment"
+    "Deployment": "Deployment",
+    "Stale price": "Stale price",
+    "Last fetched {{hours}} hours ago": "Last fetched {{hours}} hours ago"
   }
 }

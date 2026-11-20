@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "Để trống tất cả để áp dụng cho mọi chiều giá.",
     "Price coverage": "Phạm vi giá",
     "Sync cadence": "Tần suất đồng bộ",
-    "Deployment": "Triển khai"
+    "Deployment": "Triển khai",
+    "Stale price": "Giá đã cũ",
+    "Last fetched {{hours}} hours ago": "Lần lấy gần nhất {{hours}} giờ trước"
   }
 }

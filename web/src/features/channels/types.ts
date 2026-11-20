@@ -309,6 +309,8 @@ export interface ChannelModelPricingRecord {
   price_supported: boolean
   fetched_at: number
   updated_at: number
+  stale: boolean
+  fetched_age_hours: number
   official?: ChannelOfficialPricingView
   upstream_quote?: ChannelUpstreamQuoteView
   internal?: ChannelInternalPricingView

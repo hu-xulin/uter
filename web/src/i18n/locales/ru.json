@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "Оставьте всё неотмеченным, чтобы применить ко всем измерениям.",
     "Price coverage": "Покрытие цен",
     "Sync cadence": "Частота синхронизации",
-    "Deployment": "Развёртывание"
+    "Deployment": "Развёртывание",
+    "Stale price": "Устаревшая цена",
+    "Last fetched {{hours}} hours ago": "Последнее получение {{hours}} ч назад"
   }
 }

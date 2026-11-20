@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "全部不勾选时应用于所有维度。",
     "Price coverage": "价格覆盖",
     "Sync cadence": "同步频率",
-    "Deployment": "部署"
+    "Deployment": "部署",
+    "Stale price": "价格已过期",
+    "Last fetched {{hours}} hours ago": "最近抓取于 {{hours}} 小时前"
   }
 }

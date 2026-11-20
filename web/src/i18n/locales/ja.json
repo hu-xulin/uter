@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "すべて未選択の場合、すべての次元に適用されます。",
     "Price coverage": "価格カバレッジ",
     "Sync cadence": "同期頻度",
-    "Deployment": "デプロイメント"
+    "Deployment": "デプロイメント",
+    "Stale price": "価格が古い",
+    "Last fetched {{hours}} hours ago": "最終取得は {{hours}} 時間前"
   }
 }

@@ -8399,6 +8399,8 @@
     "Leave all unchecked to apply to every dimension.": "Laissez tout décoché pour appliquer à toutes les dimensions.",
     "Price coverage": "Couverture tarifaire",
     "Sync cadence": "Fréquence de synchronisation",
-    "Deployment": "Déploiement"
+    "Deployment": "Déploiement",
+    "Stale price": "Prix obsolète",
+    "Last fetched {{hours}} hours ago": "Dernière récupération il y a {{hours}} heures"
   }
 }
