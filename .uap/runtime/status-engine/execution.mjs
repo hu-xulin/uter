@@ -87,6 +87,15 @@ const GENERATED_FRONTEND_BUILD = Object.freeze([
   'web/public/sitemap.xml',
 ]);
 
+// Playwright reporters write machine-readable and HTML diagnostics outside .uap/reports.
+// They are verification outputs, not source; the parsed, hash-bound UAP report remains
+// the authoritative evidence. Keep visual baseline snapshots themselves fingerprint-bound.
+const GENERATED_PLAYWRIGHT_REPORTS = Object.freeze([
+  'web/.visual-e2e/report', 'web/.visual-e2e/report.json',
+  'web/.axe-e2e/report', 'web/.axe-e2e/report.json',
+  'web/.business-e2e/report', 'web/.business-e2e/report.json',
+]);
+
 // UDS 8.0.0 is a code-generation subsystem: registry/build.mjs derives the token
 // manifest, runtime CSS/TS, the eight registries, every specification document,
 // the showcase, the public copies, the semantic bridge and the chart palette
@@ -151,6 +160,7 @@ const VOLATILE_PREFIXES = Object.freeze([
   'tsgo-cache/', 'tsgo-cache',
   ...GENERATED_AUDIT_REPORTS,
   ...GENERATED_FRONTEND_BUILD,
+  ...GENERATED_PLAYWRIGHT_REPORTS.map((p) => p.endsWith('.json') ? p : `${p}/`),
   ...GENERATED_UDS_OUTPUTS,
 ]);
 
@@ -163,10 +173,11 @@ const DIFF_EXCLUDES = Object.freeze([
   ':(exclude)tsgo-cache',
   ...GENERATED_AUDIT_REPORTS.map((f) => `:(exclude)${f}`),
   ...GENERATED_FRONTEND_BUILD.map((f) => `:(exclude)${f}`),
+  ...GENERATED_PLAYWRIGHT_REPORTS.map((f) => `:(exclude)${f}`),
   ...GENERATED_UDS_OUTPUTS.map((f) => `:(exclude)${f}`),
 ]);
 
-function isVolatile(file) {
+export function isVolatileWorktreePath(file) {
   return VOLATILE_PREFIXES.some((p) => file === p || file.startsWith(p));
 }
 
@@ -223,7 +234,7 @@ export function worktreeFingerprint() {
   const out = git(['status', '--porcelain=v1', '--untracked-files=all'], { trim: false });
   if (out === null || head === null) return null;
   const lines = out.split('\n').map((l) => l.trimEnd()).filter(Boolean)
-    .filter((line) => !isVolatile(line.slice(3).split(' -> ').pop()))
+    .filter((line) => !isVolatileWorktreePath(line.slice(3).split(' -> ').pop()))
     .sort();
 
   const unstaged = git(['diff', '--binary', '--', '.', ...DIFF_EXCLUDES], { trim: false });
@@ -256,9 +267,10 @@ export function fingerprintBasis() {
   return {
     algorithm: 'sha256(sorted( head + status-lines + sha256(git diff --binary) + sha256(git diff --cached --binary) + sha256(untracked file bytes base64) ))',
     excludes: [...VOLATILE_PREFIXES],
+    diff_excludes: [...DIFF_EXCLUDES],
     includes_untracked_files: true,
     includes_file_content: true,
-    note: 'runtime artefacts (.uap/state, .uap/reports, .uap/evidence), the generated SPECIFICATION-INDEX.md, the tsgo-cache build cache, the generated frontend build outputs (web/public/docs-search, sitemap.xml), the generated design-system audit/*.json reports and the UDS 8.0.0 code-generation outputs (runtime/, registries, specification docs, SHOWCASE, public copies, semantic bridge, chart palette, visual-regression/uds8 run logs+screenshots) are excluded; all SOURCE remains bound (registry/*.mjs, component-registry.json, the frozen VISUAL-BASELINE.json, audit/baseline|vscode source). Generated-vs-source consistency is enforced by check-design-system-8.0.0.mjs',
+    note: 'runtime artefacts (.uap/state, .uap/reports, .uap/evidence), the generated SPECIFICATION-INDEX.md, the tsgo-cache build cache, the generated frontend build outputs (web/public/docs-search, sitemap.xml), the generated design-system audit/*.json reports, Playwright HTML/JSON reports under web/.visual-e2e, web/.axe-e2e and web/.business-e2e, and the UDS 8.0.0 code-generation outputs (runtime/, registries, specification docs, SHOWCASE, public copies, semantic bridge, chart palette, visual-regression/uds8 run logs+screenshots) are excluded; all SOURCE remains bound (registry/*.mjs, component-registry.json, the frozen VISUAL-BASELINE.json, audit/baseline|vscode source). Generated-vs-source consistency is enforced by check-design-system-8.0.0.mjs',
   };
 }
 
