@@ -8396,6 +8396,9 @@
     "All price states": "All price states",
     "Missing sale price": "Missing sale price",
     "Price dimensions": "Price dimensions",
-    "Leave all unchecked to apply to every dimension.": "Leave all unchecked to apply to every dimension."
+    "Leave all unchecked to apply to every dimension.": "Leave all unchecked to apply to every dimension.",
+    "Price coverage": "Price coverage",
+    "Sync cadence": "Sync cadence",
+    "Deployment": "Deployment"
   }
 }

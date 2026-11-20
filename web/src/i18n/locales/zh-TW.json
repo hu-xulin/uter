@@ -8396,6 +8396,9 @@
     "All price states": "全部價格狀態",
     "Missing sale price": "缺少售價",
     "Price dimensions": "價格維度",
-    "Leave all unchecked to apply to every dimension.": "全部不勾選時套用於所有維度。"
+    "Leave all unchecked to apply to every dimension.": "全部不勾選時套用於所有維度。",
+    "Price coverage": "價格覆蓋",
+    "Sync cadence": "同步頻率",
+    "Deployment": "部署"
   }
 }

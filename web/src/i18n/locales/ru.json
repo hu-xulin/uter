@@ -8396,6 +8396,9 @@
     "All price states": "Все статусы цены",
     "Missing sale price": "Нет цены продажи",
     "Price dimensions": "Измерения цены",
-    "Leave all unchecked to apply to every dimension.": "Оставьте всё неотмеченным, чтобы применить ко всем измерениям."
+    "Leave all unchecked to apply to every dimension.": "Оставьте всё неотмеченным, чтобы применить ко всем измерениям.",
+    "Price coverage": "Покрытие цен",
+    "Sync cadence": "Частота синхронизации",
+    "Deployment": "Развёртывание"
   }
 }

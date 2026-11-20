@@ -1188,6 +1188,14 @@ export type UpstreamProviderCapabilities = {
   tiered_pricing: UpstreamProviderCapability
   media_pricing: UpstreamProviderCapability
   scheduled_sync: UpstreamProviderCapability
+  token_pricing: UpstreamProviderCapability
+  image_pricing: UpstreamProviderCapability
+  video_pricing: UpstreamProviderCapability
+  audio_pricing: UpstreamProviderCapability
+  per_call_pricing: UpstreamProviderCapability
+  per_second_pricing: UpstreamProviderCapability
+  per_minute_pricing: UpstreamProviderCapability
+  deployment_pricing: UpstreamProviderCapability
 }
 
 export type ChannelSyncCapabilities = {
@@ -1198,6 +1206,9 @@ export type ChannelSyncCapabilities = {
     name: string
     auth_type: string
     capabilities: UpstreamProviderCapabilities
+    source_documentation?: string
+    sync_frequency?: string
+    last_verified_at?: number
   }
 }
 

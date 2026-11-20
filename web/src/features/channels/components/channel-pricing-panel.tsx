@@ -93,6 +93,17 @@ const PRICING_MODES = [
   { value: 'none', label: 'No change' },
 ] as const
 
+const PRICE_COVERAGE = [
+  { key: 'token_pricing', label: 'Token' },
+  { key: 'image_pricing', label: 'Image' },
+  { key: 'video_pricing', label: 'Video' },
+  { key: 'audio_pricing', label: 'Audio' },
+  { key: 'per_call_pricing', label: 'Per call' },
+  { key: 'per_second_pricing', label: 'Per second' },
+  { key: 'per_minute_pricing', label: 'Per minute' },
+  { key: 'deployment_pricing', label: 'Deployment' },
+] as const
+
 const PRICE_DIMENSIONS = [
   { value: 'input', label: 'Input' },
   { value: 'output', label: 'Output' },
@@ -498,6 +509,32 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               : t(capabilityLabel)}
           </Badge>
         </div>
+        {capabilityQuery.data ? (
+          <div className='flex flex-wrap items-center gap-2 pt-1 text-sm'>
+            <span className='text-muted-foreground'>
+              {t('Price coverage')}:
+            </span>
+            {PRICE_COVERAGE.map(({ key, label }) => {
+              const coverage = capabilityQuery.data.provider.capabilities[key]
+              const usable =
+                coverage.status === 'SUPPORTED' || coverage.status === 'PARTIAL'
+              return (
+                <Badge
+                  key={key}
+                  variant={usable ? 'secondary' : 'warning'}
+                  title={coverage.detail}
+                >
+                  {t(label)}: {capabilityStatusText(coverage.status)}
+                </Badge>
+              )
+            })}
+          </div>
+        ) : null}
+        {capabilityQuery.data?.provider.sync_frequency ? (
+          <p className='text-muted-foreground text-sm'>
+            {t('Sync cadence')}: {capabilityQuery.data.provider.sync_frequency}
+          </p>
+        ) : null}
       </div>
 
       {disabled ? (

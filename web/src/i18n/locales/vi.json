@@ -8396,6 +8396,9 @@
     "All price states": "Tất cả trạng thái giá",
     "Missing sale price": "Thiếu giá bán",
     "Price dimensions": "Chiều giá",
-    "Leave all unchecked to apply to every dimension.": "Để trống tất cả để áp dụng cho mọi chiều giá."
+    "Leave all unchecked to apply to every dimension.": "Để trống tất cả để áp dụng cho mọi chiều giá.",
+    "Price coverage": "Phạm vi giá",
+    "Sync cadence": "Tần suất đồng bộ",
+    "Deployment": "Triển khai"
   }
 }
