@@ -496,13 +496,10 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 				internal.CreateCacheUSDPerMillion = tier.CreateCachePerMillionUSD
 			}
 			if tier.AudioInputPerMillionUSD != nil && *tier.AudioInputPerMillionUSD > 0 {
-				ratio := *tier.AudioInputPerMillionUSD / *tier.InputPerMillionUSD
-				internal.AudioRatio = &ratio
+				internal.AudioInputUSDPerMillion = tier.AudioInputPerMillionUSD
 			}
-			if tier.AudioOutputPerMillionUSD != nil && tier.OutputPerMillionUSD != nil &&
-				*tier.AudioOutputPerMillionUSD > 0 && *tier.OutputPerMillionUSD > 0 {
-				ratio := *tier.AudioOutputPerMillionUSD / *tier.OutputPerMillionUSD
-				internal.AudioCompletionRatio = &ratio
+			if tier.AudioOutputPerMillionUSD != nil && *tier.AudioOutputPerMillionUSD > 0 {
+				internal.AudioOutputUSDPerMillion = tier.AudioOutputPerMillionUSD
 			}
 		case "per_image", "per_call":
 			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {

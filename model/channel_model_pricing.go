@@ -125,17 +125,24 @@ type ChannelInternalPricingTier struct {
 	OutputUSDPerMillion      *float64 `json:"output_per_million_usd,omitempty"`
 	CacheUSDPerMillion       *float64 `json:"cache_per_million_usd,omitempty"`
 	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
+	AudioInputUSDPerMillion  *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSDPerMillion *float64 `json:"audio_output_per_million_usd,omitempty"`
 	PerUnitUSD               *float64 `json:"per_unit_usd,omitempty"`
 	Unit                     string   `json:"unit"`
 }
 
 type ChannelInternalPricing struct {
-	Mode                 string   `json:"mode"`
-	InputUSDPerMillion   *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSDPerMillion  *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSDPerMillion   *float64 `json:"cache_per_million_usd,omitempty"`
-	AudioRatio           *float64 `json:"audio_ratio,omitempty"`
-	AudioCompletionRatio *float64 `json:"audio_completion_ratio,omitempty"`
+	Mode                string   `json:"mode"`
+	InputUSDPerMillion  *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSDPerMillion *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSDPerMillion  *float64 `json:"cache_per_million_usd,omitempty"`
+	// Audio absolute prices for token models. AudioRatio and
+	// AudioCompletionRatio are derived from them when set, so billing keeps
+	// using the ratio fields while the operator edits absolute prices.
+	AudioInputUSDPerMillion  *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSDPerMillion *float64 `json:"audio_output_per_million_usd,omitempty"`
+	AudioRatio               *float64 `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio     *float64 `json:"audio_completion_ratio,omitempty"`
 	// CreateCacheUSDPerMillion is the cache-write price. When omitted the
 	// global create-cache ratio remains in force.
 	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
@@ -336,6 +343,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	for _, value := range []*float64{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
 		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
+		pricing.AudioInputUSDPerMillion, pricing.AudioOutputUSDPerMillion,
 		pricing.PerCallUSD, pricing.PerSecondUSD, pricing.PerMinuteUSD,
 	} {
 		if err := validPricePointer(value); err != nil {
@@ -366,8 +374,19 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			createCache := *pricing.CreateCacheUSDPerMillion / input
 			result.CreateCacheRatio = &createCache
 		}
-		result.AudioRatio = pricing.AudioRatio
-		result.AudioCompletionRatio = pricing.AudioCompletionRatio
+		if pricing.AudioInputUSDPerMillion != nil && *pricing.AudioInputUSDPerMillion > 0 {
+			ratio := *pricing.AudioInputUSDPerMillion / input
+			result.AudioRatio = &ratio
+		} else {
+			result.AudioRatio = pricing.AudioRatio
+		}
+		if pricing.AudioOutputUSDPerMillion != nil && *pricing.AudioOutputUSDPerMillion > 0 &&
+			pricing.OutputUSDPerMillion != nil && *pricing.OutputUSDPerMillion > 0 {
+			ratio := *pricing.AudioOutputUSDPerMillion / *pricing.OutputUSDPerMillion
+			result.AudioCompletionRatio = &ratio
+		} else {
+			result.AudioCompletionRatio = pricing.AudioCompletionRatio
+		}
 		return result, nil
 	case ChannelPricingModePerCall:
 		if pricing.PerCallUSD == nil || *pricing.PerCallUSD < 0 {

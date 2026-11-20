@@ -581,3 +581,75 @@ func TestBatchPricingTieredMarginBlocksLossBand(t *testing.T) {
 	require.Len(t, result.Skipped, 1)
 	assert.Contains(t, result.Skipped[0].Reason, "32k-128k/input")
 }
+
+func seedAudioMarginRow(t *testing.T, channelID int, modelName string, saleAudio float64) {
+	t.Helper()
+	pInput, pOutput, pAudioIn, pAudioOut := 1.0, 2.0, 0.1, 0.2
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		ChannelPrice: &model.ChannelPricingTier{
+			RangeName: "Default", Unit: "per_1m_token",
+			InputPerMillionUSD: &pInput, OutputPerMillionUSD: &pOutput,
+			AudioInputPerMillionUSD: &pAudioIn, AudioOutputPerMillionUSD: &pAudioOut,
+		},
+	}
+	encoded, _ := common.Marshal(normalized)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(encoded),
+		Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	sInput, sOutput := 1.2, 2.4
+	sAudioOut := saleAudio * 2
+	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+	}, model.ChannelInternalPricing{
+		Mode:               model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &sInput, OutputUSDPerMillion: &sOutput,
+		AudioInputUSDPerMillion: &saleAudio, AudioOutputUSDPerMillion: &sAudioOut,
+		Source: "manual",
+	}))
+}
+
+func TestBatchPricingScalesAudioDimension(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedAudioMarginRow(t, 31, "audio-model", 0.12)
+
+	result, err := ApplyChannelBatchPricingWithOptions(31, BatchPricingOptions{
+		Models: []string{"audio-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.Len(t, result.Items, 1)
+	require.NotNil(t, result.Items[0].AudioInputUSD)
+	assert.InDelta(t, 0.132, *result.Items[0].AudioInputUSD, 1e-9)
+
+	effective := model.ResolveEffectiveChannelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 31, Provider: "test", ModelName: "audio-model",
+	})
+	require.True(t, effective.Billable)
+	require.NotNil(t, effective.Pricing.AudioRatio)
+	assert.InDelta(t, 0.1, *effective.Pricing.AudioRatio, 1e-9)
+}
+
+func TestBatchPricingBlocksAudioLoss(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedAudioMarginRow(t, 33, "audio-model", 0.09)
+
+	minMargin := 0.1
+	result, err := ApplyChannelBatchPricingWithOptions(33, BatchPricingOptions{
+		Models: []string{"audio-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeNone,
+		OverwriteManual: true, MinMarginRate: &minMargin,
+		ProtectionMode: BatchProtectionModePartial,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.Blocked)
+	require.Len(t, result.Skipped, 1)
+	assert.Contains(t, result.Skipped[0].Reason, "audio_input")
+}

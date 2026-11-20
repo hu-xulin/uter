@@ -32,18 +32,20 @@ const (
 
 // BatchPricingItem is one previewed/written internal price.
 type BatchPricingItem struct {
-	ModelName     string   `json:"model_name"`
-	Provider      string   `json:"provider,omitempty"`
-	Region        string   `json:"region,omitempty"`
-	DeploymentId  string   `json:"deployment_id,omitempty"`
-	Mode          string   `json:"mode"`
-	InputUSD      *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSD     *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSD      *float64 `json:"cache_per_million_usd,omitempty"`
-	CacheWriteUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
-	PerCallUSD    *float64 `json:"per_call_usd,omitempty"`
-	PerSecondUSD  *float64 `json:"per_second_usd,omitempty"`
-	PerMinuteUSD  *float64 `json:"per_minute_usd,omitempty"`
+	ModelName      string   `json:"model_name"`
+	Provider       string   `json:"provider,omitempty"`
+	Region         string   `json:"region,omitempty"`
+	DeploymentId   string   `json:"deployment_id,omitempty"`
+	Mode           string   `json:"mode"`
+	InputUSD       *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSD      *float64 `json:"output_per_million_usd,omitempty"`
+	AudioInputUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
+	CacheUSD       *float64 `json:"cache_per_million_usd,omitempty"`
+	CacheWriteUSD  *float64 `json:"create_cache_per_million_usd,omitempty"`
+	PerCallUSD     *float64 `json:"per_call_usd,omitempty"`
+	PerSecondUSD   *float64 `json:"per_second_usd,omitempty"`
+	PerMinuteUSD   *float64 `json:"per_minute_usd,omitempty"`
 	// Version is the price row version the preview calculated from. Send it
 	// back with the apply request so a changed row cannot be mixed into the
 	// confirmed result.
@@ -80,6 +82,8 @@ type BatchPricingTier struct {
 	OutputUSD      *float64 `json:"output_per_million_usd,omitempty"`
 	CacheUSD       *float64 `json:"cache_per_million_usd,omitempty"`
 	CacheWriteUSD  *float64 `json:"create_cache_per_million_usd,omitempty"`
+	AudioInputUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
 	Unit           string   `json:"unit"`
 }
 
@@ -129,27 +133,31 @@ type batchPendingWrite struct {
 }
 
 type batchBaseTier struct {
-	name          string
-	timeBand      string
-	minInput      int64
-	maxInput      int64
-	inputUSD      *float64
-	outputUSD     *float64
-	cacheUSD      *float64
-	cacheWriteUSD *float64
-	unit          string
+	name           string
+	timeBand       string
+	minInput       int64
+	maxInput       int64
+	inputUSD       *float64
+	outputUSD      *float64
+	cacheUSD       *float64
+	cacheWriteUSD  *float64
+	audioInputUSD  *float64
+	audioOutputUSD *float64
+	unit           string
 }
 
 type batchBasePrice struct {
-	mode          string
-	tiers         []batchBaseTier
-	inputUSD      *float64
-	outputUSD     *float64
-	cacheUSD      *float64
-	cacheWriteUSD *float64
-	perCallUSD    *float64
-	perSecondUSD  *float64
-	perMinuteUSD  *float64
+	mode           string
+	tiers          []batchBaseTier
+	inputUSD       *float64
+	outputUSD      *float64
+	cacheUSD       *float64
+	cacheWriteUSD  *float64
+	audioInputUSD  *float64
+	audioOutputUSD *float64
+	perCallUSD     *float64
+	perSecondUSD   *float64
+	perMinuteUSD   *float64
 }
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
@@ -190,7 +198,8 @@ type BatchPricingOptions struct {
 
 // BatchPricingDimensions lists the dimensions a rule may target.
 var BatchPricingDimensions = []string{
-	"input", "output", "cache_read", "cache_write", "per_call", "per_second", "per_minute",
+	"input", "output", "cache_read", "cache_write", "audio_input", "audio_output",
+	"per_call", "per_second", "per_minute",
 }
 
 func ApplyChannelBatchPricing(
@@ -382,6 +391,22 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
+		if next, ok := apply(base.audioInputUSD, "audio_input"); ok && next != nil {
+			item.AudioInputUSD = next
+			internal.AudioInputUSDPerMillion = next
+			internal.AudioRatio = nil
+		} else if !ok {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			continue
+		}
+		if next, ok := apply(base.audioOutputUSD, "audio_output"); ok && next != nil {
+			item.AudioOutputUSD = next
+			internal.AudioOutputUSDPerMillion = next
+			internal.AudioCompletionRatio = nil
+		} else if !ok {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			continue
+		}
 		if next, ok := apply(base.perCallUSD, "per_call"); ok && next != nil {
 			item.PerCallUSD = next
 			internal.PerCallUSD = next
@@ -443,11 +468,24 @@ func ApplyChannelBatchPricingWithOptions(
 					break
 				}
 				nextTier.CreateCacheUSDPerMillion = cacheWrite
+				audioInput, ok := applyTier(tier.audioInputUSD, "audio_input")
+				if !ok {
+					failed = true
+					break
+				}
+				nextTier.AudioInputUSDPerMillion = audioInput
+				audioOutput, ok := applyTier(tier.audioOutputUSD, "audio_output")
+				if !ok {
+					failed = true
+					break
+				}
+				nextTier.AudioOutputUSDPerMillion = audioOutput
 				saleTiers = append(saleTiers, nextTier)
 				previewTiers = append(previewTiers, BatchPricingTier{
 					RangeName: nextTier.RangeName, TimeBand: nextTier.TimeBand,
 					MinInputTokens: nextTier.MinInputTokens, MaxInputTokens: nextTier.MaxInputTokens,
 					InputUSD: nextTier.InputUSDPerMillion, OutputUSD: nextTier.OutputUSDPerMillion,
+					AudioInputUSD: nextTier.AudioInputUSDPerMillion, AudioOutputUSD: nextTier.AudioOutputUSDPerMillion,
 					CacheUSD: nextTier.CacheUSDPerMillion, CacheWriteUSD: nextTier.CreateCacheUSDPerMillion,
 					Unit: "per_1m_token",
 				})
@@ -642,6 +680,8 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 		{"output", base.outputUSD, item.OutputUSD},
 		{"cache_read", base.cacheUSD, item.CacheUSD},
 		{"cache_write", base.cacheWriteUSD, item.CacheWriteUSD},
+		{"audio_input", base.audioInputUSD, item.AudioInputUSD},
+		{"audio_output", base.audioOutputUSD, item.AudioOutputUSD},
 		{"per_call", base.perCallUSD, item.PerCallUSD},
 		{"per_second", base.perSecondUSD, item.PerSecondUSD},
 		{"per_minute", base.perMinuteUSD, item.PerMinuteUSD},
@@ -662,17 +702,22 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 			name = fmt.Sprintf("tier-%d", i+1)
 		}
 		var inputPurchase, outputPurchase, cachePurchase, cacheWritePurchase *float64
+		var audioInputPurchase, audioOutputPurchase *float64
 		if purchase != nil {
 			inputPurchase = purchase.inputUSD
 			outputPurchase = purchase.outputUSD
 			cachePurchase = purchase.cacheUSD
 			cacheWritePurchase = purchase.cacheWriteUSD
+			audioInputPurchase = purchase.audioInputUSD
+			audioOutputPurchase = purchase.audioOutputUSD
 		}
 		pairs = append(pairs,
 			batchMarginDimension{name + "/input", inputPurchase, sale.InputUSD},
 			batchMarginDimension{name + "/output", outputPurchase, sale.OutputUSD},
 			batchMarginDimension{name + "/cache_read", cachePurchase, sale.CacheUSD},
 			batchMarginDimension{name + "/cache_write", cacheWritePurchase, sale.CacheWriteUSD},
+			batchMarginDimension{name + "/audio_input", audioInputPurchase, sale.AudioInputUSD},
+			batchMarginDimension{name + "/audio_output", audioOutputPurchase, sale.AudioOutputUSD},
 		)
 	}
 	margins := make([]BatchDimensionMargin, 0, len(pairs))
@@ -841,6 +886,8 @@ func batchBaseFromTier(tier model.ChannelPricingTier) (batchBasePrice, string) {
 		base.outputUSD = tier.OutputPerMillionUSD
 		base.cacheUSD = tier.CachePerMillionUSD
 		base.cacheWriteUSD = tier.CreateCachePerMillionUSD
+		base.audioInputUSD = tier.AudioInputPerMillionUSD
+		base.audioOutputUSD = tier.AudioOutputPerMillionUSD
 		return base, ""
 	}
 	if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
@@ -868,6 +915,7 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 				minInput: tier.MinInputTokens, maxInput: tier.MaxInputTokens,
 				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
 				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
+				audioInputUSD: tier.AudioInputUSDPerMillion, audioOutputUSD: tier.AudioOutputUSDPerMillion,
 				unit: tier.Unit,
 			})
 		}
@@ -878,12 +926,25 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 		if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 {
 			return batchBasePrice{}, "current channel price has no token input price"
 		}
+		audioInput := internal.AudioInputUSDPerMillion
+		if audioInput == nil && internal.AudioRatio != nil && *internal.AudioRatio > 0 &&
+			internal.InputUSDPerMillion != nil {
+			derived := *internal.AudioRatio * *internal.InputUSDPerMillion
+			audioInput = &derived
+		}
+		audioOutput := internal.AudioOutputUSDPerMillion
+		if audioOutput == nil && internal.AudioCompletionRatio != nil && *internal.AudioCompletionRatio > 0 &&
+			internal.OutputUSDPerMillion != nil {
+			derived := *internal.AudioCompletionRatio * *internal.OutputUSDPerMillion
+			audioOutput = &derived
+		}
 		return batchBasePrice{
 			mode:          model.ChannelPricingModePerMillionTokens,
 			inputUSD:      internal.InputUSDPerMillion,
 			outputUSD:     internal.OutputUSDPerMillion,
 			cacheUSD:      internal.CacheUSDPerMillion,
 			cacheWriteUSD: internal.CreateCacheUSDPerMillion,
+			audioInputUSD: audioInput, audioOutputUSD: audioOutput,
 		}, ""
 	case model.ChannelPricingModePerCall:
 		if internal.PerCallUSD == nil {

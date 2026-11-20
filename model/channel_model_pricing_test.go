@@ -854,3 +854,21 @@ func TestNormalizeTieredTablePricingBuildsExecutableExpression(t *testing.T) {
 	_, err = NormalizeChannelInternalPricing(&nonToken)
 	require.ErrorContains(t, err, "not executable")
 }
+
+func TestNormalizeAudioAbsolutePricesDeriveRatios(t *testing.T) {
+	input, output := 2.0, 4.0
+	audioInput, audioOutput := 0.5, 1.0
+	stale := 0.1
+	pricing := ChannelInternalPricing{
+		Mode:               ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		AudioInputUSDPerMillion: &audioInput, AudioOutputUSDPerMillion: &audioOutput,
+		AudioRatio: &stale,
+	}
+	billing, err := NormalizeChannelInternalPricing(&pricing)
+	require.NoError(t, err)
+	require.NotNil(t, billing.AudioRatio)
+	require.NotNil(t, billing.AudioCompletionRatio)
+	assert.InDelta(t, 0.25, *billing.AudioRatio, 1e-9)
+	assert.InDelta(t, 0.25, *billing.AudioCompletionRatio, 1e-9)
+}
