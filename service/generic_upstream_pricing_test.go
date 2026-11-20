@@ -31,8 +31,6 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-func genericPrice(v float64) *float64 { return &v }
-
 func TestFetchGenericUpstreamPricingFallsBackToNextKey(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Authorization") == "Bearer exhausted" {

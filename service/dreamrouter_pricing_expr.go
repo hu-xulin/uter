@@ -206,18 +206,6 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 	return result, true
 }
 
-// dreamRouterExprTimeDiscount 匹配时段条件函数调用。
-var dreamRouterExprTimeDiscount = regexp.MustCompile(`\b(?:weekday|hour)\s*\(`)
-
-// dreamRouterExprHasTimeDiscount 判断表达式是否带时段折扣（weekday/hour 条件）。
-//
-// 这类模型（如 deepseek-v4-1-flash）在夜间与周末半价，uter 的倍率字段无法
-// 表达随时间浮动的价格：同步按**基准价**写入，即与上游白天同价，并记录告警
-// 提示运营「上游时段折扣未映射」。绝不按折后价写死，否则白天会亏卖。
-func dreamRouterExprHasTimeDiscount(expr string) bool {
-	return dreamRouterExprTimeDiscount.MatchString(expr)
-}
-
 // ---------------------------------------------------------------------------
 // 任务表达式的请求探测改写
 // ---------------------------------------------------------------------------

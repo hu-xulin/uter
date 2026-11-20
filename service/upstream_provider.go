@@ -64,10 +64,10 @@ type dreamRouterAdapter struct{}
 func (dreamRouterAdapter) Descriptor() UpstreamProvider {
 	return UpstreamProvider{
 		ID: "dreamrouter", Name: "DreamRouter",
-		PricingURL:          "https://dreamrouter.ai/api/pricing",
-		ModelsURL:           "https://dreamrouter.ai/v1/models",
+		PricingURL:          dreamRouterPricingPageURL,
+		ModelsURL:           dreamRouterModelsPageURL,
 		AuthType:            "pricing_public_models_api_key",
-		SourceDocumentation: "https://dreamrouter.ai/api/pricing",
+		SourceDocumentation: dreamRouterPricingPageURL,
 		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "GET /v1/models with the channel key"),
