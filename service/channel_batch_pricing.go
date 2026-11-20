@@ -310,6 +310,16 @@ func ApplyChannelBatchPricingWithOptions(
 			continue
 		}
 		annotateBatchMargin(&item)
+		// Record the amount the rule was actually applied to. A channel basis
+		// follows the selected discount group, so "base -> sale" is the only
+		// way to tell later why a sale price differs from the current quote.
+		if baseAmount := primaryBatchPrice(base.mode, base.inputUSD, base.perCallUSD, base.perSecondUSD, base.perMinuteUSD); baseAmount != nil {
+			if saleAmount := primaryBatchPrice(item.Mode, item.InputUSD, item.PerCallUSD, item.PerSecondUSD, item.PerMinuteUSD); saleAmount != nil {
+				internal.Note = fmt.Sprintf(
+					"batch: %s %s %.4f (base %.4f -> %.4f)", basis, mode, value, *baseAmount, *saleAmount,
+				)
+			}
+		}
 		if !dryRun {
 			var oldPricing *model.ChannelInternalPricing
 			if strings.TrimSpace(row.InternalPricing) != "" {

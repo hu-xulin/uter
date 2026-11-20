@@ -187,6 +187,7 @@ func TestApplyChannelBatchPricingTargetsSelectedDimensions(t *testing.T) {
 	require.NotNil(t, internal.OutputUSDPerMillion)
 	assert.InDelta(t, 1.5, *internal.InputUSDPerMillion, 1e-9)
 	assert.InDelta(t, 6.0, *internal.OutputUSDPerMillion, 1e-9, "output must stay at the base price")
+	assert.Contains(t, internal.Note, "base 3.0000", "the applied base must be auditable")
 
 	_, err = ApplyChannelBatchPricingWithOptions(31, BatchPricingOptions{
 		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
