@@ -24,6 +24,10 @@ const (
 	BatchPricingModeAdd      = "add"      // value 0.5 -> base + 0.5
 	BatchPricingModeFixed    = "fixed"    // value 2.5 -> 2.5
 	BatchPricingModeNone     = "none"     // keep the base price
+
+	BatchProtectionModeStrict   = "strict"   // any violation blocks the whole batch
+	BatchProtectionModePartial  = "partial"  // skip the violating model, apply the rest
+	BatchProtectionModeApproval = "approval" // apply with a recorded approval note
 )
 
 // BatchPricingItem is one previewed/written internal price.
@@ -55,6 +59,23 @@ type BatchPricingItem struct {
 	ChangePercent *float64 `json:"change_percent,omitempty"`
 	MarginUSD     *float64 `json:"margin_usd,omitempty"`
 	MarginRate    *float64 `json:"margin_rate,omitempty"`
+	// DimensionMargins checks every priced dimension, not just the primary
+	// one, so an input margin cannot hide a cache loss.
+	DimensionMargins []BatchDimensionMargin `json:"dimension_margins,omitempty"`
+	// MarginVerified is false when a sold dimension has no purchase price to
+	// compare against; the UI must not present that as verified.
+	MarginVerified  bool   `json:"margin_verified"`
+	ProtectionState string `json:"protection_state,omitempty"`
+}
+
+// BatchDimensionMargin is the cost check for one billable dimension.
+type BatchDimensionMargin struct {
+	Dimension   string   `json:"dimension"`
+	PurchaseUSD *float64 `json:"purchase_usd,omitempty"`
+	SaleUSD     *float64 `json:"sale_usd,omitempty"`
+	MarginUSD   *float64 `json:"margin_usd,omitempty"`
+	MarginRate  *float64 `json:"margin_rate,omitempty"`
+	Issue       string   `json:"issue,omitempty"`
 }
 
 // BatchPricingSkipped explains why a model was not priced.
@@ -76,6 +97,20 @@ type BatchPricingResult struct {
 	Conflicts []string `json:"conflicts,omitempty"`
 	// Dimensions echoes the rule's targeted dimensions; empty means all.
 	Dimensions []string `json:"dimensions,omitempty"`
+	// Blocked counts models held back by the margin protection.
+	Blocked int `json:"blocked"`
+	// Protection echoes strict/partial/approval.
+	Protection string `json:"protection,omitempty"`
+}
+
+type batchPendingWrite struct {
+	row             model.ChannelModelPricing
+	identity        model.ChannelPricingIdentity
+	internal        model.ChannelInternalPricing
+	oldPricing      *model.ChannelInternalPricing
+	expectedVersion string
+	item            BatchPricingItem
+	approved        bool
 }
 
 type batchBasePrice struct {
@@ -114,6 +149,15 @@ type BatchPricingOptions struct {
 	// cache_read, cache_write, per_call, per_second, per_minute. Empty means
 	// every dimension the model actually has.
 	Dimensions []string
+	// MinMarginRate is the lowest allowed (sale - purchase) / sale per
+	// dimension. Nil disables the check.
+	MinMarginRate *float64
+	// ProtectionMode selects strict (no writes), partial (skip the model) or
+	// approval (write with ApprovalNote). Empty means partial.
+	ProtectionMode string
+	// ApprovalNote is required when ProtectionMode is approval and a rule
+	// violates the margin floor.
+	ApprovalNote string
 }
 
 // BatchPricingDimensions lists the dimensions a rule may target.
@@ -181,6 +225,19 @@ func ApplyChannelBatchPricingWithOptions(
 	dimensionSelected := func(dimension string) bool {
 		return len(dimensions) == 0 || dimensions[dimension]
 	}
+	protection := strings.TrimSpace(options.ProtectionMode)
+	if protection == "" {
+		protection = BatchProtectionModePartial
+	}
+	switch protection {
+	case BatchProtectionModeStrict, BatchProtectionModePartial, BatchProtectionModeApproval:
+	default:
+		return nil, errors.New("protection mode must be strict, partial or approval")
+	}
+	if options.MinMarginRate != nil && (math.IsNaN(*options.MinMarginRate) || math.IsInf(*options.MinMarginRate, 0) || *options.MinMarginRate < 0) {
+		return nil, errors.New("minimum margin rate must be a finite non-negative number")
+	}
+
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
 		return nil, err
@@ -209,8 +266,11 @@ func ApplyChannelBatchPricingWithOptions(
 	result := &BatchPricingResult{
 		Basis: basis, Mode: mode, Value: value, DryRun: dryRun,
 		Items: []BatchPricingItem{}, Skipped: []BatchPricingSkipped{},
-		Dimensions: options.Dimensions,
+		Dimensions: options.Dimensions, Protection: protection,
 	}
+	pending := make([]batchPendingWrite, 0, len(rows))
+	strictBlocked := false
+	strictBlockedModels := []string{}
 	for _, row := range rows {
 		if len(selected) > 0 && !selected[row.ModelName] {
 			continue
@@ -326,7 +386,37 @@ func ApplyChannelBatchPricingWithOptions(
 				)
 			}
 		}
-		if !dryRun {
+		purchaseDimensions := resolveBatchPurchaseDimensions(row)
+		margins, verified, violated := evaluateBatchMarginDimensions(purchaseDimensions, item, options.MinMarginRate)
+		item.DimensionMargins = margins
+		item.MarginVerified = verified
+		approved := false
+		if violated {
+			item.ProtectionState = "blocked"
+			switch protection {
+			case BatchProtectionModeStrict:
+				strictBlocked = true
+				strictBlockedModels = append(strictBlockedModels, row.ModelName)
+				result.Blocked++
+			case BatchProtectionModeApproval:
+				if strings.TrimSpace(options.ApprovalNote) == "" {
+					result.Blocked++
+					result.Skipped = append(result.Skipped, BatchPricingSkipped{
+						ModelName: row.ModelName, Reason: "minimum margin violated; an approval note is required",
+					})
+				} else {
+					approved = true
+					item.ProtectionState = "approved"
+					internal.Note += " | approved: " + strings.TrimSpace(options.ApprovalNote)
+				}
+			default:
+				result.Blocked++
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{
+					ModelName: row.ModelName, Reason: marginViolationReason(margins),
+				})
+			}
+		}
+		if !dryRun && (!violated || approved) {
 			var oldPricing *model.ChannelInternalPricing
 			if strings.TrimSpace(row.InternalPricing) != "" {
 				var parsed model.ChannelInternalPricing
@@ -339,34 +429,169 @@ func ApplyChannelBatchPricingWithOptions(
 			if expectedVersion == "" {
 				expectedVersion = options.ExpectedVersions[row.ModelName]
 			}
-			pricingIdentity := model.ChannelPricingIdentity{
-				ChannelId: channelID, Provider: row.Provider, Region: row.Region,
-				DeploymentId: row.DeploymentId, ModelName: row.ModelName,
-			}
-			err := model.SetChannelInternalPricingIfVersionFor(pricingIdentity, internal, expectedVersion)
-			if errors.Is(err, model.ErrChannelPricingVersionConflict) {
-				result.Conflicts = append(result.Conflicts, row.ModelName)
-				result.Skipped = append(result.Skipped, BatchPricingSkipped{
-					ModelName: row.ModelName, Reason: "price changed after preview; re-run the preview",
-				})
-				continue
-			}
-			if err != nil {
-				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: err.Error()})
-				continue
-			}
-			if err := AppendChannelPricingHistory(ChannelPricingHistoryEntry{
-				ChannelID: channelID, ModelName: row.ModelName,
-				Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
-				Source: "batch", OldPricing: oldPricing, NewPricing: &internal,
-			}); err != nil {
-				common.SysError("append batch pricing history failed: " + err.Error())
-			}
+			pending = append(pending, batchPendingWrite{
+				row: row,
+				identity: model.ChannelPricingIdentity{
+					ChannelId: channelID, Provider: row.Provider, Region: row.Region,
+					DeploymentId: row.DeploymentId, ModelName: row.ModelName,
+				},
+				internal: internal, oldPricing: oldPricing,
+				expectedVersion: expectedVersion, item: item, approved: approved,
+			})
 		}
 		result.Items = append(result.Items, item)
 	}
-	result.Updated = len(result.Items)
+	written := 0
+	if !dryRun && (len(pending) > 0 || strictBlocked) {
+		if strictBlocked {
+			blockedNames := make(map[string]bool, len(strictBlockedModels))
+			for _, name := range strictBlockedModels {
+				blockedNames[name] = true
+			}
+			for _, write := range pending {
+				blockedNames[write.row.ModelName] = true
+			}
+			for name := range blockedNames {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{
+					ModelName: name,
+					Reason:    "strict margin protection blocked the batch; no price was written",
+				})
+			}
+		} else {
+			for _, write := range pending {
+				err := model.SetChannelInternalPricingIfVersionFor(write.identity, write.internal, write.expectedVersion)
+				if errors.Is(err, model.ErrChannelPricingVersionConflict) {
+					result.Conflicts = append(result.Conflicts, write.row.ModelName)
+					result.Skipped = append(result.Skipped, BatchPricingSkipped{
+						ModelName: write.row.ModelName, Reason: "price changed after preview; re-run the preview",
+					})
+					continue
+				}
+				if err != nil {
+					result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: write.row.ModelName, Reason: err.Error()})
+					continue
+				}
+				source := "batch"
+				if write.approved {
+					source = "batch-approved"
+				}
+				if err := AppendChannelPricingHistory(ChannelPricingHistoryEntry{
+					ChannelID: channelID, ModelName: write.row.ModelName,
+					Provider: write.row.Provider, Region: write.row.Region, DeploymentId: write.row.DeploymentId,
+					Source: source, OldPricing: write.oldPricing, NewPricing: &write.internal,
+				}); err != nil {
+					common.SysError("append batch pricing history failed: " + err.Error())
+				}
+				written++
+			}
+		}
+	}
+	if dryRun {
+		result.Updated = len(result.Items)
+	} else {
+		result.Updated = written
+	}
 	return result, nil
+}
+
+// resolveBatchPurchaseDimensions reads the channel quote separately from the
+// batch basis. When the basis is "current", the base amount is the sale price
+// and must never be used as the purchase cost.
+func resolveBatchPurchaseDimensions(row model.ChannelModelPricing) batchBasePrice {
+	if strings.TrimSpace(row.NormalizedPricing) == "" {
+		return batchBasePrice{}
+	}
+	var official model.ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(row.NormalizedPricing, &official); err != nil {
+		return batchBasePrice{}
+	}
+	var tier *model.ChannelPricingTier
+	if len(official.ChannelPriceTiers) == 1 {
+		tier = &official.ChannelPriceTiers[0]
+	} else if official.ChannelPrice != nil {
+		tier = official.ChannelPrice
+	}
+	if tier == nil {
+		return batchBasePrice{}
+	}
+	base, reason := batchBaseFromTier(*tier)
+	if reason != "" {
+		return batchBasePrice{}
+	}
+	return base
+}
+
+type batchMarginDimension struct {
+	dimension string
+	purchase  *float64
+	sale      *float64
+}
+
+// evaluateBatchMarginDimensions checks every dimension the rule priced. It
+// returns the per-dimension comparison, whether every sold dimension had a
+// purchase price (verified), and whether any dimension violates the floor.
+func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, min *float64) ([]BatchDimensionMargin, bool, bool) {
+	pairs := []batchMarginDimension{
+		{"input", base.inputUSD, item.InputUSD},
+		{"output", base.outputUSD, item.OutputUSD},
+		{"cache_read", base.cacheUSD, item.CacheUSD},
+		{"cache_write", base.cacheWriteUSD, item.CacheWriteUSD},
+		{"per_call", base.perCallUSD, item.PerCallUSD},
+		{"per_second", base.perSecondUSD, item.PerSecondUSD},
+		{"per_minute", base.perMinuteUSD, item.PerMinuteUSD},
+	}
+	margins := make([]BatchDimensionMargin, 0, len(pairs))
+	verified := true
+	violated := false
+	for _, pair := range pairs {
+		if pair.sale == nil {
+			continue
+		}
+		margin := BatchDimensionMargin{Dimension: pair.dimension, SaleUSD: pair.sale, PurchaseUSD: pair.purchase}
+		if pair.purchase == nil || *pair.purchase <= 0 {
+			verified = false
+			margin.Issue = "purchase_missing"
+			margins = append(margins, margin)
+			continue
+		}
+		amount := *pair.sale - *pair.purchase
+		rate := 0.0
+		if *pair.sale != 0 {
+			rate = amount / *pair.sale
+		}
+		margin.MarginUSD = &amount
+		margin.MarginRate = &rate
+		switch {
+		case *pair.sale <= 0:
+			margin.Issue = "zero_sale_price"
+			violated = true
+		case min != nil && rate < *min:
+			margin.Issue = "below_min_margin"
+			violated = true
+		}
+		margins = append(margins, margin)
+	}
+	return margins, verified, violated
+}
+
+func marginViolationReason(margins []BatchDimensionMargin) string {
+	lowest := ""
+	lowestRate := 0.0
+	for _, margin := range margins {
+		if margin.Issue != "below_min_margin" && margin.Issue != "zero_sale_price" {
+			continue
+		}
+		if lowest == "" || margin.MarginRate == nil || (lowestRate != 0 && *margin.MarginRate < lowestRate) {
+			lowest = margin.Dimension
+			if margin.MarginRate != nil {
+				lowestRate = *margin.MarginRate
+			}
+		}
+	}
+	if lowest == "" {
+		return "minimum margin violated"
+	}
+	return "minimum margin violated on " + lowest
 }
 
 func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBasePrice, string) {

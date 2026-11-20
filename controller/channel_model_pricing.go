@@ -406,7 +406,10 @@ func BatchChannelModelPricing(c *gin.Context) {
 		// so an apply cannot mix in rows that changed since then.
 		Versions map[string]string `json:"versions"`
 		// Dimensions restricts the rule to specific price dimensions.
-		Dimensions []string `json:"dimensions"`
+		Dimensions     []string `json:"dimensions"`
+		MinMarginRate  *float64 `json:"min_margin_rate"`
+		ProtectionMode string   `json:"protection_mode"`
+		ApprovalNote   string   `json:"approval_note"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
@@ -421,7 +424,9 @@ func BatchChannelModelPricing(c *gin.Context) {
 		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
 		ExpectedVersions: req.Versions,
 		Dimensions:       req.Dimensions,
-		Basis:            req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
+		MinMarginRate:    req.MinMarginRate, ProtectionMode: req.ProtectionMode,
+		ApprovalNote: req.ApprovalNote,
+		Basis:        req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
 	})
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())

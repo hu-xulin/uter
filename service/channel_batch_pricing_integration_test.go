@@ -15,7 +15,7 @@ func setupBatchPricingDB(t *testing.T) {
 	t.Helper()
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
-	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}, &model.Option{}))
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.Option{}))
 	previous := model.DB
 	model.DB = db
 	model.InvalidateChannelPricingCache()
@@ -359,4 +359,141 @@ func TestApplyChannelBatchPricingSupportsPerMinute(t *testing.T) {
 	require.True(t, effective.Billable)
 	require.True(t, effective.Pricing.UsePerSecond)
 	assert.InDelta(t, 0.05, effective.Pricing.PerSecondPrice, 1e-9)
+}
+
+func seedMarginRow(t *testing.T, channelID int, modelName string, purchase, sale [4]float64) {
+	t.Helper()
+	pInput, pOutput, pCache, pCacheWrite := purchase[0], purchase[1], purchase[2], purchase[3]
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		ChannelPrice: &model.ChannelPricingTier{
+			RangeName: "Default", Unit: "per_1m_token",
+			InputPerMillionUSD: &pInput, OutputPerMillionUSD: &pOutput,
+			CachePerMillionUSD: &pCache, CreateCachePerMillionUSD: &pCacheWrite,
+		},
+	}
+	encoded, _ := common.Marshal(normalized)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(encoded),
+		Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	sInput, sOutput, sCache, sCacheWrite := sale[0], sale[1], sale[2], sale[3]
+	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+	}, model.ChannelInternalPricing{
+		Mode:               model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &sInput, OutputUSDPerMillion: &sOutput,
+		CacheUSDPerMillion: &sCache, CreateCacheUSDPerMillion: &sCacheWrite,
+		Source: "manual",
+	}))
+}
+
+func TestBatchPricingPartialSkipsOnlyTheLossDimension(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedMarginRow(t, 9, "good-model", [4]float64{1, 2, 0.1, 0.2}, [4]float64{1.2, 2.4, 0.12, 0.24})
+	seedMarginRow(t, 9, "bad-cache-model", [4]float64{1, 2, 0.1, 0.2}, [4]float64{1.2, 2.4, 0.08, 0.24})
+
+	minMargin := 0.1
+	result, err := ApplyChannelBatchPricingWithOptions(9, BatchPricingOptions{
+		Models: []string{"good-model", "bad-cache-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		MinMarginRate: &minMargin, ProtectionMode: BatchProtectionModePartial,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.Blocked)
+	require.Len(t, result.Skipped, 1)
+	assert.Equal(t, "bad-cache-model", result.Skipped[0].ModelName)
+	assert.Contains(t, result.Skipped[0].Reason, "cache_read")
+
+	var bad []model.ChannelModelPricing
+	require.NoError(t, model.DB.Where("channel_id = ? AND model_name = ?", 9, "bad-cache-model").Find(&bad).Error)
+	require.Len(t, bad, 1)
+	assert.Contains(t, bad[0].InternalPricing, `"source":"manual"`, "a blocked model must not be overwritten")
+
+	var good []model.ChannelModelPricing
+	require.NoError(t, model.DB.Where("channel_id = ? AND model_name = ?", 9, "good-model").Find(&good).Error)
+	require.Len(t, good, 1)
+	assert.Contains(t, good[0].InternalPricing, `"source":"batch"`)
+}
+
+func TestBatchPricingStrictBlocksEveryWrite(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedMarginRow(t, 11, "good-model", [4]float64{1, 2, 0.1, 0.2}, [4]float64{1.2, 2.4, 0.12, 0.24})
+	seedMarginRow(t, 11, "bad-cache-model", [4]float64{1, 2, 0.1, 0.2}, [4]float64{1.2, 2.4, 0.08, 0.24})
+
+	minMargin := 0.1
+	result, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Models: []string{"good-model", "bad-cache-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		MinMarginRate: &minMargin, ProtectionMode: BatchProtectionModeStrict,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 0, result.Updated)
+	assert.Equal(t, 1, result.Blocked)
+	require.Len(t, result.Skipped, 2, "strict mode must explain every model it held back")
+
+	var good []model.ChannelModelPricing
+	require.NoError(t, model.DB.Where("channel_id = ? AND model_name = ?", 11, "good-model").Find(&good).Error)
+	require.Len(t, good, 1)
+	assert.Contains(t, good[0].InternalPricing, `"source":"manual"`)
+}
+
+func TestBatchPricingApprovalRequiresNoteAndRecordsSource(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedMarginRow(t, 13, "bad-cache-model", [4]float64{1, 2, 0.1, 0.2}, [4]float64{1.2, 2.4, 0.08, 0.24})
+
+	minMargin := 0.1
+	blocked, err := ApplyChannelBatchPricingWithOptions(13, BatchPricingOptions{
+		Models: []string{"bad-cache-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		MinMarginRate: &minMargin, ProtectionMode: BatchProtectionModeApproval,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, blocked.Blocked)
+	require.Len(t, blocked.Skipped, 1)
+	assert.Contains(t, blocked.Skipped[0].Reason, "approval note")
+
+	approved, err := ApplyChannelBatchPricingWithOptions(13, BatchPricingOptions{
+		Models: []string{"bad-cache-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		MinMarginRate: &minMargin, ProtectionMode: BatchProtectionModeApproval,
+		ApprovalNote: "finance approved campaign pricing", OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 0, approved.Blocked, "skipped=%+v", approved.Skipped)
+
+	var rows []model.ChannelModelPricing
+	require.NoError(t, model.DB.Where("channel_id = ? AND model_name = ?", 13, "bad-cache-model").Find(&rows).Error)
+	require.Len(t, rows, 1)
+	assert.Contains(t, rows[0].InternalPricing, `"source":"batch"`)
+	assert.Contains(t, rows[0].InternalPricing, "approved: finance approved campaign pricing")
+
+	history, err := model.ListChannelPricingHistory(13, 10)
+	require.NoError(t, err)
+	require.NotEmpty(t, history)
+	assert.Equal(t, "batch-approved", history[0].Source)
+}
+
+func TestBatchPricingRejectsInvalidProtectionOptions(t *testing.T) {
+	setupBatchPricingDB(t)
+	_, err := ApplyChannelBatchPricingWithOptions(1, BatchPricingOptions{
+		Basis: BatchPricingBasisCurrent, Mode: BatchPricingModeNone,
+		ProtectionMode: "yolo",
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "protection mode")
+
+	negative := -0.1
+	_, err = ApplyChannelBatchPricingWithOptions(1, BatchPricingOptions{
+		Basis: BatchPricingBasisCurrent, Mode: BatchPricingModeNone,
+		MinMarginRate: &negative,
+	})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "minimum margin rate")
 }
