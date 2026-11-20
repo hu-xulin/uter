@@ -112,3 +112,30 @@ func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
 	require.NotEmpty(t, dreamRouter.SourceDocumentation)
 	require.NotEmpty(t, dreamRouter.SyncFrequency)
 }
+
+func TestUterProviderSupportsEveryPriceDimension(t *testing.T) {
+	provider := UpstreamProviderForChannel(60, "https://api.uter.ai")
+	require.Equal(t, "uter", provider.ID)
+	require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilitySupported, provider.Capabilities.ChannelPricing.Status)
+	for dimension, capability := range map[string]UpstreamProviderCapability{
+		"token": provider.Capabilities.TokenPricing, "image": provider.Capabilities.ImagePricing,
+		"video": provider.Capabilities.VideoPricing, "audio": provider.Capabilities.AudioPricing,
+		"per_call": provider.Capabilities.PerCallPricing, "per_second": provider.Capabilities.PerSecondPricing,
+		"per_minute": provider.Capabilities.PerMinutePricing, "deployment": provider.Capabilities.DeploymentPricing,
+	} {
+		if capability.Status != CapabilitySupported {
+			t.Fatalf("Uter %s pricing = %s, want SUPPORTED", dimension, capability.Status)
+		}
+	}
+}
+
+// A New API relay whose base URL is DreamRouter must keep DreamRouter's
+// pricing adapter; otherwise its absolute official prices are misread as a
+// ratio-only New API document.
+func TestDreamRouterHostWinsOverGenericRelayType(t *testing.T) {
+	provider := UpstreamProviderForChannel(60, "https://api.dreamrouter.ai")
+	require.Equal(t, "dreamrouter", provider.ID)
+	require.Equal(t, CapabilityPartial, provider.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilityPartial, provider.Capabilities.PerSecondPricing.Status)
+}

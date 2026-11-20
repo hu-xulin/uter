@@ -30,8 +30,13 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 	switch {
 	case channelType == 17:
 		id = "alibaba-bailian"
+	// A New API/Uter relay pointed at DreamRouter still speaks DreamRouter's
+	// public pricing document. Match the host before the generic type so its
+	// official prices are not downgraded to "ratio-only".
 	case strings.Contains(strings.ToLower(baseURL), "dreamrouter.ai"):
 		id = "dreamrouter"
+	case channelType == 60:
+		return uterProviderDescriptor()
 	}
 	if id != "" {
 		for _, provider := range UpstreamProviders() {
@@ -62,6 +67,38 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 			PerSecondPricing:    capability(CapabilityPartial, "only through billing_expr"),
 			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
 			DeploymentPricing:   capability(CapabilityUnsupported, "no deployment dimension"),
+		},
+	}
+}
+
+// uterProviderDescriptor describes Uter's own upstream. Unlike third-party
+// gateways, every supported billing dimension has a native Uter price column,
+// so the capability matrix must not fall back to the conservative New API
+// "partial" wording.
+func uterProviderDescriptor() UpstreamProvider {
+	return UpstreamProvider{
+		ID: "uter", Name: "Uter.ai", AuthType: "api_key",
+		PricingURL: "/api/pricing", ModelsURL: "/v1/models",
+		SourceDocumentation: "/api/pricing",
+		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
+		Capabilities: UpstreamProviderCapabilities{
+			ModelDiscovery:      capability(CapabilitySupported, "GET /v1/models"),
+			ModelMetadata:       capability(CapabilitySupported, "model catalog and capabilities"),
+			OfficialPricing:     capability(CapabilitySupported, "Uter /api/pricing official prices"),
+			ChannelPricing:      capability(CapabilitySupported, "per-channel quote or manual price"),
+			DiscountInformation: capability(CapabilitySupported, "group and model discounts"),
+			RegionPricing:       capability(CapabilitySupported, "regional channel endpoints"),
+			TieredPricing:       capability(CapabilitySupported, "tiered price ranges are preserved"),
+			MediaPricing:        capability(CapabilitySupported, "token, call, second and minute media prices"),
+			ScheduledSync:       capability(CapabilitySupported, "background catalog sync"),
+			TokenPricing:        capability(CapabilitySupported, "per-1M token input, output and cache prices"),
+			ImagePricing:        capability(CapabilitySupported, "per-image or per-call image prices"),
+			VideoPricing:        capability(CapabilitySupported, "per-second or per-call video prices"),
+			AudioPricing:        capability(CapabilitySupported, "token, per-call or duration audio prices"),
+			PerCallPricing:      capability(CapabilitySupported, "fixed price per request"),
+			PerSecondPricing:    capability(CapabilitySupported, "duration-based task billing"),
+			PerMinutePricing:    capability(CapabilitySupported, "stored per minute and normalized to seconds"),
+			DeploymentPricing:   capability(CapabilitySupported, "deployment price estimation and deployment-scoped rows"),
 		},
 	}
 }
