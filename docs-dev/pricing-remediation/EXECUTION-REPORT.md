@@ -86,6 +86,13 @@
 - 渠道“同步模型信息”读取控制面公开目录（`/api/public/models?billing=all`），不依赖中转域名是否提供 `/v1/models`；未保存表单与已保存渠道共用同一逻辑。
 - `POST /api/channel/:id/apiko/models/sync` 将目录中缺失的模型追加到渠道模型列表（保留人工条目），幂等合并、重建 abilities 与缓存；渠道抽屉内提供“同步 Apiko 模型”操作与结果提示。
 
+### 2.3.2 百炼多档价格播种与展示
+
+- 纯 token 的多上下文档位不再标记待复核：播种生成包含全部档位与 `len <=` 阈值的计费表达式，并通过表达式编译校验。
+- 多档中混入音频维度或按秒/按次等不同单位时，明确写入 `multi-tier audio prices need manual pricing` 或 `mixed price units across tiers need manual pricing`，并保持待复核，避免“第一档价格等于全部价格”。
+- 渠道价格面板展开显示全部官方档位与上游渠道档位（区间、时段、单位、输入/输出/缓存/音频价格），并展示全部复核原因。
+- 证据：多档音频、混合单位、完整 token 阶梯三组单测；表达式可编译；前端档位/复核原因渲染通过 lint、typecheck 与渠道测试。
+
 ### 2.4 计价维度与批量定价（Phase 4）
 
 - `service/channel_batch_pricing.go`
