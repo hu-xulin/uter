@@ -3,7 +3,7 @@
 - 执行对象：Qoder
 - 分支：`main`（未创建分支/PR）
 - 基准提交：`5128c53e08dc1851786703df2c6d6aabb11e5b0f`
-- 最终提交：`818d6bc2d`（报告提交前的代码提交，见文末提交清单）
+- 最终提交：`54a41c9ef`（代码与 UAP 证据提交；后续仅格式化/证据提交不再改动行为）
 - 执行日期：2026-11-20
 - 最终状态：**IMPLEMENTED_WITH_EXTERNAL_BLOCKERS**
 
@@ -31,6 +31,13 @@
 | `845d62b2d` | 账单快照记录渠道定价模式 |
 | `d609cb853` | Apiko 渠道 + 百炼同步后自动售价（30 文件） |
 | `818d6bc2d` | 版本 `v1.6.40` |
+| `700f629e4` | Apiko 渠道默认 Base URL 与必填校验 |
+| `c9905236a` | 百炼目录价格来源收敛与旧价格重放 |
+| `02d994a9e` | 清理未使用符号，复用 DreamRouter URL 常量 |
+| `99e365e20` | oxfmt 统一渠道/定价页格式 |
+| `54a41c9ef` | UAP doctor/validate 与质量门禁证据
+
+> 报告提交本身在其后追加，不再包含代码变更。
 
 ---
 
@@ -132,6 +139,11 @@ DreamRouter 仅 ratio、无绝对价的 8 个模型（2026-11-20 线上数据）
 | Race | `go test -race ./model/ -run 'TestChannelPricing…'` 等 4 组 | 全部通过 |
 | 三库迁移 | `TestChannelPricingTablesAcrossDatabases`、`TestChannelPricingIdentityMigrationAcrossDatabases` | SQLite / MySQL 8.0 / PostgreSQL 16 全部通过 |
 | DreamRouter 表达式 | `go test ./service/ -run TestDreamRouter` | 通过（含裸 duration 解析/缩放回归） |
+| 全量测试（最终提交） | 同上命令重跑 | 通过（57 个包 ok，0 FAIL） |
+| UAP 诊断 | `./uap doctor` | 组件全部 ok，恢复演练 SUCCEEDED |
+| UAP 校验 | `./uap validate --all` | **32/32 validators passed** |
+| 统一门禁 | `./scripts/verify-all.sh --quick` | 9 项通过、0 失败（Go 测试/前端测试/构建按设计跳过） |
+| GolangCI（新增问题门禁） | `golangci-lint run --new-from-rev 5128c53e0 ./...` | **0 issues**；全量 123 项均为基准提交已存在的历史问题 |
 
 ### 4.2 前端
 
@@ -142,7 +154,7 @@ DreamRouter 仅 ratio、无绝对价的 8 个模型（2026-11-20 线上数据）
 | 设计系统 | `bun run lint:design:strict` | 通过 |
 | 版权头 | `bun run copyright:check` | 通过（新增 0） |
 | 构建 | `bun run build:check` | 通过 |
-| 全量测试 | `bun run test` | 3181/3182 通过；1 例在 312 worker 并发下 20s 超时，单独重跑 5s 通过（既有并发抖动） |
+| 全量测试 | `bun run test` | **312/312 文件、3182/3182 用例全部通过**（首轮曾出现 1 例并发超时，单独重跑与最终全量重跑均通过） |
 | 定价相关套件 | `bunx vitest run src/features/channels src/features/pricing src/features/system-settings/billing src/features/models` | 58 文件 / 755 例全部通过 |
 
 ---
@@ -159,8 +171,8 @@ DreamRouter 仅 ratio、无绝对价的 8 个模型（2026-11-20 线上数据）
 4. **计价维度边界的显式声明**
    - Uter 不提供按字符/按像素计费的请求链路，因此这两个维度在能力矩阵中声明为不支持，而不是错误地折算成 token；图片/视频/音频的可计费形态通过按次、按秒、按分钟与阶梯表达式覆盖。
 5. **环境性未执行**
-   - 本地未安装 `golangci-lint`（版本约束见 AGENTS.md，CI 负责新增问题门禁）。
    - 未执行视觉回归（`test:visual` / `test:visual:e2e` 为本地专用、非 CI 门禁）。
+   - 本地已安装 `golangci-lint v2.15.0` 并执行全量与新增问题检查（新增 0）。
 
 ---
 
