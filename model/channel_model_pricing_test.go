@@ -593,3 +593,37 @@ func TestClearAutoDerivedChannelPricingPreservesOperatorAndOtherChannels(t *test
 	require.Equal(t, ChannelPricingStatusConfigured, otherRow.PricingStatus,
 		"another channel must not be cleared")
 }
+
+func TestOfficialPricingReviewStateRequiresOperatorConfiguration(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	reviewView, err := common.Marshal(ChannelOfficialPricing{
+		Unit:          "per_1m_token",
+		NeedsReview:   true,
+		ReviewReasons: []string{"multiple time bands"},
+	})
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 12, Provider: "aliyun-bailian", ModelName: "deepseek-v4-flash",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(reviewView),
+		Source: "bailian-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	row, err := GetChannelModelPricing(12, "deepseek-v4-flash")
+	require.NoError(t, err)
+	assert.Equal(t, ChannelPricingStatusNeedsReview, row.PricingStatus)
+	if _, ok := ResolveChannelBillingPricing(12, "deepseek-v4-flash"); ok {
+		t.Fatal("a review-only row must not bill")
+	}
+
+	clearView, err := common.Marshal(ChannelOfficialPricing{Unit: "per_1m_token"})
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 12, Provider: "aliyun-bailian", ModelName: "deepseek-v4-flash",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(clearView),
+		Source: "bailian-official", FetchedAt: 101,
+	}})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(12, "deepseek-v4-flash")
+	require.NoError(t, err)
+	assert.Equal(t, ChannelPricingStatusOfficialOnly, row.PricingStatus)
+}
