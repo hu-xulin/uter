@@ -145,7 +145,7 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 					RawUnit:          price.PriceUnit,
 					RangeName:        priceRange.RangeName,
 					TimeBand:         price.TimeBand,
-					Source:           "bailian-channel",
+					Source:           "bailian-official",
 					FetchedAt:        catalog.FetchedAt,
 				}
 				if parseErr == nil {
@@ -352,15 +352,17 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 			Currency:          normalized.Currency,
 			OfficialPricing:   string(raw),
 			NormalizedPricing: string(encoded),
-			Source:            "bailian-channel",
+			Source:            "bailian-official",
 			FetchedAt:         catalog.FetchedAt.Unix(),
 		})
 	}
 	return records
 }
 
-// SeedBailianInternalPricing adopts synced channel catalog prices as explicit sale
-// prices. Catalog sync itself never makes an official row billable.
+// SeedBailianInternalPricing adopts synced catalog prices as explicit sale
+// prices for models that have exactly one unambiguous price. It runs
+// automatically after every catalog sync; operator, batch and scheduled prices
+// are preserved unless overwrite is set.
 func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) (int, int, error) {
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
@@ -448,7 +450,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 	}
 	if len(tiers) == 1 {
 		tier := tiers[0]
-		internal := model.ChannelInternalPricing{Source: "bailian-channel", UpdatedAt: normalized.FetchedAt}
+		internal := model.ChannelInternalPricing{Source: "bailian-official", UpdatedAt: normalized.FetchedAt}
 		switch tier.Unit {
 		case "per_1m_token", "per_1m_tokens":
 			if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
@@ -497,7 +499,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 		internal := model.ChannelInternalPricing{
 			Mode:        model.ChannelPricingModeTieredExpr,
 			BillingExpr: expr,
-			Source:      "bailian-channel",
+			Source:      "bailian-official",
 			UpdatedAt:   normalized.FetchedAt,
 		}
 		encoded, err := common.Marshal(internal)
@@ -571,15 +573,16 @@ func firstNonEmpty(values ...string) string {
 }
 
 // bailianOfficialPricing groups the Bailian catalog price items into ranges.
-// Bailian publishes the supplier/channel quote, not the model vendor's own
-// list price, so these tiers are stored in ChannelPriceTiers and the official
-// tier list stays empty. Multiple ranges/time bands remain separate and are
-// flagged for review; they are never averaged into one number.
+// The catalog is Alibaba's official price document, so its tiers are stored as
+// official prices and mirrored into the channel quote (Bailian publishes one
+// price, there is no separate discounted channel quote). Multiple ranges/time
+// bands remain separate and are flagged for review; they are never averaged
+// into one number.
 func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float64, fetchedAt int64) model.ChannelOfficialPricing {
 	result := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "per_1m_token",
-		Source:    "bailian-channel",
+		Source:    "bailian-official",
 		FetchedAt: fetchedAt,
 	}
 	if region == BailianRegionBeijing || region == BailianRegionHongKong {
@@ -672,6 +675,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	if len(result.ChannelPriceTiers) > 0 {
 		first := result.ChannelPriceTiers[0]
 		result.ChannelPrice = &first
+		result.Tiers = append([]model.ChannelPricingTier(nil), result.ChannelPriceTiers...)
 	}
 	if len(countRanges) > 1 {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")

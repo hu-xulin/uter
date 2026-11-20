@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { CHANNEL_TYPE_NEW_API } from '../../constants'
+import { CHANNEL_TYPE_APIKO, CHANNEL_TYPE_NEW_API } from '../../constants'
 import {
   CHANNEL_TYPE_ADVANCED_CUSTOM,
   CHANNEL_TYPE_BRANDED_AGGREGATE,
@@ -35,6 +35,7 @@ describe('channel type icon keys', () => {
   test.each([
     [CHANNEL_TYPE_ADVANCED_CUSTOM, 'Uter'],
     [CHANNEL_TYPE_NEW_API, 'Uter'],
+    [CHANNEL_TYPE_APIKO, 'Apiko'],
     [CHANNEL_TYPE_BRANDED_SHARED, 'UterShared'],
     [CHANNEL_TYPE_BRANDED_AGGREGATE, 'UterAggregate'],
     [CHANNEL_TYPE_BRANDED_PROXY, 'UterProxy'],

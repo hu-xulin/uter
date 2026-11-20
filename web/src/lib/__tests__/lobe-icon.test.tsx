@@ -131,12 +131,18 @@ describe('Lobe icons', () => {
       'width',
       '24'
     )
+    rerender(getLobeIcon('Apiko', 22))
+    expect(screen.getByRole('presentation', { hidden: true })).toHaveAttribute(
+      'width',
+      '22'
+    )
     expect(getLobeIconNames()).toEqual(
       expect.arrayContaining([
         'OpenAI',
         'Claude.Color',
         'SGLang',
         'Sub2API',
+        'Apiko',
         'Wan',
       ])
     )

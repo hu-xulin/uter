@@ -559,14 +559,17 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(within(tabs).getAllByRole('tab')).toHaveLength(5)
   await user.click(within(tabs).getByRole('tab', { name: 'Custom' }))
   const panel = screen.getByRole('tabpanel', { name: 'Custom' })
-  // Custom (8), Advanced Custom (58) and the three branded variants that
-  // behave exactly like Advanced Custom (600/601/602) share this category.
-  expect(within(panel).getAllByRole('option')).toHaveLength(5)
+  // Custom (8), Advanced Custom (58), Apiko (64) and the three branded
+  // variants that behave exactly like Advanced Custom (600/601/602) share this category.
+  expect(within(panel).getAllByRole('option')).toHaveLength(6)
   expect(
     within(panel).getByRole('option', { name: 'Advanced Custom Built-in #58' })
   ).toBeVisible()
   expect(
     within(panel).getByRole('option', { name: 'Custom Built-in #8' })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', { name: 'Apiko Built-in #64' })
   ).toBeVisible()
   expect(
     within(panel).getByRole('option', { name: 'Shared Channel Built-in #600' })
@@ -592,6 +595,9 @@ test('custom providers have their own tab and keep the search when switching cat
   ).not.toBeInTheDocument()
   expect(
     screen.queryByRole('option', { name: 'Custom Built-in #8' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Apiko Built-in #64' })
   ).not.toBeInTheDocument()
   // The branded Advanced Custom variants are Custom-only, never Built-in.
   expect(

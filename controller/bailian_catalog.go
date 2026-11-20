@@ -132,8 +132,8 @@ func buildBailianCatalogSummary(catalog *service.BailianCatalog) bailianCatalogS
 }
 
 // ApplyBailianCatalog fills metadata for the channel's actual models from the
-// saved official snapshot. It never adds catalog-only models to the channel
-// and never writes billing prices.
+// saved official snapshot and configures their prices automatically. It never
+// adds catalog-only models to the channel and never overwrites operator prices.
 func ApplyBailianCatalog(c *gin.Context) {
 	var req struct {
 		ChannelID int `json:"channel_id"`
@@ -273,14 +273,23 @@ func errorText(err error) string {
 	return err.Error()
 }
 
-// applyBailianChannelPricing persists the Bailian channel quote into the
-// channel-isolated pricing table. It never writes the operator's sale price.
+// applyBailianChannelPricing persists the Bailian official catalog price into
+// the channel-isolated pricing table and then automatically configures every
+// model that has one unambiguous price, so no operator click is required.
+// Operator, batch and scheduled prices are never overwritten.
 func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels []string) (int, error) {
 	if _, err := model.ClearAutoDerivedChannelPricing(catalog.ChannelID, "bailian-"); err != nil {
 		return 0, err
 	}
 	records := service.BailianPricingRecords(catalog, channelModels)
-	return model.UpsertChannelOfficialPricing(records)
+	written, err := model.UpsertChannelOfficialPricing(records)
+	if err != nil {
+		return 0, err
+	}
+	if _, _, err := service.SeedBailianInternalPricing(catalog.ChannelID, channelModels, false); err != nil {
+		return written, err
+	}
+	return written, nil
 }
 
 // RefreshBailianCatalog pulls all pages of GET /api/v1/models for one Bailian

@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/uter-ai/uter/setting/billing_setting"
 )
@@ -143,4 +144,12 @@ func TestFetchApikoPricingData(t *testing.T) {
 	require.NoError(t, err)
 	assert.Zero(t, skipped)
 	assert.Equal(t, `tier("base", p * 1.5 + c * 6 + cr * 0.15)`, valueMap(data[billing_setting.BillingExprField])["m1"])
+}
+
+func TestApikoChannelDefaultBaseURLReachesControlPlane(t *testing.T) {
+	base := constant.GetChannelBaseURL(constant.ChannelTypeApiko)
+	require.NotEmpty(t, base)
+	control, ok := apikoControlPlaneFor(base)
+	require.True(t, ok)
+	assert.Equal(t, apikoControlPlaneURL, control)
 }

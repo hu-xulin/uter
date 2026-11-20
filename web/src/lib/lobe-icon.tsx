@@ -40,6 +40,7 @@ import {
   type ReactNode,
 } from 'react'
 
+import apikoLogo from '@/assets/brand-icons/apiko.svg'
 import sglangLogo from '@/assets/brand-icons/sglang.svg'
 import { IconSub2api } from '@/assets/custom/icon-sub2api'
 import { IconUter } from '@/assets/custom/icon-uter'
@@ -65,6 +66,16 @@ const CUSTOM_ICONS: Record<string, ComponentType<{ size?: number }>> = {
   SGLang: (props) => (
     <img
       src={sglangLogo}
+      alt=''
+      aria-hidden='true'
+      width={props.size ?? 20}
+      height={props.size ?? 20}
+      className='object-contain'
+    />
+  ),
+  Apiko: (props) => (
+    <img
+      src={apikoLogo}
       alt=''
       aria-hidden='true'
       width={props.size ?? 20}

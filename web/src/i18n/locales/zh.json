@@ -8482,6 +8482,7 @@
     "No channel pricing records yet. Sync the channel catalog first.": "暂无渠道价格记录，请先同步渠道目录。",
     "Bailian schedules always use channel catalog prices.": "百炼定时规则始终使用渠道目录价格。",
     "CHANNEL_CATALOG": "渠道目录价",
-    "Vendor official price not published": "厂商官方价未公布"
+    "Vendor official price not published": "厂商官方价未公布",
+    "Connect to model services through the Apiko gateway": "通过 Apiko 网关接入模型服务"
   }
 }

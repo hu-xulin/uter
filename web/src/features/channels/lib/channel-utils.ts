@@ -56,6 +56,7 @@ export function getChannelTypeIcon(type: number): string {
     58: 'Uter', // Advanced Custom
     59: 'Sub2API', // Sub2API
     60: 'Uter', // Uter
+    64: 'Apiko', // Apiko
     600: 'UterShared', // Branded Shared
     601: 'UterAggregate', // Branded Aggregate
     602: 'UterProxy', // Branded Proxy

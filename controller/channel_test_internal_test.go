@@ -127,6 +127,36 @@ func TestNewAPIChannelRegistration(t *testing.T) {
 	assert.Empty(t, constant.ChannelBaseURLs[constant.ChannelTypeNewAPI])
 }
 
+func TestApikoChannelRegistration(t *testing.T) {
+	apiType, ok := common.ChannelType2APIType(constant.ChannelTypeApiko)
+	require.True(t, ok)
+	assert.Equal(t, constant.APITypeOpenAI, apiType)
+	assert.Equal(t, "Apiko", constant.GetChannelTypeName(constant.ChannelTypeApiko))
+	assert.Equal(t, "https://api.apiko.app", constant.GetChannelBaseURL(constant.ChannelTypeApiko))
+
+	want := []constant.EndpointType{
+		constant.EndpointTypeOpenAI,
+		constant.EndpointTypeOpenAIResponse,
+		constant.EndpointTypeOpenAIResponseCompact,
+		constant.EndpointTypeAnthropic,
+	}
+	assert.Equal(t, want, common.GetEndpointTypesByChannelType(constant.ChannelTypeApiko, "gpt-5"))
+	assert.True(t, common.SupportsResponsesCompact(constant.ChannelTypeApiko, constant.APITypeOpenAI))
+}
+
+func TestApikoChannelValidationAndDefaultBaseURL(t *testing.T) {
+	channel := &model.Channel{
+		Type:   constant.ChannelTypeApiko,
+		Key:    "sk-test",
+		Models: "gpt-6.2-sol",
+		Group:  "default",
+		Name:   "apiko",
+	}
+	// 默认地址来自 ChannelBaseURLs，而不是要求管理员手填。
+	assert.Equal(t, "https://api.apiko.app", channel.GetBaseURL())
+	require.NoError(t, validateChannel(channel, true))
+}
+
 func TestResponsesCompactChannelSupport(t *testing.T) {
 	tests := []struct {
 		name        string

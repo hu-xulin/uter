@@ -107,7 +107,7 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "paginated /api/v1/models"),
 			ModelMetadata:       capability(CapabilitySupported, "catalog metadata and capabilities"),
-			OfficialPricing:     capability(CapabilityManualOnly, "Bailian publishes the channel quote, not the model vendor list price"),
+			OfficialPricing:     capability(CapabilitySupported, "official Model Studio catalog prices with regions and units"),
 			ChannelPricing:      capability(CapabilitySupported, "Bailian catalog channel quote with regions and units"),
 			DiscountInformation: capability(CapabilityUnsupported, "no supplier discount feed"),
 			RegionPricing:       capability(CapabilitySupported, "region comes from the workspace endpoint"),
@@ -121,7 +121,7 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 			PerCallPricing:      capability(CapabilitySupported, "per-call channel catalog items"),
 			PerSecondPricing:    capability(CapabilitySupported, "per-second channel catalog items"),
 			PerMinutePricing:    capability(CapabilitySupported, "per-minute channel catalog items; normalized to seconds for billing"),
-			DeploymentPricing:   capability(CapabilityNeedsConfiguration, "deployment prices require the contracted workspace"),
+			DeploymentPricing:   capability(CapabilitySupported, "deployment price estimation via /api/deployments/price-estimation"),
 		},
 	}
 }

@@ -62,6 +62,7 @@ const (
 	ChannelTypeTaskPlugin     = 61 // 上游同样定义为 61
 	ChannelTypeVLLM           = 62 // 采用上游编号（rc.38+ 起上游为 62）
 	ChannelTypeSGLang         = 63 // 采用上游编号（rc.38+ 起上游为 63）
+	ChannelTypeApiko          = 64 // Uter 扩展：APIKO 网关（OpenAI/Anthropic 兼容，控制面提供公开目录价格）
 	// —— Uter 自有渠道类型：从 600 起编号，避开上游 0–63 的编号空间 ——
 	ChannelTypeBrandedShared    = 600
 	ChannelTypeBrandedAggregate = 601
@@ -161,8 +162,9 @@ var ChannelBaseURLs = []string{
 	// 模型列表当成该渠道的真实状态展示。留空则由地址校验明确拒绝。
 	// Uter 自有品牌渠道 600–602 不在此 Slice 中（超出 len，GetChannelBaseURL 返回
 	// 空串），同样交由地址校验拒绝。
-	"", //62 vLLM
-	"", //63 SGLang
+	"",                      //62 vLLM
+	"",                      //63 SGLang
+	"https://api.apiko.app", //64 Apiko
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -236,6 +238,7 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeBrandedProxy:     "Branded Proxy",
 	ChannelTypeVLLM:             "vLLM",
 	ChannelTypeSGLang:           "SGLang",
+	ChannelTypeApiko:            "Apiko",
 }
 
 func GetChannelTypeName(channelType int) string {

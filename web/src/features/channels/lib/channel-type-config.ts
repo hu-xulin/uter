@@ -180,6 +180,16 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
       models: 'Models',
     },
   },
+  64: {
+    id: 64,
+    name: CHANNEL_TYPES[64],
+    icon: 'Apiko',
+    hints: {
+      baseUrl: 'Apiko gateway base URL',
+      key: 'Apiko API Key',
+      models: 'Models fetched from upstream /v1/models',
+    },
+  },
   600: {
     id: 600,
     name: CHANNEL_TYPES[600],

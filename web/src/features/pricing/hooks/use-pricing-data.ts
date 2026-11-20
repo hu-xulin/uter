@@ -23,6 +23,10 @@ import { useStatus } from '@/hooks/use-status'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getPricing } from '../api'
+import {
+  canonicalVendorIcon,
+  canonicalVendorName,
+} from '../lib/vendor-normalize'
 
 export function usePricingData(enabled = true) {
   const { status } = useStatus()
@@ -44,6 +48,25 @@ export function usePricingData(enabled = true) {
     [status?.usd_exchange_rate, priceRate]
   )
 
+  const vendors = useMemo(() => {
+    if (!data?.vendors) return []
+    const canonical = new Map<string, (typeof data.vendors)[number]>()
+    for (const vendor of data.vendors) {
+      const name = canonicalVendorName(vendor.name)
+      if (!name) continue
+      const icon = canonicalVendorIcon(name, vendor.icon)
+      const existing = canonical.get(name)
+      if (existing) {
+        existing.model_count =
+          (existing.model_count ?? 0) + (vendor.model_count ?? 0)
+        if (!existing.icon) existing.icon = icon
+        continue
+      }
+      canonical.set(name, { ...vendor, name, icon })
+    }
+    return [...canonical.values()]
+  }, [data])
+
   const models = useMemo(() => {
     if (!data?.data || !data?.vendors) return []
 
@@ -53,11 +76,12 @@ export function usePricingData(enabled = true) {
       const vendor = model.vendor_id
         ? vendorMap.get(model.vendor_id)
         : undefined
+      const vendorName = canonicalVendorName(vendor?.name)
       return {
         ...model,
         key: model.model_name,
-        vendor_name: vendor?.name,
-        vendor_icon: vendor?.icon,
+        vendor_name: vendorName,
+        vendor_icon: canonicalVendorIcon(vendorName, vendor?.icon),
         vendor_description: vendor?.description,
         group_ratio: data.group_ratio,
       }
@@ -74,7 +98,7 @@ export function usePricingData(enabled = true) {
 
   return {
     models,
-    vendors: data?.vendors ?? [],
+    vendors,
     channels: data?.channels ?? [],
     groupRatio: data?.group_ratio ?? {},
     usableGroup: data?.usable_group ?? {},

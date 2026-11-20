@@ -33,8 +33,21 @@ type BailianUpstreamSyncStatus struct {
 // Alibaba Model Studio channels. It never writes global model ratios.
 func BailianUpstreamSyncTask() {
 	for range time.NewTicker(time.Minute).C {
+		AutoConfigureBailianPrices()
 		if _, err := RunBailianUpstreamSync(context.Background(), false); err != nil {
 			common.SysError(common.LogText("bailian upstream sync failed: %s", err.Error()))
+		}
+	}
+}
+
+// AutoConfigureBailianPrices adopts already-synced catalog prices as sale
+// prices for every model that has none yet, so a synced channel never waits
+// for an operator click. Operator, batch and scheduled prices are preserved;
+// a model with no unambiguous catalog price keeps its review flag.
+func AutoConfigureBailianPrices() {
+	for _, channel := range bailianUpstreamChannels() {
+		if _, _, err := SeedBailianInternalPricing(channel.Id, nil, false); err != nil {
+			common.SysError(common.LogText("bailian auto pricing failed for channel %d: %s", channel.Id, err.Error()))
 		}
 	}
 }
@@ -123,6 +136,13 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				continue
 			}
 			status.Written += written
+			// Configure every model that has one unambiguous catalog price so a
+			// scheduled sync never leaves the channel waiting for a manual click.
+			// Operator prices keep their source and are skipped.
+			if _, _, seedErr := SeedBailianInternalPricing(channel.Id, channel.GetModels(), false); seedErr != nil {
+				fail(fmt.Errorf("auto configure prices: %w", seedErr))
+				continue
+			}
 
 			if item.schedule.Enabled && item.schedule.ApplyOnSync {
 				item.schedule.Basis = BatchPricingBasisChannel

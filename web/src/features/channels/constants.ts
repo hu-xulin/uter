@@ -42,6 +42,8 @@ export const CHANNEL_TYPE_OLLAMA = 4
 export const CHANNEL_TYPE_SUB2API = 59
 export const CHANNEL_TYPE_VLLM = 62
 export const CHANNEL_TYPE_SGLANG = 63
+// Uter extension: APIKO gateway (OpenAI/Anthropic compatible).
+export const CHANNEL_TYPE_APIKO = 64
 export const CHANNEL_TYPE_BRANDED_SHARED = 600
 export const CHANNEL_TYPE_BRANDED_AGGREGATE = 601
 export const CHANNEL_TYPE_BRANDED_PROXY = 602
@@ -107,6 +109,7 @@ export const CHANNEL_TYPES = {
   61: 'Task Plugin',
   62: 'vLLM',
   63: 'SGLang',
+  64: 'Apiko',
   600: 'Shared Channel',
   601: 'Aggregate Channel',
   602: 'Proxy Channel',
@@ -194,6 +197,9 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
   },
   63: {
     descriptionKey: 'Connect to self-hosted models served by SGLang',
+  },
+  64: {
+    descriptionKey: 'Connect to model services through the Apiko gateway',
   },
   600: {
     descriptionKey: 'Shared channel description',

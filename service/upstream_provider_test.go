@@ -53,7 +53,8 @@ func TestManualProviderFetchNeverPretendsToSync(t *testing.T) {
 func TestUpstreamProviderForChannelMapsTypesAndFallback(t *testing.T) {
 	bailian := UpstreamProviderForChannel(17, "https://ws.cn-beijing.maas.aliyuncs.com")
 	require.Equal(t, "alibaba-bailian", bailian.ID)
-	require.Equal(t, CapabilityManualOnly, bailian.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilitySupported, bailian.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilitySupported, bailian.Capabilities.DeploymentPricing.Status)
 
 	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
 	require.Equal(t, "dreamrouter", dreamRouter.ID)

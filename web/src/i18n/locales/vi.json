@@ -8482,6 +8482,7 @@
     "No channel pricing records yet. Sync the channel catalog first.": "Chưa có bản ghi giá kênh. Hãy đồng bộ danh mục kênh trước.",
     "Bailian schedules always use channel catalog prices.": "Lịch Bailian luôn dùng giá từ danh mục kênh.",
     "CHANNEL_CATALOG": "Danh mục kênh",
-    "Vendor official price not published": "Giá chính thức của nhà cung cấp chưa được công bố"
+    "Vendor official price not published": "Giá chính thức của nhà cung cấp chưa được công bố",
+    "Connect to model services through the Apiko gateway": "Kết nối dịch vụ mô hình qua cổng Apiko"
   }
 }

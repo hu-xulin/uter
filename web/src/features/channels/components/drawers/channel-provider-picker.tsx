@@ -43,6 +43,7 @@ import { resolveLocalizedText } from '@/lib/localized-text'
 import type { TaskPluginOption } from '../../api'
 import {
   CHANNEL_PROVIDER_PRESENTATION,
+  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -159,7 +160,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
           continue
         }
         const isCustom =
-          option.value === 8 || option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
+          option.value === 8 ||
+          option.value === CHANNEL_TYPE_ADVANCED_CUSTOM ||
+          option.value === CHANNEL_TYPE_APIKO
         const isGateway =
           option.value === CHANNEL_TYPE_UTER || option.value === 59
         if (filter === 'gateway' && !isGateway) continue

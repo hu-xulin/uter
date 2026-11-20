@@ -8482,6 +8482,7 @@
     "No channel pricing records yet. Sync the channel catalog first.": "No channel pricing records yet. Sync the channel catalog first.",
     "Bailian schedules always use channel catalog prices.": "Bailian schedules always use channel catalog prices.",
     "CHANNEL_CATALOG": "Channel catalog",
-    "Vendor official price not published": "Vendor official price not published"
+    "Vendor official price not published": "Vendor official price not published",
+    "Connect to model services through the Apiko gateway": "Connect to model services through the Apiko gateway"
   }
 }

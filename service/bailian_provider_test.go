@@ -75,7 +75,7 @@ func TestBailianPriceNormalization(t *testing.T) {
 	assert.Equal(t, 0.0, prices[4].PriceValue, "unparsable numbers keep raw and report 0")
 	assert.Equal(t, "not-a-number", prices[4].Price)
 	assert.Equal(t, "per_image", prices[5].Unit)
-	assert.Equal(t, "bailian-channel", prices[0].Source)
+	assert.Equal(t, "bailian-official", prices[0].Source)
 }
 
 func TestBailianMetadataMapping(t *testing.T) {
@@ -197,7 +197,7 @@ func TestBailianPricingRecordsStayChannelScoped(t *testing.T) {
 
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Empty(t, normalized.Tiers, "Bailian publishes the channel quote, not the vendor official list")
+	require.Len(t, normalized.Tiers, 1, "the Bailian catalog is the official price document")
 	require.Len(t, normalized.ChannelPriceTiers, 1)
 	require.NotNil(t, normalized.ChannelPriceTiers[0].InputPerMillionUSD)
 	require.NotNil(t, normalized.ChannelPriceTiers[0].OutputPerMillionUSD)
@@ -233,7 +233,7 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	require.Len(t, records, 1)
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Empty(t, normalized.Tiers)
+	require.Len(t, normalized.Tiers, 2)
 	require.Len(t, normalized.ChannelPriceTiers, 2)
 	assert.True(t, normalized.NeedsReview)
 	assert.Contains(t, normalized.ReviewReasons, "multiple price ranges")
