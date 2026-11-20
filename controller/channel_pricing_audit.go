@@ -27,7 +27,6 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/service"
-	"github.com/uter-ai/uter/setting/custom_pricing"
 )
 
 // GetChannelPricingAudit reports which price source wins for one channel.
@@ -81,45 +80,4 @@ func GetChannelSyncCapabilities(c *gin.Context) {
 		"provider":   provider,
 		"base_url":   baseURL,
 	})
-}
-
-// GetChannelPricingMigrationPlan reports which legacy quotes can move to the
-// new channel pricing table. It is read-only.
-// GET /api/channel/:id/pricing_migration_plan
-func GetChannelPricingMigrationPlan(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 {
-		common.ApiErrorT(c, "Invalid parameters")
-		return
-	}
-	config, ok := custom_pricing.GetChannelConfig(id)
-	if !ok {
-		common.ApiSuccess(c, gin.H{"channel_id": id, "items": []any{}})
-		return
-	}
-	common.ApiSuccess(c, gin.H{
-		"channel_id": id,
-		"items":      service.BuildLegacyQuoteMigrationPlan(&config),
-	})
-}
-
-// ApplyChannelPricingMigration copies migratable legacy quotes into the new
-// normalized channel-price block. POST body: {"dry_run": true}.
-// POST /api/channel/:id/pricing_migration/apply
-func ApplyChannelPricingMigration(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id <= 0 {
-		common.ApiErrorT(c, "Invalid parameters")
-		return
-	}
-	var req struct {
-		DryRun bool `json:"dry_run"`
-	}
-	_ = c.ShouldBindJSON(&req)
-	result, err := service.ApplyLegacyQuoteMigration(id, req.DryRun)
-	if err != nil {
-		common.ApiError(c, err)
-		return
-	}
-	common.ApiSuccess(c, result)
 }

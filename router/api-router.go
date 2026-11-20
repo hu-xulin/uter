@@ -338,8 +338,6 @@ func SetApiRouter(router *gin.Engine) {
 			ratioSyncRoute.GET("/channels", controller.GetSyncableChannels)
 			ratioSyncRoute.POST("/fetch", controller.FetchUpstreamRatios)
 			ratioSyncRoute.GET("/preset_prices", controller.GetPresetPrices)
-			ratioSyncRoute.POST("/dreamrouter/run", controller.RunDreamRouterSync)
-			ratioSyncRoute.GET("/dreamrouter/models", controller.GetDreamRouterSyncModels)
 			ratioSyncRoute.POST("/bailian/catalog/refresh", controller.RefreshBailianCatalog)
 			ratioSyncRoute.POST("/bailian/catalog/apply", controller.ApplyBailianCatalog)
 			ratioSyncRoute.GET("/bailian/status", controller.GetBailianSyncStatus)
@@ -347,10 +345,8 @@ func SetApiRouter(router *gin.Engine) {
 		upstreamRoute := apiRouter.Group("/upstream")
 		upstreamRoute.Use(middleware.RootAuth())
 		{
-			upstreamRoute.GET("/providers", controller.GetUpstreamProviders)
 			upstreamRoute.POST("/dreamrouter/sync", controller.SyncDreamRouterUpstream)
 			upstreamRoute.GET("/dreamrouter/snapshot", controller.GetDreamRouterUpstreamSnapshot)
-			upstreamRoute.GET("/dreamrouter/history", controller.GetDreamRouterUpstreamHistory)
 		}
 		requestPluginRoute := apiRouter.Group("/request_plugin")
 		requestPluginRoute.Use(middleware.RootAuth())

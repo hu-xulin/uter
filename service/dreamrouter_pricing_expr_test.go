@@ -236,52 +236,6 @@ func TestDreamRouterScaleExprDuration(t *testing.T) {
 	}
 }
 
-// TestDreamRouterComputeTargetDurationVideo 锁定 wan3.0-video 的同步目标计算：
-// 从「tiered_unparsable 跳过」变为「tiered + 缩放表达式落库」。
-func TestDreamRouterComputeTargetDurationVideo(t *testing.T) {
-	const wan3Video = `has(lower(param("size")), "1080") || lower(param("metadata.resolution")) == "1080p"
-  ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
-  : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
-	rec := dreamRouterRecord{
-		ModelName:       "wan3.0-video",
-		QuotaType:       0,
-		ModelRatio:      37.5,
-		CompletionRatio: 1,
-		EnableGroups:    []string{"wan3"},
-		BillingMode:     "tiered_expr",
-		BillingExpr:     wan3Video,
-	}
-	change := dreamRouterComputeTarget(rec, 0.9, 1.0)
-	if change.BillingClass != "tiered" {
-		t.Fatalf("billing class = %q, want tiered", change.BillingClass)
-	}
-	if !nearlyEqualSync(change.Official.Input, 0.0895522) {
-		t.Errorf("official input = %v, want 0.0895522", change.Official.Input)
-	}
-	if !nearlyEqualSync(change.NewModelRatio, 37.5) {
-		t.Errorf("model ratio = %v, want 37.5 (upstream nominal × factor)", change.NewModelRatio)
-	}
-	if change.NewBillingExpr == "" {
-		t.Fatal("NewBillingExpr is empty")
-	}
-	if _, ok := dreamRouterDurationUnitPrices(change.NewBillingExpr); !ok {
-		t.Errorf("NewBillingExpr not duration-parsable: %s", change.NewBillingExpr)
-	}
-	// Upstream 行 = 官方价 × 上游组折扣。
-	if !nearlyEqualSync(change.Upstream.Input, 0.0895522*0.9) {
-		t.Errorf("upstream input = %v, want %v", change.Upstream.Input, 0.0895522*0.9)
-	}
-
-	// 既没有 token 系数也没有 duration 计价项 → 仍然 tiered_unparsable。
-	change = dreamRouterComputeTarget(dreamRouterRecord{
-		ModelName:   "mystery",
-		BillingExpr: `tier("base", fixed(0.02))`,
-	}, 0.9, 1.0)
-	if change.BillingClass != "tiered_unparsable" {
-		t.Errorf("billing class = %q, want tiered_unparsable", change.BillingClass)
-	}
-}
-
 // ---------------------------------------------------------------------------
 // 请求探测改写（任务表达式）
 // ---------------------------------------------------------------------------
@@ -426,30 +380,6 @@ func TestDreamRouterTaskProbeRewriteKeepsFactExpressions(t *testing.T) {
 	rewritten, ok = dreamRouterTaskProbeRewrite(tokenExpr, wan3VideoUsageSchema())
 	if !ok || rewritten != tokenExpr {
 		t.Errorf("token expression should pass through unchanged, got (%q, %v)", rewritten, ok)
-	}
-}
-
-// TestDreamRouterComputeTargetRewritesProbeExpr 锁定同步目标计算把改写接进了
-// 「落库表达式」这条通道：NewBillingExpr 必须已是用量事实形态。
-func TestDreamRouterComputeTargetRewritesProbeExpr(t *testing.T) {
-	rec := dreamRouterRecord{
-		ModelName:       "wan3.0-video",
-		QuotaType:       0,
-		ModelRatio:      37.5,
-		CompletionRatio: 1,
-		EnableGroups:    []string{"wan3"},
-		BillingMode:     "tiered_expr",
-		BillingExpr:     wan3VideoProbeExpr,
-	}
-	change := dreamRouterComputeTarget(rec, 0.9, 1.0)
-	if change.BillingClass != "tiered" {
-		t.Fatalf("billing class = %q, want tiered", change.BillingClass)
-	}
-	if strings.Contains(change.NewBillingExpr, "param(") {
-		t.Fatalf("NewBillingExpr still probes the request: %s", change.NewBillingExpr)
-	}
-	if !strings.Contains(change.NewBillingExpr, `u("resolution") == "1080P"`) {
-		t.Errorf("NewBillingExpr was not rewritten to facts: %s", change.NewBillingExpr)
 	}
 }
 

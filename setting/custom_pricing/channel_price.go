@@ -17,15 +17,13 @@ import (
 //   - "price": an absolute final price after every adjustment. For token models
 //     it is USD per 1M tokens; for per-request models it is USD per request.
 //   - "fixed_base": an absolute base price before the channel-wide ratio.
-//   - "target_final_discount": a fraction of the official list price, e.g. 0.7
 //     bills the model at 70% of the vendor list price.
 const (
-	ChannelPriceModeRatio               = "ratio"
-	ChannelPriceModePrice               = "price"
-	ChannelPriceModeMultiplier          = "multiplier"
-	ChannelPriceModeTargetFinalDiscount = "target_final_discount"
-	ChannelPriceModeFixedBase           = "fixed_base"
-	ChannelPriceModeFixedFinal          = "fixed_final"
+	ChannelPriceModeRatio      = "ratio"
+	ChannelPriceModePrice      = "price"
+	ChannelPriceModeMultiplier = "multiplier"
+	ChannelPriceModeFixedBase  = "fixed_base"
+	ChannelPriceModeFixedFinal = "fixed_final"
 )
 
 // ChannelModelRule is a per-model override inside a channel.
@@ -34,38 +32,11 @@ type ChannelModelRule struct {
 	Value float64 `json:"value"`
 }
 
-// ChannelQuote is the price a channel actually charges for one model.
-// OfficialPrice is optional; it is the vendor list price used as the target
-// discount basis. ChannelPrice is the price Uter should use as its base.
-// Amounts are USD per Unit (per_1m_token or per_call).
-type ChannelQuote struct {
-	OfficialPrice    *float64 `json:"official_price,omitempty"`
-	ChannelPrice     *float64 `json:"channel_price,omitempty"`
-	Discount         *float64 `json:"discount,omitempty"`
-	CompletionRatio  *float64 `json:"completion_ratio,omitempty"`
-	CacheRatio       *float64 `json:"cache_ratio,omitempty"`
-	CreateCacheRatio *float64 `json:"create_cache_ratio,omitempty"`
-	Unit             string   `json:"unit,omitempty"`
-	BillingMode      string   `json:"billing_mode,omitempty"`
-	BillingExpr      string   `json:"billing_expr,omitempty"`
-	Status           string   `json:"status,omitempty"`
-	Raw              string   `json:"raw,omitempty"`
-	Source           string   `json:"source,omitempty"`
-	UpdatedAt        int64    `json:"updated_at,omitempty"`
-}
-
-// ChannelQuoteStatusNeedsReview marks a quote whose upstream price cannot be
-// applied as a single amount (for example a tiered billing expression). The
-// quote is kept for reference but never affects billing until an operator sets
-// a flat price.
-const ChannelQuoteStatusNeedsReview = "needs_review"
-
 // ChannelPriceConfig is the override attached to one channel. Ratio is a
 // channel-wide multiplier used when the model has no own rule.
 type ChannelPriceConfig struct {
 	Enabled bool                        `json:"enabled"`
 	Ratio   *float64                    `json:"ratio"`
-	Quotes  map[string]ChannelQuote     `json:"quotes,omitempty"`
 	Models  map[string]ChannelModelRule `json:"models"`
 }
 
@@ -164,17 +135,7 @@ func ChannelModelMultiplier(
 	if hasChannelFactor {
 		channelFactor = *cfg.Ratio
 	}
-	quote, quoteApplies := quotePrice(cfg, modelName, usePrice)
-	quoteFactor := 1.0
-	if quoteApplies && baseAmount > 0 {
-		switch {
-		case quote.ChannelPrice != nil && *quote.ChannelPrice >= 0:
-			quoteFactor = *quote.ChannelPrice / baseAmount
-		case quote.Discount != nil && *quote.Discount >= 0:
-			quoteFactor = *quote.Discount
-		}
-	}
-	factor := quoteFactor * channelFactor
+	factor := channelFactor
 	if rule, ok := cfg.Models[modelName]; ok {
 		switch rule.Mode {
 		case ChannelPriceModeMultiplier, ChannelPriceModeRatio:
@@ -189,17 +150,9 @@ func ChannelModelMultiplier(
 			if rule.Value >= 0 && baseAmount > 0 {
 				return validChannelFactor(rule.Value*channelFactor/baseAmount, channelId, modelName)
 			}
-		case ChannelPriceModeTargetFinalDiscount:
-			official := 0.0
-			if quote, ok := cfg.Quotes[modelName]; ok && quote.OfficialPrice != nil {
-				official = *quote.OfficialPrice
-			}
-			if official > 0 && rule.Value >= 0 && baseAmount > 0 {
-				return validChannelFactor(official*rule.Value/baseAmount, channelId, modelName)
-			}
 		}
 	}
-	if !quoteApplies && !hasChannelFactor {
+	if !hasChannelFactor {
 		return 1, false
 	}
 	return validChannelFactor(factor, channelId, modelName)
@@ -217,38 +170,4 @@ func validChannelFactor(value float64, channelId int, modelName string) (float64
 		return 1, false
 	}
 	return value, true
-}
-
-func quoteUnit(usePrice bool) string {
-	if usePrice {
-		return "per_call"
-	}
-	return "per_1m_token"
-}
-
-// quotePrice returns the quote for modelName when it describes the same unit
-// the charge is expressed in. A per-call quote never applies to a token charge.
-func quotePrice(cfg ChannelPriceConfig, modelName string, usePrice bool) (ChannelQuote, bool) {
-	quote, ok := cfg.Quotes[modelName]
-	if !ok {
-		return ChannelQuote{}, false
-	}
-	if quote.Status == ChannelQuoteStatusNeedsReview || quote.BillingExpr != "" {
-		return ChannelQuote{}, false
-	}
-	if quote.Unit != "" && quote.Unit != quoteUnit(usePrice) {
-		return ChannelQuote{}, false
-	}
-	return quote, quote.ChannelPrice != nil || quote.Discount != nil
-}
-
-// GetChannelQuote returns the channel's quote for one model when the unit and
-// status allow billing. It lets billing read per-channel output/cache ratios
-// without changing the global model ratios.
-func GetChannelQuote(channelId int, modelName string, usePrice bool) (ChannelQuote, bool) {
-	cfg, ok := GetChannelConfig(channelId)
-	if !ok {
-		return ChannelQuote{}, false
-	}
-	return quotePrice(cfg, modelName, usePrice)
 }

@@ -21,15 +21,13 @@ package service
 import (
 	"fmt"
 	"sort"
-	"strings"
 
 	"github.com/uter-ai/uter/model"
-	"github.com/uter-ai/uter/setting/custom_pricing"
 )
 
 // ChannelPricingAudit reports which price source actually wins for one channel.
-// It is read-only and intentionally never resolves prices; it only exposes the
-// coexistence of ChannelPriceSetting and ChannelModelPricing.
+// ChannelModelPricing is the only per-model price store; a missing row falls
+// back to the global model price.
 type ChannelPricingAudit struct {
 	ChannelID   int                           `json:"channel_id"`
 	ChannelName string                        `json:"channel_name"`
@@ -41,7 +39,6 @@ type ChannelPricingAudit struct {
 
 type ChannelPricingAuditModel struct {
 	ModelName     string `json:"model_name"`
-	LegacyStatus  string `json:"legacy_status,omitempty"`
 	ChannelStatus string `json:"channel_status,omitempty"`
 	BillingSource string `json:"billing_source"`
 	Billable      bool   `json:"billable"`
@@ -50,20 +47,17 @@ type ChannelPricingAuditModel struct {
 
 type ChannelPricingAuditConflict struct {
 	ModelName     string `json:"model_name"`
-	LegacyStatus  string `json:"legacy_status"`
 	ChannelStatus string `json:"channel_status"`
 	BillingSource string `json:"billing_source"`
 	Reason        string `json:"reason"`
 }
 
-// BuildChannelPricingAudit compares the legacy option quote sheet with the
-// per-channel pricing table. ChannelModelPricing is the current authority:
-// an existing row wins even when it is not billable, which blocks the charge
-// instead of silently falling back to the legacy quote.
+// BuildChannelPricingAudit reports the resolved source for every stored row.
+// Rows that exist but are not configured are blocking: they never silently fall
+// back to a global price.
 func BuildChannelPricingAudit(
 	channelID int,
 	channelName string,
-	legacy *custom_pricing.ChannelPriceConfig,
 	rows []model.ChannelModelPricing,
 ) ChannelPricingAudit {
 	audit := ChannelPricingAudit{
@@ -73,107 +67,35 @@ func BuildChannelPricingAudit(
 		Conflicts:   []ChannelPricingAuditConflict{},
 		Authority:   "global",
 	}
-	legacyStatus := map[string]string{}
-	if legacy != nil {
-		for name, quote := range legacy.Quotes {
-			legacyStatus[name] = legacyQuoteStatus(quote)
-		}
-		for name := range legacy.Models {
-			if _, exists := legacyStatus[name]; !exists {
-				legacyStatus[name] = "model_rule"
-			}
-		}
-		if len(legacyStatus) > 0 || legacy.Ratio != nil {
-			audit.Authority = "legacy_channel_price_setting"
-		}
+	if len(rows) == 0 {
+		return audit
 	}
-	channelStatus := make(map[string]string, len(rows))
-	for _, row := range rows {
-		channelStatus[row.ModelName] = row.PricingStatus
-	}
-	if len(channelStatus) > 0 {
-		audit.Authority = "channel_model_pricing"
-	}
-
-	names := make(map[string]struct{}, len(legacyStatus)+len(channelStatus))
-	for name := range legacyStatus {
-		names[name] = struct{}{}
-	}
-	for name := range channelStatus {
-		names[name] = struct{}{}
-	}
-	ordered := make([]string, 0, len(names))
-	for name := range names {
-		ordered = append(ordered, name)
-	}
-	sort.Strings(ordered)
-
-	conflicts := 0
+	audit.Authority = "channel_model_pricing"
 	blocked := 0
-	for _, name := range ordered {
-		item := ChannelPricingAuditModel{ModelName: name}
-		item.LegacyStatus = legacyStatus[name]
-		item.ChannelStatus = channelStatus[name]
-		switch {
-		case item.ChannelStatus != "":
-			item.BillingSource = "channel_model_pricing"
-			item.Billable = item.ChannelStatus == model.ChannelPricingStatusConfigured
-			if !item.Billable {
-				blocked++
-			}
-		case item.LegacyStatus != "":
-			item.BillingSource = "legacy_channel_price_setting"
-			item.Billable = item.LegacyStatus != "needs_review"
-		default:
-			item.BillingSource = "global"
-			item.Billable = true
+	for _, row := range rows {
+		item := ChannelPricingAuditModel{
+			ModelName:     row.ModelName,
+			ChannelStatus: row.PricingStatus,
+			BillingSource: "channel_model_pricing",
+			Billable:      row.PricingStatus == model.ChannelPricingStatusConfigured,
 		}
-		if item.LegacyStatus != "" && item.ChannelStatus != "" {
-			item.Conflict = true
-			conflicts++
-			reason := "The channel pricing table shadows the legacy quote."
-			if !item.Billable {
-				reason = "The channel pricing row is not billable and blocks the legacy quote."
-			}
-			audit.Conflicts = append(audit.Conflicts, ChannelPricingAuditConflict{
-				ModelName:     name,
-				LegacyStatus:  item.LegacyStatus,
-				ChannelStatus: item.ChannelStatus,
-				BillingSource: item.BillingSource,
-				Reason:        reason,
-			})
+		if !item.Billable {
+			blocked++
 		}
 		audit.Models = append(audit.Models, item)
 	}
-	if conflicts > 0 {
-		audit.Warnings = append(audit.Warnings, fmt.Sprintf(
-			"%d model(s) exist in both price systems; channel_model_pricing is authoritative.",
-			conflicts,
-		))
-	}
+	sort.Slice(audit.Models, func(i, j int) bool {
+		return audit.Models[i].ModelName < audit.Models[j].ModelName
+	})
 	if blocked > 0 {
 		audit.Warnings = append(audit.Warnings, fmt.Sprintf(
-			"%d channel price row(s) are not billable and block fallback.",
-			blocked,
+			"%d channel price row(s) are not billable.", blocked,
 		))
 	}
 	return audit
 }
 
-func legacyQuoteStatus(quote custom_pricing.ChannelQuote) string {
-	if quote.Status != "" {
-		return quote.Status
-	}
-	if strings.TrimSpace(quote.BillingExpr) != "" {
-		return custom_pricing.ChannelQuoteStatusNeedsReview
-	}
-	if quote.ChannelPrice == nil && quote.Discount == nil {
-		return "official_only"
-	}
-	return "configured"
-}
-
-// AuditChannelPricing loads one channel and compares both price systems.
+// AuditChannelPricing loads one channel's pricing rows.
 func AuditChannelPricing(channelID int) (*ChannelPricingAudit, error) {
 	channel, err := model.GetChannelById(channelID, false)
 	if err != nil || channel == nil {
@@ -183,16 +105,11 @@ func AuditChannelPricing(channelID int) (*ChannelPricingAudit, error) {
 	if err != nil {
 		return nil, err
 	}
-	config, _ := custom_pricing.GetChannelConfig(channelID)
-	var legacy *custom_pricing.ChannelPriceConfig
-	if config.Enabled {
-		legacy = &config
-	}
-	audit := BuildChannelPricingAudit(channelID, channel.Name, legacy, rows)
+	audit := BuildChannelPricingAudit(channelID, channel.Name, rows)
 	return &audit, nil
 }
 
-// AuditAllChannelPricing compares both price systems for every channel.
+// AuditAllChannelPricing reports every channel's pricing rows.
 func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 	const pageSize = 200
 	audits := make([]ChannelPricingAudit, 0)
@@ -209,12 +126,7 @@ func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 			if err != nil {
 				return nil, err
 			}
-			config, _ := custom_pricing.GetChannelConfig(channel.Id)
-			var legacy *custom_pricing.ChannelPriceConfig
-			if config.Enabled {
-				legacy = &config
-			}
-			audits = append(audits, BuildChannelPricingAudit(channel.Id, channel.Name, legacy, rows))
+			audits = append(audits, BuildChannelPricingAudit(channel.Id, channel.Name, rows))
 		}
 		if len(channels) < pageSize {
 			break

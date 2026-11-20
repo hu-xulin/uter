@@ -13,11 +13,6 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-// GetUpstreamProviders lists the upstream catalog sources and capabilities.
-func GetUpstreamProviders(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": service.UpstreamProviders()})
-}
-
 // SyncDreamRouterUpstream fetches DreamRouter's public pricing document into
 // an isolated snapshot. It never writes ModelRatio, ModelPrice,
 // billing_expr, or another channel's configuration.
@@ -121,16 +116,6 @@ func GetDreamRouterUpstreamSnapshot(c *gin.Context) {
 		"discount_group":  discountGroup,
 		"discount_groups": service.DreamRouterDiscountGroups(snapshot),
 	}})
-}
-
-// GetDreamRouterUpstreamHistory returns the bounded change log.
-func GetDreamRouterUpstreamHistory(c *gin.Context) {
-	history := service.LoadDreamRouterUpstreamHistory()
-	if history == nil {
-		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"entries": []any{}}})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": history})
 }
 
 func dreamRouterUpstreamSummary(snapshot *service.UpstreamSnapshot) gin.H {

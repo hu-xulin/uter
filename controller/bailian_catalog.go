@@ -278,15 +278,6 @@ func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels [
 	return model.UpsertChannelOfficialPricing(records)
 }
 
-// GetBailianCatalog returns the last saved official catalog snapshot.
-func GetBailianCatalog(c *gin.Context) {
-	catalog := service.LoadBailianCatalogSnapshot()
-	if catalog == nil {
-		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"synced": false}})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
-		"summary": buildBailianCatalogSummary(catalog),
-		"models":  catalog.Models,
-	}})
-}
+// RefreshBailianCatalog pulls all pages of GET /api/v1/models for one Bailian
+// channel and stores the result as a reference snapshot. It deliberately does
+// not write any model price; applying the catalog is a separate, explicit step.

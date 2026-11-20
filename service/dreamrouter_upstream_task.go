@@ -32,8 +32,7 @@ type DreamRouterUpstreamSyncStatus struct {
 var dreamRouterUpstreamSyncMu sync.Mutex
 
 // DreamRouterUpstreamSyncTask runs the isolated catalog sync every five
-// minutes. It never calls SyncDreamRouterPricing and never writes global
-// ModelRatio / ModelPrice / billing_expr.
+// minutes. It never writes global ModelRatio / ModelPrice / billing_expr.
 func DreamRouterUpstreamSyncTask() {
 	for range time.NewTicker(1 * time.Minute).C {
 		if _, err := runDreamRouterUpstreamSync(context.Background(), false); err != nil {

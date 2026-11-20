@@ -231,15 +231,11 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"POST /api/ratio_sync/fetch":                accessTokenScopeRule("option:write"),
 	"GET /api/ratio_sync/preset_prices":         accessTokenScopeRule("option:read"),
 	// DreamRouter 同步：读接口只读定价，run 会写渠道与模型价格。
-	"GET /api/ratio_sync/dreamrouter/models":       accessTokenScopeRule("option:read"),
-	"POST /api/ratio_sync/dreamrouter/run":         accessTokenScopeRule("option:write"),
 	"GET /api/ratio_sync/bailian/status":           accessTokenScopeRule("option:read"),
 	"POST /api/ratio_sync/bailian/catalog/apply":   accessTokenScopeRule("option:write"),
 	"POST /api/ratio_sync/bailian/catalog/refresh": accessTokenScopeRule("option:write"),
-	"GET /api/upstream/providers":                  accessTokenScopeRule("option:read"),
 	"POST /api/upstream/dreamrouter/sync":          accessTokenScopeRule("option:write"),
 	"GET /api/upstream/dreamrouter/snapshot":       accessTokenScopeRule("option:read"),
-	"GET /api/upstream/dreamrouter/history":        accessTokenScopeRule("option:read"),
 
 	// router/api-router.go: /api/performance, /api/system-task, /api/system-info
 	"GET /api/performance/stats":                   accessTokenScopeRule("ops:read"),

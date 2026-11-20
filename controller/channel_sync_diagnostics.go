@@ -19,7 +19,11 @@ For commercial licensing, please contact support@uter.ai
 package controller
 
 import (
+	"context"
+	"errors"
 	"fmt"
+	"io"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -198,7 +202,7 @@ func genericPriceDiagnostics(c *gin.Context, channel *model.Channel) (syncDiagno
 		return official, channelCheck
 	}
 	started := time.Now()
-	payload, err := fetchUpstreamPricing(c.Request.Context(), baseURL+"/api/pricing", channel.GetKeys())
+	total, officialCount, err := probeGenericPricing(c.Request.Context(), baseURL+"/api/pricing", channel.GetKeys())
 	channelCheck.DurationMS = time.Since(started).Milliseconds()
 	if err != nil {
 		channelCheck.Status = "FAILED"
@@ -208,17 +212,11 @@ func genericPriceDiagnostics(c *gin.Context, channel *model.Channel) (syncDiagno
 		return official, channelCheck
 	}
 	channelCheck.Status = "FETCHED"
-	channelCheck.Count = len(payload.Data)
-	channelCheck.Message = fmt.Sprintf("Fetched %d pricing entries", len(payload.Data))
-	officialCount := 0
-	for _, item := range payload.Data {
-		if item.OfficialPrice != nil || item.OfficialRatio != nil {
-			officialCount++
-		}
-	}
+	channelCheck.Count = total
+	channelCheck.Message = fmt.Sprintf("Fetched %d pricing entries", total)
 	official.Status = "FETCHED"
 	official.Count = officialCount
-	official.Message = fmt.Sprintf("%d of %d entries expose an official price", officialCount, len(payload.Data))
+	official.Message = fmt.Sprintf("%d of %d entries expose an official price", officialCount, total)
 	if officialCount == 0 {
 		official.Status = "UNSUPPORTED"
 		official.Message = "The upstream pricing payload has no official_price/official_ratio."
@@ -273,4 +271,67 @@ func applyChannelPricingStatus(check *syncDiagnosticCheck, details map[string]an
 	default:
 		check.Status = "OFFICIAL_ONLY"
 	}
+}
+
+// probeGenericPricing performs a read-only GET of a new-api compatible pricing
+// document. It returns the entry count and how many carry an official price.
+func probeGenericPricing(ctx context.Context, endpoint string, keys []string) (int, int, error) {
+	if len(keys) == 0 {
+		return 0, 0, errors.New("no channel key")
+	}
+	var lastErr error
+	for _, key := range keys {
+		key = strings.TrimSpace(key)
+		if key == "" {
+			continue
+		}
+		requestCtx, cancel := context.WithTimeout(ctx, 20*time.Second)
+		req, err := http.NewRequestWithContext(requestCtx, http.MethodGet, endpoint, nil)
+		if err != nil {
+			cancel()
+			return 0, 0, err
+		}
+		req.Header.Set("Authorization", "Bearer "+key)
+		req.Header.Set("Accept", "application/json")
+		res, err := service.GetSSRFProtectedHTTPClient().Do(req)
+		if err != nil {
+			cancel()
+			lastErr = err
+			continue
+		}
+		status := res.StatusCode
+		body, readErr := io.ReadAll(io.LimitReader(res.Body, 8<<20))
+		res.Body.Close()
+		cancel()
+		if status < http.StatusOK || status >= http.StatusMultipleChoices {
+			lastErr = fmt.Errorf("status %d", status)
+			continue
+		}
+		if readErr != nil {
+			lastErr = readErr
+			continue
+		}
+		var payload struct {
+			Data []map[string]any `json:"data"`
+		}
+		if err := common.Unmarshal(body, &payload); err != nil {
+			lastErr = fmt.Errorf("invalid JSON response")
+			continue
+		}
+		official := 0
+		for _, item := range payload.Data {
+			if _, ok := item["official_price"]; ok {
+				official++
+				continue
+			}
+			if _, ok := item["official_ratio"]; ok {
+				official++
+			}
+		}
+		return len(payload.Data), official, nil
+	}
+	if lastErr == nil {
+		lastErr = errors.New("no usable channel key")
+	}
+	return 0, 0, lastErr
 }
