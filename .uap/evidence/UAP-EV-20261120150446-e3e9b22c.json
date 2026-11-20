@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261120150446-e3e9b22c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-20T15:04:46.051Z",
+  "started_at": "2026-11-20T15:04:46.051Z",
+  "finished_at": "2026-11-20T15:04:46.051Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261120150445-49ec543e",
+    "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+    "worktree_fingerprint": "c28683471784d4ff537f21f5a8ffd4d32e2fafb92fb88bea3abf8996638ef709",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261120150445-49ec543e",
+  "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+  "worktree_fingerprint": "c28683471784d4ff537f21f5a8ffd4d32e2fafb92fb88bea3abf8996638ef709",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.repair_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.repair_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.repair_integrity 实检: root_cause=PASS(failure_policy retryable=bounded_retry permission_denied=block missing_dependency=block unrecoverable=fail (按根因分类)); bounded_retry=PASS(max_repair_attempts_per_root_cause=3; 子进程复验 FAILED->QUEUED 重试路径存在=true 且有界(<=3)=true; exit_code=0); regression=PASS(回归入口 verify-all.sh/ci.yml 存在=true; preserve_user_changes=true; validation_failed=repair_then_revalidate; BASELINE 已改跟踪文件=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11947 个 | 真实读取 execution-mapping 失败策略/重试上限 + node 子进程复验重试路径有界 + 回归门禁入口; 不调用 auto-repair 引擎 execute()",
+  "content_hash": "1a0e915b0c20e0d4c6a9d54924745001eabb73888c96241650152ff642bbff8d"
+}

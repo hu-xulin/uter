@@ -320452,6 +320452,411 @@
       "blocked_reasons": [],
       "error": null,
       "health_probe": false
+    },
+    "UAP-TASK-HEALTH-20261120150326-3020e226": {
+      "task_id": "UAP-TASK-HEALTH-20261120150326-3020e226",
+      "objective": "runtime health probe",
+      "scope": "task-engine",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "all steps succeed",
+        "independent validator passes"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "__health_step__",
+          "idempotent": true,
+          "handler": "__health_step__",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150327-f0def84f"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "ran": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "bf1fca805fb5b1d7649598d10f7e6cfb15bf3628fb179765368a21c14c6f68a5",
+      "trace_id": "UAP-TRACE-20261120150326-a39aa5cc",
+      "created_at": "2026-11-20T15:03:26.919Z",
+      "updated_at": "2026-11-20T15:03:28.317Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-20T15:03:27.082Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-20T15:03:27.082Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-20T15:03:27.901Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261120150327-f0def84f",
+        "UAP-EV-20261120150328-3ffc5348"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-20T15:03:27.728Z",
+          "evidence_refs": [
+            "UAP-EV-20261120150327-f0def84f",
+            "UAP-EV-20261120150328-3ffc5348"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261120150328-96ec3f82": {
+      "task_id": "UAP-TASK-INTERRUPT-20261120150328-96ec3f82",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150329-98976056"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150330-54ad77a2"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150330-90fd830e"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261120150328-ea917f4e",
+      "created_at": "2026-11-20T15:03:28.935Z",
+      "updated_at": "2026-11-20T15:03:31.609Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-20T15:03:29.114Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-20T15:03:29.114Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "recovery: previous process died while RUNNING",
+          "at": "2026-11-20T15:03:30.173Z"
+        },
+        {
+          "from": "WAITING_RECOVERY",
+          "to": "QUEUED",
+          "reason": "recovered from interruption",
+          "at": "2026-11-20T15:03:30.173Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "resumed execution",
+          "at": "2026-11-20T15:03:30.173Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-20T15:03:31.203Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261120150329-98976056",
+        "UAP-EV-20261120150330-54ad77a2",
+        "UAP-EV-20261120150330-90fd830e",
+        "UAP-EV-20261120150331-233e8efb"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-20T15:03:31.047Z",
+          "evidence_refs": [
+            "UAP-EV-20261120150329-98976056",
+            "UAP-EV-20261120150330-54ad77a2",
+            "UAP-EV-20261120150330-90fd830e",
+            "UAP-EV-20261120150331-233e8efb"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261120150332-1bef6ffd": {
+      "task_id": "UAP-TASK-INTERRUPT-20261120150332-1bef6ffd",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150333-095cf38a"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150334-48195bed"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261120150334-c78aa934"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261120150332-f7c001d3",
+      "created_at": "2026-11-20T15:03:32.799Z",
+      "updated_at": "2026-11-20T15:03:35.343Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-20T15:03:32.972Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-20T15:03:32.972Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "recovery: previous process died while RUNNING",
+          "at": "2026-11-20T15:03:33.985Z"
+        },
+        {
+          "from": "WAITING_RECOVERY",
+          "to": "QUEUED",
+          "reason": "recovered from interruption",
+          "at": "2026-11-20T15:03:33.985Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "resumed execution",
+          "at": "2026-11-20T15:03:33.985Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-20T15:03:34.954Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261120150333-095cf38a",
+        "UAP-EV-20261120150334-48195bed",
+        "UAP-EV-20261120150334-c78aa934",
+        "UAP-EV-20261120150335-c5466344"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-20T15:03:34.814Z",
+          "evidence_refs": [
+            "UAP-EV-20261120150333-095cf38a",
+            "UAP-EV-20261120150334-48195bed",
+            "UAP-EV-20261120150334-c78aa934",
+            "UAP-EV-20261120150335-c5466344"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
     }
   }
 }

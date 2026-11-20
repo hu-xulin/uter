@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261120150615-5c42532c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-20T15:06:15.122Z",
+  "started_at": "2026-11-20T15:06:15.122Z",
+  "finished_at": "2026-11-20T15:06:15.122Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261120150445-49ec543e",
+    "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+    "worktree_fingerprint": "c28683471784d4ff537f21f5a8ffd4d32e2fafb92fb88bea3abf8996638ef709",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261120150445-49ec543e",
+  "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+  "worktree_fingerprint": "c28683471784d4ff537f21f5a8ffd4d32e2fafb92fb88bea3abf8996638ef709",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate delivery.observability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"delivery.observability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "delivery.observability_integrity 实检: structured_logs=PASS(动态 import event-system 并调用 health().ok===true: health().ok=true; 导出 publish()=true); traceability=PASS(runCommand 真实返回含 6/6 个可追溯字段(command/cwd/started_at/duration_ms/exit_code/timed_out); exit_code=0); secret_redaction=PASS(子进程复跑 redact(): password 被 REDACTED=true; exit_code=0; policy-engine 源码用 redact()=true; policy redact_secrets=true=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11957 个 | 动态 import event-system 调用 health() + runCommand 真实返回可追溯字段 + node 子进程复跑 redact(); 全程本地只读/模拟",
+  "content_hash": "cddc024606d0d1ba433f3feff0a9e7392e1e105ccfc4f4591f530aeb037f0f66"
+}

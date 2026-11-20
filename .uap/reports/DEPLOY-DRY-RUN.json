@@ -1,30 +1,30 @@
 {
-  "generated_at": "2026-11-16T12:10:50.571Z",
+  "generated_at": "2026-11-20T15:06:14.450Z",
   "target": "http://localhost:3000",
   "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
   "version": {
-    "current": "v1.5.28",
-    "next_computed": "v1.5.29"
+    "current": "v1.6.40",
+    "next_computed": "v1.6.41"
   },
   "artifacts": {
-    "dist_files": 2872,
-    "binary_sha256": "3ca7b1159cfec7a7f6e6697b1e16f50092214bdcbf3e85f177ca6dc42caa1fe7"
+    "dist_files": 2874,
+    "binary_sha256": "62509edfd45b8a2f67e95a51e1e953827890d714da75273b204612d43f2562db"
   },
   "steps": [
     {
       "name": "preflight_artifacts",
       "ok": true,
-      "detail": "VERSION=v1.5.28; web/dist 清单=2872 个文件; release 二进制 sha256=3ca7b1159cfec7a7…"
+      "detail": "VERSION=v1.6.40; web/dist 清单=2874 个文件; release 二进制 sha256=62509edfd45b8a2f…"
     },
     {
       "name": "version_advance_computed",
       "ok": true,
-      "detail": "current=v1.5.28 -> next=v1.5.29 (仅计算, 不回写仓库 VERSION)"
+      "detail": "current=v1.6.40 -> next=v1.6.41 (仅计算, 不回写仓库 VERSION)"
     },
     {
       "name": "publish_manifest_integrity",
       "ok": true,
-      "detail": "发布槽复制 web/dist(2872 文件) 与构建清单逐文件 sha256 比对: 完全一致"
+      "detail": "发布槽复制 web/dist(2874 文件) 与构建清单逐文件 sha256 比对: 完全一致"
     },
     {
       "name": "health_check_live",
@@ -39,7 +39,7 @@
     {
       "name": "boundary_temp_only",
       "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-17neNZ (os.tmpdir), 仓库无演练产物"
+      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-q9AlXO (os.tmpdir), 仓库无演练产物"
     }
   ],
   "verdict": {

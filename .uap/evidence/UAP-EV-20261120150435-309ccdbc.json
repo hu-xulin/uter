@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261120150435-309ccdbc",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-20T15:04:35.445Z",
+  "started_at": "2026-11-20T15:04:35.445Z",
+  "finished_at": "2026-11-20T15:04:35.445Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261120150327-b64b3b39",
+    "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+    "worktree_fingerprint": "6ca2f1bc77a5fb23622bba7bd1f91a2b175039959b76b66c6fb775e28e174209",
+    "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261120150327-b64b3b39",
+  "git_head": "32780a50cf1f4b91a31a3875bcf362bf8c7e5090",
+  "worktree_fingerprint": "6ca2f1bc77a5fb23622bba7bd1f91a2b175039959b76b66c6fb775e28e174209",
+  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v24.21.0",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.prototype_consistency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.prototype_consistency\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.prototype_consistency 实检: prd_mapping=PASS(docs/product/prd/*.md=56; product-model 每个 feature 含 prd 字段=true; 规范映射语义=true); prototype_mapping=PASS(原型 .md=56 .html=56; prototype-registry 含 PP-/PROTO- ID=true; product-model 每个 feature 含 prototype=true); change_detection=PASS(change-registry conflicts:[]=true CHG-=true; product-model conflicts=0 snapshots=1; history/v1.json 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 11933 个 | 真实统计 PRD/原型投影文件(各 56) + change-registry 冲突为空 + 历史快照",
+  "content_hash": "0ffbc846b77504ec000e7a001d0bf7f715e7c4674385789c17b9b2fc3c8db0ed"
+}

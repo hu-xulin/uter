@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T12:10:41.060Z",
+  "generated_at": "2026-11-20T15:06:05.838Z",
   "target": "http://localhost:3000",
   "blocked": false,
   "browser": "playwright chromium (headless, real render)",
@@ -33,12 +33,12 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
-            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
-            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
-            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]",
+            "a.group/button.inline-flex \"开始使用\" [126x40] eff=[126x40]",
+            "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
+            "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -83,9 +83,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [294x40] eff=[294x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
@@ -133,9 +133,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [294x40] eff=[294x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
@@ -183,9 +183,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [294x40] eff=[294x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [294x40] eff=[294x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [294x40] eff=[294x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
@@ -233,9 +233,9 @@
         "below_uter_recommended_44": {
           "count": 3,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -280,12 +280,12 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
-            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
-            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
-            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]",
+            "a.group/button.inline-flex \"开始使用\" [126x40] eff=[126x40]",
+            "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
+            "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -330,9 +330,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [279x40] eff=[279x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
@@ -380,9 +380,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [279x40] eff=[279x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
@@ -430,9 +430,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [279x40] eff=[279x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [279x40] eff=[279x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [279x40] eff=[279x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
@@ -480,9 +480,9 @@
         "below_uter_recommended_44": {
           "count": 3,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -527,12 +527,12 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
-            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
-            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
-            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]",
+            "a.group/button.inline-flex \"开始使用\" [126x40] eff=[126x40]",
+            "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
+            "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -577,9 +577,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [334x40] eff=[334x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
@@ -627,9 +627,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [334x40] eff=[334x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
@@ -677,9 +677,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [334x40] eff=[334x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [334x40] eff=[334x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [334x40] eff=[334x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
@@ -727,9 +727,9 @@
         "below_uter_recommended_44": {
           "count": 3,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -774,12 +774,12 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]",
-            "a.group/button.inline-flex \"开始使用\" [126x36] eff=[126x36]",
-            "a.group/button.inline-flex \"查看定价\" [98x36] eff=[98x36]",
-            "a.group/button.shrink-0 \"文档\" [94x36] eff=[94x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]",
+            "a.group/button.inline-flex \"开始使用\" [126x40] eff=[126x40]",
+            "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
+            "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -824,9 +824,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -874,9 +874,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -924,9 +924,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -974,9 +974,9 @@
         "below_uter_recommended_44": {
           "count": 3,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
-            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [36x36] eff=[36x36]",
-            "button.group/button.inline-flex \"切换导航菜单\" [36x36] eff=[36x36]"
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
+            "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
+            "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
@@ -1021,7 +1021,7 @@
         "below_uter_recommended_44": {
           "count": 16,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
             "a.min-w-0.truncate \"首页\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"管理\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"定价\" [52x38] eff=[52x38]",
@@ -1066,9 +1066,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -1111,9 +1111,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -1156,9 +1156,9 @@
         "below_uter_recommended_44": {
           "count": 8,
           "samples": [
-            "a.absolute.top-4 \"优特智能\" [112x32] eff=[112x32]",
-            "button.group/button.inline-flex \"WeChat使用微信登录\" [416x40] eff=[416x40]",
+            "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
+            "button.group/button.inline-flex \"Discord使用 Discord 登录\" [416x40] eff=[416x40]",
             "input#email-code-login-email.border-input.hover:border-border-strong [416x40] eff=[416x40]",
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
@@ -1199,9 +1199,9 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 20,
+          "count": 23,
           "samples": [
-            "a.group.flex \"优特智能\" [110x28] eff=[110x28]",
+            "a.group.flex \"优特智能\" [114x26] eff=[114x26]",
             "a.min-w-0.truncate \"首页\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"管理\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"定价\" [52x38] eff=[52x38]",
@@ -1211,14 +1211,18 @@
           "standard": "design-system §15.3 推荐 44x44px（非强制）"
         },
         "below_wcag_min_24": {
-          "count": 0,
-          "samples": [],
+          "count": 3,
+          "samples": [
+            "button.flex.min-w-0 \"用户指南\" [203x22] eff=[203x22]",
+            "button.flex.min-w-0 \"API 参考\" [203x22] eff=[203x22]",
+            "button.flex.min-w-0 \"AI 应用\" [203x22] eff=[203x22]"
+          ],
           "standard": "WCAG 2.5.8 硬线 24x24px（违规即 FAIL）"
         },
         "wcag_258_exemptions_applied": {
           "disabled_or_sr_only": 5,
           "label_wrapped_measured": 0,
-          "inline_exception": 6,
+          "inline_exception": 3,
           "pseudo_extended_pass": 20
         }
       },

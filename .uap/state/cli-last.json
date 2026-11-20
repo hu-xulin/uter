@@ -1,139 +1,17 @@
 {
-  "status": "FAIL",
-  "exit_code": 1,
-  "summary": "status consistency FAILED: 7 disagreement(s)",
+  "status": "PASS",
+  "exit_code": 0,
+  "summary": "validate: 32/32 validators passed with real checks",
   "data": {
-    "checks": [
-      {
-        "name": "final_status_exists",
-        "status": "PASS",
-        "detail": "FINAL-STATUS.json present"
-      },
-      {
-        "name": "final_acceptance_exists",
-        "status": "PASS",
-        "detail": "FINAL-ACCEPTANCE.json present"
-      },
-      {
-        "name": "index_status_block_exists",
-        "status": "PASS",
-        "detail": "UAP-STATUS-BLOCK present"
-      },
-      {
-        "name": "final_acceptance_bound_to_current_execution",
-        "status": "FAIL",
-        "detail": "gate=UAP-EXEC-20261116115030-6a0ef6da/cfb471c6cd043d81228e9703ff95d6d61c61da62/c7131af634f4 current=UAP-EXEC-20261118092646-a0b6b27f/af932671517227696a133cd4fca6808bf4f15258/edaba8b51764"
-      },
-      {
-        "name": "report_matches_recomputed_verdict",
-        "status": "FAIL",
-        "detail": "report=FAILED recomputed=IMPLEMENTED_NOT_VERIFIED"
-      },
-      {
-        "name": "index_overall_matches_report",
-        "status": "PASS",
-        "detail": "index=FAILED report=FAILED"
-      },
-      {
-        "name": "claim_allowed_matches_engine",
-        "status": "PASS",
-        "detail": "report=false gate=false"
-      },
-      {
-        "name": "claim_allowed_matches_state_machine",
-        "status": "PASS",
-        "detail": "overall=IMPLEMENTED_NOT_VERIFIED claim_allowed=false"
-      },
-      {
-        "name": "all_final_reports_bound_to_same_batch",
-        "status": "FAIL",
-        "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; DATABASE-INTEGRATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-INTEGRATION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; DATABASE-INTEGRATION.json: generated_at=2026-11-16T11:53:12.435Z is stale (164125236ms > 86400000ms); DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; DATABASE-MIGRATIONS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; DATABASE-MIGRATIONS.json: generated_at=2026-11-16T11:53:12.969Z is stale (164124702ms > 86400000ms); PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; PAYMENT-SANDBOX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; PAYMENT-SANDBOX.json: generated_at=2026-11-16T11:53:00.791Z is stale (164136880ms > 86400000ms); E2E-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; E2E-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; E2E-RESULTS.json: worktree_fingerprint mismatch; E2E-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; E2E-RESULTS.json: generated_at=2026-11-16T11:55:00.529Z is stale (164017142ms > 86400000ms); ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; ACCESSIBILITY-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; ACCESSIBILITY-RESULTS.json: generated_at=2026-11-16T11:55:01.524Z is stale (164016147ms > 86400000ms); VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; VISUAL-REGRESSION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; VISUAL-REGRESSION.json: worktree_fingerprint mismatch; VISUAL-REGRESSION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; VISUAL-REGRESSION.json: generated_at=2026-11-16T12:00:29.251Z is stale (163688420ms > 86400000ms); SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; SECURITY-VERIFICATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; SECURITY-VERIFICATION.json: generated_at=2026-11-16T12:01:25.458Z is stale (163632213ms > 86400000ms); REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; REQUIREMENT-TRACEABILITY-MATRIX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: generated_at=2026-11-16T11:52:50.554Z is stale (164147117ms > 86400000ms); REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; REQUIREMENT-VERIFICATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: generated_at=2026-11-16T11:52:50.093Z is stale (164147578ms > 86400000ms); RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2 expected=UAP-EXEC-20261118092646-a0b6b27f; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd expected=af932671517227696a133cd4fca6808bf4f15258; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; VALIDATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; VALIDATION-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: generated_at=2026-11-16T12:10:52.959Z is stale (163064712ms > 86400000ms); BUILD-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; BUILD-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; BUILD-RESULTS.json: worktree_fingerprint mismatch; BUILD-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; BUILD-RESULTS.json: generated_at=2026-11-16T12:08:56.020Z is stale (163181651ms > 86400000ms); FINAL-ACCEPTANCE.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; FINAL-ACCEPTANCE.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; FINAL-ACCEPTANCE.json: worktree_fingerprint mismatch; FINAL-ACCEPTANCE.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; FINAL-ACCEPTANCE.json: generated_at=2026-11-16T12:12:15.073Z is stale (162982598ms > 86400000ms); FINAL-STATUS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; FINAL-STATUS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; FINAL-STATUS.json: worktree_fingerprint mismatch; FINAL-STATUS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; FINAL-STATUS.json: generated_at=2026-11-16T12:12:15.815Z is stale (162981856ms > 86400000ms)"
-      },
-      {
-        "name": "worktree_fingerprint_is_not_empty_hash",
-        "status": "PASS",
-        "detail": "fingerprint=edaba8b51764fd2d5d3457d443d30b9491a4166be5e40c6ceb9f2a47df00e5b4"
-      },
-      {
-        "name": "code_unchanged_since_batch_start",
-        "status": "PASS",
-        "detail": "now=edaba8b51764fd2d5d3457d443d30b9491a4166be5e40c6ceb9f2a47df00e5b4 bound=edaba8b51764fd2d5d3457d443d30b9491a4166be5e40c6ceb9f2a47df00e5b4"
-      },
-      {
-        "name": "git_head_matches_current_run",
-        "status": "PASS",
-        "detail": "now=af932671517227696a133cd4fca6808bf4f15258 bound=af932671517227696a133cd4fca6808bf4f15258"
-      },
-      {
-        "name": "environment_fingerprint_matches_current_run",
-        "status": "PASS",
-        "detail": "now=949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a bound=949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a"
-      },
-      {
-        "name": "single_batch_consistency_proven",
-        "status": "FAIL",
-        "detail": "single_execution_id=true single_git_head=true single_worktree_fingerprint=true single_environment_fingerprint=true evidence_integrity=true evidence_freshness=true"
-      },
-      {
-        "name": "capability_cards_have_real_counts_and_bindings",
-        "status": "FAIL",
-        "detail": "DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; DATABASE-INTEGRATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; PAYMENT-SANDBOX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; PAYMENT-SANDBOX.json: fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; E2E-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; ACCESSIBILITY-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; VISUAL-REGRESSION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; VISUAL-REGRESSION.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; SECURITY-VERIFICATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; VALIDATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; VALIDATION-RESULTS.json: fingerprint mismatch"
-      },
-      {
-        "name": "evidence_manifest_hashes_and_bindings",
-        "status": "FAIL",
-        "detail": "manifest execution_id=UAP-EXEC-20261116115030-6a0ef6da current=UAP-EXEC-20261118092646-a0b6b27f; manifest git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 current=af932671517227696a133cd4fca6808bf4f15258; manifest worktree_fingerprint=c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b current=edaba8b51764fd2d5d3457d443d30b9491a4166be5e40c6ceb9f2a47df00e5b4; manifest commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 HEAD now=af932671517227696a133cd4fca6808bf4f15258; RUNTIME-TEST-RESULTS.json: sha256 changed (was bcd9bcda8d3a99eec6d88546d53801d71e6e40e6e99cfa55318a4af19a525182, now d42f7c347c6b210162dc1666ea51d93b937ab9720cf9714eb0ac3afc78c72daa); RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2 manifest=UAP-EXEC-20261116115030-6a0ef6da; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd manifest=cfb471c6cd043d81228e9703ff95d6d61c61da62; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest"
-      },
-      {
-        "name": "no_stale_pass_promoted",
-        "status": "PASS",
-        "detail": "claim_allowed=false gate_current=false manifest_ok=false"
-      },
-      {
-        "name": "p0_blockers_forbid_full_claim",
-        "status": "PASS",
-        "detail": "claim_allowed=false open_p0=2"
-      },
-      {
-        "name": "cli_process_executed",
-        "status": "PASS",
-        "detail": "uap status --json exit 0"
-      },
-      {
-        "name": "cli_overall_matches_report",
-        "status": "FAIL",
-        "detail": "cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
-      },
-      {
-        "name": "cli_execution_matches_report",
-        "status": "PASS",
-        "detail": "cli=UAP-EXEC-20261118092646-a0b6b27f current=UAP-EXEC-20261118092646-a0b6b27f"
-      }
-    ],
-    "problems": [
-      "final_acceptance_bound_to_current_execution: gate=UAP-EXEC-20261116115030-6a0ef6da/cfb471c6cd043d81228e9703ff95d6d61c61da62/c7131af634f4 current=UAP-EXEC-20261118092646-a0b6b27f/af932671517227696a133cd4fca6808bf4f15258/edaba8b51764",
-      "report_matches_recomputed_verdict: report=FAILED recomputed=IMPLEMENTED_NOT_VERIFIED",
-      "all_final_reports_bound_to_same_batch: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; DATABASE-INTEGRATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; DATABASE-INTEGRATION.json: worktree_fingerprint mismatch; DATABASE-INTEGRATION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; DATABASE-INTEGRATION.json: generated_at=2026-11-16T11:53:12.435Z is stale (164125236ms > 86400000ms); DATABASE-MIGRATIONS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; DATABASE-MIGRATIONS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; DATABASE-MIGRATIONS.json: worktree_fingerprint mismatch; DATABASE-MIGRATIONS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; DATABASE-MIGRATIONS.json: generated_at=2026-11-16T11:53:12.969Z is stale (164124702ms > 86400000ms); PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; PAYMENT-SANDBOX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; PAYMENT-SANDBOX.json: worktree_fingerprint mismatch; PAYMENT-SANDBOX.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; PAYMENT-SANDBOX.json: generated_at=2026-11-16T11:53:00.791Z is stale (164136880ms > 86400000ms); E2E-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; E2E-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; E2E-RESULTS.json: worktree_fingerprint mismatch; E2E-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; E2E-RESULTS.json: generated_at=2026-11-16T11:55:00.529Z is stale (164017142ms > 86400000ms); ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; ACCESSIBILITY-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; ACCESSIBILITY-RESULTS.json: worktree_fingerprint mismatch; ACCESSIBILITY-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; ACCESSIBILITY-RESULTS.json: generated_at=2026-11-16T11:55:01.524Z is stale (164016147ms > 86400000ms); VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; VISUAL-REGRESSION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; VISUAL-REGRESSION.json: worktree_fingerprint mismatch; VISUAL-REGRESSION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; VISUAL-REGRESSION.json: generated_at=2026-11-16T12:00:29.251Z is stale (163688420ms > 86400000ms); SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; SECURITY-VERIFICATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; SECURITY-VERIFICATION.json: worktree_fingerprint mismatch; SECURITY-VERIFICATION.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; SECURITY-VERIFICATION.json: generated_at=2026-11-16T12:01:25.458Z is stale (163632213ms > 86400000ms); REQUIREMENT-TRACEABILITY-MATRIX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; REQUIREMENT-TRACEABILITY-MATRIX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; REQUIREMENT-TRACEABILITY-MATRIX.json: worktree_fingerprint mismatch; REQUIREMENT-TRACEABILITY-MATRIX.json: generated_at=2026-11-16T11:52:50.554Z is stale (164147117ms > 86400000ms); REQUIREMENT-VERIFICATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; REQUIREMENT-VERIFICATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; REQUIREMENT-VERIFICATION-RESULTS.json: worktree_fingerprint mismatch; REQUIREMENT-VERIFICATION-RESULTS.json: generated_at=2026-11-16T11:52:50.093Z is stale (164147578ms > 86400000ms); RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2 expected=UAP-EXEC-20261118092646-a0b6b27f; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd expected=af932671517227696a133cd4fca6808bf4f15258; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; VALIDATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; VALIDATION-RESULTS.json: worktree_fingerprint mismatch; VALIDATION-RESULTS.json: generated_at=2026-11-16T12:10:52.959Z is stale (163064712ms > 86400000ms); BUILD-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; BUILD-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; BUILD-RESULTS.json: worktree_fingerprint mismatch; BUILD-RESULTS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; BUILD-RESULTS.json: generated_at=2026-11-16T12:08:56.020Z is stale (163181651ms > 86400000ms); FINAL-ACCEPTANCE.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; FINAL-ACCEPTANCE.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; FINAL-ACCEPTANCE.json: worktree_fingerprint mismatch; FINAL-ACCEPTANCE.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; FINAL-ACCEPTANCE.json: generated_at=2026-11-16T12:12:15.073Z is stale (162982598ms > 86400000ms); FINAL-STATUS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da expected=UAP-EXEC-20261118092646-a0b6b27f; FINAL-STATUS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 expected=af932671517227696a133cd4fca6808bf4f15258; FINAL-STATUS.json: worktree_fingerprint mismatch; FINAL-STATUS.json: commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 != HEAD=af932671517227696a133cd4fca6808bf4f15258; FINAL-STATUS.json: generated_at=2026-11-16T12:12:15.815Z is stale (162981856ms > 86400000ms)",
-      "single_batch_consistency_proven: single_execution_id=true single_git_head=true single_worktree_fingerprint=true single_environment_fingerprint=true evidence_integrity=true evidence_freshness=true",
-      "capability_cards_have_real_counts_and_bindings: DATABASE-INTEGRATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; DATABASE-INTEGRATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; DATABASE-INTEGRATION.json: fingerprint mismatch; PAYMENT-SANDBOX.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; PAYMENT-SANDBOX.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; PAYMENT-SANDBOX.json: fingerprint mismatch; E2E-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; E2E-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; E2E-RESULTS.json: fingerprint mismatch; ACCESSIBILITY-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; ACCESSIBILITY-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; ACCESSIBILITY-RESULTS.json: fingerprint mismatch; VISUAL-REGRESSION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; VISUAL-REGRESSION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; VISUAL-REGRESSION.json: fingerprint mismatch; SECURITY-VERIFICATION.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; SECURITY-VERIFICATION.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; SECURITY-VERIFICATION.json: fingerprint mismatch; RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd; RUNTIME-TEST-RESULTS.json: fingerprint mismatch; VALIDATION-RESULTS.json: execution_id=UAP-EXEC-20261116115030-6a0ef6da; VALIDATION-RESULTS.json: git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62; VALIDATION-RESULTS.json: fingerprint mismatch",
-      "evidence_manifest_hashes_and_bindings: manifest execution_id=UAP-EXEC-20261116115030-6a0ef6da current=UAP-EXEC-20261118092646-a0b6b27f; manifest git_head=cfb471c6cd043d81228e9703ff95d6d61c61da62 current=af932671517227696a133cd4fca6808bf4f15258; manifest worktree_fingerprint=c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b current=edaba8b51764fd2d5d3457d443d30b9491a4166be5e40c6ceb9f2a47df00e5b4; manifest commit_sha=cfb471c6cd043d81228e9703ff95d6d61c61da62 HEAD now=af932671517227696a133cd4fca6808bf4f15258; RUNTIME-TEST-RESULTS.json: sha256 changed (was bcd9bcda8d3a99eec6d88546d53801d71e6e40e6e99cfa55318a4af19a525182, now d42f7c347c6b210162dc1666ea51d93b937ab9720cf9714eb0ac3afc78c72daa); RUNTIME-TEST-RESULTS.json: execution_id=UAP-EXEC-20261118064153-8984eda2 manifest=UAP-EXEC-20261116115030-6a0ef6da; RUNTIME-TEST-RESULTS.json: git_head=4e79c44f17206d5ec98d3eb597cabf679c2079fd manifest=cfb471c6cd043d81228e9703ff95d6d61c61da62; RUNTIME-TEST-RESULTS.json: worktree_fingerprint mismatch with manifest",
-      "cli_overall_matches_report: cli=IMPLEMENTED_NOT_VERIFIED report=FAILED"
-    ],
-    "recomputed_status": "IMPLEMENTED_NOT_VERIFIED",
-    "report_status": "FAILED",
-    "index_status": "FAILED",
-    "execution_id": "UAP-EXEC-20261118092646-a0b6b27f",
-    "git_head": "af932671517227696a133cd4fca6808bf4f15258",
-    "reasons": [
-      "stale artefacts not bound to current execution/HEAD: tests,validators",
-      "538/538 applicable requirements lack current valid evidence",
-      "415 requirement(s) have no evidence record",
-      "2 unresolved P0 blocker(s)"
-    ],
-    "artefact": ".uap/reports/STATUS-CONSISTENCY.json"
+    "mode": "all",
+    "total": 32,
+    "pass": 32,
+    "fail": 0,
+    "blocked": 0,
+    "failures": []
   },
-  "command": "verify-status",
-  "duration_ms": 11366,
-  "generated_at": "2026-11-18T09:28:44.072Z",
-  "evidence_ref": "UAP-EV-20261118092844-48fa7fac"
+  "command": "validate --all",
+  "duration_ms": 106022,
+  "generated_at": "2026-11-20T15:06:16.250Z",
+  "evidence_ref": "UAP-EV-20261120150616-4c059a53"
 }
