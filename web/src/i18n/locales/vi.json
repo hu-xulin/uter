@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "{{count}} bị chặn",
     "All price tiers ({{count}})": "Tất cả bậc giá ({{count}})",
     "Upstream channel price tiers ({{count}})": "Bậc giá kênh thượng nguồn ({{count}})",
-    "Review reasons": "Lý do cần xem xét"
+    "Review reasons": "Lý do cần xem xét",
+    "Tiered token prices": "Giá token theo bậc",
+    "Price tiers (JSON)": "Các bậc giá (JSON)",
+    "One band per context range. Time bands must match or stay empty.": "Mỗi khoảng ngữ cảnh một bậc. Các khung giờ phải giống nhau hoặc để trống.",
+    "Tiers must be valid JSON.": "Các bậc phải là JSON hợp lệ.",
+    "Add at least one price tier.": "Thêm ít nhất một bậc giá.",
+    "Sale tiers ({{count}})": "Bậc giá bán ({{count}})"
   }
 }

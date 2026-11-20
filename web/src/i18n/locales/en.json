@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "{{count}} blocked",
     "All price tiers ({{count}})": "All price tiers ({{count}})",
     "Upstream channel price tiers ({{count}})": "Upstream channel price tiers ({{count}})",
-    "Review reasons": "Review reasons"
+    "Review reasons": "Review reasons",
+    "Tiered token prices": "Tiered token prices",
+    "Price tiers (JSON)": "Price tiers (JSON)",
+    "One band per context range. Time bands must match or stay empty.": "One band per context range. Time bands must match or stay empty.",
+    "Tiers must be valid JSON.": "Tiers must be valid JSON.",
+    "Add at least one price tier.": "Add at least one price tier.",
+    "Sale tiers ({{count}})": "Sale tiers ({{count}})"
   }
 }

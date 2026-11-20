@@ -298,8 +298,27 @@ export interface ChannelUpstreamQuoteView {
   discount_ratio?: number
 }
 
+export interface ChannelInternalPricingTierView {
+  range_name: string
+  time_band?: string
+  min_input_tokens?: number
+  max_input_tokens?: number
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
+  per_unit_usd?: number
+  unit: string
+}
+
 export interface ChannelInternalPricingView {
-  mode: 'per_1m_token' | 'per_call' | 'per_second' | 'per_minute'
+  mode:
+    | 'per_1m_token'
+    | 'per_call'
+    | 'per_second'
+    | 'per_minute'
+    | 'tiered_table'
+  tiers?: ChannelInternalPricingTierView[]
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number

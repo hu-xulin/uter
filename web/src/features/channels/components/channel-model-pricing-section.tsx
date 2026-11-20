@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Textarea } from '@/components/ui/textarea'
 import { toIntlLocale } from '@/i18n/languages'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -49,7 +50,12 @@ import type {
 } from '../types'
 
 type EditDraft = {
-  mode: 'per_1m_token' | 'per_call' | 'per_second' | 'per_minute'
+  mode:
+    | 'per_1m_token'
+    | 'per_call'
+    | 'per_second'
+    | 'per_minute'
+    | 'tiered_table'
   input: string
   output: string
   cache: string
@@ -57,6 +63,7 @@ type EditDraft = {
   perCall: string
   perSecond: string
   perMinute: string
+  tiersText: string
   note: string
 }
 
@@ -69,6 +76,7 @@ function modeFromInternal(mode: string | undefined): EditDraft['mode'] {
   if (mode === 'per_call') return 'per_call'
   if (mode === 'per_second') return 'per_second'
   if (mode === 'per_minute') return 'per_minute'
+  if (mode === 'tiered_table') return 'tiered_table'
   return 'per_1m_token'
 }
 
@@ -83,6 +91,10 @@ function draftFrom(record: ChannelModelPricingRecord): EditDraft {
     perCall: internal?.per_call_usd?.toString() ?? '',
     perSecond: internal?.per_second_usd?.toString() ?? '',
     perMinute: internal?.per_minute_usd?.toString() ?? '',
+    tiersText:
+      internal?.tiers && internal.tiers.length > 0
+        ? JSON.stringify(internal.tiers, null, 2)
+        : '',
     note: internal?.note ?? '',
   }
 }
@@ -174,6 +186,31 @@ export function ChannelModelPricingSection(
         note: draft.note.trim() || undefined,
         updated_at: Math.floor(Date.now() / 1000),
       }
+      if (draft.mode === 'tiered_table') {
+        let tiers: unknown
+        try {
+          tiers = JSON.parse(draft.tiersText)
+        } catch {
+          throw new Error(t('Tiers must be valid JSON.'))
+        }
+        if (!Array.isArray(tiers) || tiers.length === 0) {
+          throw new Error(t('Add at least one price tier.'))
+        }
+        pricing.mode = 'tiered_table'
+        pricing.tiers = tiers as NonNullable<
+          ChannelInternalPricingView['tiers']
+        >
+        return setChannelModelPricing(
+          props.channelId,
+          editing.model_name,
+          pricing,
+          {
+            provider: editing.provider,
+            region: editing.region,
+            deploymentId: editing.deployment_id,
+          }
+        )
+      }
       if (draft.mode === 'per_call') {
         pricing.per_call_usd = parsePrice(draft.perCall)
       } else if (draft.mode === 'per_second') {
@@ -222,6 +259,9 @@ export function ChannelModelPricingSection(
     }
     if (item.internal.mode === 'per_call') {
       return formatUsd(item.internal.per_call_usd)
+    }
+    if (item.internal.mode === 'tiered_table' || item.internal.tiers?.length) {
+      return t('{{count}} tiers', { count: item.internal.tiers?.length ?? 0 })
     }
     return `${formatUsd(item.internal.input_per_million_usd)} / ${formatUsd(item.internal.output_per_million_usd)}`
   }
@@ -431,6 +471,39 @@ export function ChannelModelPricingSection(
                     ? pricingRuleLabel(item.internal, t)
                     : t('No rule')}
                 </span>
+                {item.internal?.tiers?.length ? (
+                  <details>
+                    <summary className='text-muted-foreground cursor-pointer text-sm'>
+                      {t('Sale tiers ({{count}})', {
+                        count: item.internal.tiers.length,
+                      })}
+                    </summary>
+                    <ul className='mt-1 space-y-0.5'>
+                      {item.internal.tiers.map((tier) => (
+                        <li
+                          key={`sale|${tier.range_name}|${tier.time_band ?? ''}|${tier.unit}|${tier.min_input_tokens ?? 0}-${tier.max_input_tokens ?? 0}`}
+                          className='text-muted-foreground font-mono text-sm'
+                        >
+                          {tier.range_name || t('Default')}
+                          {tier.time_band ? ` · ${tier.time_band}` : ''} ·{' '}
+                          {formatTierPrice({
+                            range_name: tier.range_name,
+                            time_band: tier.time_band,
+                            min_input_tokens: tier.min_input_tokens,
+                            max_input_tokens: tier.max_input_tokens,
+                            input_per_million_usd: tier.input_per_million_usd,
+                            output_per_million_usd: tier.output_per_million_usd,
+                            cache_per_million_usd: tier.cache_per_million_usd,
+                            create_cache_per_million_usd:
+                              tier.create_cache_per_million_usd,
+                            per_unit_usd: tier.per_unit_usd,
+                            unit: tier.unit,
+                          })}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                ) : null}
                 <span className='text-muted-foreground'>
                   {t('Provider')}: {item.provider || '—'}
                 </span>
@@ -581,7 +654,8 @@ export function ChannelModelPricingSection(
                           mode:
                             value === 'per_call' ||
                             value === 'per_second' ||
-                            value === 'per_minute'
+                            value === 'per_minute' ||
+                            value === 'tiered_table'
                               ? value
                               : 'per_1m_token',
                         }
@@ -599,9 +673,41 @@ export function ChannelModelPricingSection(
                   <SelectItem value='per_call'>{t('Per call')}</SelectItem>
                   <SelectItem value='per_second'>{t('Per second')}</SelectItem>
                   <SelectItem value='per_minute'>{t('Per minute')}</SelectItem>
+                  <SelectItem value='tiered_table'>
+                    {t('Tiered token prices')}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {draft.mode === 'tiered_table' && (
+              <div className='space-y-1.5'>
+                <Label>{t('Price tiers (JSON)')}</Label>
+                <Textarea
+                  rows={10}
+                  className='font-mono'
+                  value={draft.tiersText}
+                  onChange={(event) =>
+                    setDraft((prev) =>
+                      prev ? { ...prev, tiersText: event.target.value } : prev
+                    )
+                  }
+                  placeholder={`[
+  {
+    "range_name": "0-32k",
+    "max_input_tokens": 32768,
+    "input_per_million_usd": 1.2,
+    "output_per_million_usd": 4.8,
+    "unit": "per_1m_token"
+  }
+]`}
+                />
+                <p className='text-muted-foreground text-sm'>
+                  {t(
+                    'One band per context range. Time bands must match or stay empty.'
+                  )}
+                </p>
+              </div>
+            )}
             {draft.mode === 'per_call' && (
               <div className='space-y-1.5'>
                 <Label>{t('Price per call (USD)')}</Label>

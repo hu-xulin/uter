@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "{{count}} bloqués",
     "All price tiers ({{count}})": "Toutes les tranches de prix ({{count}})",
     "Upstream channel price tiers ({{count}})": "Tranches de prix du canal amont ({{count}})",
-    "Review reasons": "Motifs de révision"
+    "Review reasons": "Motifs de révision",
+    "Tiered token prices": "Prix par paliers de tokens",
+    "Price tiers (JSON)": "Paliers de prix (JSON)",
+    "One band per context range. Time bands must match or stay empty.": "Un palier par plage de contexte. Les périodes doivent être identiques ou vides.",
+    "Tiers must be valid JSON.": "Les paliers doivent être un JSON valide.",
+    "Add at least one price tier.": "Ajoutez au moins un palier de prix.",
+    "Sale tiers ({{count}})": "Paliers de vente ({{count}})"
   }
 }

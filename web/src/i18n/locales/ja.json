@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "{{count}} 件ブロック",
     "All price tiers ({{count}})": "すべての価格帯（{{count}}）",
     "Upstream channel price tiers ({{count}})": "上流チャネルの価格帯（{{count}}）",
-    "Review reasons": "確認理由"
+    "Review reasons": "確認理由",
+    "Tiered token prices": "段階的トークン価格",
+    "Price tiers (JSON)": "価格帯（JSON）",
+    "One band per context range. Time bands must match or stay empty.": "コンテキスト範囲ごとに1つの帯。時間帯は一致させるか空欄にしてください。",
+    "Tiers must be valid JSON.": "価格帯は有効な JSON で入力してください。",
+    "Add at least one price tier.": "価格帯を1つ以上追加してください。",
+    "Sale tiers ({{count}})": "販売価格帯（{{count}}）"
   }
 }

@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "Заблокировано: {{count}}",
     "All price tiers ({{count}})": "Все ценовые диапазоны ({{count}})",
     "Upstream channel price tiers ({{count}})": "Ценовые диапазоны канала поставщика ({{count}})",
-    "Review reasons": "Причины проверки"
+    "Review reasons": "Причины проверки",
+    "Tiered token prices": "Ступенчатые цены на токены",
+    "Price tiers (JSON)": "Ценовые диапазоны (JSON)",
+    "One band per context range. Time bands must match or stay empty.": "Один диапазон на каждую полосу контекста. Временные полосы должны совпадать или быть пустыми.",
+    "Tiers must be valid JSON.": "Диапазоны должны быть корректным JSON.",
+    "Add at least one price tier.": "Добавьте хотя бы один ценовой диапазон.",
+    "Sale tiers ({{count}})": "Диапазоны продажи ({{count}})"
   }
 }

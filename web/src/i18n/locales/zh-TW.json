@@ -8518,6 +8518,12 @@
     "{{count}} blocked": "{{count}} 個被阻擋",
     "All price tiers ({{count}})": "全部價格檔位（{{count}}）",
     "Upstream channel price tiers ({{count}})": "上游渠道價格檔位（{{count}}）",
-    "Review reasons": "覆核原因"
+    "Review reasons": "覆核原因",
+    "Tiered token prices": "階梯 Token 價格",
+    "Price tiers (JSON)": "價格檔位（JSON）",
+    "One band per context range. Time bands must match or stay empty.": "每個上下文區間一個檔位；時段必須一致或全部留空。",
+    "Tiers must be valid JSON.": "檔位必須是有效的 JSON。",
+    "Add at least one price tier.": "至少新增一個價格檔位。",
+    "Sale tiers ({{count}})": "銷售檔位（{{count}}）"
   }
 }
