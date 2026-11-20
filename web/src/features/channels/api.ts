@@ -1012,6 +1012,16 @@ export type ChannelBatchPricingItem = {
   change_percent?: number
   margin_usd?: number
   margin_rate?: number
+  dimension_margins?: {
+    dimension: string
+    purchase_usd?: number
+    sale_usd?: number
+    margin_usd?: number
+    margin_rate?: number
+    issue?: string
+  }[]
+  margin_verified?: boolean
+  protection_state?: string
 }
 
 export type ChannelBatchPricingResult = {
@@ -1024,6 +1034,8 @@ export type ChannelBatchPricingResult = {
   skipped: Array<{ model_name: string; reason: string }>
   conflicts?: string[]
   dimensions?: string[]
+  blocked?: number
+  protection?: string
 }
 
 export async function batchChannelModelPricing(
@@ -1039,6 +1051,9 @@ export async function batchChannelModelPricing(
     overwrite_manual?: boolean
     versions?: Record<string, string>
     dimensions?: string[]
+    min_margin_rate?: number
+    protection_mode?: 'strict' | 'partial' | 'approval'
+    approval_note?: string
   }
 ): Promise<ChannelBatchPricingResult> {
   const res = await api.post(

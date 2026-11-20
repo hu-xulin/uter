@@ -8501,6 +8501,20 @@
     "Added {{count}} models from the Apiko catalogue": "已從 Apiko 目錄新增 {{count}} 個模型",
     "{{total}} models after sync; {{added}} added": "同步後共 {{total}} 個模型，新增 {{added}} 個",
     "Failed to sync Apiko models": "同步 Apiko 模型失敗",
-    "Save the channel before syncing models.": "請先儲存頻道再同步模型。"
+    "Save the channel before syncing models.": "請先儲存頻道再同步模型。",
+    "Minimum margin": "最低毛利率",
+    "Percent per dimension. Leave empty to disable the margin floor.": "按维度计算的百分比。留空则关闭毛利下限。",
+    "Enter a margin between 0 and 100.": "请输入 0 到 100 之间的毛利率。",
+    "Protection mode": "保护策略",
+    "Skip violating models": "跳过违规模型",
+    "Block the whole batch": "阻止整批操作",
+    "Allow with approval": "审批后允许",
+    "Approval note": "审批说明",
+    "Recorded with the price history": "记录到价格历史",
+    "An approval note is required in this mode.": "该模式必须填写审批说明。",
+    "Below minimum margin": "低于最低毛利率",
+    "Zero sale price": "售价为零",
+    "Purchase price missing": "缺少采购价",
+    "{{count}} blocked": "{{count}} 个被阻止"
   }
 }

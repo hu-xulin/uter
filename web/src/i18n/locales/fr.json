@@ -8501,6 +8501,20 @@
     "Added {{count}} models from the Apiko catalogue": "Apiko カタログから {{count}} 個のモデルを追加しました",
     "{{total}} models after sync; {{added}} added": "同期後のモデル数 {{total}}、追加 {{added}}",
     "Failed to sync Apiko models": "Apiko モデルの同期に失敗しました",
-    "Save the channel before syncing models.": "モデルを同期する前にチャネルを保存してください。"
+    "Save the channel before syncing models.": "モデルを同期する前にチャネルを保存してください。",
+    "Minimum margin": "Marge minimale",
+    "Percent per dimension. Leave empty to disable the margin floor.": "Pourcentage par dimension. Laissez vide pour désactiver le seuil de marge.",
+    "Enter a margin between 0 and 100.": "Saisissez une marge entre 0 et 100.",
+    "Protection mode": "Mode de protection",
+    "Skip violating models": "Ignorer les modèles en violation",
+    "Block the whole batch": "Bloquer tout le lot",
+    "Allow with approval": "Autoriser avec approbation",
+    "Approval note": "Note d'approbation",
+    "Recorded with the price history": "Enregistrée dans l'historique des prix",
+    "An approval note is required in this mode.": "Une note d'approbation est requise dans ce mode.",
+    "Below minimum margin": "Sous la marge minimale",
+    "Zero sale price": "Prix de vente nul",
+    "Purchase price missing": "Prix d'achat manquant",
+    "{{count}} blocked": "{{count}} bloqués"
   }
 }

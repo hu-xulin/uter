@@ -8501,6 +8501,20 @@
     "Added {{count}} models from the Apiko catalogue": "Đã thêm {{count}} mô hình từ danh mục Apiko",
     "{{total}} models after sync; {{added}} added": "Tổng {{total}} mô hình sau khi đồng bộ; đã thêm {{added}}",
     "Failed to sync Apiko models": "Không thể đồng bộ mô hình Apiko",
-    "Save the channel before syncing models.": "Hãy lưu kênh trước khi đồng bộ mô hình."
+    "Save the channel before syncing models.": "Hãy lưu kênh trước khi đồng bộ mô hình.",
+    "Minimum margin": "Tỷ suất lợi nhuận tối thiểu",
+    "Percent per dimension. Leave empty to disable the margin floor.": "Phần trăm theo từng chiều. Để trống để tắt mức lợi nhuận tối thiểu.",
+    "Enter a margin between 0 and 100.": "Nhập tỷ suất lợi nhuận từ 0 đến 100.",
+    "Protection mode": "Chế độ bảo vệ",
+    "Skip violating models": "Bỏ qua mô hình vi phạm",
+    "Block the whole batch": "Chặn toàn bộ lô",
+    "Allow with approval": "Cho phép khi được phê duyệt",
+    "Approval note": "Ghi chú phê duyệt",
+    "Recorded with the price history": "Được ghi vào lịch sử giá",
+    "An approval note is required in this mode.": "Chế độ này yêu cầu ghi chú phê duyệt.",
+    "Below minimum margin": "Dưới tỷ suất tối thiểu",
+    "Zero sale price": "Giá bán bằng không",
+    "Purchase price missing": "Thiếu giá mua",
+    "{{count}} blocked": "{{count}} bị chặn"
   }
 }

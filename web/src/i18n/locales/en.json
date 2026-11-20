@@ -8501,6 +8501,20 @@
     "Added {{count}} models from the Apiko catalogue": "已从 Apiko 目录新增 {{count}} 个模型",
     "{{total}} models after sync; {{added}} added": "同步后共 {{total}} 个模型，新增 {{added}} 个",
     "Failed to sync Apiko models": "同步 Apiko 模型失败",
-    "Save the channel before syncing models.": "请先保存渠道再同步模型。"
+    "Save the channel before syncing models.": "请先保存渠道再同步模型。",
+    "Minimum margin": "Minimum margin",
+    "Percent per dimension. Leave empty to disable the margin floor.": "Percent per dimension. Leave empty to disable the margin floor.",
+    "Enter a margin between 0 and 100.": "Enter a margin between 0 and 100.",
+    "Protection mode": "Protection mode",
+    "Skip violating models": "Skip violating models",
+    "Block the whole batch": "Block the whole batch",
+    "Allow with approval": "Allow with approval",
+    "Approval note": "Approval note",
+    "Recorded with the price history": "Recorded with the price history",
+    "An approval note is required in this mode.": "An approval note is required in this mode.",
+    "Below minimum margin": "Below minimum margin",
+    "Zero sale price": "Zero sale price",
+    "Purchase price missing": "Purchase price missing",
+    "{{count}} blocked": "{{count}} blocked"
   }
 }

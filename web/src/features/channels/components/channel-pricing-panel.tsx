@@ -223,6 +223,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [confirmZeroFixed, setConfirmZeroFixed] = useState(false)
   const [dimensions, setDimensions] = useState<string[]>([])
   const [overwriteManual, setOverwriteManual] = useState(false)
+  const [minMarginPercent, setMinMarginPercent] = useState('')
+  const [protectionMode, setProtectionMode] = useState<
+    'strict' | 'partial' | 'approval'
+  >('partial')
+  const [approvalNote, setApprovalNote] = useState('')
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
   const [schedule, setSchedule] =
@@ -317,6 +322,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     selectedModels,
     dimensions,
     overwriteManual,
+    minMarginPercent,
+    protectionMode,
+    approvalNote,
   ])
 
   const parsedValue = Number(value)
@@ -327,8 +335,22 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   // acknowledgement instead of silently accepting an empty-looking input.
   const zeroFixedNeedsConfirm = mode === 'fixed' && parsedValue === 0
   const selectionValid = scope !== 'models' || selectedModels.length > 0
+  const minMarginText = minMarginPercent.trim()
+  const minMarginValue =
+    minMarginText === '' ? undefined : Number(minMarginText)
+  const minMarginValid =
+    minMarginValue === undefined ||
+    (Number.isFinite(minMarginValue) &&
+      minMarginValue >= 0 &&
+      minMarginValue <= 100)
+  const approvalValid =
+    protectionMode !== 'approval' || approvalNote.trim().length > 0
   const canRun =
-    valueValid && selectionValid && (!zeroFixedNeedsConfirm || confirmZeroFixed)
+    valueValid &&
+    selectionValid &&
+    minMarginValid &&
+    approvalValid &&
+    (!zeroFixedNeedsConfirm || confirmZeroFixed)
 
   const batch = useMutation({
     mutationFn: (dryRun: boolean) =>
@@ -350,6 +372,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         model_categories: scope === 'category' ? [category] : undefined,
         overwrite_manual: overwriteManual,
         dimensions: dimensions.length > 0 ? dimensions : undefined,
+        min_margin_rate:
+          minMarginValue === undefined ? undefined : minMarginValue / 100,
+        protection_mode: protectionMode,
+        approval_note:
+          protectionMode === 'approval' ? approvalNote.trim() : undefined,
         dry_run: dryRun,
         versions:
           !dryRun && preview && preview.dry_run
@@ -971,6 +998,76 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               </span>
             </span>
           </label>
+          <div className='space-y-1.5'>
+            <Label htmlFor='batch-min-margin'>{t('Minimum margin')}</Label>
+            <Input
+              id='batch-min-margin'
+              inputMode='decimal'
+              placeholder='10'
+              value={minMarginPercent}
+              onChange={(event) => setMinMarginPercent(event.target.value)}
+              aria-invalid={!minMarginValid}
+            />
+            <p className='text-muted-foreground text-xs'>
+              {t(
+                'Percent per dimension. Leave empty to disable the margin floor.'
+              )}
+            </p>
+            {!minMarginValid ? (
+              <p className='text-destructive text-xs'>
+                {t('Enter a margin between 0 and 100.')}
+              </p>
+            ) : null}
+          </div>
+          <div className='space-y-1.5'>
+            <Label htmlFor='batch-protection-mode'>
+              {t('Protection mode')}
+            </Label>
+            <Select
+              items={[
+                { value: 'partial', label: t('Skip violating models') },
+                { value: 'strict', label: t('Block the whole batch') },
+                { value: 'approval', label: t('Allow with approval') },
+              ]}
+              value={protectionMode}
+              onValueChange={(next) =>
+                next &&
+                setProtectionMode(next as 'strict' | 'partial' | 'approval')
+              }
+            >
+              <SelectTrigger id='batch-protection-mode' className='w-full'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='partial'>
+                  {t('Skip violating models')}
+                </SelectItem>
+                <SelectItem value='strict'>
+                  {t('Block the whole batch')}
+                </SelectItem>
+                <SelectItem value='approval'>
+                  {t('Allow with approval')}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {protectionMode === 'approval' ? (
+            <div className='space-y-1.5 sm:col-span-2'>
+              <Label htmlFor='batch-approval-note'>{t('Approval note')}</Label>
+              <Input
+                id='batch-approval-note'
+                value={approvalNote}
+                onChange={(event) => setApprovalNote(event.target.value)}
+                placeholder={t('Recorded with the price history')}
+                aria-invalid={!approvalValid}
+              />
+              {!approvalValid ? (
+                <p className='text-destructive text-xs'>
+                  {t('An approval note is required in this mode.')}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
           <div className='flex items-end gap-2'>
             <Button
               type='button'
@@ -1001,6 +1098,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               {preview.skipped.length > 0 ? (
                 <Badge variant='warning'>
                   {t('{{count}} skipped', { count: preview.skipped.length })}
+                </Badge>
+              ) : null}
+              {preview.blocked != null && preview.blocked > 0 ? (
+                <Badge variant='destructive'>
+                  {t('{{count}} blocked', { count: preview.blocked })}
                 </Badge>
               ) : null}
               {preview.conflicts && preview.conflicts.length > 0 ? (
@@ -1103,10 +1205,41 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                               ? `${item.change_percent > 0 ? '+' : ''}${item.change_percent.toFixed(1)}%`
                               : '—'}
                           </td>
-                          <td className='px-2 py-1'>
-                            {item.margin_usd != null && item.margin_rate != null
-                              ? `$${item.margin_usd.toFixed(4)} (${(item.margin_rate * 100).toFixed(1)}%)`
-                              : '—'}
+                          <td
+                            className='px-2 py-1'
+                            title={
+                              item.dimension_margins
+                                ?.map(
+                                  (margin) =>
+                                    `${margin.dimension}: ${
+                                      margin.margin_rate != null
+                                        ? `${(margin.margin_rate * 100).toFixed(1)}%`
+                                        : '—'
+                                    }${margin.issue ? ` (${margin.issue})` : ''}`
+                                )
+                                .join(' · ') || undefined
+                            }
+                          >
+                            {(() => {
+                              const issue = item.dimension_margins?.find(
+                                (margin) => margin.issue
+                              )
+                              if (issue) {
+                                const labels: Record<string, string> = {
+                                  below_min_margin: t('Below minimum margin'),
+                                  zero_sale_price: t('Zero sale price'),
+                                  purchase_missing: t('Purchase price missing'),
+                                }
+                                return labels[issue.issue ?? ''] ?? issue.issue
+                              }
+                              if (
+                                item.margin_usd != null &&
+                                item.margin_rate != null
+                              ) {
+                                return `$${item.margin_usd.toFixed(4)} (${(item.margin_rate * 100).toFixed(1)}%)`
+                              }
+                              return '—'
+                            })()}
                           </td>
                         </tr>
                       )

@@ -8501,6 +8501,20 @@
     "Added {{count}} models from the Apiko catalogue": "Добавлено {{count}} моделей из каталога Apiko",
     "{{total}} models after sync; {{added}} added": "Всего моделей после синхронизации: {{total}}, добавлено: {{added}}",
     "Failed to sync Apiko models": "Не удалось синхронизировать модели Apiko",
-    "Save the channel before syncing models.": "Сохраните канал перед синхронизацией моделей."
+    "Save the channel before syncing models.": "Сохраните канал перед синхронизацией моделей.",
+    "Minimum margin": "最低マージン",
+    "Percent per dimension. Leave empty to disable the margin floor.": "ディメンションごとの割合。空欄にすると最低マージンを無効にします。",
+    "Enter a margin between 0 and 100.": "0〜100 のマージンを入力してください。",
+    "Protection mode": "保護モード",
+    "Skip violating models": "違反モデルをスキップ",
+    "Block the whole batch": "バッチ全体をブロック",
+    "Allow with approval": "承認後に許可",
+    "Approval note": "承認メモ",
+    "Recorded with the price history": "価格履歴に記録されます",
+    "An approval note is required in this mode.": "このモードでは承認メモが必要です。",
+    "Below minimum margin": "最低マージン未満",
+    "Zero sale price": "販売価格がゼロ",
+    "Purchase price missing": "仕入価格がありません",
+    "{{count}} blocked": "{{count}} 件ブロック"
   }
 }
