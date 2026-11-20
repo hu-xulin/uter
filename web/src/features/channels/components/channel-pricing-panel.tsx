@@ -356,7 +356,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             ? Object.fromEntries(
                 preview.items
                   .filter((item) => item.version)
-                  .map((item) => [item.model_name, item.version as string])
+                  .map((item) => [
+                    `${item.model_name}|${item.provider ?? ''}|${item.region ?? ''}|${item.deployment_id ?? ''}`,
+                    item.version as string,
+                  ])
               )
             : undefined,
       }),
@@ -1067,10 +1070,25 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                       }
                       return (
                         <tr
-                          key={item.model_name}
+                          key={`${item.model_name}|${item.provider ?? ''}|${item.region ?? ''}|${item.deployment_id ?? ''}`}
                           className='border-t align-top'
                         >
-                          <td className='px-2 py-1'>{item.model_name}</td>
+                          <td className='px-2 py-1'>
+                            {item.model_name}
+                            {[item.provider, item.region, item.deployment_id]
+                              .filter(Boolean)
+                              .join(' · ') ? (
+                              <span className='text-muted-foreground block text-xs'>
+                                {[
+                                  item.provider,
+                                  item.region,
+                                  item.deployment_id,
+                                ]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                              </span>
+                            ) : null}
+                          </td>
                           <td className='px-2 py-1'>
                             {billingUnitLabel(item.mode)}
                           </td>

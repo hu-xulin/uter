@@ -364,11 +364,18 @@ export async function seedChannelModelPricing(
 export async function setChannelModelPricing(
   id: number,
   modelName: string,
-  pricing: ChannelInternalPricingView
+  pricing: ChannelInternalPricingView,
+  identity?: { provider?: string; region?: string; deploymentId?: string }
 ): Promise<ChannelModelPricingUpdateResponse> {
   const res = await api.put<ChannelModelPricingUpdateResponse>(
     `/api/channel/${id}/model_pricing`,
-    { model_name: modelName, pricing },
+    {
+      model_name: modelName,
+      provider: identity?.provider ?? '',
+      region: identity?.region ?? '',
+      deployment_id: identity?.deploymentId ?? '',
+      pricing,
+    },
     channelActionConfig()
   )
   return res.data
@@ -988,6 +995,9 @@ export async function syncDreamRouterUpstream(
 
 export type ChannelBatchPricingItem = {
   model_name: string
+  provider?: string
+  region?: string
+  deployment_id?: string
   mode: 'per_1m_token' | 'per_call' | 'per_second' | 'per_minute' | string
   input_per_million_usd?: number
   output_per_million_usd?: number

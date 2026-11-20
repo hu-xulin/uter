@@ -188,7 +188,12 @@ export function ChannelModelPricingSection(
       return setChannelModelPricing(
         props.channelId,
         editing.model_name,
-        pricing
+        pricing,
+        {
+          provider: editing.provider,
+          region: editing.region,
+          deploymentId: editing.deployment_id,
+        }
       )
     },
     onSuccess: (response) => {
@@ -280,7 +285,7 @@ export function ChannelModelPricingSection(
         {items.map((item) => {
           return (
             <div
-              key={item.model_name}
+              key={`${item.model_name}|${item.provider}|${item.region}|${item.deployment_id}`}
               className='space-y-1.5 border-b px-3 py-2.5 text-sm last:border-b-0'
             >
               <div className='flex flex-wrap items-center gap-2'>
@@ -358,6 +363,11 @@ export function ChannelModelPricingSection(
                 <span className='text-muted-foreground'>
                   {t('Region')}: {item.region || '—'}
                 </span>
+                {item.deployment_id ? (
+                  <span className='text-muted-foreground'>
+                    {t('Deployment')}: {item.deployment_id}
+                  </span>
+                ) : null}
                 <span className='text-muted-foreground'>
                   {t('Updated')}:{' '}
                   {item.updated_at

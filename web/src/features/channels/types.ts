@@ -317,6 +317,7 @@ export interface ChannelModelPricingRecord {
   model_name: string
   provider: string
   region: string
+  deployment_id: string
   currency: string
   pricing_source: string
   pricing_status: 'official_only' | 'configured' | 'needs_review' | string
