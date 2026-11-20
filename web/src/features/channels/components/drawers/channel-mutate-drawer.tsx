@@ -146,6 +146,7 @@ import {
   CHANNEL_STATUS_LABELS,
   CHANNEL_TYPES,
   CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -884,6 +885,16 @@ export function ChannelMutateDrawer({
         }
         form.setValue('type', target.type, { shouldDirty: true })
         if (
+          target.type === CHANNEL_TYPE_APIKO &&
+          !form.getValues('base_url')?.trim()
+        ) {
+          form.setValue(
+            'base_url',
+            defaultBaseURLs?.[CHANNEL_TYPE_APIKO] || 'https://api.apiko.app',
+            { shouldDirty: true, shouldValidate: true }
+          )
+        }
+        if (
           target.presetDisplayName ||
           target.presetLogo ||
           target.presetLogoDark
@@ -926,6 +937,7 @@ export function ChannelMutateDrawer({
     [
       canBindTaskPlugin,
       canEditSensitive,
+      defaultBaseURLs,
       providerTarget,
       isEditing,
       form,

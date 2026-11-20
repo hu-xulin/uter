@@ -20,6 +20,7 @@ import { z } from 'zod'
 
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
+  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_NEW_API,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -314,6 +315,7 @@ export const channelFormSchema = z
         CHANNEL_TYPE_TASK_PLUGIN,
         CHANNEL_TYPE_VLLM,
         CHANNEL_TYPE_SGLANG,
+        CHANNEL_TYPE_APIKO,
       ].includes(data.type) &&
       !data.base_url?.trim()
     ) {

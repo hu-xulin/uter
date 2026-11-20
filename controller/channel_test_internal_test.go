@@ -152,9 +152,9 @@ func TestApikoChannelValidationAndDefaultBaseURL(t *testing.T) {
 		Group:  "default",
 		Name:   "apiko",
 	}
-	// 默认地址来自 ChannelBaseURLs，而不是要求管理员手填。
-	assert.Equal(t, "https://api.apiko.app", channel.GetBaseURL())
 	require.NoError(t, validateChannel(channel, true))
+	// 创建时地址留空，校验阶段补上默认中转域名，而不是要求管理员手填。
+	assert.Equal(t, "https://api.apiko.app", channel.GetBaseURL())
 }
 
 func TestResponsesCompactChannelSupport(t *testing.T) {
