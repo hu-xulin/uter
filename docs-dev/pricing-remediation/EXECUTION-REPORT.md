@@ -65,6 +65,14 @@
 - 同步 Upsert 按完整身份匹配，并兼容升级旧的无身份行（补写 provider/region/deployment，不产生重复行）。
 - 三库迁移测试：`model/channel_pricing_multidb_test.go`，SQLite、MySQL 8.0、PostgreSQL 16 全部通过（含二次迁移幂等、旧索引移除、旧数据保留、区域/部署隔离）。
 
+### 2.2.1 请求级完整价格身份
+
+- 新增 `model.ChannelPricingIdentity`（渠道 / 供应商 / 区域 / 部署 / 模型），实时请求由渠道类型与 Base URL 解析供应商与区域，任务结算加载渠道解析身份。
+- 解析规则不再使用“已配置优先 / 最新同步优先”：多条身份无法匹配时返回 `identity_missing` 或 `identity_ambiguous`，计费直接失败；未知 DashScope 主机不再默认北京。
+- 缓存键、版本冲突校验、手动写入、导入、回滚、批量定价与百炼自动播种全部按完整身份定位；批量预期版本按身份键校验，前端提交身份并在列表/预览展示。
+- 账单快照新增 `channel_pricing_provider / region / deployment` 与 `channel_pricing_purchase_usd`，普通请求与任务结算一致。
+- 证据：同渠道同模型“两区域 × 两部署”四组价格分别解析正确；未知区域阻断；单条百炼推理供应商行可匹配；并发解析 32×4×5 次无串价（`-race` 通过）；请求级区域计费与采购价快照测试通过。
+
 ### 2.3 供应商适配与识别安全（Phase 3）
 
 - `service/upstream_provider.go`：适配器注册表；DreamRouter、百炼、Apiko（公开控制面目录）可拉取；OpenAI、Anthropic、Gemini、Azure、AWS、腾讯、火山明确声明 MANUAL_ONLY，不伪造同步。
