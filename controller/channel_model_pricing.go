@@ -358,6 +358,9 @@ func BatchChannelModelPricing(c *gin.Context) {
 		Factor          float64  `json:"factor"`
 		DryRun          bool     `json:"dry_run"`
 		OverwriteManual bool     `json:"overwrite_manual"`
+		// Versions carries the per-model PricingVersion returned by a preview
+		// so an apply cannot mix in rows that changed since then.
+		Versions map[string]string `json:"versions"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
@@ -370,7 +373,8 @@ func BatchChannelModelPricing(c *gin.Context) {
 	result, err := service.ApplyChannelBatchPricingWithOptions(channelID, service.BatchPricingOptions{
 		Models: req.Models, ModelPrefixes: req.ModelPrefixes,
 		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
-		Basis: req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
+		ExpectedVersions: req.Versions,
+		Basis:            req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
 	})
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())

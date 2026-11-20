@@ -45,6 +45,11 @@ func TestFetchUpstreamCatalogRejectsUnknownProvider(t *testing.T) {
 	require.ErrorContains(t, err, "unknown upstream provider")
 }
 
+func TestManualProviderFetchNeverPretendsToSync(t *testing.T) {
+	_, err := FetchUpstreamCatalog(context.Background(), "apiko", UpstreamFetchConfig{})
+	require.ErrorContains(t, err, "no authorized price API")
+}
+
 func TestUpstreamProviderForChannelMapsTypesAndFallback(t *testing.T) {
 	bailian := UpstreamProviderForChannel(17, "https://ws.cn-beijing.maas.aliyuncs.com")
 	require.Equal(t, "alibaba-bailian", bailian.ID)
@@ -66,7 +71,7 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 	for _, provider := range providers {
 		byID[provider.ID] = provider
 	}
-	for _, id := range []string{"openai", "anthropic", "google-gemini", "microsoft-azure", "aws-bedrock", "tencent-hunyuan", "volcengine"} {
+	for _, id := range []string{"openai", "anthropic", "google-gemini", "microsoft-azure", "aws-bedrock", "tencent-hunyuan", "volcengine", "apiko"} {
 		provider, ok := byID[id]
 		if !ok {
 			t.Fatalf("provider %s is not registered", id)

@@ -121,6 +121,7 @@ var manualPricingProviders = []UpstreamProvider{
 	{ID: "aws-bedrock", Name: "AWS Bedrock", AuthType: "aws_sigv4", Capabilities: manualCapabilities("AWS Bedrock")},
 	{ID: "tencent-hunyuan", Name: "腾讯云", AuthType: "api_key", Capabilities: manualCapabilities("腾讯云")},
 	{ID: "volcengine", Name: "火山引擎", AuthType: "api_key", Capabilities: manualCapabilities("火山引擎")},
+	{ID: "apiko", Name: "Apiko", AuthType: "api_key", Capabilities: manualCapabilities("Apiko")},
 }
 
 func manualCapabilities(name string) UpstreamProviderCapabilities {

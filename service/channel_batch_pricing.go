@@ -13,6 +13,9 @@ import (
 const (
 	BatchPricingBasisOfficial = "official"
 	BatchPricingBasisChannel  = "channel"
+	// BatchPricingBasisCurrent rebases on the channel's current sale price
+	// (InternalPricing), not on any upstream quote.
+	BatchPricingBasisCurrent = "current"
 
 	BatchPricingModeDiscount = "discount" // value 0.6 -> base * 0.6
 	BatchPricingModeMarkup   = "markup"   // value 0.1 -> base * (1 + 0.1)
@@ -31,6 +34,11 @@ type BatchPricingItem struct {
 	CacheUSD      *float64 `json:"cache_per_million_usd,omitempty"`
 	CacheWriteUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
 	PerCallUSD    *float64 `json:"per_call_usd,omitempty"`
+	PerSecondUSD  *float64 `json:"per_second_usd,omitempty"`
+	// Version is the price row version the preview calculated from. Send it
+	// back with the apply request so a changed row cannot be mixed into the
+	// confirmed result.
+	Version string `json:"version,omitempty"`
 }
 
 // BatchPricingSkipped explains why a model was not priced.
@@ -48,6 +56,8 @@ type BatchPricingResult struct {
 	Updated int                   `json:"updated"`
 	Items   []BatchPricingItem    `json:"items"`
 	Skipped []BatchPricingSkipped `json:"skipped"`
+	// Conflicts lists models whose row changed between preview and apply.
+	Conflicts []string `json:"conflicts,omitempty"`
 }
 
 type batchBasePrice struct {
@@ -57,6 +67,7 @@ type batchBasePrice struct {
 	cacheUSD      *float64
 	cacheWriteUSD *float64
 	perCallUSD    *float64
+	perSecondUSD  *float64
 }
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
@@ -76,6 +87,10 @@ type BatchPricingOptions struct {
 	// OverwriteManual lets a batch rule replace a hand-edited model price.
 	// The default keeps the single-model rule as the highest priority.
 	OverwriteManual bool
+	// ExpectedVersions maps model name to the PricingVersion returned by the
+	// preview. An apply whose row version differs is reported as a conflict
+	// instead of writing a price computed from stale inputs.
+	ExpectedVersions map[string]string
 }
 
 func ApplyChannelBatchPricing(
@@ -104,8 +119,8 @@ func ApplyChannelBatchPricingWithOptions(
 		return nil, errors.New("channel id is required")
 	}
 	basis = strings.TrimSpace(basis)
-	if basis != BatchPricingBasisOfficial && basis != BatchPricingBasisChannel {
-		return nil, errors.New("basis must be official or channel")
+	if basis != BatchPricingBasisOfficial && basis != BatchPricingBasisChannel && basis != BatchPricingBasisCurrent {
+		return nil, errors.New("basis must be official, channel or current")
 	}
 	switch mode {
 	case BatchPricingModeDiscount, BatchPricingModeMultiply:
@@ -174,10 +189,11 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: reason})
 			continue
 		}
-		item := BatchPricingItem{ModelName: row.ModelName, Mode: base.mode}
+		item := BatchPricingItem{ModelName: row.ModelName, Mode: base.mode, Version: row.PricingVersion}
 		internal := model.ChannelInternalPricing{
 			Mode:      base.mode,
 			Note:      fmt.Sprintf("batch: %s %s %.4f", basis, mode, value),
+			Source:    "batch",
 			UpdatedAt: 0,
 		}
 		apply := func(raw *float64) (*float64, bool) {
@@ -226,6 +242,13 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
+		if next, ok := apply(base.perSecondUSD); ok && next != nil {
+			item.PerSecondUSD = next
+			internal.PerSecondUSD = next
+		} else if !ok {
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			continue
+		}
 		if !dryRun {
 			var oldPricing *model.ChannelInternalPricing
 			if strings.TrimSpace(row.InternalPricing) != "" {
@@ -234,7 +257,16 @@ func ApplyChannelBatchPricingWithOptions(
 					oldPricing = &parsed
 				}
 			}
-			if err := model.SetChannelInternalPricing(channelID, row.ModelName, internal); err != nil {
+			expectedVersion := options.ExpectedVersions[row.ModelName]
+			err := model.SetChannelInternalPricingIfVersion(channelID, row.ModelName, internal, expectedVersion)
+			if errors.Is(err, model.ErrChannelPricingVersionConflict) {
+				result.Conflicts = append(result.Conflicts, row.ModelName)
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{
+					ModelName: row.ModelName, Reason: "price changed after preview; re-run the preview",
+				})
+				continue
+			}
+			if err != nil {
 				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: err.Error()})
 				continue
 			}
@@ -252,6 +284,9 @@ func ApplyChannelBatchPricingWithOptions(
 }
 
 func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBasePrice, string) {
+	if basis == BatchPricingBasisCurrent {
+		return resolveCurrentBatchBasePrice(row)
+	}
 	var official model.ChannelOfficialPricing
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
 		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &official); err == nil && len(official.Tiers) > 0 {
@@ -259,8 +294,14 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 				return batchBasePrice{}, "multiple official price tiers require review"
 			}
 			for _, tier := range official.Tiers {
-				if tier.Unit == "per_second" {
-					return batchBasePrice{}, "official media price shape is not supported by batch pricing"
+				switch tier.Unit {
+				case "per_second":
+					if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
+						return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: tier.PerUnitUSD}, ""
+					}
+					return batchBasePrice{}, "per-second official price is missing"
+				case "per_minute":
+					return batchBasePrice{}, "per-minute official price requires manual conversion"
 				}
 				if tier.InputPerMillionUSD != nil && tier.PerUnitUSD != nil {
 					return batchBasePrice{}, "ambiguous official price shape requires review"
@@ -288,6 +329,12 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 	var dreamRouter DreamRouterNormalizedPricing
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
 		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &dreamRouter); err == nil {
+			if dreamRouter.Unit == "per_second" && dreamRouter.ModelPrice != nil && *dreamRouter.ModelPrice > 0 {
+				return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: dreamRouter.ModelPrice}, ""
+			}
+			if dreamRouter.Unit == "per_minute" {
+				return batchBasePrice{}, "per-minute upstream price requires manual conversion"
+			}
 			if basis == BatchPricingBasisOfficial {
 				return batchBasePrice{}, "absolute official price unavailable (ratio-only upstream)"
 			}
@@ -314,6 +361,44 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 		}
 	}
 	return batchBasePrice{}, "no absolute official price and no usable upstream ratio"
+}
+
+// resolveCurrentBatchBasePrice rebases on the channel's current sale price, so
+// an operator can adjust what customers pay today without touching upstream
+// quotes.
+func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice, string) {
+	if strings.TrimSpace(row.InternalPricing) == "" {
+		return batchBasePrice{}, "no current channel price"
+	}
+	var internal model.ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
+		return batchBasePrice{}, "current channel price cannot be parsed"
+	}
+	switch internal.Mode {
+	case model.ChannelPricingModePerMillionTokens:
+		if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 {
+			return batchBasePrice{}, "current channel price has no token input price"
+		}
+		return batchBasePrice{
+			mode:          model.ChannelPricingModePerMillionTokens,
+			inputUSD:      internal.InputUSDPerMillion,
+			outputUSD:     internal.OutputUSDPerMillion,
+			cacheUSD:      internal.CacheUSDPerMillion,
+			cacheWriteUSD: internal.CreateCacheUSDPerMillion,
+		}, ""
+	case model.ChannelPricingModePerCall:
+		if internal.PerCallUSD == nil {
+			return batchBasePrice{}, "current channel price has no per-call price"
+		}
+		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: internal.PerCallUSD}, ""
+	case model.ChannelPricingModePerSecond:
+		if internal.PerSecondUSD == nil {
+			return batchBasePrice{}, "current channel price has no per-second price"
+		}
+		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: internal.PerSecondUSD}, ""
+	default:
+		return batchBasePrice{}, "current channel price has an unsupported mode"
+	}
 }
 
 func applyBatchRule(base float64, mode string, value float64) (float64, bool) {
@@ -373,7 +458,18 @@ func manualModelPrice(row model.ChannelModelPricing) bool {
 	if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
 		return true
 	}
-	return !strings.HasPrefix(strings.TrimSpace(internal.Note), "batch:")
+	if strings.HasPrefix(strings.TrimSpace(internal.Note), "batch:") {
+		return false
+	}
+	switch {
+	case internal.Source == "batch":
+		return false
+	case strings.HasPrefix(internal.Source, "dreamrouter-"),
+		strings.HasPrefix(internal.Source, "bailian-"),
+		strings.HasPrefix(internal.Source, "generic"):
+		return false
+	}
+	return true
 }
 
 func matchesModelPrefixes(name string, prefixes []string) bool {
@@ -456,8 +552,8 @@ func SetChannelPricingSchedule(channelID int, schedule ChannelPricingSchedule) e
 		return errors.New("channel id is required")
 	}
 	if schedule.Enabled {
-		if schedule.Basis != BatchPricingBasisOfficial && schedule.Basis != BatchPricingBasisChannel {
-			return errors.New("basis must be official or channel")
+		if schedule.Basis != BatchPricingBasisOfficial && schedule.Basis != BatchPricingBasisChannel && schedule.Basis != BatchPricingBasisCurrent {
+			return errors.New("basis must be official, channel or current")
 		}
 		switch schedule.Mode {
 		case BatchPricingModeDiscount, BatchPricingModeMultiply, BatchPricingModeFixed:

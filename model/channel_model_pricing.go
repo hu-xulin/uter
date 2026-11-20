@@ -375,6 +375,59 @@ func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelI
 	return nil
 }
 
+// ErrChannelPricingVersionConflict marks a batch apply whose price inputs
+// changed after the preview that produced them.
+var ErrChannelPricingVersionConflict = errors.New("channel pricing changed since preview")
+
+// SetChannelInternalPricingIfVersion stores an operator price only while the
+// row still carries expectedVersion. An empty expectedVersion keeps the
+// unconditional behaviour. The row is read and written under one transaction
+// so a concurrent sync or batch cannot slip between the check and the write.
+func SetChannelInternalPricingIfVersion(
+	channelId int,
+	modelName string,
+	pricing ChannelInternalPricing,
+	expectedVersion string,
+) error {
+	if expectedVersion == "" {
+		return SetChannelInternalPricing(channelId, modelName, pricing)
+	}
+	modelName = strings.TrimSpace(modelName)
+	if channelId <= 0 || modelName == "" {
+		return errors.New("channel and model are required")
+	}
+	if _, err := NormalizeChannelInternalPricing(&pricing); err != nil {
+		return err
+	}
+	pricing.UpdatedAt = time.Now().Unix()
+	encoded, err := common.Marshal(pricing)
+	if err != nil {
+		return err
+	}
+	err = DB.Transaction(func(tx *gorm.DB) error {
+		var row ChannelModelPricing
+		if err := lockForUpdate(tx).
+			Where("channel_id = ? AND model_name = ?", channelId, modelName).
+			First(&row).Error; err != nil {
+			return fmt.Errorf("channel pricing record not found: %w", err)
+		}
+		if row.PricingVersion != expectedVersion {
+			return ErrChannelPricingVersionConflict
+		}
+		row.InternalPricing = string(encoded)
+		row.PricingStatus = ChannelPricingStatusConfigured
+		row.UpdatedAt = pricing.UpdatedAt
+		row.PricingVersion = channelPricingVersion(row)
+		return tx.Save(&row).Error
+	})
+	if err != nil {
+		return err
+	}
+	invalidateChannelPricingCache(channelId, modelName)
+	InvalidatePricingCache()
+	return nil
+}
+
 // GetChannelModelPricing returns one channel's price record.
 func GetChannelModelPricing(channelId int, modelName string) (*ChannelModelPricing, error) {
 	var row ChannelModelPricing

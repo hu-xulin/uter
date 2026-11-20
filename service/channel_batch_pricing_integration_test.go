@@ -115,6 +115,107 @@ func TestApplyChannelBatchPricingSupportsFixedAmountAndFixedPrice(t *testing.T) 
 	assert.InDelta(t, 2.0, pricing.ModelRatio, 1e-9) // fixed $4 / 2
 }
 
+func TestApplyChannelBatchPricingSupportsPerSecondAndCurrentBasis(t *testing.T) {
+	setupBatchPricingDB(t)
+	perSecond := 0.08
+	normalized, _ := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_second",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName: "video", PerUnitUSD: &perSecond, Unit: "per_second",
+		}},
+	})
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		{
+			ChannelId: 9, Provider: "test", ModelName: "wan-video", Currency: "USD",
+			OfficialPricing: `{}`, NormalizedPricing: string(normalized),
+			Source: "test", FetchedAt: 100,
+		},
+		batchOfficialRecord(9, "gpt-plain"),
+	})
+	require.NoError(t, err)
+
+	result, err := ApplyChannelBatchPricingWithOptions(9, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		Models: []string{"wan-video"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.NotNil(t, result.Items[0].PerSecondUSD)
+	assert.InDelta(t, 0.04, *result.Items[0].PerSecondUSD, 1e-9)
+	effective := model.ResolveEffectiveChannelPricing(9, "wan-video")
+	require.True(t, effective.Billable)
+	require.NotNil(t, effective.Pricing)
+	require.True(t, effective.Pricing.UsePerSecond)
+	assert.InDelta(t, 0.04, effective.Pricing.PerSecondPrice, 1e-9)
+	if _, ok := model.ResolveChannelBillingPricing(9, "wan-video"); ok {
+		t.Fatal("the token/per-call accessor must not expose a per-second price")
+	}
+
+	// The current basis rebases on the sale price just written.
+	result, err = ApplyChannelBatchPricingWithOptions(9, BatchPricingOptions{
+		Basis: BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		Models: []string{"wan-video", "gpt-plain"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.Len(t, result.Skipped, 1)
+	require.Equal(t, "gpt-plain", result.Skipped[0].ModelName)
+	require.Contains(t, result.Skipped[0].Reason, "no current channel price")
+	effective = model.ResolveEffectiveChannelPricing(9, "wan-video")
+	require.NotNil(t, effective.Pricing)
+	assert.InDelta(t, 0.044, effective.Pricing.PerSecondPrice, 1e-9)
+}
+
+func TestApplyChannelBatchPricingRejectsStalePreviewVersion(t *testing.T) {
+	setupBatchPricingDB(t)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		batchOfficialRecord(11, "gpt-versioned"),
+	})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ModelCategories: []string{"text"}, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, preview.Updated)
+	require.NotEmpty(t, preview.Items[0].Version)
+
+	// A re-sync changes the row version after the preview was taken.
+	updated := batchOfficialRecord(11, "gpt-versioned")
+	updated.NormalizedPricing = `{"currency":"USD","unit":"per_1m_token","tiers":[
+		{"range_name":"Default","input_per_million_usd":5,"output_per_million_usd":10,"unit":"per_1m_token"}]}`
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{updated})
+	require.NoError(t, err)
+
+	applied, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ModelCategories:  []string{"text"},
+		ExpectedVersions: map[string]string{"gpt-versioned": preview.Items[0].Version},
+	})
+	require.NoError(t, err)
+	require.Zero(t, applied.Updated)
+	require.Equal(t, []string{"gpt-versioned"}, applied.Conflicts)
+	require.Contains(t, applied.Skipped[0].Reason, "re-run the preview")
+
+	// Re-previewing against the new version applies cleanly.
+	fresh, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ModelCategories: []string{"text"}, DryRun: true,
+	})
+	require.NoError(t, err)
+	_, err = ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ModelCategories:  []string{"text"},
+		ExpectedVersions: map[string]string{"gpt-versioned": fresh.Items[0].Version},
+	})
+	require.NoError(t, err)
+	pricing, ok := model.ResolveChannelBillingPricing(11, "gpt-versioned")
+	require.True(t, ok)
+	assert.InDelta(t, 1.25, pricing.ModelRatio, 1e-9) // $5 * 0.5 / 2
+}
+
 func TestApplyChannelBatchPricingHonorsCategoryAndManualPriority(t *testing.T) {
 	setupBatchPricingDB(t)
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{

@@ -145,13 +145,6 @@ func TestResolveBatchBasePriceRejectsLossyShapes(t *testing.T) {
 			reason: "multiple official price tiers",
 		},
 		{
-			name: "per second",
-			normalized: `{"currency":"USD","unit":"per_second","tiers":[
-				{"range_name":"video","per_unit_usd":0.08,"unit":"per_second"}
-			]}`,
-			reason: "media price shape",
-		},
-		{
 			name: "ambiguous shape",
 			normalized: `{"currency":"USD","unit":"mixed","tiers":[
 				{"range_name":"mixed","input_per_million_usd":1,"per_unit_usd":0.1,"unit":"mixed"}
@@ -167,6 +160,19 @@ func TestResolveBatchBasePriceRejectsLossyShapes(t *testing.T) {
 			require.Contains(t, reason, tc.reason)
 		})
 	}
+}
+
+func TestResolveBatchBasePriceSupportsPerSecond(t *testing.T) {
+	base, reason := resolveBatchBasePrice(model.ChannelModelPricing{
+		ModelName: "video-a",
+		NormalizedPricing: `{"currency":"USD","unit":"per_second","tiers":[
+			{"range_name":"video","per_unit_usd":0.08,"unit":"per_second"}
+		]}`,
+	}, BatchPricingBasisOfficial)
+	require.Empty(t, reason)
+	require.Equal(t, model.ChannelPricingModePerSecond, base.mode)
+	require.NotNil(t, base.perSecondUSD)
+	require.Equal(t, 0.08, *base.perSecondUSD)
 }
 
 func TestResolveBatchBasePriceSupportsPerImageAsPerCall(t *testing.T) {
