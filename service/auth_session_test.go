@@ -24,6 +24,7 @@ import (
 func setupAuthSessionTestDB(t *testing.T) *model.User {
 	t.Helper()
 	previousDB, previousRedis := model.DB, common.RedisEnabled
+	model.WaitCacheSyncForTest()
 	previousActiveLimit := common.UserSessionActiveLimit
 	previousIssuanceLimit := common.UserSessionIssuanceLimit
 	previousIssuanceWindow := common.UserSessionIssuanceWindowSeconds
@@ -43,6 +44,7 @@ func setupAuthSessionTestDB(t *testing.T) *model.User {
 	common.UserSessionRevokedRetentionDays = common.DefaultUserSessionRevokedRetentionDays
 	common.UserSessionHourlyAlertThreshold = common.DefaultUserSessionHourlyAlertThreshold
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		model.DB = previousDB
 		common.RedisEnabled = previousRedis
 		common.UserSessionActiveLimit = previousActiveLimit
@@ -67,6 +69,7 @@ func setupAuthSessionTestDB(t *testing.T) *model.User {
 func useIndependentAuthSessionRedis(t *testing.T) (*miniredis.Miniredis, *redis.Client, *miniredis.Miniredis, *redis.Client) {
 	t.Helper()
 	previousRedisEnabled := common.RedisEnabled
+	model.WaitCacheSyncForTest()
 	previousRDB := common.RDB
 	previousSyncFrequency := common.SyncFrequency
 	serverA := miniredis.RunT(t)
@@ -77,6 +80,7 @@ func useIndependentAuthSessionRedis(t *testing.T) (*miniredis.Miniredis, *redis.
 	common.SyncFrequency = 2
 	common.RDB = clientA
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		_ = clientA.Close()
 		_ = clientB.Close()
 		common.RedisEnabled = previousRedisEnabled

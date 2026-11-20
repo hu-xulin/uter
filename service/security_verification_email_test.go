@@ -17,6 +17,7 @@ import (
 
 func setupStepUpEmailCodeTest(t *testing.T, email string) (*model.User, AuthIdentity) {
 	t.Helper()
+	model.WaitCacheSyncForTest()
 	previousDB, previousRedis := model.DB, common.RedisEnabled
 	previousSecret := common.SessionSecret
 	if common.OptionMap == nil {
@@ -35,6 +36,7 @@ func setupStepUpEmailCodeTest(t *testing.T, email string) (*model.User, AuthIden
 	// 配置一个多账号发信列表（仅作可用性判断，不真正发信）。
 	common.OptionMap["SMTPAccounts"] = `[{"account":"info@uter.ai","token":"test-token"}]`
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		model.DB = previousDB
 		common.RedisEnabled = previousRedis
 		common.SessionSecret = previousSecret

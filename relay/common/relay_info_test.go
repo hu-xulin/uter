@@ -356,9 +356,22 @@ func TestInitChannelMetaResetsPerAttemptStreamStateAndPreservesRequestState(t *t
 		From:     types.RelayFormatClaude,
 		To:       types.RelayFormatOpenAI,
 	}})
+	// The pre-consume channel price is request-scoped: a retry refreshes the
+	// channel metadata but must keep the applied price and its version for the
+	// consume log.
+	info.ChannelPricingApplied = true
+	info.ChannelPricingVersion = "version-1"
+	info.ChannelPricingModelRatio = 0.5
+	info.ChannelPricingUsePrice = true
+	info.ChannelPricingModelPrice = 0.04
 
 	info.InitChannelMeta(ctx)
 
+	assert.True(t, info.ChannelPricingApplied)
+	assert.Equal(t, "version-1", info.ChannelPricingVersion)
+	assert.Equal(t, 0.5, info.ChannelPricingModelRatio)
+	assert.True(t, info.ChannelPricingUsePrice)
+	assert.Equal(t, 0.04, info.ChannelPricingModelPrice)
 	assert.Zero(t, info.SendResponseCount)
 	assert.Nil(t, info.ClaudeToChatStreamState)
 	assert.Nil(t, info.ChatToGeminiStreamState)

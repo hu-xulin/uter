@@ -101,6 +101,7 @@ func TestQuotaReminderFiresOncePerDrop(t *testing.T) {
 // on, in that administrator's saved language. Until an administrator chooses,
 // root receives them and other administrators do not; other users never do.
 func TestChannelNoticesFollowEachAdministratorsSwitch(t *testing.T) {
+	model.WaitCacheSyncForTest()
 	previousDB := model.DB
 	previousCache, previousRedis := common.MemoryCacheEnabled, common.RedisEnabled
 	previousNotifyLimit := constant.NotifyLimitCount
@@ -108,6 +109,7 @@ func TestChannelNoticesFollowEachAdministratorsSwitch(t *testing.T) {
 	fetch := system_setting.GetFetchSetting()
 	previousFetch := *fetch
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		model.DB = previousDB
 		common.MemoryCacheEnabled, common.RedisEnabled = previousCache, previousRedis
 		constant.NotifyLimitCount = previousNotifyLimit

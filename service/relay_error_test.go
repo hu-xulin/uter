@@ -78,6 +78,7 @@ func TestDecideRelayRetryStopsAfterOutputWritten(t *testing.T) {
 }
 
 func TestProcessChannelErrorMasksDisableReasonAndNotification(t *testing.T) {
+	model.WaitCacheSyncForTest()
 	previousDB, previousType := model.DB, common.MainDatabaseType()
 	previousCache, previousRedis := common.MemoryCacheEnabled, common.RedisEnabled
 	previousAutoDisable, previousErrorLog := common.AutomaticDisableChannelEnabled, constant.ErrorLogEnabled
@@ -86,6 +87,7 @@ func TestProcessChannelErrorMasksDisableReasonAndNotification(t *testing.T) {
 	fetch := system_setting.GetFetchSetting()
 	previousFetch := *fetch
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		model.DB = previousDB
 		common.SetMainDatabaseType(previousType)
 		common.MemoryCacheEnabled, common.RedisEnabled = previousCache, previousRedis

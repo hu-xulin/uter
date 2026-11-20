@@ -11,15 +11,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // 限流窗口必须由 NOTIFICATION_LIMIT_DURATION_MINUTE 决定，不能在整点被重置
 func TestCheckNotificationLimitWindowSpansClockHours(t *testing.T) {
+	model.WaitCacheSyncForTest()
 	originalRedis := common.RedisEnabled
 	originalCount := constant.NotifyLimitCount
 	originalMinute := constant.NotificationLimitDurationMinute
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		common.RedisEnabled = originalRedis
 		constant.NotifyLimitCount = originalCount
 		constant.NotificationLimitDurationMinute = originalMinute
@@ -51,6 +54,7 @@ func TestCheckNotificationLimitWindowSpansClockHours(t *testing.T) {
 }
 
 func TestCheckNotificationLimitRedisWindowSpansClockHours(t *testing.T) {
+	model.WaitCacheSyncForTest()
 	originalRedis := common.RedisEnabled
 	originalRDB := common.RDB
 	originalCount := constant.NotifyLimitCount
@@ -58,6 +62,7 @@ func TestCheckNotificationLimitRedisWindowSpansClockHours(t *testing.T) {
 	server := miniredis.RunT(t)
 	common.RDB = redis.NewClient(&redis.Options{Addr: server.Addr(), MaxRetries: -1})
 	t.Cleanup(func() {
+		model.WaitCacheSyncForTest()
 		_ = common.RDB.Close()
 		common.RDB = originalRDB
 		common.RedisEnabled = originalRedis

@@ -342,13 +342,10 @@ func (info *RelayInfo) RequestedImageCount() int {
 }
 
 func (info *RelayInfo) InitChannelMeta(c *gin.Context) {
-	info.ChannelPricingApplied = false
-	info.ChannelPricingModelRatio = 0
-	info.ChannelPricingCompletionRatio = nil
-	info.ChannelPricingCacheRatio = nil
-	info.ChannelPricingModelPrice = 0
-	info.ChannelPricingUsePrice = false
-	info.ChannelPricingVersion = ""
+	// Channel pricing audit fields describe the request-scoped pre-consume
+	// price, not the channel selected for this attempt. TextHelper refreshes
+	// channel metadata before every attempt, so clearing them here would drop
+	// the applied price version from the consume log.
 	info.ResponseModel = nil
 	info.FinalRequestRelayFormat = ""
 	info.RequestConversionChain = nil
