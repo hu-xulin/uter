@@ -20,6 +20,7 @@ import { describe, expect, test } from 'vitest'
 
 import {
   CHANNEL_TYPE_APIKO,
+  CHANNEL_TYPE_WARNINGS,
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   FIELD_PASSTHROUGH_TYPES,
   MODEL_FETCHABLE_TYPES,
@@ -69,5 +70,14 @@ describe('Apiko channel type', () => {
     expect(FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
     expect(OPENAI_FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
     expect(CLAUDE_FIELD_PASSTHROUGH_TYPES.has(CHANNEL_TYPE_APIKO)).toBe(true)
+  })
+
+  test('shows the address and media-pricing guidance', () => {
+    expect(CHANNEL_TYPE_WARNINGS[CHANNEL_TYPE_APIKO]).toContain(
+      'api.apiko.app without /v1'
+    )
+    expect(CHANNEL_TYPE_WARNINGS[CHANNEL_TYPE_APIKO]).toContain(
+      'manual pricing'
+    )
   })
 })

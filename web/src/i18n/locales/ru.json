@@ -8483,6 +8483,7 @@
     "Bailian schedules always use channel catalog prices.": "Расписание Bailian всегда использует цены каталога канала.",
     "CHANNEL_CATALOG": "Каталог канала",
     "Vendor official price not published": "Официальная цена производителя не опубликована",
-    "Connect to model services through the Apiko gateway": "Подключение к сервисам моделей через шлюз Apiko"
+    "Connect to model services through the Apiko gateway": "Подключение к сервисам моделей через шлюз Apiko",
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "Укажите https://api.apiko.app без /v1. Цены синхронизируются из публичного каталога Apiko; модели изображений и видео с оплатой по разрешению или длительности нужно оценивать вручную"
   }
 }

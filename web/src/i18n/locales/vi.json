@@ -8483,6 +8483,7 @@
     "Bailian schedules always use channel catalog prices.": "Lịch Bailian luôn dùng giá từ danh mục kênh.",
     "CHANNEL_CATALOG": "Danh mục kênh",
     "Vendor official price not published": "Giá chính thức của nhà cung cấp chưa được công bố",
-    "Connect to model services through the Apiko gateway": "Kết nối dịch vụ mô hình qua cổng Apiko"
+    "Connect to model services through the Apiko gateway": "Kết nối dịch vụ mô hình qua cổng Apiko",
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "Dùng https://api.apiko.app, không kèm /v1. Giá được đồng bộ từ danh mục công khai của Apiko; mô hình ảnh và video tính theo độ phân giải hoặc thời lượng cần đặt giá thủ công"
   }
 }

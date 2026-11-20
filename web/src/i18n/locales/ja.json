@@ -8483,6 +8483,7 @@
     "Bailian schedules always use channel catalog prices.": "Bailian のスケジュールは常にチャネルカタログ価格を使用します。",
     "CHANNEL_CATALOG": "チャネルカタログ",
     "Vendor official price not published": "ベンダー公式価格は未公開です",
-    "Connect to model services through the Apiko gateway": "Apiko ゲートウェイ経由でモデルサービスに接続します"
+    "Connect to model services through the Apiko gateway": "Apiko ゲートウェイ経由でモデルサービスに接続します",
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "URL は /v1 を付けず https://api.apiko.app を指定してください。価格は Apiko の公開カタログから同期されます。解像度や再生時間で課金される画像・動画モデルは手動で価格設定してください"
   }
 }

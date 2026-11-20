@@ -574,6 +574,8 @@ export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
 
 export const CHANNEL_TYPE_WARNINGS: Record<number, string> = {
   3: 'For channels added after May 10, 2025, no need to remove "." from model names during deployment',
+  [CHANNEL_TYPE_APIKO]:
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing",
   8: 'If connecting to upstream One API or Uter relay projects, use OpenAI type instead unless you know what you are doing',
   37: 'Dify channels only support chatflow and agent, and agent does not support images',
 }

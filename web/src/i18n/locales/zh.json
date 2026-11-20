@@ -8483,6 +8483,7 @@
     "Bailian schedules always use channel catalog prices.": "百炼定时规则始终使用渠道目录价格。",
     "CHANNEL_CATALOG": "渠道目录价",
     "Vendor official price not published": "厂商官方价未公布",
-    "Connect to model services through the Apiko gateway": "通过 Apiko 网关接入模型服务"
+    "Connect to model services through the Apiko gateway": "通过 Apiko 网关接入模型服务",
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "地址填 https://api.apiko.app，不要带 /v1。模型价格从 Apiko 公开目录同步；按分辨率或时长计价的图片、视频模型需手动定价"
   }
 }
