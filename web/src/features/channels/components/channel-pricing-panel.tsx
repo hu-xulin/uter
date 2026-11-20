@@ -42,7 +42,6 @@ import {
   approveChannelPricingReviews,
   getChannelPricingAudit,
   getChannelPricingHistory,
-  getChannelPricingMigrationPlan,
   getChannelPricingReviews,
   getChannelPricingSchedule,
   getChannelSyncCapabilities,
@@ -159,7 +158,9 @@ function diagnosticWarning(
 export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [basis, setBasis] = useState<'official' | 'channel'>('official')
+  const [basis, setBasis] = useState<'official' | 'channel' | 'current'>(
+    'official'
+  )
   const [mode, setMode] = useState<string>('multiply')
   const [value, setValue] = useState('0.6')
   const [scope, setScope] = useState<'all' | 'prefix' | 'category'>('all')
@@ -199,13 +200,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
-  const migrationQuery = useQuery({
-    queryKey: ['channel-pricing-migration', props.channelId],
-    queryFn: () => getChannelPricingMigrationPlan(props.channelId ?? 0),
-    enabled: props.channelId != null,
-    retry: false,
-    meta: { errorToast: false },
-  })
   const capabilityQuery = useQuery({
     queryKey: ['channel-sync-capabilities', props.channelId],
     queryFn: () => getChannelSyncCapabilities(props.channelId ?? 0),
@@ -223,6 +217,12 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       setSchedule({ ...defaultSchedule, ...scheduleQuery.data.schedule })
     }
   }, [scheduleQuery.data])
+
+  // A preview only describes the rule that produced it. Editing the rule
+  // invalidates those row versions, so apply must preview again first.
+  useEffect(() => {
+    setPreview(null)
+  }, [basis, mode, value, scope, prefixes, category, overwriteManual])
 
   const parsedValue = Number(value)
   const valueValid = Number.isFinite(parsedValue) && parsedValue >= 0
@@ -243,6 +243,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         model_categories: scope === 'category' ? [category] : undefined,
         overwrite_manual: overwriteManual,
         dry_run: dryRun,
+        versions:
+          !dryRun && preview && preview.dry_run
+            ? Object.fromEntries(
+                preview.items
+                  .filter((item) => item.version)
+                  .map((item) => [item.model_name, item.version as string])
+              )
+            : undefined,
       }),
     onSuccess: (result, dryRun) => {
       setPreview(result)
@@ -252,6 +260,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             count: result.updated,
           })
         )
+        if (result.conflicts && result.conflicts.length > 0) {
+          toast.warning(
+            t('{{count}} models changed since the preview; preview again', {
+              count: result.conflicts.length,
+            })
+          )
+        }
         void queryClient.invalidateQueries({
           queryKey: ['channel-model-pricing', props.channelId],
         })
@@ -351,9 +366,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const authorityText = (value: string) => {
     if (value === 'channel_model_pricing') {
       return t('Channel pricing table')
-    }
-    if (value === 'legacy_channel_price_setting') {
-      return t('Legacy channel quotes')
     }
     if (value === 'global') {
       return t('Global model pricing')
@@ -504,8 +516,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Label htmlFor='batch-pricing-basis'>{t('Price basis')}</Label>
             <Select
               value={basis}
-              onValueChange={(value) =>
-                setBasis(value === 'channel' ? 'channel' : 'official')
+              onValueChange={(next) =>
+                setBasis(
+                  next === 'channel' || next === 'current' ? next : 'official'
+                )
               }
             >
               <SelectTrigger id='batch-pricing-basis' className='w-full'>
@@ -514,6 +528,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               <SelectContent>
                 <SelectItem value='official'>{t('Official price')}</SelectItem>
                 <SelectItem value='channel'>{t('Channel price')}</SelectItem>
+                <SelectItem value='current'>
+                  {t('Current channel price')}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -644,7 +661,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           </div>
         </div>
         {preview ? (
-          <div className='bg-muted/20 space-y-1 rounded-md border px-3 py-2 text-sm'>
+          <div className='bg-muted/20 space-y-2 rounded-md border px-3 py-2 text-sm'>
             <div className='flex flex-wrap items-center gap-2'>
               <Badge variant='secondary'>
                 {t('{{count}} models', { count: preview.updated })}
@@ -654,13 +671,78 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                   {t('{{count}} skipped', { count: preview.skipped.length })}
                 </Badge>
               ) : null}
+              {preview.conflicts && preview.conflicts.length > 0 ? (
+                <Badge variant='destructive'>
+                  {t('{{count}} conflicts', {
+                    count: preview.conflicts.length,
+                  })}
+                </Badge>
+              ) : null}
               <span className='text-muted-foreground'>
                 {preview.basis} · {preview.mode} {preview.value}
               </span>
             </div>
+            {preview.items.length > 0 ? (
+              <div className='max-h-72 overflow-y-auto rounded border'>
+                <table className='w-full text-left text-xs'>
+                  <thead className='bg-muted/40 sticky top-0'>
+                    <tr>
+                      <th className='px-2 py-1 font-medium'>{t('Model')}</th>
+                      <th className='px-2 py-1 font-medium'>
+                        {t('Billing unit')}
+                      </th>
+                      <th className='px-2 py-1 font-medium'>
+                        {t('New sale price')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {preview.items.map((item) => {
+                      const parts: string[] = []
+                      if (item.input_per_million_usd != null) {
+                        parts.push(
+                          `${t('Input')} $${item.input_per_million_usd}/1M`
+                        )
+                      }
+                      if (item.output_per_million_usd != null) {
+                        parts.push(
+                          `${t('Output')} $${item.output_per_million_usd}/1M`
+                        )
+                      }
+                      if (item.cache_per_million_usd != null) {
+                        parts.push(
+                          `${t('Cache read')} $${item.cache_per_million_usd}/1M`
+                        )
+                      }
+                      if (item.create_cache_per_million_usd != null) {
+                        parts.push(
+                          `${t('Cache write')} $${item.create_cache_per_million_usd}/1M`
+                        )
+                      }
+                      if (item.per_call_usd != null) {
+                        parts.push(`${t('Per call')} $${item.per_call_usd}`)
+                      }
+                      if (item.per_second_usd != null) {
+                        parts.push(`${t('Per second')} $${item.per_second_usd}`)
+                      }
+                      return (
+                        <tr
+                          key={item.model_name}
+                          className='border-t align-top'
+                        >
+                          <td className='px-2 py-1'>{item.model_name}</td>
+                          <td className='px-2 py-1'>{item.mode}</td>
+                          <td className='px-2 py-1'>{parts.join(' · ')}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : null}
             {preview.skipped.length > 0 ? (
-              <ul className='text-muted-foreground space-y-0.5'>
-                {preview.skipped.slice(0, 3).map((item) => (
+              <ul className='text-muted-foreground max-h-48 space-y-0.5 overflow-y-auto'>
+                {preview.skipped.map((item) => (
                   <li key={item.model_name}>
                     {item.model_name}: {item.reason}
                   </li>
@@ -952,33 +1034,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               ))}
             </div>
           ) : null}
-        </section>
-      ) : null}
-
-      {!disabled && props.channelId != null && migrationQuery.data?.length ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <Label>{t('Legacy quote migration')}</Label>
-            <Badge variant='secondary'>
-              {t('{{ready}} ready · {{pending}} manual', {
-                ready: migrationQuery.data.filter((item) => item.can_migrate)
-                  .length,
-                pending: migrationQuery.data.filter((item) => !item.can_migrate)
-                  .length,
-              })}
-            </Badge>
-          </div>
-          <ul className='text-muted-foreground space-y-1 text-sm'>
-            {migrationQuery.data.slice(0, 8).map((item) => (
-              <li key={item.model_name}>
-                <span className='text-foreground font-medium'>
-                  {item.model_name}
-                </span>{' '}
-                · {item.can_migrate ? t('Ready') : t('Manual review')}
-                {item.reason ? ` · ${item.reason}` : ''}
-              </li>
-            ))}
-          </ul>
         </section>
       ) : null}
 

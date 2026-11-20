@@ -299,13 +299,6 @@ export type ModelSettings = {
    * 渠道登录与同步：上游渠道凭据 + 同步时刻 + 价格规则。
    * 口令是 secret 键，GET /api/option/ 以掩码串下发（不返回明文）。
    */
-  DreamRouterSyncEnabled: boolean
-  DreamRouterSyncProvider: string
-  DreamRouterSyncChannelID: string
-  DreamRouterSyncUsername: string
-  DreamRouterSyncPassword: string
-  DreamRouterSyncRuleDirection: string
-  DreamRouterSyncRuleAmount: string
 }
 
 export type BillingSettings = {
@@ -565,43 +558,6 @@ export type DreamRouterPriceLine = {
   output: number
   cache: number
   create_cache: number
-}
-
-export type DreamRouterSyncModelRow = {
-  upstream_name: string
-  local_name: string
-  billing_class: 'per_token' | 'per_call' | 'tiered' | 'tiered_unparsable'
-  quota_type: number
-  group_ratio: number
-  official: DreamRouterPriceLine
-  upstream: DreamRouterPriceLine
-  uter: DreamRouterPriceLine
-  upstream_discount_percent: number
-  uter_discount_percent: number
-  upstream_zhe: number
-  uter_zhe: number
-  aligned: boolean
-  note?: string
-}
-
-export type DreamRouterSyncModelsResponse = {
-  success: boolean
-  message: string
-  data: {
-    synced: boolean
-    pricing_version?: string
-    synced_at?: string
-    rule_direction?: string
-    rule_amount?: number
-    channel_id?: number
-    models: DreamRouterSyncModelRow[]
-    summary: {
-      total?: number
-      aligned?: number
-      drifted?: number
-      all_aligned?: boolean
-    }
-  }
 }
 
 export type DreamRouterRunResponse = {

@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "旧価格の移行",
     "{{ready}} ready · {{pending}} manual": "{{ready}} 件移行可能 · {{pending}} 件手動",
     "{{price}} / second": "{{price}} / 秒",
-    "Price per second (USD)": "1秒あたりの価格 (USD)"
+    "Price per second (USD)": "1秒あたりの価格 (USD)",
+    "{{count}} models changed since the preview; preview again": "プレビュー後に {{count}} 件のモデルが変更されました。再プレビューしてください",
+    "Current channel price": "現在のチャネル価格",
+    "{{count}} conflicts": "{{count}} 件の競合",
+    "Billing unit": "課金単位",
+    "New sale price": "新しい販売価格",
+    "Cache read": "キャッシュ読み取り"
   }
 }

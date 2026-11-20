@@ -238,35 +238,6 @@ export interface FetchModelsResponse {
   data?: string[]
 }
 
-export interface ChannelPricingQuote {
-  official_price?: number
-  channel_price?: number
-  discount?: number
-  completion_ratio?: number
-  cache_ratio?: number
-  create_cache_ratio?: number
-  unit?: 'per_1m_token' | 'per_call' | string
-  billing_mode?: string
-  billing_expr?: string
-  status?: 'needs_review' | string
-  raw?: string
-  source?: string
-  updated_at?: number
-}
-
-export interface ChannelPricingSyncData {
-  channel_id: number
-  imported: number
-  quotes: Record<string, ChannelPricingQuote>
-  enabled: boolean
-}
-
-export interface ChannelPricingSyncResponse {
-  success: boolean
-  message?: string
-  data?: ChannelPricingSyncData
-}
-
 export interface ChannelOfficialPricingTier {
   range_name: string
   time_band?: string

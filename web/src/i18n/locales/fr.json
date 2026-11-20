@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "Migration des anciens tarifs",
     "{{ready}} ready · {{pending}} manual": "{{ready}} prêts · {{pending}} manuels",
     "{{price}} / second": "{{price}} / seconde",
-    "Price per second (USD)": "Prix par seconde (USD)"
+    "Price per second (USD)": "Prix par seconde (USD)",
+    "{{count}} models changed since the preview; preview again": "{{count}} modèle(s) ont changé depuis l’aperçu ; relancez l’aperçu",
+    "Current channel price": "Prix actuel du canal",
+    "{{count}} conflicts": "{{count}} conflit(s)",
+    "Billing unit": "Unité de facturation",
+    "New sale price": "Nouveau prix de vente",
+    "Cache read": "Lecture du cache"
   }
 }

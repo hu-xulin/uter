@@ -32,7 +32,6 @@ import type {
   ChannelModelPricingListResponse,
   ChannelModelPricingUpdateResponse,
   ChannelOpsResponse,
-  ChannelPricingSyncResponse,
   ChannelTestResponse,
   CopyChannelParams,
   CopyChannelResponse,
@@ -332,20 +331,6 @@ export async function fetchUpstreamModels(
 ): Promise<FetchModelsResponse> {
   const res = await api.get(
     `/api/channel/fetch_models/${id}`,
-    channelActionConfig()
-  )
-  return res.data
-}
-
-/**
- * Import the upstream model price sheet (new-api `/api/pricing`) for a channel.
- */
-export async function syncChannelPricing(
-  id: number
-): Promise<ChannelPricingSyncResponse> {
-  const res = await api.post<ChannelPricingSyncResponse>(
-    `/api/channel/${id}/pricing/sync`,
-    {},
     channelActionConfig()
   )
   return res.data
@@ -964,20 +949,25 @@ export async function syncDreamRouterUpstream(
 
 export type ChannelBatchPricingItem = {
   model_name: string
-  mode: 'per_1m_token' | 'per_call' | string
+  mode: 'per_1m_token' | 'per_call' | 'per_second' | string
   input_per_million_usd?: number
   output_per_million_usd?: number
+  cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
   per_call_usd?: number
+  per_second_usd?: number
+  version?: string
 }
 
 export type ChannelBatchPricingResult = {
-  basis: 'official' | 'channel'
+  basis: 'official' | 'channel' | 'current'
   mode: string
   value: number
   dry_run: boolean
   updated: number
   items: ChannelBatchPricingItem[]
   skipped: Array<{ model_name: string; reason: string }>
+  conflicts?: string[]
 }
 
 export async function batchChannelModelPricing(
@@ -986,11 +976,12 @@ export async function batchChannelModelPricing(
     models?: string[]
     model_prefixes?: string[]
     model_categories?: string[]
-    basis: 'official' | 'channel'
+    basis: 'official' | 'channel' | 'current'
     mode: string
     value: number
     dry_run: boolean
     overwrite_manual?: boolean
+    versions?: Record<string, string>
   }
 ): Promise<ChannelBatchPricingResult> {
   const res = await api.post(
@@ -1242,24 +1233,4 @@ export async function runChannelSyncDiagnostics(
     channelActionConfig()
   )
   return requireServerSuccess(res.data).data as ChannelSyncDiagnostics
-}
-
-export type ChannelPricingMigrationItem = {
-  model_name: string
-  unit?: string
-  channel_price?: number
-  official_price?: number
-  status?: string
-  can_migrate: boolean
-  reason?: string
-}
-
-export async function getChannelPricingMigrationPlan(
-  channelId: number
-): Promise<ChannelPricingMigrationItem[]> {
-  const res = await api.get(`/api/channel/${channelId}/pricing_migration_plan`)
-  return (
-    (requireServerSuccess(res.data).data
-      ?.items as ChannelPricingMigrationItem[]) ?? []
-  )
 }

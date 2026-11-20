@@ -149,16 +149,6 @@ const defaultModelSettings: ModelSettings = {
   'costopt_setting.spike_alert_multiplier': 5,
   'costopt_setting.anomaly_alert_enabled': true,
   'costopt_setting.cache_warmup_enabled': false,
-  // ===== 渠道登录与同步（默认值与后端 service/dreamrouter_sync.go 对齐）=====
-  // 默认开启同步：上游口径的模型与折扣每日一变，不开同步会让定价长期滞后。
-  // 口令默认空串 = 未配置；后端会明确报错提示去后台填，不会用明文兜底。
-  DreamRouterSyncEnabled: true,
-  DreamRouterSyncProvider: 'dreamrouter',
-  DreamRouterSyncChannelID: '20',
-  DreamRouterSyncUsername: '',
-  DreamRouterSyncPassword: '',
-  DreamRouterSyncRuleDirection: 'increase',
-  DreamRouterSyncRuleAmount: '0.1',
 }
 
 export function ModelSettings() {

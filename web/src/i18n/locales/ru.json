@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "Миграция старых цен",
     "{{ready}} ready · {{pending}} manual": "{{ready}} готово · {{pending}} вручную",
     "{{price}} / second": "{{price}} / секунда",
-    "Price per second (USD)": "Цена за секунду (USD)"
+    "Price per second (USD)": "Цена за секунду (USD)",
+    "{{count}} models changed since the preview; preview again": "После предпросмотра изменилось моделей: {{count}}; повторите предпросмотр",
+    "Current channel price": "Текущая цена канала",
+    "{{count}} conflicts": "Конфликтов: {{count}}",
+    "Billing unit": "Единица тарификации",
+    "New sale price": "Новая цена продажи",
+    "Cache read": "Чтение кэша"
   }
 }

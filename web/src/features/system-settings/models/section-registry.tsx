@@ -19,7 +19,6 @@ For commercial licensing, please contact support@uter.ai
 import { IoNetDeploymentSettingsSection } from '../integrations/ionet-deployment-settings-section'
 import type { ModelSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
-import { ChannelSyncSection } from './channel-sync-section'
 import { ClaudeSettingsCard } from './claude-settings-card'
 import { COST_OPTIMIZATION_KEYS } from './cost-optimization-fields'
 import { CostOptimizationSection } from './cost-optimization-section'
@@ -145,25 +144,6 @@ const MODELS_SECTIONS = [
         defaultValues={Object.fromEntries(
           COST_OPTIMIZATION_KEYS.map((k) => [k, settings[k]])
         )}
-      />
-    ),
-  },
-  {
-    // 渠道登录与同步：放在「模型」页最下方——它是跨渠道的运营配置
-    // （登录上游、按规则换算价格），与前面按模型维度分组的设置不同层。
-    id: 'channel-sync',
-    titleKey: 'Channel Login & Sync',
-    build: (settings: ModelSettings) => (
-      <ChannelSyncSection
-        defaultValues={{
-          DreamRouterSyncEnabled: settings.DreamRouterSyncEnabled,
-          DreamRouterSyncProvider: settings.DreamRouterSyncProvider,
-          DreamRouterSyncChannelID: settings.DreamRouterSyncChannelID,
-          DreamRouterSyncUsername: settings.DreamRouterSyncUsername,
-          DreamRouterSyncPassword: settings.DreamRouterSyncPassword,
-          DreamRouterSyncRuleDirection: settings.DreamRouterSyncRuleDirection,
-          DreamRouterSyncRuleAmount: settings.DreamRouterSyncRuleAmount,
-        }}
       />
     ),
   },

@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "Di chuyển giá cũ",
     "{{ready}} ready · {{pending}} manual": "{{ready}} sẵn sàng · {{pending}} thủ công",
     "{{price}} / second": "{{price}} / giây",
-    "Price per second (USD)": "Giá mỗi giây (USD)"
+    "Price per second (USD)": "Giá mỗi giây (USD)",
+    "{{count}} models changed since the preview; preview again": "{{count}} mô hình đã thay đổi sau bản xem trước; hãy xem trước lại",
+    "Current channel price": "Giá kênh hiện tại",
+    "{{count}} conflicts": "{{count}} xung đột",
+    "Billing unit": "Đơn vị tính phí",
+    "New sale price": "Giá bán mới",
+    "Cache read": "Đọc bộ nhớ đệm"
   }
 }

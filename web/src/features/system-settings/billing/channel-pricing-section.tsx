@@ -16,20 +16,19 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, RefreshCw, Trash2 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { Plus, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { getChannels, syncChannelPricing } from '@/features/channels/api'
-import type { Channel, ChannelPricingQuote } from '@/features/channels/types'
+import { getChannels } from '@/features/channels/api'
+import type { Channel } from '@/features/channels/types'
 import { cn } from '@/lib/utils'
 
 import {
@@ -44,7 +43,7 @@ import { useUpdateOption } from '../hooks/use-update-option'
 
 export const CHANNEL_PRICE_OPTION_KEY = 'ChannelPriceSetting'
 
-type RuleMode = 'multiplier' | 'price' | 'fixed_base' | 'target_final_discount'
+type RuleMode = 'multiplier' | 'price' | 'fixed_base'
 
 type ModelRuleDraft = {
   id: string
@@ -58,16 +57,7 @@ type ChannelDraft = {
   channelId: string
   enabled: boolean
   ratio: string
-  quotes: Record<string, ChannelPricingQuote>
   models: ModelRuleDraft[]
-}
-
-type NewQuoteDraft = {
-  rowId: string
-  model: string
-  official: string
-  channel: string
-  unit: 'per_1m_token' | 'per_call'
 }
 
 type Draft = {
@@ -86,7 +76,6 @@ function newChannelRow(channelId = ''): ChannelDraft {
     channelId,
     enabled: true,
     ratio: '',
-    quotes: {},
     models: [],
   }
 }
@@ -103,7 +92,6 @@ type SerializedRule = { mode: string; value: number }
 type SerializedChannel = {
   enabled: boolean
   ratio?: number
-  quotes?: Record<string, ChannelPricingQuote>
   models: Record<string, SerializedRule>
 }
 type SerializedSetting = {
@@ -128,18 +116,9 @@ function serialize(draft: Draft): string {
     if (row.ratio.trim() !== '' && Number.isFinite(ratio) && ratio >= 0) {
       entry.ratio = ratio
     }
-    if (Object.keys(row.quotes).length > 0) {
-      entry.quotes = row.quotes
-    }
     channels[row.channelId] = entry
   }
   return JSON.stringify({ enabled: draft.enabled, channels })
-}
-
-function parseAmount(value: string): number | undefined {
-  if (value.trim() === '') return undefined
-  const parsed = Number(value)
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined
 }
 
 function rulePlaceholder(mode: RuleMode): string {
@@ -148,8 +127,6 @@ function rulePlaceholder(mode: RuleMode): string {
       return '2.5'
     case 'fixed_base':
       return '4'
-    case 'target_final_discount':
-      return '0.7'
     default:
       return '0.8'
   }
@@ -162,46 +139,9 @@ function normalizeRuleMode(mode: string | undefined): RuleMode {
       return 'price'
     case 'fixed_base':
       return 'fixed_base'
-    case 'target_final_discount':
-      return 'target_final_discount'
     default:
       return 'multiplier'
   }
-}
-
-function normalizeQuotes(
-  quotes: Record<string, ChannelPricingQuote> | undefined
-): Record<string, ChannelPricingQuote> {
-  const normalized: Record<string, ChannelPricingQuote> = {}
-  if (!quotes) return normalized
-  for (const [model, quote] of Object.entries(quotes)) {
-    if (!model.trim() || !quote) continue
-    const entry: ChannelPricingQuote = {}
-    for (const field of [
-      'official_price',
-      'channel_price',
-      'discount',
-      'completion_ratio',
-      'cache_ratio',
-      'create_cache_ratio',
-    ] as const) {
-      const value = quote[field]
-      if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
-        entry[field] = value
-      }
-    }
-    if (quote.unit) entry.unit = quote.unit
-    if (quote.billing_mode) entry.billing_mode = quote.billing_mode
-    if (quote.billing_expr) entry.billing_expr = quote.billing_expr
-    if (quote.status) entry.status = quote.status
-    if (quote.raw) entry.raw = quote.raw
-    if (quote.source) entry.source = quote.source
-    if (typeof quote.updated_at === 'number') {
-      entry.updated_at = quote.updated_at
-    }
-    normalized[model] = entry
-  }
-  return normalized
 }
 
 function deserialize(raw: string): Draft {
@@ -228,7 +168,6 @@ function deserialize(raw: string): Draft {
       channelId,
       enabled: config.enabled !== false,
       ratio: config.ratio === undefined ? '' : String(config.ratio),
-      quotes: normalizeQuotes(config.quotes),
       models,
     })
   }
@@ -366,15 +305,10 @@ export function ChannelPricingSection({
 }) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
-  const queryClient = useQueryClient()
 
-  const [saved, setSaved] = useState(() =>
-    serialize(deserialize(defaultSetting))
-  )
+  const [saved] = useState(() => serialize(deserialize(defaultSetting)))
   const [draft, setDraft] = useState<Draft>(() => deserialize(defaultSetting))
   const [pickerRowId, setPickerRowId] = useState<string | null>(null)
-  const [syncingRowId, setSyncingRowId] = useState<string | null>(null)
-  const [newQuote, setNewQuote] = useState<NewQuoteDraft | null>(null)
 
   const channelsQuery = useQuery({
     queryKey: ['channels', 'channel-pricing-picker'],
@@ -409,7 +343,7 @@ export function ChannelPricingSection({
   // the upstream price sheet returned.
   function modelsForRow(row: ChannelDraft): string[] {
     const configured = channelModelsMap[row.channelId] ?? []
-    return [...new Set([...configured, ...Object.keys(row.quotes)])]
+    return [...new Set(configured)]
   }
 
   function patchRow(id: string, patch: Partial<ChannelDraft>) {
@@ -439,68 +373,6 @@ export function ChannelPricingSection({
           : row
       ),
     }))
-  }
-
-  function patchQuote(
-    rowId: string,
-    model: string,
-    patch: Partial<ChannelPricingQuote>
-  ) {
-    setDraft((prev) => ({
-      ...prev,
-      channels: prev.channels.map((row) =>
-        row.id === rowId
-          ? {
-              ...row,
-              quotes: {
-                ...row.quotes,
-                [model]: { ...row.quotes[model], ...patch },
-              },
-            }
-          : row
-      ),
-    }))
-  }
-
-  function removeQuote(rowId: string, model: string) {
-    setDraft((prev) => ({
-      ...prev,
-      channels: prev.channels.map((row) => {
-        if (row.id !== rowId) return row
-        const quotes = { ...row.quotes }
-        delete quotes[model]
-        return { ...row, quotes }
-      }),
-    }))
-  }
-
-  function addQuote() {
-    if (!newQuote) return
-    const model = newQuote.model.trim()
-    if (!model) {
-      toast.error(t('Model name is required'))
-      return
-    }
-    const row = draft.channels.find((item) => item.id === newQuote.rowId)
-    if (!row) return
-    if (row.quotes[model]) {
-      toast.error(t('This model already has a quote'))
-      return
-    }
-    const official = parseAmount(newQuote.official)
-    const channelPrice = parseAmount(newQuote.channel)
-    if (official === undefined && channelPrice === undefined) {
-      toast.error(t('Enter at least one price'))
-      return
-    }
-    patchQuote(row.id, model, {
-      official_price: official,
-      channel_price: channelPrice,
-      unit: newQuote.unit,
-      source: 'manual',
-      updated_at: Math.floor(Date.now() / 1000),
-    })
-    setNewQuote(null)
   }
 
   function validate(): boolean {
@@ -547,44 +419,6 @@ export function ChannelPricingSection({
   const serialized = serialize(draft)
   const isDirty = serialized !== saved
 
-  async function onSync(row: ChannelDraft) {
-    const channelId = Number(row.channelId)
-    if (!channelId) return
-    setSyncingRowId(row.id)
-    try {
-      const response = await syncChannelPricing(channelId)
-      const data = response.data
-      if (!response.success || !data) {
-        toast.error(response.message || t('Failed to sync channel prices'))
-        return
-      }
-      const nextDraft: Draft = {
-        ...draft,
-        channels: draft.channels.map((item) =>
-          item.id === row.id
-            ? { ...item, enabled: true, quotes: normalizeQuotes(data.quotes) }
-            : item
-        ),
-      }
-      setDraft(nextDraft)
-      // The sync already persisted the quote sheet; mirror the exact local
-      // shape so only genuinely unsaved edits keep the form dirty.
-      setSaved(serialize(nextDraft))
-      queryClient.invalidateQueries({ queryKey: ['system-options'] })
-      toast.success(
-        t('Imported {{count}} model prices', { count: data.imported })
-      )
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : t('Failed to sync channel prices')
-      )
-    } finally {
-      setSyncingRowId(null)
-    }
-  }
-
   async function onSave() {
     if (!validate()) return
     await updateOption.mutateAsync({
@@ -623,17 +457,6 @@ export function ChannelPricingSection({
             )}
           />
         </SettingsFormGridItem>
-
-        {!draft.enabled &&
-        draft.channels.some((row) => Object.keys(row.quotes).length > 0) ? (
-          <SettingsFormGridItem span='full'>
-            <p className='text-warning text-sm'>
-              {t(
-                'Quotes are saved but channel pricing is disabled. Enable it above to apply them to billing.'
-              )}
-            </p>
-          </SettingsFormGridItem>
-        ) : null}
 
         {draft.channels.length === 0 ? (
           <SettingsFormGridItem span='full'>
@@ -702,21 +525,6 @@ export function ChannelPricingSection({
                 <div className='flex items-center gap-2'>
                   <Button
                     type='button'
-                    variant='outline'
-                    size='sm'
-                    disabled={
-                      !row.channelId || isDirty || syncingRowId === row.id
-                    }
-                    onClick={() => void onSync(row)}
-                  >
-                    <RefreshCw
-                      data-icon='inline-start'
-                      className={cn(syncingRowId === row.id && 'animate-spin')}
-                    />
-                    <span>{t('Sync upstream prices')}</span>
-                  </Button>
-                  <Button
-                    type='button'
                     variant='ghost'
                     size='sm'
                     onClick={() =>
@@ -736,215 +544,6 @@ export function ChannelPricingSection({
               <p className='text-muted-foreground text-sm'>
                 {t('Channel-wide multiplier hint')}
               </p>
-              <p className='text-muted-foreground text-sm'>
-                {isDirty
-                  ? t('Save changes before syncing upstream prices')
-                  : t('Pricing sync hint')}
-              </p>
-
-              {Object.keys(row.quotes).length > 0 && (
-                <div className='space-y-2'>
-                  <div className='flex items-center justify-between gap-2'>
-                    <Label tier='default' className='text-muted-foreground'>
-                      {t('Synced channel quotes')}
-                    </Label>
-                    <span className='text-muted-foreground text-xs'>
-                      {t('{{count}} models', {
-                        count: Object.keys(row.quotes).length,
-                      })}
-                    </span>
-                  </div>
-                  <div className='bg-background max-h-72 overflow-y-auto rounded-md border'>
-                    {Object.entries(row.quotes).map(([model, quote]) => (
-                      <div
-                        key={model}
-                        className='flex flex-wrap items-center gap-2 border-b px-3 py-2 last:border-b-0'
-                      >
-                        <span className='text-mono min-w-0 flex-1 font-mono text-sm break-all'>
-                          {model}
-                        </span>
-                        {quote.status === 'needs_review' && (
-                          <Badge variant='warning'>{t('Needs review')}</Badge>
-                        )}
-                        <label className='flex items-center gap-1 text-sm'>
-                          <span className='text-muted-foreground'>
-                            {t('Official')}
-                          </span>
-                          <Input
-                            aria-label={t('Official price')}
-                            className='w-24'
-                            inputMode='decimal'
-                            min={0}
-                            step='0.0001'
-                            type='number'
-                            value={quote.official_price ?? ''}
-                            onChange={(event) =>
-                              patchQuote(row.id, model, {
-                                official_price: parseAmount(event.target.value),
-                              })
-                            }
-                          />
-                        </label>
-                        <label className='flex items-center gap-1 text-sm'>
-                          <span className='text-muted-foreground'>
-                            {t('Channel')}
-                          </span>
-                          <Input
-                            aria-label={t('Channel price')}
-                            className='w-24'
-                            inputMode='decimal'
-                            min={0}
-                            step='0.0001'
-                            type='number'
-                            value={quote.channel_price ?? ''}
-                            onChange={(event) =>
-                              patchQuote(row.id, model, {
-                                channel_price: parseAmount(event.target.value),
-                                status: 'ok',
-                                billing_mode: undefined,
-                                billing_expr: undefined,
-                              })
-                            }
-                          />
-                        </label>
-                        <Combobox
-                          options={[
-                            {
-                              value: 'per_1m_token',
-                              label: t('per 1M tokens'),
-                            },
-                            { value: 'per_call', label: t('per request') },
-                          ]}
-                          value={quote.unit ?? 'per_1m_token'}
-                          onValueChange={(value) =>
-                            patchQuote(row.id, model, {
-                              unit:
-                                value === 'per_call'
-                                  ? 'per_call'
-                                  : 'per_1m_token',
-                            })
-                          }
-                          className='w-40'
-                        />
-                        <Button
-                          type='button'
-                          variant='ghost'
-                          size='icon'
-                          aria-label={t('Remove quote')}
-                          onClick={() => removeQuote(row.id, model)}
-                        >
-                          <Trash2 />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                  {newQuote?.rowId === row.id ? (
-                    <div className='flex flex-wrap items-center gap-2'>
-                      <Combobox
-                        options={modelsForRow(row).map((model) => ({
-                          value: model,
-                          label: model,
-                        }))}
-                        value={newQuote.model || null}
-                        onValueChange={(value) =>
-                          setNewQuote((prev) =>
-                            prev ? { ...prev, model: value ?? '' } : prev
-                          )
-                        }
-                        allowCustomValue
-                        searchPlaceholder={t('Search models')}
-                        placeholder='gpt-4o'
-                        className='w-56'
-                      />
-                      <Input
-                        aria-label={t('Official price')}
-                        className='w-24'
-                        inputMode='decimal'
-                        min={0}
-                        step='0.0001'
-                        type='number'
-                        placeholder={t('Official price')}
-                        value={newQuote.official}
-                        onChange={(event) =>
-                          setNewQuote((prev) =>
-                            prev
-                              ? { ...prev, official: event.target.value }
-                              : prev
-                          )
-                        }
-                      />
-                      <Input
-                        aria-label={t('Channel price')}
-                        className='w-24'
-                        inputMode='decimal'
-                        min={0}
-                        step='0.0001'
-                        type='number'
-                        placeholder={t('Channel price')}
-                        value={newQuote.channel}
-                        onChange={(event) =>
-                          setNewQuote((prev) =>
-                            prev
-                              ? { ...prev, channel: event.target.value }
-                              : prev
-                          )
-                        }
-                      />
-                      <Combobox
-                        options={[
-                          { value: 'per_1m_token', label: t('per 1M tokens') },
-                          { value: 'per_call', label: t('per request') },
-                        ]}
-                        value={newQuote.unit}
-                        onValueChange={(value) =>
-                          setNewQuote((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  unit:
-                                    value === 'per_call'
-                                      ? 'per_call'
-                                      : 'per_1m_token',
-                                }
-                              : prev
-                          )
-                        }
-                        className='w-40'
-                      />
-                      <Button type='button' size='sm' onClick={addQuote}>
-                        {t('Add quote')}
-                      </Button>
-                      <Button
-                        type='button'
-                        size='sm'
-                        variant='ghost'
-                        onClick={() => setNewQuote(null)}
-                      >
-                        {t('Cancel')}
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      type='button'
-                      variant='outline'
-                      size='sm'
-                      onClick={() =>
-                        setNewQuote({
-                          rowId: row.id,
-                          model: '',
-                          official: '',
-                          channel: '',
-                          unit: 'per_1m_token',
-                        })
-                      }
-                    >
-                      <Plus data-icon='inline-start' />
-                      <span>{t('Add quote')}</span>
-                    </Button>
-                  )}
-                </div>
-              )}
-
               <SettingsControlChildren className='space-y-2'>
                 <div className='flex flex-wrap items-center justify-between gap-2'>
                   <Label tier='default' className='text-muted-foreground'>
@@ -1022,10 +621,6 @@ export function ChannelPricingSection({
                             {
                               value: 'fixed_base',
                               label: t('Absolute base price'),
-                            },
-                            {
-                              value: 'target_final_discount',
-                              label: t('Discount off official price'),
                             },
                           ]}
                           value={rule.mode}

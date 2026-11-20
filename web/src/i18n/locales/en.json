@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "Legacy quote migration",
     "{{ready}} ready · {{pending}} manual": "{{ready}} ready · {{pending}} manual",
     "{{price}} / second": "{{price}} / second",
-    "Price per second (USD)": "Price per second (USD)"
+    "Price per second (USD)": "Price per second (USD)",
+    "{{count}} models changed since the preview; preview again": "{{count}} models changed since the preview; preview again",
+    "Current channel price": "Current channel price",
+    "{{count}} conflicts": "{{count}} conflicts",
+    "Billing unit": "Billing unit",
+    "New sale price": "New sale price",
+    "Cache read": "Cache read"
   }
 }

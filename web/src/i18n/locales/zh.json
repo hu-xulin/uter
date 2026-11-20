@@ -8378,6 +8378,12 @@
     "Legacy quote migration": "旧报价迁移",
     "{{ready}} ready · {{pending}} manual": "{{ready}} 项可迁移 · {{pending}} 项需人工",
     "{{price}} / second": "{{price}} / 秒",
-    "Price per second (USD)": "每秒价格（美元）"
+    "Price per second (USD)": "每秒价格（美元）",
+    "{{count}} models changed since the preview; preview again": "预览后有 {{count}} 个模型发生变化，请重新预览",
+    "Current channel price": "当前渠道价",
+    "{{count}} conflicts": "{{count}} 个冲突",
+    "Billing unit": "计费单位",
+    "New sale price": "新售价",
+    "Cache read": "缓存读取"
   }
 }
