@@ -5,11 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 	"gorm.io/gorm"
 )
 
@@ -28,6 +31,7 @@ const (
 	ChannelPricingModePerSecond        = "per_second"
 	ChannelPricingModeTieredExpr       = "tiered_expr"
 	ChannelPricingModePerMinute        = "per_minute"
+	ChannelPricingModeTieredTable      = "tiered_table"
 )
 
 // ChannelModelPricing is one channel's independent price record for one model.
@@ -109,6 +113,22 @@ type ChannelOfficialPricing struct {
 
 // ChannelInternalPricing is the operator's flat sale price for one channel
 // model. Tiered official prices are never flattened into this structure.
+// ChannelInternalPricingTier is one operator sale-price band. Ranges are
+// context-length bands on input tokens; the billing expression selects the band
+// at request time so tiered pricing is executable instead of display-only.
+type ChannelInternalPricingTier struct {
+	RangeName                string   `json:"range_name"`
+	TimeBand                 string   `json:"time_band,omitempty"`
+	MinInputTokens           int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens           int64    `json:"max_input_tokens,omitempty"`
+	InputUSDPerMillion       *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSDPerMillion      *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSDPerMillion       *float64 `json:"cache_per_million_usd,omitempty"`
+	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
+	PerUnitUSD               *float64 `json:"per_unit_usd,omitempty"`
+	Unit                     string   `json:"unit"`
+}
+
 type ChannelInternalPricing struct {
 	Mode                 string   `json:"mode"`
 	InputUSDPerMillion   *float64 `json:"input_per_million_usd,omitempty"`
@@ -122,8 +142,11 @@ type ChannelInternalPricing struct {
 	PerCallUSD               *float64 `json:"per_call_usd,omitempty"`
 	PerSecondUSD             *float64 `json:"per_second_usd,omitempty"`
 	PerMinuteUSD             *float64 `json:"per_minute_usd,omitempty"`
-	BillingExpr              string   `json:"billing_expr,omitempty"`
-	Note                     string   `json:"note,omitempty"`
+	// Tiers holds per-range sale prices for tiered_table mode. The normalized
+	// billing form is generated from them as a billing expression.
+	Tiers       []ChannelInternalPricingTier `json:"tiers,omitempty"`
+	BillingExpr string                       `json:"billing_expr,omitempty"`
+	Note        string                       `json:"note,omitempty"`
 	// Source records who last wrote the internal price. Automatic syncs tag
 	// their writes so a later sync may refresh them, while an operator-saved
 	// price is never overwritten.
@@ -364,6 +387,12 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 			return nil, errors.New("per-second price is required")
 		}
 		return &ChannelBillingPricing{Mode: ChannelPricingModePerSecond, UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
+	case ChannelPricingModeTieredTable:
+		expr, err := buildInternalTierExpression(pricing.Tiers)
+		if err != nil {
+			return nil, err
+		}
+		return &ChannelBillingPricing{Mode: ChannelPricingModeTieredTable, BillingExpr: expr}, nil
 	case ChannelPricingModePerMinute:
 		// Seconds are the task usage unit. A per-minute quote is normalized to
 		// its per-second equivalent so the same duration billing path applies.
@@ -376,6 +405,97 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	default:
 		return nil, errors.New("unsupported internal pricing mode")
 	}
+}
+
+// buildInternalTierExpression compiles operator tier prices into the billing
+// expression language. Only token tiers in one time band are executable: a
+// time-of-day price cannot be selected from the request body, so it is rejected
+// instead of being charged at the wrong band.
+func buildInternalTierExpression(tiers []ChannelInternalPricingTier) (string, error) {
+	if len(tiers) == 0 {
+		return "", errors.New("tiered pricing requires at least one tier")
+	}
+	sorted := append([]ChannelInternalPricingTier(nil), tiers...)
+	bands := make(map[string]bool)
+	hasEmptyBand := false
+	for i := range sorted {
+		tier := &sorted[i]
+		band := strings.TrimSpace(tier.TimeBand)
+		if band == "" {
+			hasEmptyBand = true
+		} else {
+			bands[band] = true
+		}
+		if tier.Unit != "" && tier.Unit != ChannelPricingModePerMillionTokens && tier.Unit != "per_1m_tokens" {
+			return "", fmt.Errorf("tier %q unit %q is not executable", tier.RangeName, tier.Unit)
+		}
+		if tier.InputUSDPerMillion == nil || *tier.InputUSDPerMillion <= 0 {
+			return "", fmt.Errorf("tier %q requires a positive input price", tier.RangeName)
+		}
+		if tier.OutputUSDPerMillion != nil && *tier.OutputUSDPerMillion < 0 {
+			return "", fmt.Errorf("tier %q output price must be non-negative", tier.RangeName)
+		}
+		if tier.CacheUSDPerMillion != nil && *tier.CacheUSDPerMillion < 0 {
+			return "", fmt.Errorf("tier %q cache price must be non-negative", tier.RangeName)
+		}
+		if tier.CreateCacheUSDPerMillion != nil && *tier.CreateCacheUSDPerMillion < 0 {
+			return "", fmt.Errorf("tier %q cache write price must be non-negative", tier.RangeName)
+		}
+	}
+	if len(bands) > 1 || (len(bands) == 1 && hasEmptyBand) {
+		return "", errors.New("tiered sale prices cannot mix time bands")
+	}
+	sort.SliceStable(sorted, func(i, j int) bool {
+		mi, mj := sorted[i].MaxInputTokens, sorted[j].MaxInputTokens
+		if mi == 0 {
+			return false
+		}
+		if mj == 0 {
+			return true
+		}
+		return mi < mj
+	})
+	names := make(map[string]int, len(sorted))
+	parts := make([]string, 0, len(sorted))
+	for i, tier := range sorted {
+		name := strings.TrimSpace(tier.RangeName)
+		name = strings.ReplaceAll(name, `"`, "")
+		if name == "" {
+			name = fmt.Sprintf("tier-%d", i+1)
+		}
+		names[name]++
+		if names[name] > 1 {
+			name = fmt.Sprintf("%s-%d", name, names[name])
+		}
+		terms := []string{"p * " + formatInternalPrice(*tier.InputUSDPerMillion)}
+		if tier.OutputUSDPerMillion != nil && *tier.OutputUSDPerMillion > 0 {
+			terms = append(terms, "c * "+formatInternalPrice(*tier.OutputUSDPerMillion))
+		}
+		if tier.CacheUSDPerMillion != nil && *tier.CacheUSDPerMillion > 0 {
+			terms = append(terms, "cr * "+formatInternalPrice(*tier.CacheUSDPerMillion))
+		}
+		if tier.CreateCacheUSDPerMillion != nil && *tier.CreateCacheUSDPerMillion > 0 {
+			terms = append(terms, "cc * "+formatInternalPrice(*tier.CreateCacheUSDPerMillion))
+		}
+		parts = append(parts, fmt.Sprintf(`tier("%s", %s)`, name, strings.Join(terms, " + ")))
+	}
+	expr := parts[len(parts)-1]
+	for i := len(parts) - 2; i >= 0; i-- {
+		limit := sorted[i].MaxInputTokens
+		condition := "true"
+		if limit > 0 {
+			condition = fmt.Sprintf("len <= %d", limit)
+		}
+		expr = fmt.Sprintf("%s ? %s : %s", condition, parts[i], expr)
+	}
+	if _, err := billingexpr.CompileFromCache(expr); err != nil {
+		return "", fmt.Errorf("tiered sale expression is invalid: %w", err)
+	}
+	return expr, nil
+}
+
+func formatInternalPrice(value float64) string {
+	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 // internalPricingReplaceable reports whether a sync may rewrite the stored

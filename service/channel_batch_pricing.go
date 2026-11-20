@@ -66,6 +66,21 @@ type BatchPricingItem struct {
 	// compare against; the UI must not present that as verified.
 	MarginVerified  bool   `json:"margin_verified"`
 	ProtectionState string `json:"protection_state,omitempty"`
+	// Tiers echoes the tiered sale prices this rule produced.
+	Tiers []BatchPricingTier `json:"tiers,omitempty"`
+}
+
+// BatchPricingTier is one tiered sale-price preview row.
+type BatchPricingTier struct {
+	RangeName      string   `json:"range_name"`
+	TimeBand       string   `json:"time_band,omitempty"`
+	MinInputTokens int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens int64    `json:"max_input_tokens,omitempty"`
+	InputUSD       *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSD      *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSD       *float64 `json:"cache_per_million_usd,omitempty"`
+	CacheWriteUSD  *float64 `json:"create_cache_per_million_usd,omitempty"`
+	Unit           string   `json:"unit"`
 }
 
 // BatchDimensionMargin is the cost check for one billable dimension.
@@ -113,8 +128,21 @@ type batchPendingWrite struct {
 	approved        bool
 }
 
+type batchBaseTier struct {
+	name          string
+	timeBand      string
+	minInput      int64
+	maxInput      int64
+	inputUSD      *float64
+	outputUSD     *float64
+	cacheUSD      *float64
+	cacheWriteUSD *float64
+	unit          string
+}
+
 type batchBasePrice struct {
 	mode          string
+	tiers         []batchBaseTier
 	inputUSD      *float64
 	outputUSD     *float64
 	cacheUSD      *float64
@@ -375,6 +403,68 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
+		if len(base.tiers) > 0 {
+			saleTiers := make([]model.ChannelInternalPricingTier, 0, len(base.tiers))
+			previewTiers := make([]BatchPricingTier, 0, len(base.tiers))
+			failed := false
+			for _, tier := range base.tiers {
+				nextTier := model.ChannelInternalPricingTier{
+					RangeName: tier.name, TimeBand: tier.timeBand,
+					MinInputTokens: tier.minInput, MaxInputTokens: tier.maxInput,
+					Unit: model.ChannelPricingModePerMillionTokens,
+				}
+				applyTier := func(raw *float64, dimension string) (*float64, bool) {
+					if raw == nil {
+						return nil, true
+					}
+					return apply(raw, dimension)
+				}
+				input, ok := applyTier(tier.inputUSD, "input")
+				if !ok || input == nil {
+					failed = true
+					break
+				}
+				nextTier.InputUSDPerMillion = input
+				output, ok := applyTier(tier.outputUSD, "output")
+				if !ok {
+					failed = true
+					break
+				}
+				nextTier.OutputUSDPerMillion = output
+				cache, ok := applyTier(tier.cacheUSD, "cache_read")
+				if !ok {
+					failed = true
+					break
+				}
+				nextTier.CacheUSDPerMillion = cache
+				cacheWrite, ok := applyTier(tier.cacheWriteUSD, "cache_write")
+				if !ok {
+					failed = true
+					break
+				}
+				nextTier.CreateCacheUSDPerMillion = cacheWrite
+				saleTiers = append(saleTiers, nextTier)
+				previewTiers = append(previewTiers, BatchPricingTier{
+					RangeName: nextTier.RangeName, TimeBand: nextTier.TimeBand,
+					MinInputTokens: nextTier.MinInputTokens, MaxInputTokens: nextTier.MaxInputTokens,
+					InputUSD: nextTier.InputUSDPerMillion, OutputUSD: nextTier.OutputUSDPerMillion,
+					CacheUSD: nextTier.CacheUSDPerMillion, CacheWriteUSD: nextTier.CreateCacheUSDPerMillion,
+					Unit: "per_1m_token",
+				})
+			}
+			if failed {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+				continue
+			}
+			internal.Mode = model.ChannelPricingModeTieredTable
+			internal.Tiers = saleTiers
+			internal.Note = fmt.Sprintf("batch: %s %s %.4f (%d tiers)", basis, mode, value, len(saleTiers))
+			internal.InputUSDPerMillion = nil
+			internal.OutputUSDPerMillion = nil
+			internal.CacheUSDPerMillion = nil
+			internal.CreateCacheUSDPerMillion = nil
+			item.Tiers = previewTiers
+		}
 		annotateBatchMargin(&item)
 		// Record the amount the rule was actually applied to. A channel basis
 		// follows the selected discount group, so "base -> sale" is the only
@@ -390,6 +480,9 @@ func ApplyChannelBatchPricingWithOptions(
 		margins, verified, violated := evaluateBatchMarginDimensions(purchaseDimensions, item, options.MinMarginRate)
 		item.DimensionMargins = margins
 		item.MarginVerified = verified
+		if len(item.Tiers) > 0 {
+			annotateBatchTierMargin(&item)
+		}
 		approved := false
 		if violated {
 			item.ProtectionState = "blocked"
@@ -505,6 +598,19 @@ func resolveBatchPurchaseDimensions(row model.ChannelModelPricing) batchBasePric
 	if err := common.UnmarshalJsonStr(row.NormalizedPricing, &official); err != nil {
 		return batchBasePrice{}
 	}
+	if len(official.ChannelPriceTiers) > 1 {
+		tiers := make([]batchBaseTier, 0, len(official.ChannelPriceTiers))
+		for _, item := range official.ChannelPriceTiers {
+			tiers = append(tiers, batchBaseTier{
+				name: item.RangeName, timeBand: item.TimeBand,
+				minInput: item.MinInputTokens, maxInput: item.MaxInputTokens,
+				inputUSD: item.InputPerMillionUSD, outputUSD: item.OutputPerMillionUSD,
+				cacheUSD: item.CachePerMillionUSD, cacheWriteUSD: item.CreateCachePerMillionUSD,
+				unit: item.Unit,
+			})
+		}
+		return batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, tiers: tiers}
+	}
 	var tier *model.ChannelPricingTier
 	if len(official.ChannelPriceTiers) == 1 {
 		tier = &official.ChannelPriceTiers[0]
@@ -540,6 +646,35 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 		{"per_second", base.perSecondUSD, item.PerSecondUSD},
 		{"per_minute", base.perMinuteUSD, item.PerMinuteUSD},
 	}
+	for i, sale := range item.Tiers {
+		var purchase *batchBaseTier
+		for j := range base.tiers {
+			if base.tiers[j].name == sale.RangeName && base.tiers[j].timeBand == sale.TimeBand {
+				purchase = &base.tiers[j]
+				break
+			}
+		}
+		if purchase == nil && i < len(base.tiers) {
+			purchase = &base.tiers[i]
+		}
+		name := sale.RangeName
+		if strings.TrimSpace(name) == "" {
+			name = fmt.Sprintf("tier-%d", i+1)
+		}
+		var inputPurchase, outputPurchase, cachePurchase, cacheWritePurchase *float64
+		if purchase != nil {
+			inputPurchase = purchase.inputUSD
+			outputPurchase = purchase.outputUSD
+			cachePurchase = purchase.cacheUSD
+			cacheWritePurchase = purchase.cacheWriteUSD
+		}
+		pairs = append(pairs,
+			batchMarginDimension{name + "/input", inputPurchase, sale.InputUSD},
+			batchMarginDimension{name + "/output", outputPurchase, sale.OutputUSD},
+			batchMarginDimension{name + "/cache_read", cachePurchase, sale.CacheUSD},
+			batchMarginDimension{name + "/cache_write", cacheWritePurchase, sale.CacheWriteUSD},
+		)
+	}
 	margins := make([]BatchDimensionMargin, 0, len(pairs))
 	verified := true
 	violated := false
@@ -572,6 +707,26 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 		margins = append(margins, margin)
 	}
 	return margins, verified, violated
+}
+
+// annotateBatchTierMargin reports the weakest tier dimension as the item's
+// primary margin, so the summary row is not silent for tiered models.
+func annotateBatchTierMargin(item *BatchPricingItem) {
+	var worst *BatchDimensionMargin
+	for i := range item.DimensionMargins {
+		margin := &item.DimensionMargins[i]
+		if margin.MarginRate == nil {
+			continue
+		}
+		if worst == nil || *margin.MarginRate < *worst.MarginRate {
+			worst = margin
+		}
+	}
+	if worst == nil {
+		return
+	}
+	item.MarginUSD = worst.MarginUSD
+	item.MarginRate = worst.MarginRate
 }
 
 func marginViolationReason(margins []BatchDimensionMargin) string {
@@ -704,6 +859,19 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 	var internal model.ChannelInternalPricing
 	if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
 		return batchBasePrice{}, "current channel price cannot be parsed"
+	}
+	if len(internal.Tiers) > 0 {
+		tiers := make([]batchBaseTier, 0, len(internal.Tiers))
+		for _, tier := range internal.Tiers {
+			tiers = append(tiers, batchBaseTier{
+				name: tier.RangeName, timeBand: tier.TimeBand,
+				minInput: tier.MinInputTokens, maxInput: tier.MaxInputTokens,
+				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
+				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
+				unit: tier.Unit,
+			})
+		}
+		return batchBasePrice{mode: model.ChannelPricingModeTieredTable, tiers: tiers}, ""
 	}
 	switch internal.Mode {
 	case model.ChannelPricingModePerMillionTokens:

@@ -497,3 +497,87 @@ func TestBatchPricingRejectsInvalidProtectionOptions(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "minimum margin rate")
 }
+
+func seedTieredSaleRow(t *testing.T, channelID int, modelName string, saleInput [2]float64) {
+	t.Helper()
+	purchaseInput1, purchaseOutput1 := 1.0, 4.0
+	purchaseInput2, purchaseOutput2 := 2.0, 8.0
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		ChannelPriceTiers: []model.ChannelPricingTier{
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputPerMillionUSD: &purchaseInput1, OutputPerMillionUSD: &purchaseOutput1},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputPerMillionUSD: &purchaseInput2, OutputPerMillionUSD: &purchaseOutput2},
+		},
+	}
+	encoded, _ := common.Marshal(normalized)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(encoded),
+		Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	saleOutput1, saleOutput2 := saleInput[0]*4, saleInput[1]*4
+	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+	}, model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModeTieredTable,
+		Tiers: []model.ChannelInternalPricingTier{
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputUSDPerMillion: &saleInput[0], OutputUSDPerMillion: &saleOutput1},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputUSDPerMillion: &saleInput[1], OutputUSDPerMillion: &saleOutput2},
+		},
+		Source: "manual",
+	}))
+}
+
+func TestBatchPricingScalesTieredSalePrices(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedTieredSaleRow(t, 21, "tiered-model", [2]float64{1.2, 2.4})
+
+	result, err := ApplyChannelBatchPricingWithOptions(21, BatchPricingOptions{
+		Models: []string{"tiered-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeMarkup, Value: 0.1,
+		OverwriteManual: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.Len(t, result.Items, 1)
+	require.Len(t, result.Items[0].Tiers, 2)
+	assert.InDelta(t, 1.32, *result.Items[0].Tiers[0].InputUSD, 1e-9)
+	assert.InDelta(t, 2.64, *result.Items[0].Tiers[1].InputUSD, 1e-9)
+
+	row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 21, Provider: "test", ModelName: "tiered-model",
+	})
+	require.NoError(t, err)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	assert.Equal(t, model.ChannelPricingModeTieredTable, internal.Mode)
+	require.Len(t, internal.Tiers, 2)
+	assert.InDelta(t, 1.32, *internal.Tiers[0].InputUSDPerMillion, 1e-9)
+
+	effective := model.ResolveEffectiveChannelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 21, Provider: "test", ModelName: "tiered-model",
+	})
+	require.True(t, effective.Billable)
+	require.NotNil(t, effective.Pricing)
+	assert.Contains(t, effective.Pricing.BillingExpr, "len <= 32768")
+}
+
+func TestBatchPricingTieredMarginBlocksLossBand(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedTieredSaleRow(t, 23, "tiered-model", [2]float64{1.2, 1.5})
+
+	minMargin := 0.1
+	result, err := ApplyChannelBatchPricingWithOptions(23, BatchPricingOptions{
+		Models: []string{"tiered-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeNone,
+		OverwriteManual: true, MinMarginRate: &minMargin,
+		ProtectionMode: BatchProtectionModePartial,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.Blocked)
+	require.Len(t, result.Skipped, 1)
+	assert.Contains(t, result.Skipped[0].Reason, "32k-128k/input")
+}

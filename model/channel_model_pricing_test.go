@@ -817,3 +817,40 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 	assert.Equal(t, "CNY", effective.Pricing.Currency)
 	assert.InDelta(t, 7.3, effective.Pricing.FXRate, 1e-9)
 }
+
+func TestNormalizeTieredTablePricingBuildsExecutableExpression(t *testing.T) {
+	input1, output1 := 1.0, 4.0
+	input2, output2 := 2.0, 8.0
+	pricing := ChannelInternalPricing{
+		Mode: ChannelPricingModeTieredTable,
+		Tiers: []ChannelInternalPricingTier{
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, InputUSDPerMillion: &input1, OutputUSDPerMillion: &output1, Unit: ChannelPricingModePerMillionTokens},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, InputUSDPerMillion: &input2, OutputUSDPerMillion: &output2, Unit: ChannelPricingModePerMillionTokens},
+		},
+	}
+	billing, err := NormalizeChannelInternalPricing(&pricing)
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingModeTieredTable, billing.Mode)
+	assert.Contains(t, billing.BillingExpr, `tier("0-32k"`)
+	assert.Contains(t, billing.BillingExpr, `tier("32k-128k"`)
+	assert.Contains(t, billing.BillingExpr, "len <= 32768")
+
+	mixed := pricing
+	mixed.Tiers = append([]ChannelInternalPricingTier(nil), pricing.Tiers...)
+	mixed.Tiers[1].TimeBand = "night"
+	_, err = NormalizeChannelInternalPricing(&mixed)
+	require.ErrorContains(t, err, "mix time bands")
+
+	missing := pricing
+	missing.Tiers = append([]ChannelInternalPricingTier(nil), pricing.Tiers...)
+	missing.Tiers[1].InputUSDPerMillion = nil
+	_, err = NormalizeChannelInternalPricing(&missing)
+	require.ErrorContains(t, err, "positive input")
+
+	nonToken := pricing
+	nonToken.Tiers = append([]ChannelInternalPricingTier(nil), pricing.Tiers...)
+	nonToken.Tiers[1].Unit = ChannelPricingModePerSecond
+	nonToken.Tiers[1].PerUnitUSD = &input1
+	_, err = NormalizeChannelInternalPricing(&nonToken)
+	require.ErrorContains(t, err, "not executable")
+}
