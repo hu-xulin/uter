@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -45,10 +46,17 @@ func BailianUpstreamSyncTask() {
 // for an operator click. Operator, batch and scheduled prices are preserved;
 // a model with no unambiguous catalog price keeps its review flag.
 func AutoConfigureBailianPrices() {
-	for _, channel := range bailianUpstreamChannels() {
-		// Pick up a pricing schema change (for example catalog prices becoming
-		// official prices) from the saved snapshot without waiting for the next
-		// upstream pull.
+	channels := bailianUpstreamChannels()
+	// Rewrite stored prices from the saved snapshot once per process so a
+	// catalog parser change (a newly supported unit, for example) reaches every
+	// row without waiting for the next upstream pull.
+	bailianSchemaReapply.Do(func() {
+		for _, channel := range channels {
+			reapplyBailianCatalogPricing(channel)
+		}
+	})
+	for _, channel := range channels {
+		// Pick up a pricing source change from the saved snapshot.
 		reapplyBailianCatalogPricingIfStale(channel)
 		if _, _, err := SeedBailianInternalPricing(channel.Id, nil, false); err != nil {
 			common.SysError(common.LogText("bailian auto pricing failed for channel %d: %s", channel.Id, err.Error()))
@@ -56,15 +64,29 @@ func AutoConfigureBailianPrices() {
 	}
 }
 
-// reapplyBailianCatalogPricingIfStale rewrites stored prices from the saved
-// catalog snapshot when they predate the current catalog source.
+var bailianSchemaReapply sync.Once
+
+// reapplyBailianCatalogPricing rewrites stored prices from the saved catalog
+// snapshot. Operator prices survive because only catalog fields are written.
+func reapplyBailianCatalogPricing(channel *model.Channel) {
+	catalog := LoadBailianCatalogSnapshotForChannel(channel.Id)
+	if catalog == nil {
+		return
+	}
+	catalog.ChannelID = channel.Id
+	if _, err := model.UpsertChannelOfficialPricing(BailianPricingRecords(catalog, channel.GetModels())); err != nil {
+		common.SysError(common.LogText("bailian catalog reapply failed for channel %d: %s", channel.Id, err.Error()))
+	}
+}
+
+// reapplyBailianCatalogPricingIfStale rewrites stored prices when they predate
+// the current catalog source.
 func reapplyBailianCatalogPricingIfStale(channel *model.Channel) {
 	rows, err := model.ListChannelModelPricing(channel.Id)
 	if err != nil {
 		common.SysError(common.LogText("bailian auto pricing list failed for channel %d: %s", channel.Id, err.Error()))
 		return
 	}
-	stale := false
 	served := make(map[string]bool)
 	for _, name := range channel.GetModels() {
 		served[strings.TrimSpace(name)] = true
@@ -76,20 +98,9 @@ func reapplyBailianCatalogPricingIfStale(channel *model.Channel) {
 			continue
 		}
 		if strings.TrimSpace(row.NormalizedPricing) != "" && row.PricingSource != bailianCatalogSource {
-			stale = true
-			break
+			reapplyBailianCatalogPricing(channel)
+			return
 		}
-	}
-	if !stale {
-		return
-	}
-	catalog := LoadBailianCatalogSnapshotForChannel(channel.Id)
-	if catalog == nil {
-		return
-	}
-	catalog.ChannelID = channel.Id
-	if _, err := model.UpsertChannelOfficialPricing(BailianPricingRecords(catalog, channel.GetModels())); err != nil {
-		common.SysError(common.LogText("bailian catalog reapply failed for channel %d: %s", channel.Id, err.Error()))
 	}
 }
 
