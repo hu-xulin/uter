@@ -60,6 +60,8 @@ type EditDraft = {
   output: string
   cache: string
   cacheWrite: string
+  audioInput: string
+  audioOutput: string
   perCall: string
   perSecond: string
   perMinute: string
@@ -88,6 +90,8 @@ function draftFrom(record: ChannelModelPricingRecord): EditDraft {
     output: internal?.output_per_million_usd?.toString() ?? '',
     cache: internal?.cache_per_million_usd?.toString() ?? '',
     cacheWrite: internal?.create_cache_per_million_usd?.toString() ?? '',
+    audioInput: internal?.audio_input_per_million_usd?.toString() ?? '',
+    audioOutput: internal?.audio_output_per_million_usd?.toString() ?? '',
     perCall: internal?.per_call_usd?.toString() ?? '',
     perSecond: internal?.per_second_usd?.toString() ?? '',
     perMinute: internal?.per_minute_usd?.toString() ?? '',
@@ -222,6 +226,8 @@ export function ChannelModelPricingSection(
         pricing.output_per_million_usd = parsePrice(draft.output)
         pricing.cache_per_million_usd = parsePrice(draft.cache)
         pricing.create_cache_per_million_usd = parsePrice(draft.cacheWrite)
+        pricing.audio_input_per_million_usd = parsePrice(draft.audioInput)
+        pricing.audio_output_per_million_usd = parsePrice(draft.audioOutput)
       }
       return setChannelModelPricing(
         props.channelId,
@@ -464,6 +470,15 @@ export function ChannelModelPricingSection(
               <div className='flex flex-wrap items-center gap-x-3 gap-y-1'>
                 <span>
                   {t('Uter sale price')}: {internalPriceLabel(item)}
+                  {item.internal?.audio_input_per_million_usd != null ? (
+                    <span className='text-muted-foreground block text-sm'>
+                      {t('Audio input')}:{' '}
+                      {formatUsd(item.internal.audio_input_per_million_usd)}
+                      {item.internal.audio_output_per_million_usd != null
+                        ? ` · ${t('Audio output')}: ${formatUsd(item.internal.audio_output_per_million_usd)}`
+                        : ''}
+                    </span>
+                  ) : null}
                 </span>
                 <span className='text-muted-foreground'>
                   {t('Pricing rule')}:{' '}
@@ -679,6 +694,38 @@ export function ChannelModelPricingSection(
                 </SelectContent>
               </Select>
             </div>
+            {draft.mode === 'per_1m_token' && (
+              <div className='grid gap-3 sm:grid-cols-2'>
+                <div className='space-y-1.5'>
+                  <Label>{t('Audio input price (USD per 1M tokens)')}</Label>
+                  <Input
+                    inputMode='decimal'
+                    value={draft.audioInput}
+                    onChange={(event) =>
+                      setDraft((prev) =>
+                        prev
+                          ? { ...prev, audioInput: event.target.value }
+                          : prev
+                      )
+                    }
+                  />
+                </div>
+                <div className='space-y-1.5'>
+                  <Label>{t('Audio output price (USD per 1M tokens)')}</Label>
+                  <Input
+                    inputMode='decimal'
+                    value={draft.audioOutput}
+                    onChange={(event) =>
+                      setDraft((prev) =>
+                        prev
+                          ? { ...prev, audioOutput: event.target.value }
+                          : prev
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            )}
             {draft.mode === 'tiered_table' && (
               <div className='space-y-1.5'>
                 <Label>{t('Price tiers (JSON)')}</Label>

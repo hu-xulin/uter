@@ -8524,6 +8524,8 @@
     "One band per context range. Time bands must match or stay empty.": "Un palier par plage de contexte. Les périodes doivent être identiques ou vides.",
     "Tiers must be valid JSON.": "Les paliers doivent être un JSON valide.",
     "Add at least one price tier.": "Ajoutez au moins un palier de prix.",
-    "Sale tiers ({{count}})": "Paliers de vente ({{count}})"
+    "Sale tiers ({{count}})": "Paliers de vente ({{count}})",
+    "Audio input price (USD per 1M tokens)": "Prix d'entrée audio (USD par million de tokens)",
+    "Audio output price (USD per 1M tokens)": "Prix de sortie audio (USD par million de tokens)"
   }
 }

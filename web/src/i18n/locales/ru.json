@@ -8524,6 +8524,8 @@
     "One band per context range. Time bands must match or stay empty.": "Один диапазон на каждую полосу контекста. Временные полосы должны совпадать или быть пустыми.",
     "Tiers must be valid JSON.": "Диапазоны должны быть корректным JSON.",
     "Add at least one price tier.": "Добавьте хотя бы один ценовой диапазон.",
-    "Sale tiers ({{count}})": "Диапазоны продажи ({{count}})"
+    "Sale tiers ({{count}})": "Диапазоны продажи ({{count}})",
+    "Audio input price (USD per 1M tokens)": "Цена аудиовхода (USD за 1 млн токенов)",
+    "Audio output price (USD per 1M tokens)": "Цена аудиовыхода (USD за 1 млн токенов)"
   }
 }

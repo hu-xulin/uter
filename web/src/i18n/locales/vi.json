@@ -8524,6 +8524,8 @@
     "One band per context range. Time bands must match or stay empty.": "Mỗi khoảng ngữ cảnh một bậc. Các khung giờ phải giống nhau hoặc để trống.",
     "Tiers must be valid JSON.": "Các bậc phải là JSON hợp lệ.",
     "Add at least one price tier.": "Thêm ít nhất một bậc giá.",
-    "Sale tiers ({{count}})": "Bậc giá bán ({{count}})"
+    "Sale tiers ({{count}})": "Bậc giá bán ({{count}})",
+    "Audio input price (USD per 1M tokens)": "Giá đầu vào âm thanh (USD/1 triệu token)",
+    "Audio output price (USD per 1M tokens)": "Giá đầu ra âm thanh (USD/1 triệu token)"
   }
 }

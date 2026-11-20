@@ -116,6 +116,8 @@ const PRICE_DIMENSIONS = [
   { value: 'output', label: 'Output' },
   { value: 'cache_read', label: 'Cache read' },
   { value: 'cache_write', label: 'Cache write' },
+  { value: 'audio_input', label: 'Audio input' },
+  { value: 'audio_output', label: 'Audio output' },
   { value: 'per_call', label: 'Per call' },
   { value: 'per_second', label: 'Per second' },
   { value: 'per_minute', label: 'Per minute' },

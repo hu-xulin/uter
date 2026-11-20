@@ -323,6 +323,8 @@ export interface ChannelInternalPricingView {
   output_per_million_usd?: number
   cache_per_million_usd?: number
   create_cache_per_million_usd?: number
+  audio_input_per_million_usd?: number
+  audio_output_per_million_usd?: number
   per_call_usd?: number
   per_second_usd?: number
   per_minute_usd?: number

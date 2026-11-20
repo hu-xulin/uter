@@ -8524,6 +8524,8 @@
     "One band per context range. Time bands must match or stay empty.": "每个上下文区间一个档位；时段必须一致或全部留空。",
     "Tiers must be valid JSON.": "档位必须是有效的 JSON。",
     "Add at least one price tier.": "至少添加一个价格档位。",
-    "Sale tiers ({{count}})": "销售档位（{{count}}）"
+    "Sale tiers ({{count}})": "销售档位（{{count}}）",
+    "Audio input price (USD per 1M tokens)": "音频输入价格（美元/百万 tokens）",
+    "Audio output price (USD per 1M tokens)": "音频输出价格（美元/百万 tokens）"
   }
 }
