@@ -380,6 +380,13 @@ describe('pricing synchronization', () => {
             },
           },
           test_results: [{ name: 'Upstream(7)', status: 'success' }],
+          skipped_models: [
+            {
+              upstream: 'Upstream(7)',
+              model: 'video-x',
+              reason: 'duration_tiered',
+            },
+          ],
         },
       },
     })
@@ -411,6 +418,10 @@ describe('pricing synchronization', () => {
       await screen.findByRole('checkbox', { name: 'Select Upstream' })
     )
     await user.click(screen.getByRole('button', { name: 'Confirm Selection' }))
+    expect(
+      await screen.findByText('1 models need manual pricing')
+    ).toBeVisible()
+    expect(screen.getByText('video-x')).toBeVisible()
     await user.click(
       await screen.findByRole('checkbox', {
         name: 'Select price for m from Upstream(7)',
