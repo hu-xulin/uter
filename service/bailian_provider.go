@@ -700,9 +700,6 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 					unknownTypes[priceType] = true
 				}
 			case normalizedUnit == "per_image" || normalizedUnit == "per_second" || normalizedUnit == "per_minute" || normalizedUnit == "per_call":
-				if tier.PerUnitUSD != nil && *tier.PerUnitUSD != usd {
-					result.ReviewReasons = append(result.ReviewReasons, "multiple per-call prices")
-				}
 				tier.PerUnitUSD = &usd
 				result.Unit = normalizedUnit
 			default:
