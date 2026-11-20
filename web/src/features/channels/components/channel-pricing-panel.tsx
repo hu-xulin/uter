@@ -1008,13 +1008,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               onChange={(event) => setMinMarginPercent(event.target.value)}
               aria-invalid={!minMarginValid}
             />
-            <p className='text-muted-foreground text-xs'>
+            <p className='text-muted-foreground text-sm'>
               {t(
                 'Percent per dimension. Leave empty to disable the margin floor.'
               )}
             </p>
             {!minMarginValid ? (
-              <p className='text-destructive text-xs'>
+              <p className='text-destructive text-sm'>
                 {t('Enter a margin between 0 and 100.')}
               </p>
             ) : null}
@@ -1062,7 +1062,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 aria-invalid={!approvalValid}
               />
               {!approvalValid ? (
-                <p className='text-destructive text-xs'>
+                <p className='text-destructive text-sm'>
                   {t('An approval note is required in this mode.')}
                 </p>
               ) : null}
