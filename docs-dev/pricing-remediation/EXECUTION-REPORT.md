@@ -73,6 +73,11 @@
 - DreamRouter：公开 `/api/pricing` + 折扣组 + 阶梯表达式；修复上游把 `(…duration…) * x` 改为裸 `duration * x` 导致的解析失败（`service/dreamrouter_pricing_expr.go`）。
 - 百炼：原生 `/api/v1/models` 分页目录，保留人民币原值、显式记录 `FXRateToUSD` 与 `CurrencyInferred` 后换算美元；区域由 workspace/区域 host 判定。
 
+### 2.3.1 Apiko 模型同步
+
+- 渠道“同步模型信息”读取控制面公开目录（`/api/public/models?billing=all`），不依赖中转域名是否提供 `/v1/models`；未保存表单与已保存渠道共用同一逻辑。
+- `POST /api/channel/:id/apiko/models/sync` 将目录中缺失的模型追加到渠道模型列表（保留人工条目），幂等合并、重建 abilities 与缓存；渠道抽屉内提供“同步 Apiko 模型”操作与结果提示。
+
 ### 2.4 计价维度与批量定价（Phase 4）
 
 - `service/channel_batch_pricing.go`
