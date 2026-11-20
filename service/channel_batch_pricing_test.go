@@ -3,6 +3,7 @@ package service
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/model"
 )
@@ -149,7 +150,7 @@ func TestResolveBatchBasePriceRejectsLossyShapes(t *testing.T) {
 			normalized: `{"currency":"USD","unit":"mixed","tiers":[
 				{"range_name":"mixed","input_per_million_usd":1,"per_unit_usd":0.1,"unit":"mixed"}
 			]}`,
-			reason: "ambiguous official price shape",
+			reason: "ambiguous price shape",
 		},
 	}
 	for _, tc := range cases {
@@ -160,6 +161,32 @@ func TestResolveBatchBasePriceRejectsLossyShapes(t *testing.T) {
 			require.Contains(t, reason, tc.reason)
 		})
 	}
+}
+
+func TestResolveBatchBasePriceChannelBasisUsesPurchasePrice(t *testing.T) {
+	row := model.ChannelModelPricing{
+		ModelName: "gpt-priced",
+		NormalizedPricing: `{"currency":"USD","unit":"per_1m_token",
+			"tiers":[{"range_name":"base","input_per_million_usd":2,"output_per_million_usd":4,"unit":"per_1m_token"}],
+			"channel_price":{"range_name":"channel","input_per_million_usd":1.2,"output_per_million_usd":2.4,"unit":"per_1m_token"}}`,
+	}
+	base, reason := resolveBatchBasePrice(row, BatchPricingBasisChannel)
+	require.Empty(t, reason)
+	require.NotNil(t, base.inputUSD)
+	assert.Equal(t, 1.2, *base.inputUSD)
+	require.NotNil(t, base.outputUSD)
+	assert.Equal(t, 2.4, *base.outputUSD)
+
+	// Without a purchase price the channel basis must not reuse the list price.
+	row.NormalizedPricing = `{"currency":"USD","unit":"per_1m_token",
+		"tiers":[{"range_name":"base","input_per_million_usd":2,"output_per_million_usd":4,"unit":"per_1m_token"}]}`
+	_, reason = resolveBatchBasePrice(row, BatchPricingBasisChannel)
+	require.Contains(t, reason, "no upstream purchase price")
+
+	// The official basis still uses the list price.
+	base, reason = resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	require.Empty(t, reason)
+	assert.Equal(t, 2.0, *base.inputUSD)
 }
 
 func TestResolveBatchBasePriceSupportsPerSecond(t *testing.T) {

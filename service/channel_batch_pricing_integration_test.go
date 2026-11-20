@@ -167,6 +167,48 @@ func TestApplyChannelBatchPricingSupportsPerSecondAndCurrentBasis(t *testing.T) 
 	assert.InDelta(t, 0.044, effective.Pricing.PerSecondPrice, 1e-9)
 }
 
+func TestApplyChannelBatchPricingReportsMarginAndChange(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output := 3.0, 6.0
+	purchaseInput, purchaseOutput := 2.0, 4.0
+	normalized, _ := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token",
+		}},
+		ChannelPrice: &model.ChannelPricingTier{
+			RangeName: "channel", InputPerMillionUSD: &purchaseInput, OutputPerMillionUSD: &purchaseOutput, Unit: "per_1m_token",
+		},
+	})
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 21, Provider: "test", ModelName: "gpt-margin", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(normalized), Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	require.NoError(t, model.SetChannelInternalPricing(21, "gpt-margin", model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Note: "batch: seed", Source: "batch",
+	}))
+
+	result, err := ApplyChannelBatchPricingWithOptions(21, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, result.Items, 1)
+	item := result.Items[0]
+	require.NotNil(t, item.PurchaseUSD)
+	assert.Equal(t, 2.0, *item.PurchaseUSD)
+	require.NotNil(t, item.PreviousUSD)
+	assert.Equal(t, 3.0, *item.PreviousUSD)
+	require.NotNil(t, item.ChangePercent)
+	assert.InDelta(t, -50, *item.ChangePercent, 1e-9)
+	require.NotNil(t, item.MarginUSD)
+	assert.InDelta(t, -0.5, *item.MarginUSD, 1e-9)
+	require.NotNil(t, item.MarginRate)
+	assert.InDelta(t, -1.0/3.0, *item.MarginRate, 1e-9)
+}
+
 func TestApplyChannelBatchPricingRejectsStalePreviewVersion(t *testing.T) {
 	setupBatchPricingDB(t)
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
