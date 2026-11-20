@@ -8494,6 +8494,13 @@
     "Priced by resolution and duration; set it manually": "Цена зависит от разрешения и длительности; задайте вручную",
     "No direct price in the catalogue": "В каталоге нет прямой цены",
     "Pricing expression failed validation": "Выражение тарификации не прошло проверку",
-    "Apiko channels do not expose a balance API": "Каналы Apiko не предоставляют API баланса"
+    "Apiko channels do not expose a balance API": "Каналы Apiko не предоставляют API баланса",
+    "Apiko catalogue sync": "Đồng bộ danh mục Apiko",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Đồng bộ toàn bộ danh sách mô hình do control plane Apiko công bố. Các mục hiện có được giữ nguyên.",
+    "Sync Apiko models": "Đồng bộ mô hình Apiko",
+    "Added {{count}} models from the Apiko catalogue": "Đã thêm {{count}} mô hình từ danh mục Apiko",
+    "{{total}} models after sync; {{added}} added": "Tổng {{total}} mô hình sau khi đồng bộ; đã thêm {{added}}",
+    "Failed to sync Apiko models": "Không thể đồng bộ mô hình Apiko",
+    "Save the channel before syncing models.": "Hãy lưu kênh trước khi đồng bộ mô hình."
   }
 }

@@ -8494,6 +8494,13 @@
     "Priced by resolution and duration; set it manually": "解像度と再生時間ごとの課金です。手動で設定してください",
     "No direct price in the catalogue": "カタログに直接価格がありません",
     "Pricing expression failed validation": "価格式の検証に失敗しました",
-    "Apiko channels do not expose a balance API": "Apiko チャネルには残高 API がありません"
+    "Apiko channels do not expose a balance API": "Apiko チャネルには残高 API がありません",
+    "Apiko catalogue sync": "Синхронизация каталога Apiko",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Синхронизировать полный список моделей, публикуемый control plane Apiko. Существующие записи сохраняются.",
+    "Sync Apiko models": "Синхронизировать модели Apiko",
+    "Added {{count}} models from the Apiko catalogue": "Добавлено {{count}} моделей из каталога Apiko",
+    "{{total}} models after sync; {{added}} added": "Всего моделей после синхронизации: {{total}}, добавлено: {{added}}",
+    "Failed to sync Apiko models": "Не удалось синхронизировать модели Apiko",
+    "Save the channel before syncing models.": "Сохраните канал перед синхронизацией моделей."
   }
 }

@@ -218,6 +218,7 @@ import {
   nextTaskPluginBaseUrl,
 } from '../../lib/task-plugin-base-url'
 import type { AdvancedCustomConfig, Channel } from '../../types'
+import { ApikoChannelPanel } from '../apiko-channel-panel'
 import { BailianChannelPanel } from '../bailian-channel-panel'
 import { ChannelBrandingEditor } from '../channel-branding-editor'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
@@ -3268,6 +3269,7 @@ export function ChannelMutateDrawer({
 
   const modelsBaseUrl = (form.watch('base_url') ?? '').toLowerCase()
   const isBailianProvider = currentType === 17
+  const isApikoProvider = currentType === CHANNEL_TYPE_APIKO
   const isDreamRouterProvider =
     isAdvancedCustomLikeChannelType(currentType) &&
     modelsBaseUrl.includes('dreamrouter.ai')
@@ -3315,7 +3317,8 @@ export function ChannelMutateDrawer({
         <div className='space-y-5'>
           {MODEL_FETCHABLE_TYPES.has(currentType) &&
           !isBailianProvider &&
-          !isDreamRouterProvider ? (
+          !isDreamRouterProvider &&
+          !isApikoProvider ? (
             <section
               aria-live='polite'
               className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'
@@ -3383,7 +3386,7 @@ export function ChannelMutateDrawer({
               </div>
             </section>
           ) : null}
-          {(isBailianProvider || isDreamRouterProvider) && (
+          {(isBailianProvider || isDreamRouterProvider || isApikoProvider) && (
             <section className='space-y-3'>
               <div>
                 <p className='font-medium'>{t('Model information sync')}</p>
@@ -3400,6 +3403,18 @@ export function ChannelMutateDrawer({
                   onCreateDraft={isEditing ? undefined : createDraftChannel}
                   onChangeBaseUrl={(value) =>
                     form.setValue('base_url', value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                />
+              )}
+              {isApikoProvider && (
+                <ApikoChannelPanel
+                  channelId={effectiveChannelId}
+                  onCreateDraft={isEditing ? undefined : createDraftChannel}
+                  onModelsSynced={(models) =>
+                    form.setValue('models', models.join(','), {
                       shouldDirty: true,
                       shouldValidate: true,
                     })

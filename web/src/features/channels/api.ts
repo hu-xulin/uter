@@ -906,6 +906,29 @@ export async function applyBailianCatalog(channelId: number) {
   return res.data?.data
 }
 
+export type ApikoModelSyncResult = {
+  channel_id: number
+  fetched: number
+  total: number
+  added: number
+  models: string[]
+}
+
+/**
+ * Adds every model in Apiko's public control-plane catalogue to the channel.
+ * Existing manual entries are preserved.
+ */
+export async function syncApikoChannelModels(
+  channelId: number
+): Promise<ApikoModelSyncResult> {
+  const res = await api.post<{ data: ApikoModelSyncResult }>(
+    `/api/channel/${channelId}/apiko/models/sync`,
+    {},
+    channelActionConfig()
+  )
+  return res.data.data
+}
+
 export type DreamRouterUpstreamSummary = {
   provider_id: string
   fetched_at: string

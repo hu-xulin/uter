@@ -8494,6 +8494,13 @@
     "Priced by resolution and duration; set it manually": "按解析度與時長計價，請手動設定",
     "No direct price in the catalogue": "目錄中沒有直接價格",
     "Pricing expression failed validation": "定價運算式驗證失敗",
-    "Apiko channels do not expose a balance API": "Apiko 頻道沒有公開的餘額介面"
+    "Apiko channels do not expose a balance API": "Apiko 頻道沒有公開的餘額介面",
+    "Apiko catalogue sync": "Synchronisation du catalogue Apiko",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Synchroniser la liste complète publiée par le plan de contrôle Apiko. Les entrées existantes sont conservées.",
+    "Sync Apiko models": "Synchroniser les modèles Apiko",
+    "Added {{count}} models from the Apiko catalogue": "{{count}} modèles ajoutés depuis le catalogue Apiko",
+    "{{total}} models after sync; {{added}} added": "{{total}} modèles après synchronisation ; {{added}} ajoutés",
+    "Failed to sync Apiko models": "Échec de la synchronisation des modèles Apiko",
+    "Save the channel before syncing models.": "Enregistrez le canal avant de synchroniser les modèles."
   }
 }

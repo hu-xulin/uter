@@ -8494,6 +8494,13 @@
     "Priced by resolution and duration; set it manually": "Facturé selon la résolution et la durée ; à définir manuellement",
     "No direct price in the catalogue": "Aucun prix direct dans le catalogue",
     "Pricing expression failed validation": "L'expression de tarification n'a pas passé la validation",
-    "Apiko channels do not expose a balance API": "Les canaux Apiko n'exposent pas d'API de solde"
+    "Apiko channels do not expose a balance API": "Les canaux Apiko n'exposent pas d'API de solde",
+    "Apiko catalogue sync": "Apiko カタログ同期",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Apiko コントロールプレーンが公開する完全なモデル一覧を同期します。既存の項目は保持されます。",
+    "Sync Apiko models": "Apiko モデルを同期",
+    "Added {{count}} models from the Apiko catalogue": "Apiko カタログから {{count}} 個のモデルを追加しました",
+    "{{total}} models after sync; {{added}} added": "同期後のモデル数 {{total}}、追加 {{added}}",
+    "Failed to sync Apiko models": "Apiko モデルの同期に失敗しました",
+    "Save the channel before syncing models.": "モデルを同期する前にチャネルを保存してください。"
   }
 }
