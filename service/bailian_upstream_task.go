@@ -74,8 +74,38 @@ func reapplyBailianCatalogPricing(channel *model.Channel) {
 		return
 	}
 	catalog.ChannelID = channel.Id
+	augmentBailianCatalogWithStoredModels(catalog, channel.Id)
 	if _, err := model.UpsertChannelOfficialPricing(BailianPricingRecords(catalog, channel.GetModels())); err != nil {
 		common.SysError(common.LogText("bailian catalog reapply failed for channel %d: %s", channel.Id, err.Error()))
+	}
+}
+
+// augmentBailianCatalogWithStoredModels keeps models the latest catalog no
+// longer lists (but the channel still serves) priceable from their stored raw
+// payload instead of leaving stale review reasons behind.
+func augmentBailianCatalogWithStoredModels(catalog *BailianCatalog, channelID int) {
+	known := make(map[string]bool, len(catalog.Models))
+	for _, item := range catalog.Models {
+		known[item.Model] = true
+	}
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return
+	}
+	for _, row := range rows {
+		if known[row.ModelName] || strings.TrimSpace(row.OfficialPricing) == "" {
+			continue
+		}
+		var item BailianModel
+		if err := common.UnmarshalJsonStr(row.OfficialPricing, &item); err != nil {
+			continue
+		}
+		if strings.TrimSpace(item.Model) == "" {
+			continue
+		}
+		catalog.Models = append(catalog.Models, item)
+		known[item.Model] = true
+		known[row.ModelName] = true
 	}
 }
 

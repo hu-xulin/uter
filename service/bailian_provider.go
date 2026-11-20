@@ -447,10 +447,10 @@ var bailianVersionSuffixPattern = regexp.MustCompile(`^(.+?)-\d{4}(?:-\d{2}){0,2
 // represented (separate audio dimensions, conflicting per-call prices, multiple
 // time bands) return "" and stay review-only.
 func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
-	// Conflicting per-call prices cannot be flattened without charging one of
-	// them wrongly; leave the row to operator review.
+	// Conflicting per-call prices and mixed call/token models cannot be flattened
+	// without charging one of them wrongly; leave those rows to operator review.
 	for _, reason := range normalized.ReviewReasons {
-		if reason == "multiple per-call prices" {
+		if reason == "multiple per-call prices" || reason == "mixed per-call and token prices" {
 			return ""
 		}
 	}
@@ -655,6 +655,8 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			tier.RawPriceTypes = append(tier.RawPriceTypes, priceType)
 			switch {
 			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input" ||
+				priceType == "text_input_token" || priceType == "thinking_text_input_token" ||
+				priceType == "mt_character_input_token" ||
 				priceType == "embedding_token" || priceType == "translate_audio_input_token" ||
 				priceType == "omni_no_audio_input_token" || priceType == "audio_text_input_token" ||
 				priceType == "omni_input_token":
@@ -664,10 +666,12 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				priceType == "translate_multi_text_output_token" || priceType == "translate_multi_output_token" ||
 				priceType == "omni_no_audio_output_token" || priceType == "audio_text_output_token" ||
 				priceType == "omni_output_token" || priceType == "purein_text_output_token" ||
+				priceType == "thinking_purein_text_output_token" ||
 				priceType == "omni_text_output_token":
 				tier.OutputPerMillionUSD = &usd
 				result.Unit = "per_1m_token"
-			case priceType == "audio_input_token" || priceType == "omni_audio_input_token":
+			case priceType == "audio_input_token" || priceType == "omni_audio_input_token" ||
+				priceType == "thinking_audio_input_token":
 				tier.AudioInputPerMillionUSD = &usd
 				result.Unit = "per_1m_token"
 			case priceType == "audio_output_token" || priceType == "omni_audio_output_token" || priceType == "multi_output_token":
@@ -715,6 +719,16 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		result.ChannelPrice = &first
 		result.Tiers = append([]model.ChannelPricingTier(nil), result.ChannelPriceTiers...)
 	}
+	for _, tier := range result.ChannelPriceTiers {
+		// One model cannot be billed both per call and per token; a catalog that
+		// lists both (voice cloning plus synthesis, for example) needs an
+		// operator decision instead of a silent pick.
+		if tier.PerUnitUSD != nil && (tier.InputPerMillionUSD != nil || tier.OutputPerMillionUSD != nil ||
+			tier.AudioInputPerMillionUSD != nil || tier.AudioOutputPerMillionUSD != nil || tier.CachePerMillionUSD != nil) {
+			result.ReviewReasons = append(result.ReviewReasons, "mixed per-call and token prices")
+			break
+		}
+	}
 	if len(countRanges) > 1 {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")
 	}
@@ -726,6 +740,9 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	}
 	for unit := range unknownUnits {
 		result.ReviewReasons = append(result.ReviewReasons, "unsupported price unit: "+unit)
+	}
+	if len(item.Prices) == 0 {
+		result.ReviewReasons = append(result.ReviewReasons, "catalog lists no price")
 	}
 	result.NeedsReview = len(result.ReviewReasons) > 0
 	sort.Strings(result.ReviewReasons)
