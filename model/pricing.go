@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"maps"
 	"slices"
 	"strings"
@@ -60,6 +61,15 @@ type Pricing struct {
 	// ChannelPriceName is the enabled channel whose configured sale price is
 	// shown on the plaza. Empty means the global price is displayed.
 	ChannelPriceName string `json:"channel_price_name,omitempty"`
+	// ChannelOfficial* describes the same channel's official list price. The
+	// plaza compares Uter's channel-derived price against this basis, not
+	// against an unrelated catalogue price.
+	ChannelOfficialModelRatio       float64 `json:"channel_official_model_ratio,omitempty"`
+	ChannelOfficialCompletionRatio  float64 `json:"channel_official_completion_ratio,omitempty"`
+	ChannelOfficialCacheRatio       float64 `json:"channel_official_cache_ratio,omitempty"`
+	ChannelOfficialCreateCacheRatio float64 `json:"channel_official_create_cache_ratio,omitempty"`
+	ChannelOfficialModelPrice       float64 `json:"channel_official_model_price,omitempty"`
+	ChannelOfficialPerSecondUSD     float64 `json:"channel_official_per_second_usd,omitempty"`
 
 	// 目录规格：定价页模型详情的「上下文 / 最大输出 / 知识截止 / 发布于 / 模态」
 	// 五格直接消费这五个字段。
@@ -244,6 +254,28 @@ type channelInternalPrice struct {
 	completionRatio float64
 	modelPrice      float64
 	inputUSD        float64
+	officialTier    *ChannelPricingTier
+	officialUnit    string
+}
+
+type channelOfficialView struct {
+	tier *ChannelPricingTier
+	unit string
+}
+
+func channelPricingOfficialView(raw string) (channelOfficialView, error) {
+	if strings.TrimSpace(raw) == "" {
+		return channelOfficialView{}, errors.New("normalized pricing is empty")
+	}
+	var view ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(raw, &view); err != nil {
+		return channelOfficialView{}, err
+	}
+	if len(view.Tiers) == 0 {
+		return channelOfficialView{}, errors.New("normalized pricing has no tier")
+	}
+	tier := view.Tiers[0]
+	return channelOfficialView{tier: &tier, unit: tier.Unit}, nil
 }
 
 // loadChannelInternalPrices returns the lowest configured channel price per
@@ -278,6 +310,10 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) map[string]channe
 			continue
 		}
 		candidate := channelInternalPrice{channelName: channelName, pricing: internal}
+		if view, err := channelPricingOfficialView(row.NormalizedPricing); err == nil {
+			candidate.officialTier = view.tier
+			candidate.officialUnit = view.unit
+		}
 		switch internal.Mode {
 		case ChannelPricingModePerMillionTokens:
 			if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 ||
@@ -550,6 +586,29 @@ func updatePricing() {
 		}
 		if channelPrice, ok := channelPrices[model]; ok {
 			pricing.ChannelPriceName = channelPrice.channelName
+			if tier := channelPrice.officialTier; tier != nil {
+				switch channelPrice.officialUnit {
+				case "per_call", "per_image", "per_minute":
+					if tier.PerUnitUSD != nil {
+						pricing.ChannelOfficialModelPrice = *tier.PerUnitUSD
+					}
+				case "per_second":
+					if tier.PerUnitUSD != nil {
+						pricing.ChannelOfficialPerSecondUSD = *tier.PerUnitUSD
+					}
+				default:
+					if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
+						input := *tier.InputPerMillionUSD
+						pricing.ChannelOfficialModelRatio = input / 2
+						if tier.OutputPerMillionUSD != nil {
+							pricing.ChannelOfficialCompletionRatio = *tier.OutputPerMillionUSD / input
+						}
+						if tier.CachePerMillionUSD != nil {
+							pricing.ChannelOfficialCacheRatio = *tier.CachePerMillionUSD / input
+						}
+					}
+				}
+			}
 			switch channelPrice.quotaType {
 			case 1:
 				pricing.ModelPrice = channelPrice.modelPrice

@@ -73,6 +73,7 @@ func GetPricing(c *gin.Context) {
 	// "channel" -> the platform's own price (平台价格 / 价格).
 	pricingSource := normalizePricingSource(common.OptionMap["PricingSource"])
 	officialPrices := resolveOfficialPrices(pricingSource)
+	officialPrices = overlayChannelOfficialPrices(pricing, officialPrices)
 
 	c.JSON(200, gin.H{
 		"success":            true,
@@ -211,6 +212,46 @@ func mergeOfficialPriceSources(catalogue, channel, fallback map[string]map[strin
 		}
 	}
 	return merged
+}
+
+// overlayChannelOfficialPrices keeps the strike-through price and discount
+// badge in the same price universe as the Uter price. When a model is shown
+// with a channel's configured sale price, its official basis must come from
+// that channel, not from an unrelated public catalogue.
+func overlayChannelOfficialPrices(
+	pricing []model.Pricing,
+	official map[string]map[string]float64,
+) map[string]map[string]float64 {
+	for _, item := range pricing {
+		if item.ChannelPriceName == "" {
+			continue
+		}
+		entry := map[string]float64{}
+		switch {
+		case item.ChannelOfficialPerSecondUSD > 0:
+			entry["official_price_per_second"] = item.ChannelOfficialPerSecondUSD
+		case item.ChannelOfficialModelPrice > 0:
+			entry["model_price"] = item.ChannelOfficialModelPrice
+		case item.ChannelOfficialModelRatio > 0:
+			entry["model_ratio"] = item.ChannelOfficialModelRatio
+			if item.ChannelOfficialCompletionRatio > 0 {
+				entry["completion_ratio"] = item.ChannelOfficialCompletionRatio
+			}
+			if item.ChannelOfficialCacheRatio > 0 {
+				entry["cache_ratio"] = item.ChannelOfficialCacheRatio
+			}
+			if item.ChannelOfficialCreateCacheRatio > 0 {
+				entry["create_cache_ratio"] = item.ChannelOfficialCreateCacheRatio
+			}
+		default:
+			continue
+		}
+		if official == nil {
+			official = map[string]map[string]float64{}
+		}
+		official[item.ModelName] = entry
+	}
+	return official
 }
 
 func ResetModelRatio(c *gin.Context) {

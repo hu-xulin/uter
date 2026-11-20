@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/model"
 )
 
 // seedPresetRatioCache installs a deterministic preset cache entry, preserving
@@ -198,4 +199,26 @@ func TestResolveOfficialPricesConcurrentCalls(t *testing.T) {
 		<-done
 	}
 	assert.NotContains(t, official, "extra")
+}
+
+func TestOverlayChannelOfficialPricesUsesChannelBasis(t *testing.T) {
+	pricing := []model.Pricing{
+		{
+			ModelName:                      "claude-fable-5",
+			ChannelPriceName:               "优特渠道",
+			ChannelOfficialModelRatio:      5,
+			ChannelOfficialCompletionRatio: 5,
+			ChannelOfficialCacheRatio:      0.1,
+		},
+		{ModelName: "global-only"},
+	}
+	official := map[string]map[string]float64{
+		"claude-fable-5": {"model_ratio": 1.5, "completion_ratio": 6},
+		"global-only":    {"model_ratio": 2},
+	}
+	merged := overlayChannelOfficialPrices(pricing, official)
+	require.Equal(t, 5.0, merged["claude-fable-5"]["model_ratio"])
+	require.Equal(t, 5.0, merged["claude-fable-5"]["completion_ratio"])
+	require.Equal(t, 0.1, merged["claude-fable-5"]["cache_ratio"])
+	require.Equal(t, 2.0, merged["global-only"]["model_ratio"])
 }
