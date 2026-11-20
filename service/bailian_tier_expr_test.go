@@ -3,6 +3,7 @@ package service
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
@@ -42,4 +43,28 @@ func TestBailianInternalPricingSkipsMultimodalShapes(t *testing.T) {
 		{RangeName: "Default", Unit: "每次", PerUnitUSD: nil},
 	}}
 	require.Empty(t, bailianInternalPricing(view))
+}
+
+func TestBailianTierExpressionRejectsMultipleTimeBands(t *testing.T) {
+	input := 1.0
+	tiers := []model.ChannelPricingTier{
+		{RangeName: "Default", TimeBand: "峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
+		{RangeName: "Default", TimeBand: "非峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
+	}
+	require.Empty(t, bailianTierExpression(tiers))
+}
+
+func TestBailianTierExpressionIncludesCacheCreation(t *testing.T) {
+	input := 2.0
+	output := 8.0
+	cache := 0.4
+	createCache := 2.5
+	tiers := []model.ChannelPricingTier{{
+		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &input,
+		OutputPerMillionUSD: &output, CachePerMillionUSD: &cache, CreateCachePerMillionUSD: &createCache,
+	}}
+	expr := bailianTierExpression(tiers)
+	require.NotEmpty(t, expr)
+	assert.Contains(t, expr, "cr * 0.4")
+	assert.Contains(t, expr, "cc * 2.5")
 }

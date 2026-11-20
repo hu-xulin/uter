@@ -77,16 +77,46 @@ func TestApikoContextTierExpression(t *testing.T) {
 }
 
 func TestApikoPerCallExpression(t *testing.T) {
-	model := apikoModel{
+	image := apikoModel{
 		ID:           "doubao-seedream-5-0-pro",
 		Capabilities: []string{"image"},
 		Pricing: apikoPricing{
 			PerCall: apikoFloatPtr(0.0337468),
 		},
 	}
+	expr, ok := apikoPriceExpression(image)
+	require.True(t, ok)
+	// 图片按次必须乘以张数，否则 n>1 只收一张。
+	assert.Equal(t, `tier("image", fixed(0.0337468)) * image_count`, expr)
+	_, err := billingexpr.CompileFromCache(expr)
+	require.NoError(t, err)
+
+	request := apikoModel{
+		ID:      "batch-job",
+		Pricing: apikoPricing{PerCall: apikoFloatPtr(0.5)},
+	}
+	expr, ok = apikoPriceExpression(request)
+	require.True(t, ok)
+	assert.Equal(t, `tier("request", fixed(0.5))`, expr)
+	_, err = billingexpr.CompileFromCache(expr)
+	require.NoError(t, err)
+}
+
+func TestApikoTokenPricedImageExpression(t *testing.T) {
+	model := apikoModel{
+		ID:           "gpt-image-2",
+		Capabilities: []string{"image"},
+		Pricing: apikoPricing{
+			TokenImage: &apikoTokenImage{
+				TextInputPer1M:  apikoFloatPtr(4),
+				ImageInputPer1M: apikoFloatPtr(6.4),
+				OutputPer1M:     apikoFloatPtr(24),
+			},
+		},
+	}
 	expr, ok := apikoPriceExpression(model)
 	require.True(t, ok)
-	assert.Equal(t, `tier("request", fixed(0.0337468))`, expr)
+	assert.Equal(t, `tier("base", p * 4 + img * 6.4 + c * 24)`, expr)
 	_, err := billingexpr.CompileFromCache(expr)
 	require.NoError(t, err)
 }
@@ -116,7 +146,9 @@ func TestApikoModelsToPricingSyncData(t *testing.T) {
 	}
 	data, skipped, err := apikoModelsToPricingSyncData(models)
 	require.NoError(t, err)
-	assert.Equal(t, 1, skipped)
+	require.Len(t, skipped, 1)
+	assert.Equal(t, "b", skipped[0].Model)
+	assert.Equal(t, "duration_tiered", skipped[0].Reason)
 
 	modes := valueMap(data[billing_setting.BillingModeField])
 	expressions := valueMap(data[billing_setting.BillingExprField])
@@ -142,7 +174,7 @@ func TestFetchApikoPricingData(t *testing.T) {
 
 	data, skipped, err := fetchApikoPricingData(context.Background(), server.URL)
 	require.NoError(t, err)
-	assert.Zero(t, skipped)
+	assert.Empty(t, skipped)
 	assert.Equal(t, `tier("base", p * 1.5 + c * 6 + cr * 0.15)`, valueMap(data[billing_setting.BillingExprField])["m1"])
 }
 

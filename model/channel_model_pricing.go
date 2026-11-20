@@ -72,6 +72,16 @@ type ChannelPricingTier struct {
 	RawPriceTypes            []string `json:"raw_price_types,omitempty"`
 }
 
+// ChannelPricingComponent is an additional billable service the catalog
+// publishes for the same model, stored so both prices stay visible without
+// forcing a second billing dimension.
+type ChannelPricingComponent struct {
+	Name string  `json:"name,omitempty"`
+	Type string  `json:"type,omitempty"`
+	Unit string  `json:"unit"`
+	USD  float64 `json:"usd"`
+}
+
 // ChannelOfficialPricing is the normalized official view for one channel
 // model. The untouched source payload is kept in ChannelModelPricing.
 type ChannelOfficialPricing struct {
@@ -82,15 +92,19 @@ type ChannelOfficialPricing struct {
 	// ChannelPrice is the upstream channel price after applying the provider's
 	// discount for the selected billing group. It is separate from Tiers so the
 	// official list price stays auditable.
-	ChannelPrice       *ChannelPricingTier  `json:"channel_price,omitempty"`
-	ChannelPriceTiers  []ChannelPricingTier `json:"channel_price_tiers,omitempty"`
-	DiscountGroup      string               `json:"discount_group,omitempty"`
-	DiscountModelGroup string               `json:"discount_model_group,omitempty"`
-	DiscountRatio      *float64             `json:"discount_ratio,omitempty"`
-	Source             string               `json:"source"`
-	FetchedAt          int64                `json:"fetched_at"`
-	NeedsReview        bool                 `json:"needs_review,omitempty"`
-	ReviewReasons      []string             `json:"review_reasons,omitempty"`
+	ChannelPrice      *ChannelPricingTier  `json:"channel_price,omitempty"`
+	ChannelPriceTiers []ChannelPricingTier `json:"channel_price_tiers,omitempty"`
+	// ComponentPrices lists additional billable services the catalog publishes
+	// for the same model (for example voice cloning per call next to
+	// per-character synthesis). The token tier stays the billable primary price.
+	ComponentPrices    []ChannelPricingComponent `json:"component_prices,omitempty"`
+	DiscountGroup      string                    `json:"discount_group,omitempty"`
+	DiscountModelGroup string                    `json:"discount_model_group,omitempty"`
+	DiscountRatio      *float64                  `json:"discount_ratio,omitempty"`
+	Source             string                    `json:"source"`
+	FetchedAt          int64                     `json:"fetched_at"`
+	NeedsReview        bool                      `json:"needs_review,omitempty"`
+	ReviewReasons      []string                  `json:"review_reasons,omitempty"`
 }
 
 // ChannelInternalPricing is the operator's flat sale price for one channel
@@ -187,6 +201,17 @@ func InvalidateChannelPricingCache() {
 	channelPricingCacheMu.Lock()
 	channelPricingCache = map[string]channelPricingCacheEntry{}
 	channelPricingCacheMu.Unlock()
+}
+
+func officialPricingNeedsReview(raw string) bool {
+	if strings.TrimSpace(raw) == "" {
+		return false
+	}
+	var view ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(raw, &view); err != nil {
+		return false
+	}
+	return view.NeedsReview
 }
 
 func channelPricingVersion(row ChannelModelPricing) string {
@@ -354,6 +379,8 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 				}
 				if row.InternalPricing != "" {
 					row.PricingStatus = ChannelPricingStatusConfigured
+				} else if officialPricingNeedsReview(record.NormalizedPricing) {
+					row.PricingStatus = ChannelPricingStatusNeedsReview
 				}
 				row.PricingVersion = channelPricingVersion(row)
 				if err := tx.Create(&row).Error; err != nil {
@@ -385,6 +412,13 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 				strings.HasPrefix(internalPricingSource(existing.InternalPricing), "bailian-") {
 				existing.InternalPricing = ""
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
+			}
+			if existing.InternalPricing == "" && existing.PricingStatus != ChannelPricingStatusConfigured {
+				if officialPricingNeedsReview(existing.NormalizedPricing) {
+					existing.PricingStatus = ChannelPricingStatusNeedsReview
+				} else {
+					existing.PricingStatus = ChannelPricingStatusOfficialOnly
+				}
 			}
 			if existing.PricingStatus == "" {
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly

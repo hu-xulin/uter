@@ -26,6 +26,10 @@ import (
 //
 // 返回的 pricing 是 APIKO 的售价（USD/百万 token 或每次调用），正是本渠道
 // 应同步给 Uter 的默认价。
+// apikoControlPlaneBase is the control-plane origin; a variable so tests can
+// point it at a local server. Production always uses the constant below.
+var apikoControlPlaneBase = apikoControlPlaneURL
+
 const (
 	apikoControlPlaneURL   = "https://apiko.app"
 	apikoPublicModelsPath  = "/api/public/models?billing=all"
@@ -48,7 +52,16 @@ type apikoPricing struct {
 	Tiers          []jsonTier         `json:"tiers"`
 	ContextTiers   []apikoContextTier `json:"contextTiers"`
 	PerSecondTiers []jsonTier         `json:"perSecondTiers"`
+	TokenImage     *apikoTokenImage   `json:"tokenImage"`
 	Currency       string             `json:"currency"`
+}
+
+// apikoTokenImage prices an image model by tokens, which is resolution
+// independent and matches Uter's image billing variables.
+type apikoTokenImage struct {
+	TextInputPer1M  *float64 `json:"textInputPer1M"`
+	ImageInputPer1M *float64 `json:"imageInputPer1M"`
+	OutputPer1M     *float64 `json:"outputPer1M"`
 }
 
 type jsonTier struct {
@@ -62,6 +75,13 @@ type apikoModel struct {
 	Provider     string       `json:"provider"`
 	Capabilities []string     `json:"capabilities"`
 	Pricing      apikoPricing `json:"pricing"`
+}
+
+// apikoSkippedModel is one catalogue row the sync cannot price faithfully.
+// Reason is a stable code the console translates; see the frontend mapping.
+type apikoSkippedModel struct {
+	Model  string
+	Reason string
 }
 
 type apikoCatalog struct {
@@ -89,7 +109,7 @@ func apikoControlPlaneFor(rawBaseURL string) (string, bool) {
 	}
 	host := strings.ToLower(parsed.Hostname())
 	if host == "apiko.app" || host == "api.apiko.app" || strings.HasSuffix(host, ".apiko.app") {
-		return apikoControlPlaneURL, true
+		return apikoControlPlaneBase, true
 	}
 	return "", false
 }
@@ -97,51 +117,51 @@ func apikoControlPlaneFor(rawBaseURL string) (string, bool) {
 // fetchApikoPricingData turns APIKO's public catalogue into the pricing-sync
 // shape: a billing expression per model, in USD/1M tokens (or per request).
 // Models whose pricing cannot be expressed faithfully are skipped.
-func fetchApikoPricingData(ctx context.Context, controlPlane string) (map[string]any, int, error) {
+func fetchApikoPricingData(ctx context.Context, controlPlane string) (map[string]any, []apikoSkippedModel, error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, controlPlane+apikoPublicModelsPath, nil)
 	if err != nil {
-		return nil, 0, err
+		return nil, nil, err
 	}
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("User-Agent", "uter-price-sync")
 
 	response, err := (&http.Client{Timeout: apikoCatalogTimeoutSec * time.Second}).Do(request)
 	if err != nil {
-		return nil, 0, fmt.Errorf("apiko catalogue request failed: %w", err)
+		return nil, nil, fmt.Errorf("apiko catalogue request failed: %w", err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return nil, 0, fmt.Errorf("apiko catalogue returned %s", response.Status)
+		return nil, nil, fmt.Errorf("apiko catalogue returned %s", response.Status)
 	}
 	body, err := io.ReadAll(io.LimitReader(response.Body, apikoMaxCatalogBytes))
 	if err != nil {
-		return nil, 0, err
+		return nil, nil, err
 	}
 	var catalog apikoCatalog
 	if err := common.Unmarshal(body, &catalog); err != nil {
-		return nil, 0, fmt.Errorf("apiko catalogue is not valid JSON: %w", err)
+		return nil, nil, fmt.Errorf("apiko catalogue is not valid JSON: %w", err)
 	}
 	if catalog.Code != 0 {
-		return nil, 0, fmt.Errorf("apiko catalogue error: %s", catalog.Message)
+		return nil, nil, fmt.Errorf("apiko catalogue error: %s", catalog.Message)
 	}
 	return apikoModelsToPricingSyncData(catalog.Data.Models)
 }
 
-func apikoModelsToPricingSyncData(models []apikoModel) (map[string]any, int, error) {
+func apikoModelsToPricingSyncData(models []apikoModel) (map[string]any, []apikoSkippedModel, error) {
 	modes := make(map[string]any, len(models))
 	expressions := make(map[string]any, len(models))
-	skipped := 0
+	skipped := make([]apikoSkippedModel, 0)
 	for _, model := range models {
 		if strings.TrimSpace(model.ID) == "" {
 			continue
 		}
 		expr, ok := apikoPriceExpression(model)
 		if !ok {
-			skipped++
+			skipped = append(skipped, apikoSkippedModel{Model: model.ID, Reason: apikoSkipReason(model)})
 			continue
 		}
 		if _, err := billingexpr.CompileFromCache(expr); err != nil {
-			skipped++
+			skipped = append(skipped, apikoSkippedModel{Model: model.ID, Reason: "invalid_expression"})
 			continue
 		}
 		modes[model.ID] = billing_setting.BillingModeTieredExpr
@@ -156,6 +176,19 @@ func apikoModelsToPricingSyncData(models []apikoModel) (map[string]any, int, err
 	}, skipped, nil
 }
 
+// apikoSkipReason names why a row was not priced, as a stable code the console
+// turns into copy. It never inspects request content, only the catalogue shape.
+func apikoSkipReason(model apikoModel) string {
+	pricing := model.Pricing
+	if len(pricing.PerSecondTiers) > 0 {
+		return "duration_tiered"
+	}
+	if len(pricing.Tiers) > 0 && apikoHasCapability(model.Capabilities, "image") {
+		return "resolution_tiered"
+	}
+	return "no_direct_price"
+}
+
 // apikoPriceExpression compiles one catalogue row into a billing expression.
 // Only token-priced models (chat/audio) and flat per-request prices are
 // represented; resolution- or duration-tiered media prices need request
@@ -166,6 +199,13 @@ func apikoPriceExpression(model apikoModel) (string, bool) {
 	if len(pricing.ContextTiers) > 0 {
 		expr, ok := apikoContextTiersExpression(pricing.ContextTiers)
 		return expr, ok
+	}
+	if pricing.TokenImage != nil {
+		terms := apikoImageTokenTerms(pricing.TokenImage)
+		if terms == "" {
+			return "", false
+		}
+		return `tier("base", ` + terms + `)`, true
 	}
 	if pricing.InputPer1M != nil || pricing.OutputPer1M != nil {
 		terms := apikoTokenTerms(
@@ -180,9 +220,37 @@ func apikoPriceExpression(model apikoModel) (string, bool) {
 	}
 	if pricing.PerCall != nil && *pricing.PerCall > 0 &&
 		len(pricing.Tiers) == 0 && len(pricing.PerSecondTiers) == 0 {
-		return `tier("request", fixed(` + apikoNumber(*pricing.PerCall) + `))`, true
+		price := apikoNumber(*pricing.PerCall)
+		// 图片按次计价必须乘上实际张数，否则 n>1 只收一张的钱。
+		if apikoHasCapability(model.Capabilities, "image") {
+			return `tier("image", fixed(` + price + `)) * image_count`, true
+		}
+		return `tier("request", fixed(` + price + `))`, true
 	}
 	return "", false
+}
+
+func apikoImageTokenTerms(tokenImage *apikoTokenImage) string {
+	terms := make([]string, 0, 3)
+	if value := apikoValue(tokenImage.TextInputPer1M); value > 0 {
+		terms = append(terms, "p * "+apikoNumber(value))
+	}
+	if value := apikoValue(tokenImage.ImageInputPer1M); value > 0 {
+		terms = append(terms, "img * "+apikoNumber(value))
+	}
+	if value := apikoValue(tokenImage.OutputPer1M); value > 0 {
+		terms = append(terms, "c * "+apikoNumber(value))
+	}
+	return strings.Join(terms, " + ")
+}
+
+func apikoHasCapability(capabilities []string, want string) bool {
+	for _, capability := range capabilities {
+		if strings.EqualFold(capability, want) {
+			return true
+		}
+	}
+	return false
 }
 
 func apikoContextTiersExpression(tiers []apikoContextTier) (string, bool) {

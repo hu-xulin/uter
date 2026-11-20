@@ -89,9 +89,10 @@ var numericPricingSyncFields = map[string]bool{
 }
 
 type upstreamResult struct {
-	Name string         `json:"name"`
-	Data map[string]any `json:"data,omitempty"`
-	Err  string         `json:"err,omitempty"`
+	Name    string              `json:"name"`
+	Data    map[string]any      `json:"data,omitempty"`
+	Err     string              `json:"err,omitempty"`
+	Skipped []apikoSkippedModel `json:"skipped,omitempty"`
 }
 
 func valueMap(value any) map[string]any {
@@ -525,9 +526,9 @@ func FetchUpstreamRatios(c *gin.Context) {
 				}
 				logger.LogInfo(c.Request.Context(), fmt.Sprintf(
 					"apiko catalogue synced on %s: %d models, %d skipped (media pricing needs request parameters)",
-					uniqueName, len(valueMap(converted[billing_setting.BillingExprField])), skipped,
+					uniqueName, len(valueMap(converted[billing_setting.BillingExprField])), len(skipped),
 				))
-				ch <- upstreamResult{Name: uniqueName, Data: converted}
+				ch <- upstreamResult{Name: uniqueName, Data: converted, Skipped: skipped}
 				return
 			}
 
@@ -663,6 +664,7 @@ func FetchUpstreamRatios(c *gin.Context) {
 		data map[string]any
 	}
 	var allInvalid []InvalidPricingValue
+	skippedModels := make([]map[string]string, 0)
 
 	for r := range ch {
 		if r.Err != "" {
@@ -686,6 +688,13 @@ func FetchUpstreamRatios(c *gin.Context) {
 			}{name: r.Name, data: normalizedChannelData})
 
 			allInvalid = append(allInvalid, channelInvalid...)
+			for _, skipped := range r.Skipped {
+				skippedModels = append(skippedModels, map[string]string{
+					"upstream": r.Name,
+					"model":    skipped.Model,
+					"reason":   skipped.Reason,
+				})
+			}
 		}
 	}
 
@@ -751,6 +760,7 @@ func FetchUpstreamRatios(c *gin.Context) {
 				"count": len(invalidPrices),
 				"items": invalidPrices,
 			},
+			"skipped_models": skippedModels,
 		},
 	})
 }

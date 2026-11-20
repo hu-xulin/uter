@@ -319,8 +319,20 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 	assert.InDelta(t, 6.9, *tier.OutputPerMillionUSD, 1e-9)
 	assert.InDelta(t, 15.8, *tier.AudioInputPerMillionUSD, 1e-9)
 	assert.InDelta(t, 62.6, *tier.AudioOutputPerMillionUSD, 1e-9)
-	assert.Contains(t, normalized.ReviewReasons, "unsupported price type: vision_input_token")
-	assert.NotEmpty(t, bailianInternalPricing(normalized), "a recognised text tier is still auto-configurable")
+	assert.Contains(t, normalized.ReviewReasons, "multiple input token prices")
+	assert.Empty(t, bailianInternalPricing(normalized), "a differing vision input price cannot be flattened into the text price")
+
+	sameVision := BailianModel{Model: "omni-same", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "text_input_token", Price: "1.8", PriceUnit: "每百万tokens"},
+			{Type: "vision_input_token", Price: "1.8", PriceUnit: "每百万tokens"},
+			{Type: "purein_text_output_token", Price: "6.9", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	normalized = bailianOfficialPricing(sameVision, BailianRegionBeijing, 1, 100)
+	assert.Empty(t, normalized.ReviewReasons)
+	assert.NotEmpty(t, bailianInternalPricing(normalized), "identical modality prices are the same price")
 
 	mt := BailianModel{Model: "mt-uni", Prices: []BailianPriceRange{{
 		RangeName: "Default",
@@ -332,10 +344,11 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 	normalized = bailianOfficialPricing(mt, BailianRegionBeijing, 1, 100)
 	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
 	assert.InDelta(t, 65, *normalized.Tiers[0].InputPerMillionUSD, 1e-9)
-	assert.NotEmpty(t, bailianInternalPricing(normalized))
+	assert.Contains(t, normalized.ReviewReasons, "multiple input token prices")
+	assert.Empty(t, bailianInternalPricing(normalized))
 }
 
-func TestBailianMixedCallAndTokenPricesStayReviewOnly(t *testing.T) {
+func TestBailianPerCallServiceNextToTokenPrice(t *testing.T) {
 	previousRate := operation_setting.USDExchangeRate
 	operation_setting.USDExchangeRate = 1
 	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
@@ -343,13 +356,24 @@ func TestBailianMixedCallAndTokenPricesStayReviewOnly(t *testing.T) {
 	speech := BailianModel{Model: "speech-02-hd", Prices: []BailianPriceRange{{
 		RangeName: "Default",
 		Prices: []BailianPrice{
-			{Type: "tts_vc_model", Price: "9.9", PriceUnit: "每次"},
-			{Type: "cosy_tts_number", Price: "3.5", PriceUnit: "每万字符"},
+			{Type: "tts_vc_model", Price: "9.9", PriceUnit: "每次", PriceName: "声音复刻及声音设计"},
+			{Type: "cosy_tts_number", Price: "3.5", PriceUnit: "每万字符", PriceName: "语音合成"},
 		},
 	}}}
 	normalized := bailianOfficialPricing(speech, BailianRegionBeijing, 1, 100)
-	assert.Contains(t, normalized.ReviewReasons, "mixed per-call and token prices")
-	assert.Empty(t, bailianInternalPricing(normalized))
+	require.Len(t, normalized.Tiers, 1)
+	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
+	assert.InDelta(t, 350, *normalized.Tiers[0].InputPerMillionUSD, 1e-9, "synthesis stays the billable primary")
+	assert.Nil(t, normalized.Tiers[0].PerUnitUSD, "the per-call service must not become the flat price")
+	require.Len(t, normalized.ComponentPrices, 1)
+	component := normalized.ComponentPrices[0]
+	assert.Equal(t, "per_call", component.Unit)
+	assert.InDelta(t, 9.9, component.USD, 1e-9)
+	assert.Equal(t, "声音复刻及声音设计", component.Name)
+	assert.NotContains(t, normalized.ReviewReasons, "mixed per-call and token prices")
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	assert.Contains(t, internal, `"mode":"per_1m_token"`)
 }
 
 func TestBailianInternalPricingRejectsConflictingPerCallPrices(t *testing.T) {
@@ -419,3 +443,72 @@ func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
 }
 
 func floatPtr64(value float64) *float64 { return &value }
+
+func TestBailianCacheAndBatchPriceMapping(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	modelWithCache := BailianModel{Model: "qwen-cache", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens"},
+			{Type: "output_token", Price: "8", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache", Price: "0.4", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache_creation_5m", Price: "2.5", PriceUnit: "每百万tokens"},
+			{Type: "input_token_batch", Price: "1", PriceUnit: "每百万tokens"},
+			{Type: "output_token_batch", Price: "4", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	normalized := bailianOfficialPricing(modelWithCache, BailianRegionBeijing, 1, 100)
+	require.False(t, normalized.NeedsReview)
+	tier := normalized.Tiers[0]
+	require.NotNil(t, tier.CachePerMillionUSD)
+	require.NotNil(t, tier.CreateCachePerMillionUSD)
+	assert.InDelta(t, 0.4, *tier.CachePerMillionUSD, 1e-9)
+	assert.InDelta(t, 2.5, *tier.CreateCachePerMillionUSD, 1e-9)
+	assert.NotContains(t, tier.RawPriceTypes, "input_token_batch", "batch endpoints are a separate service")
+
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	assert.Contains(t, internal, `"cache_per_million_usd":0.4`)
+	assert.Contains(t, internal, `"create_cache_per_million_usd":2.5`)
+}
+
+func TestBailianImageDimensionPricesStayReviewOnly(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	image := BailianModel{Model: "qwen-image-3.0", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "qima_input_1k", Price: "0.02", PriceUnit: "每张"},
+			{Type: "qima_input_2k", Price: "0.18", PriceUnit: "每张"},
+			{Type: "qima_output_1k", Price: "0.02", PriceUnit: "每张"},
+			{Type: "qima_output_2k", Price: "0.18", PriceUnit: "每张"},
+		},
+	}}}
+	normalized := bailianOfficialPricing(image, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, normalized.ReviewReasons, "unsupported price type: qima_input_1k")
+	assert.Empty(t, bailianInternalPricing(normalized))
+}
+
+func TestBailianTimeBandPricesStayReviewOnly(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	timeBanded := BailianModel{Model: "deepseek-v4-flash", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "峰时"},
+			{Type: "output_token", Price: "4", PriceUnit: "每百万tokens", TimeBand: "峰时"},
+			{Type: "input_token", Price: "0.5", PriceUnit: "每百万tokens", TimeBand: "非峰时"},
+			{Type: "output_token", Price: "2", PriceUnit: "每百万tokens", TimeBand: "非峰时"},
+		},
+	}}}
+	normalized := bailianOfficialPricing(timeBanded, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, normalized.ReviewReasons, "multiple time bands")
+	assert.Empty(t, bailianInternalPricing(normalized))
+}
