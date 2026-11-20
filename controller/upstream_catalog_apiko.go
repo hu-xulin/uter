@@ -7,11 +7,16 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/uter-ai/uter/setting/billing_setting"
 )
@@ -118,33 +123,79 @@ func apikoControlPlaneFor(rawBaseURL string) (string, bool) {
 // shape: a billing expression per model, in USD/1M tokens (or per request).
 // Models whose pricing cannot be expressed faithfully are skipped.
 func fetchApikoPricingData(ctx context.Context, controlPlane string) (map[string]any, []apikoSkippedModel, error) {
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, controlPlane+apikoPublicModelsPath, nil)
+	models, err := fetchApikoCatalog(ctx, controlPlane)
 	if err != nil {
 		return nil, nil, err
+	}
+	return apikoModelsToPricingSyncData(models)
+}
+
+// fetchApikoCatalog reads the public control-plane catalogue. It is the
+// authoritative model list and price source; the relay host only serves
+// OpenAI/Anthropic compatible endpoints and may not expose /v1/models.
+func fetchApikoCatalog(ctx context.Context, controlPlane string) ([]apikoModel, error) {
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, controlPlane+apikoPublicModelsPath, nil)
+	if err != nil {
+		return nil, err
 	}
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("User-Agent", "uter-price-sync")
 
 	response, err := (&http.Client{Timeout: apikoCatalogTimeoutSec * time.Second}).Do(request)
 	if err != nil {
-		return nil, nil, fmt.Errorf("apiko catalogue request failed: %w", err)
+		return nil, fmt.Errorf("apiko catalogue request failed: %w", err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("apiko catalogue returned %s", response.Status)
+		return nil, fmt.Errorf("apiko catalogue returned %s", response.Status)
 	}
 	body, err := io.ReadAll(io.LimitReader(response.Body, apikoMaxCatalogBytes))
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	var catalog apikoCatalog
 	if err := common.Unmarshal(body, &catalog); err != nil {
-		return nil, nil, fmt.Errorf("apiko catalogue is not valid JSON: %w", err)
+		return nil, fmt.Errorf("apiko catalogue is not valid JSON: %w", err)
 	}
 	if catalog.Code != 0 {
-		return nil, nil, fmt.Errorf("apiko catalogue error: %s", catalog.Message)
+		return nil, fmt.Errorf("apiko catalogue error: %s", catalog.Message)
 	}
-	return apikoModelsToPricingSyncData(catalog.Data.Models)
+	return catalog.Data.Models, nil
+}
+
+// fetchApikoCatalogueModelIDs returns the catalogue model IDs for the model
+// sync action. A blank base URL falls back to the production control plane so
+// a channel created with the default address still syncs.
+func fetchApikoCatalogueModelIDs(baseURL string) ([]string, error) {
+	controlPlane := apikoControlPlaneBase
+	if strings.TrimSpace(baseURL) != "" {
+		origin, ok := apikoControlPlaneFor(baseURL)
+		if !ok {
+			return nil, fmt.Errorf("channel base URL is not an Apiko address")
+		}
+		controlPlane = origin
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), apikoCatalogTimeoutSec*time.Second)
+	defer cancel()
+	models, err := fetchApikoCatalog(ctx, controlPlane)
+	if err != nil {
+		return nil, err
+	}
+	seen := make(map[string]bool, len(models))
+	ids := make([]string, 0, len(models))
+	for _, model := range models {
+		id := strings.TrimSpace(model.ID)
+		if id == "" || seen[id] {
+			continue
+		}
+		seen[id] = true
+		ids = append(ids, id)
+	}
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("apiko catalogue has no models")
+	}
+	sort.Strings(ids)
+	return ids, nil
 }
 
 func apikoModelsToPricingSyncData(models []apikoModel) (map[string]any, []apikoSkippedModel, error) {
@@ -307,4 +358,76 @@ func apikoNumber(value float64) string {
 		return strconv.FormatInt(int64(value), 10)
 	}
 	return strconv.FormatFloat(value, 'f', -1, 64)
+}
+
+// SyncApikoChannelModels adds every model the public Apiko catalogue lists to
+// an existing channel's model list. Existing entries are preserved so a manual
+// alias is never dropped; only missing catalogue IDs are appended.
+func SyncApikoChannelModels(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil {
+		common.ApiErrorT(c, "Channel not found")
+		return
+	}
+	if channel.Type != constant.ChannelTypeApiko {
+		common.ApiErrorMsg(c, "This channel is not an Apiko channel")
+		return
+	}
+	ids, err := fetchApikoCatalogueModelIDs(channel.GetBaseURL())
+	if err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
+	existing := channel.GetModels()
+	merged, added := mergeApikoModelIDs(existing, ids)
+	if added > 0 {
+		channel.Models = strings.Join(merged, ",")
+		if err := model.DB.Model(channel).Update("models", channel.Models).Error; err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		if err := channel.UpdateAbilities(nil); err != nil {
+			common.SysError(common.LogText("apiko channel abilities update failed: channel_id=%d, error=%v", channelID, err))
+		}
+		model.BumpSyncTopic(model.SyncTopicChannels)
+		refreshChannelRuntimeCache()
+	}
+	common.ApiSuccess(c, gin.H{
+		"channel_id": channelID,
+		"fetched":    len(ids),
+		"total":      len(merged),
+		"added":      added,
+		"models":     merged,
+	})
+}
+
+// mergeApikoModelIDs keeps the operator's order and appends missing catalogue
+// IDs once, so repeated syncs are idempotent.
+func mergeApikoModelIDs(existing, fetched []string) ([]string, int) {
+	seen := make(map[string]bool, len(existing)+len(fetched))
+	merged := make([]string, 0, len(existing)+len(fetched))
+	for _, name := range existing {
+		name = strings.TrimSpace(name)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		merged = append(merged, name)
+	}
+	added := 0
+	for _, name := range fetched {
+		name = strings.TrimSpace(name)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		merged = append(merged, name)
+		added++
+	}
+	return merged, added
 }

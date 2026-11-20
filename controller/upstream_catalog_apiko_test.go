@@ -2,13 +2,16 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/uter-ai/uter/setting/billing_setting"
 )
@@ -184,4 +187,99 @@ func TestApikoChannelDefaultBaseURLReachesControlPlane(t *testing.T) {
 	control, ok := apikoControlPlaneFor(base)
 	require.True(t, ok)
 	assert.Equal(t, apikoControlPlaneURL, control)
+}
+
+func TestFetchApikoCatalogueModelIDs(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/api/public/models" {
+			http.NotFound(writer, request)
+			return
+		}
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"total":3,"models":[
+			{"id":"model-b"},{"id":"model-a"},{"id":"model-b"}
+		]}}`))
+	}))
+	t.Cleanup(server.Close)
+
+	previous := apikoControlPlaneBase
+	apikoControlPlaneBase = server.URL
+	t.Cleanup(func() { apikoControlPlaneBase = previous })
+
+	ids, err := fetchApikoCatalogueModelIDs("https://api.apiko.app")
+	require.NoError(t, err)
+	assert.Equal(t, []string{"model-a", "model-b"}, ids)
+
+	// A blank base URL keeps working: a channel created with the default
+	// address must still sync.
+	ids, err = fetchApikoCatalogueModelIDs("")
+	require.NoError(t, err)
+	assert.Equal(t, []string{"model-a", "model-b"}, ids)
+
+	_, err = fetchApikoCatalogueModelIDs("https://example.com")
+	require.Error(t, err)
+}
+
+func TestFetchChannelUpstreamModelIDsUsesApikoCatalogue(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-video"},{"id":"apiko-chat"}]}}`))
+	}))
+	t.Cleanup(server.Close)
+
+	previous := apikoControlPlaneBase
+	apikoControlPlaneBase = server.URL
+	t.Cleanup(func() { apikoControlPlaneBase = previous })
+
+	base := "https://api.apiko.app"
+	ids, err := fetchChannelUpstreamModelIDs(&model.Channel{
+		Type: constant.ChannelTypeApiko, BaseURL: &base,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, []string{"apiko-chat", "apiko-video"}, ids)
+}
+
+func TestMergeApikoModelIDs(t *testing.T) {
+	merged, added := mergeApikoModelIDs(
+		[]string{"manual-model", " apiko-chat "},
+		[]string{"apiko-chat", "apiko-video", "apiko-video"},
+	)
+	assert.Equal(t, []string{"manual-model", "apiko-chat", "apiko-video"}, merged)
+	assert.Equal(t, 1, added)
+
+	merged, added = mergeApikoModelIDs(merged, []string{"apiko-chat", "apiko-video"})
+	assert.Equal(t, 0, added)
+	assert.Len(t, merged, 3)
+}
+
+func TestSyncApikoChannelModelsAddsCatalogueModels(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-chat"},{"id":"apiko-video"}]}}`))
+	}))
+	t.Cleanup(server.Close)
+	previous := apikoControlPlaneBase
+	apikoControlPlaneBase = server.URL
+	t.Cleanup(func() { apikoControlPlaneBase = previous })
+
+	base := "https://api.apiko.app"
+	channel := &model.Channel{
+		Type: constant.ChannelTypeApiko, Name: "apiko", BaseURL: &base,
+		Models: "manual-model", Group: "default", Status: 1,
+	}
+	require.NoError(t, db.Create(channel).Error)
+
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/channel/%d/apiko/models/sync", channel.Id), nil)
+	ctx.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%d", channel.Id)}}
+
+	SyncApikoChannelModels(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	var stored model.Channel
+	require.NoError(t, db.First(&stored, channel.Id).Error)
+	assert.Equal(t, "manual-model,apiko-chat,apiko-video", stored.Models)
+	assert.Contains(t, recorder.Body.String(), `"added":2`)
 }
