@@ -496,6 +496,20 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 	} else {
 		other = GenerateTextOtherInfo(ctx, relayInfo, summary.ModelRatio, summary.GroupRatio, summary.CompletionRatio, summary.CacheTokens, summary.CacheRatio, summary.ModelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	}
+	usageBreakdown := map[string]any{
+		"prompt_tokens":         summary.PromptTokens,
+		"completion_tokens":     summary.CompletionTokens,
+		"total_tokens":          summary.TotalTokens,
+		"cache_read_tokens":     summary.CacheTokens,
+		"cache_creation_tokens": summary.CacheCreationTokens,
+	}
+	if summary.ImageTokens != 0 {
+		usageBreakdown["image_tokens"] = summary.ImageTokens
+	}
+	if summary.AudioTokens != 0 {
+		usageBreakdown["audio_tokens"] = summary.AudioTokens
+	}
+	other.SetAdmin("usage_breakdown", usageBreakdown)
 	appendUsageBillingPathForLog(other, common.GetContextKeyBool(ctx, constant.ContextKeyLocalCountTokens), originUsage)
 	if adminRejectReason != "" {
 		other.SetAdmin("reject_reason", adminRejectReason)

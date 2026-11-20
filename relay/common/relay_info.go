@@ -122,9 +122,14 @@ type RelayInfo struct {
 	ChannelPricingCurrency        string
 	ChannelPricingFXRate          float64
 	ChannelPricingVersion         string
-	RelayMode                     int
-	OriginModelName               string
-	ResponseModel                 *ResponseModel
+	// User pricing policy actually applied by this request.
+	UserPricingApplied        bool
+	UserPricingRatio          float64
+	UserPricingMonthlyUSD     float64
+	LegacyChannelPricingRatio float64
+	RelayMode                 int
+	OriginModelName           string
+	ResponseModel             *ResponseModel
 
 	// BillingModelName is the pricing identity for this request. It is kept
 	// separate from OriginModelName and UpstreamModelName so virtual pricing

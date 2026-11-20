@@ -127,13 +127,22 @@ func applyCustomPricing(
 		channelId = 0
 	}
 
+	monthlyUSD := monthlyUSDForUser(relayInfo.UserId)
+	if userRatio, ok := custom_pricing.UserTierRatio(monthlyUSD); ok {
+		relayInfo.UserPricingApplied = true
+		relayInfo.UserPricingRatio = userRatio
+		relayInfo.UserPricingMonthlyUSD = monthlyUSD
+	}
+	if channelFactor, ok := custom_pricing.ChannelModelMultiplier(channelId, modelName, baseValue, usePrice); ok {
+		relayInfo.LegacyChannelPricingRatio = channelFactor
+	}
 	multiplier, applied := custom_pricing.EffectiveMultiplier(custom_pricing.ChargeContext{
 		ChannelId:  channelId,
 		UserId:     relayInfo.UserId,
 		ModelName:  modelName,
 		BaseRatio:  baseValue,
 		UsePrice:   usePrice,
-		MonthlyUSD: monthlyUSDForUser(relayInfo.UserId),
+		MonthlyUSD: monthlyUSD,
 	})
 	if applied {
 		groupRatioInfo.GroupRatio *= multiplier

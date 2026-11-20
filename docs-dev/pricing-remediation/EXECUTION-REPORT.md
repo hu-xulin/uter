@@ -116,7 +116,9 @@
 
 - 渠道价解析同时捕获官方来源币种与汇率（`Currency` / `FXRate`），账单记录 `channel_pricing_currency`、`channel_pricing_fx_rate`。
 - 阶梯/表达式计费在普通请求与任务结算中记录 `billing_expr_version` 与 `billing_expr_hash`，与表达式内容对应。
-- 已知缺口：用户/组价格策略的分解倍率、逐维用量分项仍未进入快照。
+- 用户价格策略快照：命中用户月度分层价时记录 `user_pricing_ratio` 与 `user_pricing_monthly_usd`；旧版渠道倍率记录 `legacy_channel_pricing_ratio`，与渠道价版本并存。
+- 逐维用量快照：文本/Claude 账单记录 `usage_breakdown`（prompt/completion/total/cache_read/cache_creation/image/audio）；任务按快照 `usage_facts` 写入同名字段。
+- 已知缺口：逐档销售价尚未成为独立可配置结构（P0-2）。
 
 ### 2.5 B2B / C 端差异定价（Phase 5，等价实现）
 

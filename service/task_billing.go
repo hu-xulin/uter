@@ -82,9 +82,21 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 		if info.ChannelPricingFXRate > 0 {
 			other.SetAdmin("channel_pricing_fx_rate", info.ChannelPricingFXRate)
 		}
-		if snap := info.TieredBillingSnapshot; snap != nil && snap.ExprVersion != 0 {
-			other.SetAdmin("billing_expr_version", snap.ExprVersion)
-			other.SetAdmin("billing_expr_hash", snap.ExprHash)
+		if info.UserPricingApplied {
+			other.SetAdmin("user_pricing_ratio", info.UserPricingRatio)
+			other.SetAdmin("user_pricing_monthly_usd", info.UserPricingMonthlyUSD)
+		}
+		if info.LegacyChannelPricingRatio > 0 && info.LegacyChannelPricingRatio != 1 {
+			other.SetAdmin("legacy_channel_pricing_ratio", info.LegacyChannelPricingRatio)
+		}
+		if snap := info.TieredBillingSnapshot; snap != nil {
+			if snap.ExprVersion != 0 {
+				other.SetAdmin("billing_expr_version", snap.ExprVersion)
+				other.SetAdmin("billing_expr_hash", snap.ExprHash)
+			}
+			if len(snap.UsageFacts) > 0 {
+				other.SetAdmin("usage_breakdown", snap.UsageFacts)
+			}
 		}
 	}
 	if info.IsModelMapped {

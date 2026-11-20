@@ -1173,3 +1173,35 @@ func TestModelPriceHelperUsesRequestRegionIdentity(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "identity_missing")
 }
+
+func TestHandleGroupRatioSnapshotsUserPricingPolicy(t *testing.T) {
+	common.OptionMapRWMutex.Lock()
+	if common.OptionMap == nil {
+		common.OptionMap = map[string]string{}
+	}
+	previous, had := common.OptionMap[custom_pricing.UserPriceOptionKey]
+	common.OptionMap[custom_pricing.UserPriceOptionKey] = `{"enabled": true, "tiers": [{"min_amount": 0, "ratio": 0.8}]}`
+	common.OptionMapRWMutex.Unlock()
+	t.Cleanup(func() {
+		common.OptionMapRWMutex.Lock()
+		if had {
+			common.OptionMap[custom_pricing.UserPriceOptionKey] = previous
+		} else {
+			delete(common.OptionMap, custom_pricing.UserPriceOptionKey)
+		}
+		common.OptionMapRWMutex.Unlock()
+	})
+
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+	info := &relaycommon.RelayInfo{
+		OriginModelName: "user-priced-model",
+		UserGroup:       "default",
+		UsingGroup:      "default",
+		UserId:          0,
+	}
+	groupRatio := HandleGroupRatio(ctx, info)
+	require.True(t, info.UserPricingApplied)
+	assert.InDelta(t, 0.8, info.UserPricingRatio, 1e-9)
+	assert.InDelta(t, 0.8, groupRatio.GroupRatio, 1e-9)
+}
