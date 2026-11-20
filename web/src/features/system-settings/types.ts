@@ -549,35 +549,3 @@ export type UpstreamRatiosResponse = {
     test_results: TestResult[]
   }
 }
-
-// ── 渠道登录与同步（上游 创梦 / DreamRouter）────────────────────────────
-//
-// 价格单位：按量/分层计费为美元 / 1M tokens，按次计费为美元 / 次。
-export type DreamRouterPriceLine = {
-  input: number
-  output: number
-  cache: number
-  create_cache: number
-}
-
-export type DreamRouterRunResponse = {
-  success: boolean
-  message: string
-  data: {
-    // upstream_count 是上游 data[] 的原始记录数，含 vendor 缺失的孤儿记录；
-    // offered_count 才是真正同步进渠道的在售模型数。verifiable_count 是复核
-    // 的分母（排除孤儿记录与无法解析表达式的模型），因此
-    // verified === verifiable_count 才代表本轮完全对齐。
-    upstream_count: number
-    offered_count?: number
-    verifiable_count?: number
-    verified: number
-    misaligned?: string[]
-    added_models?: string[]
-    removed_models?: string[]
-    skipped_models?: { name: string; reason: string }[]
-    warnings?: string[]
-    applied: boolean
-    dry_run: boolean
-  }
-}
