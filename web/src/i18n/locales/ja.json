@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "{{count}} 件の競合",
     "Billing unit": "課金単位",
     "New sale price": "新しい販売価格",
-    "Cache read": "キャッシュ読み取り"
+    "Cache read": "キャッシュ読み取り",
+    "Specific models": "特定のモデル",
+    "Select all filtered": "絞り込み結果をすべて選択",
+    "No models priced on this channel yet": "このチャネルには価格設定済みのモデルがまだありません",
+    "Confirm zero sale price": "販売価格0を確認",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "固定価格0では選択したすべてのモデルが無料になります。続行するにはチェックしてください。",
+    "Purchase price": "仕入価格",
+    "Gross margin": "粗利益"
   }
 }

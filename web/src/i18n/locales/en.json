@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "{{count}} conflicts",
     "Billing unit": "Billing unit",
     "New sale price": "New sale price",
-    "Cache read": "Cache read"
+    "Cache read": "Cache read",
+    "Specific models": "Specific models",
+    "Select all filtered": "Select all filtered",
+    "No models priced on this channel yet": "No models priced on this channel yet",
+    "Confirm zero sale price": "Confirm zero sale price",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "A fixed price of 0 makes every selected model free. Check to continue.",
+    "Purchase price": "Purchase price",
+    "Gross margin": "Gross margin"
   }
 }

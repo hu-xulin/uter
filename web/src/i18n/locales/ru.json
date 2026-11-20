@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "Конфликтов: {{count}}",
     "Billing unit": "Единица тарификации",
     "New sale price": "Новая цена продажи",
-    "Cache read": "Чтение кэша"
+    "Cache read": "Чтение кэша",
+    "Specific models": "Определённые модели",
+    "Select all filtered": "Выбрать все отфильтрованные",
+    "No models priced on this channel yet": "На этом канале пока нет моделей с ценой",
+    "Confirm zero sale price": "Подтвердить нулевую цену",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "Фиксированная цена 0 сделает все выбранные модели бесплатными. Отметьте, чтобы продолжить.",
+    "Purchase price": "Цена закупки",
+    "Gross margin": "Валовая маржа"
   }
 }

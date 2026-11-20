@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "{{count}} xung đột",
     "Billing unit": "Đơn vị tính phí",
     "New sale price": "Giá bán mới",
-    "Cache read": "Đọc bộ nhớ đệm"
+    "Cache read": "Đọc bộ nhớ đệm",
+    "Specific models": "Mô hình cụ thể",
+    "Select all filtered": "Chọn tất cả kết quả lọc",
+    "No models priced on this channel yet": "Kênh này chưa có mô hình nào được định giá",
+    "Confirm zero sale price": "Xác nhận giá bán bằng 0",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "Giá cố định bằng 0 sẽ khiến mọi mô hình đã chọn miễn phí. Đánh dấu để tiếp tục.",
+    "Purchase price": "Giá mua",
+    "Gross margin": "Lợi nhuận gộp"
   }
 }

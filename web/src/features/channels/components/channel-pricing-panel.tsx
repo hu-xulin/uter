@@ -40,6 +40,7 @@ import { handleServerError } from '@/lib/handle-server-error'
 import {
   batchChannelModelPricing,
   approveChannelPricingReviews,
+  getChannelModelPricing,
   getChannelPricingAudit,
   getChannelPricingHistory,
   getChannelPricingReviews,
@@ -163,9 +164,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   )
   const [mode, setMode] = useState<string>('multiply')
   const [value, setValue] = useState('0.6')
-  const [scope, setScope] = useState<'all' | 'prefix' | 'category'>('all')
+  const [scope, setScope] = useState<'all' | 'prefix' | 'category' | 'models'>(
+    'all'
+  )
   const [prefixes, setPrefixes] = useState('')
   const [category, setCategory] = useState('text')
+  const [selectedModels, setSelectedModels] = useState<string[]>([])
+  const [modelSearch, setModelSearch] = useState('')
+  const [confirmZeroFixed, setConfirmZeroFixed] = useState(false)
   const [overwriteManual, setOverwriteManual] = useState(false)
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
@@ -207,6 +213,16 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
+  const modelsQuery = useQuery({
+    queryKey: ['channel-model-pricing', props.channelId],
+    queryFn: () => getChannelModelPricing(props.channelId ?? 0),
+    enabled: props.channelId != null && scope === 'models',
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const availableModels = (modelsQuery.data?.data?.items ?? []).map(
+    (item) => item.model_name
+  )
   const diagnostics = useMutation({
     mutationFn: () => runChannelSyncDiagnostics(props.channelId ?? 0),
     onError: (error) =>
@@ -222,10 +238,27 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   // invalidates those row versions, so apply must preview again first.
   useEffect(() => {
     setPreview(null)
-  }, [basis, mode, value, scope, prefixes, category, overwriteManual])
+  }, [
+    basis,
+    mode,
+    value,
+    scope,
+    prefixes,
+    category,
+    selectedModels,
+    overwriteManual,
+  ])
 
   const parsedValue = Number(value)
-  const valueValid = Number.isFinite(parsedValue) && parsedValue >= 0
+  const valueEmpty = value.trim() === ''
+  const valueValid =
+    !valueEmpty && Number.isFinite(parsedValue) && parsedValue >= 0
+  // A fixed price of zero hands the model out for free; require an explicit
+  // acknowledgement instead of silently accepting an empty-looking input.
+  const zeroFixedNeedsConfirm = mode === 'fixed' && parsedValue === 0
+  const selectionValid = scope !== 'models' || selectedModels.length > 0
+  const canRun =
+    valueValid && selectionValid && (!zeroFixedNeedsConfirm || confirmZeroFixed)
 
   const batch = useMutation({
     mutationFn: (dryRun: boolean) =>
@@ -233,6 +266,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         basis,
         mode,
         value: parsedValue,
+        models:
+          scope === 'models' && selectedModels.length > 0
+            ? selectedModels
+            : undefined,
         model_prefixes:
           scope === 'prefix'
             ? prefixes
@@ -571,7 +608,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Select
               value={scope}
               onValueChange={(next) => {
-                if (next === 'prefix' || next === 'category') {
+                if (
+                  next === 'prefix' ||
+                  next === 'category' ||
+                  next === 'models'
+                ) {
                   setScope(next)
                   return
                 }
@@ -583,6 +624,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='all'>{t('All models')}</SelectItem>
+                <SelectItem value='models'>{t('Specific models')}</SelectItem>
                 <SelectItem value='prefix'>{t('Model name prefix')}</SelectItem>
                 <SelectItem value='category'>{t('Model type')}</SelectItem>
               </SelectContent>
@@ -623,6 +665,104 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               </Select>
             </div>
           ) : null}
+          {scope === 'models' ? (
+            <div className='space-y-2 sm:col-span-3'>
+              <div className='flex flex-wrap items-end gap-2'>
+                <div className='min-w-56 flex-1 space-y-1.5'>
+                  <Label htmlFor='batch-pricing-model-search'>
+                    {t('Search models')}
+                  </Label>
+                  <Input
+                    id='batch-pricing-model-search'
+                    value={modelSearch}
+                    onChange={(event) => setModelSearch(event.target.value)}
+                    placeholder='gpt-4o, qwen-plus'
+                  />
+                </div>
+                <Badge variant='secondary'>
+                  {t('{{count}} selected', { count: selectedModels.length })}
+                </Badge>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  onClick={() => {
+                    const filtered = availableModels.filter((name) =>
+                      name.toLowerCase().includes(modelSearch.toLowerCase())
+                    )
+                    setSelectedModels((current) => [
+                      ...new Set([...current, ...filtered]),
+                    ])
+                  }}
+                >
+                  {t('Select all filtered')}
+                </Button>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => setSelectedModels([])}
+                >
+                  {t('Clear selection')}
+                </Button>
+              </div>
+              <div className='max-h-56 space-y-1 overflow-y-auto rounded border p-2'>
+                {modelsQuery.isFetching ? (
+                  <p className='text-muted-foreground text-sm'>
+                    {t('Loading')}
+                  </p>
+                ) : null}
+                {!modelsQuery.isFetching && availableModels.length === 0 ? (
+                  <p className='text-muted-foreground text-sm'>
+                    {t('No models priced on this channel yet')}
+                  </p>
+                ) : null}
+                {availableModels
+                  .filter((name) =>
+                    name.toLowerCase().includes(modelSearch.toLowerCase())
+                  )
+                  .map((name) => {
+                    const checked = selectedModels.includes(name)
+                    return (
+                      <label
+                        key={name}
+                        className='flex items-center gap-2 text-sm'
+                      >
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(next) =>
+                            setSelectedModels((current) =>
+                              next === true
+                                ? [...current, name]
+                                : current.filter((item) => item !== name)
+                            )
+                          }
+                        />
+                        <span>{name}</span>
+                      </label>
+                    )
+                  })}
+              </div>
+            </div>
+          ) : null}
+          {zeroFixedNeedsConfirm ? (
+            <label className='flex items-center gap-2 text-sm sm:col-span-3'>
+              <Checkbox
+                checked={confirmZeroFixed}
+                onCheckedChange={(checked) =>
+                  setConfirmZeroFixed(checked === true)
+                }
+              />
+              <span>
+                {t('Confirm zero sale price')}
+                <span className='text-muted-foreground block text-xs'>
+                  {t(
+                    'A fixed price of 0 makes every selected model free. Check to continue.'
+                  )}
+                </span>
+              </span>
+            </label>
+          ) : null}
           <label className='flex items-center gap-2 text-sm sm:col-span-3'>
             <Checkbox
               checked={overwriteManual}
@@ -644,7 +784,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               type='button'
               variant='outline'
               size='sm'
-              disabled={disabled || !valueValid || batch.isPending}
+              disabled={disabled || !canRun || batch.isPending}
               onClick={() => batch.mutate(true)}
             >
               <Calculator className='size-4' />
@@ -653,7 +793,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <Button
               type='button'
               size='sm'
-              disabled={disabled || !valueValid || batch.isPending}
+              disabled={disabled || !canRun || batch.isPending}
               onClick={() => batch.mutate(false)}
             >
               {t('Apply')}
@@ -683,7 +823,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               </span>
             </div>
             {preview.items.length > 0 ? (
-              <div className='max-h-72 overflow-y-auto rounded border'>
+              <div className='max-h-72 overflow-auto rounded border'>
                 <table className='w-full text-left text-xs'>
                   <thead className='bg-muted/40 sticky top-0'>
                     <tr>
@@ -693,6 +833,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                       </th>
                       <th className='px-2 py-1 font-medium'>
                         {t('New sale price')}
+                      </th>
+                      <th className='px-2 py-1 font-medium'>
+                        {t('Purchase price')}
+                      </th>
+                      <th className='px-2 py-1 font-medium'>{t('Change')}</th>
+                      <th className='px-2 py-1 font-medium'>
+                        {t('Gross margin')}
                       </th>
                     </tr>
                   </thead>
@@ -733,6 +880,21 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                           <td className='px-2 py-1'>{item.model_name}</td>
                           <td className='px-2 py-1'>{item.mode}</td>
                           <td className='px-2 py-1'>{parts.join(' · ')}</td>
+                          <td className='px-2 py-1'>
+                            {item.purchase_usd != null
+                              ? `$${item.purchase_usd}`
+                              : '—'}
+                          </td>
+                          <td className='px-2 py-1'>
+                            {item.change_percent != null
+                              ? `${item.change_percent > 0 ? '+' : ''}${item.change_percent.toFixed(1)}%`
+                              : '—'}
+                          </td>
+                          <td className='px-2 py-1'>
+                            {item.margin_usd != null && item.margin_rate != null
+                              ? `$${item.margin_usd.toFixed(4)} (${(item.margin_rate * 100).toFixed(1)}%)`
+                              : '—'}
+                          </td>
                         </tr>
                       )
                     })}

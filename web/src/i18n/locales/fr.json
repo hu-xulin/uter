@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "{{count}} conflit(s)",
     "Billing unit": "Unité de facturation",
     "New sale price": "Nouveau prix de vente",
-    "Cache read": "Lecture du cache"
+    "Cache read": "Lecture du cache",
+    "Specific models": "Modèles spécifiques",
+    "Select all filtered": "Sélectionner tous les résultats filtrés",
+    "No models priced on this channel yet": "Aucun modèle tarifé sur ce canal pour l’instant",
+    "Confirm zero sale price": "Confirmer un prix de vente nul",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "Un prix fixe de 0 rend tous les modèles sélectionnés gratuits. Cochez pour continuer.",
+    "Purchase price": "Prix d’achat",
+    "Gross margin": "Marge brute"
   }
 }

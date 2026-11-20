@@ -957,6 +957,11 @@ export type ChannelBatchPricingItem = {
   per_call_usd?: number
   per_second_usd?: number
   version?: string
+  purchase_usd?: number
+  previous_usd?: number
+  change_percent?: number
+  margin_usd?: number
+  margin_rate?: number
 }
 
 export type ChannelBatchPricingResult = {

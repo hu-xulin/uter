@@ -8384,6 +8384,13 @@
     "{{count}} conflicts": "{{count}} 個衝突",
     "Billing unit": "計費單位",
     "New sale price": "新售價",
-    "Cache read": "快取讀取"
+    "Cache read": "快取讀取",
+    "Specific models": "指定模型",
+    "Select all filtered": "全選篩選結果",
+    "No models priced on this channel yet": "此渠道尚無已定價的模型",
+    "Confirm zero sale price": "確認零售價",
+    "A fixed price of 0 makes every selected model free. Check to continue.": "固定價格為 0 會使所有已選模型免費。勾選後繼續。",
+    "Purchase price": "採購價格",
+    "Gross margin": "毛利"
   }
 }
