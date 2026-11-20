@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "按解析度計價，請手動設定",
     "Priced by resolution and duration; set it manually": "按解析度與時長計價，請手動設定",
     "No direct price in the catalogue": "目錄中沒有直接價格",
-    "Pricing expression failed validation": "定價運算式驗證失敗"
+    "Pricing expression failed validation": "定價運算式驗證失敗",
+    "Apiko channels do not expose a balance API": "Apiko 頻道沒有公開的餘額介面"
   }
 }

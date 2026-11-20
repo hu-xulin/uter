@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "Tính theo độ phân giải; hãy đặt thủ công",
     "Priced by resolution and duration; set it manually": "Tính theo độ phân giải và thời lượng; hãy đặt thủ công",
     "No direct price in the catalogue": "Danh mục không có giá trực tiếp",
-    "Pricing expression failed validation": "Biểu thức tính giá không vượt qua kiểm tra"
+    "Pricing expression failed validation": "Biểu thức tính giá không vượt qua kiểm tra",
+    "Apiko channels do not expose a balance API": "Kênh Apiko không cung cấp API số dư"
   }
 }

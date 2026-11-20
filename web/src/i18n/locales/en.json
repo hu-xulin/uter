@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "Priced by resolution; set it manually",
     "Priced by resolution and duration; set it manually": "Priced by resolution and duration; set it manually",
     "No direct price in the catalogue": "No direct price in the catalogue",
-    "Pricing expression failed validation": "Pricing expression failed validation"
+    "Pricing expression failed validation": "Pricing expression failed validation",
+    "Apiko channels do not expose a balance API": "Apiko channels do not expose a balance API"
   }
 }

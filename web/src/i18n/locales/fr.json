@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "Facturé selon la résolution ; à définir manuellement",
     "Priced by resolution and duration; set it manually": "Facturé selon la résolution et la durée ; à définir manuellement",
     "No direct price in the catalogue": "Aucun prix direct dans le catalogue",
-    "Pricing expression failed validation": "L'expression de tarification n'a pas passé la validation"
+    "Pricing expression failed validation": "L'expression de tarification n'a pas passé la validation",
+    "Apiko channels do not expose a balance API": "Les canaux Apiko n'exposent pas d'API de solde"
   }
 }

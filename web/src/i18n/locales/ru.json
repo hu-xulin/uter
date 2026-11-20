@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "Цена зависит от разрешения; задайте вручную",
     "Priced by resolution and duration; set it manually": "Цена зависит от разрешения и длительности; задайте вручную",
     "No direct price in the catalogue": "В каталоге нет прямой цены",
-    "Pricing expression failed validation": "Выражение тарификации не прошло проверку"
+    "Pricing expression failed validation": "Выражение тарификации не прошло проверку",
+    "Apiko channels do not expose a balance API": "Каналы Apiko не предоставляют API баланса"
   }
 }

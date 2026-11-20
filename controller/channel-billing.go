@@ -677,6 +677,9 @@ func updateStandardChannelBalance(channel *model.Channel) (float64, error) {
 		return updateChannelSub2APIBalance(channel)
 	case constant.ChannelTypeNewAPI:
 		return updateChannelNewAPIBalance(channel)
+	case constant.ChannelTypeApiko:
+		// APIKO exposes only the /v1 relay surface; it has no balance endpoint.
+		return 0, common.NewMessage("Apiko channels do not expose a balance API")
 	default:
 		return 0, common.NewMessage("Not implemented yet")
 	}

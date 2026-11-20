@@ -8493,6 +8493,7 @@
     "Priced by resolution; set it manually": "解像度ごとの課金です。手動で設定してください",
     "Priced by resolution and duration; set it manually": "解像度と再生時間ごとの課金です。手動で設定してください",
     "No direct price in the catalogue": "カタログに直接価格がありません",
-    "Pricing expression failed validation": "価格式の検証に失敗しました"
+    "Pricing expression failed validation": "価格式の検証に失敗しました",
+    "Apiko channels do not expose a balance API": "Apiko チャネルには残高 API がありません"
   }
 }

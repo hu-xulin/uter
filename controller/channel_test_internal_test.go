@@ -157,6 +157,12 @@ func TestApikoChannelValidationAndDefaultBaseURL(t *testing.T) {
 	assert.Equal(t, "https://api.apiko.app", channel.GetBaseURL())
 }
 
+func TestApikoBalanceQueryReportsUnsupported(t *testing.T) {
+	_, err := updateStandardChannelBalance(&model.Channel{Type: constant.ChannelTypeApiko})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "Apiko channels do not expose a balance API")
+}
+
 func TestResponsesCompactChannelSupport(t *testing.T) {
 	tests := []struct {
 		name        string
