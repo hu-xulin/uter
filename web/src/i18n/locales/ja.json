@@ -401,6 +401,7 @@
     "Pricing mode hint": "倍率は同期価格とチャネル倍率の上に適用されます。最終価格はすべての割引後の絶対価格、基本価格はチャネル倍率前の絶対価格、公式価格からの割引はベンダー定価に対する比率です（0.7 = 70%）。",
     "Channel price": "チャネル価格",
     "Per minute": "1分あたり",
+    "Additional service price": "追加サービス価格",
     "Price per minute (USD)": "1分あたりの価格（USD）",
     "Uter price": "Uter 価格",
     "USD / second": "USD / 秒",
@@ -8484,6 +8485,14 @@
     "CHANNEL_CATALOG": "チャネルカタログ",
     "Vendor official price not published": "ベンダー公式価格は未公開です",
     "Connect to model services through the Apiko gateway": "Apiko ゲートウェイ経由でモデルサービスに接続します",
-    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "URL は /v1 を付けず https://api.apiko.app を指定してください。価格は Apiko の公開カタログから同期されます。解像度や再生時間で課金される画像・動画モデルは手動で価格設定してください"
+    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing": "URL は /v1 を付けず https://api.apiko.app を指定してください。価格は Apiko の公開カタログから同期されます。解像度や再生時間で課金される画像・動画モデルは手動で価格設定してください",
+    "Dark logo image": "ダークテーマのロゴ画像",
+    "Shown in dark theme. Leave empty to use the light logo.": "ダークテーマで表示します。空欄の場合はライト用ロゴを使用します。",
+    "Their prices depend on request parameters or the catalogue has no direct price. This sync does not change them.": "これらの価格はリクエストパラメータに依存するか、カタログに直接の価格がありません。この同期では変更されません。",
+    "{{count}} models need manual pricing": "{{count}} 個のモデルは手動価格設定が必要です",
+    "Priced by resolution; set it manually": "解像度ごとの課金です。手動で設定してください",
+    "Priced by resolution and duration; set it manually": "解像度と再生時間ごとの課金です。手動で設定してください",
+    "No direct price in the catalogue": "カタログに直接価格がありません",
+    "Pricing expression failed validation": "価格式の検証に失敗しました"
   }
 }

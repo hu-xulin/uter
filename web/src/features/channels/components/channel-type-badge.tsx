@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Puzzle, Server } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+import { BailianLogo } from '@/assets/brand-icons/icon-bailian'
 import { ProviderBadge } from '@/components/provider-badge'
 import { StatusBadge } from '@/components/status-badge'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
@@ -46,6 +47,9 @@ export function ChannelTypeLogo(props: {
   className?: string
 }) {
   const size = props.size ?? 16
+  if (props.type === 17) {
+    return <BailianLogo size={size} className={props.className} />
+  }
   if (props.type === CHANNEL_TYPE_TASK_PLUGIN && props.plugin) {
     return <PluginIcon plugin={props.plugin} size={size} />
   }

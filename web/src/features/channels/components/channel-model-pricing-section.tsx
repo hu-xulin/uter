@@ -234,6 +234,21 @@ export function ChannelModelPricingSection(
     return `${formatUsd(quote.input_per_million_usd)} / ${formatUsd(quote.output_per_million_usd)}`
   }
 
+  const unitLabel = (unit: string) => {
+    switch (unit) {
+      case 'per_call':
+        return t('Per call')
+      case 'per_image':
+        return t('Per image')
+      case 'per_second':
+        return t('Per second')
+      case 'per_minute':
+        return t('Per minute')
+      default:
+        return unit
+    }
+  }
+
   const officialPriceLabel = (item: ChannelModelPricingRecord) => {
     const tier = item.official?.tiers?.[0]
     if (!tier) return t('Not available')
@@ -296,6 +311,17 @@ export function ChannelModelPricingSection(
                 <span>
                   {t('Upstream official price')}: {officialPriceLabel(item)}
                 </span>
+                {item.official?.component_prices?.length ? (
+                  <span>
+                    {t('Additional service price')}:{' '}
+                    {item.official.component_prices
+                      .map(
+                        (component) =>
+                          `${component.name || component.type || '—'} ${formatUsd(component.usd)} · ${unitLabel(component.unit)}`
+                      )
+                      .join(' | ')}
+                  </span>
+                ) : null}
                 <span>
                   {t('Upstream channel price')}: {upstreamQuoteLabel(item)}
                   {item.upstream_quote ? (

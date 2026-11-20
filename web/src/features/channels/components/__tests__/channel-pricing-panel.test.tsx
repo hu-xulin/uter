@@ -99,6 +99,14 @@ beforeEach(() => {
                   ],
                   source: 'bailian-official',
                   fetched_at: 1,
+                  component_prices: [
+                    {
+                      name: 'Voice cloning',
+                      type: 'tts_vc_model',
+                      unit: 'per_call',
+                      usd: 9.9,
+                    },
+                  ],
                 },
               },
             ],
@@ -132,6 +140,13 @@ test('pricing selects render translated labels instead of raw enum values', asyn
   expect(screen.getAllByText('Auto apply').length).toBeGreaterThan(0)
   expect(screen.queryByText('multiply')).not.toBeInTheDocument()
   expect(screen.queryByText('official')).not.toBeInTheDocument()
+})
+
+test('channel model row lists additional service prices next to the token tier', async () => {
+  renderPanel()
+
+  expect(await screen.findByText(/Additional service price/)).toBeVisible()
+  expect(screen.getByText(/Voice cloning/)).toBeVisible()
 })
 
 test('scheduled update fields expose labels and descriptions', async () => {

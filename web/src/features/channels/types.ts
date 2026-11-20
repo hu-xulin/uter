@@ -93,6 +93,12 @@ export interface ChannelSettings {
   tls_insecure_skip_verify?: boolean
 }
 
+export interface ChannelBranding {
+  display_name?: string
+  logo?: string
+  logo_dark?: string
+}
+
 export interface ChannelOtherSettings {
   azure_responses_version?: string
   vertex_key_type?: 'json' | 'api_key'
@@ -116,6 +122,7 @@ export interface ChannelOtherSettings {
   upstream_model_update_last_check_time?: number
   upstream_model_update_last_detected_models?: string[]
   advanced_custom?: AdvancedCustomConfig
+  branding?: ChannelBranding
   plugin_config?: Record<string, unknown>
 }
 
@@ -252,12 +259,20 @@ export interface ChannelOfficialPricingTier {
   raw_price_types?: string[]
 }
 
+export interface ChannelPricingComponentView {
+  name?: string
+  type?: string
+  unit: string
+  usd: number
+}
+
 export interface ChannelOfficialPricingView {
   currency: string
   fx_rate_to_usd?: number
   unit: string
   tiers: ChannelOfficialPricingTier[]
   channel_price?: ChannelOfficialPricingTier
+  component_prices?: ChannelPricingComponentView[]
   discount_group?: string
   discount_model_group?: string
   discount_ratio?: number

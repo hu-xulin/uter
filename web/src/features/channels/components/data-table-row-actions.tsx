@@ -67,6 +67,7 @@ import {
   handleToggleChannelStatus,
   isChannelEnabled,
   isMultiKeyChannel,
+  supportsBalanceQuery,
 } from '../lib'
 import type { Channel } from '../types'
 import { ChannelRowActionsLayoutContext } from './channel-row-actions-context'
@@ -282,12 +283,14 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </DropdownMenuItem>
 
           {/* Query Balance */}
-          <DropdownMenuItem onClick={handleQueryBalance}>
-            {t('Query Balance')}
-            <DropdownMenuShortcut>
-              <DollarSign className='size-4' />
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
+          {supportsBalanceQuery(channel.type) && (
+            <DropdownMenuItem onClick={handleQueryBalance}>
+              {t('Query Balance')}
+              <DropdownMenuShortcut>
+                <DollarSign className='size-4' />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
 
           {/* Fetch Models */}
           <DropdownMenuItem onClick={handleFetchModels}>

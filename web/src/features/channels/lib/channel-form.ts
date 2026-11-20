@@ -256,6 +256,9 @@ export const channelFormSchema = z
       .string()
       .optional()
       .refine(isOptionalJsonObject, ERROR_MESSAGES.INVALID_JSON),
+    branding_display_name: z.string().max(50).optional(),
+    branding_logo: z.string().optional(),
+    branding_logo_dark: z.string().optional(),
     advanced_custom: z.string().optional(),
     plugin_config: z
       .string()
@@ -462,6 +465,9 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   param_override: '',
   header_override: '',
   settings: '{}',
+  branding_display_name: '',
+  branding_logo: '',
+  branding_logo_dark: '',
   other: '',
   multi_key_mode: 'single',
   multi_key_type: 'random',
@@ -585,6 +591,9 @@ export function transformChannelToFormDefaults(
   let upstreamModelUpdateIgnoredModels = ''
   let advancedCustom = ''
   let pluginConfig = ''
+  let brandingDisplayName = ''
+  let brandingLogo = ''
+  let brandingLogoDark = ''
 
   if (channel.settings) {
     try {
@@ -615,6 +624,11 @@ export function transformChannelToFormDefaults(
       )
         ? parsed.upstream_model_update_ignored_models.join(',')
         : ''
+      if (parsed.branding) {
+        brandingDisplayName = parsed.branding.display_name || ''
+        brandingLogo = parsed.branding.logo || ''
+        brandingLogoDark = parsed.branding.logo_dark || ''
+      }
       if (parsed.advanced_custom) {
         advancedCustom = stringifyAdvancedCustomConfig(parsed.advanced_custom)
       }
@@ -648,6 +662,9 @@ export function transformChannelToFormDefaults(
     param_override: channel.param_override || '',
     header_override: channel.header_override || '',
     settings: channel.settings || '{}',
+    branding_display_name: brandingDisplayName,
+    branding_logo: brandingLogo,
+    branding_logo_dark: brandingLogoDark,
     other: channel.other || '',
     multi_key_mode: 'single',
     multi_key_type: channel.channel_info.multi_key_mode || 'random',
@@ -908,6 +925,21 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
     }
   } else if ('advanced_custom' in settingsObj) {
     delete settingsObj.advanced_custom
+  }
+
+  if (!isAdvancedCustomLikeChannelType(formData.type)) {
+    const branding = {
+      display_name: formData.branding_display_name?.trim() || undefined,
+      logo: formData.branding_logo?.trim() || undefined,
+      logo_dark: formData.branding_logo_dark?.trim() || undefined,
+    }
+    if (branding.display_name || branding.logo || branding.logo_dark) {
+      settingsObj.branding = branding
+    } else {
+      delete settingsObj.branding
+    }
+  } else if ('branding' in settingsObj) {
+    delete settingsObj.branding
   }
 
   return JSON.stringify(settingsObj)

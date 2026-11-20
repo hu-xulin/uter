@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { formatTimestampToDate } from '@/lib/format'
 
 import {
+  BALANCE_QUERY_UNSUPPORTED_TYPES,
   CHANNEL_TYPES,
   RESPONSE_TIME_CONFIG,
   RESPONSE_TIME_THRESHOLDS,
@@ -46,6 +47,10 @@ export function getChannelTypeLabel(type: number): string {
  * variants each keep their own glyph so shared / aggregate / proxy channels
  * stay distinguishable wherever only the channel type number is available.
  */
+export function supportsBalanceQuery(channelType: number): boolean {
+  return !BALANCE_QUERY_UNSUPPORTED_TYPES.has(channelType)
+}
+
 export function getChannelTypeIcon(type: number): string {
   const TYPE_TO_ICON: Record<number, string> = {
     // OpenAI family

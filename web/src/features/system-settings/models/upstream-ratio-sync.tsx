@@ -17,12 +17,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckSquare, RefreshCcw } from 'lucide-react'
+import { AlertTriangle, CheckSquare, RefreshCcw } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { ErrorState } from '@/components/error-state'
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -61,7 +66,17 @@ import type {
   PricingSyncValues,
   UpstreamChannel,
   UpstreamConfig,
+  UpstreamSkippedModel,
 } from '../types'
+
+// Reasons the backend reports for catalogue rows it did not price. Keys are
+// i18n source strings.
+const SKIP_REASON_KEYS: Record<string, string> = {
+  resolution_tiered: 'Priced by resolution; set it manually',
+  duration_tiered: 'Priced by resolution and duration; set it manually',
+  no_direct_price: 'No direct price in the catalogue',
+  invalid_expression: 'Pricing expression failed validation',
+}
 import { ChannelSelectorDialog } from './channel-selector-dialog'
 import {
   ConflictConfirmDialog,
@@ -206,6 +221,7 @@ export function UpstreamRatioSync() {
     Record<number, string>
   >({})
   const [differences, setDifferences] = useState<DifferencesMap>({})
+  const [skippedModels, setSkippedModels] = useState<UpstreamSkippedModel[]>([])
   const [priceAdjustment, setPriceAdjustment] =
     useState<PriceAdjustment>('keep')
   const currencyConfig = useSystemConfigStore((state) => state.config.currency)
@@ -339,6 +355,7 @@ export function UpstreamRatioSync() {
     onMutate: () => {
       setPrices({})
       setDifferences({})
+      setSkippedModels([])
       setSelectedSources({})
     },
     onSuccess: (response) => {
@@ -358,6 +375,7 @@ export function UpstreamRatioSync() {
         )
       }
       setDifferences(response.data.differences)
+      setSkippedModels(response.data.skipped_models ?? [])
       setPrices(
         mergeChannelPrices(response.data.prices, channelPriceSourcesRef.current)
       )
@@ -540,6 +558,41 @@ export function UpstreamRatioSync() {
     loadingBaseline || fetchMutation.isPending || syncMutation.isPending
   return (
     <div className='flex h-full min-h-0 flex-col gap-3'>
+      {skippedModels.length > 0 && (
+        <Alert className='border-warning/40 bg-warning-soft text-warning dark:text-warning-soft-foreground'>
+          <AlertTriangle aria-hidden='true' />
+          <AlertTitle>
+            {t('{{count}} models need manual pricing', {
+              count: skippedModels.length,
+            })}
+          </AlertTitle>
+          <AlertDescription className='text-sm text-current'>
+            <p>
+              {t(
+                'Their prices depend on request parameters or the catalogue has no direct price. This sync does not change them.'
+              )}
+            </p>
+            <ul className='mt-1.5 space-y-0.5'>
+              {skippedModels.slice(0, 8).map((item) => (
+                <li
+                  key={`${item.upstream}:${item.model}`}
+                  className='flex flex-wrap gap-x-2'
+                >
+                  <span className='font-mono'>{item.model}</span>
+                  <span className='opacity-80'>
+                    {t(SKIP_REASON_KEYS[item.reason] ?? item.reason)}
+                  </span>
+                </li>
+              ))}
+              {skippedModels.length > 8 && (
+                <li>
+                  {t('+{{count}} more', { count: skippedModels.length - 8 })}
+                </li>
+              )}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
       <div className='min-h-0 flex-1'>
         {fetchMutation.isError ? (
           <ErrorState

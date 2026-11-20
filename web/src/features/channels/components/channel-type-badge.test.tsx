@@ -91,6 +91,12 @@ test('does not request plugin metadata without bind permission', () => {
   expect(getTaskPluginOptions).not.toHaveBeenCalled()
 })
 
+test('Alibaba Bailian uses the Model Studio mark', () => {
+  render(<ChannelTypeLogo type={17} />)
+  expect(screen.getByTestId('BailianLogo')).toBeInTheDocument()
+  expect(screen.queryByTestId('Qwen.Color')).not.toBeInTheDocument()
+})
+
 test('unbound task channels use a neutral icon while regular providers keep their logo', () => {
   const { rerender } = render(
     <ChannelTypeLogo type={CHANNEL_TYPE_TASK_PLUGIN} />

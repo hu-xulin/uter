@@ -107,6 +107,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
+import { useTheme } from '@/context/theme-provider'
 import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -218,6 +219,7 @@ import {
 } from '../../lib/task-plugin-base-url'
 import type { AdvancedCustomConfig, Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
+import { ChannelBrandingEditor } from '../channel-branding-editor'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelPricingPanel } from '../channel-pricing-panel'
 import { ChannelQuickOptions } from '../channel-quick-options'
@@ -423,6 +425,7 @@ export function ChannelMutateDrawer({
   currentRow,
 }: ChannelMutateDrawerProps) {
   const { t } = useTranslation()
+  const { resolvedTheme } = useTheme()
   const queryClient = useQueryClient()
   const { setOpen } = useChannels()
   const currentUser = useAuthStore((s) => s.auth.user)
@@ -821,6 +824,30 @@ export function ChannelMutateDrawer({
     boundTaskPlugin?.name ||
     (currentType === CHANNEL_TYPE_TASK_PLUGIN && currentTaskPluginKey) ||
     t(currentTypeLabel)
+  const brandingDisplayName = (form.watch('branding_display_name') || '').trim()
+  const brandingLogo = (
+    resolvedTheme === 'dark'
+      ? form.watch('branding_logo_dark') || form.watch('branding_logo')
+      : form.watch('branding_logo')
+  )?.trim()
+  const channelHeaderLabel = brandingDisplayName || providerLabel
+  let channelHeaderIcon = (
+    <ChannelTypeLogo
+      type={currentType}
+      plugin={boundTaskPlugin}
+      size={18}
+    />
+  )
+  if (brandingLogo) {
+    channelHeaderIcon = (
+      <img
+        src={brandingLogo}
+        alt=''
+        aria-hidden='true'
+        className='size-4.5 shrink-0 rounded-full object-cover'
+      />
+    )
+  }
 
   const selectProvider = useCallback(
     (target: ChannelProviderTarget) => {
@@ -2695,6 +2722,36 @@ export function ChannelMutateDrawer({
               </FormItem>
             )}
           />
+          {!isAdvancedCustomLikeChannelType(currentType) ? (
+            <ChannelBrandingEditor
+              displayName={form.watch('branding_display_name') ?? ''}
+              logo={form.watch('branding_logo') ?? ''}
+              logoDark={form.watch('branding_logo_dark') ?? ''}
+              fallbackLabel={t(
+                CHANNEL_TYPES[currentType as keyof typeof CHANNEL_TYPES] ??
+                  'Channel'
+              )}
+              disabled={sensitiveLocked || isSubmitting}
+              onDisplayNameChange={(value) =>
+                form.setValue('branding_display_name', value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              onLogoChange={(value) =>
+                form.setValue('branding_logo', value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+              onLogoDarkChange={(value) =>
+                form.setValue('branding_logo_dark', value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+            />
+          ) : null}
         </div>
 
         {!isEditing && (
@@ -5309,8 +5366,8 @@ export function ChannelMutateDrawer({
                           ? t('Back to configuration')
                           : t('Change provider')
                       }
-                      aria-description={providerLabel}
-                      title={providerLabel}
+                      aria-description={channelHeaderLabel}
+                      title={channelHeaderLabel}
                       className='min-w-0 shrink gap-2 sm:max-w-md'
                       disabled={
                         isSubmitting ||
@@ -5331,13 +5388,11 @@ export function ChannelMutateDrawer({
                           </span>
                         </>
                       ) : (
-                        <ChannelTypeLogo
-                          type={currentType}
-                          plugin={boundTaskPlugin}
-                          size={18}
-                        />
+                        channelHeaderIcon
                       )}
-                      <span className='min-w-0 truncate'>{providerLabel}</span>
+                      <span className='min-w-0 truncate'>
+                        {channelHeaderLabel}
+                      </span>
                       {!showProviderPicker && (
                         <>
                           <span className='hidden shrink-0 sm:inline'>

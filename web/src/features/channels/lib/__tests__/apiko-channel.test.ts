@@ -28,7 +28,7 @@ import {
 } from '../../constants'
 import { CHANNEL_FORM_DEFAULT_VALUES, channelFormSchema } from '../channel-form'
 import { getChannelTypeConfig } from '../channel-type-config'
-import { getChannelTypeIcon } from '../channel-utils'
+import { getChannelTypeIcon, supportsBalanceQuery } from '../channel-utils'
 
 function apikoForm(overrides: Record<string, unknown> = {}) {
   return {
@@ -79,5 +79,10 @@ describe('Apiko channel type', () => {
     expect(CHANNEL_TYPE_WARNINGS[CHANNEL_TYPE_APIKO]).toContain(
       'manual pricing'
     )
+  })
+
+  test('hides the balance query action', () => {
+    expect(supportsBalanceQuery(CHANNEL_TYPE_APIKO)).toBe(false)
+    expect(supportsBalanceQuery(1)).toBe(true)
   })
 })

@@ -557,6 +557,10 @@ export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
   CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
+// Channel types without a public balance API. The row action is hidden so an
+// operator does not hit a predictable "not implemented" error.
+export const BALANCE_QUERY_UNSUPPORTED_TYPES = new Set([CHANNEL_TYPE_APIKO])
+
 export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
   15: 'Format: APIKey|SecretKey',
   18: 'Format: APPID|APISecret|APIKey',

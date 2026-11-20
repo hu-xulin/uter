@@ -540,6 +540,12 @@ export type TestResult = {
   error?: string
 }
 
+export type UpstreamSkippedModel = {
+  upstream: string
+  model: string
+  reason: string
+}
+
 export type UpstreamRatiosResponse = {
   success: boolean
   message: string
@@ -547,5 +553,6 @@ export type UpstreamRatiosResponse = {
     differences: DifferencesMap
     prices: PricingSyncModels
     test_results: TestResult[]
+    skipped_models?: UpstreamSkippedModel[]
   }
 }
