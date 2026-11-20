@@ -46,7 +46,7 @@ func TestFetchUpstreamCatalogRejectsUnknownProvider(t *testing.T) {
 }
 
 func TestManualProviderFetchNeverPretendsToSync(t *testing.T) {
-	_, err := FetchUpstreamCatalog(context.Background(), "apiko", UpstreamFetchConfig{})
+	_, err := FetchUpstreamCatalog(context.Background(), "volcengine", UpstreamFetchConfig{})
 	require.ErrorContains(t, err, "no authorized price API")
 }
 
@@ -72,7 +72,7 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 	for _, provider := range providers {
 		byID[provider.ID] = provider
 	}
-	for _, id := range []string{"openai", "anthropic", "google-gemini", "microsoft-azure", "aws-bedrock", "tencent-hunyuan", "volcengine", "apiko"} {
+	for _, id := range []string{"openai", "anthropic", "google-gemini", "microsoft-azure", "aws-bedrock", "tencent-hunyuan", "volcengine"} {
 		provider, ok := byID[id]
 		if !ok {
 			t.Fatalf("provider %s is not registered", id)
@@ -100,6 +100,19 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 			t.Fatalf("provider %s must not claim a price source documentation", id)
 		}
 	}
+}
+
+func TestApikoProviderUsesPublicCatalogue(t *testing.T) {
+	provider := UpstreamProviderForChannel(64, "https://api.apiko.app")
+	require.Equal(t, "apiko", provider.ID)
+	require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status)
+	require.Equal(t, CapabilitySupported, provider.Capabilities.TokenPricing.Status)
+	require.Equal(t, CapabilityManualOnly, provider.Capabilities.ImagePricing.Status)
+	require.Equal(t, CapabilityUnsupported, provider.Capabilities.DeploymentPricing.Status)
+	require.Contains(t, provider.PricingURL, "apiko.app/api/public/models")
+	// Lookalike hosts must not inherit the public catalogue capability.
+	lookalike := UpstreamProviderForChannel(64, "https://api.apiko.app.evil.example")
+	require.NotEqual(t, "apiko", lookalike.ID)
 }
 
 func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {

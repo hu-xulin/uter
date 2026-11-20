@@ -141,7 +141,38 @@ var manualPricingProviders = []UpstreamProvider{
 	{ID: "aws-bedrock", Name: "AWS Bedrock", AuthType: "aws_sigv4", Capabilities: manualCapabilities("AWS Bedrock")},
 	{ID: "tencent-hunyuan", Name: "腾讯云", AuthType: "api_key", Capabilities: manualCapabilities("腾讯云")},
 	{ID: "volcengine", Name: "火山引擎", AuthType: "api_key", Capabilities: manualCapabilities("火山引擎")},
-	{ID: "apiko", Name: "Apiko", AuthType: "api_key", Capabilities: manualCapabilities("Apiko")},
+}
+
+// apikoUpstreamDescriptor describes Apiko's public control-plane catalogue.
+// The relay host only serves OpenAI/Anthropic compatible paths, but the
+// control plane publishes model prices without a key, so pricing is not manual.
+func apikoUpstreamDescriptor() UpstreamProvider {
+	return UpstreamProvider{
+		ID: "apiko", Name: "Apiko", AuthType: "channel_key",
+		PricingURL:          "https://apiko.app/api/public/models?billing=all",
+		ModelsURL:           "https://apiko.app/api/public/models?billing=all",
+		SourceDocumentation: "https://apiko.app/api/public/models",
+		SyncFrequency:       "manual trigger through the channel pricing sync",
+		Capabilities: UpstreamProviderCapabilities{
+			ModelDiscovery:      capability(CapabilitySupported, "public catalogue plus the channel /v1/models"),
+			ModelMetadata:       capability(CapabilityPartial, "catalogue metadata; specs come from the shared catalog"),
+			OfficialPricing:     capability(CapabilitySupported, "public USD prices from the Apiko control plane"),
+			ChannelPricing:      capability(CapabilityNeedsConfiguration, "sync writes billing expressions; verify the contracted quote"),
+			DiscountInformation: capability(CapabilityUnsupported, "no supplier discount feed"),
+			RegionPricing:       capability(CapabilityUnsupported, "no region dimension"),
+			TieredPricing:       capability(CapabilityPartial, "context tiers become expressions; resolution/duration tiers need manual pricing"),
+			MediaPricing:        capability(CapabilityManualOnly, "resolution- or duration-tiered media prices need request parameters"),
+			ScheduledSync:       capability(CapabilityNeedsConfiguration, "run the channel pricing sync"),
+			TokenPricing:        capability(CapabilitySupported, "input, output and cache prices per 1M tokens"),
+			ImagePricing:        capability(CapabilityManualOnly, "image prices depend on resolution"),
+			VideoPricing:        capability(CapabilityPartial, "per-second tiers when the catalogue publishes them"),
+			AudioPricing:        capability(CapabilityPartial, "token-priced audio models are synced; duration tiers need manual pricing"),
+			PerCallPricing:      capability(CapabilitySupported, "flat per-request price"),
+			PerSecondPricing:    capability(CapabilityPartial, "only when the catalogue publishes per-second tiers"),
+			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
+			DeploymentPricing:   capability(CapabilityUnsupported, "no deployment dimension"),
+		},
+	}
 }
 
 func manualCapabilities(name string) UpstreamProviderCapabilities {
