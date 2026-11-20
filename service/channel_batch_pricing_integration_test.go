@@ -167,6 +167,34 @@ func TestApplyChannelBatchPricingSupportsPerSecondAndCurrentBasis(t *testing.T) 
 	assert.InDelta(t, 0.044, effective.Pricing.PerSecondPrice, 1e-9)
 }
 
+func TestApplyChannelBatchPricingTargetsSelectedDimensions(t *testing.T) {
+	setupBatchPricingDB(t)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		batchOfficialRecord(31, "gpt-dimensions"),
+	})
+	require.NoError(t, err)
+
+	_, err = ApplyChannelBatchPricingWithOptions(31, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		Dimensions: []string{"input"},
+	})
+	require.NoError(t, err)
+	row, err := model.GetChannelModelPricing(31, "gpt-dimensions")
+	require.NoError(t, err)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	require.NotNil(t, internal.InputUSDPerMillion)
+	require.NotNil(t, internal.OutputUSDPerMillion)
+	assert.InDelta(t, 1.5, *internal.InputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 6.0, *internal.OutputUSDPerMillion, 1e-9, "output must stay at the base price")
+
+	_, err = ApplyChannelBatchPricingWithOptions(31, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		Dimensions: []string{"audio"},
+	})
+	require.ErrorContains(t, err, "unknown price dimension")
+}
+
 func TestApplyChannelBatchPricingReportsMarginAndChange(t *testing.T) {
 	setupBatchPricingDB(t)
 	input, output := 3.0, 6.0

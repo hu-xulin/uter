@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"slices"
 	"strings"
 
 	"github.com/uter-ai/uter/common"
@@ -69,6 +70,8 @@ type BatchPricingResult struct {
 	Skipped []BatchPricingSkipped `json:"skipped"`
 	// Conflicts lists models whose row changed between preview and apply.
 	Conflicts []string `json:"conflicts,omitempty"`
+	// Dimensions echoes the rule's targeted dimensions; empty means all.
+	Dimensions []string `json:"dimensions,omitempty"`
 }
 
 type batchBasePrice struct {
@@ -102,6 +105,15 @@ type BatchPricingOptions struct {
 	// preview. An apply whose row version differs is reported as a conflict
 	// instead of writing a price computed from stale inputs.
 	ExpectedVersions map[string]string
+	// Dimensions limits the rule to the named price dimensions: input, output,
+	// cache_read, cache_write, per_call, per_second. Empty means every
+	// dimension the model actually has.
+	Dimensions []string
+}
+
+// BatchPricingDimensions lists the dimensions a rule may target.
+var BatchPricingDimensions = []string{
+	"input", "output", "cache_read", "cache_write", "per_call", "per_second",
 }
 
 func ApplyChannelBatchPricing(
@@ -150,6 +162,20 @@ func ApplyChannelBatchPricingWithOptions(
 	default:
 		return nil, errors.New("mode must be discount, markup, multiply, add, fixed or none")
 	}
+	dimensions := make(map[string]bool, len(options.Dimensions))
+	for _, dimension := range options.Dimensions {
+		dimension = strings.TrimSpace(dimension)
+		if dimension == "" {
+			continue
+		}
+		if !slices.Contains(BatchPricingDimensions, dimension) {
+			return nil, fmt.Errorf("unknown price dimension %q", dimension)
+		}
+		dimensions[dimension] = true
+	}
+	dimensionSelected := func(dimension string) bool {
+		return len(dimensions) == 0 || dimensions[dimension]
+	}
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
 		return nil, err
@@ -178,6 +204,7 @@ func ApplyChannelBatchPricingWithOptions(
 	result := &BatchPricingResult{
 		Basis: basis, Mode: mode, Value: value, DryRun: dryRun,
 		Items: []BatchPricingItem{}, Skipped: []BatchPricingSkipped{},
+		Dimensions: options.Dimensions,
 	}
 	for _, row := range rows {
 		if len(selected) > 0 && !selected[row.ModelName] {
@@ -213,9 +240,16 @@ func ApplyChannelBatchPricingWithOptions(
 			Source:    "batch",
 			UpdatedAt: 0,
 		}
-		apply := func(raw *float64) (*float64, bool) {
+		apply := func(raw *float64, dimension string) (*float64, bool) {
 			if raw == nil {
 				return nil, true
+			}
+			if !dimensionSelected(dimension) {
+				// Excluded dimensions keep their base amount. The stored price
+				// is a complete record, so it must still carry every field the
+				// model is priced on.
+				unchanged := *raw
+				return &unchanged, true
 			}
 			out, ok := applyBatchRule(*raw, mode, value)
 			if !ok {
@@ -224,42 +258,42 @@ func ApplyChannelBatchPricingWithOptions(
 			rounded := roundPrice(out)
 			return &rounded, true
 		}
-		if next, ok := apply(base.inputUSD); ok && next != nil {
+		if next, ok := apply(base.inputUSD, "input"); ok && next != nil {
 			item.InputUSD = next
 			internal.InputUSDPerMillion = next
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
-		if next, ok := apply(base.outputUSD); ok && next != nil {
+		if next, ok := apply(base.outputUSD, "output"); ok && next != nil {
 			item.OutputUSD = next
 			internal.OutputUSDPerMillion = next
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
-		if next, ok := apply(base.cacheUSD); ok && next != nil {
+		if next, ok := apply(base.cacheUSD, "cache_read"); ok && next != nil {
 			item.CacheUSD = next
 			internal.CacheUSDPerMillion = next
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
-		if next, ok := apply(base.cacheWriteUSD); ok && next != nil {
+		if next, ok := apply(base.cacheWriteUSD, "cache_write"); ok && next != nil {
 			item.CacheWriteUSD = next
 			internal.CreateCacheUSDPerMillion = next
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
-		if next, ok := apply(base.perCallUSD); ok && next != nil {
+		if next, ok := apply(base.perCallUSD, "per_call"); ok && next != nil {
 			item.PerCallUSD = next
 			internal.PerCallUSD = next
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
-		if next, ok := apply(base.perSecondUSD); ok && next != nil {
+		if next, ok := apply(base.perSecondUSD, "per_second"); ok && next != nil {
 			item.PerSecondUSD = next
 			internal.PerSecondUSD = next
 		} else if !ok {

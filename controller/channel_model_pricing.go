@@ -361,6 +361,8 @@ func BatchChannelModelPricing(c *gin.Context) {
 		// Versions carries the per-model PricingVersion returned by a preview
 		// so an apply cannot mix in rows that changed since then.
 		Versions map[string]string `json:"versions"`
+		// Dimensions restricts the rule to specific price dimensions.
+		Dimensions []string `json:"dimensions"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
@@ -374,6 +376,7 @@ func BatchChannelModelPricing(c *gin.Context) {
 		Models: req.Models, ModelPrefixes: req.ModelPrefixes,
 		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
 		ExpectedVersions: req.Versions,
+		Dimensions:       req.Dimensions,
 		Basis:            req.Basis, Mode: req.Mode, Value: req.Value, DryRun: req.DryRun,
 	})
 	if err != nil {
