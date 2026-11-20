@@ -46,9 +46,50 @@ func BailianUpstreamSyncTask() {
 // a model with no unambiguous catalog price keeps its review flag.
 func AutoConfigureBailianPrices() {
 	for _, channel := range bailianUpstreamChannels() {
+		// Pick up a pricing schema change (for example catalog prices becoming
+		// official prices) from the saved snapshot without waiting for the next
+		// upstream pull.
+		reapplyBailianCatalogPricingIfStale(channel)
 		if _, _, err := SeedBailianInternalPricing(channel.Id, nil, false); err != nil {
 			common.SysError(common.LogText("bailian auto pricing failed for channel %d: %s", channel.Id, err.Error()))
 		}
+	}
+}
+
+// reapplyBailianCatalogPricingIfStale rewrites stored prices from the saved
+// catalog snapshot when they predate the current catalog source.
+func reapplyBailianCatalogPricingIfStale(channel *model.Channel) {
+	rows, err := model.ListChannelModelPricing(channel.Id)
+	if err != nil {
+		common.SysError(common.LogText("bailian auto pricing list failed for channel %d: %s", channel.Id, err.Error()))
+		return
+	}
+	stale := false
+	served := make(map[string]bool)
+	for _, name := range channel.GetModels() {
+		served[strings.TrimSpace(name)] = true
+	}
+	for _, row := range rows {
+		// Orphan rows outside the channel's model list are never rewritten, so
+		// they must not keep triggering a reapply on every tick.
+		if !served[row.ModelName] {
+			continue
+		}
+		if strings.TrimSpace(row.NormalizedPricing) != "" && row.PricingSource != bailianCatalogSource {
+			stale = true
+			break
+		}
+	}
+	if !stale {
+		return
+	}
+	catalog := LoadBailianCatalogSnapshotForChannel(channel.Id)
+	if catalog == nil {
+		return
+	}
+	catalog.ChannelID = channel.Id
+	if _, err := model.UpsertChannelOfficialPricing(BailianPricingRecords(catalog, channel.GetModels())); err != nil {
+		common.SysError(common.LogText("bailian catalog reapply failed for channel %d: %s", channel.Id, err.Error()))
 	}
 }
 

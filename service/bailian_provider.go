@@ -27,6 +27,10 @@ const (
 	BailianRegionJapan       BailianRegion = "ap-northeast-1"
 	BailianRegionUS          BailianRegion = "us-east-1"
 	BailianRegionUnspecified BailianRegion = ""
+
+	// bailianCatalogSource marks prices synced from the official Model Studio
+	// catalog; every auto-derived row carries it so a schema change is detected.
+	bailianCatalogSource = "bailian-official"
 )
 
 var bailianRegionHostSuffix = map[BailianRegion]string{
@@ -145,7 +149,7 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 					RawUnit:          price.PriceUnit,
 					RangeName:        priceRange.RangeName,
 					TimeBand:         price.TimeBand,
-					Source:           "bailian-official",
+					Source:           bailianCatalogSource,
 					FetchedAt:        catalog.FetchedAt,
 				}
 				if parseErr == nil {
@@ -352,7 +356,7 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 			Currency:          normalized.Currency,
 			OfficialPricing:   string(raw),
 			NormalizedPricing: string(encoded),
-			Source:            "bailian-official",
+			Source:            bailianCatalogSource,
 			FetchedAt:         catalog.FetchedAt.Unix(),
 		})
 	}
@@ -450,7 +454,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 	}
 	if len(tiers) == 1 {
 		tier := tiers[0]
-		internal := model.ChannelInternalPricing{Source: "bailian-official", UpdatedAt: normalized.FetchedAt}
+		internal := model.ChannelInternalPricing{Source: bailianCatalogSource, UpdatedAt: normalized.FetchedAt}
 		switch tier.Unit {
 		case "per_1m_token", "per_1m_tokens":
 			if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
@@ -499,7 +503,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 		internal := model.ChannelInternalPricing{
 			Mode:        model.ChannelPricingModeTieredExpr,
 			BillingExpr: expr,
-			Source:      "bailian-official",
+			Source:      bailianCatalogSource,
 			UpdatedAt:   normalized.FetchedAt,
 		}
 		encoded, err := common.Marshal(internal)
@@ -582,7 +586,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	result := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "per_1m_token",
-		Source:    "bailian-official",
+		Source:    bailianCatalogSource,
 		FetchedAt: fetchedAt,
 	}
 	if region == BailianRegionBeijing || region == BailianRegionHongKong {
