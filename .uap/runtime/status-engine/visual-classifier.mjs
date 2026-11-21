@@ -54,7 +54,7 @@ export function classifyVisualDiff(s, message) {
   if (/ECONNREFUSED|net::ERR|Target page|browserType\.launch|service gate|SAFE_DELETE|expected 0|port 3\d{3}|not reachable/i.test(m)) {
     return { category: 'TEST_ENVIRONMENT', evidence_basis: 'message carries service/browser/environment failure evidence' };
   }
-  if (/baseline|missing snapshot|snapshot not found|no baseline|基线缺失/i.test(m)) {
+  if (/baseline|missing snapshot|snapshot not found|snapshot\s+(?:does\s+not|doesn't)\s+exist|no baseline|ENOENT.*(?:snapshot|\.png)|基线缺失/i.test(m)) {
     return { category: 'BASELINE_MISMATCH', evidence_basis: 'message carries baseline/snapshot availability evidence' };
   }
   if (/Snapshot mismatch|toHaveScreenshot|diff ratio|pixel|different from snapshot|\d+ pixels/i.test(m)) {
