@@ -8529,6 +8529,8 @@
     "Audio output price (USD per 1M tokens)": "音声出力価格（USD/100万トークン）",
     "Save a pricing rule for this channel.": "このチャネルの価格ルールを保存します。",
     "Apply after each upstream sync": "アップストリーム同期後に自動適用",
-    "When off, the rule is saved but only a manual Apply changes prices.": "オフの場合、ルールは保存されますが、価格は手動の「適用」でのみ変更されます。"
+    "When off, the rule is saved but only a manual Apply changes prices.": "オフの場合、ルールは保存されますが、価格は手動の「適用」でのみ変更されます。",
+    "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "下記の周期で上流カタログと価格を自動取得し、バッチルールを再適用します。手動同期は不要です。",
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "オフの場合、ルールは保存のみで、価格は手動の「適用」でのみ変更されます。オンの場合、新しい上流モデルもこのチャネルに追加されます（削除は手動のまま）。"
   }
 }

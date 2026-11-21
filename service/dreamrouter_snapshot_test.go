@@ -182,3 +182,16 @@ func TestLoadDreamRouterOfficialReferenceEmpty(t *testing.T) {
 		t.Errorf("invalid json reference = %v, want nil", reference)
 	}
 }
+
+func TestMergeChannelModelNamesAddsOnlyNewModels(t *testing.T) {
+	added := mergeChannelModelNames(
+		[]string{"gpt-a", " claude-b "},
+		[]string{"claude-b", "gpt-a", "gpt-new", ""},
+	)
+	if len(added) != 1 || added[0] != "gpt-new" {
+		t.Fatalf("added = %v, want [gpt-new]", added)
+	}
+	if added := mergeChannelModelNames([]string{"gpt-a"}, []string{"gpt-a"}); len(added) != 0 {
+		t.Fatalf("added = %v, want empty", added)
+	}
+}

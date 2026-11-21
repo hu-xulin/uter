@@ -34,7 +34,7 @@ export function applyChannelView(
   if (channelFilter === allChannels) {
     return { models, officialPrices: officialPrices ?? {} }
   }
-  const official: OfficialPrices = { ...(officialPrices ?? {}) }
+  const official: OfficialPrices = { ...officialPrices }
   const viewed = models.map((model) => {
     const channelPrice = model.channel_prices?.[channelFilter]
     if (!channelPrice) {

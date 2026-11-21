@@ -1268,7 +1268,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
           <Label>{t('Scheduled price update')}</Label>
           <p className='text-muted-foreground text-sm'>
             {t(
-              'After each upstream catalog sync, re-apply the batch rule to this channel.'
+              'Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.'
             )}
           </p>
         </div>
@@ -1301,7 +1301,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               <Label>{t('Apply after each upstream sync')}</Label>
               <p className='text-muted-foreground text-sm'>
                 {t(
-                  'When off, the rule is saved but only a manual Apply changes prices.'
+                  'When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).'
                 )}
               </p>
             </div>

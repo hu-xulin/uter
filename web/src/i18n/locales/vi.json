@@ -8529,6 +8529,8 @@
     "Audio output price (USD per 1M tokens)": "Giá đầu ra âm thanh (USD/1 triệu token)",
     "Save a pricing rule for this channel.": "Lưu quy tắc giá cho kênh này.",
     "Apply after each upstream sync": "Áp dụng sau mỗi lần đồng bộ nguồn",
-    "When off, the rule is saved but only a manual Apply changes prices.": "Khi tắt, quy tắc chỉ được lưu; giá chỉ thay đổi khi bấm Áp dụng thủ công."
+    "When off, the rule is saved but only a manual Apply changes prices.": "Khi tắt, quy tắc chỉ được lưu; giá chỉ thay đổi khi bấm Áp dụng thủ công.",
+    "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Tự động lấy danh mục và giá từ nguồn theo chu kỳ bên dưới, sau đó áp dụng lại quy tắc. Không cần đồng bộ thủ công.",
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Khi tắt, quy tắc chỉ được lưu; giá chỉ đổi khi bấm Áp dụng. Khi bật, mô hình mới từ nguồn cũng được thêm vào kênh (việc xoá vẫn thủ công)."
   }
 }

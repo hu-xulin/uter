@@ -26,6 +26,7 @@ type DreamRouterUpstreamSyncStatus struct {
 	Reviews     int       `json:"reviews"`
 	DueChannels int       `json:"due_channels"`
 	Changes     int       `json:"changes"`
+	ModelsAdded int       `json:"models_added"`
 	Errors      []string  `json:"errors,omitempty"`
 }
 
@@ -187,6 +188,18 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 		channel := due.channel
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if due.modelDue {
+			// An enabled auto-pricing schedule also keeps the channel's model
+			// list current, so new upstream models are priced on the next run
+			// instead of waiting for a manual catalog sync. Removal still
+			// requires an operator decision.
+			if due.schedule.Enabled && due.schedule.ApplyOnSync {
+				added, modelErr := appendDreamRouterChannelModels(channel, snapshot)
+				if modelErr != nil {
+					status.Errors = append(status.Errors, fmt.Sprintf("channel %d models: %v", channel.Id, modelErr))
+				} else {
+					status.ModelsAdded += added
+				}
+			}
 			state.ModelSyncAt = now.Unix()
 		}
 		if due.officialDue || due.channelDue {
@@ -203,6 +216,18 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 				continue
 			}
 			written += count
+			seenModels := make([]string, 0, len(records))
+			for _, record := range records {
+				seenModels = append(seenModels, record.ModelName)
+			}
+			if len(seenModels) > 0 {
+				if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
+					channel.Id, seenModels, now.Unix(), model.ChannelModelMissingDisableThreshold,
+				); lifecycleErr != nil {
+					status.Errors = append(status.Errors, fmt.Sprintf("channel %d lifecycle: %v", channel.Id, lifecycleErr))
+					continue
+				}
+			}
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
 			}
@@ -278,4 +303,50 @@ func LoadDreamRouterUpstreamSyncStatus() *DreamRouterUpstreamSyncStatus {
 		return nil
 	}
 	return &status
+}
+
+// mergeChannelModelNames returns upstream models the channel does not list
+// yet, preserving the configured order and never dropping a model.
+func mergeChannelModelNames(existing, upstream []string) []string {
+	seen := make(map[string]bool, len(existing))
+	for _, name := range existing {
+		name = strings.TrimSpace(name)
+		if name != "" {
+			seen[name] = true
+		}
+	}
+	added := make([]string, 0)
+	for _, name := range upstream {
+		name = strings.TrimSpace(name)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		added = append(added, name)
+	}
+	return added
+}
+
+// appendDreamRouterChannelModels appends newly discovered upstream models to
+// the channel. Deletions stay manual: an upstream outage must not silently
+// remove models that are still being served.
+func appendDreamRouterChannelModels(channel *model.Channel, snapshot *UpstreamSnapshot) (int, error) {
+	if channel == nil || snapshot == nil {
+		return 0, nil
+	}
+	names := make([]string, 0, len(snapshot.Models))
+	for _, item := range snapshot.Models {
+		names = append(names, item.ModelName)
+	}
+	added := mergeChannelModelNames(channel.GetModels(), names)
+	if len(added) == 0 {
+		return 0, nil
+	}
+	models := channel.GetModels()
+	models = append(models, added...)
+	channel.Models = strings.Join(models, ",")
+	if err := channel.Update(); err != nil {
+		return 0, err
+	}
+	return len(added), nil
 }

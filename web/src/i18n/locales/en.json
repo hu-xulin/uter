@@ -8529,6 +8529,8 @@
     "Audio output price (USD per 1M tokens)": "Audio output price (USD per 1M tokens)",
     "Save a pricing rule for this channel.": "Save a pricing rule for this channel.",
     "Apply after each upstream sync": "Apply after each upstream sync",
-    "When off, the rule is saved but only a manual Apply changes prices.": "When off, the rule is saved but only a manual Apply changes prices."
+    "When off, the rule is saved but only a manual Apply changes prices.": "When off, the rule is saved but only a manual Apply changes prices.",
+    "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.",
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual)."
   }
 }

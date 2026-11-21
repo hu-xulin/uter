@@ -8529,6 +8529,8 @@
     "Audio output price (USD per 1M tokens)": "音频输出价格（美元/百万 tokens）",
     "Save a pricing rule for this channel.": "为该渠道保存定价规则。",
     "Apply after each upstream sync": "每次上游同步后自动应用",
-    "When off, the rule is saved but only a manual Apply changes prices.": "关闭时仅保存规则，只有手动执行“应用”才会改价。"
+    "When off, the rule is saved but only a manual Apply changes prices.": "关闭时仅保存规则，只有手动执行“应用”才会改价。",
+    "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "按下方周期自动拉取上游目录与价格，然后重新应用批量规则，无需手动同步。",
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "关闭时仅保存规则，只有手动执行“应用”才会改价；开启后新的上游模型也会自动加入该渠道（下线模型仍需人工确认）。"
   }
 }
