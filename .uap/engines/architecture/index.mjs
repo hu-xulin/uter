@@ -20,6 +20,9 @@ const MODULE_PREFIX = 'github.com/uter-ai/uter/';
 const HTTP_METHODS = 'GET|POST|PUT|DELETE|PATCH|OPTIONS|HEAD|Any|Handle';
 const SCAN_DIRS = ['', 'router', 'middleware', 'controller', 'service', 'model', 'relay', 'common'];
 const MAX_PER_DIR = 8;
+const HISTORICAL_UAP_PREFIXES = ['.uap/reports/', '.uap/evidence/', '.uap/state/'];
+const isHistoricalUapPath = (rel) => HISTORICAL_UAP_PREFIXES.some((prefix) => rel.startsWith(prefix));
+const LEGACY_UDS3_PATH = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
 const LAYERS = {
   common: 0, constant: 0, i18n: 0, logger: 0,
   setting: 1, model: 1, oauth: 1, pkg: 1, relaykit: 1,
@@ -202,9 +205,12 @@ function scopeOf(rel) {
 }
 
 function scanAdr() {
+  const allUapDocs = listFiles(uapPath(), { recursive: true, filter: (a) => a.endsWith('.md') });
+  const historicalDocs = allUapDocs.filter((abs) => isHistoricalUapPath(relToRoot(abs)));
+  const activeUapDocs = allUapDocs.filter((abs) => !isHistoricalUapPath(relToRoot(abs)));
   const files = [
     ...listFiles(rootPath('docs'), { recursive: true, filter: (a) => a.endsWith('.md') }),
-    ...listFiles(uapPath(), { recursive: true, filter: (a) => a.endsWith('.md') }),
+    ...activeUapDocs,
   ];
   const documents = [];
   for (const abs of files) {
@@ -234,13 +240,16 @@ function scanAdr() {
     document_count: documents.length,
     formal_adr_count: documents.filter((d) => d.formal_adr).length,
     candidate_count: documents.filter((d) => !d.formal_adr).length,
-    source_roots: ['docs', '.uap'],
+    historical_document_count: historicalDocs.length,
+    historical_roots_excluded: HISTORICAL_UAP_PREFIXES,
+    historical_policy: 'UAP reports, evidence and state snapshots remain immutable historical records and are not current ADR/decision sources',
+    source_roots: ['docs', '.uap active specifications'],
     documents,
   };
 }
 
 function artifactOk(file, keys) {
-  if (!exists(file)) return true;
+  if (!exists(file)) return false;
   let j;
   try { j = readJSON(file); } catch { return false; }
   if (!j || typeof j !== 'object') return false;
@@ -262,6 +271,10 @@ export function health() {
   }).length >= 1;
   checks.graph_schema = artifactOk(GRAPH_FILE, ['modules', 'edges', 'api_inventory']);
   checks.adr_schema = artifactOk(ADR_FILE, ['documents', 'document_count']);
+  const adrInventory = readJSON(ADR_FILE, null);
+  checks.adr_index_current = Boolean(adrInventory && Array.isArray(adrInventory.documents)
+    && !JSON.stringify(adrInventory.documents).includes(LEGACY_UDS3_PATH)
+    && !adrInventory.documents.some((d) => isHistoricalUapPath(d.path)));
   const ok = Object.values(checks).every(Boolean);
   return {
     component, ok, checks,
