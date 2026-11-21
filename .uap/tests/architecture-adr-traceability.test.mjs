@@ -7,6 +7,7 @@ import { validators as architectureValidators } from '../validators/architecture
 import { validators as crossPlatformValidators } from '../validators/cross-platform/index.mjs';
 import { execute as executeArchitecture, health as architectureHealth } from '../engines/architecture/index.mjs';
 import { execute as executeKnowledge, health as knowledgeHealth } from '../engines/knowledge/index.mjs';
+import { gitHead } from '../runtime/status-engine/execution.mjs';
 
 test('ADR index, frontmatter, accepted status and implementation evidence are traceable', async () => {
   const result = await architectureValidators['architecture.adr_integrity']();
@@ -34,6 +35,7 @@ test('architecture index refresh excludes historical reports and preserves curre
   assert.equal(result.status, 'SUCCEEDED', result.summary);
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const inventory = JSON.parse(readFileSync(path.join(root, '.uap/state/adr-inventory.json'), 'utf8'));
+  assert.equal(inventory.generated_for_head, gitHead());
   const legacyPath = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
   assert.ok(inventory.documents.some((d) => d.path === 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'));
   assert.equal(inventory.documents.some((d) => d.path.startsWith('.uap/reports/') || d.path.startsWith('.uap/evidence/') || d.path.startsWith('.uap/state/')), false);
@@ -47,6 +49,7 @@ test('knowledge index refresh excludes historical artifacts and classifies the b
   assert.equal(result.status, 'SUCCEEDED', result.summary);
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const index = JSON.parse(readFileSync(path.join(root, '.uap/state/knowledge-index.json'), 'utf8'));
+  assert.equal(index.generated_for_head, gitHead());
   const legacyPath = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
   assert.equal(index.legacy_design_system_path_scan.active_reference_count, 0);
   assert.equal(index.legacy_design_system_path_scan.historical_baseline_reference.classification, 'HISTORICAL_ONLY_NOT_CURRENT_AUTHORITY');
