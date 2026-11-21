@@ -50,6 +50,7 @@ test('knowledge index refresh excludes historical artifacts and classifies the b
   const legacyPath = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
   assert.equal(index.legacy_design_system_path_scan.active_reference_count, 0);
   assert.equal(index.legacy_design_system_path_scan.historical_baseline_reference.classification, 'HISTORICAL_ONLY_NOT_CURRENT_AUTHORITY');
+  assert.ok(index.legacy_design_system_path_scan.historical_tool_references.some((r) => r.file === '.uap/tools/generate-baseline-report.mjs' && r.classification === 'HISTORICAL_ONLY'));
   assert.equal(index.documents.some((d) => d.path.startsWith('.uap/reports/') || d.path.startsWith('.uap/evidence/') || d.path.startsWith('.uap/state/')), false);
   assert.equal(JSON.stringify(index.documents).includes(legacyPath), false);
   const knowledgeSpec = index.documents.find((d) => d.path === '.uap/evolution/UAP-09-001-KNOWLEDGE-MANAGEMENT.md');
@@ -74,5 +75,7 @@ test('knowledge-management specification marks the baseline as historical and th
   const spec = readFileSync(path.join(root, '.uap/evolution/UAP-09-001-KNOWLEDGE-MANAGEMENT.md'), 'utf8');
   assert.ok(spec.includes('TOKEN-MANIFEST.json'));
   assert.ok(spec.includes('不可变历史快照'));
+  assert.ok(spec.includes('generate-baseline-report.mjs'));
+  assert.ok(spec.includes('HISTORICAL_ONLY'));
   assert.doesNotMatch(spec, /正式版本：3\.0/);
 });
