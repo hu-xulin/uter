@@ -1,7 +1,7 @@
 # PHASE 10 — 数据库与历史兼容
 
-状态：**IMPLEMENTED_NOT_FULLY_VERIFIED**
-（SQLite/MySQL 8.0/PostgreSQL 16 建表、唯一键、往返测试均通过；旧版本升级路径未验证）
+状态：**IMPLEMENTED_AND_VERIFIED（SQLite 升级）/ 三库建表验证通过**
+（SQLite/MySQL 8.0/PostgreSQL 16 建表与唯一键通过；旧库升级在 SQLite 备份上连续执行两次并保留数据）
 
 ## 1. 表结构
 
@@ -58,8 +58,13 @@ go test ./model/ -run 'TestChannel(ModelPricing|Pricing)' -count=1   # 通过
 GOWORK=off go test ./...                                             # exit 0
 ```
 
-未执行：由旧版本数据库升级到当前结构、以及启动两次的迁移幂等验证。
-因此可声明三库建表/唯一键兼容，但不能声明完整升级路径已验证。
+旧库升级验证（SQLite）：
+
+- 使用 2026-11-21 11:03 的升级前备份副本，连续执行两次 `model.InitDB()`。
+- 两次均 PASS：`channels=4 users=19 pricing=326 purchase_column=1 snapshots=1`。
+- 证明新列 `purchase_pricing` 与新表 `billing_price_snapshots` 可增量创建，
+  业务数据行数未变化，第二次启动不重复破坏结构。
+- 未执行 MySQL/PostgreSQL 旧库升级，仍只验证了三库新建。
 
 ## 6. 风险
 

@@ -26,7 +26,7 @@
 但以下 P0/P1 仍未达到完整验收：
 
 - 合同采购价与实际结算成本无数据源，毛利只能标为“基于上游报价的估算”。
-- 供应商账单对账未实现。
+- 表达式一致性校验与用量样本对账已实现；供应商发票导入/真实账单对账仍为 BLOCKED。
 - MySQL/PostgreSQL 真库矩阵未执行。
 - 浏览器端未逐页回归，真实供应商接口未调用。
 - 无独立不可变计费快照表，账单追溯依赖 admin 日志 JSON。
@@ -54,9 +54,9 @@
 | 多模态计费 | IMPLEMENTED_NOT_VERIFIED | 表达式支持 img/rt/ai/ao；无真实用量回放 |
 | 历史账单 | IMPLEMENTED_NOT_FULLY_VERIFIED | 新增 `billing_price_snapshots` 不可变表 + 查询接口 |
 | 多币种 | PARTIALLY_BUILT | CNY→USD + 汇率快照；无历史汇率序列 |
-| 财务对账 | NOT_BUILT | 无账单导入/匹配 |
+| 财务对账 | PARTIALLY_VERIFIED | 表达式一致性 + 用量样本对账已实现并测试；供应商发票对账 BLOCKED |
 | 前端 | PARTIALLY_VERIFIED | typecheck + 设计门禁通过；无浏览器回归 |
-| 数据库 | PARTIALLY_VERIFIED | SQLite/MySQL 8.0/PostgreSQL 16 建表与唯一键 PASS；旧库升级未验证 |
+| 数据库 | IMPLEMENTED_NOT_FULLY_VERIFIED | SQLite 旧库升级两次 PASS；MySQL 8.0/PostgreSQL 16 建表 PASS；三库旧库升级未验证 |
 | 自动化测试 | IMPLEMENTED_AND_VERIFIED | `GOWORK=off go test ./...` exit 0 |
 | 真实验证 | PARTIALLY_VERIFIED | 百炼 275 模型、DreamRouter 86 模型、Apiko 68 模型真实拉取；其余厂商无凭据 |
 | 安全性 | PARTIALLY_VERIFIED | 校验/冲突/幂等已测；无压测/分布式锁验证 |
@@ -121,7 +121,7 @@ UTER_TEST_MYSQL_DSN=... UTER_TEST_POSTGRES_DSN=... go test ./model -run TestChan
 1. 合同采购价已支持手工录入与 verified 标记；供应商账单、实际结算毛利仍无授权数据源。
 2. 不可变计费快照表与查询接口已实现；历史数据回填未做。
 2. OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山官方价格自动同步：无稳定公开接口或凭据。
-3. MySQL 8.0/PostgreSQL 16 建表已验证；旧版本升级与二次启动幂等未验证。
+3. SQLite 旧库升级与二次启动已验证；MySQL/PostgreSQL 旧库升级未验证。
 4. 百炼/DreamRouter/Apiko 已完成真实目录/价格拉取；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山仍无凭据。
 5. 浏览器人工/视觉回归、前端全量测试。
 6. 独立不可变 `BillingPriceSnapshot` 表、Decimal 账本、汇率历史表。

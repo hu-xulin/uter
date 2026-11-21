@@ -1,8 +1,8 @@
 # PHASE 08 — 多币种与财务核算
 
 状态：**PARTIALLY_BUILT**
-（币种、汇率来源/时间、换算后 USD 价格、账单币种快照已实现；
-供应商账单导入与对账未实现，标记 NOT_BUILT）
+（币种/汇率、合同成本、表达式一致性校验与用量样本对账已实现；
+供应商发票导入与真实账单对账仍为 BLOCKED）
 
 ## 1. 已实现
 
@@ -20,11 +20,24 @@
 - 计费快照 `PurchaseUSD` 优先取合同成本，并记录 verified/source。
 - 批量毛利在合同成本存在时以其比较；未验证时 `MarginVerified=false`。
 
+## 2.1 上游计费对账（工作区已有实现）
+
+- `service.ReconcileChannelUpstreamBilling`：对渠道每个可执行表达式运行确定性
+  用量样本，报告 `RULES_PASSED / RULE_FAILED / NO_EXPRESSION_RULE`。
+- `service.ReconcileUpstreamBillingSamples`：接收上游账单样本用量与成本，计算
+  Uter 按当前售价应收金额、差额与差额百分比，状态 `MATCHED / MISMATCHED /
+  NO_PRICE / UNSUPPORTED`。
+- 管理入口：`GET /api/channel/:id/upstream_reconciliation`、
+  `POST /api/channel/:id/upstream_reconciliation/samples`，前端渠道定价面板
+  展示对账结果。
+- 供应商发票对账仍返回 `BLOCKED`，因为没有授权账单导出。
+
 仍未实现：
 
+- 供应商发票导入/模型映射/赠送额度/合同折扣/账单周期解析。
 - 采购币种、销售币种、结算币种三分法：当前只记录来源币种与换算 USD。
 - 汇率历史版本表：只保存当前汇率快照，无按生效时间查询的历史序列。
-- 供应商账单导入/用量匹配/模型映射/赠送额度/合同折扣/账单差异/未匹配记录。
+- 发票级账单差异与未匹配记录（样本级对账已实现）。
 - 实际结算毛利：没有账单数据，无法计算。
 - Decimal 财务账本：使用 int 配额与受检浮点转换。
 
