@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import {
@@ -43,11 +44,13 @@ import {
   getChannelModelPricing,
   getChannelPricingAudit,
   getChannelPricingHistory,
+  getChannelUpstreamInvoices,
   getChannelUpstreamParity,
   getChannelUpstreamReconciliation,
   getChannelPricingReviews,
   getChannelPricingSchedule,
   getChannelSyncCapabilities,
+  importChannelUpstreamInvoice,
   rejectChannelPricingReviews,
   rollbackChannelPricingHistory,
   runChannelSyncDiagnostics,
@@ -55,6 +58,7 @@ import {
   syncDreamRouterUpstream,
   type ChannelBatchPricingResult,
   type ChannelPricingSchedule,
+  type UpstreamInvoiceImportResult,
 } from '../api'
 import { ChannelModelPricingSection } from './channel-model-pricing-section'
 
@@ -241,6 +245,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   >('partial')
   const [approvalNote, setApprovalNote] = useState('')
   const [preview, setPreview] = useState<ChannelBatchPricingResult | null>(null)
+  const [invoiceText, setInvoiceText] = useState('')
+  const [invoiceResult, setInvoiceResult] =
+    useState<UpstreamInvoiceImportResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
   const [schedule, setSchedule] =
     useState<ChannelPricingSchedule>(defaultSchedule)
@@ -287,6 +294,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const auditQuery = useQuery({
     queryKey: ['channel-pricing-audit', props.channelId],
     queryFn: () => getChannelPricingAudit(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const invoiceQuery = useQuery({
+    queryKey: ['channel-upstream-invoices', props.channelId],
+    queryFn: () => getChannelUpstreamInvoices(props.channelId ?? 0, 10),
     enabled: props.channelId != null,
     retry: false,
     meta: { errorToast: false },
@@ -378,6 +392,36 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     approvalValid &&
     (!zeroFixedNeedsConfirm || confirmZeroFixed)
 
+  const importInvoice = useMutation({
+    mutationFn: async () => {
+      let parsed: unknown
+      try {
+        parsed = JSON.parse(invoiceText)
+      } catch {
+        throw new Error(t('Invoice JSON is invalid.'))
+      }
+      if (
+        typeof parsed !== 'object' ||
+        parsed === null ||
+        !Array.isArray((parsed as { rows?: unknown }).rows)
+      ) {
+        throw new Error(t('Invoice JSON must contain a rows array.'))
+      }
+      return importChannelUpstreamInvoice(
+        props.channelId ?? 0,
+        parsed as Parameters<typeof importChannelUpstreamInvoice>[1]
+      )
+    },
+    onSuccess: (result) => {
+      setInvoiceResult(result)
+      toast.success(t('Upstream invoice imported'))
+      void queryClient.invalidateQueries({
+        queryKey: ['channel-upstream-invoices', props.channelId],
+      })
+    },
+    onError: (error) =>
+      handleServerError(error, t('Failed to import upstream invoice')),
+  })
   const batch = useMutation({
     mutationFn: (dryRun: boolean) =>
       batchChannelModelPricing(props.channelId ?? 0, {
@@ -1784,6 +1828,52 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               {reconciliationQuery.data.blocked_reason}
             </p>
           ) : null}
+          <div className='space-y-2 border-t pt-2'>
+            <Label>{t('Import upstream invoice')}</Label>
+            <Textarea
+              value={invoiceText}
+              onChange={(event) => setInvoiceText(event.target.value)}
+              placeholder='{"period":"2026-11","rows":[{"model_name":"gpt-4.1","input_tokens":1000,"output_tokens":500,"upstream_cost_usd":0.012}]}'
+              className='min-h-24 font-mono text-xs'
+            />
+            <div className='flex flex-wrap items-center gap-2'>
+              <Button
+                type='button'
+                size='sm'
+                disabled={!invoiceText.trim() || importInvoice.isPending}
+                onClick={() => importInvoice.mutate()}
+              >
+                {t('Import invoice')}
+              </Button>
+              {invoiceResult ? (
+                <span className='text-muted-foreground text-sm'>
+                  {t(
+                    'Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}',
+                    {
+                      matched: invoiceResult.invoice.matched,
+                      mismatched: invoiceResult.invoice.mismatched,
+                      unmatched: invoiceResult.invoice.unmatched,
+                    }
+                  )}{' '}
+                  · ${invoiceResult.invoice.total_upstream_usd.toFixed(4)} → $
+                  {invoiceResult.invoice.total_uter_usd.toFixed(4)}
+                </span>
+              ) : null}
+            </div>
+            {(invoiceQuery.data?.length ?? 0) > 0 ? (
+              <ul className='text-muted-foreground space-y-1 text-xs'>
+                {invoiceQuery.data?.map((invoice) => (
+                  <li key={invoice.id}>
+                    #{invoice.id} · {invoice.period || '—'} ·{' '}
+                    {invoice.provider || '—'} · $
+                    {invoice.total_upstream_usd.toFixed(4)} → $
+                    {invoice.total_uter_usd.toFixed(4)} · {t('Matched')}{' '}
+                    {invoice.matched}/{invoice.unmatched}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
           {(reconciliationQuery.data.models ?? []).filter(
             (item) => item.status === 'RULE_FAILED'
           ).length ? (

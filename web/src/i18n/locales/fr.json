@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "Votre coût contractuel réel, conservé séparément du prix public amont. Laissez vide si aucun coût contractuel n'est connu.",
     "Enable only after the contract or supplier bill confirms this cost.": "Activez uniquement après confirmation de ce coût par le contrat ou la facture du fournisseur.",
     "Recent billing snapshots ({{count}})": "Instantanés de facturation récents ({{count}})",
-    "cost": "coût"
+    "cost": "coût",
+    "Invoice JSON is invalid.": "Le JSON de la facture est invalide.",
+    "Invoice JSON must contain a rows array.": "Le JSON de la facture doit contenir un tableau rows.",
+    "Upstream invoice imported": "Facture amont importée",
+    "Failed to import upstream invoice": "Échec de l'import de la facture amont",
+    "Import upstream invoice": "Importer la facture amont",
+    "Import invoice": "Importer la facture",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Correspondances {{matched}} · écarts {{mismatched}} · non correspondances {{unmatched}}"
   }
 }

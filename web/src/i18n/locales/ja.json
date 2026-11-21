@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "実際の契約原価。上流の公開価格とは別に保存されます。契約原価が不明な場合は空欄にしてください。",
     "Enable only after the contract or supplier bill confirms this cost.": "契約または仕入先の請求書でこの原価が確認できた場合のみ有効にしてください。",
     "Recent billing snapshots ({{count}})": "最近の請求スナップショット（{{count}}）",
-    "cost": "原価"
+    "cost": "原価",
+    "Invoice JSON is invalid.": "請求書 JSON が無効です。",
+    "Invoice JSON must contain a rows array.": "請求書 JSON には rows 配列が必要です。",
+    "Upstream invoice imported": "上流の請求書をインポートしました",
+    "Failed to import upstream invoice": "上流の請求書のインポートに失敗しました",
+    "Import upstream invoice": "上流の請求書をインポート",
+    "Import invoice": "請求書をインポート",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "一致 {{matched}} · 不一致 {{mismatched}} · 未一致 {{unmatched}}"
   }
 }

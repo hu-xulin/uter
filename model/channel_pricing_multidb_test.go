@@ -52,7 +52,7 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 			}
 			db, err := gorm.Open(tc.open(tc.dsn), &gorm.Config{})
 			require.NoError(t, err)
-			tables := []any{&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}}
+			tables := []any{&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}, &UpstreamBillingInvoice{}}
 			require.NoError(t, db.AutoMigrate(tables...))
 			require.NoError(t, db.AutoMigrate(tables...), "migration must be idempotent")
 
@@ -96,7 +96,7 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 				RequestId: "req-7", ModelName: "gpt-a", ChannelId: 7, PricingVersion: "v2",
 			}).Error, "one request/model contract must stay unique")
 
-			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}))
+			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}, &UpstreamBillingInvoice{}))
 		})
 	}
 }

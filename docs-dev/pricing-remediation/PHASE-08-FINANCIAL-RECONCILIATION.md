@@ -30,11 +30,14 @@
 - 管理入口：`GET /api/channel/:id/upstream_reconciliation`、
   `POST /api/channel/:id/upstream_reconciliation/samples`，前端渠道定价面板
   展示对账结果。
-- 供应商发票对账仍返回 `BLOCKED`，因为没有授权账单导出。
+- 供应商发票导入（本轮新增）：`POST /api/channel/:id/upstream_invoices` 接收
+  period/currency/source/rows，逐行与渠道售价对账后持久化到
+  `upstream_billing_invoices`；返回匹配/不一致/未匹配数量与总额。
+- 自动拉取供应商账单仍返回 `BLOCKED`，因为没有授权账单导出。
 
 仍未实现：
 
-- 供应商发票导入/模型映射/赠送额度/合同折扣/账单周期解析。
+- CSV/Excel 文件解析、模型别名字典、赠送额度、合同折扣、账单周期规则。
 - 采购币种、销售币种、结算币种三分法：当前只记录来源币种与换算 USD。
 - 汇率历史版本表：只保存当前汇率快照，无按生效时间查询的历史序列。
 - 发票级账单差异与未匹配记录（样本级对账已实现）。

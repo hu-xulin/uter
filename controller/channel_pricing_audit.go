@@ -149,3 +149,68 @@ func ReconcileChannelBillingSamples(c *gin.Context) {
 	}
 	common.ApiSuccess(c, report)
 }
+
+// ImportChannelUpstreamInvoice persists one supplier invoice and reconciles
+// every row against the channel's configured sale prices.
+// POST /api/channel/:id/upstream_invoices
+func ImportChannelUpstreamInvoice(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	channel, err := model.GetChannelById(id, true)
+	if err != nil || channel == nil {
+		common.ApiErrorT(c, "Channel not found")
+		return
+	}
+	var req service.UpstreamInvoiceImportRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	result, err := service.ImportUpstreamBillingInvoice(channel, req)
+	if err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
+	common.ApiSuccess(c, result)
+}
+
+// GetChannelUpstreamInvoices lists imported supplier invoices.
+// GET /api/channel/:id/upstream_invoices
+func GetChannelUpstreamInvoices(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	rows, err := model.ListUpstreamBillingInvoices(id, limit)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channel_id": id, "items": rows})
+}
+
+// GetChannelUpstreamInvoice returns one imported invoice with its row detail.
+// GET /api/channel/:id/upstream_invoices/:invoice_id
+func GetChannelUpstreamInvoice(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	invoiceID, err := strconv.ParseInt(c.Param("invoice_id"), 10, 64)
+	if err != nil || invoiceID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	invoice, err := model.GetUpstreamBillingInvoice(id, invoiceID)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, invoice)
+}

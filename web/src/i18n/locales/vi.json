@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "Chi phí hợp đồng thực tế của bạn, được lưu tách biệt với giá công khai của nhà cung cấp. Để trống nếu chưa biết chi phí hợp đồng.",
     "Enable only after the contract or supplier bill confirms this cost.": "Chỉ bật sau khi hợp đồng hoặc hóa đơn nhà cung cấp xác nhận chi phí này.",
     "Recent billing snapshots ({{count}})": "Ảnh chụp thanh toán gần đây ({{count}})",
-    "cost": "chi phí"
+    "cost": "chi phí",
+    "Invoice JSON is invalid.": "JSON hóa đơn không hợp lệ.",
+    "Invoice JSON must contain a rows array.": "JSON hóa đơn phải chứa mảng rows.",
+    "Upstream invoice imported": "Đã nhập hóa đơn nhà cung cấp",
+    "Failed to import upstream invoice": "Nhập hóa đơn nhà cung cấp thất bại",
+    "Import upstream invoice": "Nhập hóa đơn nhà cung cấp",
+    "Import invoice": "Nhập hóa đơn",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Khớp {{matched}} · lệch {{mismatched}} · chưa khớp {{unmatched}}"
   }
 }

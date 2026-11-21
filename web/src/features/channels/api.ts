@@ -1448,6 +1448,85 @@ export async function getChannelUpstreamReconciliation(
   return requireServerSuccess(res.data).data as UpstreamReconciliationReport
 }
 
+export type UpstreamInvoiceRow = {
+  model_name: string
+  input_tokens?: number
+  output_tokens?: number
+  cache_read_tokens?: number
+  cache_creation_tokens?: number
+  image_count?: number
+  duration_seconds?: number
+  upstream_cost_usd: number
+  status: string
+  uter_cost_usd: number
+  difference_usd: number
+  difference_pct: number
+  reason?: string
+}
+
+export type UpstreamInvoice = {
+  id: number
+  channel_id: number
+  provider?: string
+  period?: string
+  currency?: string
+  source?: string
+  note?: string
+  total_upstream_usd: number
+  total_uter_usd: number
+  matched: number
+  mismatched: number
+  unmatched: number
+  unsupported: number
+  rows: string
+  created_at: number
+}
+
+export type UpstreamInvoiceImportResult = {
+  invoice: UpstreamInvoice
+  rows: UpstreamInvoiceRow[]
+  summary: Record<string, number>
+}
+
+export async function importChannelUpstreamInvoice(
+  channelId: number,
+  body: {
+    period?: string
+    currency?: string
+    source?: string
+    note?: string
+    rows: Array<{
+      model_name: string
+      input_tokens?: number
+      output_tokens?: number
+      cache_read_tokens?: number
+      cache_creation_tokens?: number
+      image_count?: number
+      duration_seconds?: number
+      upstream_cost_usd: number
+    }>
+  }
+): Promise<UpstreamInvoiceImportResult> {
+  const res = await api.post(
+    `/api/channel/${channelId}/upstream_invoices`,
+    body
+  )
+  return requireServerSuccess(res.data).data as UpstreamInvoiceImportResult
+}
+
+export async function getChannelUpstreamInvoices(
+  channelId: number,
+  limit = 20
+): Promise<UpstreamInvoice[]> {
+  const res = await api.get(`/api/channel/${channelId}/upstream_invoices`, {
+    params: { limit },
+  })
+  const data = requireServerSuccess(res.data).data as
+    | { items?: UpstreamInvoice[] }
+    | undefined
+  return data?.items ?? []
+}
+
 export type BailianCoverageModel = {
   model_name: string
   in_catalog: boolean

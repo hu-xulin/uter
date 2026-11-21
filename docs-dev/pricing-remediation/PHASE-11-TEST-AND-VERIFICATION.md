@@ -16,6 +16,7 @@
 | `TestBatchPricingUsesContractCostAndMarksVerification` | `service/channel_batch_pricing_integration_test.go` | 批量毛利使用合同成本；未验证时不得标为已验证 |
 | `TestBillingPriceSnapshotIsImmutablePerIdentity` | `model/channel_model_pricing_test.go` | 同一 request 重复写入保留首条价格版本 |
 | `TestRecordBillingPriceSnapshotCapturesIdentityAndVersion` | `service/billing_snapshot_test.go` | 渠道身份/销售版本/采购版本/组倍率写入快照；纯全局价不写 |
+| `TestImportUpstreamBillingInvoicePersistsReconciliation` | `service/upstream_invoice_test.go` | 发票行匹配/未匹配统计、总额、持久化、非法输入拒绝 |
 
 ## 2. 实际执行的命令与结果
 

@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.",
     "Enable only after the contract or supplier bill confirms this cost.": "Enable only after the contract or supplier bill confirms this cost.",
     "Recent billing snapshots ({{count}})": "Recent billing snapshots ({{count}})",
-    "cost": "cost"
+    "cost": "cost",
+    "Invoice JSON is invalid.": "Invoice JSON is invalid.",
+    "Invoice JSON must contain a rows array.": "Invoice JSON must contain a rows array.",
+    "Upstream invoice imported": "Upstream invoice imported",
+    "Failed to import upstream invoice": "Failed to import upstream invoice",
+    "Import upstream invoice": "Import upstream invoice",
+    "Import invoice": "Import invoice",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}"
   }
 }

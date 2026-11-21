@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "你的实际合同成本，与上游公开报价分开保存。未知合同成本时请留空。",
     "Enable only after the contract or supplier bill confirms this cost.": "仅在合同或供应商账单确认此成本后启用。",
     "Recent billing snapshots ({{count}})": "最近计费快照（{{count}}）",
-    "cost": "成本"
+    "cost": "成本",
+    "Invoice JSON is invalid.": "发票 JSON 无效。",
+    "Invoice JSON must contain a rows array.": "发票 JSON 必须包含 rows 数组。",
+    "Upstream invoice imported": "上游发票已导入",
+    "Failed to import upstream invoice": "导入上游发票失败",
+    "Import upstream invoice": "导入上游发票",
+    "Import invoice": "导入发票",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "匹配 {{matched}} · 不一致 {{mismatched}} · 未匹配 {{unmatched}}"
   }
 }

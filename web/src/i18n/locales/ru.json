@@ -8587,6 +8587,13 @@
     "Your actual contracted cost, kept separate from the upstream public quote. Leave empty when no contract cost is known.": "Ваша фактическая контрактная стоимость, хранится отдельно от публичной цены поставщика. Оставьте пустым, если контрактная стоимость неизвестна.",
     "Enable only after the contract or supplier bill confirms this cost.": "Включайте только после подтверждения этой стоимости контрактом или счётом поставщика.",
     "Recent billing snapshots ({{count}})": "Последние снимки биллинга ({{count}})",
-    "cost": "стоимость"
+    "cost": "стоимость",
+    "Invoice JSON is invalid.": "JSON счёта недействителен.",
+    "Invoice JSON must contain a rows array.": "JSON счёта должен содержать массив rows.",
+    "Upstream invoice imported": "Счёт поставщика импортирован",
+    "Failed to import upstream invoice": "Не удалось импортировать счёт поставщика",
+    "Import upstream invoice": "Импорт счёта поставщика",
+    "Import invoice": "Импортировать счёт",
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Совпало {{matched}} · расхождения {{mismatched}} · без пары {{unmatched}}"
   }
 }
