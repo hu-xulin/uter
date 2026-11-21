@@ -279,22 +279,9 @@ func ImportChannelModelPricing(c *gin.Context) {
 				oldPricing = &parsed
 			}
 		}
-		if err := model.SetChannelInternalPricingFor(identity, row.Pricing); err != nil {
+		if err := service.SetChannelPricingWithHistory(identity, row.Pricing, "import", "", oldPricing); err != nil {
 			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
 			continue
-		}
-		stored, err := model.GetChannelModelPricingFor(identity)
-		if err != nil {
-			skipped = append(skipped, channelPricingImportSkipped{ModelName: name, Reason: err.Error()})
-			continue
-		}
-		pricing := row.Pricing
-		if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-			ChannelID: channelID, ModelName: name,
-			Provider: stored.Provider, Region: stored.Region, DeploymentId: stored.DeploymentId,
-			Source: "import", OldPricing: oldPricing, NewPricing: &pricing,
-		}); err != nil {
-			common.SysError("append imported pricing history failed: " + err.Error())
 		}
 		imported = append(imported, name)
 	}
@@ -354,7 +341,7 @@ func SetChannelModelPricing(c *gin.Context) {
 			oldPricing = &parsed
 		}
 	}
-	if err := model.SetChannelInternalPricingFor(identity, req.Pricing); err != nil {
+	if err := service.SetChannelPricingWithHistory(identity, req.Pricing, "manual", "", oldPricing); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
@@ -362,13 +349,6 @@ func SetChannelModelPricing(c *gin.Context) {
 	if err != nil {
 		common.ApiError(c, err)
 		return
-	}
-	if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-		ChannelID: channelID, ModelName: req.ModelName,
-		Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
-		Source: "manual", OldPricing: oldPricing, NewPricing: &req.Pricing,
-	}); err != nil {
-		common.SysError("append channel pricing history failed: " + err.Error())
 	}
 	common.ApiSuccess(c, channelModelPricingToView(*row))
 }
@@ -546,23 +526,20 @@ func RollbackChannelPricingHistory(c *gin.Context) {
 		DeploymentId: entry.DeploymentId, ModelName: entry.ModelName,
 	}
 	var currentPricing *model.ChannelInternalPricing
-	if current, err := model.GetChannelModelPricingFor(identity); err == nil && strings.TrimSpace(current.InternalPricing) != "" {
-		var parsed model.ChannelInternalPricing
-		if err := common.UnmarshalJsonStr(current.InternalPricing, &parsed); err == nil {
-			currentPricing = &parsed
+	expectedVersion := ""
+	if current, err := model.GetChannelModelPricingFor(identity); err == nil {
+		expectedVersion = current.PricingVersion
+		if strings.TrimSpace(current.InternalPricing) != "" {
+			var parsed model.ChannelInternalPricing
+			if err := common.UnmarshalJsonStr(current.InternalPricing, &parsed); err == nil {
+				currentPricing = &parsed
+			}
 		}
 	}
 	restored := *entry.OldPricing
-	if err := model.SetChannelInternalPricingFor(identity, restored); err != nil {
+	if err := service.SetChannelPricingWithHistory(identity, restored, "rollback", expectedVersion, currentPricing); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
-	}
-	if err := service.AppendChannelPricingHistory(service.ChannelPricingHistoryEntry{
-		ChannelID: channelID, ModelName: entry.ModelName,
-		Provider: entry.Provider, Region: entry.Region, DeploymentId: entry.DeploymentId,
-		Source: "rollback", OldPricing: currentPricing, NewPricing: &restored,
-	}); err != nil {
-		common.SysError("append rollback history failed: " + err.Error())
 	}
 	row, err := model.GetChannelModelPricingFor(identity)
 	if err != nil {

@@ -26,6 +26,23 @@ type ChannelPricingHistoryEntry struct {
 	ChangedAt    time.Time                     `json:"changed_at"`
 }
 
+// SetChannelPricingWithHistory writes the price and its audit row atomically.
+// The option-log fallback is intentionally not used here: a history failure
+// must fail the price change instead of leaving an unaudited price behind.
+func SetChannelPricingWithHistory(
+	identity model.ChannelPricingIdentity,
+	pricing model.ChannelInternalPricing,
+	source string,
+	expectedVersion string,
+	oldPricing *model.ChannelInternalPricing,
+) error {
+	oldJSON, _ := common.Marshal(oldPricing)
+	newJSON, _ := common.Marshal(pricing)
+	return model.SetChannelInternalPricingWithAudit(identity, pricing, expectedVersion, model.ChannelPricingHistory{
+		Source: source, OldPricing: string(oldJSON), NewPricing: string(newJSON),
+	})
+}
+
 // AppendChannelPricingHistory writes to the durable table; the option log is a
 // bounded fallback for installations where the table is not available yet.
 func AppendChannelPricingHistory(entry ChannelPricingHistoryEntry) error {

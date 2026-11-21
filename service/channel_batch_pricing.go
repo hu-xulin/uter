@@ -590,7 +590,11 @@ func ApplyChannelBatchPricingWithOptions(
 			}
 		} else {
 			for _, write := range pending {
-				err := model.SetChannelInternalPricingIfVersionFor(write.identity, write.internal, write.expectedVersion)
+				source := "batch"
+				if write.approved {
+					source = "batch-approved"
+				}
+				err := SetChannelPricingWithHistory(write.identity, write.internal, source, write.expectedVersion, write.oldPricing)
 				if errors.Is(err, model.ErrChannelPricingVersionConflict) {
 					result.Conflicts = append(result.Conflicts, write.row.ModelName)
 					result.Skipped = append(result.Skipped, BatchPricingSkipped{
@@ -601,17 +605,6 @@ func ApplyChannelBatchPricingWithOptions(
 				if err != nil {
 					result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: write.row.ModelName, Reason: err.Error()})
 					continue
-				}
-				source := "batch"
-				if write.approved {
-					source = "batch-approved"
-				}
-				if err := AppendChannelPricingHistory(ChannelPricingHistoryEntry{
-					ChannelID: channelID, ModelName: write.row.ModelName,
-					Provider: write.row.Provider, Region: write.row.Region, DeploymentId: write.row.DeploymentId,
-					Source: source, OldPricing: write.oldPricing, NewPricing: &write.internal,
-				}); err != nil {
-					common.SysError("append batch pricing history failed: " + err.Error())
 				}
 				written++
 			}

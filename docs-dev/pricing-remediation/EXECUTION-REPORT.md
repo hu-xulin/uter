@@ -73,6 +73,12 @@
 - 账单快照新增 `channel_pricing_provider / region / deployment` 与 `channel_pricing_purchase_usd`，普通请求与任务结算一致。
 - 证据：同渠道同模型“两区域 × 两部署”四组价格分别解析正确；未知区域阻断；单条百炼推理供应商行可匹配；并发解析 32×4×5 次无串价（`-race` 通过）；请求级区域计费与采购价快照测试通过。
 
+### 2.2.2 价格变更与历史事务化
+
+- 手动保存、导入、批量执行与回滚统一走 `SetChannelPricingWithHistory`：价格更新与历史行在同一事务内提交；历史写入失败则价格回滚，不再出现“价格已变但无审计”。
+- 版本冲突时不写历史；回滚同样按当前 `PricingVersion` 校验，无法覆盖回滚后发生的新修改。
+- 证据：成功写入产生一条历史；历史表不可用时价格保持不变；过期版本返回冲突且历史为空。
+
 ### 2.3 供应商适配与识别安全（Phase 3）
 
 - `service/upstream_provider.go`：适配器注册表；DreamRouter、百炼、Apiko（公开控制面目录）可拉取；OpenAI、Anthropic、Gemini、Azure、AWS、腾讯、火山明确声明 MANUAL_ONLY，不伪造同步。

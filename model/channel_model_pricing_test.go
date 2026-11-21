@@ -17,7 +17,7 @@ func setupChannelModelPricingDB(t *testing.T) *gorm.DB {
 	t.Helper()
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
-	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}))
+	require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}))
 	previous := DB
 	DB = db
 	InvalidateChannelPricingCache()
@@ -871,4 +871,57 @@ func TestNormalizeAudioAbsolutePricesDeriveRatios(t *testing.T) {
 	require.NotNil(t, billing.AudioCompletionRatio)
 	assert.InDelta(t, 0.25, *billing.AudioRatio, 1e-9)
 	assert.InDelta(t, 0.25, *billing.AudioCompletionRatio, 1e-9)
+}
+
+func TestSetChannelInternalPricingWithAuditIsAtomic(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	input, output := 1.0, 2.0
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 5, Provider: "test", ModelName: "atomic-model",
+		Currency: "USD", Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	identity := ChannelPricingIdentity{ChannelId: 5, Provider: "test", ModelName: "atomic-model"}
+	old := input
+	newPrice := 2.0
+	require.NoError(t, SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &old, OutputUSDPerMillion: &output,
+	}, "", ChannelPricingHistory{Source: "manual"}))
+	var history []ChannelPricingHistory
+	require.NoError(t, db.Where("channel_id = ?", 5).Find(&history).Error)
+	require.Len(t, history, 1)
+
+	require.NoError(t, db.Migrator().DropTable(&ChannelPricingHistory{}))
+	err = SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &newPrice, OutputUSDPerMillion: &output,
+	}, "", ChannelPricingHistory{Source: "manual"})
+	require.Error(t, err, "a failed history write must fail the price change")
+
+	row, err := GetChannelModelPricingFor(identity)
+	require.NoError(t, err)
+	var stored ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &stored))
+	require.NotNil(t, stored.InputUSDPerMillion)
+	assert.InDelta(t, 1.0, *stored.InputUSDPerMillion, 1e-9, "price must roll back with the history failure")
+}
+
+func TestSetChannelInternalPricingWithAuditRejectsStaleVersion(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	input, output := 1.0, 2.0
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 6, Provider: "test", ModelName: "versioned-model",
+		Currency: "USD", Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	identity := ChannelPricingIdentity{ChannelId: 6, Provider: "test", ModelName: "versioned-model"}
+	require.NoError(t, SetChannelInternalPricingFor(identity, ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+	}))
+	err = SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &output, OutputUSDPerMillion: &input,
+	}, "stale-version", ChannelPricingHistory{Source: "manual"})
+	require.ErrorIs(t, err, ErrChannelPricingVersionConflict)
+	var history []ChannelPricingHistory
+	require.NoError(t, DB.Where("channel_id = ?", 6).Find(&history).Error)
+	assert.Empty(t, history, "a version conflict must not write history")
 }

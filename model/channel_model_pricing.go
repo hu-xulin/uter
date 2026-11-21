@@ -731,6 +731,70 @@ func SetChannelInternalPricing(channelId int, modelName string, pricing ChannelI
 	return SetChannelInternalPricingFor(ChannelPricingIdentity{ChannelId: channelId, ModelName: modelName}, pricing)
 }
 
+// SetChannelInternalPricingWithAudit updates one identity row and appends its
+// audit history in one transaction: if the audit write fails, the price change
+// is rolled back. expectedVersion "" skips the version check; otherwise a
+// changed row returns ErrChannelPricingVersionConflict without a history row.
+func SetChannelInternalPricingWithAudit(
+	identity ChannelPricingIdentity,
+	pricing ChannelInternalPricing,
+	expectedVersion string,
+	history ChannelPricingHistory,
+) error {
+	identity = normalizePricingIdentity(identity)
+	if identity.ChannelId <= 0 || identity.ModelName == "" {
+		return errors.New("channel and model are required")
+	}
+	if _, err := NormalizeChannelInternalPricing(&pricing); err != nil {
+		return err
+	}
+	pricing.UpdatedAt = time.Now().Unix()
+	encoded, err := common.Marshal(pricing)
+	if err != nil {
+		return err
+	}
+	err = DB.Transaction(func(tx *gorm.DB) error {
+		var rows []ChannelModelPricing
+		if err := lockForUpdate(tx).
+			Where("channel_id = ? AND model_name = ?", identity.ChannelId, identity.ModelName).
+			Order("id").Find(&rows).Error; err != nil {
+			return err
+		}
+		row, reason := selectChannelPricingRow(rows, identity)
+		if row == nil {
+			if reason != "" {
+				return ErrChannelPricingIdentityRequired
+			}
+			return fmt.Errorf("channel pricing record not found: %w", gorm.ErrRecordNotFound)
+		}
+		if expectedVersion != "" && row.PricingVersion != expectedVersion {
+			return ErrChannelPricingVersionConflict
+		}
+		row.InternalPricing = string(encoded)
+		row.PricingStatus = ChannelPricingStatusConfigured
+		row.UpdatedAt = pricing.UpdatedAt
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := tx.Save(row).Error; err != nil {
+			return err
+		}
+		history.ChannelID = identity.ChannelId
+		history.ModelName = identity.ModelName
+		history.Provider = row.Provider
+		history.Region = row.Region
+		history.DeploymentId = row.DeploymentId
+		if history.ChangedAt == 0 {
+			history.ChangedAt = pricing.UpdatedAt
+		}
+		return tx.Create(&history).Error
+	})
+	if err != nil {
+		return err
+	}
+	invalidateChannelPricingCache(identity.ChannelId, identity.ModelName)
+	InvalidatePricingCache()
+	return nil
+}
+
 // ErrChannelPricingVersionConflict marks a batch apply whose price inputs
 // changed after the preview that produced them.
 var ErrChannelPricingVersionConflict = errors.New("channel pricing changed since preview")
