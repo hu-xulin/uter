@@ -59,6 +59,7 @@ test('R3 字体/动画/动态内容/基线缺失/环境失败的分类不被像�
     ['CSS animation keyframe still running', 'ANIMATION'],
     ['dynamic timestamp / live data changed between captures', 'DYNAMIC_CONTENT'],
     ['snapshot not found: no baseline for this viewport', 'BASELINE_MISMATCH'],
+    [`Error: expect(page).toHaveScreenshot(expected) failed\nA snapshot doesn't exist at home-desktop-chromium-linux.png`, 'BASELINE_MISMATCH'],
     ['ECONNREFUSED at localhost:3100, service gate not reachable', 'TEST_ENVIRONMENT'],
   ];
   for (const [message, expected] of cases) {
