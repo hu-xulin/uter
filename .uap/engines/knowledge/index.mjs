@@ -94,7 +94,7 @@ function scanLegacyDesignSystemReferences() {
     if (isHistoricalUapPath(rel) || seen.has(rel)) continue;
     seen.add(rel);
     const text = readText(abs);
-    text.split('\\n').forEach((line, index) => {
+    text.split(/\r?\n/).forEach((line, index) => {
       if (line.includes(LEGACY_UDS3_PATH)) {
         activeReferences.push({ file: rel, line: index + 1, snippet: line.trim().slice(0, 180) });
       }
@@ -208,7 +208,7 @@ export function health() {
     && exists(manifestPath) && exists(acceptancePath);
   checks.design_system_authority_consistent = Boolean(manifest?.version && manifest.status === 'ACCEPTANCE_READY'
     && overview.includes(`UDS ${manifest.version}`) && adr1.includes(`UDS ${manifest.version}`)
-    && /accepted\\s*=\\s*false/i.test(acceptance));
+    && /accepted\s*=\s*false/i.test(acceptance));
   const compatibilityAdr = exists(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'))
     ? readText(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md')) : '';
   checks.compatibility_boundary_documented = compatibilityAdr.includes('3.0 runtime compatibility boundary')
