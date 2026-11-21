@@ -8526,6 +8526,9 @@
     "Add at least one price tier.": "Добавьте хотя бы один ценовой диапазон.",
     "Sale tiers ({{count}})": "Диапазоны продажи ({{count}})",
     "Audio input price (USD per 1M tokens)": "Цена аудиовхода (USD за 1 млн токенов)",
-    "Audio output price (USD per 1M tokens)": "Цена аудиовыхода (USD за 1 млн токенов)"
+    "Audio output price (USD per 1M tokens)": "Цена аудиовыхода (USD за 1 млн токенов)",
+    "Save a pricing rule for this channel.": "Сохранить правило цены для этого канала.",
+    "Apply after each upstream sync": "Применять после каждой синхронизации",
+    "When off, the rule is saved but only a manual Apply changes prices.": "Если выключено, правило только сохраняется; цены меняются лишь при ручном применении."
   }
 }

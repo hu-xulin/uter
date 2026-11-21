@@ -8526,6 +8526,9 @@
     "Add at least one price tier.": "価格帯を1つ以上追加してください。",
     "Sale tiers ({{count}})": "販売価格帯（{{count}}）",
     "Audio input price (USD per 1M tokens)": "音声入力価格（USD/100万トークン）",
-    "Audio output price (USD per 1M tokens)": "音声出力価格（USD/100万トークン）"
+    "Audio output price (USD per 1M tokens)": "音声出力価格（USD/100万トークン）",
+    "Save a pricing rule for this channel.": "このチャネルの価格ルールを保存します。",
+    "Apply after each upstream sync": "アップストリーム同期後に自動適用",
+    "When off, the rule is saved but only a manual Apply changes prices.": "オフの場合、ルールは保存されますが、価格は手動の「適用」でのみ変更されます。"
   }
 }

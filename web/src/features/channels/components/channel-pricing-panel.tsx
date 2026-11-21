@@ -1283,7 +1283,26 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             <div className='space-y-0.5'>
               <Label>{t('Enabled')}</Label>
               <p className='text-muted-foreground text-sm'>
-                {t('Run this schedule automatically after upstream syncs.')}
+                {t('Save a pricing rule for this channel.')}
+              </p>
+            </div>
+          </div>
+          <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
+            <Switch
+              checked={schedule.apply_on_sync}
+              onCheckedChange={(checked) =>
+                setSchedule((current) => ({
+                  ...current,
+                  apply_on_sync: checked,
+                }))
+              }
+            />
+            <div className='space-y-0.5'>
+              <Label>{t('Apply after each upstream sync')}</Label>
+              <p className='text-muted-foreground text-sm'>
+                {t(
+                  'When off, the rule is saved but only a manual Apply changes prices.'
+                )}
               </p>
             </div>
           </div>

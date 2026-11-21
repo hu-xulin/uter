@@ -8526,6 +8526,9 @@
     "Add at least one price tier.": "Ajoutez au moins un palier de prix.",
     "Sale tiers ({{count}})": "Paliers de vente ({{count}})",
     "Audio input price (USD per 1M tokens)": "Prix d'entrée audio (USD par million de tokens)",
-    "Audio output price (USD per 1M tokens)": "Prix de sortie audio (USD par million de tokens)"
+    "Audio output price (USD per 1M tokens)": "Prix de sortie audio (USD par million de tokens)",
+    "Save a pricing rule for this channel.": "Enregistrer une règle de prix pour ce canal.",
+    "Apply after each upstream sync": "Appliquer après chaque synchronisation amont",
+    "When off, the rule is saved but only a manual Apply changes prices.": "Si désactivé, la règle est seulement enregistrée ; seul un clic sur Appliquer modifie les prix."
   }
 }

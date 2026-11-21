@@ -8526,6 +8526,9 @@
     "Add at least one price tier.": "Thêm ít nhất một bậc giá.",
     "Sale tiers ({{count}})": "Bậc giá bán ({{count}})",
     "Audio input price (USD per 1M tokens)": "Giá đầu vào âm thanh (USD/1 triệu token)",
-    "Audio output price (USD per 1M tokens)": "Giá đầu ra âm thanh (USD/1 triệu token)"
+    "Audio output price (USD per 1M tokens)": "Giá đầu ra âm thanh (USD/1 triệu token)",
+    "Save a pricing rule for this channel.": "Lưu quy tắc giá cho kênh này.",
+    "Apply after each upstream sync": "Áp dụng sau mỗi lần đồng bộ nguồn",
+    "When off, the rule is saved but only a manual Apply changes prices.": "Khi tắt, quy tắc chỉ được lưu; giá chỉ thay đổi khi bấm Áp dụng thủ công."
   }
 }

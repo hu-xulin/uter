@@ -8526,6 +8526,9 @@
     "Add at least one price tier.": "至少新增一個價格檔位。",
     "Sale tiers ({{count}})": "銷售檔位（{{count}}）",
     "Audio input price (USD per 1M tokens)": "音訊輸入價格（美元/百萬 tokens）",
-    "Audio output price (USD per 1M tokens)": "音訊輸出價格（美元/百萬 tokens）"
+    "Audio output price (USD per 1M tokens)": "音訊輸出價格（美元/百萬 tokens）",
+    "Save a pricing rule for this channel.": "為該渠道儲存定價規則。",
+    "Apply after each upstream sync": "每次上游同步後自動套用",
+    "When off, the rule is saved but only a manual Apply changes prices.": "關閉時僅儲存規則，只有手動執行「套用」才會改價。"
   }
 }
