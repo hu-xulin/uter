@@ -135,21 +135,11 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 	completeTaskPriceSnapshot(info, task)
 }
 
-// completeTaskPriceSnapshot fills the settlement half of the task's immutable
-// voucher. The contract was written at submission; only usage and amounts are
-// added here. Refund-only transitions are reconciled separately, so a task
-// that never reaches LogTaskConsumption keeps status "pending".
+// completeTaskPriceSnapshot fills the settlement half of the request's
+// immutable voucher from the live RelayInfo.
 func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
-	if info == nil || task == nil || model.DB == nil {
+	if info == nil || task == nil {
 		return
-	}
-	requestID := ""
-	if task.PrivateData.Execution != nil {
-		requestID = task.PrivateData.Execution.RequestID
-	}
-	modelName := info.GetBillingModelName()
-	if modelName == "" {
-		modelName = info.OriginModelName
 	}
 	usage := ""
 	if snap := info.TieredBillingSnapshot; snap != nil && len(snap.UsageFacts) > 0 {
@@ -157,8 +147,21 @@ func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
 			usage = string(encoded)
 		}
 	}
-	pre := int64(info.FinalPreConsumedQuota)
-	settled := int64(info.PriceData.Quota)
+	updateTaskPriceSnapshotSettlement(task, int64(info.FinalPreConsumedQuota), int64(info.PriceData.Quota), usage, "settled")
+}
+
+// updateTaskPriceSnapshotSettlement records the amounts that actually hit the
+// wallet for a task. The contract was written at submission; this only fills
+// the settlement half, so refunds and retries cannot rewrite the price.
+func updateTaskPriceSnapshotSettlement(task *model.Task, pre, settled int64, usage, status string) {
+	if task == nil || model.DB == nil {
+		return
+	}
+	requestID := ""
+	if task.PrivateData.Execution != nil {
+		requestID = task.PrivateData.Execution.RequestID
+	}
+	modelName := taskModelName(task)
 	refund := int64(0)
 	if pre > settled {
 		refund = pre - settled
@@ -168,11 +171,28 @@ func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
 		PreConsumed:    pre,
 		Settled:        settled,
 		Refund:         refund,
-		Status:         "settled",
+		Status:         status,
 	})
 	if err != nil {
 		common.SysError(common.LogText("complete task billing snapshot failed: task=%s model=%s: %s", task.TaskID, modelName, err.Error()))
 	}
+}
+
+// taskSnapshotUsage returns the metered facts captured with the task's billing
+// context, used to complete the settlement half of the voucher.
+func taskSnapshotUsage(task *model.Task) string {
+	if task == nil || task.PrivateData.BillingContext == nil {
+		return ""
+	}
+	snap := task.PrivateData.BillingContext.TieredSnapshot
+	if snap == nil || len(snap.UsageFacts) == 0 {
+		return ""
+	}
+	encoded, err := common.Marshal(snap.UsageFacts)
+	if err != nil {
+		return ""
+	}
+	return string(encoded)
 }
 
 // ---------------------------------------------------------------------------
@@ -479,6 +499,8 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 
 	switch err := applyTaskRefund(ctx, task, quota, reason); {
 	case err == nil:
+		// 资金已退且任务记录已归零：先补全计费凭证，再进入终态。
+		updateTaskPriceSnapshotSettlement(task, int64(quota), 0, taskSnapshotUsage(task), "refunded")
 		// 资金已退且任务记录已归零：进入终态。
 		finalized, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: model.TaskBillingRefundPending,
@@ -753,6 +775,8 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("settlement usage ledger update failed after funding/token adjustment: %v", err))
 		return
 	}
+
+	updateTaskPriceSnapshotSettlement(task, int64(preConsumedQuota), int64(actualQuota), taskSnapshotUsage(task), "settled")
 
 	var logType int
 	var logQuota int
