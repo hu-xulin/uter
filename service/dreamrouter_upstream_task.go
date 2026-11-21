@@ -216,18 +216,6 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 				continue
 			}
 			written += count
-			seenModels := make([]string, 0, len(records))
-			for _, record := range records {
-				seenModels = append(seenModels, record.ModelName)
-			}
-			if len(seenModels) > 0 {
-				if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
-					channel.Id, seenModels, now.Unix(), model.ChannelModelMissingDisableThreshold,
-				); lifecycleErr != nil {
-					status.Errors = append(status.Errors, fmt.Sprintf("channel %d lifecycle: %v", channel.Id, lifecycleErr))
-					continue
-				}
-			}
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
 			}
