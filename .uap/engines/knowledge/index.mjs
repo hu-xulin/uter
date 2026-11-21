@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { STATE, rootPath, uapPath, relToRoot } from '../../runtime/_lib/paths.mjs';
 import { readText, exists, listFiles, readJSON, writeJSON, nowISO, hash } from '../../runtime/_lib/util.mjs';
+import { gitHead } from '../../runtime/status-engine/execution.mjs';
 
 export const component = 'engines.knowledge';
 export const version = '1.0.0';
@@ -191,7 +192,7 @@ function artifactOk(file) {
   if (!exists(file)) return false;
   let j;
   try { j = readJSON(file); } catch { return false; }
-  if (!j || !Array.isArray(j.documents) || j.documents.length < 1) return false;
+  if (!j || j.generated_for_head !== gitHead() || !Array.isArray(j.documents) || j.documents.length < 1) return false;
   if (!j.retired_runtime_dependency_scan || !j.legacy_design_system_path_scan) return false;
   if (j.legacy_design_system_path_scan.active_reference_count !== 0) return false;
   if (!Array.isArray(j.legacy_design_system_path_scan.historical_tool_references)
@@ -255,7 +256,7 @@ export async function execute(task = {}, ctx = {}) {
   const legacyUds = scanLegacyDesignSystemReferences();
 
   writeJSON(INDEX_FILE, {
-    schema_version: '1.0', generated_at: started,
+    schema_version: '1.0', generated_at: started, generated_for_head: gitHead(),
     executor_ids: executors,
     ...knowledge,
     retired_runtime_dependency_scan: dep,
