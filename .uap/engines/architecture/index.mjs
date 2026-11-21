@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { STATE, rootPath, uapPath, relToRoot } from '../../runtime/_lib/paths.mjs';
 import { readText, exists, listFiles, readJSON, writeJSON, nowISO, hash } from '../../runtime/_lib/util.mjs';
+import { gitHead } from '../../runtime/status-engine/execution.mjs';
 
 export const component = 'engines.architecture';
 export const version = '1.0.0';
@@ -252,7 +253,7 @@ function artifactOk(file, keys) {
   if (!exists(file)) return false;
   let j;
   try { j = readJSON(file); } catch { return false; }
-  if (!j || typeof j !== 'object') return false;
+  if (!j || typeof j !== 'object' || j.generated_for_head !== gitHead()) return false;
   if (!Array.isArray(j[keys[0]]) || j[keys[0]].length < 1) return false;
   for (const k of keys.slice(1)) if (j[k] === undefined || j[k] === null) return false;
   return true;
@@ -272,7 +273,8 @@ export function health() {
   checks.graph_schema = artifactOk(GRAPH_FILE, ['modules', 'edges', 'api_inventory']);
   checks.adr_schema = artifactOk(ADR_FILE, ['documents', 'document_count']);
   const adrInventory = readJSON(ADR_FILE, null);
-  checks.adr_index_current = Boolean(adrInventory && Array.isArray(adrInventory.documents)
+  checks.adr_index_current = Boolean(adrInventory && adrInventory.generated_for_head === gitHead()
+    && Array.isArray(adrInventory.documents)
     && !JSON.stringify(adrInventory.documents).includes(LEGACY_UDS3_PATH)
     && !adrInventory.documents.some((d) => isHistoricalUapPath(d.path)));
   const ok = Object.values(checks).every(Boolean);
@@ -290,6 +292,7 @@ export async function execute(task = {}, ctx = {}) {
   writeJSON(GRAPH_FILE, {
     schema_version: '1.0',
     generated_at: started,
+    generated_for_head: gitHead(),
     executor_ids: ['architecture.analyzer', 'architecture.api_database'],
     graph_source: 'real Go import blocks',
     ...graph,
@@ -299,6 +302,7 @@ export async function execute(task = {}, ctx = {}) {
   writeJSON(ADR_FILE, {
     schema_version: '1.0',
     generated_at: started,
+    generated_for_head: gitHead(),
     executor_ids: ['architecture.adr'],
     ...adr,
   });
