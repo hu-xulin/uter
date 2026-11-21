@@ -131,8 +131,6 @@ describe('字号阶梯（tokens/typography.css）', () => {
     )
     expect(toPx(readVar(typographyCss, 'font-weight-bold') as string)).toBe(700)
   })
-
-
 })
 
 describe('语义 Token 指向正确的阶梯档位', () => {
