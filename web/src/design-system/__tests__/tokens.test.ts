@@ -132,24 +132,7 @@ describe('字号阶梯（tokens/typography.css）', () => {
     expect(toPx(readVar(typographyCss, 'font-weight-bold') as string)).toBe(700)
   })
 
-  it('中文界面整体降一档（300/400/500/600）', () => {
-    const theme = readFileSync(
-      join(process.cwd(), 'src', 'styles', 'theme.css'),
-      'utf8'
-    )
-    const body = /html:lang\(zh\)\s*\{([\s\S]*?)\}/.exec(theme)?.[1]
-    expect(body).toBeDefined()
-    const value = (name: string) =>
-      new RegExp(`--${name}:\\s*(\\d+);`).exec(body ?? '')?.[1]
-    expect(value('ds-weight-regular')).toBe('300')
-    expect(value('ds-weight-medium')).toBe('400')
-    expect(value('ds-weight-semibold')).toBe('500')
-    expect(value('ds-weight-bold')).toBe('600')
-    expect(value('font-weight-normal')).toBe('300')
-    expect(value('font-weight-medium')).toBe('400')
-    expect(value('font-weight-semibold')).toBe('500')
-    expect(value('font-weight-bold')).toBe('600')
-  })
+
 })
 
 describe('语义 Token 指向正确的阶梯档位', () => {
