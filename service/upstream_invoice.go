@@ -48,6 +48,9 @@ func ImportUpstreamBillingInvoice(channel *model.Channel, req UpstreamInvoiceImp
 	if len(req.Rows) == 0 {
 		return result, errors.New("invoice has no rows")
 	}
+	if len(req.Rows) > 5000 {
+		return result, errors.New("invoice has too many rows (maximum 5000)")
+	}
 	for i := range req.Rows {
 		row := &req.Rows[i]
 		row.ModelName = strings.TrimSpace(row.ModelName)
