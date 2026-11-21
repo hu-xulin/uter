@@ -41,7 +41,7 @@
 | 阿里百炼真实目录 | `BAILIAN_LIVE=1 go test -tags bailian_live ./service -run TestPullBailianCatalogLive -v` | PASS：275 个模型、266 个有价格、940 条参考价、region=cn-beijing |
 | DreamRouter 真实价格 | `UPSTREAM_LIVE=1 go test -tags upstream_live ./service -run TestPullDreamRouterUpstreamLive -v` | PASS：86 个模型、44 个组、84/84 渠道价；样例官方 8 × 折扣 0.6 = 渠道 4.8 |
 | Apiko 公开目录 | 临时只读探针（运行后已删除） | PASS：68 个模型、68 个可定价记录、29 条跳过原因 |
-| MySQL 8.0 / PostgreSQL 16 | `UTER_TEST_MYSQL_DSN=... UTER_TEST_POSTGRES_DSN=... go test ./model -run TestChannelPricingTablesAcrossDatabases` | sqlite / mysql / postgres 全部 PASS |
+| MySQL 8.0 / PostgreSQL 16 | `UTER_TEST_MYSQL_DSN=... UTER_TEST_POSTGRES_DSN=... go test ./model -run TestChannelPricingTablesAcrossDatabases` | sqlite / mysql / postgres 全部 PASS（含快照表唯一键） |
 | SQLite 旧库升级幂等 | 临时 upgrade_probe 测试，对升级前备份连续运行两次（运行后删除探针） | 两次 PASS：channels=4/users=19/pricing=326 保留，新列与新表创建 |
 
 - 真实请求只读取目录/价格并保存快照 option，没有修改用户、渠道或已配置售价。

@@ -52,8 +52,9 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 			}
 			db, err := gorm.Open(tc.open(tc.dsn), &gorm.Config{})
 			require.NoError(t, err)
-			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}))
-			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}), "migration must be idempotent")
+			tables := []any{&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}}
+			require.NoError(t, db.AutoMigrate(tables...))
+			require.NoError(t, db.AutoMigrate(tables...), "migration must be idempotent")
 
 			row := ChannelModelPricing{
 				ChannelId: 7, Provider: "test", ModelName: "gpt-a",
@@ -86,7 +87,16 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 			require.NoError(t, db.Where("channel_id = ?", 7).Find(&reviews).Error)
 			require.Len(t, reviews, 1)
 
-			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}))
+			snapshot := BillingPriceSnapshot{
+				RequestId: "req-7", ModelName: "gpt-a", ChannelId: 7,
+				PricingVersion: "v1", CreatedAt: 100,
+			}
+			require.NoError(t, db.Create(&snapshot).Error)
+			require.Error(t, db.Create(&BillingPriceSnapshot{
+				RequestId: "req-7", ModelName: "gpt-a", ChannelId: 7, PricingVersion: "v2",
+			}).Error, "one request/model contract must stay unique")
+
+			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}, &BillingPriceSnapshot{}))
 		})
 	}
 }

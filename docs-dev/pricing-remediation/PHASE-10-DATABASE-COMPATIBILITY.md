@@ -39,10 +39,10 @@ UTER_TEST_POSTGRES_DSN='postgres://uter:uter@127.0.0.1:5432/uter?sslmode=disable
 go test ./model -run TestChannelPricingTablesAcrossDatabases -v -count=1
 ```
 
-结果：sqlite / mysql / postgres 三个子测试全部 PASS。日志中的重复键错误是
+结果：sqlite / mysql / postgres 三个子测试全部 PASS（含 `billing_price_snapshots`）。日志中的重复键错误是
 测试刻意验证唯一索引产生的预期输出，不影响 PASS。
 
-- 新增 `billing_price_snapshots` 表也由同一 AutoMigrate 创建，三库均通过。
+- 新增 `billing_price_snapshots` 表也纳入三库测试：建表、唯一键、重复写入拒绝均 PASS。
 
 ## 4. 历史账单
 
