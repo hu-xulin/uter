@@ -103,3 +103,30 @@ func TestBillingSnapshotSettlementPatchFillsAmountsOnce(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(4500), got.SettledQuota)
 }
+
+func TestTaskRefundCompletesSnapshotVoucher(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.BillingPriceSnapshot{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+
+	require.NoError(t, model.SaveBillingPriceSnapshot(model.BillingPriceSnapshot{
+		RequestId: "req-task-refund", TaskId: "task-refund", ModelName: "video-a",
+		PriceContract: `{"mode":"per_second"}`, PreConsumedQuota: 3000, SettleStatus: "pending",
+	}))
+	task := &model.Task{TaskID: "task-refund"}
+	task.Properties.OriginModelName = "video-a"
+	task.PrivateData.Execution = &model.TaskExecutionSnapshot{RequestID: "req-task-refund"}
+
+	updateTaskPriceSnapshotSettlement(task, 3000, 0, `{"seconds":5}`, "refunded")
+
+	got, err := model.GetBillingPriceSnapshot("req-task-refund", "task-refund", "video-a")
+	require.NoError(t, err)
+	assert.Equal(t, "refunded", got.SettleStatus)
+	assert.Equal(t, int64(3000), got.RefundQuota)
+	assert.Zero(t, got.SettledQuota)
+	assert.Equal(t, `{"mode":"per_second"}`, got.PriceContract)
+	assert.Contains(t, got.UsageBreakdown, `"seconds":5`)
+}

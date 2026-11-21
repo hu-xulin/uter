@@ -201,6 +201,15 @@ type batchBasePrice struct {
 // The official basis uses absolute official prices only. The channel basis may
 // use DreamRouter's ratio-only quote, converted with Uter's ratio convention
 // (ratio 1 = 2 USD / 1M tokens); it is never labelled as an official price.
+// BatchTierRule overrides the batch rule for a matching price tier. An empty
+// RangeName and TimeBand match every tier; the first matching rule wins.
+type BatchTierRule struct {
+	RangeName string  `json:"range_name,omitempty"`
+	TimeBand  string  `json:"time_band,omitempty"`
+	Mode      string  `json:"mode"`
+	Value     float64 `json:"value"`
+}
+
 // BatchPricingOptions selects the models and rule for one batch operation.
 // ModelPrefixes supports series-level rules such as "gpt-" or "claude-".
 type BatchPricingOptions struct {
@@ -233,6 +242,10 @@ type BatchPricingOptions struct {
 	// MinMarginRate is the lowest allowed (sale - purchase) / sale per
 	// dimension. Nil disables the check.
 	MinMarginRate *float64
+	// TierRules override the batch rule for individual price tiers, matched by
+	// range name and/or time band. A long-context band can therefore receive a
+	// different multiplier from the base band in the same batch.
+	TierRules []BatchTierRule
 	// ProtectionMode selects strict (no writes), partial (skip the model) or
 	// approval (write with ApprovalNote). Empty means partial.
 	ProtectionMode string
@@ -279,22 +292,13 @@ func ApplyChannelBatchPricingWithOptions(
 	if basis != BatchPricingBasisOfficial && basis != BatchPricingBasisChannel && basis != BatchPricingBasisCurrent {
 		return nil, errors.New("basis must be official, channel or current")
 	}
-	switch mode {
-	case BatchPricingModeDiscount, BatchPricingModeMultiply:
-		if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
-			return nil, errors.New("value must be a finite non-negative number")
+	if err := validateBatchRule(mode, value); err != nil {
+		return nil, err
+	}
+	for _, rule := range options.TierRules {
+		if err := validateBatchRule(rule.Mode, rule.Value); err != nil {
+			return nil, fmt.Errorf("tier rule %s/%s: %w", rule.RangeName, rule.TimeBand, err)
 		}
-	case BatchPricingModeMarkup, BatchPricingModeAdd:
-		if math.IsNaN(value) || math.IsInf(value, 0) {
-			return nil, errors.New("value must be a finite number")
-		}
-	case BatchPricingModeFixed:
-		if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
-			return nil, errors.New("fixed price must be a finite non-negative number")
-		}
-	case BatchPricingModeNone:
-	default:
-		return nil, errors.New("mode must be discount, markup, multiply, add, fixed or none")
 	}
 	dimensions := make(map[string]bool, len(options.Dimensions))
 	for _, dimension := range options.Dimensions {
@@ -521,11 +525,31 @@ func ApplyChannelBatchPricingWithOptions(
 					MinInputTokens: tier.minInput, MaxInputTokens: tier.maxInput,
 					Unit: model.ChannelPricingModePerMillionTokens,
 				}
+				tierMode, tierValue := mode, value
+				for _, rule := range options.TierRules {
+					if rule.RangeName != "" && !strings.EqualFold(rule.RangeName, tier.name) {
+						continue
+					}
+					if rule.TimeBand != "" && !strings.EqualFold(rule.TimeBand, tier.timeBand) {
+						continue
+					}
+					tierMode, tierValue = rule.Mode, rule.Value
+					break
+				}
 				applyTier := func(raw *float64, dimension string) (*float64, bool) {
 					if raw == nil {
 						return nil, true
 					}
-					return apply(raw, dimension)
+					if !dimensionSelected(dimension) {
+						unchanged := *raw
+						return &unchanged, true
+					}
+					out, ok := applyBatchRule(*raw, tierMode, tierValue)
+					if !ok {
+						return nil, false
+					}
+					rounded := roundPrice(out)
+					return &rounded, true
 				}
 				input, ok := applyTier(tier.inputUSD, "input")
 				if !ok || input == nil {
@@ -1335,6 +1359,29 @@ func applyBatchRule(base float64, mode string, value float64) (float64, bool) {
 		return 0, false
 	}
 	return out, true
+}
+
+// validateBatchRule enforces the finite/non-negative contract shared by the
+// base batch rule and per-tier overrides.
+func validateBatchRule(mode string, value float64) error {
+	switch mode {
+	case BatchPricingModeDiscount, BatchPricingModeMultiply:
+		if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
+			return errors.New("value must be a finite non-negative number")
+		}
+	case BatchPricingModeMarkup, BatchPricingModeAdd:
+		if math.IsNaN(value) || math.IsInf(value, 0) {
+			return errors.New("value must be a finite number")
+		}
+	case BatchPricingModeFixed:
+		if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
+			return errors.New("fixed price must be a finite non-negative number")
+		}
+	case BatchPricingModeNone:
+	default:
+		return errors.New("mode must be discount, markup, multiply, add, fixed or none")
+	}
+	return nil
 }
 
 // ClassifyModelCategory is a name-based fallback for model-type scopes. It is

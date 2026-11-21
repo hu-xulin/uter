@@ -50,6 +50,8 @@
   `billing_snapshot_error`/`billing_snapshot_request_id`，并输出系统错误日志，便于对账定位。
 - 文本、音频、实时语音路径在结算前写入 `BillingUsageBreakdown`（token/cache/图片/音频），
   快照不再只依赖 tiered 预估 facts。
+- 异步任务在成功结算、差额结算与全额退款三个路径补全快照额度；退款后的凭证状态为
+  `refunded`，合同仍不可改写。
 - 批量定价新增 `providers`/`regions`/`deployments`/`pricing_sources`/`modes` 精确筛选；
   版本校验继续使用 `model|provider|region|deployment` 身份键。前端批量面板增加对应筛选输入。
 - 上游报价视图补齐缓存写入、图片、Thinking、多模态、音频与 `per_unit_usd`；
@@ -57,8 +59,8 @@
 - Apiko 能力声明改为“后台定时同步（1 分钟调度 + 渠道官方价周期）”，与
   `main.go` 中的 `ApikoUpstreamSyncTask` 一致。
 
-仍需完成：任务退款路径的快照补全、批量逐档规则、同步退避/异常价格审批、
-历史汇率序列、真实供应商账单对账，以及登录后的浏览器验收。
+仍需完成：跨版本/换渠道任务结算的端到端一致性、同步退避/异常价格审批、
+历史汇率序列、供应商账单自动导出/发票文件解析，以及登录后的浏览器验收。
 
 ## 2. 验收清单
 
