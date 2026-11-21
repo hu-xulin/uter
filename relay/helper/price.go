@@ -213,6 +213,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
+		if encoded, err := common.Marshal(channelPricing); err == nil {
+			info.ChannelPricingContractJSON = string(encoded)
+		}
 	}
 	modelPrice, usePrice := ratio_setting.GetModelPrice(billingModelName, false)
 	if hasChannelPricing {
@@ -429,6 +432,9 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
+		if encoded, err := common.Marshal(channelPricing); err == nil {
+			info.ChannelPricingContractJSON = string(encoded)
+		}
 	}
 	groupRatioInfo := HandleGroupRatio(c, info)
 

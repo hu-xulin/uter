@@ -152,7 +152,7 @@ func apikoUpstreamDescriptor() UpstreamProvider {
 		PricingURL:          "https://apiko.app/api/public/models?billing=all",
 		ModelsURL:           "https://apiko.app/api/public/models?billing=all",
 		SourceDocumentation: "https://apiko.app/api/public/models",
-		SyncFrequency:       "manual trigger through the channel pricing sync",
+		SyncFrequency:       "scheduler 1m; runs on the channel official-price cadence",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "public catalogue plus the channel /v1/models"),
 			ModelMetadata:       capability(CapabilityPartial, "catalogue metadata; specs come from the shared catalog"),
@@ -162,7 +162,7 @@ func apikoUpstreamDescriptor() UpstreamProvider {
 			RegionPricing:       capability(CapabilityUnsupported, "no region dimension"),
 			TieredPricing:       capability(CapabilityPartial, "context tiers become expressions; resolution/duration tiers need manual pricing"),
 			MediaPricing:        capability(CapabilityManualOnly, "resolution- or duration-tiered media prices need request parameters"),
-			ScheduledSync:       capability(CapabilityNeedsConfiguration, "run the channel pricing sync"),
+			ScheduledSync:       capability(CapabilitySupported, "background catalogue sync on the channel official-price cadence"),
 			TokenPricing:        capability(CapabilitySupported, "input, output and cache prices per 1M tokens"),
 			ImagePricing:        capability(CapabilityManualOnly, "image prices depend on resolution"),
 			VideoPricing:        capability(CapabilityPartial, "per-second tiers when the catalogue publishes them"),

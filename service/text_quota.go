@@ -483,19 +483,6 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 		extraContent = append(extraContent, common.NewMessage("Model {{model}}", map[string]any{"model": summary.ModelName}))
 	}
 
-	var other *model.LogOther
-	if summary.IsClaudeUsageSemantic {
-		other = GenerateClaudeOtherInfo(ctx, relayInfo,
-			summary.ModelRatio, summary.GroupRatio, summary.CompletionRatio,
-			summary.CacheTokens, summary.CacheRatio,
-			summary.CacheCreationTokens, summary.CacheCreationRatio,
-			summary.CacheCreationTokens5m, summary.CacheCreationRatio5m,
-			summary.CacheCreationTokens1h, summary.CacheCreationRatio1h,
-			summary.ModelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
-		other.SetPublic("usage_semantic", "anthropic")
-	} else {
-		other = GenerateTextOtherInfo(ctx, relayInfo, summary.ModelRatio, summary.GroupRatio, summary.CompletionRatio, summary.CacheTokens, summary.CacheRatio, summary.ModelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
-	}
 	usageBreakdown := map[string]any{
 		"prompt_tokens":         summary.PromptTokens,
 		"completion_tokens":     summary.CompletionTokens,
@@ -508,6 +495,21 @@ func PostTextConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, us
 	}
 	if summary.AudioTokens != 0 {
 		usageBreakdown["audio_tokens"] = summary.AudioTokens
+	}
+	relayInfo.BillingUsageBreakdown = usageBreakdown
+
+	var other *model.LogOther
+	if summary.IsClaudeUsageSemantic {
+		other = GenerateClaudeOtherInfo(ctx, relayInfo,
+			summary.ModelRatio, summary.GroupRatio, summary.CompletionRatio,
+			summary.CacheTokens, summary.CacheRatio,
+			summary.CacheCreationTokens, summary.CacheCreationRatio,
+			summary.CacheCreationTokens5m, summary.CacheCreationRatio5m,
+			summary.CacheCreationTokens1h, summary.CacheCreationRatio1h,
+			summary.ModelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
+		other.SetPublic("usage_semantic", "anthropic")
+	} else {
+		other = GenerateTextOtherInfo(ctx, relayInfo, summary.ModelRatio, summary.GroupRatio, summary.CompletionRatio, summary.CacheTokens, summary.CacheRatio, summary.ModelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	}
 	other.SetAdmin("usage_breakdown", usageBreakdown)
 	appendUsageBillingPathForLog(other, common.GetContextKeyBool(ctx, constant.ContextKeyLocalCountTokens), originUsage)

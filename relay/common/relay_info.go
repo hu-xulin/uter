@@ -125,6 +125,11 @@ type RelayInfo struct {
 	ChannelPricingCurrency         string
 	ChannelPricingFXRate           float64
 	ChannelPricingVersion          string
+	// ChannelPricingContractJSON is the resolved channel price contract this
+	// request was billed with: every dimension, tier, discount and source that
+	// produced the charge. It is persisted verbatim into the immutable billing
+	// snapshot so a later price edit cannot rewrite what was sold.
+	ChannelPricingContractJSON string
 	// User pricing policy actually applied by this request.
 	UserPricingApplied        bool
 	UserPricingRatio          float64
@@ -166,6 +171,16 @@ type RelayInfo struct {
 	ChatToGeminiStreamState any
 	ReceivedResponseCount   int
 	FinalPreConsumedQuota   int // 最终预消耗的配额
+	// BillingUsageBreakdown is the actual metered quantity recorded at
+	// settlement (tokens, cache, image, audio, thinking). It is snapshotted so
+	// a bill can be rebuilt without replaying the usage log.
+	BillingUsageBreakdown map[string]any
+	// SettledQuota, SettlementFailed and SettlementRecorded describe what
+	// actually hit the wallet; a task snapshot is written before settlement,
+	// so only a recorded settlement may mark the voucher complete.
+	SettledQuota       int64
+	SettlementFailed   bool
+	SettlementRecorded bool
 	// ForcePreConsume 为 true 时禁用 BillingSession 的信任额度旁路，
 	// 强制预扣全额。用于异步任务（视频/音乐生成等），因为请求返回后任务仍在运行，
 	// 必须在提交前锁定全额。

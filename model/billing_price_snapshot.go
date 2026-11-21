@@ -45,12 +45,25 @@ type BillingPriceSnapshot struct {
 	BillingMode           string `gorm:"size:32"`
 	BillingExpression     string `gorm:"type:text"`
 	BillingExpressionHash string `gorm:"size:64"`
-	GroupRatio            float64
-	UserPricingRatio      float64
-	Currency              string `gorm:"size:16"`
-	FXRate                float64
-	UsageBreakdown        string `gorm:"type:text"`
-	CreatedAt             int64  `gorm:"index"`
+	// PriceContract is the resolved sale contract (every dimension, tier,
+	// discount and source) captured at billing time. Sold unit prices are
+	// derivable from it; BillingExpression is the executable normal form.
+	PriceContract     string `gorm:"type:text"`
+	PriceContractHash string `gorm:"size:64"`
+	PriceSource       string `gorm:"size:128"`
+	PurchaseUSD       *float64
+	PurchaseVerified  bool
+	PurchaseSource    string `gorm:"size:128"`
+	GroupRatio        float64
+	UserPricingRatio  float64
+	Currency          string `gorm:"size:16"`
+	FXRate            float64
+	UsageBreakdown    string `gorm:"type:text"`
+	PreConsumedQuota  int64
+	SettledQuota      int64
+	RefundQuota       int64
+	SettleStatus      string `gorm:"size:32"`
+	CreatedAt         int64  `gorm:"index"`
 }
 
 func (BillingPriceSnapshot) TableName() string { return "billing_price_snapshots" }
@@ -65,6 +78,39 @@ func SaveBillingPriceSnapshot(snapshot BillingPriceSnapshot) error {
 		snapshot.CreatedAt = time.Now().Unix()
 	}
 	return DB.Clauses(clause.OnConflict{DoNothing: true}).Create(&snapshot).Error
+}
+
+// SettlementPatch carries the values that only become known when the request
+// settles. It never touches the contract columns, so the sold price stays
+// immutable while the voucher still records what actually hit the wallet.
+type SettlementPatch struct {
+	UsageBreakdown string
+	PreConsumed    int64
+	Settled        int64
+	Refund         int64
+	Status         string
+}
+
+// UpdateBillingPriceSnapshotSettlement fills in the settlement half of an
+// existing snapshot. It is idempotent and refuses to overwrite a settled row.
+func UpdateBillingPriceSnapshotSettlement(requestId, taskId, modelName string, patch SettlementPatch) error {
+	if DB == nil || modelName == "" {
+		return nil
+	}
+	updates := map[string]any{
+		"pre_consumed_quota": patch.PreConsumed,
+		"settled_quota":      patch.Settled,
+		"refund_quota":       patch.Refund,
+		"settle_status":      patch.Status,
+	}
+	// A task without metered facts must not blank the usage captured at
+	// contract time.
+	if patch.UsageBreakdown != "" {
+		updates["usage_breakdown"] = patch.UsageBreakdown
+	}
+	return DB.Model(&BillingPriceSnapshot{}).
+		Where("request_id = ? AND task_id = ? AND model_name = ? AND (settle_status IS NULL OR settle_status <> ?)", requestId, taskId, modelName, "settled").
+		Updates(updates).Error
 }
 
 // GetBillingPriceSnapshot looks up the snapshot for one request or task.

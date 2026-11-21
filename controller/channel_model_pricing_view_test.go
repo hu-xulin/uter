@@ -112,3 +112,37 @@ func TestChannelModelPricingViewExposesEveryUpstreamQuoteTier(t *testing.T) {
 	require.Equal(t, "32K-128K", view.UpstreamQuote.Tiers[1].RangeName)
 	require.Equal(t, 2.0, *view.UpstreamQuote.Tiers[1].InputPerMillionUSD)
 }
+
+func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
+	perImage := 0.04
+	input, image, thinkingOut, thinkingCache := 1.0, 3.0, 4.0, 0.5
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		ChannelPriceTiers: []model.ChannelPricingTier{
+			{RangeName: "image", Unit: "per_image", PerUnitUSD: &perImage},
+			{
+				RangeName: "text", Unit: "per_1m_token",
+				InputPerMillionUSD: &input, ImageInputPerMillionUSD: &image,
+				ThinkingOutputPerMillionUSD: &thinkingOut, ThinkingCachePerMillionUSD: &thinkingCache,
+			},
+		},
+	})
+	require.NoError(t, err)
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 11, ModelName: "vision-a", Provider: "apiko",
+		NormalizedPricing: string(normalized),
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.Len(t, view.UpstreamQuote.Tiers, 2)
+	imageTier := view.UpstreamQuote.Tiers[0]
+	require.Equal(t, "per_image", imageTier.Unit)
+	require.NotNil(t, imageTier.PerUnitUSD)
+	require.InDelta(t, 0.04, *imageTier.PerUnitUSD, 1e-9)
+	textTier := view.UpstreamQuote.Tiers[1]
+	require.NotNil(t, textTier.ImageInputPerMillionUSD)
+	require.InDelta(t, 3.0, *textTier.ImageInputPerMillionUSD, 1e-9)
+	require.NotNil(t, textTier.ThinkingOutputPerMillionUSD)
+	require.InDelta(t, 4.0, *textTier.ThinkingOutputPerMillionUSD, 1e-9)
+	require.NotNil(t, textTier.ThinkingCachePerMillionUSD)
+	require.InDelta(t, 0.5, *textTier.ThinkingCachePerMillionUSD, 1e-9)
+}

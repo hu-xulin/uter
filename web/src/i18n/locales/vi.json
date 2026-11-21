@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "Nhập hóa đơn nhà cung cấp thất bại",
     "Import upstream invoice": "Nhập hóa đơn nhà cung cấp",
     "Import invoice": "Nhập hóa đơn",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Khớp {{matched}} · lệch {{mismatched}} · chưa khớp {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Khớp {{matched}} · lệch {{mismatched}} · chưa khớp {{unmatched}}",
+    "Multimodal input/output": "Đầu vào/đầu ra đa phương thức",
+    "Thinking multimodal input/output": "Đầu vào/đầu ra đa phương thức suy luận",
+    "Price identity filters": "Bộ lọc định danh giá",
+    "Comma separated; leave empty to match every value.": "Phân tách bằng dấu phẩy; để trống để khớp mọi giá trị."
   }
 }

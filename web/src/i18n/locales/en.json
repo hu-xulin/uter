@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "Failed to import upstream invoice",
     "Import upstream invoice": "Import upstream invoice",
     "Import invoice": "Import invoice",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}",
+    "Multimodal input/output": "Multimodal input/output",
+    "Thinking multimodal input/output": "Thinking multimodal input/output",
+    "Price identity filters": "Price identity filters",
+    "Comma separated; leave empty to match every value.": "Comma separated; leave empty to match every value."
   }
 }

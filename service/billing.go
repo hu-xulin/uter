@@ -114,6 +114,7 @@ func SettleBilling(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, actualQuo
 
 	// 回退：无 BillingSession 时使用旧路径
 	quotaDelta := actualQuota - relayInfo.FinalPreConsumedQuota
+	recordSnapshotSettlement(relayInfo, int64(actualQuota), false)
 	if quotaDelta != 0 {
 		return PostConsumeQuota(relayInfo, quotaDelta, relayInfo.FinalPreConsumedQuota, true)
 	}
@@ -149,16 +150,30 @@ func SettleBillingForLog(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, act
 		if relayInfo == nil {
 			return 0, true
 		}
+		recordSnapshotSettlement(relayInfo, int64(relayInfo.FinalPreConsumedQuota), true)
 		return relayInfo.FinalPreConsumedQuota, true
 	}
+	loggedQuota = actualQuota
 	if relayInfo != nil {
 		if reporter, ok := relayInfo.Billing.(settledQuotaReporter); ok {
 			if effective, clamped := reporter.SettledQuota(); clamped {
-				return effective, false
+				loggedQuota = effective
 			}
 		}
 	}
-	return actualQuota, false
+	recordSnapshotSettlement(relayInfo, int64(loggedQuota), false)
+	return loggedQuota, false
+}
+
+// recordSnapshotSettlement records what actually hit the wallet so the
+// billing voucher can be completed without re-resolving prices at log time.
+func recordSnapshotSettlement(relayInfo *relaycommon.RelayInfo, quota int64, failed bool) {
+	if relayInfo == nil {
+		return
+	}
+	relayInfo.SettledQuota = quota
+	relayInfo.SettlementFailed = failed
+	relayInfo.SettlementRecorded = true
 }
 
 // settledQuotaReporter 是 BillingSession 实现的可选接口：结算被计费上限

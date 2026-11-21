@@ -17,6 +17,9 @@
 | `TestBillingPriceSnapshotIsImmutablePerIdentity` | `model/channel_model_pricing_test.go` | 同一 request 重复写入保留首条价格版本 |
 | `TestRecordBillingPriceSnapshotCapturesIdentityAndVersion` | `service/billing_snapshot_test.go` | 渠道身份/销售版本/采购版本/组倍率写入快照；纯全局价不写 |
 | `TestImportUpstreamBillingInvoicePersistsReconciliation` | `service/upstream_invoice_test.go` | 发票行匹配/未匹配统计、总额、持久化、非法输入拒绝 |
+| `TestBillingSnapshotSettlementPatchFillsAmountsOnce` | `service/billing_snapshot_test.go` | 结算额度/退款/用量补全；合同不被改写；重复回调不覆盖 |
+| `TestBatchPricingFiltersByRegionAndDeployment` | `service/channel_batch_pricing_integration_test.go` | 同名模型按区域/部署精确筛选，另一身份不被修改 |
+| `TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields` | `controller/channel_model_pricing_view_test.go` | 报价视图保留 per_image、图片、Thinking 维度 |
 
 ## 2. 实际执行的命令与结果
 
@@ -51,16 +54,15 @@
 
 ## 4. 未执行
 
-- 其余云厂商真实接口。
-- MySQL/PostgreSQL 旧库升级（仅验证了 SQLite 旧库）。
-- 供应商真实接口验证（无授权凭据；`bailian_live` 构建标签未启用）。
+- OpenAI / Anthropic / Gemini / Azure / AWS / 腾讯云 / 火山引擎的真实价格接口（无公开接口或授权凭据）。
+- MySQL / PostgreSQL 旧库升级（仅验证了 SQLite 旧库升级；三库新建矩阵已通过）。
 - 登录后的浏览器人工/视觉回归（公开页被登录守卫拦截）。
-
 
 ## 5. 真实数据声明
 
-本轮**没有**调用任何真实供应商价格接口，也没有把 Mock 测试描述为真实验证。
-因此：Model 同步、官方价格、折扣价格的“真实验证”状态为 EXTERNAL_BLOCKED。
+本轮只读调用了阿里百炼、DreamRouter 与 Apiko 的公开目录/价格接口（命令与结果见 §3），
+未修改用户、渠道或已配置售价，也没有把 Mock 测试描述为真实验证。
+未调用的是需要授权凭据的供应商价格接口；这些供应商的“真实验证”状态为 EXTERNAL_BLOCKED。
 
 ## 6. 覆盖缺口
 

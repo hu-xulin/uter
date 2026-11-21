@@ -364,7 +364,7 @@ export function ChannelModelPricingSection(
       quote.unit === 'per_image' ||
       quote.unit === 'per_minute'
     ) {
-      return formatUsd(quote.per_call_usd)
+      return formatUsd(quote.per_unit_usd ?? quote.per_call_usd)
     }
     return `${formatUsd(quote.input_per_million_usd)} / ${formatUsd(quote.output_per_million_usd)}`
   }
@@ -406,6 +406,56 @@ export function ChannelModelPricingSection(
     if (tier.create_cache_per_million_usd != null) {
       parts.push(
         `${t('Cache write')} ${formatUsd(tier.create_cache_per_million_usd)}`
+      )
+    }
+    if (tier.image_input_per_million_usd != null) {
+      parts.push(
+        `${t('Image input')} ${formatUsd(tier.image_input_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_input_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking input')} ${formatUsd(tier.thinking_input_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_output_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking output')} ${formatUsd(tier.thinking_output_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_cache_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking cache read')} ${formatUsd(tier.thinking_cache_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_create_cache_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking cache write')} ${formatUsd(tier.thinking_create_cache_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_image_input_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking image input')} ${formatUsd(tier.thinking_image_input_per_million_usd)}`
+      )
+    }
+    if (tier.multi_input_output_per_million_usd != null) {
+      parts.push(
+        `${t('Multimodal input/output')} ${formatUsd(tier.multi_input_output_per_million_usd)}`
+      )
+    }
+    if (tier.thinking_multi_input_output_per_million_usd != null) {
+      parts.push(
+        `${t('Thinking multimodal input/output')} ${formatUsd(tier.thinking_multi_input_output_per_million_usd)}`
+      )
+    }
+    if (tier.audio_input_per_million_usd != null) {
+      parts.push(
+        `${t('Audio input')} ${formatUsd(tier.audio_input_per_million_usd)}`
+      )
+    }
+    if (tier.audio_output_per_million_usd != null) {
+      parts.push(
+        `${t('Audio output')} ${formatUsd(tier.audio_output_per_million_usd)}`
       )
     }
     if (tier.audio_input_per_million_usd != null) {

@@ -132,6 +132,47 @@ func LogTaskConsumption(c *gin.Context, info *relaycommon.RelayInfo, task *model
 	})
 	model.UpdateUserUsedQuotaAndRequestCount(info.UserId, info.PriceData.Quota)
 	model.UpdateChannelUsedQuota(info.ChannelId, info.PriceData.Quota)
+	completeTaskPriceSnapshot(info, task)
+}
+
+// completeTaskPriceSnapshot fills the settlement half of the task's immutable
+// voucher. The contract was written at submission; only usage and amounts are
+// added here. Refund-only transitions are reconciled separately, so a task
+// that never reaches LogTaskConsumption keeps status "pending".
+func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
+	if info == nil || task == nil || model.DB == nil {
+		return
+	}
+	requestID := ""
+	if task.PrivateData.Execution != nil {
+		requestID = task.PrivateData.Execution.RequestID
+	}
+	modelName := info.GetBillingModelName()
+	if modelName == "" {
+		modelName = info.OriginModelName
+	}
+	usage := ""
+	if snap := info.TieredBillingSnapshot; snap != nil && len(snap.UsageFacts) > 0 {
+		if encoded, err := common.Marshal(snap.UsageFacts); err == nil {
+			usage = string(encoded)
+		}
+	}
+	pre := int64(info.FinalPreConsumedQuota)
+	settled := int64(info.PriceData.Quota)
+	refund := int64(0)
+	if pre > settled {
+		refund = pre - settled
+	}
+	err := model.UpdateBillingPriceSnapshotSettlement(requestID, task.TaskID, modelName, model.SettlementPatch{
+		UsageBreakdown: usage,
+		PreConsumed:    pre,
+		Settled:        settled,
+		Refund:         refund,
+		Status:         "settled",
+	})
+	if err != nil {
+		common.SysError(common.LogText("complete task billing snapshot failed: task=%s model=%s: %s", task.TaskID, modelName, err.Error()))
+	}
 }
 
 // ---------------------------------------------------------------------------

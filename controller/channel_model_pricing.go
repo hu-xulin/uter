@@ -31,30 +31,57 @@ import (
 )
 
 type channelUpstreamQuoteTier struct {
-	RangeName           string                             `json:"range_name"`
-	TimeBand            string                             `json:"time_band,omitempty"`
-	MinInputTokens      int64                              `json:"min_input_tokens,omitempty"`
-	MaxInputTokens      int64                              `json:"max_input_tokens,omitempty"`
-	Unit                string                             `json:"unit"`
-	InputPerMillionUSD  *float64                           `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD *float64                           `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD  *float64                           `json:"cache_per_million_usd,omitempty"`
-	PerCallUSD          *float64                           `json:"per_call_usd,omitempty"`
-	RawComponents       []model.ChannelPricingRawComponent `json:"raw_components,omitempty"`
+	RangeName                             string   `json:"range_name"`
+	TimeBand                              string   `json:"time_band,omitempty"`
+	MinInputTokens                        int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens                        int64    `json:"max_input_tokens,omitempty"`
+	Unit                                  string   `json:"unit"`
+	InputPerMillionUSD                    *float64 `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD                   *float64 `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD                    *float64 `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD              *float64 `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputPerMillionUSD               *float64 `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputPerMillionUSD            *float64 `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputPerMillionUSD           *float64 `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCachePerMillionUSD            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCachePerMillionUSD      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputPerMillionUSD       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputPerMillionUSD         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputPerMillionUSD *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD               *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD              *float64 `json:"audio_output_per_million_usd,omitempty"`
+	// PerUnitUSD is the amount for the tier's own unit (call, second, minute,
+	// image). It is the canonical value; PerCallUSD stays populated only for
+	// older clients that read every per-unit price from that field.
+	PerUnitUSD    *float64                           `json:"per_unit_usd,omitempty"`
+	PerCallUSD    *float64                           `json:"per_call_usd,omitempty"`
+	RawComponents []model.ChannelPricingRawComponent `json:"raw_components,omitempty"`
 }
 
 type channelUpstreamQuoteView struct {
-	PriceBasis          string                     `json:"price_basis"`
-	Currency            string                     `json:"currency"`
-	Unit                string                     `json:"unit"`
-	InputPerMillionUSD  *float64                   `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD *float64                   `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD  *float64                   `json:"cache_per_million_usd,omitempty"`
-	PerCallUSD          *float64                   `json:"per_call_usd,omitempty"`
-	Source              string                     `json:"source"`
-	DiscountGroup       string                     `json:"discount_group,omitempty"`
-	DiscountRatio       *float64                   `json:"discount_ratio,omitempty"`
-	Tiers               []channelUpstreamQuoteTier `json:"tiers,omitempty"`
+	PriceBasis                            string                     `json:"price_basis"`
+	Currency                              string                     `json:"currency"`
+	Unit                                  string                     `json:"unit"`
+	InputPerMillionUSD                    *float64                   `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD                   *float64                   `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD                    *float64                   `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD              *float64                   `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputPerMillionUSD               *float64                   `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputPerMillionUSD            *float64                   `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputPerMillionUSD           *float64                   `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCachePerMillionUSD            *float64                   `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCachePerMillionUSD      *float64                   `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputPerMillionUSD       *float64                   `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputPerMillionUSD         *float64                   `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputPerMillionUSD *float64                   `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD               *float64                   `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD              *float64                   `json:"audio_output_per_million_usd,omitempty"`
+	PerUnitUSD                            *float64                   `json:"per_unit_usd,omitempty"`
+	PerCallUSD                            *float64                   `json:"per_call_usd,omitempty"`
+	Source                                string                     `json:"source"`
+	DiscountGroup                         string                     `json:"discount_group,omitempty"`
+	DiscountRatio                         *float64                   `json:"discount_ratio,omitempty"`
+	Tiers                                 []channelUpstreamQuoteTier `json:"tiers,omitempty"`
 }
 
 type channelModelPricingView struct {
@@ -246,11 +273,23 @@ func quoteTierFromTier(tier model.ChannelPricingTier) channelUpstreamQuoteTier {
 	}
 	switch tier.Unit {
 	case "per_call", "per_second", "per_image", "per_minute":
+		item.PerUnitUSD = tier.PerUnitUSD
 		item.PerCallUSD = tier.PerUnitUSD
 	default:
 		item.InputPerMillionUSD = tier.InputPerMillionUSD
 		item.OutputPerMillionUSD = tier.OutputPerMillionUSD
 		item.CachePerMillionUSD = tier.CachePerMillionUSD
+		item.CreateCachePerMillionUSD = tier.CreateCachePerMillionUSD
+		item.ImageInputPerMillionUSD = tier.ImageInputPerMillionUSD
+		item.ThinkingInputPerMillionUSD = tier.ThinkingInputPerMillionUSD
+		item.ThinkingOutputPerMillionUSD = tier.ThinkingOutputPerMillionUSD
+		item.ThinkingCachePerMillionUSD = tier.ThinkingCachePerMillionUSD
+		item.ThinkingCreateCachePerMillionUSD = tier.ThinkingCreateCachePerMillionUSD
+		item.ThinkingImageInputPerMillionUSD = tier.ThinkingImageInputPerMillionUSD
+		item.MultiInputOutputPerMillionUSD = tier.MultiInputOutputPerMillionUSD
+		item.ThinkingMultiInputOutputPerMillionUSD = tier.ThinkingMultiInputOutputPerMillionUSD
+		item.AudioInputPerMillionUSD = tier.AudioInputPerMillionUSD
+		item.AudioOutputPerMillionUSD = tier.AudioOutputPerMillionUSD
 	}
 	return item
 }
@@ -263,11 +302,23 @@ func quoteFromTier(tier model.ChannelPricingTier, basis, source string, discount
 	}
 	switch tier.Unit {
 	case "per_call", "per_second", "per_image", "per_minute":
+		quote.PerUnitUSD = tier.PerUnitUSD
 		quote.PerCallUSD = tier.PerUnitUSD
 	default:
 		quote.InputPerMillionUSD = tier.InputPerMillionUSD
 		quote.OutputPerMillionUSD = tier.OutputPerMillionUSD
 		quote.CachePerMillionUSD = tier.CachePerMillionUSD
+		quote.CreateCachePerMillionUSD = tier.CreateCachePerMillionUSD
+		quote.ImageInputPerMillionUSD = tier.ImageInputPerMillionUSD
+		quote.ThinkingInputPerMillionUSD = tier.ThinkingInputPerMillionUSD
+		quote.ThinkingOutputPerMillionUSD = tier.ThinkingOutputPerMillionUSD
+		quote.ThinkingCachePerMillionUSD = tier.ThinkingCachePerMillionUSD
+		quote.ThinkingCreateCachePerMillionUSD = tier.ThinkingCreateCachePerMillionUSD
+		quote.ThinkingImageInputPerMillionUSD = tier.ThinkingImageInputPerMillionUSD
+		quote.MultiInputOutputPerMillionUSD = tier.MultiInputOutputPerMillionUSD
+		quote.ThinkingMultiInputOutputPerMillionUSD = tier.ThinkingMultiInputOutputPerMillionUSD
+		quote.AudioInputPerMillionUSD = tier.AudioInputPerMillionUSD
+		quote.AudioOutputPerMillionUSD = tier.AudioOutputPerMillionUSD
 	}
 	return quote
 }
@@ -463,6 +514,11 @@ func BatchChannelModelPricing(c *gin.Context) {
 		Models          []string `json:"models"`
 		ModelPrefixes   []string `json:"model_prefixes"`
 		ModelCategories []string `json:"model_categories"`
+		Providers       []string `json:"providers"`
+		Regions         []string `json:"regions"`
+		Deployments     []string `json:"deployments"`
+		PricingSources  []string `json:"pricing_sources"`
+		Modes           []string `json:"modes"`
 		Basis           string   `json:"basis"`
 		Mode            string   `json:"mode"`
 		Value           float64  `json:"value"`
@@ -489,6 +545,8 @@ func BatchChannelModelPricing(c *gin.Context) {
 	result, err := service.ApplyChannelBatchPricingWithOptions(channelID, service.BatchPricingOptions{
 		Models: req.Models, ModelPrefixes: req.ModelPrefixes,
 		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
+		Providers: req.Providers, Regions: req.Regions, Deployments: req.Deployments,
+		PricingSources: req.PricingSources, Modes: req.Modes,
 		ExpectedVersions: req.Versions,
 		Dimensions:       req.Dimensions,
 		MinMarginRate:    req.MinMarginRate, ProtectionMode: req.ProtectionMode,

@@ -207,10 +207,18 @@ type BatchPricingOptions struct {
 	Models          []string
 	ModelPrefixes   []string
 	ModelCategories []string
-	Basis           string
-	Mode            string
-	Value           float64
-	DryRun          bool
+	// Identity filters narrow the batch to exact price records. A model can
+	// have several rows in one channel (region / deployment), so a name alone
+	// cannot express "only cn-beijing / deploy-1"; these filters can.
+	Providers      []string
+	Regions        []string
+	Deployments    []string
+	PricingSources []string
+	Modes          []string
+	Basis          string
+	Mode           string
+	Value          float64
+	DryRun         bool
 	// OverwriteManual lets a batch rule replace a hand-edited model price.
 	// The default keeps the single-model rule as the highest priority.
 	OverwriteManual bool
@@ -356,6 +364,21 @@ func ApplyChannelBatchPricingWithOptions(
 			continue
 		}
 		if len(categories) > 0 && !categories[ClassifyModelCategory(row.ModelName)] {
+			continue
+		}
+		if !matchesAnyFilter(row.Provider, options.Providers) {
+			continue
+		}
+		if !matchesAnyFilter(row.Region, options.Regions) {
+			continue
+		}
+		if !matchesAnyFilter(row.DeploymentId, options.Deployments) {
+			continue
+		}
+		if !matchesAnyFilter(row.PricingSource, options.PricingSources) {
+			continue
+		}
+		if !matchesAnyFilter(internalPricingMode(row.InternalPricing), options.Modes) {
 			continue
 		}
 		if !options.OverwriteManual && manualModelPrice(row) {
@@ -1361,6 +1384,32 @@ func manualModelPrice(row model.ChannelModelPricing) bool {
 		return false
 	}
 	return true
+}
+
+// matchesAnyFilter treats an empty filter list as "no restriction" and
+// compares case-insensitively, because providers and regions are typed by hand
+// in the UI while the database stores the normalized value.
+func matchesAnyFilter(value string, allowed []string) bool {
+	if len(allowed) == 0 {
+		return true
+	}
+	for _, candidate := range allowed {
+		if strings.EqualFold(strings.TrimSpace(candidate), strings.TrimSpace(value)) {
+			return true
+		}
+	}
+	return false
+}
+
+func internalPricingMode(raw string) string {
+	if strings.TrimSpace(raw) == "" {
+		return ""
+	}
+	var pricing model.ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
+		return ""
+	}
+	return pricing.Mode
 }
 
 func matchesModelPrefixes(name string, prefixes []string) bool {

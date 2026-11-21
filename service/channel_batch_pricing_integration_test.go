@@ -761,3 +761,31 @@ func TestBatchPricingUsesContractCostAndMarksVerification(t *testing.T) {
 	require.False(t, result.Items[0].CostVerified)
 	require.False(t, result.Items[0].MarginVerified)
 }
+
+func TestBatchPricingFiltersByRegionAndDeployment(t *testing.T) {
+	setupBatchPricingDB(t)
+	beijing := batchOfficialRecord(1, "model-a")
+	beijing.Region = "cn-beijing"
+	beijing.DeploymentId = "deploy-1"
+	shanghai := batchOfficialRecord(1, "model-a")
+	shanghai.Region = "cn-shanghai"
+	shanghai.DeploymentId = "deploy-2"
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{beijing, shanghai})
+	require.NoError(t, err)
+
+	result, err := ApplyChannelBatchPricingWithOptions(1, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		Regions: []string{"cn-beijing"}, Deployments: []string{"deploy-1"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+
+	rows, err := model.ListChannelModelPricing(1)
+	require.NoError(t, err)
+	byRegion := map[string]string{}
+	for _, row := range rows {
+		byRegion[row.Region] = row.InternalPricing
+	}
+	assert.NotEmpty(t, byRegion["cn-beijing"])
+	assert.Empty(t, byRegion["cn-shanghai"], "identity filter must not touch the other deployment")
+}

@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "上流の請求書のインポートに失敗しました",
     "Import upstream invoice": "上流の請求書をインポート",
     "Import invoice": "請求書をインポート",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "一致 {{matched}} · 不一致 {{mismatched}} · 未一致 {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "一致 {{matched}} · 不一致 {{mismatched}} · 未一致 {{unmatched}}",
+    "Multimodal input/output": "マルチモーダル入力/出力",
+    "Thinking multimodal input/output": "推論マルチモーダル入力/出力",
+    "Price identity filters": "価格識別子フィルター",
+    "Comma separated; leave empty to match every value.": "カンマ区切り。空欄はすべてに一致します。"
   }
 }

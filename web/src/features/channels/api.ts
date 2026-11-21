@@ -1110,6 +1110,11 @@ export async function batchChannelModelPricing(
     models?: string[]
     model_prefixes?: string[]
     model_categories?: string[]
+    providers?: string[]
+    regions?: string[]
+    deployments?: string[]
+    pricing_sources?: string[]
+    modes?: string[]
     basis: 'official' | 'channel' | 'current'
     mode: string
     value: number

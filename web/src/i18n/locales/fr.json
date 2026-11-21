@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "Échec de l'import de la facture amont",
     "Import upstream invoice": "Importer la facture amont",
     "Import invoice": "Importer la facture",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Correspondances {{matched}} · écarts {{mismatched}} · non correspondances {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Correspondances {{matched}} · écarts {{mismatched}} · non correspondances {{unmatched}}",
+    "Multimodal input/output": "Entrée/sortie multimodale",
+    "Thinking multimodal input/output": "Entrée/sortie multimodale de réflexion",
+    "Price identity filters": "Filtres d'identité de prix",
+    "Comma separated; leave empty to match every value.": "Séparés par des virgules ; laissez vide pour tout accepter."
   }
 }

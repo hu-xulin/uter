@@ -1,8 +1,9 @@
 # FINAL ACCEPTANCE REPORT — Uter 定价体系整改
 
 - 仓库：`hu-xulin/uter`
-- 分支：`main`（未创建分支，未提交）
+- 分支：`main`（未创建分支，已提交并推送至 `origin/main`）
 - 基线提交：`674eebd6a`
+- 交付提交：`a24843538` → `56a781f14`（报告提交在此之后）
 - 日期：2026-11-21
 - 最终状态：**PARTIALLY_VERIFIED / NOT ACCEPTANCE_PASS**
 
@@ -21,17 +22,43 @@
 4. **Apiko 增加后台定时同步**，不再仅依赖人工点击。
 5. 验证 deployment 身份已贯通请求、任务计费与账单字段。
 6. 新增不可变 `billing_price_snapshots` 表：请求与任务在创建时记录渠道身份、
-   销售/采购版本、表达式哈希、组倍率与币种汇率，重复回调不覆盖首条。
+   销售/采购版本、表达式哈希、完整销售合同 JSON、采购成本与验证状态、
+   组倍率、币种汇率与原始用量，并在结算时补全预扣/实扣/退款额度；
+   重复回调不覆盖首条合同。
 
 但以下 P0/P1 仍未达到完整验收：
 
 - 合同采购价与实际结算成本无数据源，毛利只能标为“基于上游报价的估算”。
 - 表达式一致性校验与用量样本对账已实现；供应商发票导入/真实账单对账仍为 BLOCKED。
 - MySQL/PostgreSQL 真库矩阵未执行。
-- 浏览器端未逐页回归，真实供应商接口未调用。
-- 无独立不可变计费快照表，账单追溯依赖 admin 日志 JSON。
+- 浏览器端未逐页回归；真实供应商接口仅覆盖百炼/DreamRouter/Apiko 只读目录。
+- 异步任务的结算额度补全与“任务创建—重试换渠道—跨版本结算”端到端一致性仍需验证；
+  不可变快照已保存合同、成本、用量与额度，但合同采购价仍缺少供应商账单级数据源。
 
 因此不满足 `FULLY_OPERATIONAL` / `ACCEPTANCE_PASS`。
+
+## 1.1 2026-11-21 复核整改
+
+针对复核提出的 P0/P1 项，本轮完成：
+
+- 快照升级为计费凭证：新增 `price_contract`（完整销售合同 JSON）、`price_contract_hash`、
+  `price_source`、`purchase_usd`、`purchase_verified`、`purchase_source`、
+  `pre_consumed_quota`、`settled_quota`、`refund_quota`、`settle_status`。
+  结算后通过 `UpdateBillingPriceSnapshotSettlement` 只补全金额与用量，不改写合同；
+  重复回调不能覆盖已结算凭证。异步任务在 `LogTaskConsumption` 时补全结算额度。
+- 快照写入 3 次同步重试；仍失败时在消费日志 admin 作用域写
+  `billing_snapshot_error`/`billing_snapshot_request_id`，并输出系统错误日志，便于对账定位。
+- 文本、音频、实时语音路径在结算前写入 `BillingUsageBreakdown`（token/cache/图片/音频），
+  快照不再只依赖 tiered 预估 facts。
+- 批量定价新增 `providers`/`regions`/`deployments`/`pricing_sources`/`modes` 精确筛选；
+  版本校验继续使用 `model|provider|region|deployment` 身份键。前端批量面板增加对应筛选输入。
+- 上游报价视图补齐缓存写入、图片、Thinking、多模态、音频与 `per_unit_usd`；
+  `per_image` 不再只能从 `per_call_usd` 读取。
+- Apiko 能力声明改为“后台定时同步（1 分钟调度 + 渠道官方价周期）”，与
+  `main.go` 中的 `ApikoUpstreamSyncTask` 一致。
+
+仍需完成：任务退款路径的快照补全、批量逐档规则、同步退避/异常价格审批、
+历史汇率序列、真实供应商账单对账，以及登录后的浏览器验收。
 
 ## 2. 验收清单
 
@@ -68,6 +95,7 @@
 后端：
 
 - `model/billing_price_snapshot.go`
+- `model/upstream_billing_invoice.go`
 - `model/channel_model_pricing.go`
 - `model/channel_model_pricing_test.go`
 - `service/channel_batch_pricing.go`
@@ -76,6 +104,11 @@
 - `service/generic_upstream_pricing.go`
 - `service/generic_upstream_pricing_test.go`
 - `service/billing_snapshot.go`
+- `service/upstream_invoice.go`
+- `service/upstream_invoice_test.go`
+- `service/upstream_reconciliation.go`
+- `service/upstream_billing_samples.go`
+- `service/upstream_expression.go`
 - `service/log_info_generate.go`
 - `pkg/billingexpr/compile.go`
 - `controller/upstream_catalog_apiko.go`
@@ -84,6 +117,7 @@
 - `relay/helper/price.go`
 - `relay/relay_task.go`
 - `router/channel-router.go`
+- `common/option_map.go`
 - `main.go`
 
 前端：
@@ -114,23 +148,25 @@ sqlite3 one-api.db "select ... from channel_model_pricing ..."           # 只�
 BAILIAN_LIVE=1 go test -tags bailian_live ./service -run TestPullBailianCatalogLive -v        # PASS
 UPSTREAM_LIVE=1 go test -tags upstream_live ./service -run TestPullDreamRouterUpstreamLive -v # PASS
 UTER_TEST_MYSQL_DSN=... UTER_TEST_POSTGRES_DSN=... go test ./model -run TestChannelPricingTablesAcrossDatabases -v # PASS
+cd web && bun run test                                                 # 316 files / 3204 tests PASS
 ```
 
 ## 5. 未完成 / 外部受限
 
 1. 合同采购价已支持手工录入与 verified 标记；供应商账单、实际结算毛利仍无授权数据源。
-2. 不可变计费快照表与查询接口已实现；历史数据回填未做。
-2. OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山官方价格自动同步：无稳定公开接口或凭据。
-3. SQLite 旧库升级与二次启动已验证；MySQL/PostgreSQL 旧库升级未验证。
-4. 百炼/DreamRouter/Apiko 已完成真实目录/价格拉取；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山仍无凭据。
-5. 浏览器人工/视觉回归、前端全量测试。
-6. 独立不可变 `BillingPriceSnapshot` 表、Decimal 账本、汇率历史表。
-7. 批量按供应商/区域/部署/价格来源/能力选择器；阶梯逐档不同规则。
-8. 同步退避重试、价格变更通知、审批队列状态机。
+2. 不可变计费快照表与查询接口已实现，合同/成本/用量/额度已入库；历史数据回填未做。
+3. OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山官方价格自动同步：无稳定公开接口或凭据。
+4. SQLite 旧库升级与二次启动已验证；MySQL/PostgreSQL 旧库升级未验证。
+5. 百炼/DreamRouter/Apiko 已完成真实目录/价格拉取；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山仍无凭据。
+6. 浏览器人工/视觉回归、前端全量测试。
+7. Decimal 账本、汇率历史表、供应商账单自动导出（发票 JSON 导入已实现）。
+8. 批量按模型能力筛选；阶梯逐档不同规则；同步退避重试、价格变更通知、审批队列状态机。
+9. 登录后的浏览器人工回归（公开定价页被登录守卫拦截，无测试账号）。
 
 ## 6. 剩余风险
 
 - 本地数据库曾被未隔离测试清空；测试隔离仍需制度化。
 - 公开报价 ≠ 合同成本，任何毛利展示必须保留“估算”标识。
 - 三库兼容未验证前，不得在生产使用 MySQL/PostgreSQL 的价格表迁移结论。
-- 账单只有 admin 日志可追溯，日志清理会削弱历史还原能力。
+- 账单追溯不再只依赖 admin 日志：`billing_price_snapshots` 独立保存合同与结算额度，
+  但历史数据尚未回填，日志清理前仍需完成快照回填核对。

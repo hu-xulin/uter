@@ -19,15 +19,32 @@ For commercial licensing, please contact support@uter.ai
 package service
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"strings"
+	"time"
+
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 )
 
-// RecordBillingPriceSnapshot persists the immutable price contract for one
-// request or task. It never blocks billing: a failure is logged, and the
-// consume log still carries the same version fields.
-func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo) {
+// billingSnapshotWriteAttempts bounds the synchronous retries for the
+// immutable billing voucher. A missing voucher is an accounting incident, not
+// a warning, so a transient database error must not silently leave a charged
+// request without its contract.
+const billingSnapshotWriteAttempts = 3
+
+// RecordBillingPriceSnapshot persists the immutable price contract and, when
+// settlement already happened, the amounts actually charged and refunded.
+//
+// The contract columns are written once and never updated. Only the
+// settlement half may be filled later (async tasks record their contract at
+// creation and their usage at settlement). A write failure is retried and,
+// if it still fails, surfaced in the consume log's admin scope plus the system
+// log so reconciliation can find the request instead of trusting a bill that
+// has no voucher behind it.
+func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo, other *model.LogOther) {
 	if info == nil || model.DB == nil {
 		return
 	}
@@ -56,14 +73,33 @@ func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo) {
 			taskID = info.TaskRelayInfo.OriginTaskID
 		}
 	}
-	groupRatio := info.PriceData.GroupRatioInfo.GroupRatio
-	usage := ""
-	if snapshot := info.TieredBillingSnapshot; snapshot != nil && len(snapshot.UsageFacts) > 0 {
-		if encoded, err := common.Marshal(snapshot.UsageFacts); err == nil {
-			usage = string(encoded)
+	usage := billingSnapshotUsage(info)
+	contract := strings.TrimSpace(info.ChannelPricingContractJSON)
+	contractHash := ""
+	priceSource := ""
+	if contract != "" {
+		sum := sha256.Sum256([]byte(contract))
+		contractHash = hex.EncodeToString(sum[:])
+		var parsed model.ChannelInternalPricing
+		if common.UnmarshalJsonStr(contract, &parsed) == nil {
+			priceSource = parsed.Source
 		}
 	}
-	err := model.SaveBillingPriceSnapshot(model.BillingPriceSnapshot{
+	preConsumed := int64(info.FinalPreConsumedQuota)
+	settled := int64(0)
+	refund := int64(0)
+	status := "pending"
+	if info.SettlementRecorded {
+		settled = info.SettledQuota
+		if preConsumed > settled {
+			refund = preConsumed - settled
+		}
+		status = "settled"
+		if info.SettlementFailed {
+			status = "settle_failed"
+		}
+	}
+	row := model.BillingPriceSnapshot{
 		RequestId:             info.RequestId,
 		TaskId:                taskID,
 		ModelName:             modelName,
@@ -76,13 +112,90 @@ func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo) {
 		BillingMode:           mode,
 		BillingExpression:     exprString,
 		BillingExpressionHash: exprHash,
-		GroupRatio:            groupRatio,
+		PriceContract:         contract,
+		PriceContractHash:     contractHash,
+		PriceSource:           priceSource,
+		PurchaseUSD:           info.ChannelPricingPurchaseUSD,
+		PurchaseVerified:      info.ChannelPricingPurchaseVerified,
+		PurchaseSource:        info.ChannelPricingPurchaseSource,
+		GroupRatio:            info.PriceData.GroupRatioInfo.GroupRatio,
 		UserPricingRatio:      info.UserPricingRatio,
 		Currency:              info.ChannelPricingCurrency,
 		FXRate:                info.ChannelPricingFXRate,
 		UsageBreakdown:        usage,
-	})
-	if err != nil {
-		common.SysError(common.LogText("save billing price snapshot failed: %s", err.Error()))
+		PreConsumedQuota:      preConsumed,
+		SettledQuota:          settled,
+		RefundQuota:           refund,
+		SettleStatus:          status,
 	}
+	if err := saveBillingPriceSnapshotWithRetry(row); err != nil {
+		markBillingSnapshotError(other, info, err)
+		return
+	}
+	if !info.SettlementRecorded {
+		return
+	}
+	patch := model.SettlementPatch{
+		UsageBreakdown: usage,
+		PreConsumed:    preConsumed,
+		Settled:        settled,
+		Refund:         refund,
+		Status:         status,
+	}
+	if err := model.UpdateBillingPriceSnapshotSettlement(info.RequestId, taskID, modelName, patch); err != nil {
+		markBillingSnapshotError(other, info, err)
+	}
+}
+
+// billingSnapshotUsage prefers the settled metered quantities (which cover
+// token, cache, image, audio and thinking dimensions) over the pre-consume
+// estimate stored on the tiered snapshot.
+func billingSnapshotUsage(info *relaycommon.RelayInfo) string {
+	if len(info.BillingUsageBreakdown) > 0 {
+		if encoded, err := common.Marshal(info.BillingUsageBreakdown); err == nil {
+			return string(encoded)
+		}
+	}
+	if snapshot := info.TieredBillingSnapshot; snapshot != nil && len(snapshot.UsageFacts) > 0 {
+		if encoded, err := common.Marshal(snapshot.UsageFacts); err == nil {
+			return string(encoded)
+		}
+	}
+	return ""
+}
+
+func saveBillingPriceSnapshotWithRetry(row model.BillingPriceSnapshot) error {
+	var err error
+	for attempt := range billingSnapshotWriteAttempts {
+		if err = model.SaveBillingPriceSnapshot(row); err == nil {
+			return nil
+		}
+		if attempt < billingSnapshotWriteAttempts-1 {
+			time.Sleep(time.Duration(50<<attempt) * time.Millisecond)
+		}
+	}
+	return err
+}
+
+// markBillingSnapshotError makes a missing voucher visible on the bill itself
+// and in the system log. The request already moved money, so the marker tells
+// reconciliation exactly which consume log has no supporting contract.
+func markBillingSnapshotError(other *model.LogOther, info *relaycommon.RelayInfo, err error) {
+	common.SysError(common.LogText(
+		"billing price snapshot missing: request=%s task=%s channel=%d model=%s: %s",
+		info.RequestId, taskIDForLog(info), info.GetChannelID(), info.GetBillingModelName(), err.Error()))
+	if other != nil {
+		other.SetAdmin("billing_snapshot_error", err.Error())
+		other.SetAdmin("billing_snapshot_request_id", info.RequestId)
+	}
+}
+
+func taskIDForLog(info *relaycommon.RelayInfo) string {
+	if info.TaskRelayInfo == nil {
+		return ""
+	}
+	if info.TaskRelayInfo.PublicTaskID != "" {
+		return info.TaskRelayInfo.PublicTaskID
+	}
+	return info.TaskRelayInfo.OriginTaskID
 }

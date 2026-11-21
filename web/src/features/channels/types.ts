@@ -271,6 +271,14 @@ export interface ChannelOfficialPricingTier {
   create_cache_per_million_usd?: number
   audio_input_per_million_usd?: number
   audio_output_per_million_usd?: number
+  image_input_per_million_usd?: number
+  thinking_input_per_million_usd?: number
+  thinking_output_per_million_usd?: number
+  thinking_cache_per_million_usd?: number
+  thinking_create_cache_per_million_usd?: number
+  thinking_image_input_per_million_usd?: number
+  multi_input_output_per_million_usd?: number
+  thinking_multi_input_output_per_million_usd?: number
   per_unit_usd?: number
   unit: string
   raw_price_types?: string[]
@@ -310,6 +318,18 @@ export interface ChannelUpstreamQuoteTier {
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
+  image_input_per_million_usd?: number
+  thinking_input_per_million_usd?: number
+  thinking_output_per_million_usd?: number
+  thinking_cache_per_million_usd?: number
+  thinking_create_cache_per_million_usd?: number
+  thinking_image_input_per_million_usd?: number
+  multi_input_output_per_million_usd?: number
+  thinking_multi_input_output_per_million_usd?: number
+  audio_input_per_million_usd?: number
+  audio_output_per_million_usd?: number
+  per_unit_usd?: number
   per_call_usd?: number
   raw_components?: ChannelPricingRawComponent[]
 }
@@ -321,6 +341,18 @@ export interface ChannelUpstreamQuoteView {
   input_per_million_usd?: number
   output_per_million_usd?: number
   cache_per_million_usd?: number
+  create_cache_per_million_usd?: number
+  image_input_per_million_usd?: number
+  thinking_input_per_million_usd?: number
+  thinking_output_per_million_usd?: number
+  thinking_cache_per_million_usd?: number
+  thinking_create_cache_per_million_usd?: number
+  thinking_image_input_per_million_usd?: number
+  multi_input_output_per_million_usd?: number
+  thinking_multi_input_output_per_million_usd?: number
+  audio_input_per_million_usd?: number
+  audio_output_per_million_usd?: number
+  per_unit_usd?: number
   per_call_usd?: number
   source: string
   discount_group?: string

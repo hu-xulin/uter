@@ -207,6 +207,14 @@ function diagnosticWarning(
   }
 }
 
+function splitFilterList(raw: string): string[] | undefined {
+  const values = raw
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+  return values.length > 0 ? values : undefined
+}
+
 export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const { t } = useTranslation()
   const pricingModeLabel = (value: string) => {
@@ -232,6 +240,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [prefixes, setPrefixes] = useState('')
   const [category, setCategory] = useState('text')
   const [selectedModels, setSelectedModels] = useState<string[]>([])
+  const [filterProviders, setFilterProviders] = useState('')
+  const [filterRegions, setFilterRegions] = useState('')
+  const [filterDeployments, setFilterDeployments] = useState('')
+  const [filterSources, setFilterSources] = useState('')
+  const [filterModes, setFilterModes] = useState('')
   const [modelSearch, setModelSearch] = useState('')
   const [priceFilter, setPriceFilter] = useState<
     'all' | 'missing' | 'needs_review'
@@ -440,6 +453,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 .filter(Boolean)
             : undefined,
         model_categories: scope === 'category' ? [category] : undefined,
+        providers: splitFilterList(filterProviders),
+        regions: splitFilterList(filterRegions),
+        deployments: splitFilterList(filterDeployments),
+        pricing_sources: splitFilterList(filterSources),
+        modes: splitFilterList(filterModes),
         overwrite_manual: overwriteManual,
         dimensions: dimensions.length > 0 ? dimensions : undefined,
         min_margin_rate:
@@ -884,6 +902,44 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               </SelectContent>
             </Select>
             <p className='text-muted-foreground text-sm'>{t('Scope hint')}</p>
+          </div>
+          <div className='space-y-1.5 sm:col-span-3'>
+            <Label>{`4. ${t('Price identity filters')}`}</Label>
+            <div className='grid gap-2 sm:grid-cols-2 lg:grid-cols-5'>
+              <Input
+                aria-label={t('Provider')}
+                value={filterProviders}
+                onChange={(event) => setFilterProviders(event.target.value)}
+                placeholder={t('Provider')}
+              />
+              <Input
+                aria-label={t('Region')}
+                value={filterRegions}
+                onChange={(event) => setFilterRegions(event.target.value)}
+                placeholder={t('Region')}
+              />
+              <Input
+                aria-label={t('Deployment')}
+                value={filterDeployments}
+                onChange={(event) => setFilterDeployments(event.target.value)}
+                placeholder={t('Deployment')}
+              />
+              <Input
+                aria-label={t('Price source')}
+                value={filterSources}
+                onChange={(event) => setFilterSources(event.target.value)}
+                placeholder={t('Price source')}
+              />
+              <Input
+                aria-label={t('Billing mode')}
+                value={filterModes}
+                onChange={(event) => setFilterModes(event.target.value)}
+                placeholder={t('Billing mode')}
+              />
+            </div>
+            <p className='text-muted-foreground text-sm'>
+              {t('Comma separated; leave empty to match every value.')}
+            </p>
           </div>
           {scope === 'prefix' ? (
             <div className='space-y-1.5 sm:col-span-2'>
@@ -1834,7 +1890,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               value={invoiceText}
               onChange={(event) => setInvoiceText(event.target.value)}
               placeholder='{"period":"2026-11","rows":[{"model_name":"gpt-4.1","input_tokens":1000,"output_tokens":500,"upstream_cost_usd":0.012}]}'
-              className='min-h-24 font-mono text-xs'
+              className='min-h-24 font-mono'
             />
             <div className='flex flex-wrap items-center gap-2'>
               <Button

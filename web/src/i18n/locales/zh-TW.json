@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "匯入上游發票失敗",
     "Import upstream invoice": "匯入上游發票",
     "Import invoice": "匯入發票",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "匹配 {{matched}} · 不一致 {{mismatched}} · 未匹配 {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "匹配 {{matched}} · 不一致 {{mismatched}} · 未匹配 {{unmatched}}",
+    "Multimodal input/output": "多模態輸入/輸出",
+    "Thinking multimodal input/output": "思考多模態輸入/輸出",
+    "Price identity filters": "價格身分篩選",
+    "Comma separated; leave empty to match every value.": "用逗號分隔；留空表示符合所有值。"
   }
 }

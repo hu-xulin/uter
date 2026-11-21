@@ -8594,6 +8594,10 @@
     "Failed to import upstream invoice": "Не удалось импортировать счёт поставщика",
     "Import upstream invoice": "Импорт счёта поставщика",
     "Import invoice": "Импортировать счёт",
-    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Совпало {{matched}} · расхождения {{mismatched}} · без пары {{unmatched}}"
+    "Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}": "Совпало {{matched}} · расхождения {{mismatched}} · без пары {{unmatched}}",
+    "Multimodal input/output": "Мультимодальный ввод/вывод",
+    "Thinking multimodal input/output": "Мультимодальный ввод/вывод рассуждений",
+    "Price identity filters": "Фильтры идентичности цены",
+    "Comma separated; leave empty to match every value.": "Через запятую; пустое поле соответствует всем значениям."
   }
 }

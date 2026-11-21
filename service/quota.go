@@ -327,6 +327,16 @@ func PostWssConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, mod
 
 	logModel := modelName
 	logContent = append(logContent, extraContent...)
+	relayInfo.BillingUsageBreakdown = map[string]any{
+		"prompt_tokens":       usage.InputTokens,
+		"completion_tokens":   usage.OutputTokens,
+		"total_tokens":        usage.TotalTokens,
+		"text_input_tokens":   usage.InputTokenDetails.TextTokens,
+		"text_output_tokens":  usage.OutputTokenDetails.TextTokens,
+		"audio_input_tokens":  usage.InputTokenDetails.AudioTokens,
+		"audio_output_tokens": usage.OutputTokenDetails.AudioTokens,
+		"cached_tokens":       usage.InputTokenDetails.CachedTokens,
+	}
 	other := GenerateWssOtherInfo(ctx, relayInfo, usage, modelRatio, groupRatio,
 		completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), modelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	if tieredResult != nil {
@@ -477,6 +487,16 @@ func PostAudioConsumeQuota(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, u
 
 	logModel := billingModelName
 	logContent = append(logContent, extraContent...)
+	relayInfo.BillingUsageBreakdown = map[string]any{
+		"prompt_tokens":       usage.PromptTokens,
+		"completion_tokens":   usage.CompletionTokens,
+		"total_tokens":        usage.TotalTokens,
+		"text_input_tokens":   usage.PromptTokensDetails.TextTokens,
+		"text_output_tokens":  usage.CompletionTokenDetails.TextTokens,
+		"audio_input_tokens":  usage.PromptTokensDetails.AudioTokens,
+		"audio_output_tokens": usage.CompletionTokenDetails.AudioTokens,
+		"cached_tokens":       usage.PromptTokensDetails.CachedTokens,
+	}
 	other := GenerateAudioOtherInfo(ctx, relayInfo, usage, modelRatio, groupRatio,
 		completionRatio.InexactFloat64(), audioRatio.InexactFloat64(), audioCompletionRatio.InexactFloat64(), modelPrice, relayInfo.PriceData.GroupRatioInfo.GroupSpecialRatio)
 	if tieredResult != nil {
