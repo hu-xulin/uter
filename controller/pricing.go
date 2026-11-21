@@ -71,7 +71,7 @@ func GetPricing(c *gin.Context) {
 	// Plaza pricing source: which reference price the model plaza shows.
 	// "official" / "models.dev" -> the preset's reference price (官方价格);
 	// "channel" -> the platform's own price (平台价格 / 价格).
-	pricingSource := normalizePricingSource(common.OptionMap["PricingSource"])
+	pricingSource := normalizePricingSource(common.GetOption("PricingSource"))
 	officialPrices := resolveOfficialPrices(pricingSource)
 	officialPrices = overlayChannelOfficialPrices(pricing, officialPrices)
 

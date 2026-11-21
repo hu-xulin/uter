@@ -296,22 +296,20 @@ For commercial licensing, please contact support@uter.ai
    *
    * Order matters and is deliberate:
    *   1. Inter first — Latin letters and digits always render in it.
-   *   2. Source Han Sans (思源黑体) next — Inter has no CJK glyphs, so
-   *      every Chinese codepoint lands here. The locally installed
-   *      families are named before the webfont so a machine that already
-   *      has 思源黑体 uses it; everyone else gets the bundled
-   *      `noto-sans-sc` webfont, which is the *same* typeface (Adobe and
-   *      Google ship one shared source — Source Han Sans / Noto Sans CJK
-   *      are glyph-identical), so 中文 renders identically on macOS and
-   *      Windows instead of drifting to PingFang / YaHei per platform.
+   *   2. Bundled Noto Sans SC (variable, 100–900) next — Inter has no CJK
+   *      glyphs, so every Chinese codepoint lands here. The webfont MUST
+   *      precede locally installed Source Han families: those frequently
+   *      ship only Medium/Bold, so a 300 request silently fell back to
+   *      Medium and Chinese looked unchanged. Source Han / OS CJK faces
+   *      stay after it as fallbacks.
    *   3. OS CJK faces last as a safety net if the webfont fails.
    *   4. Emoji faces at the very end so only emoji codepoints land there.
    *
    * Monospace is NOT part of this stack: `font-mono` / `--font-mono`
    * keeps the platform monospace face so code, keys and IDs stay aligned. */
   --font-ui:
-    'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN',
-    '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC',
+    'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC',
+    'Noto Sans CJK SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体',
     'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui,
     -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial,
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
@@ -334,8 +332,8 @@ For commercial licensing, please contact support@uter.ai
    * codepoints fall through to 思源黑体. */
   --font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC',
-    'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC',
+    'Liberation Mono', 'Courier New', monospace, 'Noto Sans SC Variable',
+    'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体',
     'PingFang SC', 'Microsoft YaHei', sans-serif;
 
   /* ── Type scale ───────────────────────────────────────────────────
@@ -802,3 +800,4 @@ For commercial licensing, please contact support@uter.ai
   --border-destructive-subtle: #7f1d1d;
   --neon-green: #adfa1d;
 }
+

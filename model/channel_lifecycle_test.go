@@ -17,6 +17,7 @@ func TestApplyChannelLifecycleSnapshotDisablesMissingModels(t *testing.T) {
 		input, output := 2.0, 4.0
 		require.NoError(t, SetChannelInternalPricing(71, name, ChannelInternalPricing{
 			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+			Source: "bailian-channel",
 		}))
 	}
 
@@ -55,4 +56,56 @@ func TestApplyChannelLifecycleSnapshotRejectsEmptySnapshot(t *testing.T) {
 	row, err := GetChannelModelPricing(72, "model-a")
 	require.NoError(t, err)
 	require.NotEqual(t, ChannelModelLifecycleDisabled, row.LifecycleStatus)
+}
+
+func TestApplyChannelLifecycleSnapshotRetainsManualPrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
+		officialRecord(73, "catalog-model", "test"),
+		officialRecord(73, "contract-model", "test"),
+	})
+	require.NoError(t, err)
+	input, output := 2.0, 4.0
+	require.NoError(t, SetChannelInternalPricing(73, "catalog-model", ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Source: "bailian-channel",
+	}))
+	require.NoError(t, SetChannelInternalPricing(73, "contract-model", ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Source: "manual",
+	}))
+
+	_, _, disabled, err := ApplyChannelLifecycleSnapshot(73, []string{"catalog-model"}, 100, 2)
+	require.NoError(t, err)
+	require.Zero(t, disabled)
+	row, err := GetChannelModelPricing(73, "contract-model")
+	require.NoError(t, err)
+	require.Equal(t, ChannelModelLifecycleActive, row.LifecycleStatus)
+	require.True(t, ResolveEffectiveChannelPricing(73, "contract-model").Billable)
+}
+
+func TestManualPriceReactivatesDisabledModel(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{officialRecord(74, "removed", "test")})
+	require.NoError(t, err)
+	price := 2.0
+	require.NoError(t, SetChannelInternalPricing(74, "removed", ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price,
+		Source: "bailian-channel",
+	}))
+	_, _, _, err = ApplyChannelLifecycleSnapshot(74, []string{"another-model"}, 100, 1)
+	require.NoError(t, err)
+	row, err := GetChannelModelPricing(74, "removed")
+	require.NoError(t, err)
+	require.Equal(t, ChannelModelLifecycleDisabled, row.LifecycleStatus)
+	require.False(t, ResolveEffectiveChannelPricing(74, "removed").Billable)
+
+	require.NoError(t, SetChannelInternalPricing(74, "removed", ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price,
+		Source: "manual",
+	}))
+	row, err = GetChannelModelPricing(74, "removed")
+	require.NoError(t, err)
+	require.Equal(t, ChannelModelLifecycleActive, row.LifecycleStatus)
+	require.True(t, ResolveEffectiveChannelPricing(74, "removed").Billable)
 }

@@ -77,7 +77,7 @@ func (d dreamRouterDueChannel) anyDue() bool {
 
 func loadDreamRouterChannelSyncState() dreamRouterChannelSyncStateSetting {
 	setting := dreamRouterChannelSyncStateSetting{Channels: map[string]dreamRouterChannelSyncState{}}
-	raw := strings.TrimSpace(common.OptionMap[dreamRouterChannelSyncStateKey])
+	raw := strings.TrimSpace(common.GetOption(dreamRouterChannelSyncStateKey))
 	if raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
@@ -282,7 +282,7 @@ func saveDreamRouterUpstreamSyncStatus(status *DreamRouterUpstreamSyncStatus) {
 
 // LoadDreamRouterUpstreamSyncStatus returns the last isolated sync status.
 func LoadDreamRouterUpstreamSyncStatus() *DreamRouterUpstreamSyncStatus {
-	raw := strings.TrimSpace(common.OptionMap[DreamRouterUpstreamSyncStatusKey])
+	raw := strings.TrimSpace(common.GetOption(DreamRouterUpstreamSyncStatusKey))
 	if raw == "" {
 		return nil
 	}

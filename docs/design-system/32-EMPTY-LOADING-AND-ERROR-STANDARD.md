@@ -46,7 +46,7 @@ Empty / Skeleton / Spinner / Error / Retry / Offline / Permission Denied / Not F
 | `--ds-leading-body` | 22px | —（同值） | px | 14px 正文 |
 | `--ds-color-text-secondary` | #475569 | #CBD5E1 | color | 次级文本（与 muted / tertiary 明确区分） |
 | `--ds-color-surface-sunken` | #F1F5F9 | #080D18 | color | 下沉表面（代码块 / 井） |
-| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
+| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
 | `--ds-text-xs` | 13px | —（同值） | px | 密集表格 / 代码 / 标签 |
 | `--ds-control-md` | 36px | —（同值） | px | Medium 按钮 / 输入 |
 | `--ds-color-status-warning` | #A54600 | #FCD34D | color | 警告 |

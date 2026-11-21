@@ -15,10 +15,8 @@ import (
 )
 
 func getIoAPIKey(c *gin.Context) (string, bool) {
-	common.OptionMapRWMutex.RLock()
-	enabled := common.OptionMap["model_deployment.ionet.enabled"] == "true"
-	apiKey := common.OptionMap["model_deployment.ionet.api_key"]
-	common.OptionMapRWMutex.RUnlock()
+	enabled := common.GetOption("model_deployment.ionet.enabled") == "true"
+	apiKey := common.GetOption("model_deployment.ionet.api_key")
 	if !enabled || strings.TrimSpace(apiKey) == "" {
 		common.ApiErrorT(c, "io.net model deployment is not enabled or api key missing")
 		return "", false
@@ -27,10 +25,8 @@ func getIoAPIKey(c *gin.Context) (string, bool) {
 }
 
 func GetModelDeploymentSettings(c *gin.Context) {
-	common.OptionMapRWMutex.RLock()
-	enabled := common.OptionMap["model_deployment.ionet.enabled"] == "true"
-	hasAPIKey := strings.TrimSpace(common.OptionMap["model_deployment.ionet.api_key"]) != ""
-	common.OptionMapRWMutex.RUnlock()
+	enabled := common.GetOption("model_deployment.ionet.enabled") == "true"
+	hasAPIKey := strings.TrimSpace(common.GetOption("model_deployment.ionet.api_key")) != ""
 
 	common.ApiSuccess(c, gin.H{
 		"provider":    "io.net",
@@ -75,9 +71,7 @@ func TestIoNetConnection(c *gin.Context) {
 
 	apiKey := strings.TrimSpace(req.APIKey)
 	if apiKey == "" {
-		common.OptionMapRWMutex.RLock()
-		storedKey := strings.TrimSpace(common.OptionMap["model_deployment.ionet.api_key"])
-		common.OptionMapRWMutex.RUnlock()
+		storedKey := strings.TrimSpace(common.GetOption("model_deployment.ionet.api_key"))
 		if storedKey == "" {
 			common.ApiErrorT(c, "api_key is required")
 			return

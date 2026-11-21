@@ -21,6 +21,7 @@ package controller
 import (
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -80,4 +81,71 @@ func GetChannelSyncCapabilities(c *gin.Context) {
 		"provider":   provider,
 		"base_url":   baseURL,
 	})
+}
+
+// GetChannelUpstreamParity reports whether each model's upstream metadata,
+// price layers, lifecycle and executable rule are consistent.
+// GET /api/channel/:id/upstream_parity
+func GetChannelUpstreamParity(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	channel, err := model.GetChannelById(id, false)
+	if err != nil || channel == nil {
+		common.ApiErrorT(c, "Channel not found")
+		return
+	}
+	rows, err := model.ListChannelModelPricing(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, service.BuildUpstreamParityReport(id, channel.Name, rows, time.Now().UTC()))
+}
+
+// GetChannelUpstreamReconciliation executes deterministic billing samples for
+// every configured expression and returns the provider-invoice status.
+// GET /api/channel/:id/upstream_reconciliation
+func GetChannelUpstreamReconciliation(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	report, err := service.ReconcileChannelUpstreamBilling(id)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, report)
+}
+
+// ReconcileChannelBillingSamples compares operator-supplied upstream bill rows
+// with Uter's configured charge. POST /api/channel/:id/upstream_reconciliation/samples
+func ReconcileChannelBillingSamples(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	channel, err := model.GetChannelById(id, true)
+	if err != nil || channel == nil {
+		common.ApiErrorT(c, "Channel not found")
+		return
+	}
+	var req struct {
+		Samples []service.UpstreamBillingSample `json:"samples"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	report, err := service.ReconcileUpstreamBillingSamples(channel, req.Samples)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, report)
 }

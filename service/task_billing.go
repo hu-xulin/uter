@@ -812,7 +812,9 @@ func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTo
 	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
 	pricingIdentity := model.ChannelPricingIdentity{ChannelId: task.ChannelId, ModelName: modelName}
 	if channel, err := model.GetChannelById(task.ChannelId, true); err == nil && channel != nil {
-		pricingIdentity = ChannelPricingIdentityForRequest(channel.Type, channel.GetBaseURL(), "", modelName)
+		pricingIdentity = ChannelPricingIdentityForRequest(
+			channel.Type, channel.GetBaseURL(), channel.GetOtherSettings().DeploymentID, modelName,
+		)
 		pricingIdentity.ChannelId = task.ChannelId
 	}
 	effective := model.ResolveEffectiveChannelPricingFor(pricingIdentity)

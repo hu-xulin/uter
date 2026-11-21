@@ -398,6 +398,7 @@ func migrateDB() error {
 		&ChannelModelPricing{},
 		&ChannelPricingHistory{},
 		&ChannelPricingReview{},
+		&BillingPriceSnapshot{},
 		&Model{},
 		&Vendor{},
 		&VendorMergeRule{},

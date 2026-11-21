@@ -1140,6 +1140,9 @@ func (channel *Channel) GetOtherSettings() dto.ChannelOtherSettings {
 	if preset := common.GetAdvancedCustomPreset(channel.Type); preset != nil {
 		setting.AdvancedCustom = preset
 	}
+	if deployment, ok := channel.GetOtherInfo()["deployment_id"].(string); ok {
+		setting.DeploymentID = strings.TrimSpace(deployment)
+	}
 	return setting
 }
 

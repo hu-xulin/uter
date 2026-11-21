@@ -28,9 +28,9 @@ const (
 	BailianRegionUS          BailianRegion = "us-east-1"
 	BailianRegionUnspecified BailianRegion = ""
 
-	// bailianCatalogSource marks prices synced from the official Model Studio
-	// catalog; every auto-derived row carries it so a schema change is detected.
-	bailianCatalogSource = "bailian-official"
+	// bailianCatalogSource marks prices synced from Alibaba's Model Studio
+	// channel catalog; these are supplier quotes, not vendor list prices.
+	bailianCatalogSource = "bailian-channel"
 )
 
 var bailianRegionHostSuffix = map[BailianRegion]string{
@@ -354,7 +354,8 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 		}
 		records = append(records, model.ChannelOfficialPricingRecord{
 			ChannelId:         catalog.ChannelID,
-			Provider:          firstNonEmpty(item.InferenceProvider, item.Provider, "aliyun-bailian"),
+			Provider:          "alibaba-bailian",
+			ModelProvider:     firstNonEmpty(item.InferenceProvider, item.Provider, "aliyun-bailian"),
 			Region:            string(catalog.Region),
 			ModelName:         name,
 			Currency:          normalized.Currency,
@@ -798,11 +799,10 @@ func firstNonEmpty(values ...string) string {
 }
 
 // bailianOfficialPricing groups the Bailian catalog price items into ranges.
-// The catalog is Alibaba's official price document, so its tiers are stored as
-// official prices and mirrored into the channel quote (Bailian publishes one
-// price, there is no separate discounted channel quote). Multiple ranges/time
-// bands remain separate and are flagged for review; they are never averaged
-// into one number.
+// The catalog is Alibaba's supplier quote, not the model vendor's official
+// list price. Its tiers are therefore stored as ChannelPriceTiers while the
+// official tier list stays empty. Multiple ranges/time bands remain separate
+// and are flagged for review; they are never averaged into one number.
 func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float64, fetchedAt int64) model.ChannelOfficialPricing {
 	result := model.ChannelOfficialPricing{
 		Currency:  "USD",
@@ -813,6 +813,8 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	if region == BailianRegionBeijing || region == BailianRegionHongKong {
 		result.Currency = "CNY"
 		result.FXRateToUSD = rate
+		result.FXSource = "system:USDExchangeRate"
+		result.FXTimestamp = fetchedAt
 	}
 	tiers := make(map[string]*model.ChannelPricingTier)
 	order := make([]string, 0, len(item.Prices))
@@ -895,6 +897,13 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			normalizedUnit, _ := normalizeBailianPriceUnit(price.PriceUnit)
 			usd := toUSD(value, normalizedUnit)
 			priceType := strings.ToLower(strings.TrimSpace(price.Type))
+			tier.RawComponents = append(tier.RawComponents, model.ChannelPricingRawComponent{
+				Type: priceType, Name: price.PriceName,
+				RawAmount: value, RawCurrency: result.Currency, RawUnit: price.PriceUnit,
+				NormalizedUSD: usd, FXRate: result.FXRateToUSD, FXSource: result.FXSource,
+				FXTimestamp: result.FXTimestamp, CurrencyInferred: true,
+				PriceSource: bailianCatalogSource, EffectiveAt: fetchedAt,
+			})
 			// Batch endpoints publish their own discounted price. They are a
 			// separate service, not the standard realtime price, so they must not
 			// overwrite or block the primary price used by the relay.
@@ -1027,7 +1036,6 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	if len(result.ChannelPriceTiers) > 0 {
 		first := result.ChannelPriceTiers[0]
 		result.ChannelPrice = &first
-		result.Tiers = append([]model.ChannelPricingTier(nil), result.ChannelPriceTiers...)
 	}
 	// Context-length ranges are executable when every tier is a token tier;
 	// the sale price then becomes one tiered expression. Mixed units or media
@@ -1280,7 +1288,7 @@ func SaveBailianSyncStatus(status *BailianSyncStatus) error {
 }
 
 func LoadBailianSyncStatus() *BailianSyncStatus {
-	raw := strings.TrimSpace(common.OptionMap[BailianSyncStatusKey])
+	raw := strings.TrimSpace(common.GetOption(BailianSyncStatusKey))
 	if raw == "" {
 		return nil
 	}

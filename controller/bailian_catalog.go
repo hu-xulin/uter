@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -295,3 +296,20 @@ func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels [
 // RefreshBailianCatalog pulls all pages of GET /api/v1/models for one Bailian
 // channel and stores the result as a reference snapshot. It deliberately does
 // not write any model price; applying the catalog is a separate, explicit step.
+
+// GetBailianCatalogCoverage reports the channel's served models against the
+// latest public catalog snapshot, including unmatched-model review actions.
+// GET /api/channel/:id/bailian/coverage
+func GetBailianCatalogCoverage(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	report, err := service.BuildBailianCatalogCoverage(channelID)
+	if err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
+	common.ApiSuccess(c, report)
+}

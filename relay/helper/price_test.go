@@ -1205,3 +1205,53 @@ func TestHandleGroupRatioSnapshotsUserPricingPolicy(t *testing.T) {
 	assert.InDelta(t, 0.8, info.UserPricingRatio, 1e-9)
 	assert.InDelta(t, 0.8, groupRatio.GroupRatio, 1e-9)
 }
+
+func TestModelPriceHelperSelectsDeploymentPricingIdentity(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	ratio_setting.InitRatioSettings()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previousDB := model.DB
+	model.DB = db
+	model.InvalidateChannelPricingCache()
+	t.Cleanup(func() {
+		model.DB = previousDB
+		model.InvalidateChannelPricingCache()
+	})
+
+	input, output := 2.0, 4.0
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		Tiers: []model.ChannelPricingTier{{
+			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+		}},
+	})
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		{ChannelId: 21, Provider: "uter", DeploymentId: "dep-a", ModelName: "m", Currency: "USD", NormalizedPricing: string(normalized), Source: "uter"},
+		{ChannelId: 21, Provider: "uter", DeploymentId: "dep-b", ModelName: "m", Currency: "USD", NormalizedPricing: string(normalized), Source: "uter"},
+	})
+	require.NoError(t, err)
+	three := 3.0
+	four := 4.0
+	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 21, Provider: "uter", DeploymentId: "dep-b", ModelName: "m",
+	}, model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &three, OutputUSDPerMillion: &four,
+	}))
+
+	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/v1/chat/completions", nil)
+	info := &relaycommon.RelayInfo{
+		OriginModelName: "m", UserGroup: "default", UsingGroup: "default",
+		ChannelMeta: &relaycommon.ChannelMeta{
+			ChannelId: 21, ChannelType: 60, ChannelBaseUrl: "https://api.example.com",
+			ChannelOtherSettings: dto.ChannelOtherSettings{DeploymentID: "dep-b"},
+		},
+	}
+	priceData, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+	assert.InDelta(t, 1.5, priceData.ModelRatio, 1e-9)
+	assert.Equal(t, "dep-b", info.ChannelPricingDeployment)
+}

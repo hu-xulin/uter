@@ -39,7 +39,7 @@ API Key / Token Usage / RPM / TPM / Usage / Quota / Model Pricing / Request Logs
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
+| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
 | `--ds-text-xs` | 13px | —（同值） | px | 密集表格 / 代码 / 标签 |
 | `--ds-leading-code` | 20px | —（同值） | px | 13px 代码 / 20px 控件 |
 | `--ds-density-default-row` | 44px | —（同值） | px | Default 表格行高 |

@@ -52,8 +52,8 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 			}
 			db, err := gorm.Open(tc.open(tc.dsn), &gorm.Config{})
 			require.NoError(t, err)
-			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}))
-			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}), "migration must be idempotent")
+			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}))
+			require.NoError(t, db.AutoMigrate(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}), "migration must be idempotent")
 
 			row := ChannelModelPricing{
 				ChannelId: 7, Provider: "test", ModelName: "gpt-a",
@@ -79,7 +79,14 @@ func TestChannelPricingTablesAcrossDatabases(t *testing.T) {
 			require.NoError(t, db.Where("channel_id = ?", 7).Find(&history).Error)
 			require.Len(t, history, 1)
 
-			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}))
+			require.NoError(t, db.Create(&ChannelPricingReview{
+				ChannelID: 7, ModelName: "gpt-a", Field: "input", Old: 1, New: 2, Percent: 100,
+			}).Error)
+			var reviews []ChannelPricingReview
+			require.NoError(t, db.Where("channel_id = ?", 7).Find(&reviews).Error)
+			require.Len(t, reviews, 1)
+
+			require.NoError(t, db.Migrator().DropTable(&ChannelModelPricing{}, &ChannelPricingHistory{}, &ChannelPricingReview{}))
 		})
 	}
 }

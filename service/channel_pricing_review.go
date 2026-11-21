@@ -31,7 +31,7 @@ type channelPricingReviewSetting struct {
 
 func channelPricingReviewRaw() channelPricingReviewSetting {
 	setting := channelPricingReviewSetting{}
-	if raw := strings.TrimSpace(common.OptionMap[ChannelPricingReviewKey]); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(ChannelPricingReviewKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
 	return setting

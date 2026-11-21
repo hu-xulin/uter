@@ -856,6 +856,40 @@ func TestNormalizeTieredTablePricingBuildsExecutableExpression(t *testing.T) {
 	require.ErrorContains(t, err, "not executable")
 }
 
+func TestNormalizeModalityPricesBuildExpression(t *testing.T) {
+	input, output := 2.0, 4.0
+	image, thinkingInput, thinkingOutput := 1.5, 3.0, 6.0
+	thinkingCache, multiOutput, cache := 0.5, 5.0, 1.0
+	pricing := ChannelInternalPricing{
+		Mode:               ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &input, OutputUSDPerMillion: &output, CacheUSDPerMillion: &cache,
+		ImageInputUSDPerMillion: &image, ThinkingInputUSDPerMillion: &thinkingInput,
+		ThinkingOutputUSDPerMillion: &thinkingOutput, ThinkingCacheUSDPerMillion: &thinkingCache,
+		MultiInputOutputUSDPerMillion: &multiOutput,
+	}
+	billing, err := NormalizeChannelInternalPricing(&pricing)
+	require.NoError(t, err)
+	require.Equal(t, ChannelPricingModePerMillionTokens, billing.Mode)
+	require.NotEmpty(t, billing.BillingExpr)
+	assert.Contains(t, billing.BillingExpr, "img * 1.5")
+	assert.Contains(t, billing.BillingExpr, "rt > 0 ? 3 : 2")
+	assert.Contains(t, billing.BillingExpr, "rt > 0 ? 6 : (img > 0 ? 5 : 4)")
+	assert.Contains(t, billing.BillingExpr, "cr * (rt > 0 ? 0.5 : ")
+
+	tierPricing := ChannelInternalPricing{
+		Mode: ChannelPricingModeTieredTable,
+		Tiers: []ChannelInternalPricingTier{{
+			RangeName: "base", InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+			ImageInputUSDPerMillion: &image, ThinkingOutputUSDPerMillion: &thinkingOutput,
+			Unit: ChannelPricingModePerMillionTokens,
+		}},
+	}
+	billing, err = NormalizeChannelInternalPricing(&tierPricing)
+	require.NoError(t, err)
+	assert.Contains(t, billing.BillingExpr, "img * 1.5")
+	assert.Contains(t, billing.BillingExpr, "rt > 0 ? 6 : 4")
+}
+
 func TestNormalizeAudioAbsolutePricesDeriveRatios(t *testing.T) {
 	input, output := 2.0, 4.0
 	audioInput, audioOutput := 0.5, 1.0
@@ -999,4 +1033,106 @@ func TestCanonicalModelTagClassifiesSixCategories(t *testing.T) {
 			require.Equal(t, tc.want, canonicalModelTag(tc.name, tc.model, tc.endpoints))
 		})
 	}
+}
+
+func TestUpsertAdoptsLegacyBailianModelProviderIdentity(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 95, Provider: "qwen", ModelName: "qwen-max", Currency: "USD",
+		NormalizedPricing: `{"currency":"USD","channel_price_tiers":[]}`, Source: "bailian-channel",
+	}})
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 95, Provider: "alibaba-bailian", ModelProvider: "qwen", ModelName: "qwen-max",
+		Currency: "USD", NormalizedPricing: `{"currency":"USD","channel_price_tiers":[]}`, Source: "bailian-channel",
+	}})
+	require.NoError(t, err)
+
+	rows, err := ListChannelModelPricing(95)
+	require.NoError(t, err)
+	require.Len(t, rows, 1, "the legacy row must be adopted, not duplicated")
+	require.Equal(t, "alibaba-bailian", rows[0].Provider)
+	require.Equal(t, "qwen", rows[0].ModelProvider)
+}
+
+func TestPurchaseCostIsSeparateFromQuoteAndFeedsSnapshot(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	input, output, quote := 2.0, 4.0, 1.2
+	normalized := ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		Tiers:        []ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token"}},
+		ChannelPrice: &ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: &quote, Unit: "per_1m_token"},
+	}
+	encoded, err := common.Marshal(normalized)
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 7, Provider: "test", ModelName: "costed", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "test", FetchedAt: 1,
+	}})
+	require.NoError(t, err)
+
+	identity := ChannelPricingIdentity{ChannelId: 7, Provider: "test", ModelName: "costed"}
+	require.NoError(t, SetChannelInternalPricingFor(identity, ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		OutputUSDPerMillion: &output, Source: "manual", UpdatedAt: 2,
+	}))
+
+	effective := ResolveEffectiveChannelPricingFor(identity)
+	require.True(t, effective.Billable)
+	require.NotNil(t, effective.Pricing.PurchaseUSD)
+	assert.InDelta(t, 1.2, *effective.Pricing.PurchaseUSD, 1e-9, "without a contract cost the public quote is used")
+	assert.False(t, effective.Pricing.PurchaseVerified)
+
+	contractInput, contractOutput := 0.8, 1.6
+	require.NoError(t, SetChannelPurchaseCostFor(identity, ChannelPurchaseCost{
+		Pricing: ChannelInternalPricing{
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &contractInput,
+			OutputUSDPerMillion: &contractOutput,
+		},
+		Verified: true, Source: "contract-2026",
+	}))
+
+	effective = ResolveEffectiveChannelPricingFor(identity)
+	require.NotNil(t, effective.Pricing.PurchaseUSD)
+	assert.InDelta(t, 0.8, *effective.Pricing.PurchaseUSD, 1e-9, "contract cost overrides the quote")
+	assert.True(t, effective.Pricing.PurchaseVerified)
+	assert.Equal(t, "contract-2026", effective.Pricing.PurchaseSource)
+
+	var row ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ? AND model_name = ?", 7, "costed").First(&row).Error)
+	assert.Contains(t, row.PurchasePricing, `"verified":true`)
+}
+
+func TestBillingPriceSnapshotIsImmutablePerIdentity(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&BillingPriceSnapshot{}))
+	previous := DB
+	DB = db
+	t.Cleanup(func() { DB = previous })
+
+	first := BillingPriceSnapshot{
+		RequestId: "req-1", ModelName: "gpt-a", ChannelId: 3,
+		PricingVersion: "v1", BillingMode: ChannelPricingModePerMillionTokens, CreatedAt: 10,
+	}
+	require.NoError(t, SaveBillingPriceSnapshot(first))
+	require.NoError(t, SaveBillingPriceSnapshot(BillingPriceSnapshot{
+		RequestId: "req-1", ModelName: "gpt-a", ChannelId: 3,
+		PricingVersion: "v2", CreatedAt: 20,
+	}))
+
+	got, err := GetBillingPriceSnapshot("req-1", "", "gpt-a")
+	require.NoError(t, err)
+	assert.Equal(t, "v1", got.PricingVersion, "a retry must not rewrite the original contract")
+
+	require.NoError(t, SaveBillingPriceSnapshot(BillingPriceSnapshot{
+		RequestId: "req-2", TaskId: "task-9", ModelName: "video-a", ChannelId: 3, PricingVersion: "v3",
+	}))
+	got, err = GetBillingPriceSnapshot("req-2", "task-9", "video-a")
+	require.NoError(t, err)
+	assert.Equal(t, "v3", got.PricingVersion)
+
+	rows, err := ListBillingPriceSnapshots(3, 10)
+	require.NoError(t, err)
+	assert.Len(t, rows, 2)
 }

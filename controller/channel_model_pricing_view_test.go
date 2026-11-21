@@ -90,3 +90,25 @@ func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 	require.Equal(t, 30.0, *view.UpstreamQuote.OutputPerMillionUSD)
 	require.Equal(t, 0.6, *view.UpstreamQuote.DiscountRatio)
 }
+
+func TestChannelModelPricingViewExposesEveryUpstreamQuoteTier(t *testing.T) {
+	lowInput, lowOutput := 1.0, 2.0
+	highInput, highOutput := 2.0, 4.0
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		ChannelPriceTiers: []model.ChannelPricingTier{
+			{RangeName: "0-32K", Unit: "per_1m_token", InputPerMillionUSD: &lowInput, OutputPerMillionUSD: &lowOutput},
+			{RangeName: "32K-128K", Unit: "per_1m_token", InputPerMillionUSD: &highInput, OutputPerMillionUSD: &highOutput},
+		},
+	})
+	require.NoError(t, err)
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 10, ModelName: "qwen-tiered", Provider: "alibaba-bailian",
+		NormalizedPricing: string(normalized),
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.Len(t, view.UpstreamQuote.Tiers, 2)
+	require.Equal(t, "0-32K", view.UpstreamQuote.Tiers[0].RangeName)
+	require.Equal(t, "32K-128K", view.UpstreamQuote.Tiers[1].RangeName)
+	require.Equal(t, 2.0, *view.UpstreamQuote.Tiers[1].InputPerMillionUSD)
+}

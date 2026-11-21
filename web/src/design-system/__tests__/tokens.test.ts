@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
@@ -130,6 +130,25 @@ describe('字号阶梯（tokens/typography.css）', () => {
       600
     )
     expect(toPx(readVar(typographyCss, 'font-weight-bold') as string)).toBe(700)
+  })
+
+  it('中文界面整体降一档（300/400/500/600）', () => {
+    const theme = readFileSync(
+      join(process.cwd(), 'src', 'styles', 'theme.css'),
+      'utf8'
+    )
+    const body = /html:lang\(zh\)\s*\{([\s\S]*?)\}/.exec(theme)?.[1]
+    expect(body).toBeDefined()
+    const value = (name: string) =>
+      new RegExp(`--${name}:\\s*(\\d+);`).exec(body ?? '')?.[1]
+    expect(value('ds-weight-regular')).toBe('300')
+    expect(value('ds-weight-medium')).toBe('400')
+    expect(value('ds-weight-semibold')).toBe('500')
+    expect(value('ds-weight-bold')).toBe('600')
+    expect(value('font-weight-normal')).toBe('300')
+    expect(value('font-weight-medium')).toBe('400')
+    expect(value('font-weight-semibold')).toBe('500')
+    expect(value('font-weight-bold')).toBe('600')
   })
 })
 
@@ -351,5 +370,48 @@ describe('showcase 核查页与 Token 真源一致', () => {
       readVar(primitives, 'primitive-radius-md') as string
     )
     expect(themeBase, 'theme.css --radius 基准').toBe(primitiveBase)
+  })
+})
+
+describe('自托管字体覆盖 400/500/600/700', () => {
+  const readWeb = (rel: string) =>
+    readFileSync(join(process.cwd(), rel), 'utf8')
+
+  it('Inter 与思源黑体（Noto Sans SC，字形同源）均以可变字重打包', () => {
+    const indexCss = readWeb('src/styles/index.css')
+    expect(indexCss).toContain("@import '@fontsource-variable/inter'")
+    expect(indexCss).toContain("@import '@fontsource-variable/noto-sans-sc'")
+
+    const inter = readWeb('node_modules/@fontsource-variable/inter/index.css')
+    const cjk = readWeb(
+      'node_modules/@fontsource-variable/noto-sans-sc/index.css'
+    )
+    // 100 900 的可变字重同时覆盖 regular/medium/semibold/bold。
+    expect(inter).toMatch(
+      /font-family: 'Inter Variable'[\s\S]*?font-weight: 100 900/
+    )
+    expect(cjk).toMatch(
+      /font-family: 'Noto Sans SC Variable'[\s\S]*?font-weight: 100 900/
+    )
+  })
+
+  it('字体文件随构建产物本地加载，不引用 CDN', () => {
+    const interFiles = readdirSync(
+      join(process.cwd(), 'node_modules/@fontsource-variable/inter/files')
+    )
+    const cjkFiles = readdirSync(
+      join(
+        process.cwd(),
+        'node_modules/@fontsource-variable/noto-sans-sc/files'
+      )
+    )
+    expect(
+      interFiles.filter((f) => f.endsWith('.woff2')).length
+    ).toBeGreaterThan(0)
+    expect(cjkFiles.filter((f) => f.endsWith('.woff2')).length).toBeGreaterThan(
+      0
+    )
+    const inter = readWeb('node_modules/@fontsource-variable/inter/index.css')
+    expect(inter).toMatch(/url\(\.\/files\/inter-[a-z-]+-wght-normal\.woff2\)/)
   })
 })

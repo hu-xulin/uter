@@ -42,7 +42,7 @@ func MergeSMTPAccountsValue(value string) (string, error) {
 	incoming = filtered
 
 	previous := make(map[string]common.SMTPAccountConfig)
-	for _, account := range common.ParseSMTPAccounts(common.OptionMap["SMTPAccounts"]) {
+	for _, account := range common.ParseSMTPAccounts(common.GetOption("SMTPAccounts")) {
 		previous[account.Account] = account
 	}
 

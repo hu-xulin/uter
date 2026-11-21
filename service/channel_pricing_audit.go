@@ -21,7 +21,10 @@ package service
 import (
 	"fmt"
 	"sort"
+	"strings"
+	"time"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -134,4 +137,129 @@ func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 		start += len(channels)
 	}
 	return audits, nil
+}
+
+const (
+	UpstreamParityFullyMatched  = "FULLY_MATCHED"
+	UpstreamParityModelMismatch = "MODEL_MISMATCH"
+	UpstreamParityPriceMismatch = "PRICE_MISMATCH"
+	UpstreamParityRuleMismatch  = "RULE_MISMATCH"
+	UpstreamParityUnsupported   = "UNSUPPORTED"
+	UpstreamParityStale         = "STALE"
+	UpstreamParitySyncFailed    = "SYNC_FAILED"
+	UpstreamParityManualReview  = "MANUAL_REVIEW"
+)
+
+const upstreamParityStaleAfter = 7 * 24 * time.Hour
+
+type UpstreamParityModel struct {
+	ModelName        string   `json:"model_name"`
+	Status           string   `json:"status"`
+	LifecycleStatus  string   `json:"lifecycle_status,omitempty"`
+	PricingStatus    string   `json:"pricing_status"`
+	HasOfficial      bool     `json:"has_official"`
+	HasChannelPrice  bool     `json:"has_channel_price"`
+	HasInternalPrice bool     `json:"has_internal_price"`
+	ExpressionStatus string   `json:"expression_status,omitempty"`
+	Stale            bool     `json:"stale"`
+	Reasons          []string `json:"reasons,omitempty"`
+}
+
+type UpstreamParityReport struct {
+	ChannelID   int                   `json:"channel_id"`
+	ChannelName string                `json:"channel_name"`
+	GeneratedAt int64                 `json:"generated_at"`
+	Summary     map[string]int        `json:"summary"`
+	Models      []UpstreamParityModel `json:"models"`
+}
+
+// BuildUpstreamParityReport classifies every stored model. A model is fully
+// matched only when its lifecycle allows traffic, its channel quote exists,
+// its internal sale price is configured, and its rule is executable.
+func BuildUpstreamParityReport(channelID int, channelName string, rows []model.ChannelModelPricing, now time.Time) UpstreamParityReport {
+	report := UpstreamParityReport{
+		ChannelID: channelID, ChannelName: channelName, GeneratedAt: now.Unix(),
+		Summary: map[string]int{}, Models: make([]UpstreamParityModel, 0, len(rows)),
+	}
+	for _, row := range rows {
+		item := UpstreamParityModel{
+			ModelName: row.ModelName, LifecycleStatus: row.LifecycleStatus,
+			PricingStatus: row.PricingStatus,
+		}
+		var official model.ChannelOfficialPricing
+		if strings.TrimSpace(row.NormalizedPricing) != "" {
+			_ = common.UnmarshalJsonStr(row.NormalizedPricing, &official)
+		}
+		item.HasOfficial = len(official.Tiers) > 0 || len(official.ChannelPriceTiers) > 0 || official.ChannelPrice != nil
+		item.HasChannelPrice = len(official.ChannelPriceTiers) > 0 || official.ChannelPrice != nil
+		item.HasInternalPrice = row.PricingStatus == model.ChannelPricingStatusConfigured && strings.TrimSpace(row.InternalPricing) != ""
+		item.ExpressionStatus = official.ExpressionStatus
+		item.Stale = row.FetchedAt > 0 && now.Sub(time.Unix(row.FetchedAt, 0)) > upstreamParityStaleAfter
+
+		lifecycle := strings.ToUpper(strings.TrimSpace(row.LifecycleStatus))
+		switch lifecycle {
+		case model.ChannelModelLifecycleSyncFailed:
+			item.Status = UpstreamParitySyncFailed
+		case model.ChannelModelLifecycleDisabled, model.ChannelModelLifecycleNotFound:
+			item.Status = UpstreamParityModelMismatch
+		}
+		if item.Status == "" && official.ExpressionStatus == UpstreamExpressionUnsupported {
+			item.Status = UpstreamParityUnsupported
+		}
+		if item.Status == "" && row.PricingStatus == model.ChannelPricingStatusNeedsReview {
+			item.Status = UpstreamParityManualReview
+		}
+		if item.Status == "" && !item.HasOfficial && !item.HasChannelPrice {
+			item.Status = UpstreamParityPriceMismatch
+		}
+		if item.Status == "" && item.HasChannelPrice && !item.HasInternalPrice {
+			item.Status = UpstreamParityPriceMismatch
+		}
+		if item.Status == "" && row.InternalPricing != "" {
+			var internal model.ChannelInternalPricing
+			if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err == nil &&
+				(internal.Mode == model.ChannelPricingModeTieredExpr || internal.Mode == model.ChannelPricingModeTieredTable) {
+				if expr := NormalizeUpstreamExpression(internal.BillingExpr); !expr.Executable && internal.BillingExpr != "" {
+					item.Status = UpstreamParityRuleMismatch
+				}
+			}
+		}
+		if item.Status == "" && item.Stale {
+			item.Status = UpstreamParityStale
+		}
+		if item.Status == "" {
+			item.Status = UpstreamParityFullyMatched
+		}
+		if item.Status != UpstreamParityFullyMatched {
+			item.Reasons = append(item.Reasons, parityReason(item))
+		}
+		report.Summary[item.Status]++
+		report.Models = append(report.Models, item)
+	}
+	sort.Slice(report.Models, func(i, j int) bool { return report.Models[i].ModelName < report.Models[j].ModelName })
+	return report
+}
+
+func parityReason(item UpstreamParityModel) string {
+	switch item.Status {
+	case UpstreamParitySyncFailed:
+		return "last upstream sync failed; the last known state is retained"
+	case UpstreamParityModelMismatch:
+		return "model is no longer active upstream"
+	case UpstreamParityPriceMismatch:
+		if !item.HasOfficial && !item.HasChannelPrice {
+			return "no official or channel price"
+		}
+		return "channel quote exists but no configured sale price"
+	case UpstreamParityUnsupported:
+		return "upstream billing expression is unsupported by Uter"
+	case UpstreamParityManualReview:
+		return "price shape or source needs operator review"
+	case UpstreamParityRuleMismatch:
+		return "internal billing expression is not executable"
+	case UpstreamParityStale:
+		return "upstream price is older than the freshness window"
+	default:
+		return ""
+	}
 }

@@ -42,8 +42,6 @@ func GetStatus(c *gin.Context) {
 
 	cs := console_setting.GetConsoleSetting()
 	passkeySetting := system_setting.PasskeySettingsSnapshot()
-	common.OptionMapRWMutex.RLock()
-	defer common.OptionMapRWMutex.RUnlock()
 
 	legalSetting := system_setting.GetLegalSettings()
 
@@ -122,11 +120,11 @@ func GetStatus(c *gin.Context) {
 		// NormalizeCustomerServicePages 展开为全部页面，故前端无需区分
 		// 「未配置」与「全开」两种情况；显式哨兵 "none" 则展开为空数组，
 		// 让入口在所有页面都不渲染。
-		"customer_service_pages": common.NormalizeCustomerServicePages(common.OptionMap["CustomerServicePages"]),
+		"customer_service_pages": common.NormalizeCustomerServicePages(common.GetOption("CustomerServicePages")),
 
 		// 模块管理配置
-		"HeaderNavModules":    common.OptionMap["HeaderNavModules"],
-		"SidebarModulesAdmin": common.OptionMap["SidebarModulesAdmin"],
+		"HeaderNavModules":    common.GetOption("HeaderNavModules"),
+		"SidebarModulesAdmin": common.GetOption("SidebarModulesAdmin"),
 
 		"oidc_enabled":                system_setting.GetOIDCSettings().Enabled,
 		"oidc_client_id":              system_setting.GetOIDCSettings().ClientId,
@@ -199,16 +197,12 @@ func GetStatus(c *gin.Context) {
 }
 
 func GetNotice(c *gin.Context) {
-	common.OptionMapRWMutex.RLock()
-	notice := common.OptionMap["Notice"]
-	common.OptionMapRWMutex.RUnlock()
+	notice := common.GetOption("Notice")
 	serveRevalidatedJSON(c, notice)
 }
 
 func GetAbout(c *gin.Context) {
-	common.OptionMapRWMutex.RLock()
-	about := common.OptionMap["About"]
-	common.OptionMapRWMutex.RUnlock()
+	about := common.GetOption("About")
 	serveRevalidatedJSON(c, about)
 }
 
@@ -225,20 +219,16 @@ func GetRechargeAgreement(c *gin.Context) {
 }
 
 func GetMidjourney(c *gin.Context) {
-	common.OptionMapRWMutex.RLock()
-	defer common.OptionMapRWMutex.RUnlock()
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
-		"data":    common.OptionMap["Midjourney"],
+		"data":    common.GetOption("Midjourney"),
 	})
 	return
 }
 
 func GetHomePageContent(c *gin.Context) {
-	common.OptionMapRWMutex.RLock()
-	homePageContent := common.OptionMap["HomePageContent"]
-	common.OptionMapRWMutex.RUnlock()
+	homePageContent := common.GetOption("HomePageContent")
 	serveRevalidatedJSON(c, homePageContent)
 }
 

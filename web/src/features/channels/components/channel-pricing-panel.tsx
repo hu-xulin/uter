@@ -43,6 +43,8 @@ import {
   getChannelModelPricing,
   getChannelPricingAudit,
   getChannelPricingHistory,
+  getChannelUpstreamParity,
+  getChannelUpstreamReconciliation,
   getChannelPricingReviews,
   getChannelPricingSchedule,
   getChannelSyncCapabilities,
@@ -118,6 +120,14 @@ const PRICE_DIMENSIONS = [
   { value: 'cache_write', label: 'Cache write' },
   { value: 'audio_input', label: 'Audio input' },
   { value: 'audio_output', label: 'Audio output' },
+  { value: 'image_input', label: 'Image input' },
+  { value: 'thinking_input', label: 'Thinking input' },
+  { value: 'thinking_output', label: 'Thinking output' },
+  { value: 'thinking_cache', label: 'Thinking cache read' },
+  { value: 'thinking_create_cache', label: 'Thinking cache write' },
+  { value: 'thinking_image_input', label: 'Thinking image input' },
+  { value: 'multi_input_output', label: 'Multimodal output' },
+  { value: 'thinking_multi_input_output', label: 'Thinking multimodal output' },
   { value: 'per_call', label: 'Per call' },
   { value: 'per_second', label: 'Per second' },
   { value: 'per_minute', label: 'Per minute' },
@@ -249,6 +259,20 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const reviewsQuery = useQuery({
     queryKey: ['channel-pricing-reviews', props.channelId],
     queryFn: () => getChannelPricingReviews(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const parityQuery = useQuery({
+    queryKey: ['channel-upstream-parity', props.channelId],
+    queryFn: () => getChannelUpstreamParity(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const reconciliationQuery = useQuery({
+    queryKey: ['channel-upstream-reconciliation', props.channelId],
+    queryFn: () => getChannelUpstreamReconciliation(props.channelId ?? 0),
     enabled: props.channelId != null,
     retry: false,
     meta: { errorToast: false },
@@ -1163,6 +1187,41 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                           `${t('Cache write')} $${item.create_cache_per_million_usd}/1M`
                         )
                       }
+                      const extraDimensions: Array<
+                        [number | undefined, string]
+                      > = [
+                        [item.image_input_per_million_usd, 'Image input'],
+                        [item.thinking_input_per_million_usd, 'Thinking input'],
+                        [
+                          item.thinking_output_per_million_usd,
+                          'Thinking output',
+                        ],
+                        [
+                          item.thinking_cache_per_million_usd,
+                          'Thinking cache read',
+                        ],
+                        [
+                          item.thinking_create_cache_per_million_usd,
+                          'Thinking cache write',
+                        ],
+                        [
+                          item.thinking_image_input_per_million_usd,
+                          'Thinking image input',
+                        ],
+                        [
+                          item.multi_input_output_per_million_usd,
+                          'Multimodal output',
+                        ],
+                        [
+                          item.thinking_multi_input_output_per_million_usd,
+                          'Thinking multimodal output',
+                        ],
+                      ]
+                      for (const [amount, label] of extraDimensions) {
+                        if (amount != null) {
+                          parts.push(`${t(label)} $${amount}/1M`)
+                        }
+                      }
                       if (item.per_call_usd != null) {
                         parts.push(`${t('Per call')} $${item.per_call_usd}`)
                       }
@@ -1637,6 +1696,110 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         </section>
       ) : null}
 
+      {!disabled && parityQuery.data ? (
+        <section className='space-y-2 rounded-lg border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <Label>{t('Upstream parity')}</Label>
+            <Badge
+              variant={
+                (parityQuery.data.summary?.FULLY_MATCHED ?? 0) ===
+                (parityQuery.data.models?.length ?? 0)
+                  ? 'secondary'
+                  : 'warning'
+              }
+            >
+              {t('{{matched}} / {{total}} fully matched', {
+                matched: parityQuery.data.summary?.FULLY_MATCHED ?? 0,
+                total: parityQuery.data.models?.length ?? 0,
+              })}
+            </Badge>
+          </div>
+          <div className='flex flex-wrap gap-1.5'>
+            {Object.entries(parityQuery.data.summary ?? {}).map(
+              ([status, count]) => (
+                <Badge
+                  key={status}
+                  variant={status === 'FULLY_MATCHED' ? 'secondary' : 'warning'}
+                >
+                  {t(status)}: {count}
+                </Badge>
+              )
+            )}
+          </div>
+          {(parityQuery.data.models ?? []).filter(
+            (item) => item.status !== 'FULLY_MATCHED'
+          ).length ? (
+            <ul className='text-muted-foreground space-y-1 text-sm'>
+              {(parityQuery.data.models ?? [])
+                .filter((item) => item.status !== 'FULLY_MATCHED')
+                .slice(0, 8)
+                .map((item) => (
+                  <li key={item.model_name}>
+                    <span className='text-foreground font-medium'>
+                      {item.model_name}
+                    </span>{' '}
+                    · {t(item.status)}
+                    {item.reasons?.[0] ? ` · ${item.reasons[0]}` : ''}
+                  </li>
+                ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
+
+      {!disabled && reconciliationQuery.data ? (
+        <section className='space-y-2 rounded-lg border p-3'>
+          <div className='flex flex-wrap items-center justify-between gap-2'>
+            <Label>{t('Upstream reconciliation')}</Label>
+            <Badge
+              variant={
+                reconciliationQuery.data.status === 'RULES_PASSED'
+                  ? 'secondary'
+                  : 'warning'
+              }
+            >
+              {t(reconciliationQuery.data.status)}
+            </Badge>
+          </div>
+          <div className='text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm'>
+            <span>
+              {t('Rules passed')}:{' '}
+              {reconciliationQuery.data.summary?.RULES_PASSED ?? 0}
+            </span>
+            <span>
+              {t('Rule failed')}:{' '}
+              {reconciliationQuery.data.summary?.RULE_FAILED ?? 0}
+            </span>
+            <span>
+              {t('Price changes')}:{' '}
+              {reconciliationQuery.data.price_change_count}
+            </span>
+            <span>
+              {t('Upstream invoice')}:{' '}
+              {reconciliationQuery.data.upstream_invoice}
+            </span>
+          </div>
+          {reconciliationQuery.data.blocked_reason ? (
+            <p className='text-muted-foreground text-sm'>
+              {reconciliationQuery.data.blocked_reason}
+            </p>
+          ) : null}
+          {(reconciliationQuery.data.models ?? []).filter(
+            (item) => item.status === 'RULE_FAILED'
+          ).length ? (
+            <ul className='text-destructive space-y-1 text-sm'>
+              {(reconciliationQuery.data.models ?? [])
+                .filter((item) => item.status === 'RULE_FAILED')
+                .slice(0, 5)
+                .map((item) => (
+                  <li key={item.model_name}>
+                    {item.model_name}: {item.error}
+                  </li>
+                ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
       {!disabled && props.channelId != null && auditQuery.data ? (
         <section className='space-y-2 rounded-lg border p-3'>
           <div className='flex flex-wrap items-center justify-between gap-2'>

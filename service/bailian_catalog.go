@@ -307,7 +307,7 @@ func bailianChannelSnapshotKey(channelID int) string {
 // falls back to the global one for channels that have not synced yet.
 func LoadBailianCatalogSnapshotForChannel(channelID int) *BailianCatalog {
 	if channelID > 0 {
-		if raw := strings.TrimSpace(common.OptionMap[bailianChannelSnapshotKey(channelID)]); raw != "" {
+		if raw := strings.TrimSpace(common.GetOption(bailianChannelSnapshotKey(channelID))); raw != "" {
 			var catalog BailianCatalog
 			if err := common.Unmarshal([]byte(raw), &catalog); err == nil {
 				return &catalog
@@ -320,7 +320,7 @@ func LoadBailianCatalogSnapshotForChannel(channelID int) *BailianCatalog {
 // LoadBailianCatalogSnapshot returns the last saved catalog, or nil when the
 // catalog has never been pulled.
 func LoadBailianCatalogSnapshot() *BailianCatalog {
-	raw := strings.TrimSpace(common.OptionMap[BailianCatalogSnapshotKey])
+	raw := strings.TrimSpace(common.GetOption(BailianCatalogSnapshotKey))
 	if raw == "" {
 		return nil
 	}
@@ -340,4 +340,76 @@ func bareAliyunHost(raw string) bool {
 	}
 	host := strings.ToLower(parsed.Hostname())
 	return host == "aliyuncs.com" || host == "www.aliyuncs.com"
+}
+
+type BailianCoverageModel struct {
+	ModelName       string `json:"model_name"`
+	InCatalog       bool   `json:"in_catalog"`
+	LifecycleStatus string `json:"lifecycle_status,omitempty"`
+	PricingStatus   string `json:"pricing_status,omitempty"`
+	HasManualPrice  bool   `json:"has_manual_price"`
+	Action          string `json:"action"`
+}
+
+type BailianCatalogCoverage struct {
+	ChannelID     int                    `json:"channel_id"`
+	CatalogModels int                    `json:"catalog_models"`
+	ChannelModels int                    `json:"channel_models"`
+	Matched       int                    `json:"matched"`
+	Unmatched     int                    `json:"unmatched"`
+	Models        []BailianCoverageModel `json:"models"`
+}
+
+// BuildBailianCatalogCoverage compares the channel's served models with the
+// latest public catalog snapshot. Unmatched models are never removed here; the
+// operator decides whether to keep a manual/contract price or stop selling.
+func BuildBailianCatalogCoverage(channelID int) (*BailianCatalogCoverage, error) {
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil {
+		return nil, errors.New("channel not found")
+	}
+	catalog := LoadBailianCatalogSnapshotForChannel(channelID)
+	if catalog == nil {
+		return nil, errors.New("bailian catalog snapshot is not available")
+	}
+	channelModels := channel.GetModels()
+	matchedNames := BailianSeenChannelModels(catalog, channelModels)
+	matched := make(map[string]bool, len(matchedNames))
+	for _, name := range matchedNames {
+		matched[name] = true
+	}
+	rows, _ := model.ListChannelModelPricing(channelID)
+	rowByName := make(map[string]model.ChannelModelPricing, len(rows))
+	for _, row := range rows {
+		rowByName[row.ModelName] = row
+	}
+	report := &BailianCatalogCoverage{
+		ChannelID: channelID, CatalogModels: len(catalog.Models), ChannelModels: len(channelModels),
+		Models: make([]BailianCoverageModel, 0, len(channelModels)),
+	}
+	for _, name := range channelModels {
+		item := BailianCoverageModel{ModelName: name, InCatalog: matched[name]}
+		if row, ok := rowByName[name]; ok {
+			item.LifecycleStatus = row.LifecycleStatus
+			item.PricingStatus = row.PricingStatus
+			if strings.TrimSpace(row.InternalPricing) != "" {
+				var internal model.ChannelInternalPricing
+				if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err == nil {
+					item.HasManualPrice = strings.TrimSpace(internal.Source) == "manual"
+				}
+			}
+		}
+		if item.InCatalog {
+			item.Action = "IN_CATALOG"
+			report.Matched++
+		} else if item.HasManualPrice {
+			item.Action = "KEEP_MANUAL"
+		} else {
+			item.Action = "REVIEW_REQUIRED"
+		}
+		report.Models = append(report.Models, item)
+	}
+	report.Unmatched = report.ChannelModels - report.Matched
+	sort.Slice(report.Models, func(i, j int) bool { return report.Models[i].ModelName < report.Models[j].ModelName })
+	return report, nil
 }

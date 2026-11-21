@@ -361,11 +361,47 @@ export async function seedChannelModelPricing(
   return res.data
 }
 
+export type BillingPriceSnapshot = {
+  id: number
+  request_id: string
+  task_id?: string
+  model_name: string
+  channel_id: number
+  provider?: string
+  region?: string
+  deployment_id?: string
+  pricing_version?: string
+  purchase_version?: string
+  billing_mode?: string
+  billing_expression_hash?: string
+  group_ratio?: number
+  currency?: string
+  fx_rate?: number
+  created_at: number
+}
+
+export async function getChannelBillingSnapshots(
+  channelId: number,
+  limit = 20
+): Promise<BillingPriceSnapshot[]> {
+  const res = await api.get<{
+    success: boolean
+    data?: { items?: BillingPriceSnapshot[] }
+  }>(`/api/channel/${channelId}/billing_snapshots`, { params: { limit } })
+  return requireServerSuccess(res.data).data?.items ?? []
+}
+
 export async function setChannelModelPricing(
   id: number,
   modelName: string,
   pricing: ChannelInternalPricingView,
-  identity?: { provider?: string; region?: string; deploymentId?: string }
+  identity?: { provider?: string; region?: string; deploymentId?: string },
+  purchase?: {
+    pricing: ChannelInternalPricingView
+    verified: boolean
+    note?: string
+  },
+  clearPurchase?: boolean
 ): Promise<ChannelModelPricingUpdateResponse> {
   const res = await api.put<ChannelModelPricingUpdateResponse>(
     `/api/channel/${id}/model_pricing`,
@@ -375,6 +411,8 @@ export async function setChannelModelPricing(
       region: identity?.region ?? '',
       deployment_id: identity?.deploymentId ?? '',
       pricing,
+      purchase,
+      purchase_clear: clearPurchase || undefined,
     },
     channelActionConfig()
   )
@@ -1023,6 +1061,14 @@ export type ChannelBatchPricingItem = {
   output_per_million_usd?: number
   cache_per_million_usd?: number
   create_cache_per_million_usd?: number
+  image_input_per_million_usd?: number
+  thinking_input_per_million_usd?: number
+  thinking_output_per_million_usd?: number
+  thinking_cache_per_million_usd?: number
+  thinking_create_cache_per_million_usd?: number
+  thinking_image_input_per_million_usd?: number
+  multi_input_output_per_million_usd?: number
+  thinking_multi_input_output_per_million_usd?: number
   per_call_usd?: number
   per_second_usd?: number
   per_minute_usd?: number
@@ -1336,4 +1382,93 @@ export async function runChannelSyncDiagnostics(
     channelActionConfig()
   )
   return requireServerSuccess(res.data).data as ChannelSyncDiagnostics
+}
+
+export type UpstreamParityModel = {
+  model_name: string
+  status: string
+  lifecycle_status?: string
+  pricing_status: string
+  has_official: boolean
+  has_channel_price: boolean
+  has_internal_price: boolean
+  expression_status?: string
+  stale: boolean
+  reasons?: string[]
+}
+
+export type UpstreamParityReport = {
+  channel_id: number
+  channel_name: string
+  generated_at: number
+  summary: Record<string, number>
+  models: UpstreamParityModel[]
+}
+
+export async function getChannelUpstreamParity(
+  channelId: number
+): Promise<UpstreamParityReport> {
+  const res = await api.get(`/api/channel/${channelId}/upstream_parity`)
+  return requireServerSuccess(res.data).data as UpstreamParityReport
+}
+
+export type UpstreamReconciliationScenario = {
+  name: string
+  quota?: number
+  before_group?: number
+  tier?: string
+  executed: boolean
+  error?: string
+}
+
+export type UpstreamReconciliationModel = {
+  model_name: string
+  pricing_status: string
+  expression_hash?: string
+  status: string
+  scenarios?: UpstreamReconciliationScenario[]
+  error?: string
+}
+
+export type UpstreamReconciliationReport = {
+  channel_id: number
+  generated_at: number
+  status: string
+  models: UpstreamReconciliationModel[]
+  summary: Record<string, number>
+  price_change_count: number
+  upstream_invoice: string
+  blocked_reason?: string
+}
+
+export async function getChannelUpstreamReconciliation(
+  channelId: number
+): Promise<UpstreamReconciliationReport> {
+  const res = await api.get(`/api/channel/${channelId}/upstream_reconciliation`)
+  return requireServerSuccess(res.data).data as UpstreamReconciliationReport
+}
+
+export type BailianCoverageModel = {
+  model_name: string
+  in_catalog: boolean
+  lifecycle_status?: string
+  pricing_status?: string
+  has_manual_price: boolean
+  action: 'IN_CATALOG' | 'KEEP_MANUAL' | 'REVIEW_REQUIRED' | string
+}
+
+export type BailianCatalogCoverage = {
+  channel_id: number
+  catalog_models: number
+  channel_models: number
+  matched: number
+  unmatched: number
+  models: BailianCoverageModel[]
+}
+
+export async function getBailianCatalogCoverage(
+  channelId: number
+): Promise<BailianCatalogCoverage> {
+  const res = await api.get(`/api/channel/${channelId}/bailian/coverage`)
+  return requireServerSuccess(res.data).data as BailianCatalogCoverage
 }

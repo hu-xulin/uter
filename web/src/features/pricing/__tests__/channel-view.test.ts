@@ -93,6 +93,7 @@ describe('applyChannelView', () => {
     ]
     const result = applyChannelView(input, '阿里百炼', {}, ALL)
     expect(result.models[0].billing_expr).toBe(expr)
+    expect(result.models[0].quota_type).toBe(4)
     expect(result.models[0].billing_mode).toBe('tiered_expr')
     expect(result.models[0].model_ratio).toBe(0)
     expect(result.officialPrices['text-model']).toBeUndefined()
@@ -114,6 +115,9 @@ describe('applyChannelView', () => {
       }),
     ]
     const result = applyChannelView(input, '阿里百炼', {}, ALL)
+    expect(result.models[0].quota_type).toBe(2)
+    expect(result.models[0].model_price).toBe(0)
+    expect(result.models[0].model_ratio).toBe(0)
     expect(result.models[0].channel_internal_per_second_usd).toBe(0.05)
     expect(result.officialPrices['text-model']).toEqual({
       official_price_per_second: 0.08,

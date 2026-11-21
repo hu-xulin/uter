@@ -89,6 +89,10 @@ func AppendRelayLogAdminInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo,
 			if relayInfo.ChannelPricingPurchaseUSD != nil {
 				other.SetAdmin("channel_pricing_purchase_usd", *relayInfo.ChannelPricingPurchaseUSD)
 			}
+			other.SetAdmin("channel_pricing_purchase_verified", relayInfo.ChannelPricingPurchaseVerified)
+			if relayInfo.ChannelPricingPurchaseSource != "" {
+				other.SetAdmin("channel_pricing_purchase_source", relayInfo.ChannelPricingPurchaseSource)
+			}
 			if relayInfo.ChannelPricingCurrency != "" {
 				other.SetAdmin("channel_pricing_currency", relayInfo.ChannelPricingCurrency)
 			}
@@ -127,6 +131,7 @@ func AppendRelayLogAdminInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo,
 	if events := RequestPolicy(ctx).Events(); len(events) > 0 {
 		other.SetAdmin("request_policy", events)
 	}
+	RecordBillingPriceSnapshot(relayInfo)
 }
 
 func GenerateTextOtherInfo(ctx *gin.Context, relayInfo *relaycommon.RelayInfo, modelRatio, groupRatio, completionRatio float64,

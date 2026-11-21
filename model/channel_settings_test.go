@@ -195,3 +195,9 @@ func TestInferencePresetSettingsAndDatabaseRoundTrip(t *testing.T) {
 		})
 	}
 }
+
+func TestGetOtherSettingsCarriesDeploymentID(t *testing.T) {
+	channel := &Channel{OtherInfo: `{"source":"ionet","deployment_id":"deploy-7"}`}
+	settings := channel.GetOtherSettings()
+	require.Equal(t, "deploy-7", settings.DeploymentID)
+}

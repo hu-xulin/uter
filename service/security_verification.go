@@ -458,9 +458,9 @@ func GetVerificationRequirements(identity AuthIdentity, scope string) (*Verifica
 // all: the Resend API is configured, or an SMTP sender exists (legacy single
 // account or the SMTPAccounts rotation list).
 func stepUpEmailDeliveryAvailable() bool {
-	provider := common.OptionMap["EmailProvider"]
+	provider := common.GetOption("EmailProvider")
 	if provider == "resend" {
-		return common.OptionMap["ResendApiKey"] != ""
+		return common.GetOption("ResendApiKey") != ""
 	}
 	if provider != "" && provider != "smtp" {
 		return false
@@ -468,7 +468,7 @@ func stepUpEmailDeliveryAvailable() bool {
 	if common.SMTPServer != "" || common.SMTPAccount != "" {
 		return true
 	}
-	return len(common.ParseSMTPAccounts(common.OptionMap["SMTPAccounts"])) > 0
+	return len(common.ParseSMTPAccounts(common.GetOption("SMTPAccounts"))) > 0
 }
 
 func verificationOAuthProviders(user *model.User) ([]VerificationOAuthProvider, error) {

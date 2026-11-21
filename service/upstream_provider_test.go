@@ -154,3 +154,10 @@ func TestDreamRouterHostWinsOverNonUterRelayType(t *testing.T) {
 	require.Equal(t, CapabilityPartial, provider.Capabilities.OfficialPricing.Status)
 	require.Equal(t, CapabilityPartial, provider.Capabilities.PerSecondPricing.Status)
 }
+
+func TestChannelPricingIdentityCarriesDeployment(t *testing.T) {
+	identity := ChannelPricingIdentityForRequest(60, "https://api.example.com", " deploy-42 ", "gpt-5")
+	require.Equal(t, "uter", identity.Provider)
+	require.Equal(t, "deploy-42", identity.DeploymentId)
+	require.Equal(t, "gpt-5", identity.ModelName)
+}

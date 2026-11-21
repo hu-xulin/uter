@@ -39,6 +39,7 @@ import { cn } from '@/lib/utils'
 import {
   applyBailianCatalog,
   getBailianSyncStatus,
+  getBailianCatalogCoverage,
   refreshBailianCatalog,
   type BailianSyncStatus,
 } from '../api'
@@ -104,6 +105,13 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
     props.onChangeBaseUrl(`https://${workspace.trim()}.${suffix}`)
   }
 
+  const coverageQuery = useQuery({
+    queryKey: ['bailian-catalog-coverage', props.channelId],
+    queryFn: () => getBailianCatalogCoverage(props.channelId ?? 0),
+    enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
   const refresh = useMutation({
     mutationFn: () => refreshBailianCatalog(props.channelId ?? 0),
     onSuccess: () => {
@@ -314,6 +322,39 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               <span>
                 {t('Due channels')}: {scheduled.due_channels}
               </span>
+            </div>
+          ) : null}
+
+          {coverageQuery.data ? (
+            <div className='space-y-1.5 border-t pt-2'>
+              <div className='flex flex-wrap items-center gap-2 text-sm'>
+                <span className='text-muted-foreground'>
+                  {t('Catalog coverage')}:
+                </span>
+                <Badge variant='outline'>
+                  {coverageQuery.data.matched} /{' '}
+                  {coverageQuery.data.channel_models}
+                </Badge>
+                {coverageQuery.data.unmatched > 0 ? (
+                  <Badge variant='warning'>
+                    {t('{{count}} unmatched', {
+                      count: coverageQuery.data.unmatched,
+                    })}
+                  </Badge>
+                ) : null}
+              </div>
+              {coverageQuery.data.unmatched > 0 ? (
+                <ul className='text-muted-foreground space-y-0.5 text-sm'>
+                  {coverageQuery.data.models
+                    .filter((item) => !item.in_catalog)
+                    .slice(0, 8)
+                    .map((item) => (
+                      <li key={item.model_name}>
+                        {item.model_name} · {t(item.action)}
+                      </li>
+                    ))}
+                </ul>
+              ) : null}
             </div>
           ) : null}
         </div>

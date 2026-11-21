@@ -67,7 +67,7 @@ var (
 
 // LoadDreamRouterSnapshot returns the last legacy full-sync snapshot.
 func LoadDreamRouterSnapshot() *DreamRouterSnapshot {
-	raw := strings.TrimSpace(common.OptionMap[dreamRouterSyncSnapshotKey])
+	raw := strings.TrimSpace(common.GetOption(dreamRouterSyncSnapshotKey))
 	if raw == "" {
 		return nil
 	}

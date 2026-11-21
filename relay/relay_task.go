@@ -273,11 +273,13 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 	}
 	channelType := common.GetContextKeyInt(c, constant.ContextKeyChannelType)
 	channelBaseURL := common.GetContextKeyString(c, constant.ContextKeyChannelBaseUrl)
+	deploymentID := ""
 	if info.ChannelMeta != nil {
 		channelType = info.ChannelType
 		channelBaseURL = info.ChannelBaseUrl
+		deploymentID = info.ChannelMeta.ChannelOtherSettings.DeploymentID
 	}
-	pricingIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, "", modelName)
+	pricingIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, deploymentID, modelName)
 	pricingIdentity.ChannelId = info.GetChannelID()
 	channelPricing := model.ResolveEffectiveChannelPricingFor(pricingIdentity)
 	if channelPricing.Exists && channelPricing.Reason != "" {
@@ -310,6 +312,9 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingPurchaseVerified = channelPricing.Pricing.PurchaseVerified
+		info.ChannelPricingPurchaseSource = channelPricing.Pricing.PurchaseSource
+		info.ChannelPricingPurchaseVersion = channelPricing.Pricing.PurchaseVersion
 		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
 		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
@@ -359,6 +364,9 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingPurchaseVerified = channelPricing.Pricing.PurchaseVerified
+		info.ChannelPricingPurchaseSource = channelPricing.Pricing.PurchaseSource
+		info.ChannelPricingPurchaseVersion = channelPricing.Pricing.PurchaseVersion
 		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
 		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
@@ -407,6 +415,9 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		info.ChannelPricingRegion = pricingIdentity.Region
 		info.ChannelPricingDeployment = pricingIdentity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.Pricing.PurchaseUSD
+		info.ChannelPricingPurchaseVerified = channelPricing.Pricing.PurchaseVerified
+		info.ChannelPricingPurchaseSource = channelPricing.Pricing.PurchaseSource
+		info.ChannelPricingPurchaseVersion = channelPricing.Pricing.PurchaseVersion
 		info.ChannelPricingCurrency = channelPricing.Pricing.Currency
 		info.ChannelPricingFXRate = channelPricing.Pricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Pricing.Version
@@ -463,7 +474,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			groupRatioInfo := helper.HandleGroupRatio(c, info)
 			// 渠道价按官方价×上游折扣反推；任务按秒/按张计费走表达式，折扣以倍率
 			// 形式并入有效组倍率，结算快照沿用同一数值，避免预扣与结算口径漂移。
-			usageIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, "", modelName)
+			usageIdentity := service.ChannelPricingIdentityForRequest(channelType, channelBaseURL, deploymentID, modelName)
 			usageIdentity.ChannelId = info.ChannelId
 			effectiveGroupRatio := groupRatioInfo.GroupRatio * model.ResolveChannelUsageDiscountFor(usageIdentity)
 			quota, clamp := common.QuotaRoundChecked(cost * common.QuotaPerUnit * effectiveGroupRatio)
@@ -478,6 +489,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		}
 	}
 	info.PriceData = priceData
+	service.RecordBillingPriceSnapshot(info)
 
 	// 5. 计费估算：让适配器根据用户请求提供 OtherRatios（时长、分辨率等）
 	//    必须在 ModelPriceHelperPerCall 之后调用（它会重建 PriceData）。

@@ -24,13 +24,13 @@
 
 ## 2. Rules
 
-1. UI 字体栈逐字保留 `web/src/styles/theme.css:301-306`；正文 = `var(--ds-font-body)` = `var(--ds-font-ui)`
-2. 代码字体栈逐字保留 `theme.css:324-328`；CJK 回退置于 generic `monospace` 之后，保证拉丁数字仍等宽
+1. UI 字体栈以 `--font-ui` 为准；打包的 Noto Sans SC Variable（100–900）必须排在本地思源黑体之前，否则 300 字重会回落到 Medium；正文 = `var(--ds-font-body)` = `var(--ds-font-ui)`
+2. 代码字体栈以 `--font-mono` 为准；CJK 回退置于 generic `monospace` 之后，且打包 Noto Sans SC 先于本地思源，保证拉丁数字等宽且中文字重一致
 3. 禁止换成 Geist / Roboto / Arial-only / 任何新字体；允许优化字体加载与回退顺序，但必须保持中英文显示能力
 4. 字号阶梯：12 / 13 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 48 px，对应 `--ds-text-2xs` … `--ds-text-5xl`
 5. 正文默认 14px/22px；长文本 16px/26px；普通可见文字不得低于 12px
 6. 独立行高 Token：caption 18、code 20、body 22、base 24、long 26、h3 26、h2 38、h1 44、display 56、table 20、button 20 px；组件不得写死行高
-7. 字重：regular 400 / medium 500 / semibold 600 / bold 700
+7. 字重：regular 400 / medium 500 / semibold 600 / bold 700；Inter 与思源黑体均以可变字体打包 100–900，中英文阶梯一致
 8. 金额、余额、Token 数量、价格、用量、订单号、统计指标强制 `font-variant-numeric: tabular-nums`
 9. 代码 / API Key / 模型标识 / Request ID 强制 `var(--ds-font-mono)`；代码默认 13px/20px
 10. H5 输入框默认字号 ≥16px（`--ds-control-h5-input-font-size`），防止 iOS Safari 自动放大
@@ -42,9 +42,9 @@
 
 | Token | Light | Dark | 单位 | 说明 |
 |---|---|---|---|---|
-| `--ds-font-ui` | 'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' | —（同值） | stack | UI 字体栈（中英文 + Emoji 回退） |
+| `--ds-font-ui` | 'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', 'Noto Sans CJK SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji' | —（同值） | stack | UI 字体栈（中英文 + Emoji 回退） |
 | `--ds-font-body` | var(--ds-font-ui) | —（同值） | stack | 正文字体 = UI 字体别名 |
-| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
+| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
 | `--ds-text-2xs` | 12px | —（同值） | px | 最小可见文字（全站下限） |
 | `--ds-text-xs` | 13px | —（同值） | px | 密集表格 / 代码 / 标签 |
 | `--ds-text-sm` | 14px | —（同值） | px | 正文默认 |

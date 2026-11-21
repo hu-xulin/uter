@@ -321,7 +321,7 @@ type bailianChannelSyncStateSetting struct {
 
 func loadBailianChannelSyncState() bailianChannelSyncStateSetting {
 	setting := bailianChannelSyncStateSetting{Channels: map[string]dreamRouterChannelSyncState{}}
-	raw := strings.TrimSpace(common.OptionMap[bailianChannelSyncStateKey])
+	raw := strings.TrimSpace(common.GetOption(bailianChannelSyncStateKey))
 	if raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
@@ -353,7 +353,7 @@ func saveBailianUpstreamSyncStatus(status *BailianUpstreamSyncStatus) {
 
 // LoadBailianUpstreamSyncStatus returns the last scheduled/manual sync outcome.
 func LoadBailianUpstreamSyncStatus() *BailianUpstreamSyncStatus {
-	raw := strings.TrimSpace(common.OptionMap[BailianUpstreamSyncStatusKey])
+	raw := strings.TrimSpace(common.GetOption(BailianUpstreamSyncStatusKey))
 	if raw == "" {
 		return nil
 	}

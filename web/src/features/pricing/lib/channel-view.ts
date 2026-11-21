@@ -71,6 +71,7 @@ function applyChannelPrice(
     return merged
   }
   if (price.quota_type === 4) {
+    merged.quota_type = 4
     merged.billing_mode = 'tiered_expr'
     merged.billing_expr = price.billing_expr ?? ''
     merged.model_ratio = 0
@@ -79,7 +80,10 @@ function applyChannelPrice(
     return merged
   }
   if (price.quota_type === 2) {
+    merged.quota_type = 2
     merged.channel_internal_per_second_usd = price.per_second_usd
+    merged.model_ratio = 0
+    merged.model_price = 0
     return merged
   }
   if (price.quota_type === 1) {

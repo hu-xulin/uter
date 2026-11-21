@@ -245,6 +245,21 @@ export interface FetchModelsResponse {
   data?: string[]
 }
 
+export interface ChannelPricingRawComponent {
+  type: string
+  name?: string
+  raw_amount: number
+  raw_currency: string
+  raw_unit: string
+  normalized_usd: number
+  fx_rate?: number
+  fx_source?: string
+  fx_timestamp?: number
+  currency_inferred: boolean
+  price_source: string
+  effective_at?: number
+}
+
 export interface ChannelOfficialPricingTier {
   range_name: string
   time_band?: string
@@ -259,6 +274,7 @@ export interface ChannelOfficialPricingTier {
   per_unit_usd?: number
   unit: string
   raw_price_types?: string[]
+  raw_components?: ChannelPricingRawComponent[]
 }
 
 export interface ChannelPricingComponentView {
@@ -285,6 +301,19 @@ export interface ChannelOfficialPricingView {
   review_reasons?: string[]
 }
 
+export interface ChannelUpstreamQuoteTier {
+  range_name: string
+  time_band?: string
+  min_input_tokens?: number
+  max_input_tokens?: number
+  unit: string
+  input_per_million_usd?: number
+  output_per_million_usd?: number
+  cache_per_million_usd?: number
+  per_call_usd?: number
+  raw_components?: ChannelPricingRawComponent[]
+}
+
 export interface ChannelUpstreamQuoteView {
   price_basis: string
   currency: string
@@ -296,6 +325,7 @@ export interface ChannelUpstreamQuoteView {
   source: string
   discount_group?: string
   discount_ratio?: number
+  tiers?: ChannelUpstreamQuoteTier[]
 }
 
 export interface ChannelInternalPricingTierView {
@@ -318,6 +348,8 @@ export interface ChannelInternalPricingView {
     | 'per_second'
     | 'per_minute'
     | 'tiered_table'
+    | 'tiered_expr'
+  billing_expr?: string
   tiers?: ChannelInternalPricingTierView[]
   input_per_million_usd?: number
   output_per_million_usd?: number
@@ -325,6 +357,14 @@ export interface ChannelInternalPricingView {
   create_cache_per_million_usd?: number
   audio_input_per_million_usd?: number
   audio_output_per_million_usd?: number
+  image_input_per_million_usd?: number
+  thinking_input_per_million_usd?: number
+  thinking_output_per_million_usd?: number
+  thinking_cache_per_million_usd?: number
+  thinking_create_cache_per_million_usd?: number
+  thinking_image_input_per_million_usd?: number
+  multi_input_output_per_million_usd?: number
+  thinking_multi_input_output_per_million_usd?: number
   per_call_usd?: number
   per_second_usd?: number
   per_minute_usd?: number
@@ -336,10 +376,19 @@ export interface ChannelInternalPricingView {
   updated_at: number
 }
 
+export interface ChannelPurchaseCostView {
+  pricing: ChannelInternalPricingView
+  verified: boolean
+  source?: string
+  note?: string
+  updated_at?: number
+}
+
 export interface ChannelModelPricingRecord {
   channel_id: number
   model_name: string
   provider: string
+  model_provider?: string
   region: string
   deployment_id: string
   currency: string
@@ -366,6 +415,7 @@ export interface ChannelModelPricingRecord {
   official?: ChannelOfficialPricingView
   upstream_quote?: ChannelUpstreamQuoteView
   internal?: ChannelInternalPricingView
+  purchase?: ChannelPurchaseCostView
 }
 
 export interface ChannelModelPricingListResponse {

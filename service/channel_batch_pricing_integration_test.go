@@ -653,3 +653,111 @@ func TestBatchPricingBlocksAudioLoss(t *testing.T) {
 	require.Len(t, result.Skipped, 1)
 	assert.Contains(t, result.Skipped[0].Reason, "audio_input")
 }
+
+func TestBatchPricingScalesThinkingAndImageDimensions(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output, image, thinkingOut := 3.0, 6.0, 1.5, 9.0
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName: "Default", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+			ImageInputPerMillionUSD: &image, ThinkingOutputPerMillionUSD: &thinkingOut,
+			Unit: "per_1m_token",
+		}},
+	}
+	encoded, _ := common.Marshal(normalized)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 41, Provider: "test", ModelName: "omni-model", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	result, err := ApplyChannelBatchPricingWithOptions(41, BatchPricingOptions{
+		Models: []string{"omni-model"},
+		Basis:  BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		Dimensions: []string{"thinking_output"}, DryRun: false,
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.Len(t, result.Items, 1)
+	item := result.Items[0]
+	require.NotNil(t, item.InputUSD)
+	assert.InDelta(t, 3.0, *item.InputUSD, 1e-9, "unselected dimensions keep the base price")
+	require.NotNil(t, item.ImageInputUSD)
+	assert.InDelta(t, 1.5, *item.ImageInputUSD, 1e-9)
+	require.NotNil(t, item.ThinkingOutputUSD)
+	assert.InDelta(t, 4.5, *item.ThinkingOutputUSD, 1e-9)
+
+	row, err := model.GetChannelModelPricing(41, "omni-model")
+	require.NoError(t, err)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	require.NotNil(t, internal.ThinkingOutputUSDPerMillion)
+	assert.InDelta(t, 4.5, *internal.ThinkingOutputUSDPerMillion, 1e-9)
+
+	effective := model.ResolveEffectiveChannelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 41, Provider: "test", ModelName: "omni-model",
+	})
+	require.True(t, effective.Billable)
+	assert.Contains(t, effective.Pricing.BillingExpr, "rt > 0 ? 4.5 : 6")
+}
+
+func TestBatchPricingUsesContractCostAndMarksVerification(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output, quote := 2.0, 4.0, 1.5
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		Tiers:        []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token"}},
+		ChannelPrice: &model.ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: &quote, Unit: "per_1m_token"},
+	}
+	encoded, _ := common.Marshal(normalized)
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 51, Provider: "test", ModelName: "contract-model", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "test", FetchedAt: 1,
+	}})
+	require.NoError(t, err)
+	identity := model.ChannelPricingIdentity{ChannelId: 51, Provider: "test", ModelName: "contract-model"}
+	require.NoError(t, model.SetChannelInternalPricingFor(identity, model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		OutputUSDPerMillion: &output, Source: "manual", UpdatedAt: 2,
+	}))
+	contractInput, contractOutput := 1.0, 2.0
+	require.NoError(t, model.SetChannelPurchaseCostFor(identity, model.ChannelPurchaseCost{
+		Pricing: model.ChannelInternalPricing{
+			Mode:               model.ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion: &contractInput, OutputUSDPerMillion: &contractOutput,
+		},
+		Verified: true, Source: "contract",
+	}))
+
+	result, err := ApplyChannelBatchPricingWithOptions(51, BatchPricingOptions{
+		Models: []string{"contract-model"}, Basis: BatchPricingBasisCurrent,
+		Mode: BatchPricingModeNone, OverwriteManual: true, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, result.Items, 1)
+	item := result.Items[0]
+	require.NotNil(t, item.PurchaseUSD)
+	assert.InDelta(t, 1.0, *item.PurchaseUSD, 1e-9, "contract cost must replace the public quote")
+	assert.True(t, item.CostVerified)
+	assert.True(t, item.MarginVerified)
+	require.NotNil(t, item.MarginRate)
+	assert.InDelta(t, 0.5, *item.MarginRate, 1e-9)
+
+	// An unverified cost still enables the comparison but cannot claim a
+	// verified margin.
+	require.NoError(t, model.SetChannelPurchaseCostFor(identity, model.ChannelPurchaseCost{
+		Pricing: model.ChannelInternalPricing{
+			Mode:               model.ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion: &contractInput, OutputUSDPerMillion: &contractOutput,
+		},
+		Verified: false, Source: "draft",
+	}))
+	result, err = ApplyChannelBatchPricingWithOptions(51, BatchPricingOptions{
+		Models: []string{"contract-model"}, Basis: BatchPricingBasisCurrent,
+		Mode: BatchPricingModeNone, OverwriteManual: true, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.False(t, result.Items[0].CostVerified)
+	require.False(t, result.Items[0].MarginVerified)
+}

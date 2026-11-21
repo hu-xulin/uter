@@ -6,6 +6,7 @@ import (
 	"math"
 	"slices"
 	"strings"
+	"sync"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
@@ -32,20 +33,28 @@ const (
 
 // BatchPricingItem is one previewed/written internal price.
 type BatchPricingItem struct {
-	ModelName      string   `json:"model_name"`
-	Provider       string   `json:"provider,omitempty"`
-	Region         string   `json:"region,omitempty"`
-	DeploymentId   string   `json:"deployment_id,omitempty"`
-	Mode           string   `json:"mode"`
-	InputUSD       *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSD      *float64 `json:"output_per_million_usd,omitempty"`
-	AudioInputUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
-	CacheUSD       *float64 `json:"cache_per_million_usd,omitempty"`
-	CacheWriteUSD  *float64 `json:"create_cache_per_million_usd,omitempty"`
-	PerCallUSD     *float64 `json:"per_call_usd,omitempty"`
-	PerSecondUSD   *float64 `json:"per_second_usd,omitempty"`
-	PerMinuteUSD   *float64 `json:"per_minute_usd,omitempty"`
+	ModelName                   string   `json:"model_name"`
+	Provider                    string   `json:"provider,omitempty"`
+	Region                      string   `json:"region,omitempty"`
+	DeploymentId                string   `json:"deployment_id,omitempty"`
+	Mode                        string   `json:"mode"`
+	InputUSD                    *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSD                   *float64 `json:"output_per_million_usd,omitempty"`
+	AudioInputUSD               *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSD              *float64 `json:"audio_output_per_million_usd,omitempty"`
+	CacheUSD                    *float64 `json:"cache_per_million_usd,omitempty"`
+	CacheWriteUSD               *float64 `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputUSD               *float64 `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputUSD            *float64 `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputUSD           *float64 `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCacheUSD            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCacheUSD      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputUSD       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputUSD         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputUSD *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	PerCallUSD                  *float64 `json:"per_call_usd,omitempty"`
+	PerSecondUSD                *float64 `json:"per_second_usd,omitempty"`
+	PerMinuteUSD                *float64 `json:"per_minute_usd,omitempty"`
 	// Version is the price row version the preview calculated from. Send it
 	// back with the apply request so a changed row cannot be mixed into the
 	// confirmed result.
@@ -66,7 +75,11 @@ type BatchPricingItem struct {
 	DimensionMargins []BatchDimensionMargin `json:"dimension_margins,omitempty"`
 	// MarginVerified is false when a sold dimension has no purchase price to
 	// compare against; the UI must not present that as verified.
-	MarginVerified  bool   `json:"margin_verified"`
+	MarginVerified bool `json:"margin_verified"`
+	// CostVerified is true only when the comparison used an operator-confirmed
+	// contract cost. A public upstream quote is an estimate and leaves it false.
+	CostVerified    bool   `json:"cost_verified"`
+	CostSource      string `json:"cost_source,omitempty"`
 	ProtectionState string `json:"protection_state,omitempty"`
 	// Tiers echoes the tiered sale prices this rule produced.
 	Tiers []BatchPricingTier `json:"tiers,omitempty"`
@@ -74,17 +87,25 @@ type BatchPricingItem struct {
 
 // BatchPricingTier is one tiered sale-price preview row.
 type BatchPricingTier struct {
-	RangeName      string   `json:"range_name"`
-	TimeBand       string   `json:"time_band,omitempty"`
-	MinInputTokens int64    `json:"min_input_tokens,omitempty"`
-	MaxInputTokens int64    `json:"max_input_tokens,omitempty"`
-	InputUSD       *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSD      *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSD       *float64 `json:"cache_per_million_usd,omitempty"`
-	CacheWriteUSD  *float64 `json:"create_cache_per_million_usd,omitempty"`
-	AudioInputUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
-	Unit           string   `json:"unit"`
+	RangeName                   string   `json:"range_name"`
+	TimeBand                    string   `json:"time_band,omitempty"`
+	MinInputTokens              int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens              int64    `json:"max_input_tokens,omitempty"`
+	InputUSD                    *float64 `json:"input_per_million_usd,omitempty"`
+	OutputUSD                   *float64 `json:"output_per_million_usd,omitempty"`
+	CacheUSD                    *float64 `json:"cache_per_million_usd,omitempty"`
+	CacheWriteUSD               *float64 `json:"create_cache_per_million_usd,omitempty"`
+	AudioInputUSD               *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSD              *float64 `json:"audio_output_per_million_usd,omitempty"`
+	ImageInputUSD               *float64 `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputUSD            *float64 `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputUSD           *float64 `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCacheUSD            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCacheUSD      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputUSD       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputUSD         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputUSD *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	Unit                        string   `json:"unit"`
 }
 
 // BatchDimensionMargin is the cost check for one billable dimension.
@@ -133,31 +154,47 @@ type batchPendingWrite struct {
 }
 
 type batchBaseTier struct {
-	name           string
-	timeBand       string
-	minInput       int64
-	maxInput       int64
-	inputUSD       *float64
-	outputUSD      *float64
-	cacheUSD       *float64
-	cacheWriteUSD  *float64
-	audioInputUSD  *float64
-	audioOutputUSD *float64
-	unit           string
+	name                        string
+	timeBand                    string
+	minInput                    int64
+	maxInput                    int64
+	inputUSD                    *float64
+	outputUSD                   *float64
+	cacheUSD                    *float64
+	cacheWriteUSD               *float64
+	audioInputUSD               *float64
+	audioOutputUSD              *float64
+	imageInputUSD               *float64
+	thinkingInputUSD            *float64
+	thinkingOutputUSD           *float64
+	thinkingCacheUSD            *float64
+	thinkingCreateCacheUSD      *float64
+	thinkingImageInputUSD       *float64
+	multiInputOutputUSD         *float64
+	thinkingMultiInputOutputUSD *float64
+	unit                        string
 }
 
 type batchBasePrice struct {
-	mode           string
-	tiers          []batchBaseTier
-	inputUSD       *float64
-	outputUSD      *float64
-	cacheUSD       *float64
-	cacheWriteUSD  *float64
-	audioInputUSD  *float64
-	audioOutputUSD *float64
-	perCallUSD     *float64
-	perSecondUSD   *float64
-	perMinuteUSD   *float64
+	mode                        string
+	tiers                       []batchBaseTier
+	inputUSD                    *float64
+	outputUSD                   *float64
+	cacheUSD                    *float64
+	cacheWriteUSD               *float64
+	audioInputUSD               *float64
+	audioOutputUSD              *float64
+	imageInputUSD               *float64
+	thinkingInputUSD            *float64
+	thinkingOutputUSD           *float64
+	thinkingCacheUSD            *float64
+	thinkingCreateCacheUSD      *float64
+	thinkingImageInputUSD       *float64
+	multiInputOutputUSD         *float64
+	thinkingMultiInputOutputUSD *float64
+	perCallUSD                  *float64
+	perSecondUSD                *float64
+	perMinuteUSD                *float64
 }
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
@@ -199,6 +236,9 @@ type BatchPricingOptions struct {
 // BatchPricingDimensions lists the dimensions a rule may target.
 var BatchPricingDimensions = []string{
 	"input", "output", "cache_read", "cache_write", "audio_input", "audio_output",
+	"image_input", "thinking_input", "thinking_output", "thinking_cache",
+	"thinking_create_cache", "thinking_image_input", "multi_input_output",
+	"thinking_multi_input_output",
 	"per_call", "per_second", "per_minute",
 }
 
@@ -407,6 +447,26 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
 			continue
 		}
+		applyDimension := func(raw *float64, dimension string, internalTarget, itemTarget **float64) bool {
+			next, ok := apply(raw, dimension)
+			if !ok {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+				return false
+			}
+			*internalTarget = next
+			*itemTarget = next
+			return true
+		}
+		if !applyDimension(base.imageInputUSD, "image_input", &internal.ImageInputUSDPerMillion, &item.ImageInputUSD) ||
+			!applyDimension(base.thinkingInputUSD, "thinking_input", &internal.ThinkingInputUSDPerMillion, &item.ThinkingInputUSD) ||
+			!applyDimension(base.thinkingOutputUSD, "thinking_output", &internal.ThinkingOutputUSDPerMillion, &item.ThinkingOutputUSD) ||
+			!applyDimension(base.thinkingCacheUSD, "thinking_cache", &internal.ThinkingCacheUSDPerMillion, &item.ThinkingCacheUSD) ||
+			!applyDimension(base.thinkingCreateCacheUSD, "thinking_create_cache", &internal.ThinkingCreateCacheUSDPerMillion, &item.ThinkingCreateCacheUSD) ||
+			!applyDimension(base.thinkingImageInputUSD, "thinking_image_input", &internal.ThinkingImageInputUSDPerMillion, &item.ThinkingImageInputUSD) ||
+			!applyDimension(base.multiInputOutputUSD, "multi_input_output", &internal.MultiInputOutputUSDPerMillion, &item.MultiInputOutputUSD) ||
+			!applyDimension(base.thinkingMultiInputOutputUSD, "thinking_multi_input_output", &internal.ThinkingMultiInputOutputUSDPerMillion, &item.ThinkingMultiInputOutputUSD) {
+			continue
+		}
 		if next, ok := apply(base.perCallUSD, "per_call"); ok && next != nil {
 			item.PerCallUSD = next
 			internal.PerCallUSD = next
@@ -480,6 +540,39 @@ func ApplyChannelBatchPricingWithOptions(
 					break
 				}
 				nextTier.AudioOutputUSDPerMillion = audioOutput
+				var okDim bool
+				if nextTier.ImageInputUSDPerMillion, okDim = applyTier(tier.imageInputUSD, "image_input"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingInputUSDPerMillion, okDim = applyTier(tier.thinkingInputUSD, "thinking_input"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingOutputUSDPerMillion, okDim = applyTier(tier.thinkingOutputUSD, "thinking_output"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingCacheUSDPerMillion, okDim = applyTier(tier.thinkingCacheUSD, "thinking_cache"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingCreateCacheUSDPerMillion, okDim = applyTier(tier.thinkingCreateCacheUSD, "thinking_create_cache"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingImageInputUSDPerMillion, okDim = applyTier(tier.thinkingImageInputUSD, "thinking_image_input"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.MultiInputOutputUSDPerMillion, okDim = applyTier(tier.multiInputOutputUSD, "multi_input_output"); !okDim {
+					failed = true
+					break
+				}
+				if nextTier.ThinkingMultiInputOutputUSDPerMillion, okDim = applyTier(tier.thinkingMultiInputOutputUSD, "thinking_multi_input_output"); !okDim {
+					failed = true
+					break
+				}
 				saleTiers = append(saleTiers, nextTier)
 				previewTiers = append(previewTiers, BatchPricingTier{
 					RangeName: nextTier.RangeName, TimeBand: nextTier.TimeBand,
@@ -487,7 +580,15 @@ func ApplyChannelBatchPricingWithOptions(
 					InputUSD: nextTier.InputUSDPerMillion, OutputUSD: nextTier.OutputUSDPerMillion,
 					AudioInputUSD: nextTier.AudioInputUSDPerMillion, AudioOutputUSD: nextTier.AudioOutputUSDPerMillion,
 					CacheUSD: nextTier.CacheUSDPerMillion, CacheWriteUSD: nextTier.CreateCacheUSDPerMillion,
-					Unit: "per_1m_token",
+					ImageInputUSD:               nextTier.ImageInputUSDPerMillion,
+					ThinkingInputUSD:            nextTier.ThinkingInputUSDPerMillion,
+					ThinkingOutputUSD:           nextTier.ThinkingOutputUSDPerMillion,
+					ThinkingCacheUSD:            nextTier.ThinkingCacheUSDPerMillion,
+					ThinkingCreateCacheUSD:      nextTier.ThinkingCreateCacheUSDPerMillion,
+					ThinkingImageInputUSD:       nextTier.ThinkingImageInputUSDPerMillion,
+					MultiInputOutputUSD:         nextTier.MultiInputOutputUSDPerMillion,
+					ThinkingMultiInputOutputUSD: nextTier.ThinkingMultiInputOutputUSDPerMillion,
+					Unit:                        "per_1m_token",
 				})
 			}
 			if failed {
@@ -518,6 +619,13 @@ func ApplyChannelBatchPricingWithOptions(
 		margins, verified, violated := evaluateBatchMarginDimensions(purchaseDimensions, item, options.MinMarginRate)
 		item.DimensionMargins = margins
 		item.MarginVerified = verified
+		if cost := model.ParseChannelPurchaseCost(row.PurchasePricing); cost != nil {
+			item.CostSource = cost.Source
+			item.CostVerified = cost.Verified && verified
+			if !cost.Verified {
+				item.MarginVerified = false
+			}
+		}
 		if len(item.Tiers) > 0 {
 			annotateBatchTierMargin(&item)
 		}
@@ -618,10 +726,70 @@ func ApplyChannelBatchPricingWithOptions(
 	return result, nil
 }
 
+// batchBaseFromContractCost converts the operator's contract cost into the
+// same dimension set used for margins. It is deliberately independent of the
+// upstream quote so the two never get mixed.
+func batchBaseFromContractCost(pricing model.ChannelInternalPricing) (batchBasePrice, string) {
+	if len(pricing.Tiers) > 0 {
+		tiers := make([]batchBaseTier, 0, len(pricing.Tiers))
+		for _, tier := range pricing.Tiers {
+			tiers = append(tiers, batchBaseTier{
+				name: tier.RangeName, timeBand: tier.TimeBand,
+				minInput: tier.MinInputTokens, maxInput: tier.MaxInputTokens,
+				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
+				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
+				audioInputUSD: tier.AudioInputUSDPerMillion, audioOutputUSD: tier.AudioOutputUSDPerMillion,
+				imageInputUSD:               tier.ImageInputUSDPerMillion,
+				thinkingInputUSD:            tier.ThinkingInputUSDPerMillion,
+				thinkingOutputUSD:           tier.ThinkingOutputUSDPerMillion,
+				thinkingCacheUSD:            tier.ThinkingCacheUSDPerMillion,
+				thinkingCreateCacheUSD:      tier.ThinkingCreateCacheUSDPerMillion,
+				thinkingImageInputUSD:       tier.ThinkingImageInputUSDPerMillion,
+				multiInputOutputUSD:         tier.MultiInputOutputUSDPerMillion,
+				thinkingMultiInputOutputUSD: tier.ThinkingMultiInputOutputUSDPerMillion,
+				unit:                        tier.Unit,
+			})
+		}
+		return batchBasePrice{mode: model.ChannelPricingModeTieredTable, tiers: tiers}, ""
+	}
+	switch pricing.Mode {
+	case model.ChannelPricingModePerMillionTokens:
+		if pricing.InputUSDPerMillion == nil || *pricing.InputUSDPerMillion <= 0 {
+			return batchBasePrice{}, "contract cost has no token input price"
+		}
+		return batchBasePrice{
+			mode:     model.ChannelPricingModePerMillionTokens,
+			inputUSD: pricing.InputUSDPerMillion, outputUSD: pricing.OutputUSDPerMillion,
+			cacheUSD: pricing.CacheUSDPerMillion, cacheWriteUSD: pricing.CreateCacheUSDPerMillion,
+			audioInputUSD: pricing.AudioInputUSDPerMillion, audioOutputUSD: pricing.AudioOutputUSDPerMillion,
+			imageInputUSD:               pricing.ImageInputUSDPerMillion,
+			thinkingInputUSD:            pricing.ThinkingInputUSDPerMillion,
+			thinkingOutputUSD:           pricing.ThinkingOutputUSDPerMillion,
+			thinkingCacheUSD:            pricing.ThinkingCacheUSDPerMillion,
+			thinkingCreateCacheUSD:      pricing.ThinkingCreateCacheUSDPerMillion,
+			thinkingImageInputUSD:       pricing.ThinkingImageInputUSDPerMillion,
+			multiInputOutputUSD:         pricing.MultiInputOutputUSDPerMillion,
+			thinkingMultiInputOutputUSD: pricing.ThinkingMultiInputOutputUSDPerMillion,
+		}, ""
+	case model.ChannelPricingModePerCall:
+		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: pricing.PerCallUSD}, ""
+	case model.ChannelPricingModePerSecond:
+		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: pricing.PerSecondUSD}, ""
+	case model.ChannelPricingModePerMinute:
+		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: pricing.PerMinuteUSD}, ""
+	}
+	return batchBasePrice{}, "unsupported contract cost mode"
+}
+
 // resolveBatchPurchaseDimensions reads the channel quote separately from the
 // batch basis. When the basis is "current", the base amount is the sale price
 // and must never be used as the purchase cost.
 func resolveBatchPurchaseDimensions(row model.ChannelModelPricing) batchBasePrice {
+	if cost := model.ParseChannelPurchaseCost(row.PurchasePricing); cost != nil {
+		if base, reason := batchBaseFromContractCost(cost.Pricing); reason == "" {
+			return base
+		}
+	}
 	if strings.TrimSpace(row.NormalizedPricing) == "" {
 		return batchBasePrice{}
 	}
@@ -637,7 +805,16 @@ func resolveBatchPurchaseDimensions(row model.ChannelModelPricing) batchBasePric
 				minInput: item.MinInputTokens, maxInput: item.MaxInputTokens,
 				inputUSD: item.InputPerMillionUSD, outputUSD: item.OutputPerMillionUSD,
 				cacheUSD: item.CachePerMillionUSD, cacheWriteUSD: item.CreateCachePerMillionUSD,
-				unit: item.Unit,
+				audioInputUSD: item.AudioInputPerMillionUSD, audioOutputUSD: item.AudioOutputPerMillionUSD,
+				imageInputUSD:               item.ImageInputPerMillionUSD,
+				thinkingInputUSD:            item.ThinkingInputPerMillionUSD,
+				thinkingOutputUSD:           item.ThinkingOutputPerMillionUSD,
+				thinkingCacheUSD:            item.ThinkingCachePerMillionUSD,
+				thinkingCreateCacheUSD:      item.ThinkingCreateCachePerMillionUSD,
+				thinkingImageInputUSD:       item.ThinkingImageInputPerMillionUSD,
+				multiInputOutputUSD:         item.MultiInputOutputPerMillionUSD,
+				thinkingMultiInputOutputUSD: item.ThinkingMultiInputOutputPerMillionUSD,
+				unit:                        item.Unit,
 			})
 		}
 		return batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, tiers: tiers}
@@ -675,6 +852,14 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 		{"cache_write", base.cacheWriteUSD, item.CacheWriteUSD},
 		{"audio_input", base.audioInputUSD, item.AudioInputUSD},
 		{"audio_output", base.audioOutputUSD, item.AudioOutputUSD},
+		{"image_input", base.imageInputUSD, item.ImageInputUSD},
+		{"thinking_input", base.thinkingInputUSD, item.ThinkingInputUSD},
+		{"thinking_output", base.thinkingOutputUSD, item.ThinkingOutputUSD},
+		{"thinking_cache", base.thinkingCacheUSD, item.ThinkingCacheUSD},
+		{"thinking_create_cache", base.thinkingCreateCacheUSD, item.ThinkingCreateCacheUSD},
+		{"thinking_image_input", base.thinkingImageInputUSD, item.ThinkingImageInputUSD},
+		{"multi_input_output", base.multiInputOutputUSD, item.MultiInputOutputUSD},
+		{"thinking_multi_input_output", base.thinkingMultiInputOutputUSD, item.ThinkingMultiInputOutputUSD},
 		{"per_call", base.perCallUSD, item.PerCallUSD},
 		{"per_second", base.perSecondUSD, item.PerSecondUSD},
 		{"per_minute", base.perMinuteUSD, item.PerMinuteUSD},
@@ -696,6 +881,9 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 		}
 		var inputPurchase, outputPurchase, cachePurchase, cacheWritePurchase *float64
 		var audioInputPurchase, audioOutputPurchase *float64
+		var imagePurchase, thinkingInputPurchase, thinkingOutputPurchase *float64
+		var thinkingCachePurchase, thinkingCreateCachePurchase, thinkingImagePurchase *float64
+		var multiOutputPurchase, thinkingMultiOutputPurchase *float64
 		if purchase != nil {
 			inputPurchase = purchase.inputUSD
 			outputPurchase = purchase.outputUSD
@@ -703,6 +891,14 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 			cacheWritePurchase = purchase.cacheWriteUSD
 			audioInputPurchase = purchase.audioInputUSD
 			audioOutputPurchase = purchase.audioOutputUSD
+			imagePurchase = purchase.imageInputUSD
+			thinkingInputPurchase = purchase.thinkingInputUSD
+			thinkingOutputPurchase = purchase.thinkingOutputUSD
+			thinkingCachePurchase = purchase.thinkingCacheUSD
+			thinkingCreateCachePurchase = purchase.thinkingCreateCacheUSD
+			thinkingImagePurchase = purchase.thinkingImageInputUSD
+			multiOutputPurchase = purchase.multiInputOutputUSD
+			thinkingMultiOutputPurchase = purchase.thinkingMultiInputOutputUSD
 		}
 		pairs = append(pairs,
 			batchMarginDimension{name + "/input", inputPurchase, sale.InputUSD},
@@ -711,6 +907,14 @@ func evaluateBatchMarginDimensions(base batchBasePrice, item BatchPricingItem, m
 			batchMarginDimension{name + "/cache_write", cacheWritePurchase, sale.CacheWriteUSD},
 			batchMarginDimension{name + "/audio_input", audioInputPurchase, sale.AudioInputUSD},
 			batchMarginDimension{name + "/audio_output", audioOutputPurchase, sale.AudioOutputUSD},
+			batchMarginDimension{name + "/image_input", imagePurchase, sale.ImageInputUSD},
+			batchMarginDimension{name + "/thinking_input", thinkingInputPurchase, sale.ThinkingInputUSD},
+			batchMarginDimension{name + "/thinking_output", thinkingOutputPurchase, sale.ThinkingOutputUSD},
+			batchMarginDimension{name + "/thinking_cache", thinkingCachePurchase, sale.ThinkingCacheUSD},
+			batchMarginDimension{name + "/thinking_create_cache", thinkingCreateCachePurchase, sale.ThinkingCreateCacheUSD},
+			batchMarginDimension{name + "/thinking_image_input", thinkingImagePurchase, sale.ThinkingImageInputUSD},
+			batchMarginDimension{name + "/multi_input_output", multiOutputPurchase, sale.MultiInputOutputUSD},
+			batchMarginDimension{name + "/thinking_multi_input_output", thinkingMultiOutputPurchase, sale.ThinkingMultiInputOutputUSD},
 		)
 	}
 	margins := make([]BatchDimensionMargin, 0, len(pairs))
@@ -810,6 +1014,13 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 			}
 		}
 	} else if parsedOfficial && len(official.Tiers) > 0 {
+		switch official.PriceKind {
+		case "", "OFFICIAL_ABSOLUTE", "OFFICIAL_RATIO":
+		default:
+			// A provider ratio, discount or estimate is not the official list
+			// price; pricing against it would silently publish a guessed price.
+			return batchBasePrice{}, "official basis unavailable: " + strings.ToLower(strings.ReplaceAll(official.PriceKind, "_", " "))
+		}
 		if len(official.Tiers) > 1 {
 			return batchBasePrice{}, "multiple official price tiers require review"
 		}
@@ -881,6 +1092,14 @@ func batchBaseFromTier(tier model.ChannelPricingTier) (batchBasePrice, string) {
 		base.cacheWriteUSD = tier.CreateCachePerMillionUSD
 		base.audioInputUSD = tier.AudioInputPerMillionUSD
 		base.audioOutputUSD = tier.AudioOutputPerMillionUSD
+		base.imageInputUSD = tier.ImageInputPerMillionUSD
+		base.thinkingInputUSD = tier.ThinkingInputPerMillionUSD
+		base.thinkingOutputUSD = tier.ThinkingOutputPerMillionUSD
+		base.thinkingCacheUSD = tier.ThinkingCachePerMillionUSD
+		base.thinkingCreateCacheUSD = tier.ThinkingCreateCachePerMillionUSD
+		base.thinkingImageInputUSD = tier.ThinkingImageInputPerMillionUSD
+		base.multiInputOutputUSD = tier.MultiInputOutputPerMillionUSD
+		base.thinkingMultiInputOutputUSD = tier.ThinkingMultiInputOutputPerMillionUSD
 		return base, ""
 	}
 	if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
@@ -909,7 +1128,15 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
 				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
 				audioInputUSD: tier.AudioInputUSDPerMillion, audioOutputUSD: tier.AudioOutputUSDPerMillion,
-				unit: tier.Unit,
+				imageInputUSD:               tier.ImageInputUSDPerMillion,
+				thinkingInputUSD:            tier.ThinkingInputUSDPerMillion,
+				thinkingOutputUSD:           tier.ThinkingOutputUSDPerMillion,
+				thinkingCacheUSD:            tier.ThinkingCacheUSDPerMillion,
+				thinkingCreateCacheUSD:      tier.ThinkingCreateCacheUSDPerMillion,
+				thinkingImageInputUSD:       tier.ThinkingImageInputUSDPerMillion,
+				multiInputOutputUSD:         tier.MultiInputOutputUSDPerMillion,
+				thinkingMultiInputOutputUSD: tier.ThinkingMultiInputOutputUSDPerMillion,
+				unit:                        tier.Unit,
 			})
 		}
 		return batchBasePrice{mode: model.ChannelPricingModeTieredTable, tiers: tiers}, ""
@@ -938,6 +1165,14 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 			cacheUSD:      internal.CacheUSDPerMillion,
 			cacheWriteUSD: internal.CreateCacheUSDPerMillion,
 			audioInputUSD: audioInput, audioOutputUSD: audioOutput,
+			imageInputUSD:               internal.ImageInputUSDPerMillion,
+			thinkingInputUSD:            internal.ThinkingInputUSDPerMillion,
+			thinkingOutputUSD:           internal.ThinkingOutputUSDPerMillion,
+			thinkingCacheUSD:            internal.ThinkingCacheUSDPerMillion,
+			thinkingCreateCacheUSD:      internal.ThinkingCreateCacheUSDPerMillion,
+			thinkingImageInputUSD:       internal.ThinkingImageInputUSDPerMillion,
+			multiInputOutputUSD:         internal.MultiInputOutputUSDPerMillion,
+			thinkingMultiInputOutputUSD: internal.ThinkingMultiInputOutputUSDPerMillion,
 		}, ""
 	case model.ChannelPricingModePerCall:
 		if internal.PerCallUSD == nil {
@@ -992,6 +1227,9 @@ func pricingModeForUnit(unit string) string {
 // the official tiers. It never substitutes the list price for a missing
 // purchase price.
 func resolvePurchasePrimaryPrice(row model.ChannelModelPricing) *float64 {
+	if primary := model.PurchaseCostPrimaryUSD(row.PurchasePricing); primary != nil {
+		return primary
+	}
 	raw := strings.TrimSpace(row.NormalizedPricing)
 	if raw == "" {
 		return nil
@@ -1186,8 +1424,14 @@ type ChannelPricingScheduleSetting struct {
 const ChannelPricingScheduleKey = "ChannelPricingSchedule"
 
 // GetChannelPricingSchedule returns one channel's schedule.
+// channelPricingScheduleMutex serializes the read-modify-write of the shared
+// schedule option so concurrent API writes cannot drop each other's entries.
+var channelPricingScheduleMutex sync.Mutex
+
 func GetChannelPricingSchedule(channelID int) (ChannelPricingSchedule, bool) {
-	raw := strings.TrimSpace(common.OptionMap[ChannelPricingScheduleKey])
+	channelPricingScheduleMutex.Lock()
+	defer channelPricingScheduleMutex.Unlock()
+	raw := strings.TrimSpace(common.GetOption(ChannelPricingScheduleKey))
 	if raw == "" || channelID <= 0 {
 		return ChannelPricingSchedule{}, false
 	}
@@ -1204,6 +1448,8 @@ func SetChannelPricingSchedule(channelID int, schedule ChannelPricingSchedule) e
 	if channelID <= 0 {
 		return errors.New("channel id is required")
 	}
+	channelPricingScheduleMutex.Lock()
+	defer channelPricingScheduleMutex.Unlock()
 	if schedule.Enabled {
 		if schedule.Basis != BatchPricingBasisOfficial && schedule.Basis != BatchPricingBasisChannel && schedule.Basis != BatchPricingBasisCurrent {
 			return errors.New("basis must be official, channel or current")
@@ -1238,7 +1484,7 @@ func SetChannelPricingSchedule(channelID int, schedule ChannelPricingSchedule) e
 		}
 	}
 	setting := ChannelPricingScheduleSetting{Channels: map[string]ChannelPricingSchedule{}}
-	if raw := strings.TrimSpace(common.OptionMap[ChannelPricingScheduleKey]); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(ChannelPricingScheduleKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 		if setting.Channels == nil {
 			setting.Channels = map[string]ChannelPricingSchedule{}

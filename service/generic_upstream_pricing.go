@@ -29,6 +29,7 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -160,10 +161,31 @@ func GenericChannelPricingRecords(
 			ChannelId: channelID, Provider: "newapi-compatible",
 			ModelName: name, Currency: official.Currency,
 			OfficialPricing: string(raw), NormalizedPricing: string(normalized),
-			Source: "newapi:/api/pricing", FetchedAt: now.Unix(),
+			InternalPricing: genericExpressionInternalPricing(entry, now.Unix()),
+			Source:          "newapi:/api/pricing", FetchedAt: now.Unix(),
 		})
 	}
 	return records
+}
+
+// genericExpressionInternalPricing mirrors an executable upstream expression
+// as the channel's default sale price. Unsupported rules never become a flat
+// approximation.
+func genericExpressionInternalPricing(entry GenericPricingEntry, updatedAt int64) string {
+	expr := NormalizeUpstreamExpression(entry.BillingExpr)
+	if !expr.Executable {
+		return ""
+	}
+	encoded, err := common.Marshal(model.ChannelInternalPricing{
+		Mode:        model.ChannelPricingModeTieredExpr,
+		BillingExpr: expr.Raw,
+		Source:      "newapi-expression",
+		UpdatedAt:   updatedAt,
+	})
+	if err != nil {
+		return ""
+	}
+	return string(encoded)
 }
 
 func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.ChannelOfficialPricing, bool, []string) {
@@ -171,16 +193,29 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 		Currency: "USD", Source: "newapi:/api/pricing", FetchedAt: fetchedAt,
 	}
 	if entry.BillingMode != "" || strings.TrimSpace(entry.BillingExpr) != "" {
-		view.Unit = "tiered_expr"
-		view.NeedsReview = true
-		view.ReviewReasons = []string{"TIERED_EXPR_REQUIRES_EXPRESSION_ENGINE"}
-		return view, true, view.ReviewReasons
+		expr := NormalizeUpstreamExpression(entry.BillingExpr)
+		view.Unit = "expression"
+		view.PriceKind = "BILLING_EXPRESSION"
+		view.BillingMode = entry.BillingMode
+		view.BillingExpr = expr.Raw
+		view.ExpressionHash = expr.Hash
+		view.ExpressionStatus = expr.Status
+		view.ExpressionError = expr.Error
+		if !expr.Executable {
+			view.NeedsReview = true
+			view.ReviewReasons = []string{"UNSUPPORTED_UPSTREAM_EXPRESSION"}
+			return view, true, view.ReviewReasons
+		}
+		return view, false, nil
 	}
 	if entry.QuotaType == 1 || entry.ModelPrice > 0 {
 		price := entry.ModelPrice
-		if entry.OfficialPrice != nil {
+		kind := "CHANNEL_QUOTE"
+		if entry.OfficialPrice != nil && *entry.OfficialPrice > 0 {
 			price = *entry.OfficialPrice
+			kind = "OFFICIAL_ABSOLUTE"
 		}
+		view.PriceKind = kind
 		view.Unit = "per_call"
 		tier := model.ChannelPricingTier{RangeName: "base", Unit: "per_call"}
 		if price > 0 {
@@ -189,26 +224,57 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 		view.Tiers = []model.ChannelPricingTier{tier}
 		return view, price <= 0, nil
 	}
-	ratio := entry.ModelRatio
-	if entry.OfficialRatio != nil {
-		ratio = *entry.OfficialRatio
-	}
+	// A token model with only an absolute "official price" has no confirmed
+	// unit (per token, per 1K or per 1M). Converting the number by assumption
+	// would invent an official price, so it is reported for manual review.
 	if entry.OfficialPrice != nil {
-		ratio = *entry.OfficialPrice / 2
+		if entry.ModelRatio > 0 || (entry.OfficialRatio != nil && *entry.OfficialRatio > 0) {
+			view.Unit = "unknown"
+			view.PriceKind = "UNKNOWN"
+			view.NeedsReview = true
+			view.ReviewReasons = []string{"OFFICIAL_PRICE_AND_RATIO_CONFLICT"}
+			return view, true, view.ReviewReasons
+		}
+		view.Unit = "unknown"
+		view.PriceKind = "UNKNOWN"
+		view.NeedsReview = true
+		view.ReviewReasons = []string{"OFFICIAL_PRICE_UNIT_UNKNOWN"}
+		return view, true, view.ReviewReasons
+	}
+	ratio := entry.ModelRatio
+	kind := "CHANNEL_RATIO"
+	if entry.OfficialRatio != nil && *entry.OfficialRatio > 0 {
+		ratio = *entry.OfficialRatio
+		kind = "OFFICIAL_RATIO"
 	}
 	if ratio <= 0 {
 		view.Unit = "unknown"
+		view.PriceKind = "UNKNOWN"
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"NO_USABLE_RATIO"}
 		return view, true, view.ReviewReasons
 	}
-	input := ratio * 2
+	// New API compatible pricing documents ratios against the standard
+	// 500,000-quota-per-dollar unit, so one ratio unit is 2 USD per 1M tokens.
+	const basisUSDPerMillion = 2.0
+	input := ratio * basisUSDPerMillion
 	tier := model.ChannelPricingTier{
 		RangeName: "base", Unit: "per_1m_token", InputPerMillionUSD: &input,
 	}
+	basis := &model.ChannelRatioBasis{
+		RawRatio:           ratio,
+		RawCompletionRatio: entry.CompletionRatio,
+		BasisUSDPerMillion: basisUSDPerMillion,
+		Formula:            "usd_per_1m = ratio * basis_usd_per_million",
+		FormulaVersion:     "newapi-ratio-v1",
+		ResultInputUSD:     input,
+	}
+	view.PriceKind = kind
+	view.RatioBasis = basis
 	if entry.CompletionRatio > 0 {
 		output := input * entry.CompletionRatio
 		tier.OutputPerMillionUSD = &output
+		basis.ResultOutputUSD = output
 	}
 	if entry.CacheRatio > 0 {
 		cache := input * entry.CacheRatio
@@ -243,7 +309,22 @@ func SyncGenericChannelPricing(ctx context.Context, channel *model.Channel) (int
 	if len(records) == 0 {
 		return 0, errors.New("no pricing entries matched the channel models")
 	}
-	return model.UpsertChannelOfficialPricing(records)
+	written, err := model.UpsertChannelOfficialPricing(records)
+	if err != nil {
+		return written, err
+	}
+	seen := make([]string, 0, len(records))
+	for _, record := range records {
+		seen = append(seen, record.ModelName)
+	}
+	if len(seen) > 0 {
+		if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
+			channel.Id, seen, time.Now().Unix(), model.ChannelModelMissingDisableThreshold,
+		); lifecycleErr != nil {
+			common.SysError(common.LogText("generic channel lifecycle update failed: channel_id=%d, error=%v", channel.Id, lifecycleErr))
+		}
+	}
+	return written, nil
 }
 
 // GenericUpstreamSyncTask refreshes generic New API channels on their official
@@ -268,7 +349,7 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 	}
 	now := time.Now().UTC()
 	for _, channel := range channels {
-		if channel.Type == 17 || strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
+		if channel.Type == 17 || channel.Type == constant.ChannelTypeApiko || strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
 			continue
 		}
 		schedule, _ := GetChannelPricingSchedule(channel.Id)
@@ -291,7 +372,7 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 const genericUpstreamSyncStateKey = "GenericUpstreamSyncState"
 
 func genericSyncStateFor(channelID int) int64 {
-	raw := strings.TrimSpace(common.OptionMap[genericUpstreamSyncStateKey])
+	raw := strings.TrimSpace(common.GetOption(genericUpstreamSyncStateKey))
 	if raw == "" {
 		return 0
 	}
@@ -304,7 +385,7 @@ func genericSyncStateFor(channelID int) int64 {
 
 func setGenericSyncState(channelID int, at int64) {
 	state := map[string]int64{}
-	if raw := strings.TrimSpace(common.OptionMap[genericUpstreamSyncStateKey]); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(genericUpstreamSyncStateKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &state)
 	}
 	state[fmt.Sprintf("%d", channelID)] = at

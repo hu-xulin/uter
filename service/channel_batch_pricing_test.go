@@ -218,6 +218,44 @@ func TestResolveBatchBasePriceSupportsPerImageAsPerCall(t *testing.T) {
 	require.Equal(t, 0.04, *base.perCallUSD)
 }
 
+func TestResolveBatchBasePriceRejectsChannelRatioAsOfficial(t *testing.T) {
+	row := model.ChannelModelPricing{
+		ModelName: "ratio-only",
+		NormalizedPricing: `{"currency":"USD","unit":"per_1m_token","price_kind":"CHANNEL_RATIO",
+			"ratio_basis":{"raw_ratio":2.5,"basis_usd_per_million":2,"formula":"usd = ratio * 2","formula_version":"newapi-ratio-v1","result_input_usd_per_million":5},
+			"tiers":[{"range_name":"base","input_per_million_usd":5,"output_per_million_usd":20,"unit":"per_1m_token"}]}`,
+	}
+	_, reason := resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	require.Contains(t, reason, "official basis unavailable: channel ratio")
+
+	row.NormalizedPricing = `{"currency":"USD","unit":"per_1m_token","price_kind":"OFFICIAL_ABSOLUTE",
+		"tiers":[{"range_name":"base","input_per_million_usd":5,"output_per_million_usd":20,"unit":"per_1m_token"}]}`
+	base, reason := resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	require.Empty(t, reason)
+	require.Equal(t, 5.0, *base.inputUSD)
+}
+
+func TestResolveCurrentBatchBasePriceCarriesModalityDimensions(t *testing.T) {
+	row := model.ChannelModelPricing{
+		ModelName: "omni-a",
+		InternalPricing: `{"mode":"per_1m_token","input_per_million_usd":2,"output_per_million_usd":4,
+			"image_input_per_million_usd":1.5,"thinking_input_per_million_usd":3,
+			"thinking_output_per_million_usd":6,"thinking_cache_per_million_usd":0.5,
+			"thinking_create_cache_per_million_usd":2.5,"thinking_image_input_per_million_usd":2.2,
+			"multi_input_output_per_million_usd":5,"thinking_multi_input_output_per_million_usd":7}`,
+	}
+	base, reason := resolveCurrentBatchBasePrice(row)
+	require.Empty(t, reason)
+	require.Equal(t, 1.5, *base.imageInputUSD)
+	require.Equal(t, 3.0, *base.thinkingInputUSD)
+	require.Equal(t, 6.0, *base.thinkingOutputUSD)
+	require.Equal(t, 0.5, *base.thinkingCacheUSD)
+	require.Equal(t, 2.5, *base.thinkingCreateCacheUSD)
+	require.Equal(t, 2.2, *base.thinkingImageInputUSD)
+	require.Equal(t, 5.0, *base.multiInputOutputUSD)
+	require.Equal(t, 7.0, *base.thinkingMultiInputOutputUSD)
+}
+
 func TestResolveBatchBasePriceIncludesCacheComponents(t *testing.T) {
 	base, reason := resolveBatchBasePrice(model.ChannelModelPricing{
 		ModelName: "gpt-a",

@@ -30,23 +30,38 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
+type channelUpstreamQuoteTier struct {
+	RangeName           string                             `json:"range_name"`
+	TimeBand            string                             `json:"time_band,omitempty"`
+	MinInputTokens      int64                              `json:"min_input_tokens,omitempty"`
+	MaxInputTokens      int64                              `json:"max_input_tokens,omitempty"`
+	Unit                string                             `json:"unit"`
+	InputPerMillionUSD  *float64                           `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD *float64                           `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD  *float64                           `json:"cache_per_million_usd,omitempty"`
+	PerCallUSD          *float64                           `json:"per_call_usd,omitempty"`
+	RawComponents       []model.ChannelPricingRawComponent `json:"raw_components,omitempty"`
+}
+
 type channelUpstreamQuoteView struct {
-	PriceBasis          string   `json:"price_basis"`
-	Currency            string   `json:"currency"`
-	Unit                string   `json:"unit"`
-	InputPerMillionUSD  *float64 `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD *float64 `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD  *float64 `json:"cache_per_million_usd,omitempty"`
-	PerCallUSD          *float64 `json:"per_call_usd,omitempty"`
-	Source              string   `json:"source"`
-	DiscountGroup       string   `json:"discount_group,omitempty"`
-	DiscountRatio       *float64 `json:"discount_ratio,omitempty"`
+	PriceBasis          string                     `json:"price_basis"`
+	Currency            string                     `json:"currency"`
+	Unit                string                     `json:"unit"`
+	InputPerMillionUSD  *float64                   `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD *float64                   `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD  *float64                   `json:"cache_per_million_usd,omitempty"`
+	PerCallUSD          *float64                   `json:"per_call_usd,omitempty"`
+	Source              string                     `json:"source"`
+	DiscountGroup       string                     `json:"discount_group,omitempty"`
+	DiscountRatio       *float64                   `json:"discount_ratio,omitempty"`
+	Tiers               []channelUpstreamQuoteTier `json:"tiers,omitempty"`
 }
 
 type channelModelPricingView struct {
 	ChannelID      int    `json:"channel_id"`
 	ModelName      string `json:"model_name"`
 	Provider       string `json:"provider"`
+	ModelProvider  string `json:"model_provider,omitempty"`
 	Region         string `json:"region"`
 	DeploymentID   string `json:"deployment_id"`
 	Currency       string `json:"currency"`
@@ -68,6 +83,7 @@ type channelModelPricingView struct {
 	Official         *model.ChannelOfficialPricing `json:"official,omitempty"`
 	UpstreamQuote    *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
 	Internal         *model.ChannelInternalPricing `json:"internal,omitempty"`
+	Purchase         *model.ChannelPurchaseCost    `json:"purchase,omitempty"`
 }
 
 // channelPricingStaleAfter is twice the default official sync interval: a
@@ -144,6 +160,7 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 			view.Internal = &internal
 		}
 	}
+	view.Purchase = model.ParseChannelPurchaseCost(row.PurchasePricing)
 	return view
 }
 
@@ -155,7 +172,12 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 	if official != nil {
 		switch {
 		case len(official.ChannelPriceTiers) > 0:
-			return quoteFromTier(official.ChannelPriceTiers[0], "CHANNEL_CATALOG", official.Source, nil)
+			quote := quoteFromTier(official.ChannelPriceTiers[0], "CHANNEL_CATALOG", official.Source, nil)
+			quote.Tiers = make([]channelUpstreamQuoteTier, 0, len(official.ChannelPriceTiers))
+			for _, tier := range official.ChannelPriceTiers {
+				quote.Tiers = append(quote.Tiers, quoteTierFromTier(tier))
+			}
+			return quote
 		case official.ChannelPrice != nil:
 			quote := &channelUpstreamQuoteView{
 				PriceBasis:    "CHANNEL_DISCOUNT",
@@ -187,6 +209,7 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 			if record.QuotaType == 1 && record.ModelPrice != nil && *record.ModelPrice > 0 {
 				quote.Unit = "per_call"
 				quote.PerCallUSD = record.ModelPrice
+				quote.Tiers = []channelUpstreamQuoteTier{{Unit: "per_call", PerCallUSD: record.ModelPrice}}
 				return quote
 			}
 			if record.ModelRatio != nil && *record.ModelRatio > 0 {
@@ -201,6 +224,10 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 					cache := input * *record.CacheRatio
 					quote.CachePerMillionUSD = &cache
 				}
+				quote.Tiers = []channelUpstreamQuoteTier{quoteTierFromTier(model.ChannelPricingTier{
+					Unit: "per_1m_token", InputPerMillionUSD: quote.InputPerMillionUSD,
+					OutputPerMillionUSD: quote.OutputPerMillionUSD, CachePerMillionUSD: quote.CachePerMillionUSD,
+				})}
 				return quote
 			}
 		}
@@ -211,10 +238,28 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 	return quoteFromTier(official.Tiers[0], "OFFICIAL_REFERENCE", official.Source, nil)
 }
 
+func quoteTierFromTier(tier model.ChannelPricingTier) channelUpstreamQuoteTier {
+	item := channelUpstreamQuoteTier{
+		RangeName: tier.RangeName, TimeBand: tier.TimeBand,
+		MinInputTokens: tier.MinInputTokens, MaxInputTokens: tier.MaxInputTokens,
+		Unit: tier.Unit, RawComponents: tier.RawComponents,
+	}
+	switch tier.Unit {
+	case "per_call", "per_second", "per_image", "per_minute":
+		item.PerCallUSD = tier.PerUnitUSD
+	default:
+		item.InputPerMillionUSD = tier.InputPerMillionUSD
+		item.OutputPerMillionUSD = tier.OutputPerMillionUSD
+		item.CachePerMillionUSD = tier.CachePerMillionUSD
+	}
+	return item
+}
+
 func quoteFromTier(tier model.ChannelPricingTier, basis, source string, discount *float64) *channelUpstreamQuoteView {
 	quote := &channelUpstreamQuoteView{
 		PriceBasis: basis, Currency: "USD",
 		Unit: tier.Unit, Source: source, DiscountRatio: discount,
+		Tiers: []channelUpstreamQuoteTier{quoteTierFromTier(tier)},
 	}
 	switch tier.Unit {
 	case "per_call", "per_second", "per_image", "per_minute":
@@ -333,6 +378,12 @@ func SetChannelModelPricing(c *gin.Context) {
 		Region       string                       `json:"region"`
 		DeploymentID string                       `json:"deployment_id"`
 		Pricing      model.ChannelInternalPricing `json:"pricing"`
+		// Purchase replaces the stored contract cost when present. It is kept
+		// apart from the sale price and never derived from the public quote.
+		Purchase *model.ChannelPurchaseCost `json:"purchase,omitempty"`
+		// ClearPurchase removes a stored contract cost when the operator
+		// explicitly deletes it.
+		ClearPurchase bool `json:"purchase_clear,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		common.ApiError(c, err)
@@ -353,12 +404,40 @@ func SetChannelModelPricing(c *gin.Context) {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
+	if req.Purchase != nil {
+		if err := model.SetChannelPurchaseCostFor(identity, *req.Purchase); err != nil {
+			common.ApiErrorMsg(c, err.Error())
+			return
+		}
+	} else if req.ClearPurchase {
+		if err := model.ClearChannelPurchaseCostFor(identity); err != nil {
+			common.ApiErrorMsg(c, err.Error())
+			return
+		}
+	}
 	row, err := model.GetChannelModelPricingFor(identity)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
 	common.ApiSuccess(c, channelModelPricingToView(*row))
+}
+
+// GetChannelBillingSnapshots lists the immutable price contracts recent
+// requests and tasks were billed with, for reconciliation and support.
+func GetChannelBillingSnapshots(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "100"))
+	rows, err := model.ListBillingPriceSnapshots(channelID, limit)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "items": rows})
 }
 
 // GetChannelPricingHistory lists recent internal price changes for one channel.

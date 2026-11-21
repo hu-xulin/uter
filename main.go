@@ -200,6 +200,7 @@ func main() {
 	go service.DreamRouterUpstreamSyncTask()
 	go service.BailianUpstreamSyncTask()
 	go service.GenericUpstreamSyncTask()
+	go controller.ApikoUpstreamSyncTask()
 	go service.DraftChannelCleanupTask()
 
 	// 周期性重载授权策略，保证多节点/多 master 部署下权限变更能传播到每个实例

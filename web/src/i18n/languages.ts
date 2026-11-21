@@ -29,6 +29,14 @@ export const INTERFACE_LANGUAGE_OPTIONS = [
 export type InterfaceLanguageCode =
   (typeof INTERFACE_LANGUAGE_OPTIONS)[number]['code']
 
+/** BCP 47 tag for the <html lang> attribute, so `:lang(zh)` CSS applies. */
+export function toHtmlLang(value?: string | null): string {
+  const code = normalizeInterfaceLanguage(value)
+  if (code === 'zhCN') return 'zh-CN'
+  if (code === 'zhTW') return 'zh-TW'
+  return code
+}
+
 export function normalizeInterfaceLanguage(
   value?: string | null
 ): InterfaceLanguageCode {

@@ -77,7 +77,51 @@ func TestGenericChannelPricingRecordsPreserveShapes(t *testing.T) {
 	tiered := byName["tiered-a"]
 	require.True(t, tiered.NeedsReview)
 	require.Empty(t, tiered.Tiers)
-	require.Equal(t, "tiered_expr", tiered.Unit)
+	require.Equal(t, "expression", tiered.Unit)
+	require.Equal(t, UpstreamExpressionUnsupported, tiered.ExpressionStatus)
+}
+
+func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
+	officialRatio := 1.5
+	officialPrice := 0.08
+	entries := []GenericPricingEntry{
+		{ModelName: "ratio", QuotaType: 0, ModelRatio: 2.5, CompletionRatio: 4},
+		{ModelName: "official-ratio", QuotaType: 0, ModelRatio: 2.5, OfficialRatio: &officialRatio, CompletionRatio: 2},
+		{ModelName: "official-token-price", QuotaType: 0, OfficialPrice: &officialPrice},
+		{ModelName: "official-call", QuotaType: 1, ModelPrice: 0.04, OfficialPrice: &officialPrice},
+	}
+	records := GenericChannelPricingRecords(9, []string{"ratio", "official-ratio", "official-token-price", "official-call"}, entries, time.Unix(100, 0))
+	require.Len(t, records, 4)
+
+	byName := map[string]model.ChannelOfficialPricing{}
+	for _, record := range records {
+		var normalized model.ChannelOfficialPricing
+		require.NoError(t, common.UnmarshalJsonStr(record.NormalizedPricing, &normalized))
+		byName[record.ModelName] = normalized
+	}
+
+	ratio := byName["ratio"]
+	require.Equal(t, "CHANNEL_RATIO", ratio.PriceKind)
+	require.NotNil(t, ratio.RatioBasis)
+	require.Equal(t, 2.5, ratio.RatioBasis.RawRatio)
+	require.Equal(t, 2.0, ratio.RatioBasis.BasisUSDPerMillion)
+	require.Equal(t, 5.0, ratio.RatioBasis.ResultInputUSD)
+	require.Equal(t, 20.0, ratio.RatioBasis.ResultOutputUSD)
+
+	official := byName["official-ratio"]
+	require.Equal(t, "OFFICIAL_RATIO", official.PriceKind)
+	require.NotNil(t, official.RatioBasis)
+	require.Equal(t, 3.0, official.RatioBasis.ResultInputUSD)
+
+	unknown := byName["official-token-price"]
+	require.Equal(t, "UNKNOWN", unknown.PriceKind)
+	require.True(t, unknown.NeedsReview)
+	require.Contains(t, unknown.ReviewReasons, "OFFICIAL_PRICE_UNIT_UNKNOWN")
+	require.Empty(t, unknown.Tiers)
+
+	call := byName["official-call"]
+	require.Equal(t, "OFFICIAL_ABSOLUTE", call.PriceKind)
+	require.Equal(t, 0.08, *call.Tiers[0].PerUnitUSD)
 }
 
 func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
@@ -88,4 +132,34 @@ func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
 	records := GenericChannelPricingRecords(7, []string{"served"}, entries, time.Unix(100, 0))
 	require.Len(t, records, 1)
 	require.Equal(t, "served", records[0].ModelName)
+}
+
+func TestGenericPricingPreservesExecutableUpstreamExpression(t *testing.T) {
+	entry := GenericPricingEntry{
+		ModelName: "tiered-model", BillingMode: "tiered_expr",
+		BillingExpr: `len <= 131072 ? tier("short", p * 1 + c * 2) : tier("long", p * 2 + c * 4)`,
+	}
+	records := GenericChannelPricingRecords(81, []string{"tiered-model"}, []GenericPricingEntry{entry}, time.Unix(1000, 0))
+	require.Len(t, records, 1)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.Equal(t, UpstreamExpressionExecutable, view.ExpressionStatus)
+	require.NotEmpty(t, view.ExpressionHash)
+	require.Equal(t, entry.BillingExpr, view.BillingExpr)
+	require.Empty(t, view.Tiers)
+	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
+	require.Contains(t, records[0].InternalPricing, `"source":"newapi-expression"`)
+}
+
+func TestGenericPricingBlocksUnsupportedExpression(t *testing.T) {
+	entry := GenericPricingEntry{
+		ModelName: "bad-model", BillingExpr: `not a valid expression (`,
+	}
+	records := GenericChannelPricingRecords(82, []string{"bad-model"}, []GenericPricingEntry{entry}, time.Unix(1000, 0))
+	require.Len(t, records, 1)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.Equal(t, UpstreamExpressionUnsupported, view.ExpressionStatus)
+	require.True(t, view.NeedsReview)
+	require.Empty(t, records[0].InternalPricing)
 }

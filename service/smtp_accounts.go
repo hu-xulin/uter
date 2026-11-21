@@ -17,7 +17,7 @@ import (
 //   - 用量查询失败 → 记日志并回退第一个账号（配额是运营限制而非安全边界，
 //     不因一次 DB 抖动阻断验证码等关键邮件）。
 func SelectSMTPSender() (common.SMTPSenderCredentials, error) {
-	accounts := common.ParseSMTPAccounts(common.OptionMap["SMTPAccounts"])
+	accounts := common.ParseSMTPAccounts(common.GetOption("SMTPAccounts"))
 	if len(accounts) == 0 {
 		return common.SMTPSenderCredentials{}, nil
 	}

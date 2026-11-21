@@ -61,11 +61,13 @@ func channelPriceIdentityError(c *gin.Context, channelId int, modelName, reason 
 func channelPricingIdentity(c *gin.Context, info *relaycommon.RelayInfo, modelName string) model.ChannelPricingIdentity {
 	channelType := common.GetContextKeyInt(c, constant.ContextKeyChannelType)
 	baseURL := common.GetContextKeyString(c, constant.ContextKeyChannelBaseUrl)
+	deploymentID := ""
 	if info.ChannelMeta != nil {
 		channelType = info.ChannelType
 		baseURL = info.ChannelBaseUrl
+		deploymentID = info.ChannelMeta.ChannelOtherSettings.DeploymentID
 	}
-	return service.ChannelPricingIdentityForRequest(channelType, baseURL, "", modelName)
+	return service.ChannelPricingIdentityForRequest(channelType, baseURL, deploymentID, modelName)
 }
 
 // HandleGroupRatio checks for "auto_group" in the context and updates the group ratio and relayInfo.UsingGroup if present
@@ -205,6 +207,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		info.ChannelPricingRegion = identity.Region
 		info.ChannelPricingDeployment = identity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
+		info.ChannelPricingPurchaseVerified = channelPricing.PurchaseVerified
+		info.ChannelPricingPurchaseSource = channelPricing.PurchaseSource
+		info.ChannelPricingPurchaseVersion = channelPricing.PurchaseVersion
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
@@ -418,6 +423,9 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		info.ChannelPricingRegion = identity.Region
 		info.ChannelPricingDeployment = identity.DeploymentId
 		info.ChannelPricingPurchaseUSD = channelPricing.PurchaseUSD
+		info.ChannelPricingPurchaseVerified = channelPricing.PurchaseVerified
+		info.ChannelPricingPurchaseSource = channelPricing.PurchaseSource
+		info.ChannelPricingPurchaseVersion = channelPricing.PurchaseVersion
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version

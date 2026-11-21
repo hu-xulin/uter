@@ -93,7 +93,7 @@ body:has([data-slot='dialog-content'][data-open]) .cs-panel {
 
 .cs-title {
   font-size: var(--ds-text-body);
-  font-weight: 600;
+  font-weight: var(--ds-weight-semibold);
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -244,7 +244,7 @@ body:has([data-slot='dialog-content'][data-open]) .cs-panel {
   cursor: pointer;
   font-family: inherit;
   font-size: var(--ds-text-body);
-  font-weight: 600;
+  font-weight: var(--ds-weight-semibold);
   transition:
     opacity 0.15s,
     filter 0.15s;

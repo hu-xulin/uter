@@ -46,7 +46,7 @@ const UTER_DARK_THEME = 'uter-dark'
 
 /** Used only if `--font-ui` cannot be read (SSR, very early paint). */
 const CHART_FONT_FAMILY_FALLBACK =
-  "'Inter Variable', 'Inter', 'Source Han Sans SC', 'Source Han Sans CN', 'Noto Sans SC Variable', 'Noto Sans SC', sans-serif"
+  "'Inter Variable', 'Inter', 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', sans-serif"
 
 function resolveChartFontFamily(): string {
   if (typeof globalThis.getComputedStyle !== 'function') {

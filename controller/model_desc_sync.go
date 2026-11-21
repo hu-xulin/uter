@@ -167,7 +167,7 @@ func containsModelName(names []string, target string) bool {
 // 模型）调用 LLM 补译，这会产生真实的外部请求与额度消耗，必须由管理员
 // 显式确认后才生效。
 func descriptionSyncEnabled() bool {
-	return strings.EqualFold(strings.TrimSpace(common.OptionMap[descriptionSyncOptionKey]), "true")
+	return strings.EqualFold(strings.TrimSpace(common.GetOption(descriptionSyncOptionKey)), "true")
 }
 
 const (

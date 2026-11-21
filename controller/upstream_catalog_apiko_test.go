@@ -17,6 +17,7 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/billing_setting"
 )
 
@@ -495,4 +496,22 @@ func TestSyncApikoChannelPricingWritesChannelScopedPrices(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(video.NormalizedPricing, &view))
 	assert.True(t, view.NeedsReview)
 	assert.Contains(t, view.ReviewReasons, "duration-tiered pricing requires request parameters")
+}
+
+func TestApikoChannelPricingRecordsUseExecutableExpression(t *testing.T) {
+	models := []apikoModel{{
+		ID: "gpt-a", Pricing: apikoPricing{
+			InputPer1M: apikoFloatPtr(1), OutputPer1M: apikoFloatPtr(2),
+		},
+	}}
+	records := apikoChannelPricingRecords(91, []string{"gpt-a", "missing"}, models, time.Unix(1000, 0))
+	require.Len(t, records, 1)
+	require.Equal(t, "apiko", records[0].Provider)
+	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
+	require.Contains(t, records[0].InternalPricing, `"source":"apiko-expression"`)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.Empty(t, view.Tiers, "Apiko publishes the channel quote, not the vendor list")
+	require.Len(t, view.ChannelPriceTiers, 1)
+	require.Equal(t, service.UpstreamExpressionExecutable, view.ExpressionStatus)
 }

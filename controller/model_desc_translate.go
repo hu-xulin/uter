@@ -364,12 +364,12 @@ func normalizeOpenAIBaseURL(base string) string {
 // 三项（base / key / model）缺一不可：与 costopt 的既有约定一致，半配置的
 // 端点静默回退为「不补译」，而不是拿错误的凭据去打上游。
 func translationEndpoint() (base, key, chatModel string, ok bool) {
-	if !strings.EqualFold(strings.TrimSpace(common.OptionMap[translationEnabledOptionKey]), "true") {
+	if !strings.EqualFold(strings.TrimSpace(common.GetOption(translationEnabledOptionKey)), "true") {
 		return "", "", "", false
 	}
-	base = strings.TrimSpace(common.OptionMap[translationBaseURLOptionKey])
-	key = strings.TrimSpace(common.OptionMap[translationAPIKeyOptionKey])
-	chatModel = strings.TrimSpace(common.OptionMap[translationModelOptionKey])
+	base = strings.TrimSpace(common.GetOption(translationBaseURLOptionKey))
+	key = strings.TrimSpace(common.GetOption(translationAPIKeyOptionKey))
+	chatModel = strings.TrimSpace(common.GetOption(translationModelOptionKey))
 	if base == "" || key == "" || chatModel == "" {
 		return "", "", "", false
 	}
@@ -381,7 +381,7 @@ func translationEndpoint() (base, key, chatModel string, ok bool) {
 // 解析后仍走 NormalizeModelDescriptionLocale 归一，避免管理员填
 // "zh_TW, fr" 这类写法被静默忽略。
 func translationLocales() []string {
-	raw := strings.TrimSpace(common.OptionMap[translationLocalesOptionKey])
+	raw := strings.TrimSpace(common.GetOption(translationLocalesOptionKey))
 	if raw == "" {
 		return append([]string(nil), descriptionTranslateLocales...)
 	}

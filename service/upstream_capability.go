@@ -112,8 +112,8 @@ func uterProviderDescriptor() UpstreamProvider {
 
 // ChannelPricingIdentityForRequest builds the full identity a request is billed
 // under. The provider comes from the channel capability (host-aware), and the
-// region from the Bailian workspace endpoint; deployment stays explicit so a
-// future router can pass the deployment it selected.
+// region from the Bailian workspace endpoint; the caller passes the deployment
+// selected by routing (or an explicit empty value when the channel has none).
 func ChannelPricingIdentityForRequest(channelType int, baseURL, deploymentID, modelName string) model.ChannelPricingIdentity {
 	provider := UpstreamProviderForChannel(channelType, baseURL).ID
 	region := ""

@@ -310,3 +310,18 @@ func TestDreamRouterRatioDerivedPriceIsNotOfficial(t *testing.T) {
 	require.Equal(t, "dreamrouter-ratio-reference", view.Source)
 	require.Contains(t, view.ReviewReasons, "DERIVED_FROM_RATIOS")
 }
+
+func TestDiffDreamRouterUpstreamDetectsBillingExpressionChange(t *testing.T) {
+	prev := &UpstreamSnapshot{Models: []UpstreamModelRecord{{
+		ModelName: "gpt-a", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 1)`,
+	}}}
+	next := &UpstreamSnapshot{Models: []UpstreamModelRecord{{
+		ModelName: "gpt-a", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 2)`,
+	}}}
+	changes := DiffDreamRouterUpstream(prev, next)
+	require.Len(t, changes, 1)
+	require.Equal(t, "rule_changed", changes[0].Kind)
+	require.Equal(t, "billing_expr", changes[0].Field)
+	require.Contains(t, changes[0].OldText, "p * 1")
+	require.Contains(t, changes[0].NewText, "p * 2")
+}

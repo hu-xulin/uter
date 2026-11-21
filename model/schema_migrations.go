@@ -38,8 +38,10 @@ const (
 	// column), but MySQL/PostgreSQL do, so the name is kept for those dialects.
 	fkTopUpsUser = "fk_top_ups_user_id"
 
-	// V2TopUpUserStatusIndex is the reversible demo index created by V2. It is
-	// exported so integration tests can assert on its presence/absence.
+	// V2TopUpUserStatusIndex is the reversible index created by V2. MySQL stores
+	// top_ups.status as TEXT, so the MySQL DDL bounds its index prefix
+	// explicitly while keeping the same logical index on every dialect.
+	// Exported so integration tests can assert on its presence/absence.
 	V2TopUpUserStatusIndex = "idx_topups_user_status"
 )
 
@@ -598,7 +600,7 @@ func migrateV2CreateIndex(db *gorm.DB) error {
 		if count > 0 {
 			return nil
 		}
-		return db.Exec("CREATE INDEX " + V2TopUpUserStatusIndex + " ON top_ups(user_id, status)").Error
+		return db.Exec("CREATE INDEX " + V2TopUpUserStatusIndex + " ON top_ups(user_id, status(64))").Error
 	default:
 		return fmt.Errorf("V2: unsupported dialect %q (fail closed)", n)
 	}

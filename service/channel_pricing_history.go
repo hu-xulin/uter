@@ -36,6 +36,9 @@ func SetChannelPricingWithHistory(
 	expectedVersion string,
 	oldPricing *model.ChannelInternalPricing,
 ) error {
+	if strings.TrimSpace(source) != "" && strings.TrimSpace(pricing.Source) == "" {
+		pricing.Source = source
+	}
 	oldJSON, _ := common.Marshal(oldPricing)
 	newJSON, _ := common.Marshal(pricing)
 	return model.SetChannelInternalPricingWithAudit(identity, pricing, expectedVersion, model.ChannelPricingHistory{
@@ -119,7 +122,7 @@ type channelPricingHistoryOptionSetting struct {
 
 func appendChannelPricingHistoryOption(entry ChannelPricingHistoryEntry) error {
 	setting := channelPricingHistoryOptionSetting{}
-	if raw := strings.TrimSpace(common.OptionMap[ChannelPricingHistoryKey]); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(ChannelPricingHistoryKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
 	entry.ID = 0
@@ -135,7 +138,7 @@ func appendChannelPricingHistoryOption(entry ChannelPricingHistoryEntry) error {
 }
 
 func listChannelPricingHistoryOption(channelID int) []ChannelPricingHistoryEntry {
-	raw := strings.TrimSpace(common.OptionMap[ChannelPricingHistoryKey])
+	raw := strings.TrimSpace(common.GetOption(ChannelPricingHistoryKey))
 	if raw == "" {
 		return []ChannelPricingHistoryEntry{}
 	}

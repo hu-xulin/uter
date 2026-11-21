@@ -124,7 +124,7 @@ For commercial licensing, please contact support@uter.ai
      * on the ladder's unitless 1.5 leading. */
     font-family: var(--font-body);
     font-size: var(--text-sm);
-    font-weight: 400;
+    font-weight: var(--ds-weight-regular);
     line-height: 1.5;
   }
 
@@ -149,7 +149,7 @@ For commercial licensing, please contact support@uter.ai
   [data-slot='card-title'],
   strong,
   b {
-    font-weight: 600;
+    font-weight: var(--ds-weight-semibold);
   }
 
   /* Cursor pointer for buttons */

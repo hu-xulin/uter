@@ -76,7 +76,7 @@ func TestBailianPriceNormalization(t *testing.T) {
 	assert.Equal(t, 0.0, prices[4].PriceValue, "unparsable numbers keep raw and report 0")
 	assert.Equal(t, "not-a-number", prices[4].Price)
 	assert.Equal(t, "per_image", prices[5].Unit)
-	assert.Equal(t, "bailian-official", prices[0].Source)
+	assert.Equal(t, "bailian-channel", prices[0].Source)
 }
 
 func TestBailianMetadataMapping(t *testing.T) {
@@ -192,13 +192,14 @@ func TestBailianPricingRecordsStayChannelScoped(t *testing.T) {
 	records := BailianPricingRecords(catalog, []string{"qwen-plus"})
 	require.Len(t, records, 1)
 	assert.Equal(t, 5, records[0].ChannelId)
-	assert.Equal(t, "aliyun-bailian", records[0].Provider)
+	assert.Equal(t, "alibaba-bailian", records[0].Provider)
+	assert.Equal(t, "aliyun-bailian", records[0].ModelProvider)
 	assert.Contains(t, records[0].OfficialPricing, "qwen-plus")
 	assert.Empty(t, records[0].InternalPricing, "official sync must not create a sale price")
 
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Len(t, normalized.Tiers, 1, "the Bailian catalog is the official price document")
+	require.Empty(t, normalized.Tiers, "Bailian publishes a channel quote, not the vendor list price")
 	require.Len(t, normalized.ChannelPriceTiers, 1)
 	require.NotNil(t, normalized.ChannelPriceTiers[0].InputPerMillionUSD)
 	require.NotNil(t, normalized.ChannelPriceTiers[0].OutputPerMillionUSD)
@@ -234,7 +235,7 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	require.Len(t, records, 1)
 	var normalized model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &normalized))
-	require.Len(t, normalized.Tiers, 2)
+	require.Empty(t, normalized.Tiers)
 	require.Len(t, normalized.ChannelPriceTiers, 2)
 	// Token tiers are fully representable by one tiered expression.
 	assert.False(t, normalized.NeedsReview, normalized.ReviewReasons)
@@ -271,18 +272,18 @@ func TestBailianTTSUnitsBecomeExecutablePrices(t *testing.T) {
 
 	var chars model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &chars))
-	require.Len(t, chars.Tiers, 1)
-	require.NotNil(t, chars.Tiers[0].InputPerMillionUSD)
-	assert.InDelta(t, 100, *chars.Tiers[0].InputPerMillionUSD, 1e-9, "one character bills as one token, so 1 USD per 10k chars is 100 USD per 1M")
-	assert.Equal(t, "per_1m_tokens", chars.Tiers[0].Unit)
+	require.Len(t, chars.ChannelPriceTiers, 1)
+	require.NotNil(t, chars.ChannelPriceTiers[0].InputPerMillionUSD)
+	assert.InDelta(t, 100, *chars.ChannelPriceTiers[0].InputPerMillionUSD, 1e-9, "one character bills as one token, so 1 USD per 10k chars is 100 USD per 1M")
+	assert.Equal(t, "per_1m_tokens", chars.ChannelPriceTiers[0].Unit)
 	assert.False(t, chars.NeedsReview)
 
 	var call model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[1].NormalizedPricing, &call))
-	require.Len(t, call.Tiers, 1)
-	require.NotNil(t, call.Tiers[0].PerUnitUSD)
-	assert.InDelta(t, 1, *call.Tiers[0].PerUnitUSD, 1e-9)
-	assert.Equal(t, "per_call", call.Tiers[0].Unit)
+	require.Len(t, call.ChannelPriceTiers, 1)
+	require.NotNil(t, call.ChannelPriceTiers[0].PerUnitUSD)
+	assert.InDelta(t, 1, *call.ChannelPriceTiers[0].PerUnitUSD, 1e-9)
+	assert.Equal(t, "per_call", call.ChannelPriceTiers[0].Unit)
 	assert.False(t, call.NeedsReview)
 
 	internal := bailianInternalPricing(chars)
@@ -310,8 +311,8 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 		},
 	}}}
 	normalized := bailianOfficialPricing(omni, BailianRegionBeijing, 1, 100)
-	require.Len(t, normalized.Tiers, 1)
-	tier := normalized.Tiers[0]
+	require.Len(t, normalized.ChannelPriceTiers, 1)
+	tier := normalized.ChannelPriceTiers[0]
 	require.NotNil(t, tier.InputPerMillionUSD)
 	require.NotNil(t, tier.OutputPerMillionUSD)
 	require.NotNil(t, tier.AudioInputPerMillionUSD)
@@ -350,10 +351,10 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 		},
 	}}}
 	normalized = bailianOfficialPricing(mt, BailianRegionBeijing, 1, 100)
-	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
-	assert.InDelta(t, 65, *normalized.Tiers[0].InputPerMillionUSD, 1e-9)
-	require.NotNil(t, normalized.Tiers[0].ImageInputPerMillionUSD)
-	assert.InDelta(t, 32, *normalized.Tiers[0].ImageInputPerMillionUSD, 1e-9)
+	require.NotNil(t, normalized.ChannelPriceTiers[0].InputPerMillionUSD)
+	assert.InDelta(t, 65, *normalized.ChannelPriceTiers[0].InputPerMillionUSD, 1e-9)
+	require.NotNil(t, normalized.ChannelPriceTiers[0].ImageInputPerMillionUSD)
+	assert.InDelta(t, 32, *normalized.ChannelPriceTiers[0].ImageInputPerMillionUSD, 1e-9)
 	assert.NotContains(t, normalized.ReviewReasons, "multiple input token prices")
 	internal = bailianInternalPricing(normalized)
 	require.NotEmpty(t, internal)
@@ -400,10 +401,10 @@ func TestBailianPerCallServiceNextToTokenPrice(t *testing.T) {
 		},
 	}}}
 	normalized := bailianOfficialPricing(speech, BailianRegionBeijing, 1, 100)
-	require.Len(t, normalized.Tiers, 1)
-	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
-	assert.InDelta(t, 350, *normalized.Tiers[0].InputPerMillionUSD, 1e-9, "synthesis stays the billable primary")
-	assert.Nil(t, normalized.Tiers[0].PerUnitUSD, "the per-call service must not become the flat price")
+	require.Len(t, normalized.ChannelPriceTiers, 1)
+	require.NotNil(t, normalized.ChannelPriceTiers[0].InputPerMillionUSD)
+	assert.InDelta(t, 350, *normalized.ChannelPriceTiers[0].InputPerMillionUSD, 1e-9, "synthesis stays the billable primary")
+	assert.Nil(t, normalized.ChannelPriceTiers[0].PerUnitUSD, "the per-call service must not become the flat price")
 	require.Len(t, normalized.ComponentPrices, 1)
 	component := normalized.ComponentPrices[0]
 	assert.Equal(t, "per_call", component.Unit)
@@ -501,7 +502,7 @@ func TestBailianCacheAndBatchPriceMapping(t *testing.T) {
 	}}}
 	normalized := bailianOfficialPricing(modelWithCache, BailianRegionBeijing, 1, 100)
 	require.False(t, normalized.NeedsReview)
-	tier := normalized.Tiers[0]
+	tier := normalized.ChannelPriceTiers[0]
 	require.NotNil(t, tier.CachePerMillionUSD)
 	require.NotNil(t, tier.CreateCachePerMillionUSD)
 	assert.InDelta(t, 0.4, *tier.CachePerMillionUSD, 1e-9)
@@ -697,4 +698,81 @@ func TestBailianSeenModelsIncludesAliasesAndExcludesRemovedModels(t *testing.T) 
 	catalog := &BailianCatalog{Models: []BailianModel{{Model: "qwen-plus"}, {Model: "qwen-max"}}}
 	seen := BailianSeenChannelModels(catalog, []string{"qwen-plus", "cmaas-qwen-max", "qwen-removed"})
 	require.Equal(t, []string{"qwen-plus", "cmaas-qwen-max"}, seen)
+}
+
+func TestBailianPricingKeepsRawCurrencyUnitAndFXAudit(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 7.3
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	catalog := &BailianCatalog{
+		ChannelID: 93, Region: BailianRegionBeijing, FetchedAt: time.Unix(1234, 0),
+		Models: []BailianModel{{
+			Model: "qwen-audit", Provider: "qwen", InferenceProvider: "aliyun-bailian",
+			Prices: []BailianPriceRange{{
+				RangeName: "Default",
+				Prices: []BailianPrice{{
+					Type: "input_token", Price: "10", PriceUnit: "每百万tokens",
+				}},
+			}},
+		}},
+	}
+	records := BailianPricingRecords(catalog, []string{"qwen-audit"})
+	require.Len(t, records, 1)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.Empty(t, view.Tiers)
+	require.Len(t, view.ChannelPriceTiers, 1)
+	require.Len(t, view.ChannelPriceTiers[0].RawComponents, 1)
+	raw := view.ChannelPriceTiers[0].RawComponents[0]
+	assert.Equal(t, 10.0, raw.RawAmount)
+	assert.Equal(t, "CNY", raw.RawCurrency)
+	assert.Equal(t, "每百万tokens", raw.RawUnit)
+	assert.InDelta(t, 10.0/7.3, raw.NormalizedUSD, 1e-9)
+	assert.Equal(t, 7.3, raw.FXRate)
+	assert.True(t, raw.CurrencyInferred)
+	assert.Equal(t, "bailian-channel", raw.PriceSource)
+	assert.Equal(t, int64(1234), raw.FXTimestamp)
+}
+
+func TestBuildBailianCatalogCoverageMarksUnmatchedModels(t *testing.T) {
+	setupBatchPricingDB(t)
+	require.NoError(t, model.DB.AutoMigrate(&model.Channel{}))
+	channel := model.Channel{Id: 96, Name: "bailian", Type: 17, Models: "qwen-a,private-x", Status: 1}
+	require.NoError(t, model.DB.Create(&channel).Error)
+
+	catalog := &BailianCatalog{ChannelID: 96, Models: []BailianModel{{Model: "qwen-a"}}}
+	raw, err := common.Marshal(catalog)
+	require.NoError(t, err)
+	if common.OptionMap == nil {
+		common.OptionMap = map[string]string{}
+	}
+	old, had := common.OptionMap[BailianCatalogSnapshotKey+":96"]
+	common.OptionMap[BailianCatalogSnapshotKey+":96"] = string(raw)
+	t.Cleanup(func() {
+		if had {
+			common.OptionMap[BailianCatalogSnapshotKey+":96"] = old
+		} else {
+			delete(common.OptionMap, BailianCatalogSnapshotKey+":96")
+		}
+	})
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		{ChannelId: 96, Provider: "alibaba-bailian", ModelName: "private-x", Currency: "USD", NormalizedPricing: `{}`, Source: "bailian-channel"},
+	})
+	require.NoError(t, err)
+	price := 2.0
+	require.NoError(t, model.SetChannelInternalPricing(96, "private-x", model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price, Source: "manual",
+	}))
+
+	report, err := BuildBailianCatalogCoverage(96)
+	require.NoError(t, err)
+	require.Equal(t, 1, report.Matched)
+	require.Equal(t, 1, report.Unmatched)
+	byName := map[string]BailianCoverageModel{}
+	for _, item := range report.Models {
+		byName[item.ModelName] = item
+	}
+	require.Equal(t, "KEEP_MANUAL", byName["private-x"].Action)
+	require.Equal(t, "IN_CATALOG", byName["qwen-a"].Action)
 }

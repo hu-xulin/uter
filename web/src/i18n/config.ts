@@ -24,6 +24,7 @@ import {
   activeInterfaceLanguage,
   convertDetectedLanguage,
   normalizeInterfaceLanguage,
+  toHtmlLang,
   type InterfaceLanguageCode,
 } from './languages'
 import { loadLocaleBundle } from './locale-loaders'
@@ -117,7 +118,12 @@ const initialized = i18n
     // A language switch has to pull in that locale's code-split chunk before
     // the new strings can render. Registered after the initial `ensureLocale`
     // so the startup language is fetched exactly once.
+    const syncHtmlLang = (code: string) => {
+      document.documentElement.lang = toHtmlLang(code)
+    }
+    syncHtmlLang(i18n.language)
     i18n.on('languageChanged', (code) => {
+      syncHtmlLang(code)
       void ensureLocale(normalizeInterfaceLanguage(code))
     })
 

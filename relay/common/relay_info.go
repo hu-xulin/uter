@@ -108,20 +108,23 @@ type RelayInfo struct {
 	// ChannelPricingApplied marks a request whose price came from the actual
 	// serving channel's isolated record instead of the global model price.
 	// Settlement must reuse these fields so pre-consume and final billing agree.
-	ChannelPricingApplied         bool
-	ChannelPricingModelRatio      float64
-	ChannelPricingCompletionRatio *float64
-	ChannelPricingCacheRatio      *float64
-	ChannelPricingModelPrice      float64
-	ChannelPricingUsePrice        bool
-	ChannelPricingMode            string
-	ChannelPricingProvider        string
-	ChannelPricingRegion          string
-	ChannelPricingDeployment      string
-	ChannelPricingPurchaseUSD     *float64
-	ChannelPricingCurrency        string
-	ChannelPricingFXRate          float64
-	ChannelPricingVersion         string
+	ChannelPricingApplied          bool
+	ChannelPricingModelRatio       float64
+	ChannelPricingCompletionRatio  *float64
+	ChannelPricingCacheRatio       *float64
+	ChannelPricingModelPrice       float64
+	ChannelPricingUsePrice         bool
+	ChannelPricingMode             string
+	ChannelPricingProvider         string
+	ChannelPricingRegion           string
+	ChannelPricingDeployment       string
+	ChannelPricingPurchaseUSD      *float64
+	ChannelPricingPurchaseVerified bool
+	ChannelPricingPurchaseSource   string
+	ChannelPricingPurchaseVersion  string
+	ChannelPricingCurrency         string
+	ChannelPricingFXRate           float64
+	ChannelPricingVersion          string
 	// User pricing policy actually applied by this request.
 	UserPricingApplied        bool
 	UserPricingRatio          float64

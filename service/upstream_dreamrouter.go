@@ -320,7 +320,7 @@ func GetDreamRouterDiscountGroup(channelID int) string {
 	if channelID <= 0 {
 		return DreamRouterDiscountGroupDefault
 	}
-	raw := strings.TrimSpace(common.OptionMap[DreamRouterDiscountGroupOptionKey])
+	raw := strings.TrimSpace(common.GetOption(DreamRouterDiscountGroupOptionKey))
 	if raw == "" {
 		return DreamRouterDiscountGroupDefault
 	}
@@ -346,7 +346,7 @@ func SetDreamRouterDiscountGroup(channelID int, group string) error {
 		return errors.New("discount group is required")
 	}
 	groups := map[string]string{}
-	raw := strings.TrimSpace(common.OptionMap[DreamRouterDiscountGroupOptionKey])
+	raw := strings.TrimSpace(common.GetOption(DreamRouterDiscountGroupOptionKey))
 	if raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &groups)
 	}
@@ -657,7 +657,7 @@ func SaveDreamRouterUpstreamSnapshot(snapshot *UpstreamSnapshot) error {
 
 // LoadDreamRouterUpstreamSnapshot returns the last isolated snapshot.
 func LoadDreamRouterUpstreamSnapshot() *UpstreamSnapshot {
-	raw := strings.TrimSpace(common.OptionMap[DreamRouterUpstreamSnapshotKey])
+	raw := strings.TrimSpace(common.GetOption(DreamRouterUpstreamSnapshotKey))
 	if raw == "" {
 		return nil
 	}
@@ -677,6 +677,8 @@ type UpstreamPriceChange struct {
 	Field          string    `json:"field,omitempty"`
 	Old            *float64  `json:"old,omitempty"`
 	New            *float64  `json:"new,omitempty"`
+	OldText        string    `json:"old_text,omitempty"`
+	NewText        string    `json:"new_text,omitempty"`
 	DetectedAt     time.Time `json:"detected_at"`
 	PricingVersion string    `json:"pricing_version,omitempty"`
 }
@@ -711,6 +713,15 @@ func DiffDreamRouterUpstream(prev, next *UpstreamSnapshot) []UpstreamPriceChange
 				Kind: "model_added", DetectedAt: now, PricingVersion: next.PricingVersion,
 			})
 			continue
+		}
+		if strings.TrimSpace(before.BillingExpr) != strings.TrimSpace(item.BillingExpr) ||
+			strings.TrimSpace(before.BillingMode) != strings.TrimSpace(item.BillingMode) {
+			changes = append(changes, UpstreamPriceChange{
+				ProviderID: next.ProviderID, ModelID: item.ModelName,
+				Kind: "rule_changed", Field: "billing_expr",
+				OldText: before.BillingExpr, NewText: item.BillingExpr,
+				DetectedAt: now, PricingVersion: next.PricingVersion,
+			})
 		}
 		for _, field := range []struct {
 			name string
@@ -781,7 +792,7 @@ func AppendDreamRouterUpstreamHistory(providerID string, changes []UpstreamPrice
 
 // LoadDreamRouterUpstreamHistory returns the persisted change log.
 func LoadDreamRouterUpstreamHistory() *UpstreamPriceHistory {
-	raw := strings.TrimSpace(common.OptionMap[DreamRouterUpstreamHistoryKey])
+	raw := strings.TrimSpace(common.GetOption(DreamRouterUpstreamHistoryKey))
 	if raw == "" {
 		return nil
 	}

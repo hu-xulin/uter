@@ -45,7 +45,7 @@ Balance / Recharge / Payment / Order / Refund / Invoice / Transaction / Payment 
 | `--ds-leading-base` | 24px | —（同值） | px | 16px 长文本 / 控件 |
 | `--ds-leading-h1` | 44px | —（同值） | px | 36px 页面标题 |
 | `--ds-numeric-tabular` | tabular-nums | —（同值） | keyword | 金额 / 余额 / Token 数 / 价格 / 用量 / 订单号 / 指标 |
-| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'Noto Sans SC Variable', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
+| `--ds-font-mono` | ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace, 'Noto Sans SC Variable', 'Noto Sans SC', 'Source Han Sans SC', 'Source Han Sans CN', '思源黑体', 'PingFang SC', 'Microsoft YaHei', sans-serif | —（同值） | stack | 等宽字体栈（CJK 回退置于 monospace 之后，保持拉丁等宽） |
 | `--ds-color-status-success` | #15803D | #6EE7B7 | color | 成功 |
 | `--ds-color-status-danger` | #B91C1C | #FCA5A5 | color | 危险 |
 | `--ds-color-status-warning` | #A54600 | #FCD34D | color | 警告 |

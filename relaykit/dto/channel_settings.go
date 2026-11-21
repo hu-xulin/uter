@@ -176,6 +176,10 @@ type ChannelOtherSettings struct {
 	UpstreamModelUpdateIgnoredModels      []string              `json:"upstream_model_update_ignored_models,omitempty"`       // 手动忽略的模型
 	AdvancedCustom                        *AdvancedCustomConfig `json:"advanced_custom,omitempty"`
 	Branding                              *ChannelBranding      `json:"branding,omitempty"`
+	// DeploymentID is routing metadata parsed from channel.other_info. It is
+	// never serialized back into settings; it only completes the pricing
+	// identity of the request.
+	DeploymentID string `json:"-"`
 	// OllamaOpenAIChat routes Ollama chat completions to the OpenAI-compatible
 	// /v1/chat/completions endpoint. When unset, chat completions keep using
 	// the native /api/chat protocol.
