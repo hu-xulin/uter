@@ -92,6 +92,21 @@ export async function stepExecutor({ task, step }) {
       if (r.exit_code !== 0) { out.status = 'BLOCKED'; out.summary = `UAP tests exited ${r.exit_code}`; }
       else out.summary = `UAP tests passed: ${files.length} files, exit ${r.exit_code}`;
     }
+  } else if (name === 'scan_architecture' || name === 'scan_knowledge') {
+    const modulePath = name === 'scan_architecture' ? '../engines/architecture/index.mjs' : '../engines/knowledge/index.mjs';
+    const engine = await import(modulePath);
+    const result = await engine.execute(task, { workflow_id: task.scope || null, step_name: name });
+    const health = engine.health();
+    out.outputs = { ...(result.outputs || {}), engine_status: result.status, health: health.checks };
+    out.changed_files.push(...(result.changed_files || []));
+    out.commands.push(...(result.commands || []));
+    out.evidence_refs.push(...(result.evidence_refs || []));
+    if (result.status !== 'SUCCEEDED' || !health.ok) {
+      out.status = 'BLOCKED';
+      out.summary = `${name}: engine_status=${result.status}, health_ok=${health.ok}; ${result.summary}`;
+    } else {
+      out.summary = `${name}: ${result.summary}`;
+    }
   } else if (name.startsWith('scan_')) {
     const domain = name.replace(/^scan_/, '');
     try {
