@@ -10,7 +10,12 @@ import (
 	"github.com/uter-ai/uter/common"
 )
 
-const upstreamSyncLockTTL = 30 * time.Minute
+// upstreamSyncLockTTL bounds how long a crashed instance can block scheduled
+// syncs. A normal run takes seconds and releases the lock explicitly; 30
+// minutes meant one killed process silently stopped price auto-updates for
+// half an hour, so the fallback expiry is kept short. Upserts are idempotent,
+// which makes the rare overlap after an overrun harmless.
+const upstreamSyncLockTTL = 5 * time.Minute
 
 const releaseUpstreamSyncLockScript = `
 if redis.call("GET", KEYS[1]) == ARGV[1] then
