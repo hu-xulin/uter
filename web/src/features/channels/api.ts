@@ -1115,6 +1115,12 @@ export async function batchChannelModelPricing(
     deployments?: string[]
     pricing_sources?: string[]
     modes?: string[]
+    tier_rules?: Array<{
+      range_name?: string
+      time_band?: string
+      mode: string
+      value: number
+    }>
     basis: 'official' | 'channel' | 'current'
     mode: string
     value: number

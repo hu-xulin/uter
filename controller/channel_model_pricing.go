@@ -519,12 +519,18 @@ func BatchChannelModelPricing(c *gin.Context) {
 		Deployments     []string `json:"deployments"`
 		PricingSources  []string `json:"pricing_sources"`
 		Modes           []string `json:"modes"`
-		Basis           string   `json:"basis"`
-		Mode            string   `json:"mode"`
-		Value           float64  `json:"value"`
-		Factor          float64  `json:"factor"`
-		DryRun          bool     `json:"dry_run"`
-		OverwriteManual bool     `json:"overwrite_manual"`
+		TierRules       []struct {
+			RangeName string  `json:"range_name"`
+			TimeBand  string  `json:"time_band"`
+			Mode      string  `json:"mode"`
+			Value     float64 `json:"value"`
+		} `json:"tier_rules"`
+		Basis           string  `json:"basis"`
+		Mode            string  `json:"mode"`
+		Value           float64 `json:"value"`
+		Factor          float64 `json:"factor"`
+		DryRun          bool    `json:"dry_run"`
+		OverwriteManual bool    `json:"overwrite_manual"`
 		// Versions carries the per-model PricingVersion returned by a preview
 		// so an apply cannot mix in rows that changed since then.
 		Versions map[string]string `json:"versions"`
@@ -547,6 +553,7 @@ func BatchChannelModelPricing(c *gin.Context) {
 		ModelCategories: req.ModelCategories, OverwriteManual: req.OverwriteManual,
 		Providers: req.Providers, Regions: req.Regions, Deployments: req.Deployments,
 		PricingSources: req.PricingSources, Modes: req.Modes,
+		TierRules:        batchTierRulesFromRequest(req.TierRules),
 		ExpectedVersions: req.Versions,
 		Dimensions:       req.Dimensions,
 		MinMarginRate:    req.MinMarginRate, ProtectionMode: req.ProtectionMode,
@@ -558,6 +565,25 @@ func BatchChannelModelPricing(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, result)
+}
+
+// batchTierRulesFromRequest converts the wire shape into the service rule type.
+func batchTierRulesFromRequest(rules []struct {
+	RangeName string  `json:"range_name"`
+	TimeBand  string  `json:"time_band"`
+	Mode      string  `json:"mode"`
+	Value     float64 `json:"value"`
+}) []service.BatchTierRule {
+	if len(rules) == 0 {
+		return nil
+	}
+	out := make([]service.BatchTierRule, 0, len(rules))
+	for _, rule := range rules {
+		out = append(out, service.BatchTierRule{
+			RangeName: rule.RangeName, TimeBand: rule.TimeBand, Mode: rule.Mode, Value: rule.Value,
+		})
+	}
+	return out
 }
 
 // GetChannelPricingSchedule returns a channel's post-sync pricing rule.

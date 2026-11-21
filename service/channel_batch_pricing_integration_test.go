@@ -789,3 +789,33 @@ func TestBatchPricingFiltersByRegionAndDeployment(t *testing.T) {
 	assert.NotEmpty(t, byRegion["cn-beijing"])
 	assert.Empty(t, byRegion["cn-shanghai"], "identity filter must not touch the other deployment")
 }
+
+func TestBatchPricingAppliesPerTierRule(t *testing.T) {
+	setupBatchPricingDB(t)
+	seedTieredSaleRow(t, 24, "tiered-model", [2]float64{1.2, 2.4})
+
+	result, err := ApplyChannelBatchPricingWithOptions(24, BatchPricingOptions{
+		Models: []string{"tiered-model"},
+		Basis:  BatchPricingBasisCurrent, Mode: BatchPricingModeDiscount, Value: 0.5,
+		OverwriteManual: true,
+		TierRules: []BatchTierRule{{
+			RangeName: "32k-128k", Mode: BatchPricingModeDiscount, Value: 0.8,
+		}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 1, result.Updated)
+	require.Len(t, result.Items, 1)
+	require.Len(t, result.Items[0].Tiers, 2)
+	assert.InDelta(t, 0.6, *result.Items[0].Tiers[0].InputUSD, 1e-9)
+	assert.InDelta(t, 1.92, *result.Items[0].Tiers[1].InputUSD, 1e-9)
+	assert.InDelta(t, 2.4, *result.Items[0].Tiers[0].OutputUSD, 1e-9)
+	assert.InDelta(t, 7.68, *result.Items[0].Tiers[1].OutputUSD, 1e-9)
+
+	// An invalid per-tier rule is rejected before any write.
+	_, err = ApplyChannelBatchPricingWithOptions(24, BatchPricingOptions{
+		Models: []string{"tiered-model"}, Basis: BatchPricingBasisCurrent,
+		Mode: BatchPricingModeDiscount, Value: 0.5,
+		TierRules: []BatchTierRule{{RangeName: "0-32k", Mode: "bogus", Value: 1}},
+	})
+	require.Error(t, err)
+}

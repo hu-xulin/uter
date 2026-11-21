@@ -54,6 +54,8 @@
   `refunded`，合同仍不可改写。
 - 批量定价新增 `providers`/`regions`/`deployments`/`pricing_sources`/`modes` 精确筛选；
   版本校验继续使用 `model|provider|region|deployment` 身份键。前端批量面板增加对应筛选输入。
+- 批量调价支持 `tier_rules` 逐档规则：按 `range_name`/`time_band` 为不同上下文档位
+  指定独立 mode/value，未命中的档位沿用基础规则；非法规则在写入前拒绝。
 - 上游报价视图补齐缓存写入、图片、Thinking、多模态、音频与 `per_unit_usd`；
   `per_image` 不再只能从 `per_call_usd` 读取。
 - Apiko 能力声明改为“后台定时同步（1 分钟调度 + 渠道官方价周期）”，与
