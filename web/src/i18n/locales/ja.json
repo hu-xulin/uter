@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "アップストリーム同期後に自動適用",
     "When off, the rule is saved but only a manual Apply changes prices.": "オフの場合、ルールは保存されますが、価格は手動の「適用」でのみ変更されます。",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "下記の周期で上流カタログと価格を自動取得し、バッチルールを再適用します。手動同期は不要です。",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "オフの場合、ルールは保存のみで、価格は手動の「適用」でのみ変更されます。オンの場合、新しい上流モデルもこのチャネルに追加されます（削除は手動のまま）。"
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "オフの場合、ルールは保存のみで、価格は手動の「適用」でのみ変更されます。オンの場合、新しい上流モデルもこのチャネルに追加されます（削除は手動のまま）。",
+    "Embedding": "埋め込み",
+    "Omni": "全モダリティ",
+    "Sync Apiko prices": "Apiko 価格を同期",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "{{recorded}} 件の価格を同期、{{seeded}} 件を自動設定、{{skipped}} 件は手動設定が必要です",
+    "Failed to sync Apiko prices": "Apiko 価格の同期に失敗しました",
+    "Save the channel before syncing prices.": "価格を同期する前にチャネルを保存してください。"
   }
 }

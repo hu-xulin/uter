@@ -25,7 +25,12 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
-import { syncApikoChannelModels, type ApikoModelSyncResult } from '../api'
+import {
+  syncApikoChannelModels,
+  syncApikoChannelPricing,
+  type ApikoModelSyncResult,
+  type ApikoPriceSyncResult,
+} from '../api'
 
 type ApikoChannelPanelProps = {
   channelId: number | null
@@ -41,6 +46,9 @@ type ApikoChannelPanelProps = {
 export function ApikoChannelPanel(props: ApikoChannelPanelProps) {
   const { t } = useTranslation()
   const [result, setResult] = useState<ApikoModelSyncResult | null>(null)
+  const [priceResult, setPriceResult] = useState<ApikoPriceSyncResult | null>(
+    null
+  )
   const mutation = useMutation({
     mutationFn: async () => {
       let channelId = props.channelId
@@ -70,6 +78,39 @@ export function ApikoChannelPanel(props: ApikoChannelPanelProps) {
     },
   })
 
+  const priceMutation = useMutation({
+    mutationFn: async () => {
+      let channelId = props.channelId
+      if (!channelId) {
+        channelId = (await props.onCreateDraft?.()) ?? null
+      }
+      if (!channelId) {
+        throw new Error(t('Save the channel before syncing prices.'))
+      }
+      return syncApikoChannelPricing(channelId)
+    },
+    onSuccess: (data) => {
+      setPriceResult(data)
+      toast.success(
+        t(
+          'Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing',
+          {
+            recorded: data.recorded,
+            seeded: data.seeded,
+            skipped: data.skipped.length,
+          }
+        )
+      )
+    },
+    onError: (error) => {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : t('Failed to sync Apiko prices')
+      )
+    },
+  })
+
   return (
     <div className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'>
       <div className='flex flex-wrap items-start justify-between gap-3'>
@@ -94,6 +135,19 @@ export function ApikoChannelPanel(props: ApikoChannelPanelProps) {
           />
           {t('Sync Apiko models')}
         </Button>
+        <Button
+          type='button'
+          size='sm'
+          variant='outline'
+          onClick={() => priceMutation.mutate()}
+          disabled={priceMutation.isPending}
+        >
+          <RefreshCw
+            className={cn('size-4', priceMutation.isPending && 'animate-spin')}
+            aria-hidden='true'
+          />
+          {t('Sync Apiko prices')}
+        </Button>
       </div>
       {result ? (
         <p className='text-muted-foreground text-sm' role='status'>
@@ -101,6 +155,18 @@ export function ApikoChannelPanel(props: ApikoChannelPanelProps) {
             total: result.total,
             added: result.added,
           })}
+        </p>
+      ) : null}
+      {priceResult ? (
+        <p className='text-muted-foreground text-sm' role='status'>
+          {t(
+            'Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing',
+            {
+              recorded: priceResult.recorded,
+              seeded: priceResult.seeded,
+              skipped: priceResult.skipped.length,
+            }
+          )}
         </p>
       ) : null}
     </div>

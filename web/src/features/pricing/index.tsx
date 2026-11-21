@@ -36,8 +36,8 @@ import {
 } from './components'
 import { FILTER_ALL, VIEW_MODES } from './constants'
 import { useFilters } from './hooks/use-filters'
-import { applyChannelView } from './lib/channel-view'
 import { usePricingData } from './hooks/use-pricing-data'
+import { applyChannelView } from './lib/channel-view'
 
 export function Pricing() {
   const { t } = useTranslation()

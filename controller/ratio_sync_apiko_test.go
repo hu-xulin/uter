@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/setting/billing_setting"
 )
 
 func TestFetchUpstreamRatiosUsesApikoPublicCatalogue(t *testing.T) {
@@ -66,18 +65,7 @@ func TestFetchUpstreamRatiosUsesApikoPublicCatalogue(t *testing.T) {
 	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
 	require.True(t, response.Success)
 	require.Len(t, response.Data.TestResults, 1)
-	assert.Equal(t, "success", response.Data.TestResults[0].Status)
-	assert.Equal(t, "apiko", response.Data.TestResults[0].Name)
-
-	price, ok := response.Data.Prices["apiko-chat-test"]
-	require.True(t, ok, "the catalogue model must reach the preview")
-	upstream := price.Upstreams["apiko"]
-	require.NotNil(t, upstream)
-	assert.Equal(t, billing_setting.BillingModeTieredExpr, upstream[billing_setting.BillingModeField])
-	assert.Equal(t, `tier("base", p * 1.25 + c * 5 + cr * 0.125)`, upstream[billing_setting.BillingExprField])
-
-	require.Len(t, response.Data.SkippedModels, 1)
-	assert.Equal(t, "apiko", response.Data.SkippedModels[0].Upstream)
-	assert.Equal(t, "apiko-video-test", response.Data.SkippedModels[0].Model)
-	assert.Equal(t, "duration_tiered", response.Data.SkippedModels[0].Reason)
+	assert.Equal(t, "error", response.Data.TestResults[0].Status)
+	assert.Contains(t, response.Data.TestResults[0].Error, "channel-scoped")
+	assert.Empty(t, response.Data.Prices, "Apiko must not write global model prices")
 }

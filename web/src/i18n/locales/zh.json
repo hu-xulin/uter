@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "每次上游同步后自动应用",
     "When off, the rule is saved but only a manual Apply changes prices.": "关闭时仅保存规则，只有手动执行“应用”才会改价。",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "按下方周期自动拉取上游目录与价格，然后重新应用批量规则，无需手动同步。",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "关闭时仅保存规则，只有手动执行“应用”才会改价；开启后新的上游模型也会自动加入该渠道（下线模型仍需人工确认）。"
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "关闭时仅保存规则，只有手动执行“应用”才会改价；开启后新的上游模型也会自动加入该渠道（下线模型仍需人工确认）。",
+    "Embedding": "向量",
+    "Omni": "全模态",
+    "Sync Apiko prices": "同步 Apiko 价格",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "已同步 {{recorded}} 个价格，自动定价 {{seeded}} 个；{{skipped}} 个需要人工定价",
+    "Failed to sync Apiko prices": "同步 Apiko 价格失败",
+    "Save the channel before syncing prices.": "请先保存渠道再同步价格。"
   }
 }

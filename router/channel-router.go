@@ -118,6 +118,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodGet, path: "/:id/model_pricing/schedule", permission: authz.ChannelRead, handler: controller.GetChannelPricingSchedule},
 	{method: http.MethodPut, path: "/:id/model_pricing/schedule", permission: authz.ChannelSensitiveWrite, handler: controller.SetChannelPricingSchedule},
 	{method: http.MethodPost, path: "/:id/apiko/models/sync", permission: authz.ChannelOperate, handler: controller.SyncApikoChannelModels},
+	{method: http.MethodPost, path: "/:id/apiko/prices/sync", permission: authz.ChannelOperate, handler: controller.SyncApikoChannelPricing},
 	{method: http.MethodPost, path: "/upstream_updates/apply", permission: authz.ChannelWrite, handler: controller.ApplyChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/apply_all", permission: authz.ChannelWrite, handler: controller.ApplyAllChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/detect", permission: authz.ChannelOperate, handler: controller.DetectChannelUpstreamModelUpdates},

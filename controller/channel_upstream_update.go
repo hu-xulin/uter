@@ -409,10 +409,10 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		}
 		return normalizeModelNames(plugin.Meta.Models), nil
 	}
-	// Apiko's relay host may not expose /v1/models; its authoritative catalogue is
-	// the public control-plane document, which also carries the model prices.
+	// The public control-plane catalogue is the full model list; the
+	// key-scoped /v1/models only exposes the subset enabled for one key.
 	if channel.Type == constant.ChannelTypeApiko {
-		return fetchApikoCatalogueModelIDs(channel.GetBaseURL())
+		return fetchApikoModelIDs(channel)
 	}
 	baseURL := constant.GetChannelBaseURL(channel.Type)
 	if channel.GetBaseURL() != "" {

@@ -418,6 +418,37 @@ func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) 
 	return seeded, skipped, nil
 }
 
+// BailianSeenChannelModels returns the channel's served model names that the
+// latest complete catalog actually contains. Alias matches count as present;
+// names absent from the catalog are left out so lifecycle tracking can age them.
+func BailianSeenChannelModels(catalog *BailianCatalog, channelModels []string) []string {
+	if catalog == nil || len(channelModels) == 0 {
+		return nil
+	}
+	byName := make(map[string]BailianModel, len(catalog.Models))
+	for _, item := range catalog.Models {
+		byName[item.Model] = item
+	}
+	seen := make([]string, 0, len(channelModels))
+	dedupe := make(map[string]bool, len(channelModels))
+	for _, rawName := range channelModels {
+		name := strings.TrimSpace(rawName)
+		if name == "" || dedupe[name] {
+			continue
+		}
+		if _, ok := byName[name]; ok {
+			seen = append(seen, name)
+			dedupe[name] = true
+			continue
+		}
+		if _, ok := resolveBailianCatalogAlias(name, byName); ok {
+			seen = append(seen, name)
+			dedupe[name] = true
+		}
+	}
+	return seen
+}
+
 // resolveBailianCatalogAlias matches channel model names that differ from the
 // catalog only by a known envelope: the `cmaas-` prefix, a vendor scope before
 // `/`, or a trailing date. It never guesses by substring.
@@ -460,10 +491,22 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 	// unit, missing price) cannot be represented by one executable price.
 	for _, reason := range normalized.ReviewReasons {
 		switch reason {
-		case "multiple price ranges", "multiple cache read prices", "multiple cache creation prices":
+		case "multiple price ranges", "multiple cache read prices", "multiple cache creation prices",
+			"multiple thinking cache read prices", "multiple thinking cache creation prices":
 		default:
 			return ""
 		}
+	}
+	if expr := bailianImageTaskExpression(normalized.ComponentPrices); expr != "" {
+		internal := model.ChannelInternalPricing{
+			Mode: model.ChannelPricingModeTieredExpr, BillingExpr: expr,
+			Source: bailianCatalogSource, UpdatedAt: normalized.FetchedAt,
+		}
+		encoded, err := common.Marshal(internal)
+		if err != nil {
+			return ""
+		}
+		return string(encoded)
 	}
 	tiers := normalized.ChannelPriceTiers
 	if len(tiers) == 0 && normalized.ChannelPrice != nil {
@@ -475,7 +518,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 	if len(tiers) == 0 {
 		return ""
 	}
-	if len(tiers) == 1 {
+	if len(tiers) == 1 && !bailianTierNeedsExpression(tiers[0]) {
 		tier := tiers[0]
 		internal := model.ChannelInternalPricing{Source: bailianCatalogSource, UpdatedAt: normalized.FetchedAt}
 		switch tier.Unit {
@@ -547,21 +590,94 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 // bailianTierExpression converts context-length tiers into the expression
 // language used by the billing engine. Coefficients are USD per 1M tokens; the
 // engine multiplies them by token counts and converts to quota.
-func bailianTierExpression(tiers []model.ChannelPricingTier) string {
-	sorted := append([]model.ChannelPricingTier(nil), tiers...)
-	// The billing expression has no time-of-day condition. A tiered expression
-	// can only be generated when every context range belongs to one time band.
-	band := ""
-	for _, tier := range sorted {
-		current := strings.TrimSpace(tier.TimeBand)
-		if band == "" {
-			band = current
-			continue
-		}
-		if current != band {
-			return ""
+// bailianImageTaskExpression maps the image task plugins' declared usage facts
+// to the official per-image prices. Qwen-Image3 reports output_image_type and
+// input_image_count; Z-Image reports prompt_extend.
+func bailianImageTaskExpression(components []model.ChannelPricingComponent) string {
+	prices := make(map[string]float64, len(components))
+	for _, component := range components {
+		prices[strings.ToLower(component.Type)] = component.USD
+	}
+	if output1, ok1 := prices["qima_output_1k"]; ok1 {
+		if output2, ok2 := prices["qima_output_2k"]; ok2 {
+			output := fmt.Sprintf(`(u("output_image_type") == "qima_output_2k" ? %s : %s)`,
+				formatExprNumber(output2), formatExprNumber(output1))
+			terms := fmt.Sprintf(`u("image_count") * %s`, output)
+			if input1, okInput1 := prices["qima_input_1k"]; okInput1 {
+				if input2, okInput2 := prices["qima_input_2k"]; okInput2 {
+					input := fmt.Sprintf(`(u("output_image_type") == "qima_output_2k" ? %s : %s)`,
+						formatExprNumber(input2), formatExprNumber(input1))
+					terms += fmt.Sprintf(` + u("input_image_count") * %s`, input)
+				}
+			}
+			return fmt.Sprintf(`tier("qwen-image", %s)`, terms)
 		}
 	}
+	if standard, okStandard := prices["image_standard"]; okStandard {
+		if thinking, okThinking := prices["image_thinking"]; okThinking {
+			return fmt.Sprintf(`tier("z-image", u("image_count") * (u("prompt_extend") ? %s : %s))`,
+				formatExprNumber(thinking), formatExprNumber(standard))
+		}
+	}
+	return ""
+}
+
+func bailianTierExpression(tiers []model.ChannelPricingTier) string {
+	bands := make(map[string]bool, len(tiers))
+	for _, tier := range tiers {
+		bands[bailianTimeBand(tier.TimeBand)] = true
+	}
+	switch len(bands) {
+	case 1:
+		for band := range bands {
+			return bailianBandExpression(tiers, band)
+		}
+		return ""
+	case 2:
+		if !bands["peak"] || !bands["offpeak"] {
+			return ""
+		}
+		peak := bailianTiersForBand(tiers, "peak")
+		offpeak := bailianTiersForBand(tiers, "offpeak")
+		peakExpr := bailianBandExpression(peak, "peak")
+		offpeakExpr := bailianBandExpression(offpeak, "offpeak")
+		if peakExpr == "" || offpeakExpr == "" {
+			return ""
+		}
+		// Bailian's off-peak window is 22:00-08:00 Asia/Shanghai; the rest is
+		// peak. Use the request time, matching the upstream price schedule.
+		return fmt.Sprintf(`(hour("Asia/Shanghai") >= 22 || hour("Asia/Shanghai") < 8 ? %s : %s)`,
+			offpeakExpr, peakExpr)
+	default:
+		return ""
+	}
+}
+
+func bailianTimeBand(raw string) string {
+	switch strings.ToLower(strings.TrimSpace(raw)) {
+	case "", "standard":
+		return "standard"
+	case "peak":
+		return "peak"
+	case "offpeak":
+		return "offpeak"
+	default:
+		return strings.ToLower(strings.TrimSpace(raw))
+	}
+}
+
+func bailianTiersForBand(tiers []model.ChannelPricingTier, band string) []model.ChannelPricingTier {
+	out := make([]model.ChannelPricingTier, 0, len(tiers))
+	for _, tier := range tiers {
+		if bailianTimeBand(tier.TimeBand) == band {
+			out = append(out, tier)
+		}
+	}
+	return out
+}
+
+func bailianBandExpression(tiers []model.ChannelPricingTier, band string) string {
+	sorted := append([]model.ChannelPricingTier(nil), tiers...)
 	sort.Slice(sorted, func(i, j int) bool {
 		mi, mj := sorted[i].MaxInputTokens, sorted[j].MaxInputTokens
 		if mi == 0 {
@@ -580,22 +696,79 @@ func bailianTierExpression(tiers []model.ChannelPricingTier) string {
 		if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
 			return ""
 		}
-		terms := []string{fmt.Sprintf("p * %s", formatExprNumber(*tier.InputPerMillionUSD))}
+		input := *tier.InputPerMillionUSD
+		terms := []string{}
+		if tier.ThinkingInputPerMillionUSD != nil && *tier.ThinkingInputPerMillionUSD > 0 &&
+			*tier.ThinkingInputPerMillionUSD != input {
+			terms = append(terms, fmt.Sprintf("p * (rt > 0 ? %s : %s)",
+				formatExprNumber(*tier.ThinkingInputPerMillionUSD), formatExprNumber(input)))
+		} else {
+			terms = append(terms, fmt.Sprintf("p * %s", formatExprNumber(input)))
+		}
+		if tier.ImageInputPerMillionUSD != nil && *tier.ImageInputPerMillionUSD > 0 {
+			image := *tier.ImageInputPerMillionUSD
+			if tier.ThinkingImageInputPerMillionUSD != nil && *tier.ThinkingImageInputPerMillionUSD > 0 &&
+				*tier.ThinkingImageInputPerMillionUSD != image {
+				terms = append(terms, fmt.Sprintf("img * (rt > 0 ? %s : %s)",
+					formatExprNumber(*tier.ThinkingImageInputPerMillionUSD), formatExprNumber(image)))
+			} else {
+				terms = append(terms, fmt.Sprintf("img * %s", formatExprNumber(image)))
+			}
+		}
 		if tier.OutputPerMillionUSD != nil && *tier.OutputPerMillionUSD > 0 {
-			terms = append(terms, fmt.Sprintf("c * %s", formatExprNumber(*tier.OutputPerMillionUSD)))
+			output := *tier.OutputPerMillionUSD
+			normalOutput := formatExprNumber(output)
+			if tier.MultiInputOutputPerMillionUSD != nil && *tier.MultiInputOutputPerMillionUSD > 0 &&
+				*tier.MultiInputOutputPerMillionUSD != output {
+				normalOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
+					formatExprNumber(*tier.MultiInputOutputPerMillionUSD), normalOutput)
+			}
+			if tier.ThinkingOutputPerMillionUSD != nil && *tier.ThinkingOutputPerMillionUSD > 0 &&
+				*tier.ThinkingOutputPerMillionUSD != output {
+				thinkingOutput := formatExprNumber(*tier.ThinkingOutputPerMillionUSD)
+				if tier.ThinkingMultiInputOutputPerMillionUSD != nil &&
+					*tier.ThinkingMultiInputOutputPerMillionUSD > 0 &&
+					*tier.ThinkingMultiInputOutputPerMillionUSD != *tier.ThinkingOutputPerMillionUSD {
+					thinkingOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
+						formatExprNumber(*tier.ThinkingMultiInputOutputPerMillionUSD), thinkingOutput)
+				}
+				terms = append(terms, fmt.Sprintf("c * (rt > 0 ? %s : %s)", thinkingOutput, normalOutput))
+			} else {
+				terms = append(terms, fmt.Sprintf("c * %s", normalOutput))
+			}
 		}
 		if tier.CachePerMillionUSD != nil && *tier.CachePerMillionUSD > 0 {
-			terms = append(terms, fmt.Sprintf("cr * %s", formatExprNumber(*tier.CachePerMillionUSD)))
+			cache := *tier.CachePerMillionUSD
+			if tier.ThinkingCachePerMillionUSD != nil && *tier.ThinkingCachePerMillionUSD > 0 &&
+				*tier.ThinkingCachePerMillionUSD != cache {
+				terms = append(terms, fmt.Sprintf("cr * (rt > 0 ? %s : %s)",
+					formatExprNumber(*tier.ThinkingCachePerMillionUSD), formatExprNumber(cache)))
+			} else {
+				terms = append(terms, fmt.Sprintf("cr * %s", formatExprNumber(cache)))
+			}
 		}
 		if tier.CreateCachePerMillionUSD != nil && *tier.CreateCachePerMillionUSD > 0 {
-			terms = append(terms, fmt.Sprintf("cc * %s", formatExprNumber(*tier.CreateCachePerMillionUSD)))
+			createCache := *tier.CreateCachePerMillionUSD
+			if tier.ThinkingCreateCachePerMillionUSD != nil && *tier.ThinkingCreateCachePerMillionUSD > 0 &&
+				*tier.ThinkingCreateCachePerMillionUSD != createCache {
+				terms = append(terms, fmt.Sprintf("cc * (rt > 0 ? %s : %s)",
+					formatExprNumber(*tier.ThinkingCreateCachePerMillionUSD), formatExprNumber(createCache)))
+			} else {
+				terms = append(terms, fmt.Sprintf("cc * %s", formatExprNumber(createCache)))
+			}
 		}
-		if tier.AudioInputPerMillionUSD != nil || tier.AudioOutputPerMillionUSD != nil {
-			return ""
+		if tier.AudioInputPerMillionUSD != nil && *tier.AudioInputPerMillionUSD > 0 {
+			terms = append(terms, fmt.Sprintf("ai * %s", formatExprNumber(*tier.AudioInputPerMillionUSD)))
+		}
+		if tier.AudioOutputPerMillionUSD != nil && *tier.AudioOutputPerMillionUSD > 0 {
+			terms = append(terms, fmt.Sprintf("ao * %s", formatExprNumber(*tier.AudioOutputPerMillionUSD)))
 		}
 		name := tier.RangeName
 		if strings.TrimSpace(name) == "" {
 			name = "tier"
+		}
+		if band == "peak" || band == "offpeak" {
+			name = band + ":" + name
 		}
 		parts = append(parts, fmt.Sprintf(`tier("%s", %s)`, strings.ReplaceAll(name, `"`, ""), strings.Join(terms, " + ")))
 	}
@@ -695,7 +868,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		countRanges[priceRange.RangeName] = true
 		for _, price := range priceRange.Prices {
 			band := strings.TrimSpace(price.TimeBand)
-			countBands[band] = true
+			countBands[bailianTimeBand(band)] = true
 			key := priceRange.RangeName + "\x00" + band
 			tier, ok := tiers[key]
 			if !ok {
@@ -731,41 +904,66 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			tier.RawPriceTypes = append(tier.RawPriceTypes, priceType)
 			switch {
 			case strings.Contains(priceType, "cache") && strings.Contains(priceType, "creation"):
-				setTokenPrice(&tier.CreateCachePerMillionUSD, usd, "cache creation")
+				if strings.Contains(priceType, "thinking") {
+					setTokenPrice(&tier.ThinkingCreateCachePerMillionUSD, usd, "thinking cache creation")
+				} else {
+					setTokenPrice(&tier.CreateCachePerMillionUSD, usd, "cache creation")
+				}
 			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input" ||
 				priceType == "text_input_token" || priceType == "thinking_text_input_token" ||
 				priceType == "mt_character_input_token" ||
 				priceType == "embedding_token" || priceType == "translate_audio_input_token" ||
 				priceType == "omni_no_audio_input_token" || priceType == "audio_text_input_token" ||
-				priceType == "omni_input_token" || priceType == "thinking_input_token" ||
-				priceType == "vision_input_token" || priceType == "thinking_vision_input_token" ||
-				priceType == "translate_vision_input_token" ||
-				priceType == "mt_image_input_token" || priceType == "mt_document_input_token" ||
-				priceType == "mt_audio_input_token":
+				priceType == "omni_input_token":
 				setTokenPrice(&tier.InputPerMillionUSD, usd, "input token")
 				result.Unit = "per_1m_token"
 			case priceType == "output_token" || priceType == "output_tokens" || priceType == "text_output" ||
-				priceType == "translate_multi_text_output_token" || priceType == "translate_multi_output_token" ||
+				priceType == "translate_multi_text_output_token" ||
 				priceType == "omni_no_audio_output_token" || priceType == "audio_text_output_token" ||
 				priceType == "omni_output_token" || priceType == "purein_text_output_token" ||
 				priceType == "thinking_purein_text_output_token" ||
-				priceType == "omni_text_output_token" || priceType == "thinking_output_token" ||
-				priceType == "multiin_text_output_token" ||
-				priceType == "thinking_multiin_text_output_token" ||
-				priceType == "vision_output_token" || priceType == "thinking_vision_output_token":
+				priceType == "omni_text_output_token":
 				setTokenPrice(&tier.OutputPerMillionUSD, usd, "output token")
 				result.Unit = "per_1m_token"
+			// Vision input is a separate token dimension and the relay reports
+			// image_tokens, so it can be priced exactly with the `img` variable.
+			case priceType == "vision_input_token" || priceType == "translate_vision_input_token" ||
+				priceType == "mt_image_input_token":
+				setTokenPrice(&tier.ImageInputPerMillionUSD, usd, "image input token")
+			case priceType == "thinking_vision_input_token":
+				setTokenPrice(&tier.ThinkingImageInputPerMillionUSD, usd, "thinking image input token")
+			case priceType == "multiin_text_output_token":
+				setTokenPrice(&tier.MultiInputOutputPerMillionUSD, usd, "multi-input output token")
+			case priceType == "thinking_multiin_text_output_token":
+				setTokenPrice(&tier.ThinkingMultiInputOutputPerMillionUSD, usd, "thinking multi-input output token")
+			case priceType == "mt_audio_input_token":
+				setTokenPrice(&tier.AudioInputPerMillionUSD, usd, "audio input token")
+			case priceType == "mt_document_input_token" ||
+				priceType == "vision_output_token" || priceType == "thinking_vision_output_token":
+				// Document input and image output have no matching billing
+				// variable; keep the model review-only instead of undercharging.
+				unknownTypes[priceType] = true
 			case priceType == "audio_input_token" || priceType == "omni_audio_input_token" ||
 				priceType == "thinking_audio_input_token":
 				setTokenPrice(&tier.AudioInputPerMillionUSD, usd, "audio input token")
 				result.Unit = "per_1m_token"
-			case priceType == "audio_output_token" || priceType == "omni_audio_output_token" || priceType == "multi_output_token":
+			case priceType == "audio_output_token" || priceType == "omni_audio_output_token" ||
+				priceType == "multi_output_token" || priceType == "translate_multi_output_token":
 				setTokenPrice(&tier.AudioOutputPerMillionUSD, usd, "audio output token")
 				result.Unit = "per_1m_token"
-			case priceType == "input_token_cache" || priceType == "thinking_input_token_cache" ||
-				priceType == "omni_input_token_cache" ||
+			case priceType == "thinking_input_token_cache" ||
+				(priceType == "thinking_input_token_cache_read"):
+				setTokenPrice(&tier.ThinkingCachePerMillionUSD, usd, "thinking cache read")
+			case priceType == "input_token_cache" || priceType == "omni_input_token_cache" ||
 				(strings.Contains(priceType, "cache") && strings.Contains(priceType, "read")):
 				setTokenPrice(&tier.CachePerMillionUSD, usd, "cache read")
+			// Reasoning-mode prices are a variant of the primary input/output price.
+			// They stay visible as components only when they differ, so the standard
+			// price remains the billable tier.
+			case priceType == "thinking_input_token":
+				setTokenPrice(&tier.ThinkingInputPerMillionUSD, usd, "thinking input token")
+			case priceType == "thinking_output_token":
+				setTokenPrice(&tier.ThinkingOutputPerMillionUSD, usd, "thinking output token")
 			// TTS models publish one price per synthesis call or per ten thousand
 			// characters. The relay bills TTS usage as tokens where one character
 			// is one token (the usage_characters convention), so a per-10k-character
@@ -784,10 +982,19 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 					unknownTypes[priceType] = true
 				}
 			case strings.HasPrefix(priceType, "qima_"):
-				// Qwen-Image publishes separate input/output prices per output
-				// resolution. Collapsing them into one per-image price would
-				// misprice every request, so keep the whole model review-only.
-				unknownTypes[priceType] = true
+				// Qwen-Image3's task plugin reports output_image_type and
+				// input_image_count, so the tiered per-image prices are exact.
+				result.ComponentPrices = append(result.ComponentPrices, model.ChannelPricingComponent{
+					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: usd,
+				})
+				result.Unit = "per_image"
+			case priceType == "image_standard" || priceType == "image_thinking":
+				// Z-Image's plugin reports prompt_extend, which selects between
+				// the standard and thinking per-image price.
+				result.ComponentPrices = append(result.ComponentPrices, model.ChannelPricingComponent{
+					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: usd,
+				})
+				result.Unit = "per_image"
 			case normalizedUnit == "per_image" || normalizedUnit == "per_second" ||
 				normalizedUnit == "per_minute" || normalizedUnit == "per_call":
 				addPerUnitPrice(tier, normalizedUnit, usd, price, priceType)
@@ -836,18 +1043,21 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")
 	}
 	if len(countBands) > 1 {
-		result.ReviewReasons = append(result.ReviewReasons, "multiple time bands")
-	}
-	// Multi-tier rows are only executable when every tier is a token tier. Audio
-	// or media dimensions mixed into several ranges cannot be flattened into one
-	// expression, so name the reason instead of leaving a silent empty sale price.
-	if len(result.ChannelPriceTiers) > 1 {
-		for _, tier := range result.ChannelPriceTiers {
-			if tier.AudioInputPerMillionUSD != nil || tier.AudioOutputPerMillionUSD != nil {
-				result.ReviewReasons = append(result.ReviewReasons, "multi-tier audio prices need manual pricing")
-				break
+		supportedBands := true
+		for band := range countBands {
+			if band != "standard" && band != "peak" && band != "offpeak" {
+				result.ReviewReasons = append(result.ReviewReasons, "unsupported time band: "+band)
+				supportedBands = false
 			}
 		}
+		if supportedBands && !(len(countBands) == 2 && countBands["peak"] && countBands["offpeak"]) {
+			result.ReviewReasons = append(result.ReviewReasons, "unsupported time band combination")
+		}
+	}
+	// Multi-tier rows are only executable when every tier is a token tier.
+	// Media dimensions mixed into several ranges cannot be flattened into one
+	// expression, so name the reason instead of leaving a silent empty sale price.
+	if len(result.ChannelPriceTiers) > 1 {
 		for _, tier := range result.ChannelPriceTiers {
 			if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
 				result.ReviewReasons = append(result.ReviewReasons, "mixed price units across tiers need manual pricing")
@@ -855,8 +1065,19 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			}
 		}
 	}
+	multipleInputPrices := false
 	for priceType := range unknownTypes {
 		result.ReviewReasons = append(result.ReviewReasons, "unsupported price type: "+priceType)
+		lower := strings.ToLower(priceType)
+		if strings.Contains(lower, "input") &&
+			!strings.Contains(lower, "batch") &&
+			!strings.Contains(lower, "chat") &&
+			!strings.Contains(lower, "thinking") {
+			multipleInputPrices = true
+		}
+	}
+	if multipleInputPrices {
+		result.ReviewReasons = append(result.ReviewReasons, "multiple input token prices")
 	}
 	for unit := range unknownUnits {
 		result.ReviewReasons = append(result.ReviewReasons, "unsupported price unit: "+unit)
@@ -872,7 +1093,21 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 func tierHasTokenPrice(tier *model.ChannelPricingTier) bool {
 	return tier.InputPerMillionUSD != nil || tier.OutputPerMillionUSD != nil ||
 		tier.AudioInputPerMillionUSD != nil || tier.AudioOutputPerMillionUSD != nil ||
-		tier.CachePerMillionUSD != nil || tier.CreateCachePerMillionUSD != nil
+		tier.CachePerMillionUSD != nil || tier.CreateCachePerMillionUSD != nil ||
+		tier.ImageInputPerMillionUSD != nil || tier.ThinkingInputPerMillionUSD != nil ||
+		tier.ThinkingOutputPerMillionUSD != nil || tier.ThinkingCachePerMillionUSD != nil ||
+		tier.ThinkingCreateCachePerMillionUSD != nil
+}
+
+func bailianTierNeedsExpression(tier model.ChannelPricingTier) bool {
+	return tier.ImageInputPerMillionUSD != nil ||
+		tier.ThinkingInputPerMillionUSD != nil ||
+		tier.ThinkingOutputPerMillionUSD != nil ||
+		tier.ThinkingCachePerMillionUSD != nil ||
+		tier.ThinkingCreateCachePerMillionUSD != nil ||
+		tier.MultiInputOutputPerMillionUSD != nil ||
+		tier.ThinkingMultiInputOutputPerMillionUSD != nil ||
+		tier.ThinkingImageInputPerMillionUSD != nil
 }
 
 var (

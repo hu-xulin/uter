@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "Apply after each upstream sync",
     "When off, the rule is saved but only a manual Apply changes prices.": "When off, the rule is saved but only a manual Apply changes prices.",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual)."
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).",
+    "Embedding": "Embedding",
+    "Omni": "Omni",
+    "Sync Apiko prices": "Sync Apiko prices",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing",
+    "Failed to sync Apiko prices": "Failed to sync Apiko prices",
+    "Save the channel before syncing prices.": "Save the channel before syncing prices."
   }
 }

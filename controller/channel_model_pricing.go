@@ -59,11 +59,15 @@ type channelModelPricingView struct {
 	UpdatedAt      int64  `json:"updated_at"`
 	// Stale marks an upstream price older than the official sync cadence, so
 	// an operator does not treat yesterday's quote as current.
-	Stale           bool                          `json:"stale"`
-	FetchedAgeHours int64                         `json:"fetched_age_hours"`
-	Official        *model.ChannelOfficialPricing `json:"official,omitempty"`
-	UpstreamQuote   *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
-	Internal        *model.ChannelInternalPricing `json:"internal,omitempty"`
+	Stale            bool                          `json:"stale"`
+	FetchedAgeHours  int64                         `json:"fetched_age_hours"`
+	LifecycleStatus  string                        `json:"lifecycle_status,omitempty"`
+	LifecycleReason  string                        `json:"lifecycle_reason,omitempty"`
+	LastSeenAt       int64                         `json:"last_seen_at,omitempty"`
+	MissingSyncCount int                           `json:"missing_sync_count,omitempty"`
+	Official         *model.ChannelOfficialPricing `json:"official,omitempty"`
+	UpstreamQuote    *channelUpstreamQuoteView     `json:"upstream_quote,omitempty"`
+	Internal         *model.ChannelInternalPricing `json:"internal,omitempty"`
 }
 
 // channelPricingStaleAfter is twice the default official sync interval: a
@@ -105,17 +109,21 @@ func classifyOfficialPricingShape(official *model.ChannelOfficialPricing) (strin
 
 func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricingView {
 	view := channelModelPricingView{
-		ChannelID:      row.ChannelId,
-		ModelName:      row.ModelName,
-		Provider:       row.Provider,
-		Region:         row.Region,
-		DeploymentID:   row.DeploymentId,
-		Currency:       row.Currency,
-		PricingSource:  row.PricingSource,
-		PricingStatus:  row.PricingStatus,
-		PricingVersion: row.PricingVersion,
-		FetchedAt:      row.FetchedAt,
-		UpdatedAt:      row.UpdatedAt,
+		ChannelID:        row.ChannelId,
+		ModelName:        row.ModelName,
+		Provider:         row.Provider,
+		Region:           row.Region,
+		DeploymentID:     row.DeploymentId,
+		Currency:         row.Currency,
+		PricingSource:    row.PricingSource,
+		PricingStatus:    row.PricingStatus,
+		PricingVersion:   row.PricingVersion,
+		FetchedAt:        row.FetchedAt,
+		UpdatedAt:        row.UpdatedAt,
+		LifecycleStatus:  row.LifecycleStatus,
+		LifecycleReason:  row.LifecycleReason,
+		LastSeenAt:       row.LastSeenAt,
+		MissingSyncCount: row.MissingSyncCount,
 	}
 	if row.FetchedAt > 0 {
 		age := time.Since(time.Unix(row.FetchedAt, 0))

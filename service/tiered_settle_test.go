@@ -1176,3 +1176,19 @@ func TestSamePriceCacheReadsRemainInInput(t *testing.T) {
 		})
 	}
 }
+
+func TestBuildTieredTokenParams_GPT_ReasoningMode(t *testing.T) {
+	usage := &dto.Usage{
+		PromptTokens:     1000,
+		CompletionTokens: 600,
+		CompletionTokenDetails: dto.OutputTokenDetails{
+			ReasoningTokens: 400,
+			TextTokens:      200,
+		},
+	}
+	expr := `tier("base", c * (rt > 0 ? 10 : 2))`
+	got := tieredQuota(expr, usage, false, 1.0)
+	if math.Abs(got-3000) > 0.01 {
+		t.Fatalf("quota = %f, want 3000", got)
+	}
+}

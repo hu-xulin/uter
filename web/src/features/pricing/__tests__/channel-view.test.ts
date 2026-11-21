@@ -77,7 +77,8 @@ describe('applyChannelView', () => {
   })
 
   it('keeps a channel tiered expression instead of a flat ratio', () => {
-    const expr = 'len <= 131072 ? tier("short", p * 1 + c * 2) : tier("long", p * 3)'
+    const expr =
+      'len <= 131072 ? tier("short", p * 1 + c * 2) : tier("long", p * 3)'
     const input = [
       model({
         channel_prices: {

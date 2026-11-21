@@ -442,6 +442,47 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 	return best, byChannel
 }
 
+// canonicalModelTag classifies a model into the catalog's six model
+// categories. The catalog shows one primary category per model so the tag
+// filter stays stable instead of exposing arbitrary provider tags.
+func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointType) string {
+	parts := []string{strings.ToLower(strings.TrimSpace(name))}
+	for _, endpoint := range endpoints {
+		parts = append(parts, strings.ToLower(string(endpoint)))
+	}
+	if meta != nil {
+		parts = append(parts,
+			strings.ToLower(meta.InputModalities),
+			strings.ToLower(meta.OutputModalities),
+			strings.ToLower(meta.Tags),
+		)
+	}
+	haystack := strings.Join(parts, " ")
+
+	has := func(words ...string) bool {
+		for _, word := range words {
+			if strings.Contains(haystack, word) {
+				return true
+			}
+		}
+		return false
+	}
+	switch {
+	case has("omni", "realtime", "s2s", "speech-to-speech"):
+		return "Omni"
+	case has("embedding", "embeddings", "rerank", "vector"):
+		return "Embedding"
+	case has("video", "sora", "veo", "kling", "seedance"):
+		return "Video"
+	case has("tts", "asr", "audio", "speech", "transcription", "voice"):
+		return "Audio"
+	case has("image", "dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx"):
+		return "Image"
+	default:
+		return "Text"
+	}
+}
+
 func updatePricing() {
 	//modelRatios := common.GetModelRatios()
 	enableAbilities, err := GetAllEnableAbilityWithChannels()
@@ -634,7 +675,7 @@ func updatePricing() {
 				pricing.Descriptions = make(map[string]string, len(meta.Descriptions))
 				maps.Copy(pricing.Descriptions, meta.Descriptions)
 			}
-			pricing.Tags = meta.Tags
+			pricing.Tags = canonicalModelTag(model, meta, modelSupportEndpointTypes[model])
 			pricing.VendorID = meta.VendorID
 			// 目录规格直接下发给定价页。这些字段由「同步资料」从 models.dev 与
 			// basellm 双源合并写入 models 表，未同步时为 0 / 空，前端据此隐藏对应格子。
@@ -655,6 +696,7 @@ func updatePricing() {
 				pricing.Icon = icon
 			}
 		} else {
+			pricing.Tags = canonicalModelTag(model, nil, modelSupportEndpointTypes[model])
 			// 未入库（无元数据）的模型：按模型名归因到自己的产品 logo，
 			// 与同家族已入库模型保持一致。否则卡片会回落到首字母占位，
 			// 即用户看到的「logo 变成不存在」。defaultProductIconForModel

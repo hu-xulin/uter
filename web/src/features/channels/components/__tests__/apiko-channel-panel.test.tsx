@@ -115,3 +115,31 @@ test('creates a draft before syncing a channel that is not saved yet', async () 
   )
   expect(onModelsSynced).toHaveBeenCalledWith(['apiko-chat'])
 })
+
+test('syncs channel-scoped prices and reports manual-pricing skips', async () => {
+  const post = vi.spyOn(api, 'post').mockResolvedValue({
+    data: {
+      success: true,
+      data: {
+        channel_id: 7,
+        fetched: 2,
+        recorded: 2,
+        seeded: 1,
+        skipped: [{ model: 'video-x', reason: 'duration-tiered pricing' }],
+      },
+    },
+  })
+  const user = userEvent.setup()
+  renderPanel()
+
+  await user.click(screen.getByRole('button', { name: 'Sync Apiko prices' }))
+
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    '1 need manual pricing'
+  )
+  expect(post).toHaveBeenCalledWith(
+    '/api/channel/7/apiko/prices/sync',
+    {},
+    expect.anything()
+  )
+})

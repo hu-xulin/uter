@@ -352,6 +352,17 @@ export interface ChannelModelPricingRecord {
   updated_at: number
   stale: boolean
   fetched_age_hours: number
+  lifecycle_status?:
+    | 'ACTIVE'
+    | 'UPDATED'
+    | 'DEPRECATED'
+    | 'DISABLED'
+    | 'NOT_FOUND'
+    | 'SYNC_FAILED'
+    | string
+  lifecycle_reason?: string
+  last_seen_at?: number
+  missing_sync_count?: number
   official?: ChannelOfficialPricingView
   upstream_quote?: ChannelUpstreamQuoteView
   internal?: ChannelInternalPricingView

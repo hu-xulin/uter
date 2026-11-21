@@ -296,6 +296,9 @@ export function ChannelModelPricingSection(
         return t('Per second')
       case 'per_minute':
         return t('Per minute')
+      case 'per_1m_token':
+      case 'per_1m_tokens':
+        return t('Per 1M tokens')
       default:
         return unit
     }

@@ -47,13 +47,42 @@ func TestBailianInternalPricingSkipsMultimodalShapes(t *testing.T) {
 	require.Empty(t, bailianInternalPricing(view))
 }
 
-func TestBailianTierExpressionRejectsMultipleTimeBands(t *testing.T) {
+func TestBailianTierExpressionRejectsUnsupportedTimeBands(t *testing.T) {
 	input := 1.0
 	tiers := []model.ChannelPricingTier{
 		{RangeName: "Default", TimeBand: "峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
 		{RangeName: "Default", TimeBand: "非峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
 	}
 	require.Empty(t, bailianTierExpression(tiers))
+}
+
+func TestBailianTierExpressionEvaluatesPeakAndOffpeak(t *testing.T) {
+	peakInput, peakOutput := 2.0, 8.0
+	offInput, offOutput := 1.0, 4.0
+	tiers := []model.ChannelPricingTier{
+		{RangeName: "Default", TimeBand: "peak", Unit: "per_1m_token", InputPerMillionUSD: &peakInput, OutputPerMillionUSD: &peakOutput},
+		{RangeName: "Default", TimeBand: "offpeak", Unit: "per_1m_token", InputPerMillionUSD: &offInput, OutputPerMillionUSD: &offOutput},
+	}
+	expr := bailianTierExpression(tiers)
+	require.NotEmpty(t, expr)
+	snap := &billingexpr.BillingSnapshot{
+		ExprString: expr, ExprHash: billingexpr.ExprHashString(expr),
+		QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(expr),
+	}
+	result, err := billingexpr.ComputeTieredQuotaWithRequest(snap,
+		billingexpr.TokenParams{P: 1000, C: 1000, Len: 1000}, billingexpr.RequestInput{})
+	require.NoError(t, err)
+	location, err := time.LoadLocation("Asia/Shanghai")
+	require.NoError(t, err)
+	hour := time.Now().In(location).Hour()
+	offpeak := hour >= 22 || hour < 8
+	if offpeak {
+		require.Equal(t, "offpeak:Default", result.MatchedTier)
+		require.InDelta(t, (1000*offInput+1000*offOutput)/1_000_000*common.QuotaPerUnit, result.ActualQuotaBeforeGroup, 1e-6)
+		return
+	}
+	require.Equal(t, "peak:Default", result.MatchedTier)
+	require.InDelta(t, (1000*peakInput+1000*peakOutput)/1_000_000*common.QuotaPerUnit, result.ActualQuotaBeforeGroup, 1e-6)
 }
 
 func TestBailianTierExpressionIncludesCacheCreation(t *testing.T) {
@@ -105,7 +134,7 @@ func TestBailianPricingRecordsResolvesExplicitAliases(t *testing.T) {
 	}
 	require.Contains(t, byName, "cmaas-qwen3.8-flash")
 	require.Contains(t, byName, "qwen-plus-2025-11-05")
-	require.Contains(t, byName["cmaas-qwen3.8-flash"].NormalizedPricing, "qwen3.8-flash")
+	require.Contains(t, byName["cmaas-qwen3.8-flash"].OfficialPricing, "qwen3.8-flash")
 }
 
 func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
@@ -153,4 +182,55 @@ func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
 	require.Equal(t, model.ChannelPricingModePerSecond, secondInternal.Mode)
 	require.NotNil(t, secondInternal.PerSecondUSD)
 	assert.InDelta(t, perSecond, *secondInternal.PerSecondUSD, 1e-9)
+}
+
+func TestBailianThinkingExpressionUsesReasoningTokens(t *testing.T) {
+	input, output, thinkingOutput := 2.0, 2.0, 8.0
+	tiers := []model.ChannelPricingTier{{
+		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &input,
+		OutputPerMillionUSD: &output, ThinkingOutputPerMillionUSD: &thinkingOutput,
+	}}
+	expr := bailianTierExpression(tiers)
+	require.NotEmpty(t, expr)
+	snap := &billingexpr.BillingSnapshot{
+		ExprString: expr, ExprHash: billingexpr.ExprHashString(expr),
+		QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(expr),
+	}
+	normal, err := billingexpr.ComputeTieredQuotaWithRequest(snap,
+		billingexpr.TokenParams{P: 1000, C: 1000, Len: 1000}, billingexpr.RequestInput{})
+	require.NoError(t, err)
+	require.InDelta(t, (1000*input+1000*output)/1_000_000*common.QuotaPerUnit, normal.ActualQuotaBeforeGroup, 1e-6)
+
+	thinking, err := billingexpr.ComputeTieredQuotaWithRequest(snap,
+		billingexpr.TokenParams{P: 1000, C: 1000, Len: 1000, RT: 600}, billingexpr.RequestInput{})
+	require.NoError(t, err)
+	require.InDelta(t, (1000*input+1000*thinkingOutput)/1_000_000*common.QuotaPerUnit, thinking.ActualQuotaBeforeGroup, 1e-6)
+}
+
+func TestBailianImageTaskExpressionsUsePluginFacts(t *testing.T) {
+	qima := bailianImageTaskExpression([]model.ChannelPricingComponent{
+		{Type: "qima_output_1k", Unit: "per_image", USD: 0.02},
+		{Type: "qima_output_2k", Unit: "per_image", USD: 0.18},
+		{Type: "qima_input_1k", Unit: "per_image", USD: 0.01},
+		{Type: "qima_input_2k", Unit: "per_image", USD: 0.05},
+	})
+	require.NotEmpty(t, qima)
+	cost, _, err := billingexpr.RunExprWithRequest(qima, billingexpr.TokenParams{}, billingexpr.RequestInput{
+		Usage: map[string]any{
+			"image_count": 2, "input_image_count": 1, "output_image_type": "qima_output_2k",
+		},
+	})
+	require.NoError(t, err)
+	require.InDelta(t, 2*0.18+0.05, cost, 1e-9)
+
+	zimage := bailianImageTaskExpression([]model.ChannelPricingComponent{
+		{Type: "image_standard", Unit: "per_image", USD: 0.1},
+		{Type: "image_thinking", Unit: "per_image", USD: 0.2},
+	})
+	require.NotEmpty(t, zimage)
+	cost, _, err = billingexpr.RunExprWithRequest(zimage, billingexpr.TokenParams{}, billingexpr.RequestInput{
+		Usage: map[string]any{"image_count": 3, "prompt_extend": true},
+	})
+	require.NoError(t, err)
+	require.InDelta(t, 3*0.2, cost, 1e-9)
 }

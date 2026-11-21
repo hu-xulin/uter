@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "Áp dụng sau mỗi lần đồng bộ nguồn",
     "When off, the rule is saved but only a manual Apply changes prices.": "Khi tắt, quy tắc chỉ được lưu; giá chỉ thay đổi khi bấm Áp dụng thủ công.",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Tự động lấy danh mục và giá từ nguồn theo chu kỳ bên dưới, sau đó áp dụng lại quy tắc. Không cần đồng bộ thủ công.",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Khi tắt, quy tắc chỉ được lưu; giá chỉ đổi khi bấm Áp dụng. Khi bật, mô hình mới từ nguồn cũng được thêm vào kênh (việc xoá vẫn thủ công)."
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Khi tắt, quy tắc chỉ được lưu; giá chỉ đổi khi bấm Áp dụng. Khi bật, mô hình mới từ nguồn cũng được thêm vào kênh (việc xoá vẫn thủ công).",
+    "Embedding": "Embedding",
+    "Omni": "Đa phương thức",
+    "Sync Apiko prices": "Đồng bộ giá Apiko",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "Đã đồng bộ {{recorded}} giá, tự động định giá {{seeded}}; {{skipped}} cần định giá thủ công",
+    "Failed to sync Apiko prices": "Không thể đồng bộ giá Apiko",
+    "Save the channel before syncing prices.": "Hãy lưu kênh trước khi đồng bộ giá."
   }
 }

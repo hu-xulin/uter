@@ -184,6 +184,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   const showTokenSuffix =
     billingMode === 'Dynamic Pricing' || billingMode === 'Token-based'
   const tags = parseTags(props.model.tags)
+  const tagLabels = tags.map((tag) => t(tag))
   // 描述优先取全语种副本按当前界面语言本地解析，这样切换语言立即生效，
   // 不必为每种语言重新请求定价接口；没有副本时才用后端已解析好的单值。
   const localizedDescription = resolveLocalizedText(
@@ -861,11 +862,14 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
               className='text-muted-foreground flex min-w-0 items-baseline gap-1.5 text-sm'
             >
               <span className='shrink-0'>{t('Tags')}</span>
-              <span className='truncate' title={tags.join(', ')}>
-                {tags.slice(0, 2).join(', ')}
+              <span className='truncate' title={tagLabels.join(', ')}>
+                {tagLabels.slice(0, 2).join(', ')}
               </span>
               {tags.length > 2 && (
-                <span className='shrink-0' title={tags.slice(2).join(', ')}>
+                <span
+                  className='shrink-0'
+                  title={tagLabels.slice(2).join(', ')}
+                >
                   +{tags.length - 2}
                 </span>
               )}

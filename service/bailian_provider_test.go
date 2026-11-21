@@ -320,8 +320,15 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 	assert.InDelta(t, 6.9, *tier.OutputPerMillionUSD, 1e-9)
 	assert.InDelta(t, 15.8, *tier.AudioInputPerMillionUSD, 1e-9)
 	assert.InDelta(t, 62.6, *tier.AudioOutputPerMillionUSD, 1e-9)
-	assert.Contains(t, normalized.ReviewReasons, "multiple input token prices")
-	assert.Empty(t, bailianInternalPricing(normalized), "a differing vision input price cannot be flattened into the text price")
+	assert.NotContains(t, normalized.ReviewReasons, "multiple input token prices")
+	require.NotNil(t, tier.ImageInputPerMillionUSD)
+	assert.InDelta(t, 3.3, *tier.ImageInputPerMillionUSD, 1e-9)
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, "img * 3.3")
+	assert.Contains(t, pricing.BillingExpr, "ai * 15.8")
 
 	sameVision := BailianModel{Model: "omni-same", Prices: []BailianPriceRange{{
 		RangeName: "Default",
@@ -345,8 +352,39 @@ func TestBailianMultimodalPrimaryTokenPrice(t *testing.T) {
 	normalized = bailianOfficialPricing(mt, BailianRegionBeijing, 1, 100)
 	require.NotNil(t, normalized.Tiers[0].InputPerMillionUSD)
 	assert.InDelta(t, 65, *normalized.Tiers[0].InputPerMillionUSD, 1e-9)
-	assert.Contains(t, normalized.ReviewReasons, "multiple input token prices")
-	assert.Empty(t, bailianInternalPricing(normalized))
+	require.NotNil(t, normalized.Tiers[0].ImageInputPerMillionUSD)
+	assert.InDelta(t, 32, *normalized.Tiers[0].ImageInputPerMillionUSD, 1e-9)
+	assert.NotContains(t, normalized.ReviewReasons, "multiple input token prices")
+	internal = bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, "img * 32")
+}
+
+func TestBailianThinkingPricesBecomeReasoningAware(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	item := BailianModel{Model: "qwen-plus", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens"},
+			{Type: "output_token", Price: "2", PriceUnit: "每百万tokens"},
+			{Type: "thinking_input_token", Price: "2", PriceUnit: "每百万tokens"},
+			{Type: "thinking_output_token", Price: "8", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache", Price: "0.16", PriceUnit: "每百万tokens"},
+			{Type: "thinking_input_token_cache", Price: "0.32", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	normalized := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	assert.Empty(t, normalized.ReviewReasons)
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, "c * (rt > 0 ? 8 : 2)")
+	assert.Contains(t, pricing.BillingExpr, "cr * (rt > 0 ? 0.32 : 0.16)")
 }
 
 func TestBailianPerCallServiceNextToTokenPrice(t *testing.T) {
@@ -476,7 +514,7 @@ func TestBailianCacheAndBatchPriceMapping(t *testing.T) {
 	assert.Contains(t, internal, `"create_cache_per_million_usd":2.5`)
 }
 
-func TestBailianImageDimensionPricesStayReviewOnly(t *testing.T) {
+func TestBailianImageDimensionPricesBecomeTaskExpression(t *testing.T) {
 	previousRate := operation_setting.USDExchangeRate
 	operation_setting.USDExchangeRate = 1
 	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
@@ -491,11 +529,30 @@ func TestBailianImageDimensionPricesStayReviewOnly(t *testing.T) {
 		},
 	}}}
 	normalized := bailianOfficialPricing(image, BailianRegionBeijing, 1, 100)
-	assert.Contains(t, normalized.ReviewReasons, "unsupported price type: qima_input_1k")
-	assert.Empty(t, bailianInternalPricing(normalized))
+	assert.Empty(t, normalized.ReviewReasons)
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, `u("output_image_type") == "qima_output_2k"`)
+	assert.Contains(t, pricing.BillingExpr, `u("input_image_count")`)
+
+	zimage := BailianModel{Model: "z-image-turbo", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "image_standard", Price: "0.1", PriceUnit: "每张"},
+			{Type: "image_thinking", Price: "0.2", PriceUnit: "每张"},
+		},
+	}}}
+	normalized = bailianOfficialPricing(zimage, BailianRegionBeijing, 1, 100)
+	assert.Empty(t, normalized.ReviewReasons)
+	internal = bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, `u("prompt_extend")`)
 }
 
-func TestBailianTimeBandPricesStayReviewOnly(t *testing.T) {
+func TestBailianUnsupportedTimeBandsStayReviewOnly(t *testing.T) {
 	previousRate := operation_setting.USDExchangeRate
 	operation_setting.USDExchangeRate = 1
 	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
@@ -510,8 +567,33 @@ func TestBailianTimeBandPricesStayReviewOnly(t *testing.T) {
 		},
 	}}}
 	normalized := bailianOfficialPricing(timeBanded, BailianRegionBeijing, 1, 100)
-	assert.Contains(t, normalized.ReviewReasons, "multiple time bands")
+	assert.Contains(t, normalized.ReviewReasons, "unsupported time band: 峰时")
 	assert.Empty(t, bailianInternalPricing(normalized))
+}
+
+func TestBailianPeakOffpeakPricingBecomesTimeAware(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	timeBanded := BailianModel{Model: "deepseek-v4-flash", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens", TimeBand: "peak"},
+			{Type: "output_token", Price: "8", PriceUnit: "每百万tokens", TimeBand: "peak"},
+			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "offpeak"},
+			{Type: "output_token", Price: "4", PriceUnit: "每百万tokens", TimeBand: "offpeak"},
+		},
+	}}}
+	normalized := bailianOfficialPricing(timeBanded, BailianRegionBeijing, 1, 100)
+	assert.Empty(t, normalized.ReviewReasons)
+	internal := bailianInternalPricing(normalized)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, `hour("Asia/Shanghai") >= 22`)
+	assert.Contains(t, pricing.BillingExpr, "peak:Default")
+	assert.Contains(t, pricing.BillingExpr, "offpeak:Default")
 }
 
 func TestBailianSynchronousASRDurationPriceStaysReviewOnly(t *testing.T) {
@@ -546,7 +628,7 @@ func TestBailianSynchronousASRDurationPriceStaysReviewOnly(t *testing.T) {
 	assert.NotEmpty(t, bailianInternalPricing(normalized), "async video tasks support per-second settlement")
 }
 
-func TestBailianMultiTierAudioStaysReviewOnly(t *testing.T) {
+func TestBailianMultiTierAudioBecomesExpression(t *testing.T) {
 	item := BailianModel{Model: "qwen-audio-tiered", Prices: []BailianPriceRange{
 		{RangeName: "0-32k", Prices: []BailianPrice{
 			{Type: "input_token", Price: "1", PriceUnit: "每百万tokens", TimeBand: "standard"},
@@ -558,9 +640,13 @@ func TestBailianMultiTierAudioStaysReviewOnly(t *testing.T) {
 		}},
 	}}
 	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
-	require.True(t, view.NeedsReview)
-	assert.Contains(t, view.ReviewReasons, "multi-tier audio prices need manual pricing")
-	assert.Empty(t, bailianInternalPricing(view))
+	assert.Empty(t, view.ReviewReasons)
+	internal := bailianInternalPricing(view)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, "ai * 2")
+	assert.Contains(t, pricing.BillingExpr, "ai * 4")
 	for _, tier := range view.ChannelPriceTiers {
 		require.NotNil(t, tier.AudioInputPerMillionUSD, "the audio dimension must stay visible")
 	}
@@ -605,4 +691,10 @@ func TestBailianTokenTiersBecomeCompleteExpression(t *testing.T) {
 	if _, err := billingexpr.CompileFromCache(internal.BillingExpr); err != nil {
 		t.Fatalf("tiered expression does not compile: %v", err)
 	}
+}
+
+func TestBailianSeenModelsIncludesAliasesAndExcludesRemovedModels(t *testing.T) {
+	catalog := &BailianCatalog{Models: []BailianModel{{Model: "qwen-plus"}, {Model: "qwen-max"}}}
+	seen := BailianSeenChannelModels(catalog, []string{"qwen-plus", "cmaas-qwen-max", "qwen-removed"})
+	require.Equal(t, []string{"qwen-plus", "cmaas-qwen-max"}, seen)
 }

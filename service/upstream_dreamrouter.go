@@ -164,18 +164,36 @@ func dreamRouterExprPriceLine(expr string) (*UpstreamPriceLine, string) {
 // dreamRouterOfficialLine returns the absolute official price line for a model.
 // It prefers the full sync snapshot and only falls back to the documented
 // ratio space (model_ratio 1 = $2 / 1M tokens, model_price = USD / call).
+func dreamRouterRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
+	for _, endpoint := range item.SupportedEndpoints {
+		lower := strings.ToLower(endpoint)
+		if strings.Contains(lower, "video") ||
+			strings.Contains(lower, "audio") ||
+			strings.Contains(lower, "image") {
+			return true
+		}
+	}
+	return false
+}
+
 func dreamRouterOfficialLine(
 	item UpstreamModelRecord,
 	legacy map[string]DreamRouterModelRow,
 ) (*UpstreamPriceLine, string) {
-	if item.QuotaType == 1 && item.ModelPrice != nil && *item.ModelPrice > 0 {
+	// The complete billing expression is the richest live source: it carries
+	// context tiers, media duration terms and cache rules that a single ratio
+	// cannot represent. It must win before any flat price field.
+	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
+		return line, status
+	}
+	// An explicitly published per-call price is an absolute live price.
+	if item.ModelPrice != nil && *item.ModelPrice > 0 {
 		value := *item.ModelPrice
 		return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_call", PerCall: true}, "OFFICIAL_API"
 	}
-	// The live public pricing document is the provider's current list price.
-	// The full-sync snapshot is a fallback: it is rebuilt from billing
-	// expressions and can lag behind a price change, and it must be the only
-	// source for media/tiered models whose model_ratio is a placeholder.
+	// A ratio is a live multiplier, not an absolute purchase price. Convert it
+	// into a clearly-labelled reference so it never masquerades as official or
+	// contract cost.
 	if item.ModelRatio != nil && *item.ModelRatio > 0 &&
 		*item.ModelRatio != dreamRouterPlaceholderModelRatio &&
 		!dreamRouterRecordUsesMediaEndpoint(item) {
@@ -193,15 +211,17 @@ func dreamRouterOfficialLine(
 			createCache := input * *item.CreateCacheRatio
 			line.CacheWrite = &createCache
 		}
-		return line, "OFFICIAL_API"
+		return line, "DERIVED_FROM_RATIOS"
 	}
+	// A historical snapshot is used only when no live source exists, and it is
+	// explicitly labelled so callers can require review or treat it as stale.
 	if row, ok := legacy[item.ModelName]; ok && row.Official.Input > 0 {
 		value := row.Official.Input
 		switch {
 		case row.PerSecond:
-			return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_second", PerSecond: true}, "OFFICIAL_REFERENCE"
+			return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_second", PerSecond: true}, "HISTORICAL_SNAPSHOT"
 		case row.QuotaType == 1 || row.BillingClass == "per_call":
-			return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_call", PerCall: true}, "OFFICIAL_REFERENCE"
+			return &UpstreamPriceLine{Input: &value, Currency: "USD", Unit: "per_call", PerCall: true}, "HISTORICAL_SNAPSHOT"
 		default:
 			output := row.Official.Output
 			cache := row.Official.Cache
@@ -209,28 +229,13 @@ func dreamRouterOfficialLine(
 			return &UpstreamPriceLine{
 				Input: &value, Output: &output, CacheRead: &cache, CacheWrite: &createCache,
 				Currency: "USD", Unit: "per_1m_token",
-			}, "OFFICIAL_REFERENCE"
+			}, "HISTORICAL_SNAPSHOT"
 		}
 	}
-	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
-		return line, status
+	if strings.TrimSpace(item.BillingExpr) != "" {
+		return nil, "UNSUPPORTED_BILLING_EXPR"
 	}
 	return nil, "RATIO_ONLY_NO_ABSOLUTE_PRICE"
-}
-
-// dreamRouterRecordUsesMediaEndpoint marks video/audio/image endpoints whose
-// model_ratio is not a token multiplier, so it must never be converted to a
-// per-million-token price.
-func dreamRouterRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
-	for _, endpoint := range item.SupportedEndpoints {
-		lower := strings.ToLower(endpoint)
-		if strings.Contains(lower, "video") ||
-			strings.Contains(lower, "audio") ||
-			strings.Contains(lower, "image") {
-			return true
-		}
-	}
-	return false
 }
 
 // UpstreamPriceLine is an absolute price line. Providers that only publish
@@ -896,20 +901,38 @@ func dreamRouterChannelOfficialPricing(
 	view := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "unknown",
-		Source:    "dreamrouter-official",
+		Source:    dreamRouterPriceSource(item.PriceStatus),
 		FetchedAt: fetchedAt,
 	}
 	line := item.OfficialPrice
 	if line == nil || line.Input == nil {
 		view.NeedsReview = true
-		view.ReviewReasons = []string{"ABSENT_ABSOLUTE_PRICE"}
+		reason := "ABSENT_ABSOLUTE_PRICE"
+		if item.PriceStatus == "UNSUPPORTED_BILLING_EXPR" {
+			reason = "UNSUPPORTED_BILLING_EXPR"
+		}
+		view.ReviewReasons = []string{reason}
 		return view, ""
 	}
 	view.Unit = line.Unit
-	view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
-	if item.PriceStatus == "DERIVED_FROM_RATIOS" {
+	switch item.PriceStatus {
+	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
+		// The raw expression is preserved in OfficialPricing. A flattened
+		// coefficient view is useful as a reference but does not prove full
+		// tier/condition equivalence, so it stays reviewable.
+		view.NeedsReview = true
+		view.ReviewReasons = []string{"EXPRESSION_REQUIRES_SEMANTIC_REVIEW"}
+		view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+	case "DERIVED_FROM_RATIOS":
+		// A ratio is not an official list price. Keep the derived amount as the
+		// channel reference and leave the official tier list empty.
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"DERIVED_FROM_RATIOS"}
+	case "HISTORICAL_SNAPSHOT":
+		view.NeedsReview = true
+		view.ReviewReasons = []string{"HISTORICAL_SNAPSHOT"}
+	default:
+		view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
 	}
 	group := strings.TrimSpace(billingGroup)
 	if group == "" {
@@ -933,4 +956,19 @@ func dreamRouterChannelOfficialPricing(
 	view.DiscountModelGroup = modelGroup
 	view.DiscountRatio = &discount
 	return view, internalPricing
+}
+
+func dreamRouterPriceSource(status string) string {
+	switch status {
+	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
+		return "dreamrouter-expression"
+	case "OFFICIAL_API":
+		return "dreamrouter-official-api"
+	case "HISTORICAL_SNAPSHOT":
+		return "dreamrouter-historical-snapshot"
+	case "DERIVED_FROM_RATIOS":
+		return "dreamrouter-ratio-reference"
+	default:
+		return "dreamrouter-ratio-only"
+	}
 }

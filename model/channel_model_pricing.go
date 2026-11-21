@@ -25,6 +25,19 @@ const (
 	ChannelPricingStatusNeedsReview  = "needs_review"
 )
 
+// Upstream model lifecycle. Lifecycle is independent from the price status:
+// a DISABLED model keeps its historical prices but can no longer bill.
+const (
+	ChannelModelLifecycleActive     = "ACTIVE"
+	ChannelModelLifecycleUpdated    = "UPDATED"
+	ChannelModelLifecycleDeprecated = "DEPRECATED"
+	ChannelModelLifecycleDisabled   = "DISABLED"
+	ChannelModelLifecycleNotFound   = "NOT_FOUND"
+	ChannelModelLifecycleSyncFailed = "SYNC_FAILED"
+)
+
+const ChannelModelMissingDisableThreshold = 2
+
 const (
 	ChannelPricingModePerMillionTokens = "per_1m_token"
 	ChannelPricingModePerCall          = "per_call"
@@ -54,6 +67,13 @@ type ChannelModelPricing struct {
 	PricingVersion    string `gorm:"size:64"`
 	FetchedAt         int64
 	UpdatedAt         int64
+	// LifecycleStatus is the upstream catalog state. Empty is treated as
+	// ACTIVE for rows created before lifecycle tracking existed.
+	LifecycleStatus    string `gorm:"size:32;index"`
+	LifecycleReason    string `gorm:"size:255"`
+	LastSeenAt         int64
+	MissingSyncCount   int
+	LifecycleUpdatedAt int64
 }
 
 func (ChannelModelPricing) TableName() string { return "channel_model_pricing" }
@@ -61,19 +81,27 @@ func (ChannelModelPricing) TableName() string { return "channel_model_pricing" }
 // ChannelPricingTier is one official price band. Amounts are USD per unit so
 // comparisons never depend on the source currency or unit.
 type ChannelPricingTier struct {
-	RangeName                string   `json:"range_name"`
-	TimeBand                 string   `json:"time_band,omitempty"`
-	MinInputTokens           int64    `json:"min_input_tokens,omitempty"`
-	MaxInputTokens           int64    `json:"max_input_tokens,omitempty"`
-	InputPerMillionUSD       *float64 `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD      *float64 `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD       *float64 `json:"cache_per_million_usd,omitempty"`
-	CreateCachePerMillionUSD *float64 `json:"create_cache_per_million_usd,omitempty"`
-	AudioInputPerMillionUSD  *float64 `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputPerMillionUSD *float64 `json:"audio_output_per_million_usd,omitempty"`
-	PerUnitUSD               *float64 `json:"per_unit_usd,omitempty"`
-	Unit                     string   `json:"unit"`
-	RawPriceTypes            []string `json:"raw_price_types,omitempty"`
+	RangeName                             string   `json:"range_name"`
+	TimeBand                              string   `json:"time_band,omitempty"`
+	MinInputTokens                        int64    `json:"min_input_tokens,omitempty"`
+	MaxInputTokens                        int64    `json:"max_input_tokens,omitempty"`
+	InputPerMillionUSD                    *float64 `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD                   *float64 `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD                    *float64 `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD              *float64 `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputPerMillionUSD               *float64 `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputPerMillionUSD            *float64 `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputPerMillionUSD           *float64 `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCachePerMillionUSD            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCachePerMillionUSD      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputPerMillionUSD       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputPerMillionUSD         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputPerMillionUSD *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD               *float64 `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD              *float64 `json:"audio_output_per_million_usd,omitempty"`
+	PerUnitUSD                            *float64 `json:"per_unit_usd,omitempty"`
+	Unit                                  string   `json:"unit"`
+	RawPriceTypes                         []string `json:"raw_price_types,omitempty"`
 }
 
 // ChannelPricingComponent is an additional billable service the catalog
@@ -107,8 +135,16 @@ type ChannelOfficialPricing struct {
 	DiscountRatio      *float64                  `json:"discount_ratio,omitempty"`
 	Source             string                    `json:"source"`
 	FetchedAt          int64                     `json:"fetched_at"`
-	NeedsReview        bool                      `json:"needs_review,omitempty"`
-	ReviewReasons      []string                  `json:"review_reasons,omitempty"`
+	// BillingExpr is the upstream's complete executable rule, preserved
+	// verbatim. ExpressionHash makes a rule change auditable without comparing
+	// formatted text. Status is EXECUTABLE only after Uter's engine compiles it.
+	BillingMode      string   `json:"billing_mode,omitempty"`
+	BillingExpr      string   `json:"billing_expr,omitempty"`
+	ExpressionHash   string   `json:"expression_hash,omitempty"`
+	ExpressionStatus string   `json:"expression_status,omitempty"`
+	ExpressionError  string   `json:"expression_error,omitempty"`
+	NeedsReview      bool     `json:"needs_review,omitempty"`
+	ReviewReasons    []string `json:"review_reasons,omitempty"`
 }
 
 // ChannelInternalPricing is the operator's flat sale price for one channel
@@ -218,6 +254,7 @@ var (
 type channelPricingCacheEntry struct {
 	pricing   *ChannelBillingPricing
 	status    string
+	lifecycle string
 	reason    string
 	exists    bool
 	expiresAt time.Time
@@ -539,7 +576,9 @@ func internalPricingReplaceable(raw string) bool {
 	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
 		return false
 	}
-	return strings.HasPrefix(pricing.Source, "dreamrouter-") || strings.HasPrefix(pricing.Source, "bailian-")
+	return strings.HasPrefix(pricing.Source, "dreamrouter-") ||
+		strings.HasPrefix(pricing.Source, "bailian-") ||
+		strings.HasPrefix(pricing.Source, "newapi-")
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the
@@ -573,19 +612,22 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			}
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				row := ChannelModelPricing{
-					ChannelId:         record.ChannelId,
-					Provider:          record.Provider,
-					ModelName:         record.ModelName,
-					Region:            record.Region,
-					DeploymentId:      record.DeploymentId,
-					Currency:          record.Currency,
-					OfficialPricing:   record.OfficialPricing,
-					NormalizedPricing: record.NormalizedPricing,
-					InternalPricing:   record.InternalPricing,
-					PricingSource:     record.Source,
-					PricingStatus:     ChannelPricingStatusOfficialOnly,
-					FetchedAt:         record.FetchedAt,
-					UpdatedAt:         now,
+					ChannelId:          record.ChannelId,
+					Provider:           record.Provider,
+					ModelName:          record.ModelName,
+					Region:             record.Region,
+					DeploymentId:       record.DeploymentId,
+					Currency:           record.Currency,
+					OfficialPricing:    record.OfficialPricing,
+					NormalizedPricing:  record.NormalizedPricing,
+					InternalPricing:    record.InternalPricing,
+					PricingSource:      record.Source,
+					PricingStatus:      ChannelPricingStatusOfficialOnly,
+					FetchedAt:          record.FetchedAt,
+					UpdatedAt:          now,
+					LifecycleStatus:    ChannelModelLifecycleActive,
+					LastSeenAt:         record.FetchedAt,
+					LifecycleUpdatedAt: now,
 				}
 				if row.InternalPricing != "" {
 					row.PricingStatus = ChannelPricingStatusConfigured
@@ -959,28 +1001,28 @@ func loadChannelPricingRows(channelId int, modelName string) ([]ChannelModelPric
 // loadChannelPricingFor resolves one identity and caches the decision. A
 // missing row and an unmatched identity are cached too, so hot billing paths
 // do not query the database repeatedly while the configuration stays broken.
-func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPricing, string, bool, string) {
+func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPricing, string, string, bool, string) {
 	identity = normalizePricingIdentity(identity)
 	if DB == nil || identity.ChannelId <= 0 || identity.ModelName == "" {
-		return nil, "", false, ""
+		return nil, "", "", false, ""
 	}
 	key := channelPricingCacheKey(identity)
 	channelPricingCacheMu.RLock()
 	if entry, ok := channelPricingCache[key]; ok && time.Now().Before(entry.expiresAt) {
 		channelPricingCacheMu.RUnlock()
-		return entry.pricing, entry.status, entry.exists, entry.reason
+		return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason
 	}
 	channelPricingCacheMu.RUnlock()
 
 	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
 	if err != nil {
-		return nil, "", false, ""
+		return nil, "", "", false, ""
 	}
 	if len(rows) == 0 {
 		channelPricingCacheMu.Lock()
 		channelPricingCache[key] = channelPricingCacheEntry{expiresAt: time.Now().Add(channelPricingCacheTTL)}
 		channelPricingCacheMu.Unlock()
-		return nil, "", false, ""
+		return nil, "", "", false, ""
 	}
 	row, reason := selectChannelPricingRow(rows, identity)
 	entry := channelPricingCacheEntry{
@@ -992,9 +1034,10 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 		channelPricingCacheMu.Lock()
 		channelPricingCache[key] = entry
 		channelPricingCacheMu.Unlock()
-		return nil, "", true, reason
+		return nil, "", "", true, reason
 	}
 	entry.status = row.PricingStatus
+	entry.lifecycle = row.LifecycleStatus
 	if row.PricingStatus == ChannelPricingStatusConfigured && row.InternalPricing != "" {
 		var internal ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
@@ -1018,7 +1061,90 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 	channelPricingCacheMu.Lock()
 	channelPricingCache[key] = entry
 	channelPricingCacheMu.Unlock()
-	return entry.pricing, entry.status, entry.exists, entry.reason
+	return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason
+}
+
+// ApplyChannelLifecycleSnapshot marks the models visible in a complete upstream
+// catalog snapshot as ACTIVE and ages the rest toward DISABLED. Missing rows
+// keep their prices and history; only billing eligibility changes.
+func ApplyChannelLifecycleSnapshot(channelId int, seenModels []string, now int64, threshold int) (active int, missing int, disabled int, err error) {
+	if channelId <= 0 || len(seenModels) == 0 {
+		return 0, 0, 0, errors.New("complete catalog snapshot is required")
+	}
+	if threshold <= 0 {
+		threshold = ChannelModelMissingDisableThreshold
+	}
+	seen := make(map[string]bool, len(seenModels))
+	for _, name := range seenModels {
+		name = strings.TrimSpace(name)
+		if name != "" {
+			seen[name] = true
+		}
+	}
+	if len(seen) == 0 {
+		return 0, 0, 0, errors.New("complete catalog snapshot is empty")
+	}
+	err = DB.Transaction(func(tx *gorm.DB) error {
+		var rows []ChannelModelPricing
+		if err := tx.Where("channel_id = ?", channelId).Find(&rows).Error; err != nil {
+			return err
+		}
+		for i := range rows {
+			row := &rows[i]
+			lifecycle := row.LifecycleStatus
+			reason := row.LifecycleReason
+			lastSeen := row.LastSeenAt
+			if seen[row.ModelName] {
+				lifecycle = ChannelModelLifecycleActive
+				reason = ""
+				lastSeen = now
+				row.MissingSyncCount = 0
+				active++
+			} else {
+				row.MissingSyncCount++
+				missing++
+				reason = "not returned by the latest complete upstream catalog snapshot"
+				if row.MissingSyncCount >= threshold {
+					lifecycle = ChannelModelLifecycleDisabled
+					disabled++
+				} else {
+					lifecycle = ChannelModelLifecycleNotFound
+				}
+			}
+			if lifecycle == row.LifecycleStatus && reason == row.LifecycleReason && lastSeen == row.LastSeenAt {
+				continue
+			}
+			row.LifecycleStatus = lifecycle
+			row.LifecycleReason = reason
+			row.LastSeenAt = lastSeen
+			row.LifecycleUpdatedAt = now
+			if err := tx.Model(row).Updates(map[string]any{
+				"lifecycle_status":     row.LifecycleStatus,
+				"lifecycle_reason":     row.LifecycleReason,
+				"last_seen_at":         row.LastSeenAt,
+				"missing_sync_count":   row.MissingSyncCount,
+				"lifecycle_updated_at": row.LifecycleUpdatedAt,
+			}).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, 0, 0, err
+	}
+	InvalidateChannelPricingCache()
+	InvalidatePricingCache()
+	return active, missing, disabled, nil
+}
+
+func channelLifecycleBillable(lifecycle string) bool {
+	switch strings.ToUpper(strings.TrimSpace(lifecycle)) {
+	case "", ChannelModelLifecycleActive, ChannelModelLifecycleUpdated, ChannelModelLifecycleDeprecated:
+		return true
+	default:
+		return false
+	}
 }
 
 // EffectiveChannelPricing is the single authoritative resolution of one
@@ -1047,13 +1173,13 @@ type EffectiveChannelPricing struct {
 // threaded in when the multimodal price schema lands (P2); today the durable
 // key is exactly (channel_id, model_name).
 func ResolveEffectiveChannelPricingFor(identity ChannelPricingIdentity) EffectiveChannelPricing {
-	pricing, status, exists, reason := loadChannelPricingFor(identity)
+	pricing, status, lifecycle, exists, reason := loadChannelPricingFor(identity)
 	return EffectiveChannelPricing{
 		Pricing:  pricing,
 		Status:   status,
 		Exists:   exists,
 		Reason:   reason,
-		Billable: exists && reason == "" && status == ChannelPricingStatusConfigured && pricing != nil,
+		Billable: exists && reason == "" && status == ChannelPricingStatusConfigured && pricing != nil && channelLifecycleBillable(lifecycle),
 	}
 }
 

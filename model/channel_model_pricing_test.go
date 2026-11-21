@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"gorm.io/gorm"
 )
 
@@ -924,4 +925,78 @@ func TestSetChannelInternalPricingWithAuditRejectsStaleVersion(t *testing.T) {
 	var history []ChannelPricingHistory
 	require.NoError(t, DB.Where("channel_id = ?", 6).Find(&history).Error)
 	assert.Empty(t, history, "a version conflict must not write history")
+}
+
+func TestLoadChannelInternalPricesKeepsPerChannelAndReviewEntries(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	inputA, outputA := 1.0, 2.0
+	inputB, outputB := 0.8, 1.6
+	normalized := func(input, output float64) string {
+		encoded, err := common.Marshal(ChannelOfficialPricing{
+			Currency: "USD",
+			Unit:     "per_1m_token",
+			Tiers: []ChannelPricingTier{{
+				RangeName: "Default", Unit: "per_1m_token",
+				InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+			}},
+		})
+		require.NoError(t, err)
+		return string(encoded)
+	}
+	internal := func(input, output float64) string {
+		encoded, err := common.Marshal(ChannelInternalPricing{
+			Mode:               ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+			Source: "bailian-official",
+		})
+		require.NoError(t, err)
+		return string(encoded)
+	}
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
+		{ChannelId: 1, Provider: "bailian", ModelName: "shared", Currency: "USD", NormalizedPricing: normalized(inputA, outputA), InternalPricing: internal(inputA, outputA), Source: "bailian-official"},
+		{ChannelId: 2, Provider: "bailian", ModelName: "shared", Currency: "USD", NormalizedPricing: normalized(inputB, outputB), InternalPricing: internal(inputB, outputB), Source: "bailian-official"},
+		{ChannelId: 3, Provider: "bailian", ModelName: "review-only", Currency: "USD", NormalizedPricing: normalized(3, 6), Source: "bailian-official"},
+	})
+	require.NoError(t, err)
+	// Mark channel 3's row review-only.
+	require.NoError(t, DB.Model(&ChannelModelPricing{}).
+		Where("channel_id = ? AND model_name = ?", 3, "review-only").
+		Update("pricing_status", ChannelPricingStatusNeedsReview).Error)
+	InvalidatePricingCache()
+
+	best, byChannel := loadChannelInternalPrices([]AbilityWithChannel{
+		{Ability: Ability{ChannelId: 1, Model: "shared", Enabled: true}, ChannelName: "阿里百炼", ChannelStatus: common.ChannelStatusEnabled},
+		{Ability: Ability{ChannelId: 2, Model: "shared", Enabled: true}, ChannelName: "优特渠道", ChannelStatus: common.ChannelStatusEnabled},
+		{Ability: Ability{ChannelId: 3, Model: "review-only", Enabled: true}, ChannelName: "阿里百炼", ChannelStatus: common.ChannelStatusEnabled},
+	})
+	require.InDelta(t, 0.4, best["shared"].modelRatio, 1e-9, "best view keeps the lowest channel price")
+	require.Len(t, byChannel["shared"], 2)
+	require.InDelta(t, 0.5, byChannel["shared"]["阿里百炼"].modelRatio, 1e-9)
+	require.InDelta(t, 0.4, byChannel["shared"]["优特渠道"].modelRatio, 1e-9)
+	review := byChannel["review-only"]["阿里百炼"]
+	require.Equal(t, -1, review.quotaType)
+	require.Equal(t, ChannelPricingStatusNeedsReview, review.status)
+	require.NotNil(t, review.officialTier)
+}
+
+func TestCanonicalModelTagClassifiesSixCategories(t *testing.T) {
+	modalities := func(raw string) *Model { return &Model{InputModalities: raw} }
+	cases := []struct {
+		name      string
+		model     *Model
+		endpoints []constant.EndpointType
+		want      string
+	}{
+		{"qwen4-max", nil, nil, "Text"},
+		{"gpt-4o", modalities("text,image"), nil, "Image"},
+		{"wan3.0-video", nil, nil, "Video"},
+		{"qwen3-tts-flash", nil, nil, "Audio"},
+		{"qwen3.7-text-embedding", nil, nil, "Embedding"},
+		{"qwen3.5-omni-plus", nil, nil, "Omni"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.want, canonicalModelTag(tc.name, tc.model, tc.endpoints))
+		})
+	}
 }

@@ -200,6 +200,7 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 			catalog.ChannelID = channel.Id
 			catalog.Region = BailianRegionOf(channel.GetBaseURL())
 			catalog.ReferencePrice = NormalizeBailianPrices(catalog)
+			seenModels := BailianSeenChannelModels(catalog, channel.GetModels())
 			previous := LoadBailianCatalogSnapshotForChannel(channel.Id)
 			changes := bailianCatalogChanges(previous, catalog, channel.GetModels())
 			status.Changes += len(changes)
@@ -218,6 +219,14 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				continue
 			}
 			status.Written += written
+			if len(seenModels) > 0 {
+				if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
+					channel.Id, seenModels, now.Unix(), model.ChannelModelMissingDisableThreshold,
+				); lifecycleErr != nil {
+					fail(lifecycleErr)
+					continue
+				}
+			}
 			// Configure every model that has one unambiguous catalog price so a
 			// scheduled sync never leaves the channel waiting for a manual click.
 			// Operator prices keep their source and are skipped.

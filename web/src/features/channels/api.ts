@@ -936,6 +936,26 @@ export async function syncApikoChannelModels(
   return res.data.data
 }
 
+export type ApikoPriceSyncResult = {
+  channel_id: number
+  fetched: number
+  recorded: number
+  seeded: number
+  skipped: { model: string; reason: string }[]
+}
+
+/** Writes Apiko catalogue prices into this channel's isolated price table. */
+export async function syncApikoChannelPricing(
+  channelId: number
+): Promise<ApikoPriceSyncResult> {
+  const res = await api.post<{ data: ApikoPriceSyncResult }>(
+    `/api/channel/${channelId}/apiko/prices/sync`,
+    {},
+    channelActionConfig()
+  )
+  return res.data.data
+}
+
 export type DreamRouterUpstreamSummary = {
   provider_id: string
   fetched_at: string

@@ -565,7 +565,7 @@ function ModelBackendProviderSection(props: { model: PricingModel }) {
   if (tags.length > 0) {
     cells.push(
       <CatalogInfoCell key='tags' label={t('Tags')}>
-        <CatalogPillList items={tags} />
+        <CatalogPillList items={tags.map((tag) => t(tag))} />
       </CatalogInfoCell>
     )
   }

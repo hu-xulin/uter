@@ -85,7 +85,7 @@ func TestFetchDreamRouterUpstreamKeepsRatiosIsolated(t *testing.T) {
 	require.Equal(t, 0.5, *gpt.OfficialPrice.CacheRead)
 	require.Equal(t, 6.25, *gpt.OfficialPrice.CacheWrite)
 	require.Equal(t, "per_1m_token", gpt.OfficialPrice.Unit)
-	require.Equal(t, "OFFICIAL_API", gpt.PriceStatus)
+	require.Equal(t, "DERIVED_FROM_RATIOS", gpt.PriceStatus)
 
 	image := byName["image-a"]
 	require.Equal(t, 1, image.QuotaType)
@@ -257,4 +257,56 @@ func TestDreamRouterExprPriceLineDerivesStandardTier(t *testing.T) {
 	require.NotNil(t, media)
 	require.True(t, media.PerSecond)
 	require.InDelta(t, 0.116417925, *media.Input, 0.0000001)
+}
+
+func TestDreamRouterOfficialLinePrefersExpressionThenPriceThenRatio(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	item := UpstreamModelRecord{
+		ModelName: "gpt-a", ModelRatio: ratio(2.5), ModelPrice: ratio(0.04), QuotaType: 0,
+		BillingExpr: `tier("base", p * 3 + c * 6)`,
+	}
+	line, status := dreamRouterOfficialLine(item, nil)
+	require.Equal(t, "DERIVED_FROM_EXPR", status)
+	require.NotNil(t, line)
+	require.Equal(t, 3.0, *line.Input)
+	require.Equal(t, 6.0, *line.Output)
+
+	item.BillingExpr = ""
+	item.QuotaType = 1
+	line, status = dreamRouterOfficialLine(item, nil)
+	require.Equal(t, "OFFICIAL_API", status)
+	require.Equal(t, "per_call", line.Unit)
+	require.Equal(t, 0.04, *line.Input)
+}
+
+func TestDreamRouterOfficialLineMarksHistoricalSnapshot(t *testing.T) {
+	legacy := map[string]DreamRouterModelRow{
+		"legacy-a": {UpstreamName: "legacy-a", Official: DreamRouterPriceLine{Input: 2, Output: 4}},
+	}
+	line, status := dreamRouterOfficialLine(UpstreamModelRecord{ModelName: "legacy-a"}, legacy)
+	require.Equal(t, "HISTORICAL_SNAPSHOT", status)
+	require.NotNil(t, line)
+	require.Equal(t, 2.0, *line.Input)
+}
+
+func TestDreamRouterRatioDerivedPriceIsNotOfficial(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		GroupRatio:      map[string]float64{"openai": 0.6},
+		GroupGroupRatio: map[string]map[string]float64{},
+	}
+	item := UpstreamModelRecord{
+		ModelName: "ratio-only", EnableGroups: []string{"openai"},
+		PriceStatus: "DERIVED_FROM_RATIOS",
+		OfficialPrice: &UpstreamPriceLine{
+			Input: ratio(5), Output: ratio(25), Currency: "USD", Unit: "per_1m_token",
+		},
+	}
+	view, _ := dreamRouterChannelOfficialPricing(snapshot, item, 100, "default")
+	require.Empty(t, view.Tiers, "a ratio-derived amount must not become an official tier")
+	require.NotNil(t, view.ChannelPrice)
+	require.Equal(t, 3.0, *view.ChannelPrice.InputPerMillionUSD)
+	require.True(t, view.NeedsReview)
+	require.Equal(t, "dreamrouter-ratio-reference", view.Source)
+	require.Contains(t, view.ReviewReasons, "DERIVED_FROM_RATIOS")
 }

@@ -374,7 +374,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
     },
     ...tagNames.map((tag) => ({
       value: tag,
-      label: tag,
+      label: t(tag),
       count: countBy(props.facetModels.tag, (model) =>
         parseTags(model.tags)
           .map((item) => item.toLowerCase())

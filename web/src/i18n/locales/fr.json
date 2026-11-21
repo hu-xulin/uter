@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "Appliquer après chaque synchronisation amont",
     "When off, the rule is saved but only a manual Apply changes prices.": "Si désactivé, la règle est seulement enregistrée ; seul un clic sur Appliquer modifie les prix.",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Récupère automatiquement le catalogue et les prix amont selon la cadence ci-dessous, puis réapplique la règle. Aucune synchronisation manuelle n’est nécessaire.",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Désactivé : la règle est seulement enregistrée ; seul un clic sur Appliquer modifie les prix. Activé : les nouveaux modèles amont sont ajoutés à ce canal (les suppressions restent manuelles)."
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Désactivé : la règle est seulement enregistrée ; seul un clic sur Appliquer modifie les prix. Activé : les nouveaux modèles amont sont ajoutés à ce canal (les suppressions restent manuelles).",
+    "Embedding": "Embedding",
+    "Omni": "Omnimodal",
+    "Sync Apiko prices": "Synchroniser les prix Apiko",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "{{recorded}} prix synchronisés, {{seeded}} tarifés automatiquement ; {{skipped}} nécessitent une tarification manuelle",
+    "Failed to sync Apiko prices": "Échec de la synchronisation des prix Apiko",
+    "Save the channel before syncing prices.": "Enregistrez le canal avant de synchroniser les prix."
   }
 }

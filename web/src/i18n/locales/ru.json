@@ -8531,6 +8531,12 @@
     "Apply after each upstream sync": "Применять после каждой синхронизации",
     "When off, the rule is saved but only a manual Apply changes prices.": "Если выключено, правило только сохраняется; цены меняются лишь при ручном применении.",
     "Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.": "Автоматически загружает каталог и цены вышестоящего провайдера с указанной ниже периодичностью и повторно применяет правило. Ручная синхронизация не требуется.",
-    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Выключено: правило только сохраняется, цены меняются лишь вручную. Включено: новые модели провайдера добавляются в канал (удаление остаётся ручным)."
+    "When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).": "Выключено: правило только сохраняется, цены меняются лишь вручную. Включено: новые модели провайдера добавляются в канал (удаление остаётся ручным).",
+    "Embedding": "Векторные",
+    "Omni": "Мультимодальные",
+    "Sync Apiko prices": "Синхронизировать цены Apiko",
+    "Synced {{recorded}} prices, {{seeded}} auto-priced; {{skipped}} need manual pricing": "Синхронизировано цен: {{recorded}}, автоматически задано: {{seeded}}; требуют ручной настройки: {{skipped}}",
+    "Failed to sync Apiko prices": "Не удалось синхронизировать цены Apiko",
+    "Save the channel before syncing prices.": "Сохраните канал перед синхронизацией цен."
   }
 }
