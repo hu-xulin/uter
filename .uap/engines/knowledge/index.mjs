@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { STATE, rootPath, uapPath, relToRoot } from '../../runtime/_lib/paths.mjs';
 import { readText, exists, listFiles, readJSON, writeJSON, nowISO, hash } from '../../runtime/_lib/util.mjs';
+import { gitHead } from '../../runtime/status-engine/execution.mjs';
 
 export const component = 'engines.knowledge';
 export const version = '1.0.0';
@@ -18,6 +19,16 @@ const INDEX_FILE = path.join(STATE, 'knowledge-index.json');
 const EXTRA_DOCS = ['AGENTS.md', 'CLAUDE.md', 'docs/adr/README.md', 'docs/adr/0001-uter-design-system-single-source-of-truth.md', 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md', 'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md', 'docs/design-system/TOKEN-MANIFEST.json', 'docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md', 'docs/design-system/SHOWCASE-8.0.0.html'];
 const RETIRED = ['AES', 'UAES', 'docs/ai-specs', 'uaes/standards'];
 const RETIRE_WORDS = /(退役|退休|已删除|不再|废除|废止|废弃|retired|deprecated|no longer|removed|pending replacement|承接|historical|历史|must not|do not|禁止|不得|说明)/i;
+const LEGACY_UDS3_PATH = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
+const HISTORICAL_UAP_PREFIXES = ['.uap/reports/', '.uap/evidence/', '.uap/state/'];
+const HISTORICAL_TOOL_REFERENCE_ALLOWLIST = new Map([
+  ['.uap/tools/generate-baseline-report.mjs', 'regenerates the immutable 2026-11-13 baseline audit; the embedded path is captured pre-migration working-tree evidence, never current design-system authority'],
+]);
+const KNOWLEDGE_SOURCE_EXT = /\.(md|mjs|js|ts|json|ya?ml|sh)$/i;
+
+function isHistoricalUapPath(rel) {
+  return HISTORICAL_UAP_PREFIXES.some((prefix) => rel.startsWith(prefix));
+}
 const RUNTIME_REF = /(?:import\s|require\(|from\s+['"]|run:\s|cd\s|cat\s|source\s|bash\s|sh\s|path\.join|os\.\w+|exec\(|spawn\(|include\s|\.mjs['"]|\.go['"]|=>\s*['"])/;
 
 function extractSources(text) {
@@ -34,8 +45,11 @@ function scopeOf(rel) {
 }
 
 function scanKnowledge() {
+  const allUapDocs = listFiles(uapPath(), { recursive: true, filter: (a) => a.endsWith('.md') });
+  const historicalDocs = allUapDocs.filter((abs) => isHistoricalUapPath(relToRoot(abs)));
+  const activeUapDocs = allUapDocs.filter((abs) => !isHistoricalUapPath(relToRoot(abs)));
   const files = [
-    ...listFiles(uapPath(), { recursive: true, filter: (a) => a.endsWith('.md') }),
+    ...activeUapDocs,
     ...EXTRA_DOCS.filter((d) => exists(rootPath(d))).map((d) => rootPath(d)),
   ];
   const seen = new Set();
@@ -63,7 +77,55 @@ function scanKnowledge() {
   return {
     document_count: documents.length,
     documents,
-    sources_scanned: ['.uap/**/*.md', ...EXTRA_DOCS],
+    historical_document_count: historicalDocs.length,
+    historical_roots_excluded: HISTORICAL_UAP_PREFIXES,
+    historical_policy: 'reports, evidence and state snapshots remain immutable historical records and are not active knowledge sources',
+    sources_scanned: ['.uap/**/*.md (excluding reports/evidence/state)', ...EXTRA_DOCS],
+  };
+}
+
+function scanLegacyDesignSystemReferences() {
+  const files = [
+    ...listFiles(uapPath(), { recursive: true, filter: (a) => KNOWLEDGE_SOURCE_EXT.test(a) }),
+    ...listFiles(rootPath('docs/adr'), { recursive: true, filter: (a) => KNOWLEDGE_SOURCE_EXT.test(a) }),
+    ...listFiles(rootPath('docs/design-system'), { recursive: true, filter: (a) => KNOWLEDGE_SOURCE_EXT.test(a) }),
+    ...['AGENTS.md', 'CLAUDE.md', 'web/AGENTS.md'].filter((d) => exists(rootPath(d))).map((d) => rootPath(d)),
+  ];
+  const seen = new Set();
+  const activeReferences = [];
+  const historicalToolReferences = [];
+  for (const abs of files) {
+    const rel = relToRoot(abs);
+    if (isHistoricalUapPath(rel) || seen.has(rel)) continue;
+    seen.add(rel);
+    const text = readText(abs);
+    text.split(/\r?\n/).forEach((line, index) => {
+      if (!line.includes(LEGACY_UDS3_PATH)) return;
+      const historicalReason = HISTORICAL_TOOL_REFERENCE_ALLOWLIST.get(rel);
+      if (historicalReason) {
+        historicalToolReferences.push({ file: rel, line: index + 1, classification: 'HISTORICAL_ONLY', reason: historicalReason });
+      } else {
+        activeReferences.push({ file: rel, line: index + 1, snippet: line.trim().slice(0, 180) });
+      }
+    });
+  }
+  const baseline = readJSON(rootPath('.uap/state/BASELINE.json'), null);
+  const baselineDesignSystem = baseline?.pre_existing_governance?.design_system || '';
+  const historicalBaselineReference = String(baselineDesignSystem).includes(LEGACY_UDS3_PATH)
+    ? {
+      file: '.uap/state/BASELINE.json', field: 'pre_existing_governance.design_system',
+      baseline_id: baseline?.baseline_id || null, captured_at: baseline?.captured_at || null,
+      classification: 'HISTORICAL_ONLY_NOT_CURRENT_AUTHORITY',
+    }
+    : { file: '.uap/state/BASELINE.json', classification: 'NO_LEGACY_DESIGN_SYSTEM_REFERENCE' };
+  return {
+    scanned_file_count: seen.size,
+    active_reference_count: activeReferences.length,
+    active_references: activeReferences.slice(0, 50),
+    historical_tool_references: historicalToolReferences,
+    historical_tool_allowlist: [...HISTORICAL_TOOL_REFERENCE_ALLOWLIST.keys()],
+    historical_baseline_reference: historicalBaselineReference,
+    policy: 'active UAP/docs sources must not reference the retired 3.0 design-system file; the immutable 2026-11-12 baseline reference is retained as historical evidence only',
   };
 }
 
@@ -127,27 +189,46 @@ function scanRetiredDependencies() {
 }
 
 function artifactOk(file) {
-  if (!exists(file)) return true;
+  if (!exists(file)) return false;
   let j;
   try { j = readJSON(file); } catch { return false; }
-  if (!j || !Array.isArray(j.documents) || j.documents.length < 1) return false;
-  if (!j.retired_runtime_dependency_scan) return false;
+  if (!j || j.generated_for_head !== gitHead() || !Array.isArray(j.documents) || j.documents.length < 1) return false;
+  if (!j.retired_runtime_dependency_scan || !j.legacy_design_system_path_scan) return false;
+  if (j.legacy_design_system_path_scan.active_reference_count !== 0) return false;
+  if (!Array.isArray(j.legacy_design_system_path_scan.historical_tool_references)
+    || j.legacy_design_system_path_scan.historical_tool_references.some((r) => r.classification !== 'HISTORICAL_ONLY')) return false;
+  if (j.documents.some((d) => isHistoricalUapPath(d.path))) return false;
+  if (JSON.stringify(j.documents).includes(LEGACY_UDS3_PATH)) return false;
   const d = j.documents[0];
-  return Boolean(d.hash && d.sources && d.scope && d.updated_at);
+  return Boolean(d.hash && d.sources && d.scope && d.updated_at
+    && Number.isInteger(j.historical_document_count)
+    && Array.isArray(j.historical_roots_excluded));
 }
 
 export function health() {
   const checks = {};
   checks.agents_exists = exists(rootPath('AGENTS.md'));
   checks.claude_exists = exists(rootPath('CLAUDE.md'));
-  checks.design_system_exists = exists(rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md'))
-    && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'))
-    && exists(rootPath('docs/design-system/TOKEN-MANIFEST.json'))
-    && exists(rootPath('docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md'));
+  const overviewPath = rootPath('docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md');
+  const manifestPath = rootPath('docs/design-system/TOKEN-MANIFEST.json');
+  const acceptancePath = rootPath('docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md');
+  const adr1Path = rootPath('docs/adr/0001-uter-design-system-single-source-of-truth.md');
+  const manifest = readJSON(manifestPath, null);
+  const overview = exists(overviewPath) ? readText(overviewPath) : '';
+  const acceptance = exists(acceptancePath) ? readText(acceptancePath) : '';
+  const adr1 = exists(adr1Path) ? readText(adr1Path) : '';
+  checks.design_system_exists = exists(overviewPath) && exists(rootPath('docs/design-system/SHOWCASE-8.0.0.html'))
+    && exists(manifestPath) && exists(acceptancePath);
+  checks.design_system_authority_consistent = Boolean(manifest?.version && manifest.status === 'ACCEPTANCE_READY'
+    && overview.includes(`UDS ${manifest.version}`) && adr1.includes(`UDS ${manifest.version}`)
+    && /accepted\s*=\s*false/i.test(acceptance));
   const compatibilityAdr = exists(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'))
     ? readText(rootPath('docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md')) : '';
   checks.compatibility_boundary_documented = compatibilityAdr.includes('3.0 runtime compatibility boundary')
     && compatibilityAdr.includes('明确授权迁移');
+  let legacyUdsScan = null;
+  try { legacyUdsScan = scanLegacyDesignSystemReferences(); } catch { legacyUdsScan = null; }
+  checks.no_stale_uds_paths_in_active_sources = Boolean(legacyUdsScan && legacyUdsScan.active_reference_count === 0);
   checks.uap_md_present = listFiles(uapPath(), {
     recursive: true, filter: (a) => a.endsWith('.md'),
   }).length >= 1;
@@ -172,18 +253,22 @@ export async function execute(task = {}, ctx = {}) {
   const started = nowISO();
   const knowledge = scanKnowledge();
   const dep = scanRetiredDependencies();
+  const legacyUds = scanLegacyDesignSystemReferences();
 
   writeJSON(INDEX_FILE, {
-    schema_version: '1.0', generated_at: started,
+    schema_version: '1.0', generated_at: started, generated_for_head: gitHead(),
     executor_ids: executors,
     ...knowledge,
     retired_runtime_dependency_scan: dep,
+    legacy_design_system_path_scan: legacyUds,
   });
 
   const sourceTotal = knowledge.documents.reduce((n, d) => n + d.sources.length, 0);
   return {
-    status: 'SUCCEEDED',
-    summary: `indexed ${knowledge.document_count} real knowledge documents (${sourceTotal} source refs, sha256+mtime per doc); `
+    status: legacyUds.active_reference_count === 0 ? 'SUCCEEDED' : 'BLOCKED',
+    summary: `indexed ${knowledge.document_count} active knowledge documents (${sourceTotal} source refs, sha256+mtime per doc; `
+      + `${knowledge.historical_document_count} historical documents excluded); `
+      + `legacy active UDS path references=${legacyUds.active_reference_count}; `
       + `retired-governance runtime scan over ${dep.scanned_file_count} files found ${dep.runtime_dependency_count} `
       + `runtime dependencies and ignored ${dep.retirement_notes_ignored} retirement-note lines`,
     changed_files: [relToRoot(INDEX_FILE)],
@@ -197,6 +282,8 @@ export async function execute(task = {}, ctx = {}) {
       retirement_notes_ignored: dep.retirement_notes_ignored,
       dependency_scan_file_count: dep.scanned_file_count,
       runtime_dependency_sample: dep.runtime_dependencies.slice(0, 5),
+      legacy_design_system_path_scan: legacyUds,
+      historical_document_count: knowledge.historical_document_count,
     },
   };
 }

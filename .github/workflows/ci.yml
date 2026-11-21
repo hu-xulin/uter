@@ -135,6 +135,10 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_ENV, `UAP_BATCH_LOCK_ID=${execution.execution_id}\n`);
           console.log(JSON.stringify(execution, null, 2));
           NODE
+      - name: UAP full audit and current architecture/knowledge index refresh
+        id: uap_full_audit
+        continue-on-error: true
+        run: node .uap/bin/uap.mjs workflow run uap-full-audit
       - name: Generate current UAP build evidence
         id: uap_build
         continue-on-error: true
@@ -302,14 +306,17 @@ jobs:
           DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
           VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
           TEST_OUTCOME: ${{ steps.uap_test.outcome }}
+          FULL_AUDIT_OUTCOME: ${{ steps.uap_full_audit.outcome }}
           ACCEPTANCE_OUTCOME: ${{ steps.uap_accept.outcome }}
         run: |
-          printf 'build=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfinal_acceptance=%s\\n' "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$ACCEPTANCE_OUTCOME"
+          printf 'build=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfull_audit=%s\\nfinal_acceptance=%s\\n' "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$FULL_AUDIT_OUTCOME" "$ACCEPTANCE_OUTCOME"
           if [[ "$ACCEPTANCE_OUTCOME" != "success" ]]; then echo "::warning::Operational UAP gate passed/checked separately; final acceptance remains blocked or unverified."; fi
           test "$BUILD_OUTCOME" = success
           test "$DOCTOR_OUTCOME" = success
           test "$VALIDATE_OUTCOME" = success
           test "$TEST_OUTCOME" = success
+          test "$FULL_AUDIT_OUTCOME" = success
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then test "$ACCEPTANCE_OUTCOME" = success; fi
 
       - name: Upload UAP evidence reports
         if: always()
@@ -319,6 +326,10 @@ jobs:
           path: |
             .uap/reports/*.json
             .uap/reports/PHASE-2-REMEDIATION-REPORT.md
+            .uap/state/knowledge-index.json
+            .uap/state/adr-inventory.json
+            .uap/state/architecture-graph.json
+            .uap/state/workflow-uap-full-audit-last-run.json
             docs/design-system/audit/uds8-final-acceptance.json
             docs/design-system/audit/uds8-final-scan.json
             docs/design-system/audit/uds8-legacy-reference-report.json

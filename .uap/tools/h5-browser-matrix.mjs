@@ -4,8 +4,9 @@
 //   - target   : VISUAL_BASE_URL ?? http://localhost:3000 (Go backend embedding web/dist)
 //   - baseline : desktop 1440x900 + mobile 390x844 (web/e2e/visual/lib/target.ts)
 //   - unreachable target => BLOCKED (exit 2), NEVER reported as pass
-//   - touch-target standard: docs/design-system/UTER-DESIGN-SYSTEM-3.0.md §15.3
-//     (important mobile targets must be 44x44px); minimum font size 12px (§1.2)
+//   - touch-target policy: docs/design-system/13-ACCESSIBILITY-STANDARD.md
+//     (44x44px target metric; WCAG 2.5.8 24x24px hard floor is enforced below)
+//   - minimum-font policy: docs/design-system/04-TYPOGRAPHY-STANDARD.md (12px)
 //
 // What it actually does in a real browser (Playwright Chromium):
 //   per (viewport x route):
@@ -248,11 +249,11 @@ function auditPage() {
     horizontal_overflow_px: Math.max(0, overflowPx),
     overflow_samples: overflowEls,
     small_touch_targets: {
-      below_uter_recommended_44: { count: belowRec.length, samples: belowRec.slice(0, 6), standard: 'design-system §15.3 推荐 44x44px（非强制）' },
+      below_uter_recommended_44: { count: belowRec.length, samples: belowRec.slice(0, 6), standard: 'UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric' },
       below_wcag_min_24: { count: belowWcag.length, samples: belowWcag.slice(0, 6), standard: 'WCAG 2.5.8 硬线 24x24px（违规即 FAIL）' },
       wcag_258_exemptions_applied: wcagExemptions,
     },
-    small_fonts: { count: smallFonts.length, samples: smallFonts.slice(0, 6), standard: 'design-system §1.2: min 12px' },
+    small_fonts: { count: smallFonts.length, samples: smallFonts.slice(0, 6), standard: 'UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px' },
   };
 }
 
@@ -393,8 +394,7 @@ async function main() {
     touch: (() => {
       if (!mobileRows.length) return 'FAIL';
       const tapOk = mobileRows.filter((r) => r.spa_rendered).every((r) => r.tap && (r.tap.touchstart > 0 || r.tap.pointerdown > 0));
-      // WCAG 2.5.8 hard floor gates the check; the 44px recommendation is
-      // surfaced separately (UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: "not the uniform minimum").
+      // The UDS 44px target is reported separately; WCAG 2.5.8 24px is the hard gate.
       const wcagOk = mobileRows.filter((r) => r.spa_rendered).every((r) => r.small_touch_targets && r.small_touch_targets.below_wcag_min_24.count === 0);
       return tapOk && wcagOk ? 'PASS' : 'FAIL';
     })(),

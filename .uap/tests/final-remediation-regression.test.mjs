@@ -26,7 +26,7 @@ import { fileURLToPath } from 'node:url';
 import { classifyVisualDiff, MANDATED_CATEGORIES } from '../runtime/status-engine/visual-classifier.mjs';
 import { worktreeFingerprint } from '../runtime/status-engine/execution.mjs';
 import { FINAL_REPORTS, generateEvidenceManifest, MAX_REPORT_AGE_MS } from '../runtime/evidence-engine/manifest.mjs';
-import { checkBatchConsistency } from '../tools/final-acceptance-gate.mjs';
+import { checkBatchConsistency, classifyFingerprintStatusLines } from '../tools/final-acceptance-gate.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const src = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -59,6 +59,7 @@ test('R3 字体/动画/动态内容/基线缺失/环境失败的分类不被像�
     ['CSS animation keyframe still running', 'ANIMATION'],
     ['dynamic timestamp / live data changed between captures', 'DYNAMIC_CONTENT'],
     ['snapshot not found: no baseline for this viewport', 'BASELINE_MISMATCH'],
+    [`Error: expect(page).toHaveScreenshot(expected) failed\nA snapshot doesn't exist at home-desktop-chromium-linux.png`, 'BASELINE_MISMATCH'],
     ['ECONNREFUSED at localhost:3100, service gate not reachable', 'TEST_ENVIRONMENT'],
   ];
   for (const [message, expected] of cases) {
@@ -457,4 +458,23 @@ test('R27 [静态守卫] 门禁装配 single-batch 组并 surfaced 六项；独�
   assert.match(c, /single_batch_consistency_proven/);
   assert.match(c, /environment_fingerprint_matches_current_run/);
   assert.match(c, /gate\.environment_fingerprint === execution\.environment_fingerprint/);
+});
+
+test('R28 fingerprint drift diagnostics identify bound source paths and separate volatile reports without reading contents', () => {
+  const result = classifyFingerprintStatusLines([
+    ' M src/handlers/recharge.go',
+    '?? .uap/reports/FINAL-ACCEPTANCE.json',
+    '?? web/.visual-e2e/report.json',
+    ' M docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
+  ].join('\n'));
+  assert.equal(result.total_status_entries, 4);
+  assert.deepEqual(result.included_paths, [
+    'src/handlers/recharge.go',
+    'docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md',
+  ]);
+  assert.deepEqual(result.excluded_volatile_paths, [
+    '.uap/reports/FINAL-ACCEPTANCE.json',
+    'web/.visual-e2e/report.json',
+  ]);
+  assert.equal(JSON.stringify(result).includes('file contents'), false);
 });
