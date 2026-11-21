@@ -1,12 +1,14 @@
 package service
 
 import (
+	"fmt"
 	"math"
 	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 const ChannelPricingReviewKey = "ChannelPricingReviews"
@@ -22,6 +24,10 @@ type ChannelPricingReviewEntry struct {
 	Old       float64   `json:"old"`
 	New       float64   `json:"new"`
 	Percent   float64   `json:"percent"`
+	Status    string    `json:"status,omitempty"`
+	Reviewer  string    `json:"reviewer,omitempty"`
+	Note      string    `json:"note,omitempty"`
+	DecidedAt int64     `json:"decided_at,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -90,11 +96,44 @@ func AppendChannelPricingReviews(entries []ChannelPricingReviewEntry) error {
 		})
 	}
 	if err := model.AppendChannelPricingReviews(rows); err == nil {
+		notifyPricingReviewAdmins(entries)
 		return nil
 	} else {
 		common.SysError("append channel pricing review table failed: " + err.Error())
 	}
-	return appendChannelPricingReviewsOption(entries)
+	if err := appendChannelPricingReviewsOption(entries); err != nil {
+		return err
+	}
+	notifyPricingReviewAdmins(entries)
+	return nil
+}
+
+// notifyPricingReviewAdmins tells administrators that upstream prices moved
+// beyond the configured threshold and are waiting for a decision. Delivery
+// failures never block the sync itself.
+func notifyPricingReviewAdmins(entries []ChannelPricingReviewEntry) {
+	if len(entries) == 0 {
+		return
+	}
+	channelID := entries[0].ChannelID
+	name := fmt.Sprintf("#%d", channelID)
+	if channel, err := model.GetChannelById(channelID, false); err == nil && channel != nil && channel.Name != "" {
+		name = channel.Name
+	}
+	count := len(entries)
+	notifyAdmins("channel_pricing_review", func(role int, setting dto.UserSetting) bool {
+		if setting.ChannelNotifyEnabled != nil {
+			return *setting.ChannelNotifyEnabled
+		}
+		return role == common.RoleRootUser
+	}, func(lang string) (string, string) {
+		if strings.HasPrefix(strings.ToLower(lang), "zh") {
+			return "渠道价格变更待审核",
+				fmt.Sprintf("渠道 %s 有 %d 条上游价格变更超过阈值，请在渠道定价页审批或拒绝。", name, count)
+		}
+		return "Channel price change awaiting review",
+			fmt.Sprintf("Channel %s has %d upstream price changes above the threshold. Approve or reject them on the channel pricing page.", name, count)
+	})
 }
 
 func ListChannelPricingReviews(channelID int) []ChannelPricingReviewEntry {
@@ -145,6 +184,38 @@ func listChannelPricingReviewsOption(channelID int) []ChannelPricingReviewEntry 
 		}
 	}
 	return out
+}
+
+// ListChannelPricingReviewsByStatus returns pending or decided review history.
+func ListChannelPricingReviewsByStatus(channelID int, status string) []ChannelPricingReviewEntry {
+	rows, err := model.ListChannelPricingReviewsByStatus(channelID, status)
+	if err != nil {
+		return nil
+	}
+	out := make([]ChannelPricingReviewEntry, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, ChannelPricingReviewEntry{
+			ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+			Field: row.Field, Old: row.Old, New: row.New, Percent: row.Percent,
+			Status: row.Status, Reviewer: row.ReviewerName, Note: row.Note,
+			DecidedAt: row.DecidedAt, CreatedAt: time.Unix(row.CreatedAt, 0).UTC(),
+		})
+	}
+	return out
+}
+
+// DecideChannelPricingReviews records an approval or rejection. Approval is
+// done by the caller after it applies the schedule rule, so a failed price
+// write leaves the entries pending.
+func DecideChannelPricingReviews(channelID int, status string, reviewerID int, reviewerName, note string) (int64, error) {
+	affected, err := model.DecideChannelPricingReviews(channelID, status, reviewerID, reviewerName, note)
+	if err != nil {
+		return 0, err
+	}
+	if status == model.ChannelPricingReviewStatusRejected || status == model.ChannelPricingReviewStatusApproved {
+		_ = clearChannelPricingReviewsOption(channelID)
+	}
+	return affected, nil
 }
 
 // ClearChannelPricingReviews removes every pending entry for one channel.

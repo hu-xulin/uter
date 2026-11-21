@@ -219,13 +219,16 @@ type TaskPluginAuthorSnapshot struct {
 
 // TaskBillingContext 记录任务提交时的计费参数，以便轮询阶段可以重新计算额度。
 type TaskBillingContext struct {
-	ModelPrice      float64                      `json:"model_price,omitempty"`       // 模型单价
-	GroupRatio      float64                      `json:"group_ratio,omitempty"`       // 分组倍率
-	ModelRatio      float64                      `json:"model_ratio,omitempty"`       // 模型倍率
-	OtherRatios     map[string]float64           `json:"other_ratios,omitempty"`      // 附加倍率（时长、分辨率等）
-	OriginModelName string                       `json:"origin_model_name,omitempty"` // 模型名称，必须为OriginModelName
-	PerCallBilling  bool                         `json:"per_call_billing,omitempty"`  // 按次计费：跳过轮询阶段的差额结算
-	TieredSnapshot  *billingexpr.BillingSnapshot `json:"tiered_snapshot,omitempty"`
+	ModelPrice      float64            `json:"model_price,omitempty"`       // 模型单价
+	GroupRatio      float64            `json:"group_ratio,omitempty"`       // 分组倍率
+	ModelRatio      float64            `json:"model_ratio,omitempty"`       // 模型倍率
+	OtherRatios     map[string]float64 `json:"other_ratios,omitempty"`      // 附加倍率（时长、分辨率等）
+	OriginModelName string             `json:"origin_model_name,omitempty"` // 模型名称，必须为OriginModelName
+	// BillingModelName is the pricing alias that produced the charge. It can
+	// differ from OriginModelName when a virtual price alias is configured.
+	BillingModelName string                       `json:"billing_model_name,omitempty"`
+	PerCallBilling   bool                         `json:"per_call_billing,omitempty"` // 按次计费：跳过轮询阶段的差额结算
+	TieredSnapshot   *billingexpr.BillingSnapshot `json:"tiered_snapshot,omitempty"`
 	// Channel pricing snapshot frozen at submit time.
 	ChannelPricingApplied bool   `json:"channel_pricing_applied,omitempty"`
 	ChannelPricingVersion string `json:"channel_pricing_version,omitempty"`

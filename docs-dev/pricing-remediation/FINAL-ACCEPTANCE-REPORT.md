@@ -52,6 +52,14 @@
   快照不再只依赖 tiered 预估 facts。
 - 异步任务在成功结算、差额结算与全额退款三个路径补全快照额度；退款后的凭证状态为
   `refunded`，合同仍不可改写。
+- 任务价格合同改为“任务持久化成功后”写入：失败的重试尝试不再占用快照唯一键，
+  快照使用成功尝试的渠道身份与真实 task_id；结算按提交时固化的 `BillingContext`
+  计价，并在 `TaskBillingContext` 中保存 `billing_model_name`，保证计价别名下仍能匹配。
+- Apiko 定时同步补齐指数退避（1m→1h 封顶）与官方输入价变更检测；启用价格计划时，
+  超过阈值的变更写入 `channel_pricing_reviews`，进入人工审批而不是直接采用。
+- 价格审阅升级为状态机：`pending → approved / rejected`，记录审批人、备注与决策时间；
+  已决记录保留为审计历史，后续同步只替换新的 pending 条目。审阅产生时向开启渠道通知
+  的管理员发送提醒；审批成功后才应用计划规则，拒绝不改变价格。
 - 批量定价新增 `providers`/`regions`/`deployments`/`pricing_sources`/`modes` 精确筛选；
   版本校验继续使用 `model|provider|region|deployment` 身份键。前端批量面板增加对应筛选输入。
 - 批量调价支持 `tier_rules` 逐档规则：按 `range_name`/`time_band` 为不同上下文档位

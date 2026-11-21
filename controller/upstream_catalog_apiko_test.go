@@ -515,3 +515,38 @@ func TestApikoChannelPricingRecordsUseExecutableExpression(t *testing.T) {
 	require.Len(t, view.ChannelPriceTiers, 1)
 	require.Equal(t, service.UpstreamExpressionExecutable, view.ExpressionStatus)
 }
+
+func TestApikoSyncBackoffAndPrimaryPriceChanges(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	require.NoError(t, db.AutoMigrate(&model.Option{}, &model.ChannelModelPricing{}))
+
+	now := time.Now().UTC()
+	require.False(t, apikoBackoffActive(7, now))
+	recordApikoSyncFailure(7, now)
+	require.True(t, apikoBackoffActive(7, now.Add(30*time.Second)))
+	clearApikoSyncFailure(7)
+	require.False(t, apikoBackoffActive(7, now))
+
+	oldPricing, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Tiers:    []model.ChannelPricingTier{{Unit: "per_1m_token", InputPerMillionUSD: apikoFloatPtr(1.0)}},
+	})
+	require.NoError(t, err)
+	require.NoError(t, db.Create(&model.ChannelModelPricing{
+		ChannelId: 7, Provider: "apiko", ModelName: "apiko-chat",
+		NormalizedPricing: string(oldPricing), PricingStatus: model.ChannelPricingStatusOfficialOnly,
+	}).Error)
+
+	newPricing, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Tiers:    []model.ChannelPricingTier{{Unit: "per_1m_token", InputPerMillionUSD: apikoFloatPtr(5.0)}},
+	})
+	require.NoError(t, err)
+	changes := apikoOfficialPriceChanges(7, []model.ChannelOfficialPricingRecord{{
+		ChannelId: 7, Provider: "apiko", ModelName: "apiko-chat", NormalizedPricing: string(newPricing),
+	}})
+	require.Len(t, changes, 1)
+	assert.Equal(t, "apiko-chat", changes[0].ModelID)
+	assert.InDelta(t, 1.0, *changes[0].Old, 1e-9)
+	assert.InDelta(t, 5.0, *changes[0].New, 1e-9)
+}

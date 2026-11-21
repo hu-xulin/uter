@@ -758,6 +758,9 @@ type apikoPricingSyncResult struct {
 	Recorded int
 	Seeded   int
 	Skipped  []apikoSkippedModel
+	// Changes carries official-price movements so a configured pricing schedule
+	// can raise review entries for abnormal jumps.
+	Changes []service.UpstreamPriceChange
 }
 
 var apikoPricingSyncMu sync.Mutex
@@ -784,6 +787,7 @@ func syncApikoChannelPricing(channel *model.Channel) (apikoPricingSyncResult, er
 	if len(built.records) == 0 {
 		return result, errors.New("apiko catalogue has no models")
 	}
+	result.Changes = apikoOfficialPriceChanges(channel.Id, built.records)
 	written, err := model.UpsertChannelOfficialPricing(built.records)
 	if err != nil {
 		return result, err
@@ -842,12 +846,124 @@ func runApikoUpstreamSync(force bool) {
 		if !force && now.Unix()-apikoSyncStateFor(channel.Id) < int64(officialInterval)*60 {
 			continue
 		}
-		if _, err := syncApikoChannelPricing(channel); err != nil {
-			common.SysError(common.LogText("apiko pricing sync failed for channel %d: %s", channel.Id, err.Error()))
+		if !force && apikoBackoffActive(channel.Id, now) {
 			continue
 		}
+		synced, err := syncApikoChannelPricing(channel)
+		if err != nil {
+			common.SysError(common.LogText("apiko pricing sync failed for channel %d: %s", channel.Id, err.Error()))
+			recordApikoSyncFailure(channel.Id, now)
+			continue
+		}
+		clearApikoSyncFailure(channel.Id)
 		setApikoSyncState(channel.Id, now.Unix())
+		if schedule.Enabled && len(synced.Changes) > 0 {
+			reviews := service.BuildChannelPricingReviews(synced.Changes, channel.Id, channel.GetModels(), schedule.ThresholdPercent)
+			if err := service.AppendChannelPricingReviews(reviews); err != nil {
+				common.SysError(common.LogText("append apiko pricing reviews failed for channel %d: %s", channel.Id, err.Error()))
+			}
+		}
 	}
+}
+
+const apikoUpstreamSyncBackoffKey = "ApikoUpstreamSyncBackoff"
+
+type apikoSyncBackoff struct {
+	Failures    int   `json:"failures"`
+	NextAttempt int64 `json:"next_attempt_at"`
+}
+
+func apikoBackoffState() map[string]apikoSyncBackoff {
+	state := map[string]apikoSyncBackoff{}
+	if raw := strings.TrimSpace(common.GetOption(apikoUpstreamSyncBackoffKey)); raw != "" {
+		_ = common.UnmarshalJsonStr(raw, &state)
+	}
+	return state
+}
+
+func apikoBackoffActive(channelID int, now time.Time) bool {
+	return apikoBackoffState()[strconv.Itoa(channelID)].NextAttempt > now.Unix()
+}
+
+// recordApikoSyncFailure applies exponential backoff (1m, 2m, 4m ... capped at
+// 1h) so a broken upstream is not polled every minute forever.
+func recordApikoSyncFailure(channelID int, now time.Time) {
+	state := apikoBackoffState()
+	key := strconv.Itoa(channelID)
+	entry := state[key]
+	entry.Failures++
+	backoff := time.Minute << min(entry.Failures-1, 6)
+	if backoff > time.Hour {
+		backoff = time.Hour
+	}
+	entry.NextAttempt = now.Add(backoff).Unix()
+	state[key] = entry
+	if raw, err := common.Marshal(state); err == nil {
+		_ = model.UpdateOption(apikoUpstreamSyncBackoffKey, string(raw))
+	}
+}
+
+func clearApikoSyncFailure(channelID int) {
+	state := apikoBackoffState()
+	key := strconv.Itoa(channelID)
+	if _, ok := state[key]; !ok {
+		return
+	}
+	delete(state, key)
+	if raw, err := common.Marshal(state); err == nil {
+		_ = model.UpdateOption(apikoUpstreamSyncBackoffKey, string(raw))
+	}
+}
+
+// apikoOfficialPriceChanges compares the primary official input price before
+// and after a sync so a schedule threshold can flag abnormal jumps.
+func apikoOfficialPriceChanges(channelID int, records []model.ChannelOfficialPricingRecord) []service.UpstreamPriceChange {
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return nil
+	}
+	previous := make(map[string]float64, len(rows))
+	for _, row := range rows {
+		if price := officialPrimaryInputUSD(row.NormalizedPricing); price != nil && *price > 0 {
+			previous[row.ModelName] = *price
+		}
+	}
+	changes := make([]service.UpstreamPriceChange, 0)
+	for _, record := range records {
+		price := officialPrimaryInputUSD(record.NormalizedPricing)
+		if price == nil || *price <= 0 {
+			continue
+		}
+		old, ok := previous[record.ModelName]
+		if !ok || old == *price {
+			continue
+		}
+		oldValue, newValue := old, *price
+		changes = append(changes, service.UpstreamPriceChange{
+			ProviderID: "apiko", ModelID: record.ModelName, Kind: "price_changed",
+			Field: "input", Old: &oldValue, New: &newValue, DetectedAt: time.Now().UTC(),
+		})
+	}
+	return changes
+}
+
+func officialPrimaryInputUSD(raw string) *float64 {
+	if strings.TrimSpace(raw) == "" {
+		return nil
+	}
+	var pricing model.ChannelOfficialPricing
+	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
+		return nil
+	}
+	for _, tier := range pricing.Tiers {
+		if tier.InputPerMillionUSD != nil {
+			return tier.InputPerMillionUSD
+		}
+	}
+	if pricing.ChannelPrice != nil && pricing.ChannelPrice.InputPerMillionUSD != nil {
+		return pricing.ChannelPrice.InputPerMillionUSD
+	}
+	return nil
 }
 
 func apikoSyncStateFor(channelID int) int64 {

@@ -147,7 +147,14 @@ func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
 			usage = string(encoded)
 		}
 	}
-	updateTaskPriceSnapshotSettlement(task, int64(info.FinalPreConsumedQuota), int64(info.PriceData.Quota), usage, "settled")
+	// A queued task has only reserved its quota; the final settlement or refund
+	// arrives later and must still be able to complete the voucher. Only a
+	// terminal task may be marked settled here.
+	status := "pending"
+	if task.Status == model.TaskStatusSuccess || task.Status == model.TaskStatusFailure {
+		status = "settled"
+	}
+	updateTaskPriceSnapshotSettlement(task, int64(info.FinalPreConsumedQuota), int64(info.PriceData.Quota), usage, status)
 }
 
 // updateTaskPriceSnapshotSettlement records the amounts that actually hit the
@@ -414,8 +421,13 @@ func taskBillingContextPriceData(bc *model.TaskBillingContext) *types.PriceData 
 
 // taskModelName 从 BillingContext 或 Properties 中获取模型名称。
 func taskModelName(task *model.Task) string {
-	if bc := task.PrivateData.BillingContext; bc != nil && bc.OriginModelName != "" {
-		return bc.OriginModelName
+	if bc := task.PrivateData.BillingContext; bc != nil {
+		if bc.BillingModelName != "" {
+			return bc.BillingModelName
+		}
+		if bc.OriginModelName != "" {
+			return bc.OriginModelName
+		}
 	}
 	return task.Properties.OriginModelName
 }

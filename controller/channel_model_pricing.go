@@ -623,9 +623,11 @@ func GetChannelPricingReviews(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
+	status := strings.TrimSpace(c.Query("status"))
 	common.ApiSuccess(c, gin.H{
 		"channel_id": channelID,
-		"items":      service.ListChannelPricingReviews(channelID),
+		"status":     status,
+		"items":      service.ListChannelPricingReviewsByStatus(channelID, status),
 	})
 }
 
@@ -642,16 +644,24 @@ func ApproveChannelPricingReviews(c *gin.Context) {
 		common.ApiErrorMsg(c, "No enabled pricing schedule for this channel")
 		return
 	}
+	var req struct {
+		Note string `json:"note"`
+	}
+	_ = c.ShouldBindJSON(&req)
 	result, err := service.ApplyChannelBatchPricing(channelID, nil, schedule.Basis, schedule.Mode, schedule.Value, false)
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
-	if err := service.ClearChannelPricingReviews(channelID); err != nil {
+	decided, err := service.DecideChannelPricingReviews(
+		channelID, model.ChannelPricingReviewStatusApproved,
+		c.GetInt("id"), c.GetString("username"), strings.TrimSpace(req.Note),
+	)
+	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{"channel_id": channelID, "updated": result.Updated})
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "updated": result.Updated, "reviewed": decided})
 }
 
 // RejectChannelPricingReviews clears pending entries without changing prices.
@@ -661,11 +671,19 @@ func RejectChannelPricingReviews(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid parameters")
 		return
 	}
-	if err := service.ClearChannelPricingReviews(channelID); err != nil {
+	var req struct {
+		Note string `json:"note"`
+	}
+	_ = c.ShouldBindJSON(&req)
+	decided, err := service.DecideChannelPricingReviews(
+		channelID, model.ChannelPricingReviewStatusRejected,
+		c.GetInt("id"), c.GetString("username"), strings.TrimSpace(req.Note),
+	)
+	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{"channel_id": channelID})
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "reviewed": decided})
 }
 
 // RollbackChannelPricingHistory restores the previous internal sale price

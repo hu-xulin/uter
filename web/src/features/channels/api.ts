@@ -1235,6 +1235,10 @@ export type ChannelPricingReview = {
   old: number
   new: number
   percent: number
+  status?: string
+  reviewer?: string
+  note?: string
+  decided_at?: number
   created_at: string
 }
 

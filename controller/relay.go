@@ -786,6 +786,7 @@ func executeTaskSubmissionWith(
 		ModelRatio:            relayInfo.PriceData.ModelRatio,
 		OtherRatios:           relayInfo.PriceData.OtherRatios(),
 		OriginModelName:       relayInfo.OriginModelName,
+		BillingModelName:      relayInfo.GetBillingModelName(),
 		PerCallBilling:        common.StringsContains(constant.TaskPricePatches, relayInfo.OriginModelName) || relayInfo.PriceData.UsePrice,
 		TieredSnapshot:        relayInfo.TieredBillingSnapshot,
 		ChannelPricingApplied: relayInfo.ChannelPricingApplied,
@@ -850,6 +851,10 @@ func executeTaskSubmissionWith(
 		return nil, taskErr
 	}
 	durable = true
+	// Record the immutable contract only after the task is durable: retries
+	// re-price the request, so a failed attempt must not occupy the snapshot
+	// identity, and the voucher needs the real task id for settlement.
+	service.RecordBillingPriceSnapshotForTask(relayInfo, task.TaskID, nil)
 	requestplugin.TaskCreated(c)
 	if immediateTerminal {
 		// Reported once settled, whatever the settlement did.

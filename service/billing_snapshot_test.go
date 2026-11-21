@@ -130,3 +130,33 @@ func TestTaskRefundCompletesSnapshotVoucher(t *testing.T) {
 	assert.Equal(t, `{"mode":"per_second"}`, got.PriceContract)
 	assert.Contains(t, got.UsageBreakdown, `"seconds":5`)
 }
+
+func TestTaskSnapshotUsesDurableTaskIDForSettlement(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.BillingPriceSnapshot{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+
+	info := &relaycommon.RelayInfo{
+		RequestId: "req-task-9", OriginModelName: "video-a",
+		ChannelPricingApplied: true, ChannelPricingVersion: "sale-v1",
+		ChannelPricingContractJSON: `{"mode":"per_second"}`,
+	}
+	info.ChannelMeta = &relaycommon.ChannelMeta{ChannelId: 3}
+	RecordBillingPriceSnapshotForTask(info, "task-9", nil)
+
+	got, err := model.GetBillingPriceSnapshot("req-task-9", "task-9", "video-a")
+	require.NoError(t, err)
+	assert.Equal(t, "pending", got.SettleStatus)
+	require.NotEmpty(t, got.PriceContractHash)
+
+	require.NoError(t, model.UpdateBillingPriceSnapshotSettlement("req-task-9", "task-9", "video-a", model.SettlementPatch{
+		PreConsumed: 100, Settled: 80, Refund: 20, Status: "settled",
+	}))
+	got, err = model.GetBillingPriceSnapshot("req-task-9", "task-9", "video-a")
+	require.NoError(t, err)
+	assert.Equal(t, "settled", got.SettleStatus)
+	assert.Equal(t, int64(20), got.RefundQuota)
+}

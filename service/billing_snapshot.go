@@ -45,6 +45,17 @@ const billingSnapshotWriteAttempts = 3
 // log so reconciliation can find the request instead of trusting a bill that
 // has no voucher behind it.
 func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo, other *model.LogOther) {
+	recordBillingPriceSnapshot(info, taskIDForLog(info), other)
+}
+
+// RecordBillingPriceSnapshotForTask records a task contract with the durable
+// task id after insertion. Task retries re-price on every attempt, so the
+// snapshot must be written by the successful attempt only.
+func RecordBillingPriceSnapshotForTask(info *relaycommon.RelayInfo, taskID string, other *model.LogOther) {
+	recordBillingPriceSnapshot(info, taskID, other)
+}
+
+func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, other *model.LogOther) {
 	if info == nil || model.DB == nil {
 		return
 	}
@@ -65,13 +76,6 @@ func RecordBillingPriceSnapshot(info *relaycommon.RelayInfo, other *model.LogOth
 	}
 	if modelName == "" {
 		return
-	}
-	taskID := ""
-	if info.TaskRelayInfo != nil {
-		taskID = info.TaskRelayInfo.PublicTaskID
-		if taskID == "" {
-			taskID = info.TaskRelayInfo.OriginTaskID
-		}
 	}
 	usage := billingSnapshotUsage(info)
 	contract := strings.TrimSpace(info.ChannelPricingContractJSON)
@@ -191,7 +195,7 @@ func markBillingSnapshotError(other *model.LogOther, info *relaycommon.RelayInfo
 }
 
 func taskIDForLog(info *relaycommon.RelayInfo) string {
-	if info.TaskRelayInfo == nil {
+	if info == nil || info.TaskRelayInfo == nil {
 		return ""
 	}
 	if info.TaskRelayInfo.PublicTaskID != "" {

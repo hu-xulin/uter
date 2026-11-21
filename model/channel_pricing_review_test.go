@@ -59,3 +59,45 @@ func TestChannelPricingTablesMigrateTwiceWithoutDataLoss(t *testing.T) {
 	require.Len(t, listed, 1)
 	require.Equal(t, "gpt-x", listed[0].ModelName)
 }
+
+func TestChannelPricingReviewDecisionKeepsHistory(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&ChannelPricingReview{}))
+	previous := DB
+	DB = db
+	t.Cleanup(func() { DB = previous })
+
+	require.NoError(t, AppendChannelPricingReviews([]ChannelPricingReview{
+		{ChannelID: 12, ModelName: "gpt-a", Field: "input", Old: 1, New: 5, Percent: 400},
+		{ChannelID: 12, ModelName: "gpt-b", Field: "input", Old: 2, New: 8, Percent: 300},
+	}))
+	decided, err := DecideChannelPricingReviews(12, ChannelPricingReviewStatusApproved, 3, "root", "verified upstream list")
+	require.NoError(t, err)
+	assert.Equal(t, int64(2), decided)
+
+	pending, err := ListChannelPricingReviews(12)
+	require.NoError(t, err)
+	assert.Empty(t, pending)
+
+	approved, err := ListChannelPricingReviewsByStatus(12, ChannelPricingReviewStatusApproved)
+	require.NoError(t, err)
+	require.Len(t, approved, 2)
+	assert.Equal(t, "root", approved[0].ReviewerName)
+	assert.Equal(t, "verified upstream list", approved[0].Note)
+	assert.NotZero(t, approved[0].DecidedAt)
+
+	// A later sync creates a new pending entry while the decision stays.
+	require.NoError(t, AppendChannelPricingReviews([]ChannelPricingReview{
+		{ChannelID: 12, ModelName: "gpt-a", Field: "input", Old: 5, New: 6, Percent: 20},
+	}))
+	pending, err = ListChannelPricingReviews(12)
+	require.NoError(t, err)
+	require.Len(t, pending, 1)
+	approved, err = ListChannelPricingReviewsByStatus(12, ChannelPricingReviewStatusApproved)
+	require.NoError(t, err)
+	assert.Len(t, approved, 2)
+
+	_, err = DecideChannelPricingReviews(12, "bogus", 0, "", "")
+	require.Error(t, err)
+}
