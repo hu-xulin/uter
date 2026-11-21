@@ -32,6 +32,7 @@
 | `cd web && bun run lint` | exit 0（0 warnings / 0 errors） |
 | `cd web && bun run typecheck`（快照 UI 后复跑） | exit 0 |
 | `cd web && bun run lint:design:strict` | exit 0 |
+| `cd web && bun run test` | 316 files / 3204 tests PASS，exit 0 |
 | `cd web && bun run i18n:sync` | 7 语言 missing/extras = 0；二次执行 sha256 一致 |
 
 ## 3. 真实供应商与三库验证（本轮实际执行）
@@ -52,8 +53,8 @@
 - 其余云厂商真实接口。
 - MySQL/PostgreSQL 旧库升级（仅验证了 SQLite 旧库）。
 - 供应商真实接口验证（无授权凭据；`bailian_live` 构建标签未启用）。
-- 浏览器端 E2E/视觉回归（需要完整前后端栈）。
-- 前端全量 `bun run test`；本轮只运行类型与设计门禁。
+- 登录后的浏览器人工/视觉回归（公开页被登录守卫拦截）。
+
 
 ## 5. 真实数据声明
 

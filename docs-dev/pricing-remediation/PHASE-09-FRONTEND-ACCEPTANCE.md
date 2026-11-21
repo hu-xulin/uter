@@ -46,13 +46,16 @@
 
 ```bash
 cd web && bun run typecheck          # exit 0
+cd web && bun run lint               # exit 0
 cd web && bun run lint:design:strict # exit 0
+cd web && bun run test               # 316 files / 3204 tests PASS, exit 0
 cd web && bun run i18n:sync          # 0 missing / 0 extras
 # 幂等校验：两次 sync 后 7 个 locale 文件 sha256 一致
 ```
 
-未执行：`bun run test` 全量前端测试、浏览器人工回归、视觉基线对比。
+未执行：登录后的浏览器人工回归、视觉基线对比。公开定价页访问被登录守卫
+重定向到 `/sign-in`，本轮没有可用测试账号。
 
 ## 5. 结论
 
-界面与后端字段已对齐，类型检查通过；但不能表述为“全部功能已真实点击验证”。
+界面与后端字段已对齐，类型/静态/设计门禁与 3204 条前端测试通过；但登录后的浏览器点击回归仍未执行，不能表述为“全部功能已真实点击验证”。
