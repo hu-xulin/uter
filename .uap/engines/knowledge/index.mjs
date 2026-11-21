@@ -20,6 +20,9 @@ const RETIRED = ['AES', 'UAES', 'docs/ai-specs', 'uaes/standards'];
 const RETIRE_WORDS = /(退役|退休|已删除|不再|废除|废止|废弃|retired|deprecated|no longer|removed|pending replacement|承接|historical|历史|must not|do not|禁止|不得|说明)/i;
 const LEGACY_UDS3_PATH = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
 const HISTORICAL_UAP_PREFIXES = ['.uap/reports/', '.uap/evidence/', '.uap/state/'];
+const HISTORICAL_TOOL_REFERENCE_ALLOWLIST = new Map([
+  ['.uap/tools/generate-baseline-report.mjs', 'regenerates the immutable 2026-11-13 baseline audit; the embedded path is captured pre-migration working-tree evidence, never current design-system authority'],
+]);
 const KNOWLEDGE_SOURCE_EXT = /\.(md|mjs|js|ts|json|ya?ml|sh)$/i;
 
 function isHistoricalUapPath(rel) {
@@ -89,13 +92,18 @@ function scanLegacyDesignSystemReferences() {
   ];
   const seen = new Set();
   const activeReferences = [];
+  const historicalToolReferences = [];
   for (const abs of files) {
     const rel = relToRoot(abs);
     if (isHistoricalUapPath(rel) || seen.has(rel)) continue;
     seen.add(rel);
     const text = readText(abs);
     text.split(/\r?\n/).forEach((line, index) => {
-      if (line.includes(LEGACY_UDS3_PATH)) {
+      if (!line.includes(LEGACY_UDS3_PATH)) return;
+      const historicalReason = HISTORICAL_TOOL_REFERENCE_ALLOWLIST.get(rel);
+      if (historicalReason) {
+        historicalToolReferences.push({ file: rel, line: index + 1, classification: 'HISTORICAL_ONLY', reason: historicalReason });
+      } else {
         activeReferences.push({ file: rel, line: index + 1, snippet: line.trim().slice(0, 180) });
       }
     });
@@ -113,6 +121,8 @@ function scanLegacyDesignSystemReferences() {
     scanned_file_count: seen.size,
     active_reference_count: activeReferences.length,
     active_references: activeReferences.slice(0, 50),
+    historical_tool_references: historicalToolReferences,
+    historical_tool_allowlist: [...HISTORICAL_TOOL_REFERENCE_ALLOWLIST.keys()],
     historical_baseline_reference: historicalBaselineReference,
     policy: 'active UAP/docs sources must not reference the retired 3.0 design-system file; the immutable 2026-11-12 baseline reference is retained as historical evidence only',
   };
@@ -184,6 +194,8 @@ function artifactOk(file) {
   if (!j || !Array.isArray(j.documents) || j.documents.length < 1) return false;
   if (!j.retired_runtime_dependency_scan || !j.legacy_design_system_path_scan) return false;
   if (j.legacy_design_system_path_scan.active_reference_count !== 0) return false;
+  if (!Array.isArray(j.legacy_design_system_path_scan.historical_tool_references)
+    || j.legacy_design_system_path_scan.historical_tool_references.some((r) => r.classification !== 'HISTORICAL_ONLY')) return false;
   if (j.documents.some((d) => isHistoricalUapPath(d.path))) return false;
   if (JSON.stringify(j.documents).includes(LEGACY_UDS3_PATH)) return false;
   const d = j.documents[0];
