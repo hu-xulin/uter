@@ -529,36 +529,43 @@ func genericPrimaryPriceUSD(view model.ChannelOfficialPricing) (float64, bool) {
 	return 0, false
 }
 
-func genericChannelPriceSnapshot(channelID int) map[string]float64 {
+type genericPricePoint struct {
+	price   float64
+	version string
+}
+
+func genericChannelPriceSnapshot(channelID int) map[string]genericPricePoint {
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
 		return nil
 	}
-	out := make(map[string]float64, len(rows))
+	out := make(map[string]genericPricePoint, len(rows))
 	for _, row := range rows {
 		var view model.ChannelOfficialPricing
 		if common.UnmarshalJsonStr(row.NormalizedPricing, &view) != nil {
 			continue
 		}
 		if price, ok := genericPrimaryPriceUSD(view); ok && price > 0 {
-			out[row.ModelName] = price
+			out[row.ModelName] = genericPricePoint{price: price, version: row.PricingVersion}
 		}
 	}
 	return out
 }
 
-func genericPriceChanges(channelID int, before, after map[string]float64, now time.Time) []UpstreamPriceChange {
+func genericPriceChanges(channelID int, before, after map[string]genericPricePoint, now time.Time) []UpstreamPriceChange {
 	changes := make([]UpstreamPriceChange, 0)
-	for name, newPrice := range after {
-		oldPrice, ok := before[name]
-		if !ok || oldPrice <= 0 || math.Abs(newPrice-oldPrice) < 1e-12 {
+	for name, newPoint := range after {
+		oldPoint, ok := before[name]
+		if !ok || oldPoint.price <= 0 || math.Abs(newPoint.price-oldPoint.price) < 1e-12 {
 			continue
 		}
-		oldValue, newValue := oldPrice, newPrice
+		oldValue, newValue := oldPoint.price, newPoint.price
 		changes = append(changes, UpstreamPriceChange{
 			ProviderID: "newapi-compatible", ModelID: name,
 			Kind: "price_changed", Field: "input_per_million_usd",
-			Old: &oldValue, New: &newValue, DetectedAt: now,
+			Old: &oldValue, New: &newValue,
+			OldText: oldPoint.version, NewText: newPoint.version,
+			PricingVersion: newPoint.version, DetectedAt: now,
 		})
 	}
 	sort.Slice(changes, func(i, j int) bool { return changes[i].ModelID < changes[j].ModelID })

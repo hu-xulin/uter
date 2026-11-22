@@ -306,8 +306,14 @@ func TestGenericRatioUsesUpstreamQuotaPerUnit(t *testing.T) {
 func TestGenericPriceChangesDetectsOnlyRealMovements(t *testing.T) {
 	now := time.Unix(1000, 0)
 	changes := genericPriceChanges(7,
-		map[string]float64{"same": 1, "moved": 1, "gone": 1},
-		map[string]float64{"same": 1, "moved": 1.2, "new": 2}, now)
+		map[string]genericPricePoint{
+			"same": {price: 1, version: "v1"}, "moved": {price: 1, version: "v1"},
+			"gone": {price: 1, version: "v1"},
+		},
+		map[string]genericPricePoint{
+			"same": {price: 1, version: "v1"}, "moved": {price: 1.2, version: "v2"},
+			"new": {price: 2, version: "v1"},
+		}, now)
 	require.Len(t, changes, 1)
 	assert.Equal(t, "moved", changes[0].ModelID)
 	assert.Equal(t, "price_changed", changes[0].Kind)
@@ -315,4 +321,5 @@ func TestGenericPriceChangesDetectsOnlyRealMovements(t *testing.T) {
 	require.NotNil(t, changes[0].New)
 	assert.InDelta(t, 1, *changes[0].Old, 1e-9)
 	assert.InDelta(t, 1.2, *changes[0].New, 1e-9)
+	assert.Equal(t, "v2", changes[0].PricingVersion)
 }
