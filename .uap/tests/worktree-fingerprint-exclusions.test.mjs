@@ -34,8 +34,6 @@ test('Playwright test sources and frozen visual baselines remain fingerprint-bou
   }
 });
 
-import fs from 'node:fs';
-
 test('visual baseline generation is disabled by default and requires the explicit update command', () => {
   const config = fs.readFileSync(new URL('../../web/e2e/visual/playwright.config.ts', import.meta.url), 'utf8');
   const pkg = JSON.parse(fs.readFileSync(new URL('../../web/package.json', import.meta.url), 'utf8'));
