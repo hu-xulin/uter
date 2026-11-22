@@ -167,6 +167,25 @@ catalog audit.
 7. Apiko runtime removal is complete; historical data migration must be handled
    separately before any production cleanup.
 
+## 5.1 Historical data residue (production DB snapshot)
+
+Read-only audit of the local production database on 2026-11-23:
+
+| Item | Count |
+|---|---:|
+| Total channel pricing rows | 711 |
+| Rows whose channel no longer exists | 413 |
+| Apiko-provider rows (orphaned) | 69 |
+
+Orphan channel IDs in this snapshot: 26, 31, 33, 35, 36. These rows are not
+billable but remain in the table. They are now exposed by
+`GET /api/channel/pricing_audit` under `orphans`.
+
+Cleanup is intentionally **not** automatic. It requires a database backup,
+per-channel preview, and explicit operator approval. Apiko rows are historical
+residue from the removed provider and must be migrated or archived separately
+from runtime code deletion.
+
 ## 6. Acceptance status
 
 The four P0 code defects above are implemented and covered by automated tests.

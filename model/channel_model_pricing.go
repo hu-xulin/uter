@@ -1964,3 +1964,28 @@ func UpdateChannelOfficialPricingView(channelId int, modelName string, view Chan
 	invalidateChannelPricingCache(channelId, modelName)
 	return nil
 }
+
+// ChannelPricingOrphan groups pricing rows whose channel no longer exists.
+// Orphans are audit-visible but never billable and must not be deleted
+// automatically during a production audit.
+type ChannelPricingOrphan struct {
+	ChannelId int   `json:"channel_id"`
+	Count     int64 `json:"count"`
+}
+
+// ListOrphanChannelPricing returns pricing rows left behind by deleted
+// channels, grouped by channel id.
+func ListOrphanChannelPricing() ([]ChannelPricingOrphan, error) {
+	if DB == nil || !DB.Migrator().HasTable(&ChannelModelPricing{}) {
+		return nil, nil
+	}
+	var rows []ChannelPricingOrphan
+	err := DB.Table("channel_model_pricing AS cmp").
+		Joins("LEFT JOIN channels AS c ON c.id = cmp.channel_id").
+		Where("c.id IS NULL").
+		Select("cmp.channel_id AS channel_id, COUNT(*) AS count").
+		Group("cmp.channel_id").
+		Order("cmp.channel_id").
+		Scan(&rows).Error
+	return rows, err
+}

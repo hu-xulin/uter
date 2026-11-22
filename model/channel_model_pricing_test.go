@@ -1217,3 +1217,18 @@ func TestChannelUsesScopedPricing(t *testing.T) {
 	assert.True(t, ChannelUsesScopedPricing(77))
 	assert.False(t, ChannelUsesScopedPricing(78))
 }
+
+func TestListOrphanChannelPricing(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	require.NoError(t, db.AutoMigrate(&Channel{}))
+	require.NoError(t, db.Create(&Channel{Id: 1, Name: "live", Status: 1}).Error)
+	require.NoError(t, db.Create(&ChannelModelPricing{ChannelId: 1, Provider: "p", ModelName: "a"}).Error)
+	require.NoError(t, db.Create(&ChannelModelPricing{ChannelId: 99, Provider: "p", ModelName: "b"}).Error)
+	require.NoError(t, db.Create(&ChannelModelPricing{ChannelId: 99, Provider: "p", ModelName: "c"}).Error)
+
+	orphans, err := ListOrphanChannelPricing()
+	require.NoError(t, err)
+	require.Len(t, orphans, 1)
+	assert.Equal(t, 99, orphans[0].ChannelId)
+	assert.EqualValues(t, 2, orphans[0].Count)
+}

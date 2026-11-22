@@ -341,3 +341,23 @@ func parityReason(item UpstreamParityModel) string {
 		return ""
 	}
 }
+
+// OrphanPricingAudit reports pricing rows whose channel no longer exists.
+type OrphanPricingAudit struct {
+	Total    int64                        `json:"total"`
+	Channels []model.ChannelPricingOrphan `json:"channels"`
+}
+
+// AuditOrphanChannelPricing lists orphaned channel pricing rows. It is
+// read-only; production cleanup requires a separate backup-and-preview step.
+func AuditOrphanChannelPricing() (OrphanPricingAudit, error) {
+	rows, err := model.ListOrphanChannelPricing()
+	if err != nil {
+		return OrphanPricingAudit{}, err
+	}
+	audit := OrphanPricingAudit{Channels: rows}
+	for _, row := range rows {
+		audit.Total += row.Count
+	}
+	return audit, nil
+}

@@ -54,7 +54,12 @@ func GetAllChannelPricingAudits(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, gin.H{"channels": audits})
+	orphans, err := service.AuditOrphanChannelPricing()
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channels": audits, "orphans": orphans})
 }
 
 // GetChannelSyncCapabilities returns the provider capability matrix for one
