@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
-
 export const CHANNEL_PRIORITY_GUIDE_KEYS = {
   card: 'channels:priority-drag-guide:card:v1',
   table: 'channels:priority-drag-guide:v1',
@@ -51,7 +32,6 @@ export const CHANNEL_TYPES = {
   5: 'MjProxyPlus',
   // 6: 'OpenAIMax',
   7: 'OhMyGPT',
-  8: 'Custom',
   // 9: 'AILS',
   // 10: 'AI Proxy',
   // 11: 'PaLM',
@@ -121,11 +101,6 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
   4: { descriptionKey: 'Connect to local or self-hosted Ollama models' },
   5: { descriptionKey: 'Generate Midjourney images through MjProxyPlus' },
   7: { descriptionKey: 'Access model services through the OhMyGPT gateway' },
-  8: {
-    descriptionKey:
-      'Legacy full-URL integration; use Advanced Custom for new channels',
-    badge: { labelKey: 'Deprecated', tone: 'warning' },
-  },
   14: { descriptionKey: 'Connect to the Anthropic API or compatible services' },
   15: { descriptionKey: 'Access Baidu Qianfan models through the legacy API' },
   16: { descriptionKey: 'Access Zhipu models through the legacy API' },
@@ -195,8 +170,8 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
 
 const CHANNEL_TYPE_DISPLAY_ORDER: number[] = [
   1, 14, 24, 33, 43, 3, 41, 17, 45, 25, 26, 23, 48, 60, 58, 59, 61, 42, 34, 20,
-  4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 8, 57, 22, 21, 44,
-  2, 5, 36, 50, 51, 52, 53, 54, 55, 56,
+  4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 57, 22, 21, 44, 2,
+  5, 36, 50, 51, 52, 53, 54, 55, 56,
 ]
 
 export const CHANNEL_TYPE_OPTIONS: { value: number; label: string }[] = (() => {
@@ -512,6 +487,5 @@ export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
 
 export const CHANNEL_TYPE_WARNINGS: Record<number, string> = {
   3: 'For channels added after May 10, 2025, no need to remove "." from model names during deployment',
-  8: 'If connecting to upstream One API or Uter relay projects, use OpenAI type instead unless you know what you are doing',
   37: 'Dify channels only support chatflow and agent, and agent does not support images',
 }

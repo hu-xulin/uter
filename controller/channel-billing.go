@@ -788,9 +788,6 @@ func updateAllChannelsBalance() error {
 			continue // skip multi-key channels
 		}
 		// TODO: support Azure
-		//if channel.Type != common.ChannelTypeOpenAI && channel.Type != common.ChannelTypeCustom {
-		//	continue
-		//}
 		result, err := updateChannelBalance(channel)
 		if err != nil {
 			continue
