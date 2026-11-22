@@ -185,3 +185,64 @@ test('official-only rows expose an explicit adopt-official-price action', async 
     )
   )
 })
+
+test('renders official, channel and default-marked Uter prices separately', async () => {
+  const previous = vi.mocked(api.get).getMockImplementation()
+  vi.spyOn(api, 'get').mockImplementation(async (url, ...args) => {
+    if (url.endsWith('/model_pricing')) {
+      return {
+        data: {
+          success: true,
+          data: {
+            channel_id: 7,
+            items: [
+              {
+                channel_id: 7,
+                model_name: 'claude-fable-5',
+                provider: 'dreamrouter',
+                region: '',
+                currency: 'USD',
+                pricing_source: 'dreamrouter-official',
+                pricing_status: 'configured',
+                pricing_version: 'v1',
+                fetched_at: Math.floor(Date.now() / 1000),
+                updated_at: Math.floor(Date.now() / 1000),
+                official: {
+                  currency: 'USD',
+                  unit: 'expression',
+                  tiers: null,
+                  price_kind: 'BILLING_EXPRESSION',
+                  source: 'dreamrouter-expression',
+                  fetched_at: Math.floor(Date.now() / 1000),
+                  billing_expr: 'tier("base", p * 10 + c * 50)',
+                  expression_status: 'EXECUTABLE',
+                },
+                upstream_quote: {
+                  price_basis: 'CHANNEL_DISCOUNT',
+                  currency: 'USD',
+                  unit: 'per_1m_token',
+                  input_per_million_usd: 6,
+                  output_per_million_usd: 30,
+                  discount_ratio: 0.6,
+                  source: 'dreamrouter-discount',
+                },
+                internal: {
+                  mode: 'tiered_expr',
+                  billing_expr: '((tier("base", p * 10 + c * 50)) * 0.6) * 1.1',
+                  source: 'dreamrouter-discount',
+                  discount_ratio: 0.6,
+                },
+              },
+            ],
+          },
+        },
+      }
+    }
+    if (previous) return previous(url, ...args)
+    return { data: { success: true, data: { items: [] } } }
+  })
+
+  renderPanel()
+  expect(await screen.findByText(/\$6\.0000 \/ \$30\.0000/)).toBeVisible()
+  expect(await screen.findByText(/Uter sale price: Expression/)).toBeVisible()
+})

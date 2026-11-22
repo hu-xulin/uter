@@ -341,6 +341,9 @@ export function ChannelModelPricingSection(
 
   const internalPriceLabel = (item: ChannelModelPricingRecord) => {
     if (!item.internal) return t('Not configured')
+    if (item.internal.mode === 'tiered_expr' || item.internal.billing_expr) {
+      return t('Expression')
+    }
     if (item.internal.mode === 'per_second') {
       return t('{{price}} / second', {
         price: formatUsd(item.internal.per_second_usd),
