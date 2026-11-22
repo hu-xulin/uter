@@ -8,6 +8,10 @@
 - 最终状态：**IMPLEMENTED_WITH_EXTERNAL_BLOCKERS**
 
 > 本报告只记录实际执行过的命令与结果。未执行或环境不满足的项目在“未完成事项”中逐条列出，不以文档或接口可访问冒充通过。
+>
+> **2026-11-23 状态更正**：报告中的 Apiko Provider、同步任务、路由与页面均已
+> 删除，由 XXAPI 替代；`apiko-` 仅作为历史价格来源前缀保留。当前状态以
+> `docs/audits/UTER-PRICING-EXECUTION-REPORT.md` 为准。
 
 ---
 
