@@ -167,6 +167,18 @@ catalog audit.
 7. Apiko runtime removal is complete; historical data migration must be handled
    separately before any production cleanup.
 
+## 4.2 Three-layer price verification (2026-11-23)
+
+| Channel | Official | Channel quote | Uter default |
+|---|---|---|---|
+| DreamRouter new channel, `claude-fable-5` | expression `p*10+c*50+cr*1+cc*12.5+cc1h*20` | 6 / 30 USD per 1M (0.6 group) | expression × 0.6 × **1.1** → 6.6 / 33 |
+| Bailian, `MiniMax/MiniMax-M3` | channel catalog quote | 0.6278026906 / 2.5112107623 | 0.6905829596 / 2.7623318386 (×1.1) |
+| XXAPI, expression example | gateway expression (no vendor list price) | expression × group ratio (unit test: 5 / 25) | expression × group × **1.1** |
+
+Bailian seed now refreshes previous automatic prices (source `bailian-*`) while
+protecting operator/batch prices. XXAPI live groups: 14; creation without a key
+is rejected.
+
 ## 5.0 Sample reconciliation attempt (2026-11-23)
 
 DreamRouter usage page: 9 rows today (00:27–03:30), 7 matched to Uter consume

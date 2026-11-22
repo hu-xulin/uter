@@ -25,6 +25,14 @@ Task expressions return USD. Pre-consume and settlement use the same expression
 and the same usage facts. Missing required usage facts fail the charge instead
 of guessing a value.
 
+## Default sale price
+
+When no operator/batch rule exists, an automatically derived Uter sale price is
+the upstream channel quote × **1.10**. The markup is applied to flat monetary
+dimensions and to executable expressions (fixed charges are scaled in place so
+task billing still accepts them). Operator, batch and approved prices are never
+scaled or overwritten.
+
 ## Group and customer pricing
 
 The customer/group ratio is applied after the channel sale contract. It does

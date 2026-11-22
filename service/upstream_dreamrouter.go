@@ -453,6 +453,9 @@ func dreamRouterChannelInternalPricing(
 		pricing.CacheUSDPerMillion = line.CacheRead
 		pricing.CreateCacheUSDPerMillion = line.CacheWrite
 	}
+	if !applyDefaultSaleMarkup(&pricing) {
+		return "", false
+	}
 	encoded, err := common.Marshal(pricing)
 	if err != nil {
 		return "", false
@@ -505,6 +508,9 @@ func dreamRouterChannelExpressionPricing(
 		DiscountModelGroup: modelGroup,
 		DiscountRatio:      factor,
 		UpdatedAt:          time.Now().Unix(),
+	}
+	if !applyDefaultSaleMarkup(&pricing) {
+		return "", false
 	}
 	encoded, err := common.Marshal(pricing)
 	if err != nil {
@@ -1029,6 +1035,32 @@ func dreamRouterChannelOfficialPricing(
 		view.DiscountGroup = group
 		view.DiscountModelGroup = modelGroup
 		view.DiscountRatio = &discount
+		// The expression carries official unit coefficients. Expose the
+		// discounted absolute reference so the pricing page can show the
+		// channel price separately from the official expression.
+		if units, ok := dreamRouterOfficialUnitPrices(normalized.Raw); ok {
+			tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
+			input := units.Input * discount
+			tier.InputPerMillionUSD = &input
+			if units.Output > 0 {
+				output := units.Output * discount
+				tier.OutputPerMillionUSD = &output
+			}
+			if units.Cache > 0 {
+				cache := units.Cache * discount
+				tier.CachePerMillionUSD = &cache
+			}
+			if units.CreateCache > 0 {
+				createCache := units.CreateCache * discount
+				tier.CreateCachePerMillionUSD = &createCache
+			}
+			view.ChannelPrice = &tier
+		} else if units, ok := dreamRouterDurationUnitPrices(normalized.Raw); ok {
+			perSecond := units.Input * discount
+			view.ChannelPrice = &model.ChannelPricingTier{
+				RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
+			}
+		}
 		internalPricing, priced := dreamRouterChannelExpressionPricing(
 			item.BillingExpr, group, modelGroup, discount,
 		)

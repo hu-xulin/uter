@@ -461,7 +461,7 @@ func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
 	require.Zero(t, skipped)
 	pricing, ok := model.ResolveChannelBillingPricing(41, "qwen-plus")
 	require.True(t, ok)
-	assert.InDelta(t, 1.5, pricing.ModelRatio, 1e-9)
+	assert.InDelta(t, 1.5*DefaultUterSaleMarkup, pricing.ModelRatio, 1e-9)
 
 	// A later sync does not create a sale price, but an operator-seeded one is
 	// retained because its source is no longer the automatic provider value.
@@ -819,4 +819,35 @@ func TestBailianMissingOutputIsNotFreeAndCacheConflictsBlock(t *testing.T) {
 		}},
 	}
 	assert.NotEmpty(t, bailianInternalPricing(tts), "audio synthesis has no output-token dimension")
+}
+
+func TestSeedBailianRefreshesAutomaticPriceWithDefaultMarkup(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output := 3.0, 6.0
+	normalized, _ := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName: "Default", InputPerMillionUSD: &input,
+			OutputPerMillionUSD: &output, Unit: "per_1m_token",
+		}},
+	})
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 42, Provider: "aliyun-bailian", ModelName: "qwen-auto",
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
+		Source: "bailian-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
+		ChannelId: 42, Provider: "aliyun-bailian", ModelName: "qwen-auto",
+	}, model.ChannelInternalPricing{
+		Mode:               model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &input, OutputUSDPerMillion: &output, Source: "bailian-channel",
+	}))
+
+	seeded, _, err := SeedBailianInternalPricing(42, nil, false)
+	require.NoError(t, err)
+	assert.Equal(t, 1, seeded)
+	pricing, ok := model.ResolveChannelBillingPricing(42, "qwen-auto")
+	require.True(t, ok)
+	assert.InDelta(t, 3*DefaultUterSaleMarkup/2, pricing.ModelRatio, 1e-9)
 }

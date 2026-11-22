@@ -231,6 +231,17 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
 }
 
+// 分组绑定的渠道只服务一个模型家族：上游偶发返回整账号目录时按家族过滤。
+func TestFilterModelNamesByUpstreamGroup(t *testing.T) {
+	models := []string{"claude-sonnet-5", "gpt-6.2-sol", "gemini-4"}
+
+	assert.Equal(t, []string{"claude-sonnet-5"}, FilterModelNamesByUpstreamGroup("Claude-max", models))
+	assert.Equal(t, []string{"gpt-6.2-sol"}, FilterModelNamesByUpstreamGroup("Codex Pro", models))
+	assert.Equal(t, models, FilterModelNamesByUpstreamGroup("", models))
+	assert.Equal(t, models, FilterModelNamesByUpstreamGroup("default", models))
+	assert.Equal(t, []string{"unknown-model"}, FilterModelNamesByUpstreamGroup("Claude-max", []string{"unknown-model"}))
+}
+
 // 价格文档是账号级目录，可能包含该密钥无法服务的模型：已有模型列表的渠道
 // 不能被每次价格同步扩张，只有完全没有模型列表的渠道才从文档导入。
 func TestGenericSyncDoesNotExpandExistingChannelModels(t *testing.T) {

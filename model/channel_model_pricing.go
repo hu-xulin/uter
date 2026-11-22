@@ -2005,3 +2005,9 @@ func ListOrphanChannelPricingRows() ([]ChannelModelPricing, error) {
 		Scan(&rows).Error
 	return rows, err
 }
+
+// ChannelInternalPricingIsAutoDerived reports whether a stored sale price was
+// written by an upstream sync and may therefore be refreshed.
+func ChannelInternalPricingIsAutoDerived(raw string) bool {
+	return autoDerivedInternalSource(internalPricingSource(raw))
+}

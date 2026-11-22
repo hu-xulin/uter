@@ -26,6 +26,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
 
 func xxapiPricingServer(t *testing.T) *httptest.Server {
@@ -78,4 +81,33 @@ func TestXXAPIPricingEndpointAcceptsFullPriceURL(t *testing.T) {
 	endpoint, err = xxapiPricingEndpointFor("https://xxapi.ai/v1")
 	require.NoError(t, err)
 	assert.Equal(t, "https://xxapi.ai/api/pricing", endpoint)
+}
+
+func TestXXAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
+	entry := GenericPricingEntry{
+		ModelName: "gpt-a", BillingMode: "tiered_expr",
+		BillingExpr: `tier("base", p * 10 + c * 50)`,
+	}
+	official, _, _ := genericOfficialPricing(entry, 1000, 0)
+	record := model.ChannelOfficialPricingRecord{
+		ModelName: "gpt-a",
+	}
+	normalized, err := common.Marshal(official)
+	require.NoError(t, err)
+	record.NormalizedPricing = string(normalized)
+	record.InternalPricing = genericExpressionInternalPricing(entry, 1000)
+	require.NotEmpty(t, record.InternalPricing)
+
+	applyGroupRatioToRecord(&record, "Codex", 0.5)
+
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(record.NormalizedPricing, &view))
+	require.NotNil(t, view.ChannelPrice)
+	assert.InDelta(t, 5, *view.ChannelPrice.InputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 25, *view.ChannelPrice.OutputPerMillionUSD, 1e-9)
+
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))
+	assert.Contains(t, internal.BillingExpr, "0.5")
+	assert.Contains(t, internal.BillingExpr, "1.1")
 }

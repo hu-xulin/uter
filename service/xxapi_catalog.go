@@ -211,10 +211,12 @@ func applyGroupRatioToRecord(record *model.ChannelOfficialPricingRecord, group s
 	if record == nil || ratio <= 0 || ratio == 1 {
 		return
 	}
+	originalExpr := ""
 	if strings.TrimSpace(record.InternalPricing) != "" {
 		var internal model.ChannelInternalPricing
 		if common.UnmarshalJsonStr(record.InternalPricing, &internal) == nil &&
 			strings.TrimSpace(internal.BillingExpr) != "" {
+			originalExpr = internal.BillingExpr
 			expr := fmt.Sprintf("(%s) * %s", strings.TrimSpace(internal.BillingExpr), strconv.FormatFloat(ratio, 'f', -1, 64))
 			if NormalizeUpstreamExpression(expr).Executable {
 				internal.BillingExpr = expr
@@ -227,6 +229,9 @@ func applyGroupRatioToRecord(record *model.ChannelOfficialPricingRecord, group s
 	}
 	var official model.ChannelOfficialPricing
 	if common.UnmarshalJsonStr(record.NormalizedPricing, &official) == nil {
+		if originalExpr != "" {
+			setChannelPriceFromExpression(&official, originalExpr, ratio)
+		}
 		official.DiscountGroup = group
 		official.DiscountRatio = &ratio
 		if encoded, err := common.Marshal(official); err == nil {

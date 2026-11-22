@@ -6,7 +6,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
 
 const dreamRouterPricingFixture = `{
@@ -201,8 +204,12 @@ func TestDreamRouterChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testi
 	require.Contains(t, record.NormalizedPricing, `"discount_ratio":0.6`)
 	require.Contains(t, record.NormalizedPricing, `"discount_model_group":"openai"`)
 	require.NotEmpty(t, record.InternalPricing)
-	require.Contains(t, record.InternalPricing, `"input_per_million_usd":3`)
-	require.Contains(t, record.InternalPricing, `"output_per_million_usd":15`)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))
+	require.NotNil(t, internal.InputUSDPerMillion)
+	require.NotNil(t, internal.OutputUSDPerMillion)
+	assert.InDelta(t, 3*DefaultUterSaleMarkup, *internal.InputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 15*DefaultUterSaleMarkup, *internal.OutputUSDPerMillion, 1e-9)
 	require.Contains(t, record.InternalPricing, `"source":"dreamrouter-discount"`)
 
 	// A model without an upstream discount group never guesses a channel price.
@@ -360,4 +367,27 @@ func TestDreamRouterExpressionKeepsAllTiersAndReviewGate(t *testing.T) {
 
 	require.Empty(t, records[1].InternalPricing, "ratio-derived price must not auto-enable billing")
 	require.Contains(t, records[1].NormalizedPricing, `"needs_review":true`)
+}
+
+func TestDreamRouterExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "dreamrouter", PriceBasis: UpstreamPriceBasisRatioOnly,
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"openai": 0.6}},
+		Models: []UpstreamModelRecord{{
+			ModelName: "expr-only", EnableGroups: []string{"openai"}, PriceStatus: "BILLING_EXPR",
+			BillingExpr: `tier("base", p * 10 + c * 50 + cr * 1)`,
+			ModelRatio:  ratio(5),
+		}},
+	}
+	records, err := DreamRouterChannelPricingRecords(snapshot, 7, []string{"expr-only"}, "default")
+	require.NoError(t, err)
+	require.Len(t, records, 1)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.NotNil(t, view.ChannelPrice)
+	assert.InDelta(t, 6, *view.ChannelPrice.InputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 30, *view.ChannelPrice.OutputPerMillionUSD, 1e-9)
+	require.Contains(t, records[0].InternalPricing, ") * 1.1")
 }

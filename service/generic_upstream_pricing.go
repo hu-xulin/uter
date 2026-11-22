@@ -145,6 +145,33 @@ func SetGenericUpstreamBillingGroup(channelID int, group string) error {
 	return model.UpdateOption(GenericUpstreamBillingGroupKey, string(encoded))
 }
 
+// FilterModelNamesByUpstreamGroup keeps only the model family an upstream
+// group can serve: Claude groups see Claude models, Codex/GPT groups see GPT
+// models. Groups outside those families, and answers that match nothing, keep
+// every name so an upstream rename cannot silently empty a channel.
+func FilterModelNamesByUpstreamGroup(group string, models []string) []string {
+	lower := strings.ToLower(strings.TrimSpace(group))
+	var family string
+	switch {
+	case strings.HasPrefix(lower, "claude"):
+		family = "claude"
+	case strings.HasPrefix(lower, "codex"), strings.HasPrefix(lower, "gpt"):
+		family = "gpt"
+	default:
+		return models
+	}
+	kept := make([]string, 0, len(models))
+	for _, name := range models {
+		if strings.Contains(strings.ToLower(name), family) {
+			kept = append(kept, name)
+		}
+	}
+	if len(kept) == 0 {
+		return models
+	}
+	return kept
+}
+
 // FetchGenericUpstreamPricing reads a New API compatible /api/pricing document.
 // It tries each channel key so one exhausted key does not block the sync.
 func FetchGenericUpstreamPricing(ctx context.Context, baseURL string, keys []string) (*GenericPricingPayload, error) {
@@ -281,17 +308,52 @@ func GenericChannelPricingRecordsWithQuota(
 // genericExpressionInternalPricing mirrors an executable upstream expression
 // as the channel's default sale price. Unsupported rules never become a flat
 // approximation.
+func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr string, factor float64) {
+	if official == nil || factor <= 0 {
+		return
+	}
+	if units, ok := dreamRouterOfficialUnitPrices(expr); ok {
+		tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
+		input := units.Input * factor
+		tier.InputPerMillionUSD = &input
+		if units.Output > 0 {
+			output := units.Output * factor
+			tier.OutputPerMillionUSD = &output
+		}
+		if units.Cache > 0 {
+			cache := units.Cache * factor
+			tier.CachePerMillionUSD = &cache
+		}
+		if units.CreateCache > 0 {
+			createCache := units.CreateCache * factor
+			tier.CreateCachePerMillionUSD = &createCache
+		}
+		official.ChannelPrice = &tier
+		return
+	}
+	if units, ok := dreamRouterDurationUnitPrices(expr); ok {
+		perSecond := units.Input * factor
+		official.ChannelPrice = &model.ChannelPricingTier{
+			RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
+		}
+	}
+}
+
 func genericExpressionInternalPricing(entry GenericPricingEntry, updatedAt int64) string {
 	expr := NormalizeUpstreamExpression(entry.BillingExpr)
 	if !expr.Executable {
 		return ""
 	}
-	encoded, err := common.Marshal(model.ChannelInternalPricing{
+	internal := model.ChannelInternalPricing{
 		Mode:        model.ChannelPricingModeTieredExpr,
 		BillingExpr: expr.Raw,
 		Source:      "newapi-expression",
 		UpdatedAt:   updatedAt,
-	})
+	}
+	if !applyDefaultSaleMarkup(&internal) {
+		return ""
+	}
+	encoded, err := common.Marshal(internal)
 	if err != nil {
 		return ""
 	}
@@ -311,6 +373,9 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPer
 		view.ExpressionHash = expr.Hash
 		view.ExpressionStatus = expr.Status
 		view.ExpressionError = expr.Error
+		if expr.Executable {
+			setChannelPriceFromExpression(&view, expr.Raw, 1)
+		}
 		if !expr.Executable {
 			view.NeedsReview = true
 			view.ReviewReasons = []string{"UNSUPPORTED_UPSTREAM_EXPRESSION"}

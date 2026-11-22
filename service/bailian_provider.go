@@ -399,7 +399,10 @@ func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) 
 		if len(wanted) > 0 && !wanted[row.ModelName] {
 			continue
 		}
-		if !overwrite && strings.TrimSpace(row.InternalPricing) != "" {
+		if !overwrite && strings.TrimSpace(row.InternalPricing) != "" &&
+			!model.ChannelInternalPricingIsAutoDerived(row.InternalPricing) {
+			// Operator/batch prices are protected. A previous automatic price
+			// is refreshed so the current default markup takes effect.
 			skipped++
 			continue
 		}
@@ -415,6 +418,10 @@ func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) 
 		}
 		var internal model.ChannelInternalPricing
 		if err := common.UnmarshalJsonStr(encoded, &internal); err != nil {
+			skipped++
+			continue
+		}
+		if !applyDefaultSaleMarkup(&internal) {
 			skipped++
 			continue
 		}
