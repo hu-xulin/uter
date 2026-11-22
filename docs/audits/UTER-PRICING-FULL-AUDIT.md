@@ -80,6 +80,13 @@ Generic/New API and XXAPI scheduled syncs now:
 - skip applying the scheduled rule for changes above the threshold;
 - apply the configured basis/mode/value on sync when enabled.
 
+### 3.4.1 Catalog verification after every sync
+
+Successful channel syncs now persist a `ChannelPricingCatalogVerify:<id>`
+report built from the provider's complete catalog. Missing upstream models are
+counted and logged; providers without a catalog adapter make no completeness
+claim.
+
 ### 3.5 Cross-instance price-sync lock
 
 Generic/New API and XXAPI channel price syncs now claim a database-backed

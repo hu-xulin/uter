@@ -1,14 +1,20 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
-const ChannelPricingAutoVerifyPrefix = "ChannelPricingAutoVerify:"
+const (
+	ChannelPricingAutoVerifyPrefix     = "ChannelPricingAutoVerify:"
+	ChannelPricingCatalogVerifyPrefix  = "ChannelPricingCatalogVerify:"
+	channelPricingCatalogVerifyTimeout = 20 * time.Second
+)
 
 // AutoVerifyChannelPricing runs the deterministic price-contract check after a
 // sync and persists the report, so verification needs no operator click. A
@@ -34,6 +40,54 @@ func AutoVerifyChannelPricing(channelID int) {
 		common.SysError(common.LogText(
 			"auto verify channel %d pricing status=%s failed_rules=%d",
 			channelID, report.Status, report.Summary[UpstreamReconcileRuleFailed],
+		))
+	}
+	autoVerifyChannelCatalog(channelID)
+}
+
+// autoVerifyChannelCatalog compares the provider's complete catalog with Uter's
+// rows after each successful sync and persists the result for audit. A provider
+// without a catalog adapter records no completeness claim.
+func autoVerifyChannelCatalog(channelID int) {
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil {
+		return
+	}
+	baseURL := ""
+	if channel.BaseURL != nil {
+		baseURL = strings.TrimSpace(*channel.BaseURL)
+	}
+	provider := UpstreamProviderForChannel(channel.Type, baseURL)
+	apiKey := ""
+	if key, _, keyErr := channel.GetNextEnabledKey(); keyErr == nil {
+		apiKey = strings.TrimSpace(key)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), channelPricingCatalogVerifyTimeout)
+	defer cancel()
+	models, catalogErr := FetchUpstreamModelNames(ctx, provider.ID, UpstreamFetchConfig{
+		BaseURL: baseURL, APIKey: apiKey, ChannelID: channelID,
+	})
+	if catalogErr != nil {
+		return
+	}
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return
+	}
+	parity := BuildUpstreamParityReportWithCatalog(channelID, channel.Name, rows, models, time.Now().UTC())
+	encoded, err := common.Marshal(parity)
+	if err != nil {
+		return
+	}
+	key := ChannelPricingCatalogVerifyPrefix + fmt.Sprintf("%d", channelID)
+	if err := model.UpdateOption(key, string(encoded)); err != nil {
+		common.SysError(common.LogText("persist catalog verify channel %d failed: %s", channelID, err.Error()))
+		return
+	}
+	if missing := parity.Summary[UpstreamParityModelMissing]; missing > 0 {
+		common.SysError(common.LogText(
+			"auto verify channel %d catalog has %d upstream model(s) without Uter pricing rows",
+			channelID, missing,
 		))
 	}
 }
