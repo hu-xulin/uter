@@ -33,7 +33,10 @@ type UpstreamBillingSample struct {
 	CacheCreationTokens float64 `json:"cache_creation_tokens,omitempty"`
 	ImageCount          int     `json:"image_count,omitempty"`
 	DurationSeconds     float64 `json:"duration_seconds,omitempty"`
-	UpstreamCostUSD     float64 `json:"upstream_cost_usd"`
+	// OccurredAt is the supplier line time (Unix seconds). When RequestId is
+	// absent, Uter resolves the nearest consume log for this channel/model.
+	OccurredAt      int64   `json:"occurred_at,omitempty"`
+	UpstreamCostUSD float64 `json:"upstream_cost_usd"`
 }
 
 type UpstreamBillingSampleResult struct {
@@ -70,6 +73,13 @@ func ReconcileUpstreamBillingSamples(channel *model.Channel, samples []UpstreamB
 			ModelName: name, RequestId: strings.TrimSpace(sample.RequestId),
 			BillingLineId:   strings.TrimSpace(sample.BillingLineId),
 			UpstreamCostUSD: sample.UpstreamCostUSD,
+		}
+		if result.RequestId == "" && sample.OccurredAt > 0 {
+			if requestID, lookupErr := model.FindNearestConsumeRequestID(
+				channel.Id, name, sample.OccurredAt, 60,
+			); lookupErr == nil && requestID != "" {
+				result.RequestId = requestID
+			}
 		}
 		if result.RequestId != "" {
 			result = reconcileSampleByRequestId(channel, sample, result)

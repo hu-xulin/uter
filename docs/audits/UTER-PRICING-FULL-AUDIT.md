@@ -172,13 +172,15 @@ catalog audit.
 DreamRouter usage page: 9 rows today (00:27–03:30), 7 matched to Uter consume
 logs by timestamp, 2 unmatched (retry/timeout candidates).
 
-Submitting the 7 supplier lines through
-`POST /api/channel/32/upstream_reconciliation/samples` returned
-`NO_REQUEST: 7`: the supplier rows do not carry Uter request IDs, and the
-matching Uter billing snapshots have no purchase cost breakdown. Request-level
-reconciliation is therefore **BLOCKED** until either:
+Supplier lines can now carry `occurred_at`; Uter resolves the nearest consume
+log for the same channel/model within 60 seconds. The retry returned
+`NO_REQUEST: 9` because this snapshot is internal **Model test** traffic: its
+consume-log request ids come from the log path, while the billing snapshots
+carry ids generated on the relay attempt, and those snapshots have no purchase
+cost breakdown. Request-level reconciliation is therefore **BLOCKED** for this
+traffic until either:
 
-- the operator supplies a mapping to Uter request IDs, or
+- the request-id path for internal test traffic is unified, and
 - purchase contracts are recorded and frozen into billing snapshots.
 
 This is a data-contract blocker, not a pricing-rule failure.

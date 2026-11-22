@@ -884,3 +884,26 @@ func isMoneyLogType(logType int) bool {
 		return false
 	}
 }
+
+// FindNearestConsumeRequestID resolves a supplier invoice line to the closest
+// Uter consume log for the same channel and model. It is used when the invoice
+// carries a timestamp but no Uter request id.
+func FindNearestConsumeRequestID(channelID int, modelName string, occurredAt, toleranceSeconds int64) (string, error) {
+	if DB == nil || channelID <= 0 || strings.TrimSpace(modelName) == "" || occurredAt <= 0 {
+		return "", nil
+	}
+	if toleranceSeconds <= 0 {
+		toleranceSeconds = 60
+	}
+	var row Log
+	err := DB.Model(&Log{}).
+		Where("type = ? AND channel_id = ? AND model_name = ?", LogTypeConsume, channelID, modelName).
+		Where("created_at BETWEEN ? AND ?", occurredAt-toleranceSeconds, occurredAt+toleranceSeconds).
+		Order(gorm.Expr("ABS(created_at - ?)", occurredAt)).
+		Limit(1).
+		Find(&row).Error
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(row.RequestId), nil
+}
