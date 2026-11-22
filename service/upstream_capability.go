@@ -40,8 +40,6 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 		id = "dreamrouter"
 	case channelType == constant.ChannelTypeAli:
 		id = "alibaba-bailian"
-	case MatchesUpstreamHost(baseURL, "apiko.app"):
-		return apikoUpstreamDescriptor()
 	default:
 		id = manualUpstreamProviderForHost(baseURL)
 	}

@@ -131,8 +131,6 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPost, path: "/:id/upstream/prices/sync", permission: authz.ChannelOperate, handler: controller.SyncGenericChannelPricing},
 	{method: http.MethodGet, path: "/:id/upstream_billing_group", permission: authz.ChannelRead, handler: controller.GetGenericUpstreamBillingGroup},
 	{method: http.MethodPut, path: "/:id/upstream_billing_group", permission: authz.ChannelOperate, handler: controller.SetGenericUpstreamBillingGroup},
-	{method: http.MethodPost, path: "/:id/apiko/models/sync", permission: authz.ChannelOperate, handler: controller.SyncApikoChannelModels},
-	{method: http.MethodPost, path: "/:id/apiko/prices/sync", permission: authz.ChannelOperate, handler: controller.SyncApikoChannelPricing},
 	{method: http.MethodPost, path: "/upstream_updates/apply", permission: authz.ChannelWrite, handler: controller.ApplyChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/apply_all", permission: authz.ChannelWrite, handler: controller.ApplyAllChannelUpstreamModelUpdates},
 	{method: http.MethodPost, path: "/upstream_updates/detect", permission: authz.ChannelOperate, handler: controller.DetectChannelUpstreamModelUpdates},

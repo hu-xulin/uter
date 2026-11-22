@@ -120,3 +120,16 @@
 - DreamRouter 6 个 seedance 模型：上游无元数据。
 - 百炼推理服务过滤是否需覆盖 `alibaba-cloud-modelstudio`：需官方接口确认，
   未擅自扩大过滤条件。
+
+## 7. 全自动维护（无需人工介入）
+
+- 未显式配置同步计划的渠道按默认周期自动运行（模型/官方价 24h，失败指数退避）。
+  只有管理员显式关闭计划（`Enabled=false`）才跳过。
+- DreamRouter、New API 兼容、Apiko：同步时自动把上游新模型加入渠道模型列表；
+  DreamRouter/Bailian 自动播种缺失的销售价，人工/批量价永不覆盖。
+- 每次同步结束自动执行 `AutoVerifyChannelPricing`：运行全部可执行表达式，
+  报告写入 `ChannelPricingAutoVerify:<channel>` option；失败规则写入系统日志。
+- fixed 图片/任务表达式按 relay 实际请求路径校验，不再被 tiered token 校验误判。
+- 上游失败按 1/2/4…60 分钟退避，避免无效重试刷屏；成功即清除退避。
+- 自动价格处于 review 状态时仍由硬门禁阻止计费，不需要人工点击审核即可保证安全。
+- XXAPI 在提供密钥后自动沿用同一套模型发现、分组价格同步与自动校对流程。

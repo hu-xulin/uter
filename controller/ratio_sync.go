@@ -89,10 +89,9 @@ var numericPricingSyncFields = map[string]bool{
 }
 
 type upstreamResult struct {
-	Name    string              `json:"name"`
-	Data    map[string]any      `json:"data,omitempty"`
-	Err     string              `json:"err,omitempty"`
-	Skipped []apikoSkippedModel `json:"skipped,omitempty"`
+	Name string         `json:"name"`
+	Data map[string]any `json:"data,omitempty"`
+	Err  string         `json:"err,omitempty"`
 }
 
 func valueMap(value any) map[string]any {
@@ -509,17 +508,6 @@ func FetchUpstreamRatios(c *gin.Context) {
 				uniqueName = fmt.Sprintf("%s(%d)", chItem.Name, chItem.ID)
 			}
 
-			// APIKO 只有 /v1/* 中转，没有 new-api 的 /api/pricing；模型与价格
-			// 在控制面的公开目录接口，见 upstream_catalog_apiko.go。
-			if _, isApiko := apikoControlPlaneFor(chItem.BaseURL); isApiko {
-				// Apiko prices are the channel's purchase/sale basis. Writing them
-				// as global model prices would leak one channel's discount onto
-				// every other channel serving the same model, so this entry point
-				// directs operators to the channel-scoped sync instead.
-				ch <- upstreamResult{Name: uniqueName, Err: "Apiko prices are channel-scoped; sync them from the channel pricing panel"}
-				return
-			}
-
 			ctx, cancel := context.WithTimeout(c.Request.Context(), time.Duration(req.Timeout)*time.Second)
 			defer cancel()
 
@@ -676,13 +664,6 @@ func FetchUpstreamRatios(c *gin.Context) {
 			}{name: r.Name, data: normalizedChannelData})
 
 			allInvalid = append(allInvalid, channelInvalid...)
-			for _, skipped := range r.Skipped {
-				skippedModels = append(skippedModels, map[string]string{
-					"upstream": r.Name,
-					"model":    skipped.Model,
-					"reason":   skipped.Reason,
-				})
-			}
 		}
 	}
 

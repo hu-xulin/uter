@@ -27,13 +27,10 @@ package model
 // 把它升级成 "<Brand>.Color"，渲染时前端按 baseKey 命中 CUSTOM_ICONS 忽略后缀，
 // 走的就是那张整枚 SVG。
 var customIconVariants = map[string]lobeIconVariant{
-	"Wan":           {hasColor: true},
-	"SGLang":        {hasColor: true},
-	"Sub2API":       {hasColor: true},
-	"Uter":          {hasColor: true},
-	"UterShared":    {hasColor: true},
-	"UterAggregate": {hasColor: true},
-	"UterProxy":     {hasColor: true},
+	"Wan":     {hasColor: true},
+	"SGLang":  {hasColor: true},
+	"Sub2API": {hasColor: true},
+	"Uter":    {hasColor: true},
 }
 
 // isRenderableIconKey 判断某个图标键能否真正渲染出来。

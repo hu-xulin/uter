@@ -236,8 +236,8 @@ export type XXAPICreateResult = {
  * never rotates across pools.
  */
 export async function createXXAPIChannels(payload: {
-  claude_key?: string
-  gpt_key?: string
+  claude_keys?: string[]
+  gpt_keys?: string[]
   claude_group?: string
   gpt_group?: string
   group?: string
@@ -997,49 +997,6 @@ export async function applyBailianCatalog(channelId: number) {
     channel_id: channelId,
   })
   return res.data?.data
-}
-
-export type ApikoModelSyncResult = {
-  channel_id: number
-  fetched: number
-  total: number
-  added: number
-  models: string[]
-}
-
-/**
- * Adds every model in Apiko's public control-plane catalogue to the channel.
- * Existing manual entries are preserved.
- */
-export async function syncApikoChannelModels(
-  channelId: number
-): Promise<ApikoModelSyncResult> {
-  const res = await api.post<{ data: ApikoModelSyncResult }>(
-    `/api/channel/${channelId}/apiko/models/sync`,
-    {},
-    channelActionConfig()
-  )
-  return res.data.data
-}
-
-export type ApikoPriceSyncResult = {
-  channel_id: number
-  fetched: number
-  recorded: number
-  seeded: number
-  skipped: { model: string; reason: string }[]
-}
-
-/** Writes Apiko catalogue prices into this channel's isolated price table. */
-export async function syncApikoChannelPricing(
-  channelId: number
-): Promise<ApikoPriceSyncResult> {
-  const res = await api.post<{ data: ApikoPriceSyncResult }>(
-    `/api/channel/${channelId}/apiko/prices/sync`,
-    {},
-    channelActionConfig()
-  )
-  return res.data.data
 }
 
 export type DreamRouterUpstreamSummary = {

@@ -53,12 +53,12 @@ func TestValidateChannelPricingReviewsCurrentRejectsStaleReview(t *testing.T) {
 	t.Cleanup(func() { model.DB = previous })
 
 	require.NoError(t, db.Create(&model.ChannelModelPricing{
-		ChannelId: 31, Provider: "apiko", ModelName: "gpt-a",
+		ChannelId: 31, Provider: "xxapi", ModelName: "gpt-a",
 		PricingStatus:  model.ChannelPricingStatusConfigured,
 		PricingVersion: "v1", LifecycleStatus: model.ChannelModelLifecycleActive,
 	}).Error)
 	require.NoError(t, model.AppendChannelPricingReviews([]model.ChannelPricingReview{{
-		ChannelID: 31, ModelName: "gpt-a", Provider: "apiko", PricingVersion: "v1",
+		ChannelID: 31, ModelName: "gpt-a", Provider: "xxapi", PricingVersion: "v1",
 		Field: "input", Old: 1, New: 2,
 	}}))
 	require.NoError(t, ValidateChannelPricingReviewsCurrent(31))

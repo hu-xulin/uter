@@ -117,17 +117,34 @@ func reconcileExpression(expr string) (string, []UpstreamReconciliationScenario,
 			GroupRatio: 1, QuotaPerUnit: common.QuotaPerUnit, TaskUsageBilling: true,
 			UsageFacts: scenario.request.Usage,
 		}
-		result, err := billingexpr.ComputeTieredQuotaWithRequest(snapshot, scenario.params, scenario.request)
 		entry := UpstreamReconciliationScenario{Name: scenario.name}
-		if err != nil {
-			entry.Error = err.Error()
-		} else if math.IsNaN(result.ActualQuotaBeforeGroup) || math.IsInf(result.ActualQuotaBeforeGroup, 0) || result.ActualQuotaBeforeGroup < 0 {
-			entry.Error = "expression produced an invalid charge"
+		if billingexpr.UsesFixedPricingByHash(expr, hash) {
+			// Task fixed pricing runs through the request path, not the tiered
+			// token settle path; validating it with ComputeTieredQuota would
+			// reject a rule the relay can actually execute.
+			cost, trace, err := billingexpr.RunExprWithRequest(expr, scenario.params, scenario.request)
+			if err != nil {
+				entry.Error = err.Error()
+			} else if math.IsNaN(cost) || math.IsInf(cost, 0) || cost < 0 {
+				entry.Error = "expression produced an invalid charge"
+			} else {
+				entry.Executed = true
+				entry.BeforeGroup = cost * common.QuotaPerUnit
+				entry.Tier = trace.MatchedTier
+				entry.Quota = common.QuotaRound(cost * common.QuotaPerUnit)
+			}
 		} else {
-			entry.Executed = true
-			entry.Quota = result.ActualQuotaAfterGroup
-			entry.BeforeGroup = result.ActualQuotaBeforeGroup
-			entry.Tier = result.MatchedTier
+			result, err := billingexpr.ComputeTieredQuotaWithRequest(snapshot, scenario.params, scenario.request)
+			if err != nil {
+				entry.Error = err.Error()
+			} else if math.IsNaN(result.ActualQuotaBeforeGroup) || math.IsInf(result.ActualQuotaBeforeGroup, 0) || result.ActualQuotaBeforeGroup < 0 {
+				entry.Error = "expression produced an invalid charge"
+			} else {
+				entry.Executed = true
+				entry.Quota = result.ActualQuotaAfterGroup
+				entry.BeforeGroup = result.ActualQuotaBeforeGroup
+				entry.Tier = result.MatchedTier
+			}
 		}
 		out = append(out, entry)
 	}

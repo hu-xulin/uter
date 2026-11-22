@@ -180,46 +180,6 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
       models: 'Models',
     },
   },
-  64: {
-    id: 64,
-    name: CHANNEL_TYPES[64],
-    icon: 'Apiko',
-    hints: {
-      baseUrl: 'Apiko gateway base URL',
-      key: 'Apiko API Key',
-      models: 'Models fetched from upstream /v1/models',
-    },
-  },
-  600: {
-    id: 600,
-    name: CHANNEL_TYPES[600],
-    icon: 'UterShared',
-    hints: {
-      baseUrl: 'Fallback base URL',
-      key: 'Used by route auth templates',
-      models: 'Models exposed by this channel',
-    },
-  },
-  601: {
-    id: 601,
-    name: CHANNEL_TYPES[601],
-    icon: 'UterAggregate',
-    hints: {
-      baseUrl: 'Fallback base URL',
-      key: 'Used by route auth templates',
-      models: 'Models exposed by this channel',
-    },
-  },
-  602: {
-    id: 602,
-    name: CHANNEL_TYPES[602],
-    icon: 'UterProxy',
-    hints: {
-      baseUrl: 'Fallback base URL',
-      key: 'Used by route auth templates',
-      models: 'Models exposed by this channel',
-    },
-  },
 }
 
 /**

@@ -175,10 +175,6 @@ func (a *Adaptor) GetRequestURL(info *relaycommon.RelayInfo) (string, error) {
 		return relaycommon.GetFullRequestURL(info.ChannelBaseUrl, requestURL, info.ChannelType), nil
 	//case constant.ChannelTypeMiniMax:
 	//	return minimax.GetRequestURL(info)
-	case constant.ChannelTypeCustom:
-		url := info.ChannelBaseUrl
-		url = strings.Replace(url, "{model}", info.UpstreamModelName, -1)
-		return url, nil
 	default:
 		if (info.RelayFormat == types.RelayFormatClaude || info.RelayFormat == types.RelayFormatGemini) &&
 			info.RelayMode != relayconstant.RelayModeResponses &&

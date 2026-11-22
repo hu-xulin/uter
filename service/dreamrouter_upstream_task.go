@@ -132,7 +132,11 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 	states := loadDreamRouterChannelSyncState()
 	dueChannels := make([]dreamRouterDueChannel, 0, len(channels))
 	for _, channel := range channels {
-		schedule, _ := GetChannelPricingSchedule(channel.Id)
+		schedule, explicit := GetChannelPricingSchedule(channel.Id)
+		if !explicit {
+			schedule.Enabled = true
+			schedule.ApplyOnSync = true
+		}
 		modelInterval, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if !force && state.NextAttemptAt > now.Unix() {
@@ -222,6 +226,7 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 			}
 			written += count
 			RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), len(records), count, 0, 0, "", nil, model.ChannelSyncTypePrices)
+			AutoVerifyChannelPricing(channel.Id)
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
 			}

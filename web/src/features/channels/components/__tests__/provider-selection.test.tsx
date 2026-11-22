@@ -559,28 +559,11 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(within(tabs).getAllByRole('tab')).toHaveLength(5)
   await user.click(within(tabs).getByRole('tab', { name: 'Custom' }))
   const panel = screen.getByRole('tabpanel', { name: 'Custom' })
-  // Custom (8), Advanced Custom (58), Apiko (64) and the three branded
-  // variants that behave exactly like Advanced Custom (600/601/602) share this category.
-  expect(within(panel).getAllByRole('option')).toHaveLength(6)
+  // Advanced Custom (58) is the only custom category entry; the deprecated
+  // type 8 is gone.
+  expect(within(panel).getAllByRole('option')).toHaveLength(1)
   expect(
     within(panel).getByRole('option', { name: 'Advanced Custom Built-in #58' })
-  ).toBeVisible()
-  expect(
-    within(panel).getByRole('option', { name: 'Custom Built-in #8' })
-  ).toBeVisible()
-  expect(
-    within(panel).getByRole('option', { name: 'Apiko Built-in #64' })
-  ).toBeVisible()
-  expect(
-    within(panel).getByRole('option', { name: 'Shared Channel Built-in #600' })
-  ).toBeVisible()
-  expect(
-    within(panel).getByRole('option', {
-      name: 'Aggregate Channel Built-in #601',
-    })
-  ).toBeVisible()
-  expect(
-    within(panel).getByRole('option', { name: 'Proxy Channel Built-in #602' })
   ).toBeVisible()
   expect(
     within(panel).queryByRole('option', { name: /Plugin/ })
@@ -592,22 +575,6 @@ test('custom providers have their own tab and keep the search when switching cat
   ).toBeVisible()
   expect(
     screen.queryByRole('option', { name: 'Advanced Custom Built-in #58' })
-  ).not.toBeInTheDocument()
-  expect(
-    screen.queryByRole('option', { name: 'Custom Built-in #8' })
-  ).not.toBeInTheDocument()
-  expect(
-    screen.queryByRole('option', { name: 'Apiko Built-in #64' })
-  ).not.toBeInTheDocument()
-  // The branded Advanced Custom variants are Custom-only, never Built-in.
-  expect(
-    screen.queryByRole('option', { name: 'Shared Channel Built-in #600' })
-  ).not.toBeInTheDocument()
-  expect(
-    screen.queryByRole('option', { name: 'Aggregate Channel Built-in #601' })
-  ).not.toBeInTheDocument()
-  expect(
-    screen.queryByRole('option', { name: 'Proxy Channel Built-in #602' })
   ).not.toBeInTheDocument()
   await user.type(screen.getByRole('combobox'), '58')
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
@@ -726,7 +693,7 @@ test('every built-in provider has a description and Anthropic includes compatibl
   ).toBeVisible()
 })
 
-test('deprecated and flexible integration badges preserve provider selection and expose the full explanation', async () => {
+test('flexible integration badge preserves provider selection and exposes the full explanation', async () => {
   const select = vi.fn()
   const user = userEvent.setup()
   const props = {
@@ -739,16 +706,9 @@ test('deprecated and flexible integration badges preserve provider selection and
     onSelect: select,
   }
   const view = render(<ChannelProviderPicker {...props} />)
-  const custom = screen.getByRole('option', { name: 'Custom Built-in #8' })
   const advanced = screen.getByRole('option', {
     name: 'Advanced Custom Built-in #58',
   })
-  expect(custom).toHaveAccessibleDescription(
-    'Deprecated · Legacy full-URL integration; use Advanced Custom for new channels'
-  )
-  await user.click(within(custom).getByText('Deprecated'))
-  expect(select).toHaveBeenNthCalledWith(1, { kind: 'builtin', type: 8 })
-
   const details =
     "Uter's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently"
   expect(advanced).toHaveAccessibleDescription(
@@ -760,12 +720,13 @@ test('deprecated and flexible integration badges preserve provider selection and
     )
   ).toHaveAttribute('title', details)
   await user.click(within(advanced).getByText('Flexible integration'))
-  expect(select).toHaveBeenNthCalledWith(2, { kind: 'builtin', type: 58 })
+  expect(select).toHaveBeenNthCalledWith(1, { kind: 'builtin', type: 58 })
 
   view.rerender(<ChannelProviderPicker {...props} disabled />)
   expect(advanced).toHaveAttribute('aria-disabled', 'true')
   await user.click(within(advanced).getByText('Flexible integration'))
-  expect(select).toHaveBeenCalledTimes(2)
+  // A disabled picker must not emit another selection.
+  expect(select).toHaveBeenCalledTimes(1)
 })
 
 test('plugin descriptions follow the current language with an English fallback and remain selectable', async () => {

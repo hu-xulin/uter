@@ -688,20 +688,12 @@ func SyncGenericChannelPricing(c *gin.Context) {
 
 	applied := 0
 	if req.ApplyModels && len(discovered) > 0 {
-		merged, added := mergeApikoModelIDs(channel.GetModels(), discovered)
-		if added > 0 {
-			channel.Models = strings.Join(merged, ",")
-			if err := model.DB.Model(channel).Update("models", channel.Models).Error; err != nil {
-				common.ApiError(c, err)
-				return
-			}
-			if err := channel.UpdateAbilities(nil); err != nil {
-				common.SysError(common.LogText("custom channel abilities update failed: channel_id=%d, error=%v", channel.Id, err))
-			}
-			model.BumpSyncTopic(model.SyncTopicChannels)
-			refreshChannelRuntimeCache()
-			applied = added
+		added, addErr := service.AppendChannelModelNames(channel, discovered)
+		if addErr != nil {
+			common.ApiError(c, addErr)
+			return
 		}
+		applied = added
 	}
 	common.ApiSuccess(c, gin.H{
 		"channel_id": channelID, "written": written,

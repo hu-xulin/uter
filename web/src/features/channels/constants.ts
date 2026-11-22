@@ -36,17 +36,11 @@ export const CHANNEL_TYPE_TASK_PLUGIN = 61
 
 // Channel type constants aligned with the Go backend (constant/channel.go).
 // Standard channel numbers adopt new-api's numbering as-is (OLLAMA/SUB2API/
-// VLLM/SGLang). Uter's own branded channel types are numbered from 600 to
-// avoid colliding with upstream's 0–63 range.
+// VLLM/SGLang).
 export const CHANNEL_TYPE_OLLAMA = 4
 export const CHANNEL_TYPE_SUB2API = 59
 export const CHANNEL_TYPE_VLLM = 62
 export const CHANNEL_TYPE_SGLANG = 63
-// Uter extension: APIKO gateway (OpenAI/Anthropic compatible).
-export const CHANNEL_TYPE_APIKO = 64
-export const CHANNEL_TYPE_BRANDED_SHARED = 600
-export const CHANNEL_TYPE_BRANDED_AGGREGATE = 601
-export const CHANNEL_TYPE_BRANDED_PROXY = 602
 
 export const CHANNEL_TYPES = {
   0: 'Unknown',
@@ -109,10 +103,6 @@ export const CHANNEL_TYPES = {
   61: 'Task Plugin',
   62: 'vLLM',
   63: 'SGLang',
-  64: 'Apiko',
-  600: 'Shared Channel',
-  601: 'Aggregate Channel',
-  602: 'Proxy Channel',
 } as const
 
 export type ChannelProviderPresentation = {
@@ -198,32 +188,13 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
   63: {
     descriptionKey: 'Connect to self-hosted models served by SGLang',
   },
-  64: {
-    descriptionKey: 'Connect to model services through the Apiko gateway',
-  },
-  600: {
-    descriptionKey: 'Shared channel description',
-    detailKey:
-      'Branded Advanced Custom channel — route requests across shared upstreams',
-  },
-  601: {
-    descriptionKey: 'Aggregate channel description',
-    detailKey:
-      'Branded Advanced Custom channel — combine multiple providers into one endpoint',
-  },
-  602: {
-    descriptionKey: 'Proxy channel description',
-    detailKey:
-      'Branded Advanced Custom channel — forward traffic to an upstream proxy',
-  },
 } satisfies Record<
   Exclude<keyof typeof CHANNEL_TYPES, 0 | typeof CHANNEL_TYPE_TASK_PLUGIN>,
   ChannelProviderPresentation
 >
 
 const CHANNEL_TYPE_DISPLAY_ORDER: number[] = [
-  1, 14, 24, 33, 43, 3, 41, 17, 45, 25, 26, 23, 48, 60, 58, 59, 61, 600, 601,
-  602, 42, 34, 20, 4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 8,
+  1, 14, 24, 33, 43, 3, 41, 17, 45, 25, 26, 23, 48, 60, 58, 59, 61, 42, 34, 20, 4, 40, 27, 15, 46, 18, 31, 35, 49, 19, 47, 37, 38, 39, 11, 8,
   57, 22, 21, 44, 2, 5, 36, 50, 51, 52, 53, 54, 55, 56,
 ]
 
@@ -491,34 +462,8 @@ export const FIELD_DESCRIPTIONS = {
 // ============================================================================
 
 export const MODEL_FETCHABLE_TYPES = new Set([
-  1,
-  4,
-  14,
-  17,
-  20,
-  23,
-  24,
-  25,
-  26,
-  27,
-  31,
-  34,
-  35,
-  40,
-  42,
-  43,
-  47,
-  48,
-  57,
-  58,
-  59,
-  60,
-  62,
-  63,
-  CHANNEL_TYPE_APIKO,
-  600,
-  601,
-  602,
+  1, 4, 14, 17, 20, 23, 24, 25, 26, 27, 31, 34, 35, 40, 42, 43, 47, 48, 57, 58,
+  59, 60, 62, 63, 600, 601, 602,
 ])
 
 export const FIELD_PASSTHROUGH_TYPES = new Set([
@@ -528,10 +473,6 @@ export const FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  CHANNEL_TYPE_APIKO,
-  CHANNEL_TYPE_BRANDED_SHARED,
-  CHANNEL_TYPE_BRANDED_AGGREGATE,
-  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -540,10 +481,6 @@ export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  CHANNEL_TYPE_APIKO,
-  CHANNEL_TYPE_BRANDED_SHARED,
-  CHANNEL_TYPE_BRANDED_AGGREGATE,
-  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -551,15 +488,11 @@ export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
-  CHANNEL_TYPE_APIKO,
-  CHANNEL_TYPE_BRANDED_SHARED,
-  CHANNEL_TYPE_BRANDED_AGGREGATE,
-  CHANNEL_TYPE_BRANDED_PROXY,
 ])
 
 // Channel types without a public balance API. The row action is hidden so an
 // operator does not hit a predictable "not implemented" error.
-export const BALANCE_QUERY_UNSUPPORTED_TYPES = new Set([CHANNEL_TYPE_APIKO])
+export const BALANCE_QUERY_UNSUPPORTED_TYPES = new Set<number>()
 
 export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
   15: 'Format: APIKey|SecretKey',
@@ -578,8 +511,6 @@ export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
 
 export const CHANNEL_TYPE_WARNINGS: Record<number, string> = {
   3: 'For channels added after May 10, 2025, no need to remove "." from model names during deployment',
-  [CHANNEL_TYPE_APIKO]:
-    "Use https://api.apiko.app without /v1. Prices sync from Apiko's public catalogue; image and video models priced by resolution or duration need manual pricing",
   8: 'If connecting to upstream One API or Uter relay projects, use OpenAI type instead unless you know what you are doing',
   37: 'Dify channels only support chatflow and agent, and agent does not support images',
 }

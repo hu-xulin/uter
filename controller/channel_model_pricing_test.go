@@ -34,7 +34,7 @@ func TestSyncGenericChannelPricingHandler(t *testing.T) {
 
 	base := server.URL
 	channel := &model.Channel{
-		Type: constant.ChannelTypeCustom, Name: "xxapi", BaseURL: &base,
+		Type: constant.ChannelTypeOpenAI, Name: "xxapi", BaseURL: &base,
 		Key: "sk-test", Models: "", Group: "default", Status: 1,
 	}
 	require.NoError(t, db.Create(channel).Error)
@@ -77,7 +77,7 @@ func TestGenericUpstreamBillingGroupHandlers(t *testing.T) {
 
 	base := "https://xxapi.ai"
 	channel := &model.Channel{
-		Type: constant.ChannelTypeCustom, Name: "xxapi", BaseURL: &base,
+		Type: constant.ChannelTypeOpenAI, Name: "xxapi", BaseURL: &base,
 		Key: "sk-test", Models: "m-a", Group: "default", Status: 1,
 	}
 	require.NoError(t, db.Create(channel).Error)

@@ -24,7 +24,7 @@ func TestRecordBillingPriceSnapshotCapturesIdentityAndVersion(t *testing.T) {
 	info := &relaycommon.RelayInfo{
 		RequestId: "req-live-1", OriginModelName: "gpt-a",
 		ChannelPricingApplied:          true,
-		ChannelPricingProvider:         "apiko",
+		ChannelPricingProvider:         "xxapi",
 		ChannelPricingRegion:           "us",
 		ChannelPricingDeployment:       "dep-1",
 		ChannelPricingVersion:          "sale-v1",
@@ -49,7 +49,7 @@ func TestRecordBillingPriceSnapshotCapturesIdentityAndVersion(t *testing.T) {
 	got, err := model.GetBillingPriceSnapshot("req-live-1", "", "gpt-a")
 	require.NoError(t, err)
 	assert.Equal(t, 9, got.ChannelId)
-	assert.Equal(t, "apiko", got.Provider)
+	assert.Equal(t, "xxapi", got.Provider)
 	assert.Equal(t, "dep-1", got.DeploymentId)
 	assert.Equal(t, "sale-v1", got.PricingVersion)
 	assert.Equal(t, "cost-v1", got.PurchaseVersion)

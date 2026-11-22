@@ -150,7 +150,6 @@ import {
   CHANNEL_STATUS_LABELS,
   CHANNEL_TYPES,
   CHANNEL_TYPE_NEW_API,
-  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -196,10 +195,6 @@ import {
   validateModelMappingJson,
 } from '../../lib'
 import {
-  createAdvancedCustomRoute,
-  stringifyAdvancedCustomConfig,
-} from '../../lib/advanced-custom'
-import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
   type ChannelConfigurationStatus,
@@ -220,8 +215,7 @@ import {
   assessBaseUrlTrust,
   nextTaskPluginBaseUrl,
 } from '../../lib/task-plugin-base-url'
-import type { AdvancedCustomConfig, Channel } from '../../types'
-import { ApikoChannelPanel } from '../apiko-channel-panel'
+import type { Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
 import { ChannelBrandingEditor } from '../channel-branding-editor'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
@@ -500,6 +494,8 @@ export function ChannelMutateDrawer({
     useState<ChannelProviderTarget | null>(null)
   const [xxapiClaudeGroup, setXxapiClaudeGroup] = useState('base')
   const [xxapiGptGroup, setXxapiGptGroup] = useState('base')
+  const [xxapiClaudeKeys, setXxapiClaudeKeys] = useState('')
+  const [xxapiGptKeys, setXxapiGptKeys] = useState('')
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
@@ -866,18 +862,12 @@ export function ChannelMutateDrawer({
   const selectProvider = useCallback(
     (target: ChannelProviderTarget) => {
       if (!canEditSensitive) return
-      // Two providers are "the same" only when their identity matches. For
-      // builtin providers the identity includes the branded preset, because
-      // every branded shortcut (共享渠道 / 聚合渠道 / 代理渠道) is a distinct type
-      // (600/601/602) but may still carry a different preset; comparing by type
-      // alone could skip re-applying a different preset, leaving the channel
-      // without its logo / display name.
+      // Two providers are "the same" only when their builtin type (or plugin
+      // key / xxapi identity) matches.
       const sameBuiltinProvider =
         target.kind === 'builtin' &&
         providerTarget?.kind === 'builtin' &&
-        target.type === providerTarget.type &&
-        (target.presetDisplayName || '') ===
-          (providerTarget.presetDisplayName || '')
+        target.type === providerTarget.type
       const samePluginProvider =
         target.kind === 'plugin' &&
         providerTarget?.kind === 'plugin' &&
@@ -896,10 +886,13 @@ export function ChannelMutateDrawer({
           shouldValidate: true,
         })
         form.setValue('name', 'xxapi')
+        form.setValue('branding_display_name', 'xxapi')
         form.setValue('models', '')
         form.setValue('key', '')
         setXxapiClaudeGroup('base')
         setXxapiGptGroup('base')
+        setXxapiClaudeKeys('')
+        setXxapiGptKeys('')
         setProviderTarget(target)
         setChoosingProvider(false)
         setShowDraftPricing(false)
@@ -944,46 +937,7 @@ export function ChannelMutateDrawer({
           return
         }
         form.setValue('type', target.type, { shouldDirty: true })
-        if (
-          target.type === CHANNEL_TYPE_APIKO &&
-          !form.getValues('base_url')?.trim()
-        ) {
-          form.setValue(
-            'base_url',
-            defaultBaseURLs?.[CHANNEL_TYPE_APIKO] || 'https://api.apiko.app',
-            { shouldDirty: true, shouldValidate: true }
-          )
-        }
-        if (
-          target.presetDisplayName ||
-          target.presetLogo ||
-          target.presetLogoDark
-        ) {
-          // Branded shortcut of an existing type (e.g. 共享渠道 / 聚合渠道 /
-          // 代理渠道 built on "Advanced Custom"). Seed the per-channel display
-          // name and logo so the channel card renders with the brand, while
-          // every other aspect stays identical to the base type. Always
-          // re-seed when (re)selecting a branded provider so switching presets
-          // of the same base type updates the channel identity.
-          const brandedConfig: AdvancedCustomConfig = {
-            advanced_routes: [createAdvancedCustomRoute()],
-            display_name: target.presetDisplayName,
-            logo: target.presetLogo,
-            logo_dark: target.presetLogoDark,
-          }
-          form.setValue(
-            'advanced_custom',
-            stringifyAdvancedCustomConfig(brandedConfig),
-            { shouldDirty: true }
-          )
-          if (target.presetDisplayName) {
-            form.setValue('name', target.presetDisplayName)
-          }
-        } else if (
-          !isEditing &&
-          !providerTarget &&
-          !form.getValues('name').trim()
-        ) {
+        if (!isEditing && !providerTarget && !form.getValues('name').trim()) {
           const label = CHANNEL_TYPE_OPTIONS.find(
             (option) => option.value === target.type
           )?.label
@@ -997,7 +951,6 @@ export function ChannelMutateDrawer({
     [
       canBindTaskPlugin,
       canEditSensitive,
-      defaultBaseURLs,
       providerTarget,
       isEditing,
       form,
@@ -1775,27 +1728,22 @@ export function ChannelMutateDrawer({
       if (!isEditing && (!providerTarget || !canEditSensitive)) return
 
       if (!isEditing && providerTarget?.kind === 'xxapi') {
-        const keys = (data.key || '')
-          .split('\n')
-          .map((value) => value.trim())
-          .filter(Boolean)
-        if (keys.length === 0) {
-          form.setError('key', {
-            type: 'manual',
-            message: ERROR_MESSAGES.REQUIRED_KEY,
-          })
+        const splitKeys = (raw: string) =>
+          raw
+            .split('\n')
+            .map((value) => value.trim())
+            .filter(Boolean)
+        const claudeKeys = splitKeys(xxapiClaudeKeys)
+        const gptKeys = splitKeys(xxapiGptKeys)
+        if (claudeKeys.length === 0 && gptKeys.length === 0) {
+          toast.error(t('Enter at least one Claude or GPT API key'))
           setConfigurationSection('connection')
-          setPendingErrorFocus('key')
-          return
-        }
-        if (keys.length > 2) {
-          toast.error(t('At most two keys: Claude first, GPT second'))
           return
         }
         try {
           const response = await createXXAPIChannels({
-            claude_key: keys[0] || '',
-            gpt_key: keys[1] || '',
+            claude_keys: claudeKeys,
+            gpt_keys: gptKeys,
             claude_group: xxapiClaudeGroup === 'base' ? '' : xxapiClaudeGroup,
             gpt_group: xxapiGptGroup === 'base' ? '' : xxapiGptGroup,
             group: (data.group ?? []).join(',') || 'default',
@@ -1961,6 +1909,8 @@ export function ChannelMutateDrawer({
       handleSuccess,
       xxapiClaudeGroup,
       xxapiGptGroup,
+      xxapiClaudeKeys,
+      xxapiGptKeys,
       t,
     ]
   )
@@ -3365,7 +3315,6 @@ export function ChannelMutateDrawer({
 
   const modelsBaseUrl = (form.watch('base_url') ?? '').toLowerCase()
   const isBailianProvider = currentType === 17
-  const isApikoProvider = currentType === CHANNEL_TYPE_APIKO
   const isDreamRouterProvider =
     isAdvancedCustomLikeChannelType(currentType) &&
     modelsBaseUrl.includes('dreamrouter.ai')
@@ -3413,8 +3362,7 @@ export function ChannelMutateDrawer({
         <div className='space-y-5'>
           {MODEL_FETCHABLE_TYPES.has(currentType) &&
           !isBailianProvider &&
-          !isDreamRouterProvider &&
-          !isApikoProvider ? (
+          !isDreamRouterProvider ? (
             <section
               aria-live='polite'
               className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'
@@ -3482,7 +3430,7 @@ export function ChannelMutateDrawer({
               </div>
             </section>
           ) : null}
-          {(isBailianProvider || isDreamRouterProvider || isApikoProvider) && (
+          {(isBailianProvider || isDreamRouterProvider) && (
             <section className='space-y-3'>
               <div>
                 <p className='font-medium'>{t('Model information sync')}</p>
@@ -3499,18 +3447,6 @@ export function ChannelMutateDrawer({
                   onCreateDraft={isEditing ? undefined : createDraftChannel}
                   onChangeBaseUrl={(value) =>
                     form.setValue('base_url', value, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    })
-                  }
-                />
-              )}
-              {isApikoProvider && (
-                <ApikoChannelPanel
-                  channelId={effectiveChannelId}
-                  onCreateDraft={isEditing ? undefined : createDraftChannel}
-                  onModelsSynced={(models) =>
-                    form.setValue('models', models.join(','), {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
@@ -4913,159 +4849,177 @@ export function ChannelMutateDrawer({
                 />
               )}
 
-              <FormField
-                control={form.control}
-                name='key'
-                render={({ field }) => {
-                  let keyPlaceholder = t(getKeyPromptForType(currentType))
-                  if (isEditing) {
-                    keyPlaceholder = t('Leave empty to keep existing key')
-                  } else if (
-                    currentType === 33 &&
-                    awsKeyType === 'api_key' &&
-                    isBatchMode
-                  ) {
-                    keyPlaceholder = t(
-                      'Enter API Key, one per line, format: APIKey|Region'
-                    )
-                  } else if (currentType === 33 && awsKeyType === 'api_key') {
-                    keyPlaceholder = t('Enter API Key, format: APIKey|Region')
-                  } else if (currentType === 33 && isBatchMode) {
-                    keyPlaceholder = t(
-                      'Enter key, one per line, format: AccessKey|SecretAccessKey|Region'
-                    )
-                  } else if (currentType === 33) {
-                    keyPlaceholder = t(
-                      'Enter key, format: AccessKey|SecretAccessKey|Region'
-                    )
-                  } else if (isBatchMode) {
-                    keyPlaceholder = t(
-                      'Enter one key per line for batch creation'
-                    )
-                  } else if (providerTarget?.kind === 'xxapi') {
-                    keyPlaceholder = t(
-                      'Claude key on line 1, GPT key on line 2'
-                    )
-                  }
-
-                  let keyDescription: ReactNode = t(FIELD_DESCRIPTIONS.KEY)
-                  if (isEditing) {
-                    let keyModeDescription = t(
-                      'Append mode: New keys will be added to the end of the existing key list'
-                    )
-                    if (keyMode === 'replace') {
-                      keyModeDescription = t(
-                        'Replace mode: Will completely replace all existing keys'
+              {!isEditing && providerTarget?.kind === 'xxapi' && (
+                <div className='grid gap-3 sm:grid-cols-2'>
+                  <div className='space-y-2'>
+                    <Label>{t('Claude API keys')}</Label>
+                    <Textarea
+                      rows={4}
+                      value={xxapiClaudeKeys}
+                      onChange={(event) =>
+                        setXxapiClaudeKeys(event.target.value)
+                      }
+                      placeholder={t('One key per line')}
+                    />
+                  </div>
+                  <div className='space-y-2'>
+                    <Label>{t('GPT API keys')}</Label>
+                    <Textarea
+                      rows={4}
+                      value={xxapiGptKeys}
+                      onChange={(event) => setXxapiGptKeys(event.target.value)}
+                      placeholder={t('One key per line')}
+                    />
+                  </div>
+                </div>
+              )}
+              {providerTarget?.kind !== 'xxapi' && (
+                <FormField
+                  control={form.control}
+                  name='key'
+                  render={({ field }) => {
+                    let keyPlaceholder = t(getKeyPromptForType(currentType))
+                    if (isEditing) {
+                      keyPlaceholder = t('Leave empty to keep existing key')
+                    } else if (
+                      currentType === 33 &&
+                      awsKeyType === 'api_key' &&
+                      isBatchMode
+                    ) {
+                      keyPlaceholder = t(
+                        'Enter API Key, one per line, format: APIKey|Region'
+                      )
+                    } else if (currentType === 33 && awsKeyType === 'api_key') {
+                      keyPlaceholder = t('Enter API Key, format: APIKey|Region')
+                    } else if (currentType === 33 && isBatchMode) {
+                      keyPlaceholder = t(
+                        'Enter key, one per line, format: AccessKey|SecretAccessKey|Region'
+                      )
+                    } else if (currentType === 33) {
+                      keyPlaceholder = t(
+                        'Enter key, format: AccessKey|SecretAccessKey|Region'
+                      )
+                    } else if (isBatchMode) {
+                      keyPlaceholder = t(
+                        'Enter one key per line for batch creation'
                       )
                     }
-                    keyDescription = (
-                      <>
-                        {t(
-                          'Enter new key to update, or leave empty to keep current key'
-                        )}
-                        {isMultiKeyChannel && (
-                          <span className='text-warning mt-1 block'>
-                            {keyModeDescription}
-                          </span>
-                        )}
-                      </>
-                    )
-                  } else if (isBatchMode) {
-                    keyDescription = t(
-                      'Enter one API key per line for batch creation'
-                    )
-                  } else if (providerTarget?.kind === 'xxapi') {
-                    keyDescription = t(
-                      'Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.'
-                    )
-                  }
-                  return (
-                    <FormItem>
-                      <FormLabel required>{t('API Key')}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={keyPlaceholder}
-                          rows={isBatchMode ? 8 : 4}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        <span className='flex flex-col gap-2'>
-                          <span>{keyDescription}</span>
-                          {!isEditing && isBatchMode && (
-                            <Button
-                              type='button'
-                              variant='outline'
-                              size='sm'
-                              onClick={handleDeduplicateKeys}
-                              className='w-fit'
-                            >
-                              <Trash2 className='mr-2 h-4.5 w-4.5' />
-                              {t('Remove Duplicates')}
-                            </Button>
+
+                    let keyDescription: ReactNode = t(FIELD_DESCRIPTIONS.KEY)
+                    if (isEditing) {
+                      let keyModeDescription = t(
+                        'Append mode: New keys will be added to the end of the existing key list'
+                      )
+                      if (keyMode === 'replace') {
+                        keyModeDescription = t(
+                          'Replace mode: Will completely replace all existing keys'
+                        )
+                      }
+                      keyDescription = (
+                        <>
+                          {t(
+                            'Enter new key to update, or leave empty to keep current key'
                           )}
-                        </span>
-                      </FormDescription>
-                      {isEditing && canRevealChannelKey && (
-                        <div className='border-border/60 mt-4 flex flex-col gap-3 border-y border-dashed py-4'>
-                          <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-                            <div>
-                              <p className='text-sm font-medium'>
-                                {t('Current key')}
-                              </p>
-                              <p className='text-muted-foreground text-sm'>
-                                {t(
-                                  'Verification required to reveal the saved key.'
-                                )}
-                              </p>
-                            </div>
-                            <div className='flex items-center gap-2'>
+                          {isMultiKeyChannel && (
+                            <span className='text-warning mt-1 block'>
+                              {keyModeDescription}
+                            </span>
+                          )}
+                        </>
+                      )
+                    } else if (isBatchMode) {
+                      keyDescription = t(
+                        'Enter one API key per line for batch creation'
+                      )
+                    }
+                    return (
+                      <FormItem>
+                        <FormLabel required>{t('API Key')}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={keyPlaceholder}
+                            rows={isBatchMode ? 8 : 4}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          <span className='flex flex-col gap-2'>
+                            <span>{keyDescription}</span>
+                            {!isEditing && isBatchMode && (
                               <Button
                                 type='button'
                                 variant='outline'
                                 size='sm'
-                                onClick={handleRevealKey}
-                                disabled={
-                                  isChannelKeyLoading || verification.isActive
-                                }
+                                onClick={handleDeduplicateKeys}
+                                className='w-fit'
                               >
-                                {isChannelKeyLoading ||
-                                verification.isActive ? (
-                                  <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
-                                ) : (
-                                  <Eye className='mr-2 h-4.5 w-4.5' />
-                                )}
-                                {t('Reveal key')}
+                                <Trash2 className='mr-2 h-4.5 w-4.5' />
+                                {t('Remove Duplicates')}
                               </Button>
-                              <Button
-                                type='button'
-                                variant='ghost'
-                                size='sm'
-                                onClick={async () => {
-                                  if (channelKey) {
-                                    await copyToClipboard(channelKey)
+                            )}
+                          </span>
+                        </FormDescription>
+                        {isEditing && canRevealChannelKey && (
+                          <div className='border-border/60 mt-4 flex flex-col gap-3 border-y border-dashed py-4'>
+                            <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+                              <div>
+                                <p className='text-sm font-medium'>
+                                  {t('Current key')}
+                                </p>
+                                <p className='text-muted-foreground text-sm'>
+                                  {t(
+                                    'Verification required to reveal the saved key.'
+                                  )}
+                                </p>
+                              </div>
+                              <div className='flex items-center gap-2'>
+                                <Button
+                                  type='button'
+                                  variant='outline'
+                                  size='sm'
+                                  onClick={handleRevealKey}
+                                  disabled={
+                                    isChannelKeyLoading || verification.isActive
                                   }
-                                }}
-                                disabled={!channelKey}
-                              >
-                                <Copy className='mr-2 h-4.5 w-4.5' />
-                                {t('Copy')}
-                              </Button>
+                                >
+                                  {isChannelKeyLoading ||
+                                  verification.isActive ? (
+                                    <Loader2 className='mr-2 h-4.5 w-4.5 animate-spin' />
+                                  ) : (
+                                    <Eye className='mr-2 h-4.5 w-4.5' />
+                                  )}
+                                  {t('Reveal key')}
+                                </Button>
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  size='sm'
+                                  onClick={async () => {
+                                    if (channelKey) {
+                                      await copyToClipboard(channelKey)
+                                    }
+                                  }}
+                                  disabled={!channelKey}
+                                >
+                                  <Copy className='mr-2 h-4.5 w-4.5' />
+                                  {t('Copy')}
+                                </Button>
+                              </div>
                             </div>
+                            <Input
+                              readOnly
+                              value={channelKey ?? ''}
+                              placeholder={t('Hidden — verify to reveal')}
+                              className='font-mono text-sm'
+                            />
                           </div>
-                          <Input
-                            readOnly
-                            value={channelKey ?? ''}
-                            placeholder={t('Hidden — verify to reveal')}
-                            className='font-mono text-sm'
-                          />
-                        </div>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )
-                }}
-              />
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )
+                  }}
+                />
+              )}
 
               {currentType === 57 && (
                 <div className='border-border/60 flex flex-col gap-3 border-y py-4'>

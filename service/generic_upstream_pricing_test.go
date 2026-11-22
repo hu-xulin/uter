@@ -194,7 +194,7 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	t.Cleanup(server.Close)
 
 	base := server.URL
-	channel := &model.Channel{Type: constant.ChannelTypeCustom, Name: "xxapi", BaseURL: &base, Key: "sk-test", Models: "m-a", Group: "default", Status: 1}
+	channel := &model.Channel{Type: constant.ChannelTypeOpenAI, Name: "xxapi", BaseURL: &base, Key: "sk-test", Models: "m-a", Group: "default", Status: 1}
 	require.NoError(t, db.Create(channel).Error)
 	common.OptionMap[GenericUpstreamBillingGroupKey] = fmt.Sprintf(`{"%d":"Claude-稳定"}`, channel.Id)
 

@@ -34,3 +34,13 @@ func TestReconcileChannelUpstreamBillingExecutesRules(t *testing.T) {
 	require.Equal(t, "BLOCKED", report.UpstreamInvoice)
 	require.NotEmpty(t, report.BlockedReason)
 }
+
+func TestReconcileExpressionAcceptsExecutableFixedPricing(t *testing.T) {
+	status, scenarios, errText := reconcileExpression(`tier("image", fixed(0.02)) * image_count`)
+	if status != UpstreamReconcileRulesPassed {
+		t.Fatalf("fixed pricing must reconcile: status=%s error=%s", status, errText)
+	}
+	if len(scenarios) == 0 {
+		t.Fatal("expected reconciliation scenarios")
+	}
+}

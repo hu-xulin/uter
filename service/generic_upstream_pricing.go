@@ -31,7 +31,6 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
-	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -437,6 +436,9 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		return 0, nil, errors.New("upstream returned no pricing entries")
 	}
 	models := GenericModelNames(entries.Data)
+	if _, addErr := AppendChannelModelNames(channel, models); addErr != nil {
+		common.SysError(common.LogText("generic auto model add failed: channel_id=%d, error=%v", channel.Id, addErr))
+	}
 	records := GenericChannelPricingRecordsWithQuota(
 		channel.Id, channel.GetModels(), entries.Data, time.Now().UTC(),
 		genericQuotaPerUnit(GenericPricingEntry{}, entries),
@@ -484,15 +486,21 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 	}
 	now := time.Now().UTC()
 	for _, channel := range channels {
-		if channel.Type == 17 || channel.Type == constant.ChannelTypeApiko || strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
+		if channel.Type == 17 || strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
 			continue
 		}
-		schedule, _ := GetChannelPricingSchedule(channel.Id)
-		if !schedule.Enabled {
+		schedule, explicit := GetChannelPricingSchedule(channel.Id)
+		if explicit && !schedule.Enabled {
 			continue
+		}
+		if !explicit {
+			schedule.Enabled = true
 		}
 		_, officialInterval, _ := schedule.EffectiveIntervals()
 		state := genericSyncStateFor(channel.Id)
+		if !force && genericBackoffActive(channel.Id, now) {
+			continue
+		}
 		if !force && now.Unix()-state < int64(officialInterval)*60 {
 			continue
 		}
@@ -500,11 +508,14 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 		written, syncErr := SyncGenericChannelPricing(ctx, channel)
 		if syncErr != nil {
 			common.SysError(common.LogText("generic upstream sync failed for channel %d: %s", channel.Id, syncErr.Error()))
+			recordGenericSyncFailure(channel.Id, now)
 			RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, 0, 0, 0, "", syncErr, model.ChannelSyncTypePrices)
 			continue
 		}
+		clearGenericSyncFailure(channel.Id)
 		RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, written, 0, 0, "", nil, model.ChannelSyncTypePrices)
 		setGenericSyncState(channel.Id, now.Unix())
+		AutoVerifyChannelPricing(channel.Id)
 	}
 }
 
@@ -578,5 +589,51 @@ func applyGenericGroupPurchaseCost(channelID int, payload *GenericPricingPayload
 		if err := model.SetChannelPurchaseCostFor(identity, cost); err != nil {
 			common.SysError(common.LogText("generic group purchase cost failed: channel_id=%d model=%s, error=%v", channelID, record.ModelName, err))
 		}
+	}
+}
+
+const genericUpstreamBackoffKey = "GenericUpstreamSyncBackoff"
+
+type genericSyncBackoff struct {
+	Failures    int   `json:"failures"`
+	NextAttempt int64 `json:"next_attempt_at"`
+}
+
+func genericBackoffState() map[string]genericSyncBackoff {
+	state := map[string]genericSyncBackoff{}
+	if raw := strings.TrimSpace(common.GetOption(genericUpstreamBackoffKey)); raw != "" {
+		_ = common.UnmarshalJsonStr(raw, &state)
+	}
+	return state
+}
+
+func genericBackoffActive(channelID int, now time.Time) bool {
+	return genericBackoffState()[fmt.Sprintf("%d", channelID)].NextAttempt > now.Unix()
+}
+
+func recordGenericSyncFailure(channelID int, now time.Time) {
+	state := genericBackoffState()
+	entry := state[fmt.Sprintf("%d", channelID)]
+	entry.Failures++
+	backoff := time.Minute << min(entry.Failures-1, 6)
+	if backoff > time.Hour {
+		backoff = time.Hour
+	}
+	entry.NextAttempt = now.Add(backoff).Unix()
+	state[fmt.Sprintf("%d", channelID)] = entry
+	if raw, err := common.Marshal(state); err == nil {
+		_ = model.UpdateOption(genericUpstreamBackoffKey, string(raw))
+	}
+}
+
+func clearGenericSyncFailure(channelID int) {
+	state := genericBackoffState()
+	key := fmt.Sprintf("%d", channelID)
+	if _, ok := state[key]; !ok {
+		return
+	}
+	delete(state, key)
+	if raw, err := common.Marshal(state); err == nil {
+		_ = model.UpdateOption(genericUpstreamBackoffKey, string(raw))
 	}
 }

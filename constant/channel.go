@@ -9,7 +9,6 @@ const (
 	ChannelTypeMidjourneyPlus = 5
 	ChannelTypeOpenAIMax      = 6
 	ChannelTypeOhMyGPT        = 7
-	ChannelTypeCustom         = 8
 	ChannelTypeAILS           = 9
 	ChannelTypeAIProxy        = 10
 	ChannelTypePaLM           = 11
@@ -62,31 +61,22 @@ const (
 	ChannelTypeTaskPlugin     = 61 // 上游同样定义为 61
 	ChannelTypeVLLM           = 62 // 采用上游编号（rc.38+ 起上游为 62）
 	ChannelTypeSGLang         = 63 // 采用上游编号（rc.38+ 起上游为 63）
-	ChannelTypeApiko          = 64 // Uter 扩展：APIKO 网关（OpenAI/Anthropic 兼容，控制面提供公开目录价格）
-	// —— Uter 自有渠道类型：从 600 起编号，避开上游 0–63 的编号空间 ——
-	ChannelTypeBrandedShared    = 600
-	ChannelTypeBrandedAggregate = 601
-	ChannelTypeBrandedProxy     = 602
-	ChannelTypeDummy            // = 602，最大渠道类型上界；controller/model.go 的 1..Dummy 循环依赖它覆盖品牌渠道，勿删
-
+	// ChannelTypeDummy is the upper bound used by the channel-type loops in
+	// controller/model.go. It must cover every supported channel type.
+	ChannelTypeDummy = ChannelTypeSGLang
 )
 
 // IsAdvancedCustomChannelType reports whether the channel type behaves like an
 // "Advanced Custom" channel (type 58) for routing, billing, pricing, model
-// preview and constraint purposes. The branded channel types (600/601/602) are
-// first-class variants of Advanced Custom that only differ by their preset
-// display name and logo; they must be handled identically everywhere.
+// preview and constraint purposes.
 func IsAdvancedCustomChannelType(channelType int) bool {
 	return channelType == ChannelTypeAdvancedCustom ||
-		channelType == ChannelTypeBrandedShared ||
-		channelType == ChannelTypeBrandedAggregate ||
-		channelType == ChannelTypeBrandedProxy ||
 		channelType == ChannelTypeVLLM ||
 		channelType == ChannelTypeSGLang
 }
 
 // IsAdvancedCustomChannel 是上游的等价入口（上游把 vLLM / SGLang 也归入高级自定义
-// 的处理链路），uter 侧的品牌渠道同样按高级自定义处理，故二者实现一致。
+// 的处理链路），二者实现一致。
 func IsAdvancedCustomChannel(channelType int) bool {
 	return IsAdvancedCustomChannelType(channelType)
 }
@@ -160,11 +150,8 @@ var ChannelBaseURLs = []string{
 	// localhost 会让「渠道地址留空」变成一次静默的本地探测：管理员以为没配地址
 	// 用不了，实际请求带着渠道密钥打到了 localhost:8000/30000，并把探到的版本、
 	// 模型列表当成该渠道的真实状态展示。留空则由地址校验明确拒绝。
-	// Uter 自有品牌渠道 600–602 不在此 Slice 中（超出 len，GetChannelBaseURL 返回
-	// 空串），同样交由地址校验拒绝。
-	"",                      //62 vLLM
-	"",                      //63 SGLang
-	"https://api.apiko.app", //64 Apiko
+	"", //62 vLLM
+	"", //63 SGLang
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -175,70 +162,65 @@ func GetChannelBaseURL(channelType int) string {
 }
 
 var ChannelTypeNames = map[int]string{
-	ChannelTypeUnknown:          "Unknown",
-	ChannelTypeOpenAI:           "OpenAI",
-	ChannelTypeMidjourney:       "Midjourney",
-	ChannelTypeAzure:            "Azure",
-	ChannelTypeOllama:           "Ollama",
-	ChannelTypeMidjourneyPlus:   "MidjourneyPlus",
-	ChannelTypeOpenAIMax:        "OpenAIMax",
-	ChannelTypeOhMyGPT:          "OhMyGPT",
-	ChannelTypeCustom:           "Custom",
-	ChannelTypeAILS:             "AILS",
-	ChannelTypeAIProxy:          "AIProxy",
-	ChannelTypePaLM:             "PaLM",
-	ChannelTypeAPI2GPT:          "API2GPT",
-	ChannelTypeAIGC2D:           "AIGC2D",
-	ChannelTypeAnthropic:        "Anthropic",
-	ChannelTypeBaidu:            "Baidu",
-	ChannelTypeZhipu:            "Zhipu",
-	ChannelTypeAli:              "Ali",
-	ChannelTypeXunfei:           "Xunfei",
-	ChannelType360:              "360",
-	ChannelTypeOpenRouter:       "OpenRouter",
-	ChannelTypeAIProxyLibrary:   "AIProxyLibrary",
-	ChannelTypeFastGPT:          "FastGPT",
-	ChannelTypeTencent:          "Tencent",
-	ChannelTypeGemini:           "Gemini",
-	ChannelTypeMoonshot:         "Moonshot",
-	ChannelTypeZhipu_v4:         "ZhipuV4",
-	ChannelTypePerplexity:       "Perplexity",
-	ChannelTypeLingYiWanWu:      "LingYiWanWu",
-	ChannelTypeAws:              "AWS",
-	ChannelTypeCohere:           "Cohere",
-	ChannelTypeMiniMax:          "MiniMax",
-	ChannelTypeSunoAPI:          "SunoAPI",
-	ChannelTypeDify:             "Dify",
-	ChannelTypeJina:             "Jina",
-	ChannelCloudflare:           "Cloudflare",
-	ChannelTypeSiliconFlow:      "SiliconFlow",
-	ChannelTypeVertexAi:         "VertexAI",
-	ChannelTypeMistral:          "Mistral",
-	ChannelTypeDeepSeek:         "DeepSeek",
-	ChannelTypeMokaAI:           "MokaAI",
-	ChannelTypeVolcEngine:       "VolcEngine",
-	ChannelTypeBaiduV2:          "BaiduV2",
-	ChannelTypeXinference:       "Xinference",
-	ChannelTypeXai:              "xAI",
-	ChannelTypeCoze:             "Coze",
-	ChannelTypeKling:            "Kling",
-	ChannelTypeJimeng:           "Jimeng",
-	ChannelTypeVidu:             "Vidu",
-	ChannelTypeSubmodel:         "Submodel",
-	ChannelTypeDoubaoVideo:      "DoubaoVideo",
-	ChannelTypeSora:             "Sora",
-	ChannelTypeReplicate:        "Replicate",
-	ChannelTypeCodex:            "ChatGPT Subscription (Codex)",
-	ChannelTypeAdvancedCustom:   "Advanced Custom",
-	ChannelTypeSub2API:          "Sub2API",
-	ChannelTypeUter:             "Uter",
-	ChannelTypeTaskPlugin:       "Task Plugin",
-	ChannelTypeBrandedShared:    "Branded Shared",
-	ChannelTypeBrandedAggregate: "Branded Aggregate",
-	ChannelTypeBrandedProxy:     "Branded Proxy",
-	ChannelTypeVLLM:             "vLLM",
-	ChannelTypeSGLang:           "SGLang",
-	ChannelTypeApiko:            "Apiko",
+	ChannelTypeUnknown:        "Unknown",
+	ChannelTypeOpenAI:         "OpenAI",
+	ChannelTypeMidjourney:     "Midjourney",
+	ChannelTypeAzure:          "Azure",
+	ChannelTypeOllama:         "Ollama",
+	ChannelTypeMidjourneyPlus: "MidjourneyPlus",
+	ChannelTypeOpenAIMax:      "OpenAIMax",
+	ChannelTypeOhMyGPT:        "OhMyGPT",
+	ChannelTypeAILS:           "AILS",
+	ChannelTypeAIProxy:        "AIProxy",
+	ChannelTypePaLM:           "PaLM",
+	ChannelTypeAPI2GPT:        "API2GPT",
+	ChannelTypeAIGC2D:         "AIGC2D",
+	ChannelTypeAnthropic:      "Anthropic",
+	ChannelTypeBaidu:          "Baidu",
+	ChannelTypeZhipu:          "Zhipu",
+	ChannelTypeAli:            "Ali",
+	ChannelTypeXunfei:         "Xunfei",
+	ChannelType360:            "360",
+	ChannelTypeOpenRouter:     "OpenRouter",
+	ChannelTypeAIProxyLibrary: "AIProxyLibrary",
+	ChannelTypeFastGPT:        "FastGPT",
+	ChannelTypeTencent:        "Tencent",
+	ChannelTypeGemini:         "Gemini",
+	ChannelTypeMoonshot:       "Moonshot",
+	ChannelTypeZhipu_v4:       "ZhipuV4",
+	ChannelTypePerplexity:     "Perplexity",
+	ChannelTypeLingYiWanWu:    "LingYiWanWu",
+	ChannelTypeAws:            "AWS",
+	ChannelTypeCohere:         "Cohere",
+	ChannelTypeMiniMax:        "MiniMax",
+	ChannelTypeSunoAPI:        "SunoAPI",
+	ChannelTypeDify:           "Dify",
+	ChannelTypeJina:           "Jina",
+	ChannelCloudflare:         "Cloudflare",
+	ChannelTypeSiliconFlow:    "SiliconFlow",
+	ChannelTypeVertexAi:       "VertexAI",
+	ChannelTypeMistral:        "Mistral",
+	ChannelTypeDeepSeek:       "DeepSeek",
+	ChannelTypeMokaAI:         "MokaAI",
+	ChannelTypeVolcEngine:     "VolcEngine",
+	ChannelTypeBaiduV2:        "BaiduV2",
+	ChannelTypeXinference:     "Xinference",
+	ChannelTypeXai:            "xAI",
+	ChannelTypeCoze:           "Coze",
+	ChannelTypeKling:          "Kling",
+	ChannelTypeJimeng:         "Jimeng",
+	ChannelTypeVidu:           "Vidu",
+	ChannelTypeSubmodel:       "Submodel",
+	ChannelTypeDoubaoVideo:    "DoubaoVideo",
+	ChannelTypeSora:           "Sora",
+	ChannelTypeReplicate:      "Replicate",
+	ChannelTypeCodex:          "ChatGPT Subscription (Codex)",
+	ChannelTypeAdvancedCustom: "Advanced Custom",
+	ChannelTypeSub2API:        "Sub2API",
+	ChannelTypeUter:           "Uter",
+	ChannelTypeTaskPlugin:     "Task Plugin",
+	ChannelTypeVLLM:           "vLLM",
+	ChannelTypeSGLang:         "SGLang",
 }
 
 func GetChannelTypeName(channelType int) string {

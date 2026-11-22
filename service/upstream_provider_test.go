@@ -102,19 +102,6 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 	}
 }
 
-func TestApikoProviderUsesPublicCatalogue(t *testing.T) {
-	provider := UpstreamProviderForChannel(64, "https://api.apiko.app")
-	require.Equal(t, "apiko", provider.ID)
-	require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status)
-	require.Equal(t, CapabilitySupported, provider.Capabilities.TokenPricing.Status)
-	require.Equal(t, CapabilityManualOnly, provider.Capabilities.ImagePricing.Status)
-	require.Equal(t, CapabilityUnsupported, provider.Capabilities.DeploymentPricing.Status)
-	require.Contains(t, provider.PricingURL, "apiko.app/api/public/models")
-	// Lookalike hosts must not inherit the public catalogue capability.
-	lookalike := UpstreamProviderForChannel(64, "https://api.apiko.app.evil.example")
-	require.NotEqual(t, "apiko", lookalike.ID)
-}
-
 func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
 	bailian := UpstreamProviderForChannel(17, "")
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.TokenPricing.Status)

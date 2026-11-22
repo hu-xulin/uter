@@ -155,7 +155,7 @@ function pricingRuleLabel(
   ) {
     return t('Channel catalog default')
   }
-  if (internal.source === 'apiko-expression') {
+  if (internal.source?.includes('expression')) {
     return t('Upstream expression')
   }
   if (internal.source === 'batch') {

@@ -131,27 +131,21 @@ describe('Lobe icons', () => {
       'width',
       '24'
     )
-    rerender(getLobeIcon('Apiko', 22))
-    expect(screen.getByRole('presentation', { hidden: true })).toHaveAttribute(
-      'width',
-      '22'
-    )
     expect(getLobeIconNames()).toEqual(
       expect.arrayContaining([
         'OpenAI',
         'Claude.Color',
         'SGLang',
         'Sub2API',
-        'Apiko',
         'Wan',
       ])
     )
   })
 
-  // `@lobehub/icons` ships no "Uter" brand. Before these registrations every
-  // channel type mapping to it (58 / 60 / 600 / 601 / 602) rendered the grey
-  // single-letter placeholder circle instead of a logo.
-  it.each(['Uter', 'UterShared', 'UterAggregate', 'UterProxy'])(
+  // `@lobehub/icons` ships no "Uter" brand. Before this registration every
+  // channel type mapping to it (58 / 60) rendered the grey single-letter
+  // placeholder circle instead of a logo.
+  it.each(['Uter'])(
     'renders the custom %s icon at the requested size',
     (name) => {
       const { container } = render(getLobeIcon(`${name}.Color`, 18))
@@ -164,33 +158,7 @@ describe('Lobe icons', () => {
     }
   )
 
-  it('gives the three branded Advanced Custom variants distinct glyphs', () => {
-    const paths = (name: string) => {
-      const { container, unmount } = render(getLobeIcon(name, 20))
-      const svg = container.querySelector('svg')
-      const signature = [...(svg?.querySelectorAll('path') ?? [])]
-        .map((path) => path.getAttribute('d'))
-        .join('|')
-      unmount()
-      return signature
-    }
-    const shared = paths('UterShared')
-    const aggregate = paths('UterAggregate')
-    const proxy = paths('UterProxy')
-    expect(shared).not.toBe('')
-    expect(aggregate).not.toBe('')
-    expect(proxy).not.toBe('')
-    expect(new Set([shared, aggregate, proxy]).size).toBe(3)
-  })
-
-  it('exposes the Uter icons through the selector registry', () => {
-    expect(getLobeIconNames()).toEqual(
-      expect.arrayContaining([
-        'Uter',
-        'UterShared',
-        'UterAggregate',
-        'UterProxy',
-      ])
-    )
+  it('exposes the Uter icon through the selector registry', () => {
+    expect(getLobeIconNames()).toEqual(expect.arrayContaining(['Uter']))
   })
 })

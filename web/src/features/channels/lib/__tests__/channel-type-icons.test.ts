@@ -18,13 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { CHANNEL_TYPE_APIKO, CHANNEL_TYPE_NEW_API } from '../../constants'
-import {
-  CHANNEL_TYPE_ADVANCED_CUSTOM,
-  CHANNEL_TYPE_BRANDED_AGGREGATE,
-  CHANNEL_TYPE_BRANDED_PROXY,
-  CHANNEL_TYPE_BRANDED_SHARED,
-} from '../advanced-custom'
+import { CHANNEL_TYPE_NEW_API } from '../../constants'
+import { CHANNEL_TYPE_ADVANCED_CUSTOM } from '../advanced-custom'
 import { getChannelTypeConfig } from '../channel-type-config'
 import { getChannelTypeIcon } from '../channel-utils'
 
@@ -35,22 +30,9 @@ describe('channel type icon keys', () => {
   test.each([
     [CHANNEL_TYPE_ADVANCED_CUSTOM, 'Uter'],
     [CHANNEL_TYPE_NEW_API, 'Uter'],
-    [CHANNEL_TYPE_APIKO, 'Apiko'],
-    [CHANNEL_TYPE_BRANDED_SHARED, 'UterShared'],
-    [CHANNEL_TYPE_BRANDED_AGGREGATE, 'UterAggregate'],
-    [CHANNEL_TYPE_BRANDED_PROXY, 'UterProxy'],
   ])('maps channel type %i to %s', (type, iconKey) => {
     expect(getChannelTypeIcon(type)).toBe(iconKey)
     expect(getChannelTypeConfig(type).icon).toBe(iconKey)
-  })
-
-  test('keeps the three branded variants visually distinct', () => {
-    const keys = [
-      getChannelTypeIcon(CHANNEL_TYPE_BRANDED_SHARED),
-      getChannelTypeIcon(CHANNEL_TYPE_BRANDED_AGGREGATE),
-      getChannelTypeIcon(CHANNEL_TYPE_BRANDED_PROXY),
-    ]
-    expect(new Set(keys).size).toBe(3)
   })
 
   test('falls back to a real provider glyph for unknown types', () => {

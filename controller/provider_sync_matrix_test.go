@@ -2,13 +2,11 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -19,12 +17,11 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-// 四类创建渠道 — DreamRouter、阿里百炼、Apiko、xxapi — 的同步矩阵：
+// 三类创建渠道 — DreamRouter、阿里百炼、xxapi — 的同步矩阵：
 // 每个供应商都必须完成「模型信息 → 价格 → 计费规则可执行」三件事。
 func TestProviderSyncMatrix(t *testing.T) {
 	t.Run("dreamrouter", testDreamRouterSyncMatrix)
 	t.Run("bailian", testBailianSyncMatrix)
-	t.Run("apiko", testApikoSyncMatrix)
 	t.Run("xxapi", testXXAPISyncMatrix)
 }
 
@@ -195,43 +192,6 @@ func testBailianSyncMatrix(t *testing.T) {
 	assertBillingRule(t, channel.Id, "qwen-vl", billingexpr.TokenParams{P: 1000, C: 500, Len: 1000}, billingexpr.RequestInput{})
 }
 
-func testApikoSyncMatrix(t *testing.T) {
-	db := migrateProviderMatrixDB(t)
-	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		writer.Header().Set("Content-Type", "application/json")
-		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[
-			{"id":"apiko-chat","capabilities":["chat"],"pricing":{"inputPer1M":1.25,"outputPer1M":5,"cachePer1M":0.125,"currency":"USD"}},
-			{"id":"apiko-image","capabilities":["image"],"pricing":{"perCall":0.04,"currency":"USD"}}
-		]}}`))
-	}))
-	t.Cleanup(server.Close)
-	previous := apikoControlPlaneBase
-	apikoControlPlaneBase = server.URL
-	t.Cleanup(func() { apikoControlPlaneBase = previous })
-
-	channel := newMatrixChannel(t, db, "apiko", constant.ChannelTypeApiko, "https://api.apiko.app", "sk-test", "manual-model")
-
-	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
-	ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/channel/%d/apiko/models/sync", channel.Id), nil)
-	ctx.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%d", channel.Id)}}
-	SyncApikoChannelModels(ctx)
-
-	stored, err := model.GetChannelById(channel.Id, true)
-	require.NoError(t, err)
-	assert.Contains(t, stored.GetModels(), "manual-model")
-	assert.Contains(t, stored.GetModels(), "apiko-chat")
-	assert.Contains(t, stored.GetModels(), "apiko-image")
-
-	ctx, _ = gin.CreateTestContext(httptest.NewRecorder())
-	ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/channel/%d/apiko/prices/sync", channel.Id), nil)
-	ctx.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%d", channel.Id)}}
-	SyncApikoChannelPricing(ctx)
-
-	assertBillingRule(t, channel.Id, "apiko-chat", billingexpr.TokenParams{P: 1000, C: 500, Len: 1000}, billingexpr.RequestInput{})
-	two := 2
-	assertBillingRule(t, channel.Id, "apiko-image", billingexpr.TokenParams{}, billingexpr.RequestInput{ImageCount: &two})
-}
-
 func testXXAPISyncMatrix(t *testing.T) {
 	db := migrateProviderMatrixDB(t)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
@@ -250,7 +210,7 @@ func testXXAPISyncMatrix(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	channel := newMatrixChannel(t, db, "xxapi", constant.ChannelTypeCustom, server.URL, "sk-placeholder", "")
+	channel := newMatrixChannel(t, db, "xxapi", constant.ChannelTypeOpenAI, server.URL, "sk-placeholder", "")
 	written, discovered, err := service.SyncGenericChannelPricingWithModels(context.Background(), channel)
 	require.NoError(t, err)
 	assert.Equal(t, 3, written)

@@ -29,18 +29,7 @@ import { channelFormSchema, type ChannelFormValues } from './channel-form'
 import { supportsResponsesWebSocket } from './responses-websocket'
 
 export type ChannelProviderTarget =
-  | {
-      kind: 'builtin'
-      type: number
-      /**
-       * When set, the channel is created as a branded shortcut of an existing
-       * type (e.g. a 共享渠道 / 聚合渠道 / 代理渠道 built on "Advanced Custom").
-       * The drawer seeds `advanced_custom.display_name` / `logo` from these.
-       */
-      presetDisplayName?: string
-      presetLogo?: string
-      presetLogoDark?: string
-    }
+  | { kind: 'builtin'; type: number }
   | { kind: 'plugin'; key: string }
   | { kind: 'xxapi' }
 

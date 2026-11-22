@@ -943,7 +943,7 @@ func formatInternalPrice(value float64) string {
 // approved prices are never touched.
 func autoDerivedInternalSource(source string) bool {
 	source = strings.ToLower(strings.TrimSpace(source))
-	for _, prefix := range []string{"dreamrouter-", "bailian-", "apiko-", "newapi-", "generic-"} {
+	for _, prefix := range []string{"dreamrouter-", "bailian-", "newapi-", "generic-"} {
 		if strings.HasPrefix(source, prefix) {
 			return true
 		}
@@ -975,8 +975,7 @@ func internalPricingReplaceable(raw string) bool {
 	}
 	return strings.HasPrefix(pricing.Source, "dreamrouter-") ||
 		strings.HasPrefix(pricing.Source, "bailian-") ||
-		strings.HasPrefix(pricing.Source, "newapi-") ||
-		strings.HasPrefix(pricing.Source, "apiko-")
+		strings.HasPrefix(pricing.Source, "newapi-")
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the

@@ -129,7 +129,7 @@ func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
 	})
 	require.NoError(t, err)
 	view := channelModelPricingToView(model.ChannelModelPricing{
-		ChannelId: 11, ModelName: "vision-a", Provider: "apiko",
+		ChannelId: 11, ModelName: "vision-a", Provider: "xxapi",
 		NormalizedPricing: string(normalized),
 	})
 	require.NotNil(t, view.UpstreamQuote)

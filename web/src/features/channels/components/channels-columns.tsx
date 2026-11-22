@@ -824,8 +824,8 @@ export function useChannelsColumns(
           const type = row.getValue('type') as number
           const typeNameKey = getChannelTypeLabel(type)
           const channel = row.original as Channel
-          // Advanced Custom and its branded variants may override the type
-          // label and logo with the per-channel display_name / logo.
+          // Advanced Custom may override the type label and logo with the
+          // per-channel display_name / logo.
           const advancedCustomDisplay = isAdvancedCustomLikeChannelType(type)
             ? parseChannelOtherSettings(channel.settings)?.advanced_custom
             : undefined

@@ -19,8 +19,10 @@ For commercial licensing, please contact support@uter.ai
 package controller
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,8 +37,10 @@ import (
 // Claude pool, the other the GPT/Codex pool. A single channel cannot rotate
 // between them, so each key becomes its own channel with its own model list.
 type xxapiCreateRequest struct {
-	ClaudeKey string `json:"claude_key"`
-	GPTKey    string `json:"gpt_key"`
+	ClaudeKey  string   `json:"claude_key"`
+	GPTKey     string   `json:"gpt_key"`
+	ClaudeKeys []string `json:"claude_keys"`
+	GPTKeys    []string `json:"gpt_keys"`
 	// ClaudeGroup/GPTGroup are the upstream billing groups each key belongs to.
 	// A key's group decides both its price multiplier and visible models.
 	ClaudeGroup string `json:"claude_group"`
@@ -59,9 +63,9 @@ func CreateXXAPIChannels(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	req.ClaudeKey = strings.TrimSpace(req.ClaudeKey)
-	req.GPTKey = strings.TrimSpace(req.GPTKey)
-	if req.ClaudeKey == "" && req.GPTKey == "" {
+	claudeKeys := normalizeXXAPIKeys(req.ClaudeKeys, req.ClaudeKey)
+	gptKeys := normalizeXXAPIKeys(req.GPTKeys, req.GPTKey)
+	if len(claudeKeys) == 0 && len(gptKeys) == 0 {
 		common.ApiErrorMsg(c, "At least one xxapi key is required")
 		return
 	}
@@ -76,31 +80,36 @@ func CreateXXAPIChannels(c *gin.Context) {
 
 	specs := []struct {
 		suffix string
-		key    string
+		keys   []string
 		group  string
 	}{
-		{"claude", req.ClaudeKey, strings.TrimSpace(req.ClaudeGroup)},
-		{"gpt", req.GPTKey, strings.TrimSpace(req.GPTGroup)},
+		{"claude", claudeKeys, strings.TrimSpace(req.ClaudeGroup)},
+		{"gpt", gptKeys, strings.TrimSpace(req.GPTGroup)},
 	}
 	results := make([]gin.H, 0, len(specs))
 	created := 0
 	lastErr := ""
 	for _, spec := range specs {
-		if spec.key == "" {
+		if len(spec.keys) == 0 {
 			continue
 		}
 		name := fmt.Sprintf("xxapi-%s", spec.suffix)
-		models, err := service.OpenAIModelIDs(c.Request.Context(), xxapiBaseURLForTest, spec.key)
-		if err != nil {
-			results = append(results, gin.H{"name": name, "error": common.LogText("model discovery failed: %s", err.Error())})
-			lastErr = err.Error()
+		models, usableKeys, discoveryErr := discoverXXAPIModels(c.Request.Context(), spec.keys)
+		if len(usableKeys) == 0 {
+			results = append(results, gin.H{"name": name, "error": common.LogText("model discovery failed: %s", discoveryErr)})
+			lastErr = discoveryErr
 			continue
 		}
 		base := xxapiBaseURLForTest
 		channel := model.Channel{
-			Type: constant.ChannelTypeNewAPI, Name: name, BaseURL: &base, Key: spec.key,
+			Type: constant.ChannelTypeNewAPI, Name: name, BaseURL: &base, Key: strings.Join(usableKeys, "\n"),
 			Models: strings.Join(models, ","), Group: group, Status: status,
 			CreatedTime: common.GetTimestamp(),
+		}
+		if len(usableKeys) > 1 {
+			channel.ChannelInfo.IsMultiKey = true
+			channel.ChannelInfo.MultiKeySize = len(usableKeys)
+			channel.ChannelInfo.MultiKeyMode = constant.MultiKeyModePolling
 		}
 		if err := validateChannel(&channel, true); err != nil {
 			results = append(results, gin.H{"name": name, "error": err.Error()})
@@ -136,6 +145,7 @@ func CreateXXAPIChannels(c *gin.Context) {
 			"channel_id": channel.Id, "name": name, "type": channel.Type,
 			"base_url": base, "models": models, "pricing_written": written,
 			"group": spec.group, "group_name": groupName, "price_ratio": priceRatio,
+			"keys": len(usableKeys),
 		}
 		if pricingErr != "" {
 			entry["pricing_error"] = pricingErr
@@ -164,4 +174,43 @@ func GetXXAPIPricingGroups(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, gin.H{"groups": groups})
+}
+func normalizeXXAPIKeys(list []string, single string) []string {
+	seen := make(map[string]bool)
+	out := make([]string, 0, len(list)+1)
+	for _, raw := range append(append([]string{}, list...), single) {
+		key := strings.TrimSpace(raw)
+		if key == "" || seen[key] {
+			continue
+		}
+		seen[key] = true
+		out = append(out, key)
+	}
+	return out
+}
+
+// discoverXXAPIModels unions the model lists of every usable key in one box.
+// A failing key is dropped; the box fails only when no key works.
+func discoverXXAPIModels(ctx context.Context, keys []string) ([]string, []string, string) {
+	seen := make(map[string]bool)
+	models := make([]string, 0)
+	usable := make([]string, 0, len(keys))
+	lastErr := ""
+	for _, key := range keys {
+		found, err := service.OpenAIModelIDs(ctx, xxapiBaseURLForTest, key)
+		if err != nil {
+			lastErr = err.Error()
+			continue
+		}
+		usable = append(usable, key)
+		for _, model := range found {
+			if seen[model] {
+				continue
+			}
+			seen[model] = true
+			models = append(models, model)
+		}
+	}
+	sort.Strings(models)
+	return models, usable, lastErr
 }

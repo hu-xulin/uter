@@ -671,12 +671,6 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 	if channel.Type == constant.ChannelTypeSGLang && strings.TrimSpace(channel.GetBaseURL()) == "" {
 		return fmt.Errorf("SGLang channel base URL cannot be empty")
 	}
-	// Apiko 的地址是固定的中转域名；创建/更新时留空就补上默认值，
-	// 避免保存一个没有地址、所有转发都拼成相对路径的渠道。
-	if channel.Type == constant.ChannelTypeApiko && strings.TrimSpace(channel.GetBaseURL()) == "" {
-		defaultBaseURL := constant.GetChannelBaseURL(constant.ChannelTypeApiko)
-		channel.BaseURL = &defaultBaseURL
-	}
 
 	// 如果是添加操作，检查 channel 和 key 是否为空
 	if isAdd {

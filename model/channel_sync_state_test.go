@@ -18,18 +18,18 @@ func TestChannelSyncStateKeepsLastSuccessOnFailure(t *testing.T) {
 	t.Cleanup(func() { DB = previous })
 
 	require.NoError(t, SaveChannelSyncState(ChannelSyncState{
-		ChannelId: 9, SyncType: ChannelSyncTypePrices, Provider: "apiko",
+		ChannelId: 9, SyncType: ChannelSyncTypePrices, Provider: "xxapi",
 		LastStartedAt: 100, LastSuccessAt: 100, Fetched: 4, Written: 3, Skipped: 1,
 		ChangeSummary: `[{"model":"gpt-a"}]`,
 	}))
 	require.NoError(t, SaveChannelSyncState(ChannelSyncState{
-		ChannelId: 9, SyncType: ChannelSyncTypeModels, Provider: "apiko",
+		ChannelId: 9, SyncType: ChannelSyncTypeModels, Provider: "xxapi",
 		LastStartedAt: 100, LastSuccessAt: 100, Fetched: 4, Written: 4,
 	}))
 
 	// A later failed attempt must not erase the last good success.
 	require.NoError(t, SaveChannelSyncState(ChannelSyncState{
-		ChannelId: 9, SyncType: ChannelSyncTypePrices, Provider: "apiko",
+		ChannelId: 9, SyncType: ChannelSyncTypePrices, Provider: "xxapi",
 		LastStartedAt: 200, LastError: "upstream timeout",
 	}))
 

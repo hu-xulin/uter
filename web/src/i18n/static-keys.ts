@@ -28,7 +28,6 @@ export const STATIC_I18N_KEYS = [
   'Connect to local or self-hosted Ollama models',
   'Generate Midjourney images through MjProxyPlus',
   'Access model services through the OhMyGPT gateway',
-  'Legacy full-URL integration; use Advanced Custom for new channels',
   'Deprecated',
   'Connect to the Anthropic API or compatible services',
   'Access Baidu Qianfan models through the legacy API',

@@ -40,13 +40,9 @@ import {
   type ReactNode,
 } from 'react'
 
-import apikoLogo from '@/assets/brand-icons/apiko.svg'
 import sglangLogo from '@/assets/brand-icons/sglang.svg'
 import { IconSub2api } from '@/assets/custom/icon-sub2api'
 import { IconUter } from '@/assets/custom/icon-uter'
-import { IconUterAggregate } from '@/assets/custom/icon-uter-aggregate'
-import { IconUterProxy } from '@/assets/custom/icon-uter-proxy'
-import { IconUterShared } from '@/assets/custom/icon-uter-shared'
 import { IconWan } from '@/assets/custom/icon-wan'
 
 type IconParam = {
@@ -73,29 +69,15 @@ const CUSTOM_ICONS: Record<string, ComponentType<{ size?: number }>> = {
       className='object-contain'
     />
   ),
-  Apiko: (props) => (
-    <img
-      src={apikoLogo}
-      alt=''
-      aria-hidden='true'
-      width={props.size ?? 20}
-      height={props.size ?? 20}
-      className='object-contain'
-    />
-  ),
   Sub2API: IconSub2api,
   Wan: IconWan,
   // Uter's own brand mark. `@lobehub/icons` has no "Uter" entry, so without
-  // this registration every channel type that maps to it (58 Advanced Custom,
-  // 60 New API, and the 600/601/602 branded variants) fell through to the
-  // grey single-letter placeholder circle.
+  // this registration every channel type that maps to it (58 Advanced Custom
+  // and 60 New API) fell through to the grey single-letter placeholder circle.
   Uter: IconUter,
   // Branded Advanced Custom variants. Each keeps its own glyph so the shared /
   // aggregate / proxy channels stay distinguishable wherever only the channel
   // type is known (type filter chips, provider button, logo fallback).
-  UterShared: IconUterShared,
-  UterAggregate: IconUterAggregate,
-  UterProxy: IconUterProxy,
 }
 
 const ICON_METADATA = new Map<string, TocEntry>(

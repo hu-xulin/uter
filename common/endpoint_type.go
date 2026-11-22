@@ -48,13 +48,7 @@ func GetEndpointTypesByChannelType(channelType int, modelName string) []constant
 			constant.EndpointTypeGemini,
 			constant.EndpointTypeOpenAIAlphaSearch,
 		}
-	case constant.ChannelTypeApiko:
-		endpointTypes = []constant.EndpointType{
-			constant.EndpointTypeOpenAI,
-			constant.EndpointTypeOpenAIResponse,
-			constant.EndpointTypeOpenAIResponseCompact,
-			constant.EndpointTypeAnthropic,
-		}
+
 	case constant.ChannelTypeCodex:
 		endpointTypes = []constant.EndpointType{
 			constant.EndpointTypeOpenAIResponse,

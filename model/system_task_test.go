@@ -500,7 +500,7 @@ func TestTryAcquireSystemTaskLockIsExclusiveAndReclaimsExpired(t *testing.T) {
 	DB = db
 	t.Cleanup(func() { DB = previous })
 
-	const lockName = "apiko_price_sync:1"
+	const lockName = "generic_price_sync:1"
 	now := common.GetTimestamp()
 
 	acquired, err := TryAcquireSystemTaskLock(lockName, lockName, "owner-a", now+60)

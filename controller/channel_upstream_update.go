@@ -411,9 +411,6 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	}
 	// The public control-plane catalogue is the full model list; the
 	// key-scoped /v1/models only exposes the subset enabled for one key.
-	if channel.Type == constant.ChannelTypeApiko {
-		return fetchApikoModelIDs(channel)
-	}
 	baseURL := constant.GetChannelBaseURL(channel.Type)
 	if channel.GetBaseURL() != "" {
 		baseURL = channel.GetBaseURL()

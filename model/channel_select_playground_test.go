@@ -28,7 +28,7 @@ func TestGetRandomSatisfiedChannelSelectsAdvancedCustomForPlaygroundPath(t *test
 	weight := uint(1)
 	channel := Channel{
 		Id:       940001,
-		Type:     constant.ChannelTypeBrandedAggregate,
+		Type:     constant.ChannelTypeAdvancedCustom,
 		Status:   common.ChannelStatusEnabled,
 		Name:     "aggregate",
 		Models:   "claude-opus-5-5",
@@ -65,7 +65,7 @@ func TestGetRandomSatisfiedChannelRejectsWrongRouteFromPlaygroundPath(t *testing
 
 	channel := Channel{
 		Id:     940002,
-		Type:   constant.ChannelTypeBrandedAggregate,
+		Type:   constant.ChannelTypeAdvancedCustom,
 		Status: common.ChannelStatusEnabled,
 		Name:   "responses-only",
 		Models: "claude-opus-5-5",
@@ -95,7 +95,7 @@ func TestGetChannelFromDatabaseNormalizesPlaygroundPath(t *testing.T) {
 	truncateTables(t)
 	channel := Channel{
 		Id:     940003,
-		Type:   constant.ChannelTypeBrandedAggregate,
+		Type:   constant.ChannelTypeAdvancedCustom,
 		Status: common.ChannelStatusEnabled,
 		Name:   "aggregate-db",
 		Models: "claude-opus-5-5",

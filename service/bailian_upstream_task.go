@@ -155,7 +155,11 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 	states := loadBailianChannelSyncState()
 	due := make([]dreamRouterDueChannel, 0, len(channels))
 	for _, channel := range channels {
-		schedule, _ := GetChannelPricingSchedule(channel.Id)
+		schedule, explicit := GetChannelPricingSchedule(channel.Id)
+		if !explicit {
+			schedule.Enabled = true
+			schedule.ApplyOnSync = true
+		}
 		modelInterval, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if !force && state.NextAttemptAt > now.Unix() {
@@ -243,6 +247,7 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				fail(fmt.Errorf("clear stale auto prices: %w", clearErr))
 				continue
 			}
+			AutoVerifyChannelPricing(channel.Id)
 
 			if item.schedule.Enabled && item.schedule.ApplyOnSync {
 				item.schedule.Basis = BatchPricingBasisChannel

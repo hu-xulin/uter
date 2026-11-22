@@ -20,7 +20,6 @@ import { z } from 'zod'
 
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
-  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_NEW_API,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -41,7 +40,6 @@ import {
   stringifyAdvancedCustomConfig,
   validateAdvancedCustomConfig,
 } from './advanced-custom'
-import { BRANDED_ADVANCED_CUSTOM_PROVIDERS } from './branded-channel-providers'
 import { readTaskExtendPluginKeys } from './channel-plugin-extensions'
 import { supportsResponsesWebSocket } from './responses-websocket'
 
@@ -313,14 +311,12 @@ export const channelFormSchema = z
     if (
       [
         3,
-        8,
         36,
         45,
         CHANNEL_TYPE_NEW_API,
         CHANNEL_TYPE_TASK_PLUGIN,
         CHANNEL_TYPE_VLLM,
         CHANNEL_TYPE_SGLANG,
-        CHANNEL_TYPE_APIKO,
       ].includes(data.type) &&
       !data.base_url?.trim()
     ) {
@@ -905,24 +901,6 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
       formData.advanced_custom
     )
     if (advancedCustomConfig) {
-      // Branded channel types (600/601/602) carry a preset display name and logo
-      // seeded at creation time. Persist them even when the preset selection
-      // or the advanced-custom route editor did not write them back, so the
-      // channel card always renders with its brand identity.
-      const branded = BRANDED_ADVANCED_CUSTOM_PROVIDERS.find(
-        (provider) => provider.type === formData.type
-      )
-      if (branded) {
-        if (!advancedCustomConfig.display_name?.trim()) {
-          advancedCustomConfig.display_name = branded.displayName
-        }
-        if (!advancedCustomConfig.logo?.trim()) {
-          advancedCustomConfig.logo = branded.logo
-        }
-        if (!advancedCustomConfig.logo_dark?.trim()) {
-          advancedCustomConfig.logo_dark = branded.logoDark
-        }
-      }
       settingsObj.advanced_custom = advancedCustomConfig
     }
   } else if ('advanced_custom' in settingsObj) {

@@ -183,3 +183,55 @@ func TestCreateXXAPIChannelsAppliesGroupMultiplier(t *testing.T) {
 	require.NotNil(t, cost, "group multiplier must also produce a purchase contract")
 	assert.Contains(t, cost.Pricing.BillingExpr, "* 2.5")
 }
+
+// 每个输入框可以放多把密钥：生成一个多密钥渠道，模型取并集。
+func TestCreateXXAPIChannelsSupportsMultipleKeysPerBox(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	require.NoError(t, db.AutoMigrate(
+		&model.ChannelModelPricing{}, &model.ChannelPricingHistory{},
+		&model.Model{}, &model.Vendor{}, &model.Option{},
+	))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.URL.Path == "/v1/models" && r.Header.Get("Authorization") == "Bearer key-1":
+			_, _ = w.Write([]byte(`{"data":[{"id":"claude-a"}]}`))
+		case r.URL.Path == "/v1/models" && r.Header.Get("Authorization") == "Bearer key-2":
+			_, _ = w.Write([]byte(`{"data":[{"id":"claude-b"}]}`))
+		case r.URL.Path == "/api/pricing":
+			_, _ = w.Write([]byte(`{"success":true,"data":[
+				{"model_name":"claude-a","billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p + c)"},
+				{"model_name":"claude-b","billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 2 + c)"}
+			]}`))
+		default:
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	t.Cleanup(server.Close)
+	previousBase := xxapiBaseURLForTest
+	xxapiBaseURLForTest = server.URL
+	t.Cleanup(func() { xxapiBaseURLForTest = previousBase })
+
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/api/channel/xxapi",
+		strings.NewReader(`{"claude_keys":["key-1","key-2"]}`))
+	ctx.Request.Header.Set("Content-Type", "application/json")
+
+	CreateXXAPIChannels(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "xxapi-claude" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+	assert.Equal(t, "claude-a,claude-b", created.Models)
+	assert.True(t, created.ChannelInfo.IsMultiKey)
+	assert.Equal(t, 2, created.ChannelInfo.MultiKeySize)
+	assert.Equal(t, "key-1\nkey-2", created.Key)
+}

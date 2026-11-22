@@ -43,7 +43,6 @@ import { resolveLocalizedText } from '@/lib/localized-text'
 import type { TaskPluginOption } from '../../api'
 import {
   CHANNEL_PROVIDER_PRESENTATION,
-  CHANNEL_TYPE_APIKO,
   CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -51,12 +50,8 @@ import {
 } from '../../constants'
 import {
   CHANNEL_TYPE_ADVANCED_CUSTOM,
-  CHANNEL_TYPE_BRANDED_AGGREGATE,
-  CHANNEL_TYPE_BRANDED_PROXY,
-  CHANNEL_TYPE_BRANDED_SHARED,
   isAdvancedCustomLikeChannelType,
 } from '../../lib/advanced-custom'
-import { BRANDED_ADVANCED_CUSTOM_PROVIDERS } from '../../lib/branded-channel-providers'
 import type { ChannelProviderTarget } from '../../lib/channel-configuration'
 import {
   getChannelPluginExtensions,
@@ -74,6 +69,12 @@ type ChannelProviderPickerProps = {
   disabled: boolean
   onRetry: () => void
   onSelect: (target: ChannelProviderTarget) => void
+}
+
+function providerLogoChannelType(target: ChannelProviderTarget): number {
+  if (target.kind === 'builtin') return target.type
+  if (target.kind === 'xxapi') return CHANNEL_TYPE_ADVANCED_CUSTOM
+  return CHANNEL_TYPE_TASK_PLUGIN
 }
 
 function providerOptionAriaLabel(
@@ -161,25 +162,8 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         // Keep legacy Zhipu available when editing existing channels.
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
-        // xxapi replaces Apiko in the creation flow; existing Apiko channels
-        // stay editable through their channel type.
-        if (props.isCreating && option.value === CHANNEL_TYPE_APIKO) continue
         if (replacedTypes.has(option.value)) continue
-        // The branded Advanced Custom variants (600/601/602) are surfaced below as
-        // dedicated provider cards with their own logos. Skipping them here
-        // avoids duplicate cards that look identical except for the generic Uter
-        // logo used by the raw channel-type entries.
-        if (
-          option.value === CHANNEL_TYPE_BRANDED_SHARED ||
-          option.value === CHANNEL_TYPE_BRANDED_AGGREGATE ||
-          option.value === CHANNEL_TYPE_BRANDED_PROXY
-        ) {
-          continue
-        }
-        const isCustom =
-          option.value === 8 ||
-          option.value === CHANNEL_TYPE_ADVANCED_CUSTOM ||
-          option.value === CHANNEL_TYPE_APIKO
+        const isCustom = option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
         const isGateway =
           option.value === CHANNEL_TYPE_UTER || option.value === 59
         if (filter === 'gateway' && !isGateway) continue
@@ -232,30 +216,6 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         ),
         searchText: `xxapi claude gpt ${t('xxapi gateway: the Claude key and the GPT key create two channels')}`,
       })
-    }
-    // Branded shortcuts that are first-class variants of the "Advanced Custom"
-    // channel, each with its own distinct type number (600/601/602). They behave
-    // exactly like an Advanced Custom channel; the only difference is the preset
-    // display name and logo seeded at creation time. They surface under the same
-    // filters as Advanced Custom (all + custom).
-    if (filter !== 'plugin' && filter !== 'builtin' && filter !== 'gateway') {
-      for (const provider of BRANDED_ADVANCED_CUSTOM_PROVIDERS) {
-        entries.push({
-          id: `branded:${provider.id}`,
-          label: t(provider.labelKey),
-          target: {
-            kind: 'builtin',
-            type: provider.type,
-            presetDisplayName: provider.displayName,
-            presetLogo: provider.logo,
-            presetLogoDark: provider.logoDark,
-          },
-          description: t(provider.descriptionKey),
-          logo: provider.logo,
-          logoDark: provider.logoDark,
-          searchText: `${provider.id} ${provider.displayName} ${t(provider.labelKey)} ${provider.labelKey}`,
-        })
-      }
     }
     return entries.filter((entry) =>
       entry.searchText.toLocaleLowerCase().includes(keyword)
@@ -362,11 +322,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                   }
                   return (
                     <ChannelTypeLogo
-                      type={
-                        option.target.kind === 'builtin'
-                          ? option.target.type
-                          : CHANNEL_TYPE_TASK_PLUGIN
-                      }
+                      type={providerLogoChannelType(option.target)}
                       size={20}
                     />
                   )

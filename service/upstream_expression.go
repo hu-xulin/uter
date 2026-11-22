@@ -23,7 +23,7 @@ type UpstreamExpression struct {
 	Executable bool   `json:"executable"`
 }
 
-// NormalizeUpstreamExpression validates a New API/Apiko-style billing
+// NormalizeUpstreamExpression validates a New API-style billing
 // expression with Uter's billing engine. Unsupported syntax is never reduced
 // to a flat token price.
 func NormalizeUpstreamExpression(raw string) UpstreamExpression {
