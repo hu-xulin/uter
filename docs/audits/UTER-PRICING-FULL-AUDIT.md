@@ -167,6 +167,22 @@ catalog audit.
 7. Apiko runtime removal is complete; historical data migration must be handled
    separately before any production cleanup.
 
+## 5.0 Sample reconciliation attempt (2026-11-23)
+
+DreamRouter usage page: 9 rows today (00:27–03:30), 7 matched to Uter consume
+logs by timestamp, 2 unmatched (retry/timeout candidates).
+
+Submitting the 7 supplier lines through
+`POST /api/channel/32/upstream_reconciliation/samples` returned
+`NO_REQUEST: 7`: the supplier rows do not carry Uter request IDs, and the
+matching Uter billing snapshots have no purchase cost breakdown. Request-level
+reconciliation is therefore **BLOCKED** until either:
+
+- the operator supplies a mapping to Uter request IDs, or
+- purchase contracts are recorded and frozen into billing snapshots.
+
+This is a data-contract blocker, not a pricing-rule failure.
+
 ## 5.1 Historical data residue (production DB snapshot)
 
 Read-only audit of the local production database on 2026-11-23:
