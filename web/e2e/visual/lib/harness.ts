@@ -88,4 +88,70 @@ export async function openRoute(
 
   // 让布局再沉降一帧，收掉入场动画的最后一帧抖动。
   await page.waitForTimeout(250)
+
+  // 截图口径必须来自打包字体，而不是本机安装的 Inter/思源黑体：
+  // 后者随开发机不同而变化，会让同一份代码在不同机器上产生像素漂移。
+  // 这里在每次截图前显式加载并校验 400/500/600/700 四个字重，失败即报错，
+  // 不再让「字体没生效」伪装成正常的基线差异。
+  await assertBundledTypography(page)
+}
+
+/**
+ * 校验当前页面的排版由打包字体与设计 Token 决定。
+ *
+ * `--font-ui` 必须把 `Inter Variable` 放在首位、`Noto Sans SC Variable` 放在
+ * 本机思源黑体之前；正文实际字重必须等于 `--ds-weight-regular`。任何一项
+ * 不满足都说明本机字体或栈顺序会污染视觉基线。
+ */
+async function assertBundledTypography(page: Page): Promise<void> {
+  const audit = await page.evaluate(async () => {
+    const weights = ['400', '500', '600', '700']
+    await Promise.all([
+      ...weights.map((w) =>
+        document.fonts.load(`${w} 16px "Inter Variable"`, 'Weight 400')
+      ),
+      ...weights.map((w) =>
+        document.fonts.load(`${w} 16px "Noto Sans SC Variable"`, '思源黑体')
+      ),
+    ])
+    const root = getComputedStyle(document.documentElement)
+    const body = getComputedStyle(document.body)
+    return {
+      inter: weights.map((w) =>
+        document.fonts.check(`${w} 16px "Inter Variable"`, 'Weight 400')
+      ),
+      noto: weights.map((w) =>
+        document.fonts.check(`${w} 16px "Noto Sans SC Variable"`, '思源黑体')
+      ),
+      stack: body.fontFamily,
+      bodyWeight: body.fontWeight,
+      regular: root.getPropertyValue('--ds-weight-regular').trim(),
+    }
+  })
+  const notoIndex = audit.stack.indexOf('Noto Sans SC Variable')
+  const localHanIndex = audit.stack.indexOf('Source Han Sans SC')
+  const problems: string[] = []
+  if (!audit.stack.startsWith('"Inter Variable"')) {
+    problems.push(`--font-ui 未以打包 Inter 开头: ${audit.stack}`)
+  }
+  if (notoIndex < 0 || (localHanIndex >= 0 && localHanIndex < notoIndex)) {
+    problems.push(`打包思源黑体未排在本机思源之前: ${audit.stack}`)
+  }
+  if (audit.inter.includes(false)) {
+    problems.push('Inter Variable 未覆盖 400/500/600/700')
+  }
+  if (audit.noto.includes(false)) {
+    problems.push('Noto Sans SC Variable 未覆盖 400/500/600/700')
+  }
+  if (audit.regular === '' || audit.bodyWeight !== audit.regular) {
+    problems.push(
+      `正文字重 ${audit.bodyWeight} 与 --ds-weight-regular=${audit.regular} 不一致`
+    )
+  }
+  if (problems.length > 0) {
+    throw new Error(
+      `视觉基线字体口径不稳定：${problems.join('；')}。` +
+        '请确认打包字体已加载、--font-ui 顺序正确，且本机字体不得覆盖打包字体。'
+    )
+  }
 }
