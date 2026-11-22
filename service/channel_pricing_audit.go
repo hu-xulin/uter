@@ -142,6 +142,7 @@ func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 const (
 	UpstreamParityFullyMatched  = "FULLY_MATCHED"
 	UpstreamParityModelMismatch = "MODEL_MISMATCH"
+	UpstreamParityModelMissing  = "MODEL_MISSING"
 	UpstreamParityPriceMismatch = "PRICE_MISMATCH"
 	UpstreamParityRuleMismatch  = "RULE_MISMATCH"
 	UpstreamParityUnsupported   = "UNSUPPORTED"
@@ -170,11 +171,16 @@ type UpstreamParityModel struct {
 }
 
 type UpstreamParityReport struct {
-	ChannelID   int                   `json:"channel_id"`
-	ChannelName string                `json:"channel_name"`
-	GeneratedAt int64                 `json:"generated_at"`
-	Summary     map[string]int        `json:"summary"`
-	Models      []UpstreamParityModel `json:"models"`
+	ChannelID   int    `json:"channel_id"`
+	ChannelName string `json:"channel_name"`
+	GeneratedAt int64  `json:"generated_at"`
+	// CatalogCompared is true only when the complete upstream catalog was read
+	// and compared against Uter's rows in this report.
+	CatalogCompared    bool                  `json:"catalog_compared"`
+	CatalogError       string                `json:"catalog_error,omitempty"`
+	UpstreamModelCount int                   `json:"upstream_model_count,omitempty"`
+	Summary            map[string]int        `json:"summary"`
+	Models             []UpstreamParityModel `json:"models"`
 }
 
 // BuildUpstreamParityReport classifies every stored model. A model is fully
@@ -258,12 +264,53 @@ func BuildUpstreamParityReport(channelID int, channelName string, rows []model.C
 	return report
 }
 
+// BuildUpstreamParityReportWithCatalog adds models that exist upstream but
+// have no Uter pricing row. Checking only stored rows can never prove catalog
+// completeness, so callers must pass the freshly fetched upstream model IDs.
+func BuildUpstreamParityReportWithCatalog(
+	channelID int,
+	channelName string,
+	rows []model.ChannelModelPricing,
+	upstreamModels []string,
+	now time.Time,
+) UpstreamParityReport {
+	report := BuildUpstreamParityReport(channelID, channelName, rows, now)
+	report.CatalogCompared = true
+	report.UpstreamModelCount = len(upstreamModels)
+	if len(upstreamModels) == 0 {
+		return report
+	}
+	seen := make(map[string]struct{}, len(rows))
+	for _, row := range rows {
+		seen[row.ModelName] = struct{}{}
+	}
+	for _, name := range upstreamModels {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		report.Models = append(report.Models, UpstreamParityModel{
+			ModelName: name,
+			Status:    UpstreamParityModelMissing,
+			Reasons:   []string{parityReason(UpstreamParityModel{Status: UpstreamParityModelMissing})},
+		})
+		report.Summary[UpstreamParityModelMissing]++
+	}
+	sort.Slice(report.Models, func(i, j int) bool { return report.Models[i].ModelName < report.Models[j].ModelName })
+	return report
+}
+
 func parityReason(item UpstreamParityModel) string {
 	switch item.Status {
 	case UpstreamParitySyncFailed:
 		return "last upstream sync failed; the last known state is retained"
 	case UpstreamParityModelMismatch:
 		return "model is no longer active upstream"
+	case UpstreamParityModelMissing:
+		return "upstream model has no Uter pricing row"
 	case UpstreamParityPriceMismatch:
 		if item.HasOfficialEstimate && !item.HasChannelPrice {
 			return "official absolute price unavailable; only a ratio-derived estimate"

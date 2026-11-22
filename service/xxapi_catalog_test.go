@@ -69,3 +69,13 @@ func TestXXAPIProviderAdapterIsRegistered(t *testing.T) {
 	require.True(t, ok)
 	require.Len(t, result.Data, 1)
 }
+
+func TestXXAPIPricingEndpointAcceptsFullPriceURL(t *testing.T) {
+	endpoint, err := xxapiPricingEndpointFor("https://xxapi.ai/api/pricing")
+	require.NoError(t, err)
+	assert.Equal(t, "https://xxapi.ai/api/pricing", endpoint)
+
+	endpoint, err = xxapiPricingEndpointFor("https://xxapi.ai/v1")
+	require.NoError(t, err)
+	assert.Equal(t, "https://xxapi.ai/api/pricing", endpoint)
+}

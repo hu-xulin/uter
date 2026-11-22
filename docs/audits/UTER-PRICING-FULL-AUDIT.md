@@ -28,7 +28,7 @@ Packages reviewed: `model/`, `service/`, `controller/`, `relay/`,
 | P0-3 | P0 | XXAPI channel price sync called `/api/pricing` without the channel API key and XXAPI was absent from the provider adapter registry. | Fixed |
 | P0-4 | P0 | A channel that already had channel-scoped prices fell back to global pricing when one model row was missing. | Fixed |
 | P1-1 | P1 | Audit freshness used 7 days while the pricing screen used 48 hours. | Fixed |
-| P1-2 | P1 | Full upstream catalog parity (upstream models absent from DB) is still not computed in the audit report. | Open |
+| P1-2 | P1 | Full upstream catalog parity (upstream models absent from DB) is still not computed in the audit report. | Fixed: API now fetches the provider catalog and reports `MODEL_MISSING` |
 | P1-3 | P1 | Purchase cost display still exposes a primary dimension; the full contract is stored and billed, but unmapped dimensions rely on the contract parser. | Partially addressed |
 | P1-4 | P1 | Manual providers (OpenAI, Anthropic, Gemini, Azure, Bedrock, Tencent, Volcengine) still have no authorized automatic price API. | Open / blocked on data source |
 | P1-5 | P1 | Real upstream invoice reconciliation remains blocked pending authorized exports. | Blocked |
@@ -83,19 +83,49 @@ global path.
 | `go test ./service -run 'TestFetchXXAPIPricingPayloadSendsChannelKey|TestXXAPIProviderAdapterIsRegistered'` | passed |
 | `go test ./relay/helper -run 'TestScopedChannelMissingModelDoesNotFallBackToGlobalPrice'` | passed |
 
+## 4.1 Live catalog verification (2026-11-22)
+
+Commands:
+
+```bash
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditXXAPILive -v
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditDreamRouterLive|TestAuditBailianLive' -v
+```
+
+| Provider | Result |
+|---|---|
+| XXAPI | 51 models, 51 pricing records, 51 executable expressions, 14 groups, 0 failures |
+| DreamRouter | 86 records, 54 executable, 32 intentional review rows (24 ratio-only + 8 historical), 0 execution failures |
+| Bailian | 275 catalog models, 134 records, 105 internal prices, 102 executable; 3 image expressions fail on missing usage facts |
+
+Bailian failures requiring follow-up:
+
+- `qwen-image-3.0-pro` and `qwen-image-3.0`: `u("image_count")` is nil in the
+  settlement sample.
+- `z-image-turbo`: `u("prompt_extend")` is nil and cast to bool.
+
+These are usage-fact completeness issues, not price-format issues. Until the
+runtime guarantees those facts (or the expression gets a safe default), these
+three models must not be treated as fully verified.
+
 ## 5. Not verified / remaining work
 
-1. Full catalog comparison against every live upstream (including models absent
-   from `channel_model_pricing`) is not yet computed.
+1. Full catalog comparison is implemented through the provider adapters and is
+   reported by `GET /api/channel/:id/upstream_parity`. A provider without a
+   registered catalog adapter or without a usable key reports `catalog_error`
+   instead of claiming completeness.
 2. Purchase cost is stored as a full per-dimension contract and billed through
    `buildPurchaseCostRows`; the single primary value remains a display/estimate
    field and must never be treated as full contract cost.
 3. Manual providers still require operator-confirmed prices or official
    documents; no automatic fetch was invented for them.
-4. XXAPI real account sync was not executed in this pass; tests use a local
-   authenticated fixture. A real-key verification remains required.
+4. XXAPI public catalog was verified live (51/51 executable). Real-key group
+   sync still requires an authorized key; the pricing document itself is public.
 5. Real upstream invoice reconciliation is blocked without authorized billing
    exports.
+6. Bailian has three image expressions that fail when optional usage facts are
+   absent (see 4.1); they remain NEEDS_REVIEW until the runtime fact contract is
+   fixed.
 6. Decimal/currency conversion migration away from float64 is not complete.
 7. Apiko runtime removal is complete; historical data migration must be handled
    separately before any production cleanup.

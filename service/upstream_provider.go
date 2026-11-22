@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"sort"
+	"strings"
 )
 
 // UpstreamFetchConfig carries the credentials a provider adapter may need.
@@ -39,6 +40,50 @@ func init() {
 	for _, provider := range manualPricingProviders {
 		registerUpstreamAdapter(manualProviderAdapter{provider: provider})
 	}
+}
+
+// FetchUpstreamModelNames normalizes each provider's own catalog shape into
+// model IDs for completeness checks. Adapters keep their provider-specific
+// payloads; only this audit view is uniform.
+func FetchUpstreamModelNames(ctx context.Context, providerID string, cfg UpstreamFetchConfig) ([]string, error) {
+	payload, err := FetchUpstreamCatalog(ctx, providerID, cfg)
+	if err != nil {
+		return nil, err
+	}
+	names := make([]string, 0)
+	switch catalog := payload.(type) {
+	case *UpstreamSnapshot:
+		for _, item := range catalog.Models {
+			name := strings.TrimSpace(item.ModelName)
+			if name == "" {
+				name = strings.TrimSpace(item.UpstreamModelID)
+			}
+			if name != "" {
+				names = append(names, name)
+			}
+		}
+	case *BailianCatalog:
+		for _, item := range catalog.Models {
+			if name := strings.TrimSpace(item.Model); name != "" {
+				names = append(names, name)
+			}
+		}
+	case *GenericPricingPayload:
+		names = append(names, GenericModelNames(catalog.Data)...)
+	default:
+		return nil, errors.New("provider does not expose a normalized model catalog")
+	}
+	seen := make(map[string]struct{}, len(names))
+	unique := names[:0]
+	for _, name := range names {
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		seen[name] = struct{}{}
+		unique = append(unique, name)
+	}
+	sort.Strings(unique)
+	return unique, nil
 }
 
 // UpstreamProviders lists registered adapters with their real capabilities.

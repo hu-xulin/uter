@@ -132,6 +132,9 @@ func xxapiPricingEndpointFor(baseURL string) (string, error) {
 	}
 	parsed.Path = strings.TrimSuffix(parsed.Path, "/v1")
 	parsed.RawQuery = ""
+	if strings.HasSuffix(strings.TrimRight(parsed.Path, "/"), "/api/pricing") {
+		return strings.TrimRight(parsed.String(), "/"), nil
+	}
 	return parsed.String() + "/api/pricing", nil
 }
 
@@ -170,7 +173,7 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	}
 	if ratio != 1 {
 		for i := range records {
-			scaleXXAPIRecordPrice(&records[i], group, ratio)
+			applyGroupRatioToRecord(&records[i], group, ratio)
 		}
 	}
 	written, err := model.UpsertChannelOfficialPricing(records)
@@ -193,9 +196,9 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	return written, ratio, groupName, nil
 }
 
-// scaleXXAPIRecordPrice applies the group multiplier to the executable channel
+// applyGroupRatioToRecord applies the group multiplier to the executable channel
 // price and records the group/ratio on the normalized quote for audit.
-func scaleXXAPIRecordPrice(record *model.ChannelOfficialPricingRecord, group string, ratio float64) {
+func applyGroupRatioToRecord(record *model.ChannelOfficialPricingRecord, group string, ratio float64) {
 	if record == nil || ratio <= 0 || ratio == 1 {
 		return
 	}

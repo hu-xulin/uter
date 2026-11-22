@@ -102,7 +102,27 @@ func GetChannelUpstreamParity(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	common.ApiSuccess(c, service.BuildUpstreamParityReport(id, channel.Name, rows, time.Now().UTC()))
+	baseURL := ""
+	if channel.BaseURL != nil {
+		baseURL = strings.TrimSpace(*channel.BaseURL)
+	}
+	provider := service.UpstreamProviderForChannel(channel.Type, baseURL)
+	apiKey := ""
+	if key, _, keyErr := channel.GetNextEnabledKey(); keyErr == nil {
+		apiKey = strings.TrimSpace(key)
+	}
+	report := service.BuildUpstreamParityReport(id, channel.Name, rows, time.Now().UTC())
+	upstreamModels, catalogErr := service.FetchUpstreamModelNames(
+		c.Request.Context(), provider.ID,
+		service.UpstreamFetchConfig{BaseURL: baseURL, APIKey: apiKey, ChannelID: id},
+	)
+	if catalogErr != nil {
+		// Keep the stored-row report usable, but never claim catalog parity.
+		report.CatalogError = catalogErr.Error()
+	} else {
+		report = service.BuildUpstreamParityReportWithCatalog(id, channel.Name, rows, upstreamModels, time.Now().UTC())
+	}
+	common.ApiSuccess(c, report)
 }
 
 // GetChannelUpstreamReconciliation executes deterministic billing samples for

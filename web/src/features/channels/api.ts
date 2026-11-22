@@ -1,21 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
 import { getGroups as getUserGroups } from '@/features/users/api'
 import { api, type ApiRequestConfig } from '@/lib/api'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -235,11 +217,14 @@ export type XXAPICreateResult = {
  * models it can access and the GPT key only the GPT models, so a single channel
  * never rotates across pools.
  */
+export type XXAPIKeySlot = {
+  name: string
+  group: string
+  keys: string[]
+}
+
 export async function createXXAPIChannels(payload: {
-  claude_keys?: string[]
-  gpt_keys?: string[]
-  claude_group?: string
-  gpt_group?: string
+  slots: XXAPIKeySlot[]
   group?: string
 }): Promise<XXAPICreateResult> {
   const res = await api.post(
@@ -1404,12 +1389,32 @@ export async function runChannelSyncDiagnostics(
   return requireServerSuccess(res.data).data as ChannelSyncDiagnostics
 }
 
+export type ChannelUpstreamPriceSync = {
+  channel_id: number
+  written: number
+  models: string[]
+  models_added: number
+}
+
+export async function syncChannelUpstreamPrices(
+  channelId: number
+): Promise<ChannelUpstreamPriceSync> {
+  const res = await api.post(
+    `/api/channel/${channelId}/upstream/prices/sync`,
+    {},
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data as ChannelUpstreamPriceSync
+}
+
 export type UpstreamParityModel = {
   model_name: string
   status: string
   lifecycle_status?: string
   pricing_status: string
+  price_kind?: string
   has_official: boolean
+  has_official_estimate?: boolean
   has_channel_price: boolean
   has_internal_price: boolean
   expression_status?: string
@@ -1421,6 +1426,9 @@ export type UpstreamParityReport = {
   channel_id: number
   channel_name: string
   generated_at: number
+  catalog_compared?: boolean
+  catalog_error?: string
+  upstream_model_count?: number
   summary: Record<string, number>
   models: UpstreamParityModel[]
 }

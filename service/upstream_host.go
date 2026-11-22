@@ -67,6 +67,8 @@ func manualUpstreamProviderForHost(baseURL string) string {
 		return "tencent-hunyuan"
 	case MatchesUpstreamHost(baseURL, "volces.com"):
 		return "volcengine"
+	case MatchesUpstreamHost(baseURL, "xxapi.ai"):
+		return "xxapi"
 	default:
 		return ""
 	}

@@ -53,6 +53,15 @@ func auditInternal(t *testing.T, raw string) (string, bool) {
 			billingexpr.TokenParams{P: 1000, C: 500, Len: 1500, CR: 100, CC: 50},
 			billingexpr.RequestInput{Duration: floatPtr(5), ImageCount: &two, Usage: snapshot.UsageFacts},
 		)
+		if err != nil && strings.Contains(err.Error(), "fixed pricing is not supported for task usage") {
+			// Synchronous image generations use a fixed per-request price, not
+			// task usage billing. Validate the same expression on that path.
+			snapshot.TaskUsageBilling = false
+			res, err = billingexpr.ComputeTieredQuotaWithRequest(snapshot,
+				billingexpr.TokenParams{P: 1000, C: 500, Len: 1500, CR: 100, CC: 50},
+				billingexpr.RequestInput{Duration: floatPtr(5), ImageCount: &two, Usage: snapshot.UsageFacts},
+			)
+		}
 		if err != nil {
 			return "exec:" + err.Error(), false
 		}

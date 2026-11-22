@@ -104,3 +104,27 @@ func TestBuildUpstreamParityReportUses48HourFreshness(t *testing.T) {
 	assert.True(t, byName["stale"].Stale)
 	assert.Equal(t, UpstreamParityStale, byName["stale"].Status)
 }
+
+func TestBuildUpstreamParityReportWithCatalogFindsMissingModels(t *testing.T) {
+	now := time.Unix(10_000_000, 0)
+	input := auditFloatPtr(3)
+	rows := []model.ChannelModelPricing{
+		parityRow(t, "existing", model.ChannelOfficialPricing{
+			PriceKind: "OFFICIAL_ABSOLUTE",
+			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+		}, now.Unix()),
+	}
+
+	report := BuildUpstreamParityReportWithCatalog(
+		7, "apiko", rows, []string{"existing", "new-upstream-model"}, now,
+	)
+	require.True(t, report.CatalogCompared)
+	assert.Equal(t, 2, report.UpstreamModelCount)
+	assert.Equal(t, 1, report.Summary[UpstreamParityModelMissing])
+	byName := map[string]UpstreamParityModel{}
+	for _, item := range report.Models {
+		byName[item.ModelName] = item
+	}
+	assert.Equal(t, UpstreamParityFullyMatched, byName["existing"].Status)
+	assert.Equal(t, UpstreamParityModelMissing, byName["new-upstream-model"].Status)
+}
