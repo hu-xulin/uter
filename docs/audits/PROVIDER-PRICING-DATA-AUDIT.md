@@ -100,6 +100,14 @@
 
 ## 5. 计费一致性
 
+实际运行日志（2026-11-22 17:53）显示三家渠道均完成真实 Token 请求并按渠道价扣费：
+
+| channel | 模型 | quota | 关键快照 |
+|---|---|---|---|
+| 31 百炼 | deepseek-v4.1-flash-1017 | 14 | CNY / FX 6.69 / tiered_expr / peak:Default |
+| 32 DreamRouter | claude-fable-5 | 290 | USD / ratio 3.3 / completion 5 / cache 0.1 |
+| 33 Apiko | claude-fable-5 | 121 | USD / tiered_expr / base |
+
 - 52 个 DreamRouter 可执行内部价、15 个百炼内部价均通过确定性用量执行，
   无零额度/异常值。
 - 任务/退款/重复回调的计费合同测试通过（`go test ./model ./service ./controller`）。
