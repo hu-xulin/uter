@@ -52,6 +52,16 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 			common.ApiErrorMsg(c, "The selected channel Base URL is not dreamrouter.ai")
 			return
 		}
+		release, acquired, lockErr := service.AcquireChannelPricingSyncLock(req.ChannelID)
+		if lockErr != nil {
+			common.ApiError(c, lockErr)
+			return
+		}
+		if !acquired {
+			common.ApiErrorMsg(c, service.ErrPricingSyncInProgress.Error())
+			return
+		}
+		defer release()
 		channelModels = channel.GetModels()
 		discountGroup = service.GetDreamRouterDiscountGroup(req.ChannelID)
 		if strings.TrimSpace(req.DiscountGroup) != "" {

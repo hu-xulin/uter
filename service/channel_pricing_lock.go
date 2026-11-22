@@ -33,6 +33,12 @@ var ErrPricingSyncInProgress = errors.New("channel pricing sync is already runni
 
 const channelPricingSyncLockTTL = 10 * time.Minute
 
+// AcquireChannelPricingSyncLock is the exported form used by controller-level
+// manual syncs. Release must be called when acquired is true.
+func AcquireChannelPricingSyncLock(channelID int) (func(), bool, error) {
+	return acquireChannelPricingSyncLock(channelID)
+}
+
 // acquireChannelPricingSyncLock claims the cross-instance lock for one channel.
 // The returned release function is safe to call only when acquired is true.
 func acquireChannelPricingSyncLock(channelID int) (func(), bool, error) {
