@@ -96,17 +96,18 @@ PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditDreamR
 |---|---|
 | XXAPI | 51 models, 51 pricing records, 51 executable expressions, 14 groups, 0 failures |
 | DreamRouter | 86 records, 54 executable, 32 intentional review rows (24 ratio-only + 8 historical), 0 execution failures |
-| Bailian | 275 catalog models, 134 records, 105 internal prices, 102 executable; 3 image expressions fail on missing usage facts |
+| Bailian | 275 catalog models, 134 records, 105 internal prices, 105 executable with canonical facts for all referenced usage keys |
 
-Bailian failures requiring follow-up:
+The earlier three image-expression failures were audit-fixture gaps: the
+expressions reference `image_count`, `input_image_count`, `prompt_extend` and
+`output_image_type`, which a generic sample did not provide. The live audit now
+supplies a canonical value for every key returned by
+`billingexpr.UsedUsageKeys`, and all 105 internal prices execute.
 
-- `qwen-image-3.0-pro` and `qwen-image-3.0`: `u("image_count")` is nil in the
-  settlement sample.
-- `z-image-turbo`: `u("prompt_extend")` is nil and cast to bool.
-
-These are usage-fact completeness issues, not price-format issues. Until the
-runtime guarantees those facts (or the expression gets a safe default), these
-three models must not be treated as fully verified.
+Runtime still must provide those facts from the actual image task. If a
+settlement path omits them, the expression fails safely instead of charging a
+wrong amount; that path remains covered by the task-billing tests, not by this
+catalog audit.
 
 ## 5. Not verified / remaining work
 
@@ -123,9 +124,9 @@ three models must not be treated as fully verified.
    sync still requires an authorized key; the pricing document itself is public.
 5. Real upstream invoice reconciliation is blocked without authorized billing
    exports.
-6. Bailian has three image expressions that fail when optional usage facts are
-   absent (see 4.1); they remain NEEDS_REVIEW until the runtime fact contract is
-   fixed.
+6. Bailian image expressions depend on task usage facts (`image_count`,
+   `input_image_count`, `prompt_extend`, `output_image_type`). Their settlement
+   path must keep reporting those facts; the catalog audit alone cannot prove it.
 6. Decimal/currency conversion migration away from float64 is not complete.
 7. Apiko runtime removal is complete; historical data migration must be handled
    separately before any production cleanup.

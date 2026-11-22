@@ -43,15 +43,30 @@ func auditInternal(t *testing.T, raw string) (string, bool) {
 	switch pricing.Mode {
 	case model.ChannelPricingModeTieredExpr:
 		two := 2
+		facts := map[string]any{"duration": 5.0, "image_count": 2.0, "seconds": 5.0}
+		for key := range billingexpr.UsedUsageKeys(pricing.BillingExpr) {
+			if _, ok := facts[key]; ok {
+				continue
+			}
+			switch {
+			case key == "prompt_extend" || strings.HasPrefix(key, "is_") || strings.HasPrefix(key, "has_"):
+				facts[key] = true
+			case strings.Contains(key, "type") || strings.Contains(key, "resolution") ||
+				strings.Contains(key, "size") || strings.Contains(key, "mode"):
+				facts[key] = "standard"
+			default:
+				facts[key] = 2.0
+			}
+		}
 		snapshot := &billingexpr.BillingSnapshot{
 			BillingMode: "tiered_expr", ExprString: pricing.BillingExpr,
 			ExprHash: billingexpr.ExprHashString(pricing.BillingExpr), GroupRatio: 1,
 			QuotaPerUnit: 500000, TaskUsageBilling: true,
-			UsageFacts: map[string]any{"duration": 5.0, "image_count": 2.0},
+			UsageFacts: facts,
 		}
 		res, err := billingexpr.ComputeTieredQuotaWithRequest(snapshot,
 			billingexpr.TokenParams{P: 1000, C: 500, Len: 1500, CR: 100, CC: 50},
-			billingexpr.RequestInput{Duration: floatPtr(5), ImageCount: &two, Usage: snapshot.UsageFacts},
+			billingexpr.RequestInput{Duration: floatPtr(5), ImageCount: &two, Usage: facts},
 		)
 		if err != nil && strings.Contains(err.Error(), "fixed pricing is not supported for task usage") {
 			// Synchronous image generations use a fixed per-request price, not
