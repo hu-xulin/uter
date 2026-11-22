@@ -50,6 +50,9 @@ export default defineConfig({
   timeout: 120_000,
   forbidOnly: !!process.env.CI,
   retries: 0,
+  // CI must never create missing platform-specific baselines implicitly.
+  // Baseline refresh remains an explicit, reviewed `--update-snapshots` action.
+  updateSnapshots: 'none',
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: '../../.visual-e2e/report' }],
