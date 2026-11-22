@@ -1431,10 +1431,9 @@ export function ChannelMutateDrawer({
     if (!autoProvisionRuntime || !canAutoProvision) return
     if (configurationSection !== 'models') return
     if (!currentKey.trim()) return
-    if (discovery.status !== 'idle' && discovery.status !== 'stale') return
-    const signature = `${currentType}|${currentBaseUrl}|${currentKey}`
-    if (autoDiscoverySignatureRef.current === signature) return
-    autoDiscoverySignatureRef.current = signature
+    if (discovery.status !== 'idle') return
+    if (autoDiscoverySignatureRef.current === 'done') return
+    autoDiscoverySignatureRef.current = 'done'
     void discoveryFetchModels()
   }, [
     autoProvisionRuntime,
@@ -3490,42 +3489,56 @@ export function ChannelMutateDrawer({
   } else if (autoProvision.verification === 'error') {
     provisionVerificationText = t('Verification failed')
   }
+  let verificationStep: AutoProvisionStep = 'done'
+  if (autoProvision.verification === 'idle') {
+    verificationStep = 'idle'
+  } else if (autoProvision.verification === 'error') {
+    verificationStep = 'error'
+  }
   const provisionRows = [
     {
       id: 'models',
       label: t('Model catalog'),
       text: provisionModelsText,
-      running: autoProvision.models === 'running',
-      failed: autoProvision.models === 'error',
+      step: autoProvision.models,
+      attention: false,
     },
     {
       id: 'prices',
       label: t('Upstream prices'),
       text: provisionPricesText,
-      running: autoProvision.prices === 'running',
-      failed: autoProvision.prices === 'error',
+      step: autoProvision.prices,
+      attention: false,
     },
     {
       id: 'verification',
       label: t('Price check & billing rules'),
       text: provisionVerificationText,
-      running: false,
-      failed: autoProvision.verification === 'error',
+      step: verificationStep,
+      attention: autoProvision.verification === 'attention',
     },
   ]
 
-  const provisionBadgeVariant = (
-    failed: boolean,
-    running: boolean
-  ): 'destructive' | 'secondary' | 'default' => {
-    if (failed) return 'destructive'
-    if (running) return 'secondary'
-    return 'default'
-  }
-  const provisionStatusLabel = (failed: boolean, running: boolean): string => {
-    if (failed) return 'Failed'
-    if (running) return 'Running'
-    return 'Ready'
+  const provisionBadge = (row: (typeof provisionRows)[number]) => {
+    if (row.step === 'error') {
+      return {
+        variant: 'destructive' as const,
+        label: t('Failed'),
+      }
+    }
+    if (row.attention) {
+      return {
+        variant: 'warning' as const,
+        label: t('Needs review'),
+      }
+    }
+    if (row.step === 'done') {
+      return { variant: 'default' as const, label: t('Ready') }
+    }
+    if (row.step === 'running') {
+      return { variant: 'secondary' as const, label: t('Running') }
+    }
+    return { variant: 'secondary' as const, label: t('Pending') }
   }
 
   const autoProvisionPanel = canAutoProvision ? (
@@ -3542,20 +3555,21 @@ export function ChannelMutateDrawer({
         </p>
       </div>
       <dl className='space-y-2'>
-        {provisionRows.map((row) => (
-          <div
-            key={row.id}
-            className='flex flex-wrap items-center justify-between gap-2 text-sm'
-          >
-            <dt className='text-muted-foreground'>{row.label}</dt>
-            <dd className='flex items-center gap-2'>
-              <span className='font-medium'>{row.text}</span>
-              <Badge variant={provisionBadgeVariant(row.failed, row.running)}>
-                {t(provisionStatusLabel(row.failed, row.running))}
-              </Badge>
-            </dd>
-          </div>
-        ))}
+        {provisionRows.map((row) => {
+          const badge = provisionBadge(row)
+          return (
+            <div
+              key={row.id}
+              className='flex flex-wrap items-center justify-between gap-2 text-sm'
+            >
+              <dt className='text-muted-foreground'>{row.label}</dt>
+              <dd className='flex items-center gap-2'>
+                <span className='font-medium'>{row.text}</span>
+                <Badge variant={badge.variant}>{badge.label}</Badge>
+              </dd>
+            </div>
+          )
+        })}
       </dl>
       {autoProvision.error ? (
         <p className='text-destructive text-sm'>{autoProvision.error}</p>
@@ -5369,14 +5383,18 @@ export function ChannelMutateDrawer({
             {t('Review the configuration before creating the channel.')}
           </p>
         </div>
-        <Button
-          type='button'
-          variant='outline'
-          size='sm'
-          onClick={() => setConfigurationSection('pricing')}
-        >
-          {t('Open pricing')}
-        </Button>
+        {!isEditing && isXxapiTarget ? null : (
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            onClick={() =>
+              setConfigurationSection(isEditing ? 'pricing' : 'models')
+            }
+          >
+            {t('Open pricing')}
+          </Button>
+        )}
       </div>
       <dl className='overflow-hidden rounded-lg border'>
         {reviewRows.map((row, index) => (
