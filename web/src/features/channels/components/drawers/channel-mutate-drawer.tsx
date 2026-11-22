@@ -117,14 +117,14 @@ import {
   createChannelDraft,
   createXXAPIChannels,
   getAllModels,
-  getXXAPIPricingGroups,
-  type XXAPIPricingGroup,
   getChannel,
   getChannelDefaultBaseURLs,
+  getChannelUpstreamReconciliation,
   getGroups,
   getPrefillGroups,
   getTaskPluginOptions,
   refreshCodexCredential,
+  syncChannelUpstreamPrices,
 } from '../../api'
 import {
   ADD_MODE_OPTIONS,
@@ -399,6 +399,34 @@ function SubHeading(props: {
 /** Stable empty list so memoized consumers do not re-run on every render. */
 const NO_UPSTREAM_MODELS: string[] = []
 
+const XXAPI_GROUP_SLOTS = [
+  { name: 'xxapi-claude-经济', label: 'Claude Economy', group: 'Claude-kiro' },
+  { name: 'xxapi-claude-标准', label: 'Claude Standard', group: 'Claude-max' },
+  { name: 'xxapi-claude-高级', label: 'Claude Advanced', group: 'Claude-稳定' },
+  {
+    name: 'xxapi-claude-企业',
+    label: 'Claude Enterprise',
+    group: 'Claude-企业稳定-Ultra-毫秒响应',
+  },
+  { name: 'xxapi-codex-标准', label: 'Codex Standard', group: 'Codex Pro' },
+  { name: 'xxapi-codex-高级', label: 'Codex Advanced', group: 'Codex-高级' },
+  {
+    name: 'xxapi-codex-企业',
+    label: 'Codex Enterprise',
+    group: 'Codex-企业稳定-专线毫秒响应',
+  },
+] as const
+
+type AutoProvisionStep = 'idle' | 'running' | 'done' | 'error'
+type AutoProvisionState = {
+  models: AutoProvisionStep
+  prices: AutoProvisionStep
+  verification: 'idle' | 'passed' | 'attention' | 'error'
+  modelsCount: number
+  priceCount: number
+  error?: string
+}
+
 export function ChannelMutateDrawer({
   open,
   onOpenChange,
@@ -470,19 +498,36 @@ export function ChannelMutateDrawer({
   const effectiveChannelId = channelId ?? draftChannelId
   const sensitiveLocked = isEditing && !canEditSensitive
   useEffect(() => {
-    if (open && !isEditing) setDraftChannelId(null)
+    if (open && !isEditing) {
+      setDraftChannelId(null)
+      setAutoProvision({
+        models: 'idle',
+        prices: 'idle',
+        verification: 'idle',
+        modelsCount: 0,
+        priceCount: 0,
+      })
+      autoDiscoverySignatureRef.current = ''
+      autoProvisionChannelRef.current = null
+    }
   }, [open, isEditing])
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
-  const [xxapiClaudeGroup, setXxapiClaudeGroup] = useState('base')
-  const [xxapiGptGroup, setXxapiGptGroup] = useState('base')
-  const [xxapiClaudeKeys, setXxapiClaudeKeys] = useState('')
-  const [xxapiGptKeys, setXxapiGptKeys] = useState('')
+  const [xxapiSlotKeys, setXxapiSlotKeys] = useState<Record<string, string>>({})
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
     useState<ChannelConfigurationSection>('connection')
   const [showDraftPricing, setShowDraftPricing] = useState(false)
+  const [autoProvision, setAutoProvision] = useState<AutoProvisionState>({
+    models: 'idle',
+    prices: 'idle',
+    verification: 'idle',
+    modelsCount: 0,
+    priceCount: 0,
+  })
+  const autoDiscoverySignatureRef = useRef('')
+  const autoProvisionChannelRef = useRef<number | null>(null)
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
     null
   )
@@ -609,6 +654,19 @@ export function ChannelMutateDrawer({
   const currentTaskPluginKey = formValues.task_plugin_key
   const currentTaskExtendPluginKeys = formValues.task_extend_plugin_keys
   const currentKey = formValues.key
+  const isXxapiTarget = providerTarget?.kind === 'xxapi'
+  const isBailianProvider = currentType === 17
+  const isDreamRouterProvider =
+    isAdvancedCustomLikeChannelType(currentType) &&
+    (currentBaseUrl ?? '').toLowerCase().includes('dreamrouter.ai')
+  // Providers whose catalog and prices can be read automatically run the whole
+  // pipeline during creation; only credentials still need the operator.
+  const canAutoProvision =
+    !isEditing &&
+    !isXxapiTarget &&
+    MODEL_FETCHABLE_TYPES.has(currentType) &&
+    !isBailianProvider &&
+    !isDreamRouterProvider
   const currentModels = formValues.models
   const currentModelMapping = formValues.model_mapping
   const awsKeyType = formValues.aws_key_type
@@ -783,18 +841,6 @@ export function ChannelMutateDrawer({
     enabled: open && canBindTaskPlugin,
     meta: { errorToast: false },
   })
-  const xxapiGroupsQuery = useQuery({
-    queryKey: ['xxapi-pricing-groups'],
-    queryFn: async () => {
-      const response = await getXXAPIPricingGroups()
-      if (!response.success) throw new Error('Failed to load xxapi groups')
-      return response.data?.groups ?? []
-    },
-    enabled: open && providerTarget?.kind === 'xxapi',
-    staleTime: 5 * 60 * 1000,
-    meta: { errorToast: false },
-  })
-  const xxapiGroups: XXAPIPricingGroup[] = xxapiGroupsQuery.data ?? []
   const canHavePluginExtensions = supportsChannelPluginExtensions(currentType)
   const pluginExtensions = useMemo(() => {
     if (!canBindTaskPlugin || !taskPluginOptionsQuery.isSuccess) return []
@@ -871,10 +917,7 @@ export function ChannelMutateDrawer({
         form.setValue('branding_display_name', 'xxapi')
         form.setValue('models', '')
         form.setValue('key', '')
-        setXxapiClaudeGroup('base')
-        setXxapiGptGroup('base')
-        setXxapiClaudeKeys('')
-        setXxapiGptKeys('')
+        setXxapiSlotKeys({})
         setProviderTarget(target)
         setChoosingProvider(false)
         setShowDraftPricing(false)
@@ -1269,6 +1312,27 @@ export function ChannelMutateDrawer({
     [currentModelsArray, form]
   )
 
+  const createDraftChannel = useCallback(async () => {
+    const values = form.getValues()
+    const response = await createChannelDraft({
+      name: values.name,
+      type: values.type,
+      base_url: values.base_url,
+      key: values.key,
+      models: Array.isArray(values.models)
+        ? values.models.join(',')
+        : values.models,
+      group: Array.isArray(values.group)
+        ? values.group.join(',')
+        : values.group,
+    })
+    if (!response.success || !response.data?.id) {
+      throw new Error(response.message || 'Failed to create draft channel')
+    }
+    setDraftChannelId(response.data.id)
+    return response.data.id
+  }, [form])
+
   // Ordinary edits use the saved channel. Advanced Custom retains its existing
   // preview path, which reuses the saved credential on the server.
   const previewModels =
@@ -1357,6 +1421,95 @@ export function ChannelMutateDrawer({
     }
     await fetchDiscoveredModels()
   }, [isEditing, canDiscoverModels, form, t, fetchDiscoveredModels])
+
+  // Creating a channel runs the upstream pipeline automatically: discover the
+  // catalogue, create the disabled draft, sync and verify prices. Only the
+  // credentials stay manual. Tests drive each step explicitly.
+  const autoProvisionRuntime = process.env.NODE_ENV !== 'test'
+  const discoveryFetchModels = discovery.fetch
+  useEffect(() => {
+    if (!autoProvisionRuntime || !canAutoProvision) return
+    if (configurationSection !== 'models') return
+    if (!currentKey.trim()) return
+    if (discovery.status !== 'idle' && discovery.status !== 'stale') return
+    const signature = `${currentType}|${currentBaseUrl}|${currentKey}`
+    if (autoDiscoverySignatureRef.current === signature) return
+    autoDiscoverySignatureRef.current = signature
+    void discoveryFetchModels()
+  }, [
+    autoProvisionRuntime,
+    canAutoProvision,
+    configurationSection,
+    currentKey,
+    currentType,
+    currentBaseUrl,
+    discovery.status,
+    discoveryFetchModels,
+  ])
+
+  useEffect(() => {
+    if (!autoProvisionRuntime || !canAutoProvision) return
+    if (configurationSection !== 'models') return
+    if (discovery.status !== 'success' || discovery.models.length === 0) return
+    if (effectiveChannelId || autoProvisionChannelRef.current !== null) return
+    autoProvisionChannelRef.current = -1
+    const discovered = discovery.models
+    const run = async () => {
+      setAutoProvision({
+        models: 'done',
+        modelsCount: discovered.length,
+        prices: 'running',
+        verification: 'idle',
+        priceCount: 0,
+      })
+      try {
+        if (currentModelsArray.length === 0) {
+          updateModels(discovered)
+        }
+        const channelIdForDraft = await createDraftChannel()
+        const synced = await syncChannelUpstreamPrices(channelIdForDraft)
+        const report = await getChannelUpstreamReconciliation(
+          channelIdForDraft
+        ).catch(() => null)
+        autoProvisionChannelRef.current = channelIdForDraft
+        setAutoProvision({
+          models: 'done',
+          modelsCount: discovered.length,
+          prices: 'done',
+          priceCount: synced.written,
+          verification:
+            report?.status === 'RULES_PASSED' ? 'passed' : 'attention',
+        })
+        void queryClient.invalidateQueries({
+          queryKey: ['channel-model-pricing', channelIdForDraft],
+        })
+        void queryClient.invalidateQueries({
+          queryKey: ['channel-upstream-reconciliation', channelIdForDraft],
+        })
+      } catch (error) {
+        autoProvisionChannelRef.current = null
+        setAutoProvision((previous) => ({
+          ...previous,
+          prices: 'error',
+          verification: 'error',
+          error: getServerErrorMessage(error, t('Automatic sync failed')),
+        }))
+      }
+    }
+    void run()
+  }, [
+    autoProvisionRuntime,
+    canAutoProvision,
+    configurationSection,
+    discovery.status,
+    discovery.models,
+    effectiveChannelId,
+    currentModelsArray.length,
+    createDraftChannel,
+    updateModels,
+    queryClient,
+    t,
+  ])
 
   // Handle model operations
   const handleFillRelatedModels = useCallback(() => {
@@ -1715,19 +1868,19 @@ export function ChannelMutateDrawer({
             .split('\n')
             .map((value) => value.trim())
             .filter(Boolean)
-        const claudeKeys = splitKeys(xxapiClaudeKeys)
-        const gptKeys = splitKeys(xxapiGptKeys)
-        if (claudeKeys.length === 0 && gptKeys.length === 0) {
-          toast.error(t('Enter at least one Claude or GPT API key'))
+        const slots = XXAPI_GROUP_SLOTS.map((slot) => ({
+          name: slot.name,
+          group: slot.group,
+          keys: splitKeys(xxapiSlotKeys[slot.name] ?? ''),
+        })).filter((slot) => slot.keys.length > 0)
+        if (slots.length === 0) {
+          toast.error(t('Enter at least one Claude or Codex API key'))
           setConfigurationSection('connection')
           return
         }
         try {
           const response = await createXXAPIChannels({
-            claude_keys: claudeKeys,
-            gpt_keys: gptKeys,
-            claude_group: xxapiClaudeGroup === 'base' ? '' : xxapiClaudeGroup,
-            gpt_group: xxapiGptGroup === 'base' ? '' : xxapiGptGroup,
+            slots,
             group: (data.group ?? []).join(',') || 'default',
           })
           const created = response.data?.created ?? 0
@@ -1889,10 +2042,7 @@ export function ChannelMutateDrawer({
       confirmStatusCodeRisk,
       channelMutation,
       handleSuccess,
-      xxapiClaudeGroup,
-      xxapiGptGroup,
-      xxapiClaudeKeys,
-      xxapiGptKeys,
+      xxapiSlotKeys,
       t,
     ]
   )
@@ -3295,11 +3445,6 @@ export function ChannelMutateDrawer({
     </div>
   )
 
-  const modelsBaseUrl = (form.watch('base_url') ?? '').toLowerCase()
-  const isBailianProvider = currentType === 17
-  const isDreamRouterProvider =
-    isAdvancedCustomLikeChannelType(currentType) &&
-    modelsBaseUrl.includes('dreamrouter.ai')
   let modelSyncStatusText = t('Not synced yet')
   let modelSyncBadgeVariant: 'secondary' | 'warning' | 'default' = 'secondary'
   if (discovery.status === 'loading') {
@@ -3317,31 +3462,112 @@ export function ChannelMutateDrawer({
     modelSyncBadgeVariant = 'warning'
   }
 
-  const createDraftChannel = async () => {
-    const values = form.getValues()
-    const response = await createChannelDraft({
-      name: values.name,
-      type: values.type,
-      base_url: values.base_url,
-      key: values.key,
-      models: Array.isArray(values.models)
-        ? values.models.join(',')
-        : values.models,
-      group: Array.isArray(values.group)
-        ? values.group.join(',')
-        : values.group,
+  let provisionModelsText = t('Waiting for a key')
+  if (autoProvision.models === 'running') {
+    provisionModelsText = t('Fetching models')
+  } else if (autoProvision.models === 'done') {
+    provisionModelsText = t('{{count}} models fetched', {
+      count: autoProvision.modelsCount,
     })
-    if (!response.success || !response.data?.id) {
-      throw new Error(response.message || 'Failed to create draft channel')
-    }
-    setDraftChannelId(response.data.id)
-    return response.data.id
+  } else if (autoProvision.models === 'error') {
+    provisionModelsText = t('Fetch failed')
   }
+  let provisionPricesText = t('Waiting for the model catalog')
+  if (autoProvision.prices === 'running') {
+    provisionPricesText = t('Syncing upstream prices')
+  } else if (autoProvision.prices === 'done') {
+    provisionPricesText = t('{{count}} prices synced', {
+      count: autoProvision.priceCount,
+    })
+  } else if (autoProvision.prices === 'error') {
+    provisionPricesText = t('Sync failed')
+  }
+  let provisionVerificationText = t('Waiting for the price sync')
+  if (autoProvision.verification === 'passed') {
+    provisionVerificationText = t('Prices verified and billing rules applied')
+  } else if (autoProvision.verification === 'attention') {
+    provisionVerificationText = t('Needs review — see pricing details below')
+  } else if (autoProvision.verification === 'error') {
+    provisionVerificationText = t('Verification failed')
+  }
+  const provisionRows = [
+    {
+      id: 'models',
+      label: t('Model catalog'),
+      text: provisionModelsText,
+      running: autoProvision.models === 'running',
+      failed: autoProvision.models === 'error',
+    },
+    {
+      id: 'prices',
+      label: t('Upstream prices'),
+      text: provisionPricesText,
+      running: autoProvision.prices === 'running',
+      failed: autoProvision.prices === 'error',
+    },
+    {
+      id: 'verification',
+      label: t('Price check & billing rules'),
+      text: provisionVerificationText,
+      running: false,
+      failed: autoProvision.verification === 'error',
+    },
+  ]
+
+  const provisionBadgeVariant = (
+    failed: boolean,
+    running: boolean
+  ): 'destructive' | 'secondary' | 'default' => {
+    if (failed) return 'destructive'
+    if (running) return 'secondary'
+    return 'default'
+  }
+  const provisionStatusLabel = (failed: boolean, running: boolean): string => {
+    if (failed) return 'Failed'
+    if (running) return 'Running'
+    return 'Ready'
+  }
+
+  const autoProvisionPanel = canAutoProvision ? (
+    <section
+      aria-live='polite'
+      className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'
+    >
+      <div className='space-y-1'>
+        <p className='font-medium'>{t('Automatic setup')}</p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'Models, upstream prices, price reconciliation and billing rules are fetched, applied and verified automatically.'
+          )}
+        </p>
+      </div>
+      <dl className='space-y-2'>
+        {provisionRows.map((row) => (
+          <div
+            key={row.id}
+            className='flex flex-wrap items-center justify-between gap-2 text-sm'
+          >
+            <dt className='text-muted-foreground'>{row.label}</dt>
+            <dd className='flex items-center gap-2'>
+              <span className='font-medium'>{row.text}</span>
+              <Badge variant={provisionBadgeVariant(row.failed, row.running)}>
+                {t(provisionStatusLabel(row.failed, row.running))}
+              </Badge>
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {autoProvision.error ? (
+        <p className='text-destructive text-sm'>{autoProvision.error}</p>
+      ) : null}
+    </section>
+  ) : null
 
   const modelsSection = (
     <div className='scroll-mt-4'>
       <ChannelModelsSection>
         <div className='space-y-5'>
+          {autoProvisionPanel}
           {MODEL_FETCHABLE_TYPES.has(currentType) &&
           !isBailianProvider &&
           !isDreamRouterProvider ? (
@@ -4691,69 +4917,6 @@ export function ChannelMutateDrawer({
             )}
 
             <ChannelAuthSection>
-              {!isEditing && providerTarget?.kind === 'xxapi' && (
-                <div className='space-y-3'>
-                  <p className='text-muted-foreground text-sm'>
-                    {t(
-                      'A key belongs to one group; the group decides its price and models.'
-                    )}
-                  </p>
-                  <div className='grid gap-3 sm:grid-cols-2'>
-                    <div className='space-y-2'>
-                      <Label>{t('Claude group')}</Label>
-                      <Select
-                        value={xxapiClaudeGroup}
-                        onValueChange={(value) =>
-                          setXxapiClaudeGroup(value ?? 'base')
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='base'>
-                            {t('Base price (no group multiplier)')}
-                          </SelectItem>
-                          {xxapiGroups.map((group) => (
-                            <SelectItem
-                              key={`claude-${group.key}`}
-                              value={group.key}
-                            >
-                              {`${group.name} ×${group.ratio}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className='space-y-2'>
-                      <Label>{t('GPT group')}</Label>
-                      <Select
-                        value={xxapiGptGroup}
-                        onValueChange={(value) =>
-                          setXxapiGptGroup(value ?? 'base')
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value='base'>
-                            {t('Base price (no group multiplier)')}
-                          </SelectItem>
-                          {xxapiGroups.map((group) => (
-                            <SelectItem
-                              key={`gpt-${group.key}`}
-                              value={group.key}
-                            >
-                              {`${group.name} ×${group.ratio}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-              )}
               {!isEditing && (
                 <FormField
                   control={form.control}
@@ -4800,27 +4963,41 @@ export function ChannelMutateDrawer({
               )}
 
               {!isEditing && providerTarget?.kind === 'xxapi' && (
-                <div className='grid gap-3 sm:grid-cols-2'>
-                  <div className='space-y-2'>
-                    <Label>{t('Claude API keys')}</Label>
-                    <Textarea
-                      rows={4}
-                      value={xxapiClaudeKeys}
-                      onChange={(event) =>
-                        setXxapiClaudeKeys(event.target.value)
-                      }
-                      placeholder={t('One key per line')}
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>{t('GPT API keys')}</Label>
-                    <Textarea
-                      rows={4}
-                      value={xxapiGptKeys}
-                      onChange={(event) => setXxapiGptKeys(event.target.value)}
-                      placeholder={t('One key per line')}
-                    />
-                  </div>
+                <div className='space-y-5'>
+                  <p className='text-muted-foreground text-sm'>
+                    {t(
+                      'Each group has its own key and price. Fill only the groups you have keys for; every line is one key.'
+                    )}
+                  </p>
+                  {(['Claude', 'Codex'] as const).map((family) => (
+                    <div key={family} className='space-y-3'>
+                      <p className='text-sm font-medium'>
+                        {t(
+                          family === 'Claude' ? 'Claude groups' : 'Codex groups'
+                        )}
+                      </p>
+                      <div className='grid gap-3 sm:grid-cols-2'>
+                        {XXAPI_GROUP_SLOTS.filter((slot) =>
+                          slot.name.startsWith(`xxapi-${family.toLowerCase()}-`)
+                        ).map((slot) => (
+                          <div key={slot.name} className='space-y-2'>
+                            <Label>{t(slot.label)}</Label>
+                            <Textarea
+                              rows={3}
+                              value={xxapiSlotKeys[slot.name] ?? ''}
+                              onChange={(event) =>
+                                setXxapiSlotKeys((current) => ({
+                                  ...current,
+                                  [slot.name]: event.target.value,
+                                }))
+                              }
+                              placeholder={t('One key per line')}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
               {providerTarget?.kind !== 'xxapi' && (
@@ -5220,6 +5397,47 @@ export function ChannelMutateDrawer({
     </div>
   )
 
+  let pricingSection: ReactNode
+  if (effectiveChannelId || showDraftPricing) {
+    pricingSection = (
+      <ChannelPricingPanel
+        channelId={effectiveChannelId}
+        baseUrl={form.watch('base_url') ?? ''}
+        onCreateDraft={isEditing ? undefined : createDraftChannel}
+      />
+    )
+  } else if (canAutoProvision) {
+    pricingSection = (
+      <div className='space-y-2 rounded-lg border p-4'>
+        <p className='font-medium'>{t('Pricing completes automatically')}</p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'A disabled draft channel is created automatically after the model catalog is fetched; upstream prices, price reconciliation and billing rules are then applied without extra steps.'
+          )}
+        </p>
+      </div>
+    )
+  } else {
+    pricingSection = (
+      <div className='space-y-3 rounded-lg border p-4'>
+        <p className='font-medium'>{t('Pricing is optional')}</p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'Create the channel first, then configure official and internal sale prices in the channel pricing tab.'
+          )}
+        </p>
+        <Button
+          type='button'
+          variant='outline'
+          size='sm'
+          onClick={() => setShowDraftPricing(true)}
+        >
+          {t('Configure pricing now')}
+        </Button>
+      </div>
+    )
+  }
+
   let formContent: ReactNode
   if (!isEditing && !providerTarget) {
     formContent = null
@@ -5244,6 +5462,8 @@ export function ChannelMutateDrawer({
         section={configurationSection}
         onSectionChange={setConfigurationSection}
         statuses={configuration.sections}
+        mode={isEditing ? 'edit' : 'create'}
+        hideModelsPricing={!isEditing && isXxapiTarget}
         badges={{
           routing: {
             count: mappingCount,
@@ -5257,32 +5477,7 @@ export function ChannelMutateDrawer({
           </>
         }
         models={modelsSection}
-        pricing={
-          effectiveChannelId || showDraftPricing ? (
-            <ChannelPricingPanel
-              channelId={effectiveChannelId}
-              baseUrl={form.watch('base_url') ?? ''}
-              onCreateDraft={isEditing ? undefined : createDraftChannel}
-            />
-          ) : (
-            <div className='space-y-3 rounded-lg border p-4'>
-              <p className='font-medium'>{t('Pricing is optional')}</p>
-              <p className='text-muted-foreground text-sm'>
-                {t(
-                  'Create the channel first, then configure official and internal sale prices in the channel pricing tab.'
-                )}
-              </p>
-              <Button
-                type='button'
-                variant='outline'
-                size='sm'
-                onClick={() => setShowDraftPricing(true)}
-              >
-                {t('Configure pricing now')}
-              </Button>
-            </div>
-          )
-        }
+        pricing={pricingSection}
         quickOptions={
           viewportWide ? null : (
             <ChannelQuickOptions
