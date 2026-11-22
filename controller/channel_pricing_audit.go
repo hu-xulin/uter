@@ -62,6 +62,17 @@ func GetAllChannelPricingAudits(c *gin.Context) {
 	common.ApiSuccess(c, gin.H{"channels": audits, "orphans": orphans})
 }
 
+// ExportOrphanChannelPricing returns the read-only orphan-row backup payload.
+// GET /api/channel/pricing_audit/orphans
+func ExportOrphanChannelPricing(c *gin.Context) {
+	export, err := service.ExportOrphanChannelPricing(time.Now().UTC())
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, export)
+}
+
 // GetChannelSyncCapabilities returns the provider capability matrix for one
 // channel. It is read-only and never probes the upstream.
 // GET /api/channel/:id/sync_capabilities

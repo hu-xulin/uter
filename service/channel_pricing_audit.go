@@ -361,3 +361,20 @@ func AuditOrphanChannelPricing() (OrphanPricingAudit, error) {
 	}
 	return audit, nil
 }
+
+// OrphanPricingExport is the read-only backup/preview payload for orphan rows.
+type OrphanPricingExport struct {
+	GeneratedAt int64                       `json:"generated_at"`
+	Total       int64                       `json:"total"`
+	Rows        []model.ChannelModelPricing `json:"rows"`
+}
+
+// ExportOrphanChannelPricing returns every orphan row for backup. It never
+// deletes or modifies production data.
+func ExportOrphanChannelPricing(now time.Time) (OrphanPricingExport, error) {
+	rows, err := model.ListOrphanChannelPricingRows()
+	if err != nil {
+		return OrphanPricingExport{}, err
+	}
+	return OrphanPricingExport{GeneratedAt: now.Unix(), Total: int64(len(rows)), Rows: rows}, nil
+}

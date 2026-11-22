@@ -104,6 +104,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPost, path: "/copy/:id", permission: authz.ChannelSensitiveWrite, handler: controller.CopyChannel},
 	{method: http.MethodPost, path: "/multi_key/manage", permission: authz.ChannelOperate, handler: controller.ManageMultiKeys},
 	{method: http.MethodGet, path: "/pricing_audit", permission: authz.ChannelRead, handler: controller.GetAllChannelPricingAudits},
+	{method: http.MethodGet, path: "/pricing_audit/orphans", permission: authz.ChannelRead, handler: controller.ExportOrphanChannelPricing},
 	{method: http.MethodGet, path: "/:id/pricing_audit", permission: authz.ChannelRead, handler: controller.GetChannelPricingAudit},
 	{method: http.MethodGet, path: "/:id/upstream_parity", permission: authz.ChannelRead, handler: controller.GetChannelUpstreamParity},
 	{method: http.MethodGet, path: "/:id/upstream_reconciliation", permission: authz.ChannelRead, handler: controller.GetChannelUpstreamReconciliation},

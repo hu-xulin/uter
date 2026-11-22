@@ -1989,3 +1989,19 @@ func ListOrphanChannelPricing() ([]ChannelPricingOrphan, error) {
 		Scan(&rows).Error
 	return rows, err
 }
+
+// ListOrphanChannelPricingRows returns the full orphan rows for backup and
+// migration preview. It is read-only.
+func ListOrphanChannelPricingRows() ([]ChannelModelPricing, error) {
+	if DB == nil || !DB.Migrator().HasTable(&ChannelModelPricing{}) {
+		return nil, nil
+	}
+	var rows []ChannelModelPricing
+	err := DB.Table("channel_model_pricing AS cmp").
+		Joins("LEFT JOIN channels AS c ON c.id = cmp.channel_id").
+		Where("c.id IS NULL").
+		Order("cmp.channel_id, cmp.model_name").
+		Select("cmp.*").
+		Scan(&rows).Error
+	return rows, err
+}

@@ -178,8 +178,9 @@ Read-only audit of the local production database on 2026-11-23:
 | Apiko-provider rows (orphaned) | 69 |
 
 Orphan channel IDs in this snapshot: 26, 31, 33, 35, 36. These rows are not
-billable but remain in the table. They are now exposed by
-`GET /api/channel/pricing_audit` under `orphans`.
+billable but remain in the table. They are exposed by `GET /api/channel/pricing_audit` under `orphans`, and a
+read-only backup/preview payload is available at
+`GET /api/channel/pricing_audit/orphans`.
 
 Cleanup is intentionally **not** automatic. It requires a database backup,
 per-channel preview, and explicit operator approval. Apiko rows are historical

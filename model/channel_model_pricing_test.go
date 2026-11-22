@@ -1231,4 +1231,9 @@ func TestListOrphanChannelPricing(t *testing.T) {
 	require.Len(t, orphans, 1)
 	assert.Equal(t, 99, orphans[0].ChannelId)
 	assert.EqualValues(t, 2, orphans[0].Count)
+
+	rows, err := ListOrphanChannelPricingRows()
+	require.NoError(t, err)
+	require.Len(t, rows, 2)
+	assert.Equal(t, 99, rows[0].ChannelId)
 }
