@@ -99,6 +99,23 @@ gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
   `PHASE-06-PRICE-GOVERNANCE.md` now describe XXAPI in place of the removed
   Apiko runtime and state the historical-prefix boundary.
 
+## Request-level billing reconciliation samples (2026-11-23)
+
+Two real consume logs were matched to their written price contracts by channel,
+model and identical `created_at` (the supplier-side request ids are not the
+same, so the nearest-time mapping is used).
+
+| Log | Model / channel | Snapshot contract | Recalculation | Logged quota |
+|---|---|---|---|---:|
+| `8732` | `claude-fable-5` / `32` | `per_1m_token`, ratio `3.3`, completion `5` | `8×3.3 + 14×3.3×5 = 257.4` | `257` |
+| `8733` | `qwen3-coder-flash-2025-07-28` / `34` | tiered expression, first tier `p×0.149476831 + c×0.597907324`, then `×1.1` | `(9×0.149476831 + 9×0.597907324)×1.1 / 1e6 × 500000 ≈ 3.70` | `4` |
+
+Both snapshots carry the purchase price separately from the sale contract and
+mark `PurchaseVerified=false`, so the public quote is not presented as a
+verified contract. These samples close the flat-ratio and tiered-expression
+request-level checks; supplier invoice reconciliation still needs the vendor
+export and a supplier→Uter request-id mapping.
+
 ## Release matrix blocker
 
 The local environment has no Docker daemon and no MySQL/PostgreSQL server, so
