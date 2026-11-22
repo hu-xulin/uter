@@ -82,6 +82,29 @@ selection still fails `TestManageUserQuotaMiddlewareKeepsOneOperationPerRequest`
 because a legacy token is rejected; the same package passes under the project
 gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
 
+## Runtime rebuild and Apiko documentation cleanup (2026-11-23)
+
+- `web/` production build: exit 0; the served `index.html` references the newly
+  generated asset hashes, so port 3000 now uses the current UI bundle.
+- Root Go build with `GOWORK=off`: exit 0; local `uter-bin` rebuilt and
+  restarted after backing up the previous binary to `/tmp/uter-bin.prev`.
+- Browser verification of `/pricing` is **BLOCKED**: the unauthenticated
+  isolated session redirects to email-code sign-in, and no authorized session
+  credential is available. Data and unit-level rendering remain verified;
+  this is not reported as a visual pass.
+- Repository-wide runtime grep for `Apiko`/`apiko` finds no provider, route,
+  task, controller or model code. Only the `apiko-` prefix in the automatic
+  source classifier remains, intentionally, for historical-row audit.
+- `docs-dev/pricing-remediation/PHASE-03-PROVIDER-SYNC.md` and
+  `PHASE-06-PRICE-GOVERNANCE.md` now describe XXAPI in place of the removed
+  Apiko runtime and state the historical-prefix boundary.
+
+## Release matrix blocker
+
+The local environment has no Docker daemon and no MySQL/PostgreSQL server, so
+the required three-database matrix cannot be executed here. It must not be
+reported as passed until real SQLite, MySQL and PostgreSQL runs are recorded.
+
 ## Historical data snapshot
 
 - 711 channel pricing rows total.
