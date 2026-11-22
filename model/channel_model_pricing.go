@@ -938,6 +938,19 @@ func formatInternalPrice(value float64) string {
 	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
+// autoDerivedInternalSource reports whether a sale price was written by an
+// upstream sync. Only these may be cleared automatically; operator, batch and
+// approved prices are never touched.
+func autoDerivedInternalSource(source string) bool {
+	source = strings.ToLower(strings.TrimSpace(source))
+	for _, prefix := range []string{"dreamrouter-", "bailian-", "apiko-", "newapi-", "generic-"} {
+		if strings.HasPrefix(source, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 // internalPricingReplaceable reports whether a sync may rewrite the stored
 // internal price. An empty row and a previously sync-derived price are
 // replaceable; anything an operator saved is preserved.
@@ -1023,10 +1036,16 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 					LastSeenAt:         record.FetchedAt,
 					LifecycleUpdatedAt: now,
 				}
-				if row.InternalPricing != "" {
-					row.PricingStatus = ChannelPricingStatusConfigured
-				} else if officialPricingNeedsReview(record.NormalizedPricing) {
+				reviewOnly := officialPricingNeedsReview(record.NormalizedPricing)
+				autoInternal := record.InternalPricing != "" &&
+					autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
+				if reviewOnly && (record.InternalPricing == "" || autoInternal) {
+					// A review-only official record must never auto-enable billing.
+					// An operator/batch price is an explicit decision and stays.
+					row.InternalPricing = ""
 					row.PricingStatus = ChannelPricingStatusNeedsReview
+				} else if row.InternalPricing != "" {
+					row.PricingStatus = ChannelPricingStatusConfigured
 				}
 				row.PricingVersion = channelPricingVersion(row)
 				if err := tx.Create(&row).Error; err != nil {
@@ -1048,24 +1067,30 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			existing.PricingSource = record.Source
 			existing.FetchedAt = record.FetchedAt
 			existing.UpdatedAt = now
-			if record.InternalPricing != "" && internalPricingReplaceable(existing.InternalPricing) {
+			reviewOnly := officialPricingNeedsReview(record.NormalizedPricing)
+			incomingAuto := record.InternalPricing != "" &&
+				autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
+			if record.InternalPricing != "" && internalPricingReplaceable(existing.InternalPricing) &&
+				!(reviewOnly && incomingAuto) {
 				existing.InternalPricing = record.InternalPricing
 				existing.PricingStatus = ChannelPricingStatusConfigured
 			}
 			// Official catalog syncs no longer derive a sale price. A row whose
 			// previous internal price was auto-derived by the same provider
 			// returns to official_only instead of silently staying billable.
-			if record.InternalPricing == "" && strings.HasPrefix(record.Source, "bailian-") &&
-				strings.HasPrefix(internalPricingSource(existing.InternalPricing), "bailian-") {
+			if record.InternalPricing == "" && autoDerivedInternalSource(internalPricingSource(existing.InternalPricing)) {
 				existing.InternalPricing = ""
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
 			}
-			if existing.InternalPricing == "" && existing.PricingStatus != ChannelPricingStatusConfigured {
-				if officialPricingNeedsReview(existing.NormalizedPricing) {
-					existing.PricingStatus = ChannelPricingStatusNeedsReview
-				} else {
-					existing.PricingStatus = ChannelPricingStatusOfficialOnly
-				}
+			if reviewOnly && autoDerivedInternalSource(internalPricingSource(existing.InternalPricing)) {
+				// A stale automatic sale price cannot survive a review flag.
+				// Operator and batch prices are explicit and stay billable.
+				existing.InternalPricing = ""
+				existing.PricingStatus = ChannelPricingStatusNeedsReview
+			} else if reviewOnly && existing.InternalPricing == "" {
+				existing.PricingStatus = ChannelPricingStatusNeedsReview
+			} else if existing.InternalPricing == "" && existing.PricingStatus != ChannelPricingStatusConfigured {
+				existing.PricingStatus = ChannelPricingStatusOfficialOnly
 			}
 			if existing.PricingStatus == "" {
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
@@ -1343,6 +1368,128 @@ func ListChannelModelPricing(channelId int) ([]ChannelModelPricing, error) {
 	var rows []ChannelModelPricing
 	err := DB.Where("channel_id = ?", channelId).Order("model_name").Find(&rows).Error
 	return rows, err
+}
+
+// ClearAutoDerivedInternalForModels clears a provider's automatic sale price
+// for the named models, leaving operator/batch prices untouched. Used when the
+// upstream catalogue no longer publishes a price for a model.
+func ClearAutoDerivedInternalForModels(channelId int, provider string, modelNames []string, sourcePrefix string) (int, error) {
+	if DB == nil || channelId <= 0 || len(modelNames) == 0 || strings.TrimSpace(sourcePrefix) == "" {
+		return 0, nil
+	}
+	var rows []ChannelModelPricing
+	err := DB.Where("channel_id = ? AND provider = ? AND model_name IN ?", channelId, provider, modelNames).
+		Find(&rows).Error
+	if err != nil {
+		return 0, err
+	}
+	cleared := 0
+	for i := range rows {
+		row := &rows[i]
+		if !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+			continue
+		}
+		row.InternalPricing = ""
+		row.PricingStatus = ChannelPricingStatusOfficialOnly
+		row.UpdatedAt = time.Now().Unix()
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := DB.Model(row).Updates(map[string]any{
+			"internal_pricing": "",
+			"pricing_status":   row.PricingStatus,
+			"pricing_version":  row.PricingVersion,
+			"updated_at":       row.UpdatedAt,
+		}).Error; err != nil {
+			return cleared, err
+		}
+		cleared++
+	}
+	if cleared > 0 {
+		invalidateChannelPricingCache(channelId, "")
+		InvalidatePricingCache()
+	}
+	return cleared, nil
+}
+
+// EnforcePricingReviewGate clears automatic sale prices whose official record
+// is marked for review and pauses their billing. Operator, batch and approved
+// prices are explicit decisions and are left billable.
+func EnforcePricingReviewGate() (cleared int, err error) {
+	if DB == nil {
+		return 0, nil
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("pricing_status = ?", ChannelPricingStatusConfigured).Find(&rows).Error; err != nil {
+		return 0, err
+	}
+	for i := range rows {
+		row := &rows[i]
+		if !officialPricingNeedsReview(row.NormalizedPricing) {
+			continue
+		}
+		if !autoDerivedInternalSource(internalPricingSource(row.InternalPricing)) {
+			continue
+		}
+		row.InternalPricing = ""
+		row.PricingStatus = ChannelPricingStatusNeedsReview
+		row.UpdatedAt = time.Now().Unix()
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := DB.Model(row).Updates(map[string]any{
+			"internal_pricing": "",
+			"pricing_status":   row.PricingStatus,
+			"pricing_version":  row.PricingVersion,
+			"updated_at":       row.UpdatedAt,
+		}).Error; err != nil {
+			return cleared, err
+		}
+		cleared++
+	}
+	if cleared > 0 {
+		InvalidateChannelPricingCache()
+		InvalidatePricingCache()
+	}
+	return cleared, nil
+}
+
+// ClearAutoDerivedInternalExcept clears a provider's automatic sale prices for
+// channel models that are no longer in the current catalogue, leaving operator
+// and batch prices untouched. Historical official rows and prices stay.
+func ClearAutoDerivedInternalExcept(channelId int, provider string, keepModels []string, sourcePrefix string) (int, error) {
+	if DB == nil || channelId <= 0 || strings.TrimSpace(sourcePrefix) == "" {
+		return 0, nil
+	}
+	keep := make(map[string]bool, len(keepModels))
+	for _, name := range keepModels {
+		keep[strings.TrimSpace(name)] = true
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("channel_id = ? AND provider = ?", channelId, provider).Find(&rows).Error; err != nil {
+		return 0, err
+	}
+	cleared := 0
+	for i := range rows {
+		row := &rows[i]
+		if keep[row.ModelName] || !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+			continue
+		}
+		row.InternalPricing = ""
+		row.PricingStatus = ChannelPricingStatusOfficialOnly
+		row.UpdatedAt = time.Now().Unix()
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := DB.Model(row).Updates(map[string]any{
+			"internal_pricing": "",
+			"pricing_status":   row.PricingStatus,
+			"pricing_version":  row.PricingVersion,
+			"updated_at":       row.UpdatedAt,
+		}).Error; err != nil {
+			return cleared, err
+		}
+		cleared++
+	}
+	if cleared > 0 {
+		invalidateChannelPricingCache(channelId, "")
+		InvalidatePricingCache()
+	}
+	return cleared, nil
 }
 
 // DeleteUnpricedChannelModelPricing removes review-only rows for models the

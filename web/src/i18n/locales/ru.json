@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "Через запятую; пустое поле соответствует всем значениям.",
     "Tier rules must be a JSON array.": "Правила по уровням должны быть массивом JSON.",
     "Per-tier rules (optional)": "Правила по уровням (необязательно)",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Массив JSON с переопределениями по range_name/time_band. Несовпавшие уровни используют базовое правило; некорректный JSON блокирует предпросмотр."
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Массив JSON с переопределениями по range_name/time_band. Несовпавшие уровни используют базовое правило; некорректный JSON блокирует предпросмотр.",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "Шлюз xxapi: ключ Claude и ключ GPT создают два канала",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "Строка 1: ключ Claude. Строка 2: ключ GPT. Каждый ключ создаёт отдельный канал.",
+    "Claude key on line 1, GPT key on line 2": "Ключ Claude в строке 1, ключ GPT в строке 2",
+    "At most two keys: Claude first, GPT second": "Не более двух ключей: сначала Claude, затем GPT",
+    "xxapi channels created": "Каналы xxapi созданы",
+    "xxapi channels created, but some pricing syncs failed": "Каналы xxapi созданы, но часть синхронизаций цен не удалась",
+    "Failed to create xxapi channels": "Не удалось создать каналы xxapi",
+    "Claude group": "Группа Claude",
+    "GPT group": "Группа GPT",
+    "Base price (no group multiplier)": "Базовая цена (без множителя группы)",
+    "A key belongs to one group; the group decides its price and models.": "Ключ принадлежит одной группе; группа определяет цену и доступные модели."
   }
 }

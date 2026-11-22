@@ -55,6 +55,11 @@ type GenericPricingEntry struct {
 	PricingVersion         string   `json:"pricing_version,omitempty"`
 	OfficialPrice          *float64 `json:"official_price"`
 	OfficialRatio          *float64 `json:"official_ratio"`
+	// QuotaPerUnit is the instance's quota-to-dollar basis. A ratio can only
+	// become USD when this is known; assuming 500000 silently misprices other
+	// New API deployments.
+	QuotaPerUnit *float64 `json:"quota_per_unit,omitempty"`
+	Currency     string   `json:"currency,omitempty"`
 }
 
 // GenericModelNames returns the catalogue model ids in document order.
@@ -73,9 +78,27 @@ func GenericModelNames(entries []GenericPricingEntry) []string {
 }
 
 type GenericPricingPayload struct {
-	Data        []GenericPricingEntry `json:"data"`
-	GroupRatio  map[string]float64    `json:"group_ratio,omitempty"`
-	UsableGroup map[string]string     `json:"usable_group,omitempty"`
+	Data         []GenericPricingEntry `json:"data"`
+	GroupRatio   map[string]float64    `json:"group_ratio,omitempty"`
+	UsableGroup  map[string]string     `json:"usable_group,omitempty"`
+	QuotaPerUnit *float64              `json:"quota_per_unit,omitempty"`
+	// GroupDisplay maps the technical billing group to the operator-facing name
+	// (for example Codex Pro -> "Codex · 标准（稳定）").
+	GroupDisplay map[string]struct {
+		Name string `json:"name"`
+	} `json:"group_display,omitempty"`
+}
+
+// genericQuotaPerUnit resolves the ratio basis: the entry wins, then the
+// document. Zero means unknown and forbids ratio-to-USD conversion.
+func genericQuotaPerUnit(entry GenericPricingEntry, payload *GenericPricingPayload) float64 {
+	if entry.QuotaPerUnit != nil && *entry.QuotaPerUnit > 0 {
+		return *entry.QuotaPerUnit
+	}
+	if payload != nil && payload.QuotaPerUnit != nil && *payload.QuotaPerUnit > 0 {
+		return *payload.QuotaPerUnit
+	}
+	return 0
 }
 
 // GenericUpstreamBillingGroupKey stores the selected upstream billing group per
@@ -204,6 +227,18 @@ func GenericChannelPricingRecords(
 	entries []GenericPricingEntry,
 	now time.Time,
 ) []model.ChannelOfficialPricingRecord {
+	return GenericChannelPricingRecordsWithQuota(channelID, channelModels, entries, now, 0)
+}
+
+// GenericChannelPricingRecordsWithQuota also applies a document-level
+// quota_per_unit when an entry does not carry its own basis.
+func GenericChannelPricingRecordsWithQuota(
+	channelID int,
+	channelModels []string,
+	entries []GenericPricingEntry,
+	now time.Time,
+	quotaPerUnit float64,
+) []model.ChannelOfficialPricingRecord {
 	wanted := make(map[string]bool, len(channelModels))
 	for _, name := range channelModels {
 		name = strings.TrimSpace(name)
@@ -217,7 +252,11 @@ func GenericChannelPricingRecords(
 		if name == "" || (len(wanted) > 0 && !wanted[name]) {
 			continue
 		}
-		official, needsReview, reasons := genericOfficialPricing(entry, now.Unix())
+		quota := quotaPerUnit
+		if entry.QuotaPerUnit != nil && *entry.QuotaPerUnit > 0 {
+			quota = *entry.QuotaPerUnit
+		}
+		official, needsReview, reasons := genericOfficialPricing(entry, now.Unix(), quota)
 		raw, err := common.Marshal(entry)
 		if err != nil {
 			continue
@@ -259,7 +298,7 @@ func genericExpressionInternalPricing(entry GenericPricingEntry, updatedAt int64
 	return string(encoded)
 }
 
-func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.ChannelOfficialPricing, bool, []string) {
+func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPerUnit float64) (model.ChannelOfficialPricing, bool, []string) {
 	view := model.ChannelOfficialPricing{
 		Currency: "USD", Source: "newapi:/api/pricing", FetchedAt: fetchedAt,
 	}
@@ -325,9 +364,23 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 		view.ReviewReasons = []string{"NO_USABLE_RATIO"}
 		return view, true, view.ReviewReasons
 	}
-	// New API compatible pricing documents ratios against the standard
-	// 500,000-quota-per-dollar unit, so one ratio unit is 2 USD per 1M tokens.
-	const basisUSDPerMillion = 2.0
+	if quotaPerUnit <= 0 {
+		// Without the instance's quota basis a ratio is not a USD price. Keep
+		// the ratio for audit and block automatic pricing.
+		view.Unit = "ratio"
+		view.PriceKind = "RATIO_ONLY"
+		view.NeedsReview = true
+		view.ReviewReasons = []string{"RATIO_BASIS_UNKNOWN"}
+		view.RatioBasis = &model.ChannelRatioBasis{
+			RawRatio:           ratio,
+			RawCompletionRatio: entry.CompletionRatio,
+			Formula:            "ratio only; quota_per_unit is required",
+			FormulaVersion:     "newapi-quota-v1",
+		}
+		return view, true, view.ReviewReasons
+	}
+	// USD per 1M tokens = ratio * 1,000,000 / quota_per_unit.
+	basisUSDPerMillion := 1_000_000 / quotaPerUnit
 	input := ratio * basisUSDPerMillion
 	tier := model.ChannelPricingTier{
 		RangeName: "base", Unit: "per_1m_token", InputPerMillionUSD: &input,
@@ -336,8 +389,8 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 		RawRatio:           ratio,
 		RawCompletionRatio: entry.CompletionRatio,
 		BasisUSDPerMillion: basisUSDPerMillion,
-		Formula:            "usd_per_1m = ratio * basis_usd_per_million",
-		FormulaVersion:     "newapi-ratio-v1",
+		Formula:            "usd_per_1m = ratio * 1000000 / quota_per_unit",
+		FormulaVersion:     "newapi-quota-v1",
 		ResultInputUSD:     input,
 	}
 	view.PriceKind = kind
@@ -384,7 +437,10 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		return 0, nil, errors.New("upstream returned no pricing entries")
 	}
 	models := GenericModelNames(entries.Data)
-	records := GenericChannelPricingRecords(channel.Id, channel.GetModels(), entries.Data, time.Now().UTC())
+	records := GenericChannelPricingRecordsWithQuota(
+		channel.Id, channel.GetModels(), entries.Data, time.Now().UTC(),
+		genericQuotaPerUnit(GenericPricingEntry{}, entries),
+	)
 	if len(records) == 0 {
 		return 0, models, errors.New("no pricing entries matched the channel models")
 	}
@@ -393,13 +449,12 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		return written, models, err
 	}
 	applyGenericGroupPurchaseCost(channel.Id, entries, records)
-	seen := make([]string, 0, len(records))
-	for _, record := range records {
-		seen = append(seen, record.ModelName)
-	}
-	if len(seen) > 0 {
+	// Model existence and price availability are separate: a callable model
+	// without a public price stays in the catalogue and must not be disabled
+	// just because it produced no price record.
+	if len(models) > 0 {
 		if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
-			channel.Id, seen, time.Now().Unix(), model.ChannelModelMissingDisableThreshold,
+			channel.Id, models, time.Now().Unix(), model.ChannelModelMissingDisableThreshold,
 		); lifecycleErr != nil {
 			common.SysError(common.LogText("generic channel lifecycle update failed: channel_id=%d, error=%v", channel.Id, lifecycleErr))
 		}

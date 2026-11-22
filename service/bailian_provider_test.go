@@ -776,3 +776,47 @@ func TestBuildBailianCatalogCoverageMarksUnmatchedModels(t *testing.T) {
 	require.Equal(t, "KEEP_MANUAL", byName["private-x"].Action)
 	require.Equal(t, "IN_CATALOG", byName["qwen-a"].Action)
 }
+
+func TestBailianUnknownAndUSRegionsAreExplicit(t *testing.T) {
+	assert.Equal(t, BailianRegionUS, BailianRegionOf("https://dashscope-us.aliyuncs.com"))
+	assert.Equal(t, BailianRegionBeijing, BailianRegionOf("https://dashscope.aliyuncs.com"))
+	assert.Equal(t, BailianRegionUnspecified, BailianRegionOf("https://dashscope-unknown.aliyuncs.com"))
+
+	catalog := &BailianCatalog{Region: BailianRegionUnspecified, Models: []BailianModel{{Model: "m"}}}
+	assert.Empty(t, BailianPricingRecords(catalog, []string{"m"}), "unknown region must not produce price records")
+	currency, inferred := bailianCurrencyForRegion(BailianRegionUnspecified)
+	assert.Empty(t, currency)
+	assert.False(t, inferred)
+}
+
+func TestBailianMissingOutputIsNotFreeAndCacheConflictsBlock(t *testing.T) {
+	input := 1.0
+	missingOutput := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName: "Default", InputPerMillionUSD: &input, Unit: "per_1m_token",
+			RawPriceTypes: []string{"text_input_token"},
+		}},
+	}
+	assert.Empty(t, bailianInternalPricing(missingOutput), "chat model without output must stay review-only")
+
+	conflict := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		ReviewReasons: []string{"multiple cache read prices"},
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName: "Default", InputPerMillionUSD: &input, OutputPerMillionUSD: &input,
+			Unit: "per_1m_token",
+		}},
+	}
+	assert.Empty(t, bailianInternalPricing(conflict), "conflicting cache prices must block automatic pricing")
+
+	ttsInput := 100.0
+	tts := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token",
+		ChannelPriceTiers: []model.ChannelPricingTier{{
+			RangeName: "Default", InputPerMillionUSD: &ttsInput, Unit: "per_1m_tokens",
+			RawPriceTypes: []string{"cosy_tts_number"},
+		}},
+	}
+	assert.NotEmpty(t, bailianInternalPricing(tts), "audio synthesis has no output-token dimension")
+}

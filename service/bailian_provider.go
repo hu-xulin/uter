@@ -80,6 +80,9 @@ func ParseBailianWorkspace(baseURL string) (workspaceID string, region BailianRe
 			return "", candidate, true
 		}
 	}
+	if strings.Contains(host, "dashscope-us.aliyuncs.com") {
+		return "", BailianRegionUS, true
+	}
 	if strings.Contains(host, "dashscope-intl.aliyuncs.com") {
 		return "", BailianRegionSingapore, true
 	}
@@ -89,14 +92,15 @@ func ParseBailianWorkspace(baseURL string) (workspaceID string, region BailianRe
 	return "", "", false
 }
 
-// BailianRegionOf returns the region a base URL belongs to, defaulting to
-// Beijing for the generic DashScope host.
+// BailianRegionOf returns the region a base URL belongs to. An unknown host
+// stays UNKNOWN instead of silently becoming Beijing: a wrong region also picks
+// the wrong currency and price identity.
 func BailianRegionOf(baseURL string) BailianRegion {
 	_, region, ok := ParseBailianWorkspace(baseURL)
 	if ok && region != "" {
 		return region
 	}
-	return BailianRegionBeijing
+	return BailianRegionUnspecified
 }
 
 // BailianReferencePrice is the normalized, reference-only view of one official
@@ -166,11 +170,13 @@ func bailianCurrencyForRegion(region BailianRegion) (string, bool) {
 	switch region {
 	case BailianRegionBeijing, BailianRegionHongKong:
 		return "CNY", true
-	default:
+	case BailianRegionSingapore, BailianRegionJapan, BailianRegionGermany, BailianRegionUS:
 		// The official response does not carry a currency field. International
-		// regions are quoted in USD on Alibaba Cloud's price pages; flag the
-		// inference so an operator can correct it before relying on the value.
+		// regions are quoted in USD; flag the inference for operator review.
 		return "USD", true
+	default:
+		// Unknown region: do not infer a currency.
+		return "", false
 	}
 }
 
@@ -318,6 +324,11 @@ func ApplyBailianCatalog(catalog *BailianCatalog, channelModels []string) (*Bail
 // the untouched official payload is preserved on the row.
 func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []model.ChannelOfficialPricingRecord {
 	if catalog == nil || len(channelModels) == 0 {
+		return nil
+	}
+	if catalog.Region == BailianRegionUnspecified {
+		// Region controls both the price identity and the source currency.
+		// Without it no formal price record can be produced.
 		return nil
 	}
 	byName := make(map[string]BailianModel, len(catalog.Models))
@@ -474,6 +485,21 @@ func resolveBailianCatalogAlias(name string, byName map[string]BailianModel) (Ba
 
 var bailianVersionSuffixPattern = regexp.MustCompile(`^(.+?)-\d{4}(?:-\d{2}){0,2}$`)
 
+// bailianOutputNotApplicable reports whether the published price types show a
+// model without an output-token dimension, so a missing output price means N/A
+// rather than an incomplete quote.
+func bailianOutputNotApplicable(tier model.ChannelPricingTier) bool {
+	for _, rawType := range tier.RawPriceTypes {
+		lower := strings.ToLower(rawType)
+		for _, marker := range []string{"tts", "audio", "voice", "embedding", "rerank", "image"} {
+			if strings.Contains(lower, marker) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // bailianInternalPricing builds the channel's default sale price from the
 // Bailian official catalog price. A single executable tier becomes a flat
 // price; multiple token tiers become a tiered billing expression so
@@ -492,8 +518,9 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 	// unit, missing price) cannot be represented by one executable price.
 	for _, reason := range normalized.ReviewReasons {
 		switch reason {
-		case "multiple price ranges", "multiple cache read prices", "multiple cache creation prices",
-			"multiple thinking cache read prices", "multiple thinking cache creation prices":
+		case "multiple price ranges":
+			// Representable as tiered context ranges; everything else means a
+			// dimension cannot be distinguished and must stay review-only.
 		default:
 			return ""
 		}
@@ -532,11 +559,18 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 			}
 			internal.Mode = model.ChannelPricingModePerMillionTokens
 			internal.InputUSDPerMillion = tier.InputPerMillionUSD
-			if tier.OutputPerMillionUSD != nil {
-				internal.OutputUSDPerMillion = tier.OutputPerMillionUSD
-			} else {
+			if tier.OutputPerMillionUSD == nil {
+				if !bailianOutputNotApplicable(tier) {
+					// Missing output price is not free: without it the token
+					// sale price is incomplete and must stay review-only.
+					return ""
+				}
+				// Audio synthesis, embeddings and image models have no output
+				// token dimension; zero here is N/A, not a missing price.
 				zero := 0.0
 				internal.OutputUSDPerMillion = &zero
+			} else {
+				internal.OutputUSDPerMillion = tier.OutputPerMillionUSD
 			}
 			internal.CacheUSDPerMillion = tier.CachePerMillionUSD
 			if tier.CreateCachePerMillionUSD != nil && *tier.CreateCachePerMillionUSD > 0 {
@@ -810,6 +844,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	result := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "per_1m_token",
+		PriceKind: "CHANNEL_QUOTE",
 		Source:    bailianCatalogSource,
 		FetchedAt: fetchedAt,
 	}

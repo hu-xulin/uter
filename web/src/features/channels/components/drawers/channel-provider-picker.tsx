@@ -76,6 +76,20 @@ type ChannelProviderPickerProps = {
   onSelect: (target: ChannelProviderTarget) => void
 }
 
+function providerOptionAriaLabel(
+  option: { label: string; target: ChannelProviderTarget },
+  translate: (key: string) => string
+): string {
+  const target = option.target
+  if (target.kind === 'builtin') {
+    return `${option.label} ${translate('Built-in')} #${target.type}`
+  }
+  if (target.kind === 'plugin') {
+    return `${option.label} ${translate('Plugin')} ${target.key}`
+  }
+  return `${option.label} xxapi`
+}
+
 export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
   const { t, i18n } = useTranslation()
   const { resolvedTheme } = useTheme()
@@ -147,6 +161,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         // Keep legacy Zhipu available when editing existing channels.
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
+        // xxapi replaces Apiko in the creation flow; existing Apiko channels
+        // stay editable through their channel type.
+        if (props.isCreating && option.value === CHANNEL_TYPE_APIKO) continue
         if (replacedTypes.has(option.value)) continue
         // The branded Advanced Custom variants (600/601/602) are surfaced below as
         // dedicated provider cards with their own logos. Skipping them here
@@ -199,6 +216,22 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
           searchText: `${option.value} ${option.label} ${t(option.label)} ${extensions.map((plugin) => `${plugin.name} ${plugin.key}`).join(' ')}`,
         })
       }
+    }
+    if (
+      props.isCreating &&
+      filter !== 'plugin' &&
+      filter !== 'builtin' &&
+      filter !== 'gateway'
+    ) {
+      entries.push({
+        id: 'xxapi',
+        label: 'xxapi',
+        target: { kind: 'xxapi' },
+        description: t(
+          'xxapi gateway: the Claude key and the GPT key create two channels'
+        ),
+        searchText: `xxapi claude gpt ${t('xxapi gateway: the Claude key and the GPT key create two channels')}`,
+      })
     }
     // Branded shortcuts that are first-class variants of the "Advanced Custom"
     // channel, each with its own distinct type number (600/601/602). They behave
@@ -346,11 +379,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                       option.id === currentProviderId ? true : undefined
                     }
                     data-checked={option.id === currentProviderId}
-                    aria-label={
-                      option.target.kind === 'builtin'
-                        ? `${option.label} ${t('Built-in')} #${option.target.type}`
-                        : `${option.label} ${t('Plugin')} ${option.target.key}`
-                    }
+                    aria-label={providerOptionAriaLabel(option, t)}
                     aria-description={
                       [
                         option.badge && t(option.badge.labelKey),

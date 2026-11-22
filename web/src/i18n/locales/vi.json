@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "Phân tách bằng dấu phẩy; để trống để khớp mọi giá trị.",
     "Tier rules must be a JSON array.": "Quy tắc theo bậc phải là mảng JSON.",
     "Per-tier rules (optional)": "Quy tắc theo bậc (tùy chọn)",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Mảng JSON ghi đè theo range_name/time_band. Các bậc không khớp giữ quy tắc gốc; JSON không hợp lệ sẽ chặn bản xem trước."
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Mảng JSON ghi đè theo range_name/time_band. Các bậc không khớp giữ quy tắc gốc; JSON không hợp lệ sẽ chặn bản xem trước.",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "Cổng xxapi: khóa Claude và khóa GPT tạo hai kênh riêng",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "Dòng 1: khóa Claude. Dòng 2: khóa GPT. Mỗi khóa tạo một kênh riêng.",
+    "Claude key on line 1, GPT key on line 2": "Khóa Claude ở dòng 1, khóa GPT ở dòng 2",
+    "At most two keys: Claude first, GPT second": "Tối đa hai khóa: Claude trước, GPT sau",
+    "xxapi channels created": "Đã tạo các kênh xxapi",
+    "xxapi channels created, but some pricing syncs failed": "Đã tạo các kênh xxapi nhưng một số lần đồng bộ giá thất bại",
+    "Failed to create xxapi channels": "Tạo kênh xxapi thất bại",
+    "Claude group": "Nhóm Claude",
+    "GPT group": "Nhóm GPT",
+    "Base price (no group multiplier)": "Giá cơ bản (không nhân hệ số nhóm)",
+    "A key belongs to one group; the group decides its price and models.": "Mỗi khóa thuộc một nhóm; nhóm quyết định giá và các mô hình khả dụng."
   }
 }

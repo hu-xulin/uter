@@ -59,7 +59,7 @@ func TestGenericChannelPricingRecordsPreserveShapes(t *testing.T) {
 		{ModelName: "call-a", QuotaType: 1, ModelPrice: 0.04},
 		{ModelName: "tiered-a", QuotaType: 0, BillingMode: "tiered_expr", BillingExpr: "tier(...)"},
 	}
-	records := GenericChannelPricingRecords(7, []string{"token-a", "call-a", "tiered-a"}, entries, time.Unix(100, 0))
+	records := GenericChannelPricingRecordsWithQuota(7, []string{"token-a", "call-a", "tiered-a"}, entries, time.Unix(100, 0), 500000)
 	require.Len(t, records, 3)
 
 	byName := map[string]model.ChannelOfficialPricing{}
@@ -95,7 +95,7 @@ func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
 		{ModelName: "official-token-price", QuotaType: 0, OfficialPrice: &officialPrice},
 		{ModelName: "official-call", QuotaType: 1, ModelPrice: 0.04, OfficialPrice: &officialPrice},
 	}
-	records := GenericChannelPricingRecords(9, []string{"ratio", "official-ratio", "official-token-price", "official-call"}, entries, time.Unix(100, 0))
+	records := GenericChannelPricingRecordsWithQuota(9, []string{"ratio", "official-ratio", "official-token-price", "official-call"}, entries, time.Unix(100, 0), 500000)
 	require.Len(t, records, 4)
 
 	byName := map[string]model.ChannelOfficialPricing{}
@@ -134,7 +134,7 @@ func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
 		{ModelName: "served", QuotaType: 0, ModelRatio: 1, CompletionRatio: 2},
 		{ModelName: "not-served", QuotaType: 0, ModelRatio: 1, CompletionRatio: 2},
 	}
-	records := GenericChannelPricingRecords(7, []string{"served"}, entries, time.Unix(100, 0))
+	records := GenericChannelPricingRecordsWithQuota(7, []string{"served"}, entries, time.Unix(100, 0), 500000)
 	require.Len(t, records, 1)
 	require.Equal(t, "served", records[0].ModelName)
 }
@@ -225,4 +225,39 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, summary.CostVerified)
 	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
+}
+
+func TestGenericRatioWithoutQuotaStaysReviewOnly(t *testing.T) {
+	records := GenericChannelPricingRecords(11, []string{"ratio"}, []GenericPricingEntry{
+		{ModelName: "ratio", ModelRatio: 1, CompletionRatio: 2},
+	}, time.Unix(100, 0))
+	require.Len(t, records, 1)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+	require.True(t, view.NeedsReview)
+	require.Equal(t, "RATIO_ONLY", view.PriceKind)
+	require.Contains(t, view.ReviewReasons, "RATIO_BASIS_UNKNOWN")
+	require.Empty(t, view.Tiers)
+	require.NotNil(t, view.RatioBasis)
+	require.Equal(t, 1.0, view.RatioBasis.RawRatio)
+	require.Empty(t, records[0].InternalPricing)
+}
+
+func TestGenericRatioUsesUpstreamQuotaPerUnit(t *testing.T) {
+	cases := []struct {
+		quota float64
+		want  float64
+	}{{250000, 4}, {500000, 2}, {1000000, 1}}
+	for _, tc := range cases {
+		records := GenericChannelPricingRecordsWithQuota(12, []string{"m"}, []GenericPricingEntry{
+			{ModelName: "m", ModelRatio: 1, CompletionRatio: 2},
+		}, time.Unix(100, 0), tc.quota)
+		require.Len(t, records, 1)
+		var view model.ChannelOfficialPricing
+		require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
+		require.False(t, view.NeedsReview)
+		require.Len(t, view.Tiers, 1)
+		assert.InDelta(t, tc.want, *view.Tiers[0].InputPerMillionUSD, 1e-9)
+		assert.InDelta(t, tc.quota, 1000000/view.RatioBasis.BasisUSDPerMillion, 1e-6)
+	}
 }

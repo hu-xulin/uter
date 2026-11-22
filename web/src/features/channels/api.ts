@@ -213,6 +213,54 @@ export async function createChannel(
   return res.data
 }
 
+export type XXAPIChannelResult = {
+  channel_id?: number
+  name: string
+  type?: number
+  base_url?: string
+  models?: string[]
+  pricing_written?: number
+  pricing_error?: string
+  error?: string
+}
+
+export type XXAPICreateResult = {
+  success: boolean
+  message?: string
+  data?: { channels: XXAPIChannelResult[]; created: number }
+}
+
+/**
+ * Create one channel per xxapi key. The Claude key only enables the Claude
+ * models it can access and the GPT key only the GPT models, so a single channel
+ * never rotates across pools.
+ */
+export async function createXXAPIChannels(payload: {
+  claude_key?: string
+  gpt_key?: string
+  claude_group?: string
+  gpt_group?: string
+  group?: string
+}): Promise<XXAPICreateResult> {
+  const res = await api.post(
+    '/api/channel/xxapi',
+    payload,
+    channelActionConfig()
+  )
+  return res.data
+}
+
+export type XXAPIPricingGroup = { key: string; name: string; ratio: number }
+
+/** Billing groups published by the xxapi pricing document. */
+export async function getXXAPIPricingGroups(): Promise<{
+  success: boolean
+  data?: { groups: XXAPIPricingGroup[] }
+}> {
+  const res = await api.get('/api/channel/xxapi/groups')
+  return res.data
+}
+
 /**
  * Update existing channel
  */

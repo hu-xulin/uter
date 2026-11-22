@@ -42,6 +42,7 @@ export type ChannelProviderTarget =
       presetLogoDark?: string
     }
   | { kind: 'plugin'; key: string }
+  | { kind: 'xxapi' }
 
 export type ChannelConfigurationSection =
   | 'connection'

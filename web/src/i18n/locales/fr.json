@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "Séparés par des virgules ; laissez vide pour tout accepter.",
     "Tier rules must be a JSON array.": "Les règles par palier doivent être un tableau JSON.",
     "Per-tier rules (optional)": "Règles par palier (facultatif)",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Tableau JSON de remplacements par range_name/time_band. Les paliers non concernés gardent la règle de base ; un JSON invalide bloque l’aperçu."
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Tableau JSON de remplacements par range_name/time_band. Les paliers non concernés gardent la règle de base ; un JSON invalide bloque l’aperçu.",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "Passerelle xxapi : la clé Claude et la clé GPT créent deux canaux",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "Ligne 1 : clé Claude. Ligne 2 : clé GPT. Chaque clé crée son propre canal.",
+    "Claude key on line 1, GPT key on line 2": "Clé Claude en ligne 1, clé GPT en ligne 2",
+    "At most two keys: Claude first, GPT second": "Deux clés maximum : Claude puis GPT",
+    "xxapi channels created": "Canaux xxapi créés",
+    "xxapi channels created, but some pricing syncs failed": "Canaux xxapi créés, mais certaines synchronisations de prix ont échoué",
+    "Failed to create xxapi channels": "Échec de la création des canaux xxapi",
+    "Claude group": "Groupe Claude",
+    "GPT group": "Groupe GPT",
+    "Base price (no group multiplier)": "Prix de base (sans multiplicateur de groupe)",
+    "A key belongs to one group; the group decides its price and models.": "Une clé appartient à un groupe ; le groupe détermine son prix et ses modèles."
   }
 }

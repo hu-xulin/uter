@@ -58,8 +58,11 @@ func AutoConfigureBailianPrices() {
 	for _, channel := range channels {
 		// Pick up a pricing source change from the saved snapshot.
 		reapplyBailianCatalogPricingIfStale(channel)
-		if _, _, err := SeedBailianInternalPricing(channel.Id, nil, false); err != nil {
+		if _, _, err := SeedBailianInternalPricing(channel.Id, channel.GetModels(), false); err != nil {
 			common.SysError(common.LogText("bailian auto pricing failed for channel %d: %s", channel.Id, err.Error()))
+		}
+		if _, err := model.ClearAutoDerivedInternalExcept(channel.Id, "alibaba-bailian", channel.GetModels(), "bailian-"); err != nil {
+			common.SysError(common.LogText("bailian stale auto price cleanup failed for channel %d: %s", channel.Id, err.Error()))
 		}
 	}
 }
@@ -234,6 +237,10 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 			// Operator prices keep their source and are skipped.
 			if _, _, seedErr := SeedBailianInternalPricing(channel.Id, channel.GetModels(), false); seedErr != nil {
 				fail(fmt.Errorf("auto configure prices: %w", seedErr))
+				continue
+			}
+			if _, clearErr := model.ClearAutoDerivedInternalExcept(channel.Id, "alibaba-bailian", channel.GetModels(), "bailian-"); clearErr != nil {
+				fail(fmt.Errorf("clear stale auto prices: %w", clearErr))
 				continue
 			}
 

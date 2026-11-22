@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"io"
@@ -163,6 +164,14 @@ func fetchApikoCatalog(ctx context.Context, controlPlane string) ([]apikoModel, 
 	}
 	if catalog.Code != 0 {
 		return nil, fmt.Errorf("apiko catalogue error: %s", catalog.Message)
+	}
+	if catalog.Data.Total > 0 && len(catalog.Data.Models) < catalog.Data.Total {
+		// A partial page must never be treated as a complete catalogue: the
+		// caller would otherwise disable models or clear prices it did not see.
+		return nil, fmt.Errorf(
+			"apiko catalogue is incomplete: got %d of %d models",
+			len(catalog.Data.Models), catalog.Data.Total,
+		)
 	}
 	return catalog.Data.Models, nil
 }
@@ -894,7 +903,51 @@ func buildApikoChannelPricing(models []apikoModel, channelID int, now time.Time)
 				CacheUSDPerMillion:  tiers[0].CachePerMillionUSD,
 				Source:              "apiko-official", UpdatedAt: now.Unix(),
 			}
+		case item.Pricing.TokenImage != nil:
+			expr, ok := apikoPriceExpression(item)
+			if !ok {
+				review("token-image price is incomplete")
+				break
+			}
+			exprInfo := service.NormalizeUpstreamExpression(expr)
+			if !exprInfo.Executable {
+				review("token-image price is not executable")
+				break
+			}
+			official.Unit = "expression"
+			official.BillingMode = model.ChannelPricingModeTieredExpr
+			official.BillingExpr = exprInfo.Raw
+			official.ExpressionHash = exprInfo.Hash
+			official.ExpressionStatus = exprInfo.Status
+			internal = &model.ChannelInternalPricing{
+				Mode: model.ChannelPricingModeTieredExpr, BillingExpr: exprInfo.Raw,
+				Source: "apiko-expression", UpdatedAt: now.Unix(),
+			}
 		case item.Pricing.PerCall != nil && len(item.Pricing.Tiers) == 0 && len(item.Pricing.PerSecondTiers) == 0:
+			if apikoHasCapability(item.Capabilities, "image") {
+				// A per-image price must multiply by the real image count; a flat
+				// per-call price would charge n>1 as one image.
+				expr, ok := apikoPriceExpression(item)
+				if !ok {
+					review("image price is not executable")
+					break
+				}
+				exprInfo := service.NormalizeUpstreamExpression(expr)
+				if !exprInfo.Executable {
+					review("image price is not executable")
+					break
+				}
+				official.Unit = "expression"
+				official.BillingMode = model.ChannelPricingModeTieredExpr
+				official.BillingExpr = exprInfo.Raw
+				official.ExpressionHash = exprInfo.Hash
+				official.ExpressionStatus = exprInfo.Status
+				internal = &model.ChannelInternalPricing{
+					Mode: model.ChannelPricingModeTieredExpr, BillingExpr: exprInfo.Raw,
+					Source: "apiko-expression", UpdatedAt: now.Unix(),
+				}
+				break
+			}
 			tiers := apikoFlatTokenTier(item.Pricing)
 			official.Tiers = tiers
 			internal = &model.ChannelInternalPricing{
@@ -1150,6 +1203,11 @@ func syncApikoChannelPricing(channel *model.Channel) (result apikoPricingSyncRes
 			unpriced = append(unpriced, skipped.Model)
 		}
 	}
+	if len(unpriced) > 0 {
+		if _, clearErr := model.ClearAutoDerivedInternalForModels(channel.Id, "apiko", unpriced, "apiko-"); clearErr != nil {
+			common.SysError(common.LogText("clear stale apiko sale prices failed: channel_id=%d, error=%v", channel.Id, clearErr))
+		}
+	}
 	if err := model.DeleteUnpricedChannelModelPricing(channel.Id, unpriced); err != nil {
 		common.SysError(common.LogText("delete unpriced apiko rows failed: channel_id=%d, error=%v", channel.Id, err))
 	}
@@ -1286,48 +1344,35 @@ func apikoOfficialPriceChanges(channelID int, records []model.ChannelOfficialPri
 	if err != nil {
 		return nil
 	}
-	previous := make(map[string]float64, len(rows))
+	previous := make(map[string]string, len(rows))
 	for _, row := range rows {
-		if price := officialPrimaryInputUSD(row.NormalizedPricing); price != nil && *price > 0 {
-			previous[row.ModelName] = *price
+		if strings.TrimSpace(row.NormalizedPricing) != "" {
+			previous[row.ModelName] = pricingContractHash(row.NormalizedPricing)
 		}
 	}
 	changes := make([]service.UpstreamPriceChange, 0)
 	for _, record := range records {
-		price := officialPrimaryInputUSD(record.NormalizedPricing)
-		if price == nil || *price <= 0 {
+		if strings.TrimSpace(record.NormalizedPricing) == "" {
 			continue
 		}
+		next := pricingContractHash(record.NormalizedPricing)
 		old, ok := previous[record.ModelName]
-		if !ok || old == *price {
+		if !ok || old == next {
 			continue
 		}
-		oldValue, newValue := old, *price
 		changes = append(changes, service.UpstreamPriceChange{
 			ProviderID: "apiko", ModelID: record.ModelName, Kind: "price_changed",
-			Field: "input", Old: &oldValue, New: &newValue, DetectedAt: time.Now().UTC(),
+			Field: "contract", OldText: old, NewText: next, DetectedAt: time.Now().UTC(),
 		})
 	}
 	return changes
 }
 
-func officialPrimaryInputUSD(raw string) *float64 {
-	if strings.TrimSpace(raw) == "" {
-		return nil
-	}
-	var pricing model.ChannelOfficialPricing
-	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
-		return nil
-	}
-	for _, tier := range pricing.Tiers {
-		if tier.InputPerMillionUSD != nil {
-			return tier.InputPerMillionUSD
-		}
-	}
-	if pricing.ChannelPrice != nil && pricing.ChannelPrice.InputPerMillionUSD != nil {
-		return pricing.ChannelPrice.InputPerMillionUSD
-	}
-	return nil
+// pricingContractHash covers every normalized dimension: input/output, cache,
+// media, per-call/second, tiers, currency and the executable expression. A
+// change in any of them must raise a review event, not only an input change.
+func pricingContractHash(raw string) string {
+	return fmt.Sprintf("%x", sha256.Sum256([]byte(strings.TrimSpace(raw))))
 }
 
 func apikoSyncStateFor(channelID int) int64 {

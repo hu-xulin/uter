@@ -617,8 +617,29 @@ func TestApikoSyncBackoffAndPrimaryPriceChanges(t *testing.T) {
 	}})
 	require.Len(t, changes, 1)
 	assert.Equal(t, "apiko-chat", changes[0].ModelID)
-	assert.InDelta(t, 1.0, *changes[0].Old, 1e-9)
-	assert.InDelta(t, 5.0, *changes[0].New, 1e-9)
+	assert.Equal(t, "contract", changes[0].Field)
+	assert.NotEmpty(t, changes[0].OldText)
+	assert.NotEmpty(t, changes[0].NewText)
+	assert.NotEqual(t, changes[0].OldText, changes[0].NewText)
+
+	// An output-only change must also be detected: comparing only the input
+	// price would silently miss it.
+	sameInputNewOutput, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD",
+		Tiers: []model.ChannelPricingTier{{
+			Unit: "per_1m_token", InputPerMillionUSD: apikoFloatPtr(5.0),
+			OutputPerMillionUSD: apikoFloatPtr(15.0),
+		}},
+	})
+	require.NoError(t, err)
+	require.NoError(t, db.Model(&model.ChannelModelPricing{}).
+		Where("channel_id = ? AND provider = ? AND model_name = ?", 7, "apiko", "apiko-chat").
+		Update("normalized_pricing", string(newPricing)).Error)
+	outputChanges := apikoOfficialPriceChanges(7, []model.ChannelOfficialPricingRecord{{
+		ChannelId: 7, Provider: "apiko", ModelName: "apiko-chat", NormalizedPricing: string(sameInputNewOutput),
+	}})
+	require.Len(t, outputChanges, 1)
+	assert.Equal(t, "contract", outputChanges[0].Field)
 }
 
 // 目录里显式给 0 的价格是真实免费模型；字段缺失才是“未定价”。两者不能混为一谈。
@@ -678,4 +699,34 @@ func TestSyncApikoChannelPricingRecordsFailureState(t *testing.T) {
 	assert.Equal(t, model.ChannelSyncTypePrices, states[0].SyncType)
 	assert.NotEmpty(t, states[0].LastError)
 	assert.Zero(t, states[0].LastSuccessAt)
+}
+
+func TestApikoBuilderHandlesTokenImageAndImageCount(t *testing.T) {
+	f := func(v float64) *float64 { return &v }
+	models := []apikoModel{
+		{
+			ID: "token-image", Provider: "openai", Capabilities: []string{"image"},
+			Pricing: apikoPricing{TokenImage: &apikoTokenImage{
+				TextInputPer1M: f(1), ImageInputPer1M: f(2), OutputPer1M: f(3),
+			}},
+		},
+		{
+			ID: "image-per-call", Provider: "openai", Capabilities: []string{"image"},
+			Pricing: apikoPricing{PerCall: f(0.04)},
+		},
+	}
+	built := buildApikoChannelPricing(models, 9, time.Now().UTC())
+	require.Len(t, built.records, 2)
+	require.Len(t, built.internals, 2)
+
+	tokenImage := built.internals["token-image"]
+	require.Equal(t, model.ChannelPricingModeTieredExpr, tokenImage.Mode)
+	require.Contains(t, tokenImage.BillingExpr, "img * 2")
+	require.Contains(t, tokenImage.BillingExpr, "p * 1")
+	require.Contains(t, tokenImage.BillingExpr, "c * 3")
+
+	perImage := built.internals["image-per-call"]
+	require.Equal(t, model.ChannelPricingModeTieredExpr, perImage.Mode)
+	require.Contains(t, perImage.BillingExpr, "image_count")
+	require.Contains(t, perImage.BillingExpr, "fixed(0.04)")
 }

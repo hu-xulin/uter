@@ -113,13 +113,25 @@ func testDreamRouterSyncMatrix(t *testing.T) {
 	_, err = model.UpsertChannelOfficialPricing(records)
 	require.NoError(t, err)
 
-	assertBillingRule(t, channel.Id, "dr-token", billingexpr.TokenParams{P: 1000, C: 500, Len: 1000}, billingexpr.RequestInput{})
+	// dr-token is ratio-only. Its derived USD amount is a reference, not an
+	// official absolute price, so it must stay review-only and never bill.
+	drToken, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: channel.Id, Provider: "dreamrouter", ModelName: "dr-token",
+	})
+	require.NoError(t, err)
+	require.Empty(t, drToken.InternalPricing)
+	require.Equal(t, model.ChannelPricingStatusNeedsReview, drToken.PricingStatus)
+	require.Contains(t, drToken.NormalizedPricing, "DERIVED_FROM_RATIOS")
+	_, billable := model.ResolveChannelBillingPricing(channel.Id, "dr-token")
+	require.False(t, billable)
 
-	// An expression-only upstream rule is captured verbatim for review; Uter
-	// does not auto-adopt it as the channel price, but it must execute.
+	// The complete expression rule is executable and keeps its image count.
+	two := 2
+	assertBillingRule(t, channel.Id, "dr-image", billingexpr.TokenParams{}, billingexpr.RequestInput{ImageCount: &two})
+
+	// An expression-only upstream rule is captured verbatim and must execute.
 	imagePricing := byName["dr-image"]
 	require.NotEmpty(t, imagePricing.BillingExpr)
-	two := 2
 	imageSnapshot := &billingexpr.BillingSnapshot{
 		BillingMode: "tiered_expr", ExprString: imagePricing.BillingExpr,
 		ExprHash: billingexpr.ExprHashString(imagePricing.BillingExpr), GroupRatio: 1, QuotaPerUnit: 500_000,

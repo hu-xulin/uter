@@ -214,7 +214,9 @@ export const channelFormSchema = z
     task_extend_plugin_keys: z.array(z.string()).optional(),
     key: z.string(),
     openai_organization: z.string().optional(),
-    models: z.string().min(1, ERROR_MESSAGES.REQUIRED_MODELS),
+    // Models are validated in the submit handler: the xxapi dual-key flow
+    // discovers them from the upstream key instead of the form.
+    models: z.string(),
     group: z.array(z.string()).min(1, ERROR_MESSAGES.REQUIRED_GROUP),
     model_mapping: z
       .string()

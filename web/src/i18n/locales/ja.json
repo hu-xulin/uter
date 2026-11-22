@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "カンマ区切り。空欄はすべてに一致します。",
     "Tier rules must be a JSON array.": "階層ルールは JSON 配列である必要があります。",
     "Per-tier rules (optional)": "階層別ルール（任意）",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "range_name/time_band ごとの上書きを指定する JSON 配列。一致しない階層は基本ルールを継承し、不正な JSON はプレビューを止めます。"
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "range_name/time_band ごとの上書きを指定する JSON 配列。一致しない階層は基本ルールを継承し、不正な JSON はプレビューを止めます。",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "xxapi ゲートウェイ：Claude キーと GPT キーでそれぞれチャネルを作成します",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "1 行目に Claude キー、2 行目に GPT キー。各キーが独立したチャネルになります。",
+    "Claude key on line 1, GPT key on line 2": "1 行目に Claude キー、2 行目に GPT キー",
+    "At most two keys: Claude first, GPT second": "最大 2 行：1 行目 Claude、2 行目 GPT",
+    "xxapi channels created": "xxapi チャネルを作成しました",
+    "xxapi channels created, but some pricing syncs failed": "xxapi チャネルを作成しましたが、一部の価格同期に失敗しました",
+    "Failed to create xxapi channels": "xxapi チャネルの作成に失敗しました",
+    "Claude group": "Claude グループ",
+    "GPT group": "GPT グループ",
+    "Base price (no group multiplier)": "基本価格（グループ倍率なし）",
+    "A key belongs to one group; the group decides its price and models.": "キーは 1 つのグループに属し、グループが価格と利用可能なモデルを決めます。"
   }
 }

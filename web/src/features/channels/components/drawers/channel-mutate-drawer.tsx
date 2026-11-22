@@ -133,7 +133,10 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import {
   createChannelDraft,
+  createXXAPIChannels,
   getAllModels,
+  getXXAPIPricingGroups,
+  type XXAPIPricingGroup,
   getChannel,
   getChannelDefaultBaseURLs,
   getGroups,
@@ -495,6 +498,8 @@ export function ChannelMutateDrawer({
   }, [open, isEditing])
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
+  const [xxapiClaudeGroup, setXxapiClaudeGroup] = useState('base')
+  const [xxapiGptGroup, setXxapiGptGroup] = useState('base')
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
@@ -800,6 +805,18 @@ export function ChannelMutateDrawer({
     enabled: open && canBindTaskPlugin,
     meta: { errorToast: false },
   })
+  const xxapiGroupsQuery = useQuery({
+    queryKey: ['xxapi-pricing-groups'],
+    queryFn: async () => {
+      const response = await getXXAPIPricingGroups()
+      if (!response.success) throw new Error('Failed to load xxapi groups')
+      return response.data?.groups ?? []
+    },
+    enabled: open && providerTarget?.kind === 'xxapi',
+    staleTime: 5 * 60 * 1000,
+    meta: { errorToast: false },
+  })
+  const xxapiGroups: XXAPIPricingGroup[] = xxapiGroupsQuery.data ?? []
   const canHavePluginExtensions = supportsChannelPluginExtensions(currentType)
   const pluginExtensions = useMemo(() => {
     if (!canBindTaskPlugin || !taskPluginOptionsQuery.isSuccess) return []
@@ -865,8 +882,27 @@ export function ChannelMutateDrawer({
         target.kind === 'plugin' &&
         providerTarget?.kind === 'plugin' &&
         target.key === providerTarget.key
-      if (sameBuiltinProvider || samePluginProvider) {
+      const sameXXAPIProvider =
+        target.kind === 'xxapi' && providerTarget?.kind === 'xxapi'
+      if (sameBuiltinProvider || samePluginProvider || sameXXAPIProvider) {
         setChoosingProvider(false)
+        return
+      }
+      if (target.kind === 'xxapi') {
+        if (isEditing) return
+        form.setValue('type', CHANNEL_TYPE_NEW_API, { shouldDirty: true })
+        form.setValue('base_url', 'https://xxapi.ai', {
+          shouldDirty: true,
+          shouldValidate: true,
+        })
+        form.setValue('name', 'xxapi')
+        form.setValue('models', '')
+        form.setValue('key', '')
+        setXxapiClaudeGroup('base')
+        setXxapiGptGroup('base')
+        setProviderTarget(target)
+        setChoosingProvider(false)
+        setShowDraftPricing(false)
         return
       }
       if (target.kind === 'plugin') {
@@ -1737,6 +1773,63 @@ export function ChannelMutateDrawer({
     async (data: ChannelFormValues) => {
       if (isEditing && !channelData?.data) return
       if (!isEditing && (!providerTarget || !canEditSensitive)) return
+
+      if (!isEditing && providerTarget?.kind === 'xxapi') {
+        const keys = (data.key || '')
+          .split('\n')
+          .map((value) => value.trim())
+          .filter(Boolean)
+        if (keys.length === 0) {
+          form.setError('key', {
+            type: 'manual',
+            message: ERROR_MESSAGES.REQUIRED_KEY,
+          })
+          setConfigurationSection('connection')
+          setPendingErrorFocus('key')
+          return
+        }
+        if (keys.length > 2) {
+          toast.error(t('At most two keys: Claude first, GPT second'))
+          return
+        }
+        try {
+          const response = await createXXAPIChannels({
+            claude_key: keys[0] || '',
+            gpt_key: keys[1] || '',
+            claude_group: xxapiClaudeGroup === 'base' ? '' : xxapiClaudeGroup,
+            gpt_group: xxapiGptGroup === 'base' ? '' : xxapiGptGroup,
+            group: (data.group ?? []).join(',') || 'default',
+          })
+          const created = response.data?.created ?? 0
+          const pricingIssues = (response.data?.channels ?? []).filter(
+            (channel) => channel.pricing_error
+          ).length
+          if (pricingIssues > 0) {
+            toast.warning(
+              t('xxapi channels created, but some pricing syncs failed')
+            )
+          } else {
+            toast.success(t('xxapi channels created'))
+          }
+          if (created > 0) {
+            handleSuccess()
+          }
+        } catch (error) {
+          handleServerError(error, t('Failed to create xxapi channels'))
+        }
+        return
+      }
+
+      if (providerTarget?.kind !== 'xxapi' && !data.models?.trim()) {
+        form.setError('models', {
+          type: 'manual',
+          message: ERROR_MESSAGES.REQUIRED_MODELS,
+        })
+        setConfigurationSection('models')
+        setPendingErrorFocus('models')
+        return
+      }
+
       // Validate key is required when creating
       if (!isEditing && !data.key?.trim()) {
         form.setError('key', {
@@ -1865,6 +1958,9 @@ export function ChannelMutateDrawer({
       confirmMissingModelMappings,
       confirmStatusCodeRisk,
       channelMutation,
+      handleSuccess,
+      xxapiClaudeGroup,
+      xxapiGptGroup,
       t,
     ]
   )
@@ -4709,6 +4805,69 @@ export function ChannelMutateDrawer({
             )}
 
             <ChannelAuthSection>
+              {!isEditing && providerTarget?.kind === 'xxapi' && (
+                <div className='space-y-3'>
+                  <p className='text-muted-foreground text-sm'>
+                    {t(
+                      'A key belongs to one group; the group decides its price and models.'
+                    )}
+                  </p>
+                  <div className='grid gap-3 sm:grid-cols-2'>
+                    <div className='space-y-2'>
+                      <Label>{t('Claude group')}</Label>
+                      <Select
+                        value={xxapiClaudeGroup}
+                        onValueChange={(value) =>
+                          setXxapiClaudeGroup(value ?? 'base')
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='base'>
+                            {t('Base price (no group multiplier)')}
+                          </SelectItem>
+                          {xxapiGroups.map((group) => (
+                            <SelectItem
+                              key={`claude-${group.key}`}
+                              value={group.key}
+                            >
+                              {`${group.name} ×${group.ratio}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className='space-y-2'>
+                      <Label>{t('GPT group')}</Label>
+                      <Select
+                        value={xxapiGptGroup}
+                        onValueChange={(value) =>
+                          setXxapiGptGroup(value ?? 'base')
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value='base'>
+                            {t('Base price (no group multiplier)')}
+                          </SelectItem>
+                          {xxapiGroups.map((group) => (
+                            <SelectItem
+                              key={`gpt-${group.key}`}
+                              value={group.key}
+                            >
+                              {`${group.name} ×${group.ratio}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+              )}
               {!isEditing && (
                 <FormField
                   control={form.control}
@@ -4783,6 +4942,10 @@ export function ChannelMutateDrawer({
                     keyPlaceholder = t(
                       'Enter one key per line for batch creation'
                     )
+                  } else if (providerTarget?.kind === 'xxapi') {
+                    keyPlaceholder = t(
+                      'Claude key on line 1, GPT key on line 2'
+                    )
                   }
 
                   let keyDescription: ReactNode = t(FIELD_DESCRIPTIONS.KEY)
@@ -4810,6 +4973,10 @@ export function ChannelMutateDrawer({
                   } else if (isBatchMode) {
                     keyDescription = t(
                       'Enter one API key per line for batch creation'
+                    )
+                  } else if (providerTarget?.kind === 'xxapi') {
+                    keyDescription = t(
+                      'Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.'
                     )
                   }
                   return (

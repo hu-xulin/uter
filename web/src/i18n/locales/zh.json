@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "用逗号分隔；留空表示匹配所有值。",
     "Tier rules must be a JSON array.": "逐档规则必须是 JSON 数组。",
     "Per-tier rules (optional)": "逐档规则（可选）",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 数组，按 range_name/time_band 覆盖规则；未命中的档位沿用基础规则，非法 JSON 会阻止预览。"
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 数组，按 range_name/time_band 覆盖规则；未命中的档位沿用基础规则，非法 JSON 会阻止预览。",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "xxapi 网关：分别输入 Claude 密钥与 GPT 密钥，各建一个渠道",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "第 1 行填 Claude 密钥，第 2 行填 GPT 密钥；每个密钥创建一个独立渠道。",
+    "Claude key on line 1, GPT key on line 2": "第 1 行填 Claude 密钥，第 2 行填 GPT 密钥",
+    "At most two keys: Claude first, GPT second": "最多两行：第一行 Claude，第二行 GPT",
+    "xxapi channels created": "xxapi 渠道已创建",
+    "xxapi channels created, but some pricing syncs failed": "xxapi 渠道已创建，但部分价格同步失败",
+    "Failed to create xxapi channels": "创建 xxapi 渠道失败",
+    "Claude group": "Claude 分组",
+    "GPT group": "GPT 分组",
+    "Base price (no group multiplier)": "基础价（不乘分组倍率）",
+    "A key belongs to one group; the group decides its price and models.": "一个密钥对应一个分组，分组决定价格与可用模型。"
   }
 }

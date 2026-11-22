@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "Comma separated; leave empty to match every value.",
     "Tier rules must be a JSON array.": "Tier rules must be a JSON array.",
     "Per-tier rules (optional)": "Per-tier rules (optional)",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview."
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "xxapi gateway: the Claude key and the GPT key create two channels",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.",
+    "Claude key on line 1, GPT key on line 2": "Claude key on line 1, GPT key on line 2",
+    "At most two keys: Claude first, GPT second": "At most two keys: Claude first, GPT second",
+    "xxapi channels created": "xxapi channels created",
+    "xxapi channels created, but some pricing syncs failed": "xxapi channels created, but some pricing syncs failed",
+    "Failed to create xxapi channels": "Failed to create xxapi channels",
+    "Claude group": "Claude group",
+    "GPT group": "GPT group",
+    "Base price (no group multiplier)": "Base price (no group multiplier)",
+    "A key belongs to one group; the group decides its price and models.": "A key belongs to one group; the group decides its price and models."
   }
 }

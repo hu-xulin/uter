@@ -8601,6 +8601,17 @@
     "Comma separated; leave empty to match every value.": "用逗號分隔；留空表示符合所有值。",
     "Tier rules must be a JSON array.": "逐檔規則必須是 JSON 陣列。",
     "Per-tier rules (optional)": "逐檔規則（可選）",
-    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 陣列，按 range_name/time_band 覆寫規則；未命中的檔位沿用基礎規則，非法 JSON 會阻止預覽。"
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 陣列，按 range_name/time_band 覆寫規則；未命中的檔位沿用基礎規則，非法 JSON 會阻止預覽。",
+    "xxapi gateway: the Claude key and the GPT key create two channels": "xxapi 閘道：分別輸入 Claude 金鑰與 GPT 金鑰，各建立一個渠道",
+    "Line 1: Claude key. Line 2: GPT key. Each key creates its own channel.": "第 1 行填 Claude 金鑰，第 2 行填 GPT 金鑰；每個金鑰建立一個獨立渠道。",
+    "Claude key on line 1, GPT key on line 2": "第 1 行填 Claude 金鑰，第 2 行填 GPT 金鑰",
+    "At most two keys: Claude first, GPT second": "最多兩行：第一行 Claude，第二行 GPT",
+    "xxapi channels created": "xxapi 渠道已建立",
+    "xxapi channels created, but some pricing syncs failed": "xxapi 渠道已建立，但部分價格同步失敗",
+    "Failed to create xxapi channels": "建立 xxapi 渠道失敗",
+    "Claude group": "Claude 分組",
+    "GPT group": "GPT 分組",
+    "Base price (no group multiplier)": "基礎價（不乘分組倍率）",
+    "A key belongs to one group; the group decides its price and models.": "一個金鑰對應一個分組，分組決定價格與可用模型。"
   }
 }

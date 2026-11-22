@@ -1136,3 +1136,57 @@ func TestBillingPriceSnapshotIsImmutablePerIdentity(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, rows, 2)
 }
+
+func TestUpsertReviewRecordNeverBecomesBillable(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	input, output := 2.0, 4.0
+	internal, err := common.Marshal(ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		OutputUSDPerMillion: &output, Source: "dreamrouter-discount", UpdatedAt: 1,
+	})
+	require.NoError(t, err)
+	normalized := `{"currency":"USD","unit":"expression","needs_review":true,"review_reasons":["HISTORICAL_SNAPSHOT"]}`
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 61, Provider: "dreamrouter", ModelName: "reviewed", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: normalized,
+		InternalPricing: string(internal), Source: "dreamrouter-official", FetchedAt: 1,
+	}})
+	require.NoError(t, err)
+	var row ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ? AND model_name = ?", 61, "reviewed").First(&row).Error)
+	assert.Empty(t, row.InternalPricing)
+	assert.Equal(t, ChannelPricingStatusNeedsReview, row.PricingStatus)
+	effective := ResolveEffectiveChannelPricing(61, "reviewed")
+	assert.False(t, effective.Billable)
+}
+
+func TestReviewGateKeepsBatchPriceAndClearsAutoPrice(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	input, output := 2.0, 4.0
+	batchPricing, _ := common.Marshal(ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		OutputUSDPerMillion: &output, Source: "batch", UpdatedAt: 1,
+	})
+	autoPricing, _ := common.Marshal(ChannelInternalPricing{
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		OutputUSDPerMillion: &output, Source: "bailian-channel", UpdatedAt: 1,
+	})
+	normalized := `{"currency":"USD","unit":"per_1m_token","needs_review":true,"review_reasons":["multiple cache read prices"]}`
+	for name, internal := range map[string]string{"batch-row": string(batchPricing), "auto-row": string(autoPricing)} {
+		require.NoError(t, db.Create(&ChannelModelPricing{
+			ChannelId: 71, Provider: "test", ModelName: name, NormalizedPricing: normalized,
+			InternalPricing: internal, PricingStatus: ChannelPricingStatusConfigured,
+		}).Error)
+	}
+	cleared, err := EnforcePricingReviewGate()
+	require.NoError(t, err)
+	assert.Equal(t, 1, cleared)
+
+	var batchRow, autoRow ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ? AND model_name = ?", 71, "batch-row").First(&batchRow).Error)
+	require.NoError(t, db.Where("channel_id = ? AND model_name = ?", 71, "auto-row").First(&autoRow).Error)
+	assert.Equal(t, ChannelPricingStatusConfigured, batchRow.PricingStatus)
+	assert.NotEmpty(t, batchRow.InternalPricing)
+	assert.Equal(t, ChannelPricingStatusNeedsReview, autoRow.PricingStatus)
+	assert.Empty(t, autoRow.InternalPricing)
+}

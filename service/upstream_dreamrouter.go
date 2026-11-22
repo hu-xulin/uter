@@ -8,7 +8,9 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -32,6 +34,8 @@ const upstreamHistoryLimit = 1000
 // dreamRouterPlaceholderModelRatio marks models whose public model_ratio is a
 // placeholder because their real price lives in billing_expr (tiered/media).
 const dreamRouterPlaceholderModelRatio = 37.5
+
+var dreamRouterFixedPriceDiscount = regexp.MustCompile(`fixed\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)`)
 
 type UpstreamCapabilityStatus string
 
@@ -456,6 +460,59 @@ func dreamRouterChannelInternalPricing(
 	return string(encoded), true
 }
 
+func dreamRouterRatioValue(value *float64) float64 {
+	if value == nil {
+		return 0
+	}
+	return *value
+}
+
+// dreamRouterChannelExpressionPricing applies the channel discount to the
+// complete upstream rule by wrapping it, so every tier and condition keeps its
+// own coefficients. Flattening the expression to the first tier would charge
+// long-context requests at the short-context price.
+func dreamRouterChannelExpressionPricing(
+	expr string,
+	group string,
+	modelGroup string,
+	factor float64,
+) (string, bool) {
+	raw := strings.TrimSpace(expr)
+	if raw == "" || factor <= 0 {
+		return "", false
+	}
+	scaled := fmt.Sprintf("(%s) * %s", raw, strconv.FormatFloat(factor, 'f', -1, 64))
+	if strings.Contains(raw, "fixed(") {
+		// The expression engine forbids multiplying a fixed charge by a request
+		// multiplier, so the discount is applied inside fixed(amount).
+		scaled = dreamRouterFixedPriceDiscount.ReplaceAllStringFunc(raw, func(term string) string {
+			match := dreamRouterFixedPriceDiscount.FindStringSubmatch(term)
+			value, err := strconv.ParseFloat(match[1], 64)
+			if err != nil {
+				return term
+			}
+			return "fixed(" + strconv.FormatFloat(value*factor, 'f', -1, 64) + ")"
+		})
+	}
+	if !NormalizeUpstreamExpression(scaled).Executable {
+		return "", false
+	}
+	pricing := model.ChannelInternalPricing{
+		Mode:               model.ChannelPricingModeTieredExpr,
+		BillingExpr:        scaled,
+		Source:             "dreamrouter-discount",
+		DiscountGroup:      group,
+		DiscountModelGroup: modelGroup,
+		DiscountRatio:      factor,
+		UpdatedAt:          time.Now().Unix(),
+	}
+	encoded, err := common.Marshal(pricing)
+	if err != nil {
+		return "", false
+	}
+	return string(encoded), true
+}
+
 // UpstreamModelRecord is one normalized model in the isolated catalog.
 type UpstreamModelRecord struct {
 	ProviderID         string   `json:"provider_id"`
@@ -860,6 +917,9 @@ func DreamRouterChannelPricingRecords(
 		officialView, internalPricing := dreamRouterChannelOfficialPricing(
 			snapshot, item, snapshot.FetchedAt.Unix(), billingGroup,
 		)
+		if officialView.NeedsReview {
+			internalPricing = ""
+		}
 		officialRaw, err := common.Marshal(item)
 		if err != nil {
 			return nil, err
@@ -919,7 +979,66 @@ func dreamRouterChannelOfficialPricing(
 		Source:    dreamRouterPriceSource(item.PriceStatus),
 		FetchedAt: fetchedAt,
 	}
+	switch item.PriceStatus {
+	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
+		view.PriceKind = "BILLING_EXPRESSION"
+	case "DERIVED_FROM_RATIOS":
+		view.PriceKind = "RATIO_ONLY"
+		if item.ModelRatio != nil && *item.ModelRatio > 0 {
+			view.RatioBasis = &model.ChannelRatioBasis{
+				RawRatio:           *item.ModelRatio,
+				RawCompletionRatio: dreamRouterRatioValue(item.CompletionRatio),
+				BasisUSDPerMillion: 2,
+				Formula:            "reference_only: usd_per_1m = model_ratio * 2",
+				FormulaVersion:     "dreamrouter-ratio-v1",
+			}
+		}
+	case "HISTORICAL_SNAPSHOT":
+		view.PriceKind = "HISTORICAL_SNAPSHOT"
+	default:
+		view.PriceKind = "OFFICIAL_ABSOLUTE"
+	}
 	line := item.OfficialPrice
+	expressionRule := strings.TrimSpace(item.BillingExpr) != "" &&
+		item.PriceStatus != "HISTORICAL_SNAPSHOT"
+	if expressionRule {
+		// The complete executable rule is the price contract even when the
+		// provider publishes no flattened absolute line for it.
+		normalized := NormalizeUpstreamExpression(item.BillingExpr)
+		view.Unit = "expression"
+		view.BillingMode = "tiered_expr"
+		view.BillingExpr = normalized.Raw
+		view.ExpressionHash = normalized.Hash
+		view.ExpressionStatus = normalized.Status
+		view.ExpressionError = normalized.Error
+		if !normalized.Executable {
+			view.NeedsReview = true
+			view.ReviewReasons = []string{"UNSUPPORTED_UPSTREAM_EXPRESSION"}
+			return view, ""
+		}
+		group := strings.TrimSpace(billingGroup)
+		if group == "" {
+			group = DreamRouterDiscountGroupDefault
+		}
+		discount, modelGroup, ok := DreamRouterDiscountForModel(snapshot, item, group)
+		if !ok {
+			view.NeedsReview = true
+			view.ReviewReasons = append(view.ReviewReasons, "NO_UPSTREAM_DISCOUNT")
+			return view, ""
+		}
+		view.DiscountGroup = group
+		view.DiscountModelGroup = modelGroup
+		view.DiscountRatio = &discount
+		internalPricing, priced := dreamRouterChannelExpressionPricing(
+			item.BillingExpr, group, modelGroup, discount,
+		)
+		if !priced {
+			view.NeedsReview = true
+			view.ReviewReasons = append(view.ReviewReasons, "EXPRESSION_DISCOUNT_UNVERIFIED")
+			return view, ""
+		}
+		return view, internalPricing
+	}
 	if line == nil || line.Input == nil {
 		view.NeedsReview = true
 		reason := "ABSENT_ABSOLUTE_PRICE"
@@ -930,14 +1049,24 @@ func dreamRouterChannelOfficialPricing(
 		return view, ""
 	}
 	view.Unit = line.Unit
+	expressionRule = false
 	switch item.PriceStatus {
 	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
-		// The raw expression is preserved in OfficialPricing. A flattened
-		// coefficient view is useful as a reference but does not prove full
-		// tier/condition equivalence, so it stays reviewable.
-		view.NeedsReview = true
-		view.ReviewReasons = []string{"EXPRESSION_REQUIRES_SEMANTIC_REVIEW"}
-		view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+		// Keep the complete rule. A flattened coefficient view is a reference
+		// only and must never become the billing price.
+		normalized := NormalizeUpstreamExpression(item.BillingExpr)
+		view.Unit = "expression"
+		view.BillingMode = "tiered_expr"
+		view.BillingExpr = normalized.Raw
+		view.ExpressionHash = normalized.Hash
+		view.ExpressionStatus = normalized.Status
+		view.ExpressionError = normalized.Error
+		if !normalized.Executable {
+			view.NeedsReview = true
+			view.ReviewReasons = []string{"UNSUPPORTED_UPSTREAM_EXPRESSION"}
+			return view, ""
+		}
+		expressionRule = true
 	case "DERIVED_FROM_RATIOS":
 		// A ratio is not an official list price. Keep the derived amount as the
 		// channel reference and leave the official tier list empty.
@@ -960,10 +1089,31 @@ func dreamRouterChannelOfficialPricing(
 		return view, ""
 	}
 	channelLine := scaleUpstreamPriceLine(line, discount)
-	internalPricing, priced := dreamRouterChannelInternalPricing(channelLine, group, modelGroup, discount)
-	if !priced {
-		view.NeedsReview = true
-		view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
+	var internalPricing string
+	priced := false
+	if expressionRule {
+		internalPricing, priced = dreamRouterChannelExpressionPricing(
+			item.BillingExpr, group, modelGroup, discount,
+		)
+		if priced {
+			// The complete, executable rule carries every tier, so the
+			// expression itself is the validated price contract.
+			view.NeedsReview = false
+			view.ReviewReasons = nil
+		} else {
+			view.NeedsReview = true
+			view.ReviewReasons = append(view.ReviewReasons, "EXPRESSION_DISCOUNT_UNVERIFIED")
+		}
+	} else {
+		internalPricing, priced = dreamRouterChannelInternalPricing(channelLine, group, modelGroup, discount)
+		if !priced {
+			view.NeedsReview = true
+			view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
+		}
+	}
+	if view.NeedsReview {
+		// Hard gate: a review-only record may never auto-enable billing.
+		internalPricing = ""
 	}
 	channelTier := dreamRouterPricingTier(channelLine)
 	view.ChannelPrice = &channelTier

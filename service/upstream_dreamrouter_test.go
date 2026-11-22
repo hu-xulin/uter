@@ -325,3 +325,39 @@ func TestDiffDreamRouterUpstreamDetectsBillingExpressionChange(t *testing.T) {
 	require.Contains(t, changes[0].OldText, "p * 1")
 	require.Contains(t, changes[0].NewText, "p * 2")
 }
+
+func TestDreamRouterExpressionKeepsAllTiersAndReviewGate(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long", p * 2.5 + c * 15 + cr * 0.25)`
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "dreamrouter", PriceBasis: UpstreamPriceBasisRatioOnly,
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"openai": 0.6}},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName: "tiered", EnableGroups: []string{"openai"}, PriceStatus: "BILLING_EXPR",
+				BillingExpr: expr,
+				OfficialPrice: &UpstreamPriceLine{
+					Input: ratio(1.25), Output: ratio(10), CacheRead: ratio(0.13),
+					Currency: "USD", Unit: "per_1m_token",
+				},
+			},
+			{
+				ModelName: "ratio-only", EnableGroups: []string{"openai"}, PriceStatus: "DERIVED_FROM_RATIOS",
+				ModelRatio: ratio(2), OfficialPrice: &UpstreamPriceLine{Input: ratio(4), Output: ratio(8), Currency: "USD", Unit: "per_1m_token"},
+			},
+		},
+	}
+	records, err := DreamRouterChannelPricingRecords(snapshot, 7, []string{"tiered", "ratio-only"}, "default")
+	require.NoError(t, err)
+	require.Len(t, records, 2)
+
+	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
+	require.Contains(t, records[0].InternalPricing, `tier(\"standard\"`)
+	require.Contains(t, records[0].InternalPricing, `tier(\"long\"`)
+	require.Contains(t, records[0].InternalPricing, `) * 0.6`)
+	require.NotContains(t, records[0].NormalizedPricing, `"needs_review":true`)
+
+	require.Empty(t, records[1].InternalPricing, "ratio-derived price must not auto-enable billing")
+	require.Contains(t, records[1].NormalizedPricing, `"needs_review":true`)
+}
