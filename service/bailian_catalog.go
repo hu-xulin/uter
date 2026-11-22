@@ -181,6 +181,14 @@ func fetchBailianCatalogFromBase(ctx context.Context, baseURL, apiKey string) (*
 	if len(catalog.Models) == 0 {
 		return nil, errors.New("bailian catalog returned no models")
 	}
+	// A partial page set must never be published as the complete catalog.
+	// total is the upstream's authoritative count for this scoped query.
+	if catalog.Total > 0 && len(catalog.Models) < catalog.Total {
+		return nil, fmt.Errorf(
+			"bailian catalog incomplete: fetched %d of %d models",
+			len(catalog.Models), catalog.Total,
+		)
+	}
 	return catalog, nil
 }
 
