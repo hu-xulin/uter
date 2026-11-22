@@ -165,6 +165,8 @@ type UpstreamParityModel struct {
 	HasOfficialEstimate bool     `json:"has_official_estimate"`
 	HasChannelPrice     bool     `json:"has_channel_price"`
 	HasInternalPrice    bool     `json:"has_internal_price"`
+	HasPurchaseCost     bool     `json:"has_purchase_cost"`
+	PurchaseVerified    bool     `json:"purchase_verified"`
 	ExpressionStatus    string   `json:"expression_status,omitempty"`
 	Stale               bool     `json:"stale"`
 	Reasons             []string `json:"reasons,omitempty"`
@@ -179,6 +181,7 @@ type UpstreamParityReport struct {
 	CatalogCompared    bool                  `json:"catalog_compared"`
 	CatalogError       string                `json:"catalog_error,omitempty"`
 	UpstreamModelCount int                   `json:"upstream_model_count,omitempty"`
+	PurchaseUnverified int                   `json:"purchase_unverified"`
 	Summary            map[string]int        `json:"summary"`
 	Models             []UpstreamParityModel `json:"models"`
 }
@@ -212,6 +215,13 @@ func BuildUpstreamParityReport(channelID int, channelName string, rows []model.C
 		item.HasOfficialEstimate = len(official.Tiers) > 0 &&
 			(official.PriceKind == "RATIO_ONLY" || official.PriceKind == "DERIVED_FROM_RATIOS")
 		item.HasInternalPrice = row.PricingStatus == model.ChannelPricingStatusConfigured && strings.TrimSpace(row.InternalPricing) != ""
+		if cost := model.ParseChannelPurchaseCost(row.PurchasePricing); cost != nil {
+			item.HasPurchaseCost = true
+			item.PurchaseVerified = cost.Verified
+		}
+		if item.HasInternalPrice && !item.PurchaseVerified {
+			report.PurchaseUnverified++
+		}
 		item.ExpressionStatus = official.ExpressionStatus
 		item.Stale = row.FetchedAt > 0 && now.Sub(time.Unix(row.FetchedAt, 0)) > upstreamParityStaleAfter
 

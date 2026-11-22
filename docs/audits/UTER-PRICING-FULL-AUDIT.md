@@ -51,6 +51,10 @@ protected.
 - `has_official_estimate`: ratio-derived estimate only.
 - `has_channel_price`: upstream channel quote.
 - `price_kind`: original source classification.
+- `has_purchase_cost` / `purchase_verified`: whether the full contract cost is
+  present and operator-confirmed.
+- `purchase_unverified`: count of configured models whose sale price has no
+  verified purchase contract.
 
 Ratio-only rows without a channel quote are reported as `PRICE_MISMATCH`
 instead of `FULLY_MATCHED`. Freshness is 48 hours, matching the channel pricing

@@ -1417,6 +1417,8 @@ export type UpstreamParityModel = {
   has_official_estimate?: boolean
   has_channel_price: boolean
   has_internal_price: boolean
+  has_purchase_cost?: boolean
+  purchase_verified?: boolean
   expression_status?: string
   stale: boolean
   reasons?: string[]
@@ -1429,6 +1431,7 @@ export type UpstreamParityReport = {
   catalog_compared?: boolean
   catalog_error?: string
   upstream_model_count?: number
+  purchase_unverified?: number
   summary: Record<string, number>
   models: UpstreamParityModel[]
 }
