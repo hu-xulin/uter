@@ -215,6 +215,30 @@ function splitFilterList(raw: string): string[] | undefined {
   return values.length > 0 ? values : undefined
 }
 
+// parseTierRules accepts the optional per-tier override array. Invalid JSON or
+// a non-array value is rejected before any preview request is sent.
+function parseTierRules(raw: string):
+  | Array<{
+      range_name?: string
+      time_band?: string
+      mode: string
+      value: number
+    }>
+  | undefined {
+  const text = raw.trim()
+  if (!text) return undefined
+  const parsed: unknown = JSON.parse(text)
+  if (!Array.isArray(parsed)) {
+    throw new Error('Tier rules must be a JSON array.')
+  }
+  return parsed as Array<{
+    range_name?: string
+    time_band?: string
+    mode: string
+    value: number
+  }>
+}
+
 export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const { t } = useTranslation()
   const pricingModeLabel = (value: string) => {
@@ -251,6 +275,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   >('all')
   const [confirmZeroFixed, setConfirmZeroFixed] = useState(false)
   const [dimensions, setDimensions] = useState<string[]>([])
+  const [tierRulesText, setTierRulesText] = useState('')
   const [overwriteManual, setOverwriteManual] = useState(false)
   const [minMarginPercent, setMinMarginPercent] = useState('')
   const [protectionMode, setProtectionMode] = useState<
@@ -436,8 +461,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       handleServerError(error, t('Failed to import upstream invoice')),
   })
   const batch = useMutation({
-    mutationFn: (dryRun: boolean) =>
-      batchChannelModelPricing(props.channelId ?? 0, {
+    mutationFn: (dryRun: boolean) => {
+      let tierRules: ReturnType<typeof parseTierRules>
+      try {
+        tierRules = parseTierRules(tierRulesText)
+      } catch {
+        throw new Error(t('Tier rules must be a JSON array.'))
+      }
+      return batchChannelModelPricing(props.channelId ?? 0, {
         basis,
         mode,
         value: parsedValue,
@@ -477,7 +508,9 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                   ])
               )
             : undefined,
-      }),
+        tier_rules: tierRules,
+      })
+    },
     onSuccess: (result, dryRun) => {
       setPreview(result)
       if (!dryRun) {
@@ -869,6 +902,22 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
               {t('Leave all unchecked to apply to every dimension.')}
             </p>
           </div>
+          <details className='space-y-1.5 sm:col-span-3'>
+            <summary className='cursor-pointer text-sm'>
+              {t('Per-tier rules (optional)')}
+            </summary>
+            <Textarea
+              value={tierRulesText}
+              onChange={(event) => setTierRulesText(event.target.value)}
+              placeholder='[{"range_name":"long","mode":"multiply","value":0.5}]'
+              className='mt-1 min-h-20 font-mono'
+            />
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.'
+              )}
+            </p>
+          </details>
           <div className='space-y-1.5'>
             <Label htmlFor='batch-pricing-scope'>{`3. ${t('Scope')}`}</Label>
             <Select

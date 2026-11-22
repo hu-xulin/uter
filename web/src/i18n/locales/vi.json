@@ -8598,6 +8598,9 @@
     "Multimodal input/output": "Đầu vào/đầu ra đa phương thức",
     "Thinking multimodal input/output": "Đầu vào/đầu ra đa phương thức suy luận",
     "Price identity filters": "Bộ lọc định danh giá",
-    "Comma separated; leave empty to match every value.": "Phân tách bằng dấu phẩy; để trống để khớp mọi giá trị."
+    "Comma separated; leave empty to match every value.": "Phân tách bằng dấu phẩy; để trống để khớp mọi giá trị.",
+    "Tier rules must be a JSON array.": "Quy tắc theo bậc phải là mảng JSON.",
+    "Per-tier rules (optional)": "Quy tắc theo bậc (tùy chọn)",
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "Mảng JSON ghi đè theo range_name/time_band. Các bậc không khớp giữ quy tắc gốc; JSON không hợp lệ sẽ chặn bản xem trước."
   }
 }

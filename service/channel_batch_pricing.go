@@ -121,7 +121,10 @@ type BatchDimensionMargin struct {
 // BatchPricingSkipped explains why a model was not priced.
 type BatchPricingSkipped struct {
 	ModelName string `json:"model_name"`
-	Reason    string `json:"reason"`
+	// Identity is the full model|provider|region|deployment key when the skip
+	// is about one specific identity, so a multi-identity model stays traceable.
+	Identity string `json:"identity,omitempty"`
+	Reason   string `json:"reason"`
 }
 
 // BatchPricingResult is the preview/apply outcome.
@@ -330,6 +333,18 @@ func ApplyChannelBatchPricingWithOptions(
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
 		return nil, err
+	}
+	// A model may exist under several provider/region/deployment identities.
+	// The legacy model-name version key is only safe when the name is unique.
+	identitiesByModel := make(map[string]map[string]struct{}, len(rows))
+	for _, row := range rows {
+		if row.ModelName == "" {
+			continue
+		}
+		if identitiesByModel[row.ModelName] == nil {
+			identitiesByModel[row.ModelName] = make(map[string]struct{})
+		}
+		identitiesByModel[row.ModelName][batchPricingIdentityKey(row)] = struct{}{}
 	}
 	selected := make(map[string]bool, len(modelNames))
 	for _, name := range modelNames {
@@ -702,18 +717,31 @@ func ApplyChannelBatchPricingWithOptions(
 				})
 			}
 		}
-		if !dryRun && (!violated || approved) {
+		identityKey := batchPricingIdentityKey(row)
+		expectedVersion := options.ExpectedVersions[identityKey]
+		versionAmbiguous := false
+		if expectedVersion == "" {
+			if nameVersion, hasNameVersion := options.ExpectedVersions[row.ModelName]; hasNameVersion {
+				// 只有调用方确实提交了模型名版本时才回退；同名模型存在多个
+				// 身份时模型名无法唯一定位，宁可拒绝也不能校验到错误身份。
+				if len(identitiesByModel[row.ModelName]) > 1 {
+					versionAmbiguous = true
+					result.Skipped = append(result.Skipped, BatchPricingSkipped{
+						ModelName: row.ModelName, Identity: identityKey,
+						Reason: "model has multiple channel identities; provide the full identity version key",
+					})
+				} else {
+					expectedVersion = nameVersion
+				}
+			}
+		}
+		if !versionAmbiguous && !dryRun && (!violated || approved) {
 			var oldPricing *model.ChannelInternalPricing
 			if strings.TrimSpace(row.InternalPricing) != "" {
 				var parsed model.ChannelInternalPricing
 				if err := common.UnmarshalJsonStr(row.InternalPricing, &parsed); err == nil {
 					oldPricing = &parsed
 				}
-			}
-			identityKey := row.ModelName + "|" + row.Provider + "|" + row.Region + "|" + row.DeploymentId
-			expectedVersion := options.ExpectedVersions[identityKey]
-			if expectedVersion == "" {
-				expectedVersion = options.ExpectedVersions[row.ModelName]
 			}
 			pending = append(pending, batchPendingWrite{
 				row: row,
@@ -751,9 +779,11 @@ func ApplyChannelBatchPricingWithOptions(
 				}
 				err := SetChannelPricingWithHistory(write.identity, write.internal, source, write.expectedVersion, write.oldPricing)
 				if errors.Is(err, model.ErrChannelPricingVersionConflict) {
-					result.Conflicts = append(result.Conflicts, write.row.ModelName)
+					identityKey := batchPricingIdentityKey(write.row)
+					result.Conflicts = append(result.Conflicts, identityKey)
 					result.Skipped = append(result.Skipped, BatchPricingSkipped{
-						ModelName: write.row.ModelName, Reason: "price changed after preview; re-run the preview",
+						ModelName: write.row.ModelName, Identity: identityKey,
+						Reason: "price changed after preview; re-run the preview",
 					})
 					continue
 				}
@@ -771,6 +801,11 @@ func ApplyChannelBatchPricingWithOptions(
 		result.Updated = written
 	}
 	return result, nil
+}
+
+// batchPricingIdentityKey is the stable version-key for one pricing identity.
+func batchPricingIdentityKey(row model.ChannelModelPricing) string {
+	return row.ModelName + "|" + row.Provider + "|" + row.Region + "|" + row.DeploymentId
 }
 
 // batchBaseFromContractCost converts the operator's contract cost into the

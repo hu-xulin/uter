@@ -122,6 +122,9 @@ type RelayInfo struct {
 	ChannelPricingPurchaseVerified bool
 	ChannelPricingPurchaseSource   string
 	ChannelPricingPurchaseVersion  string
+	// ChannelPricingPurchaseContract is the per-dimension contract cost frozen
+	// at submit time. It is what the financial cost breakdown is computed from.
+	ChannelPricingPurchaseContract string
 	ChannelPricingCurrency         string
 	ChannelPricingFXRate           float64
 	ChannelPricingVersion          string

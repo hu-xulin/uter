@@ -20,6 +20,36 @@ package model
 
 import "testing"
 
+func TestPreserveDraftSettingKeepsDraftOnUpdate(t *testing.T) {
+	origin := Channel{OtherSettings: `{"draft":true}`}
+	updated := Channel{OtherSettings: `{"vertex_key_type":"api_key"}`}
+	updated.PreserveDraftSetting(&origin, true)
+	if !updated.GetOtherSettings().Draft {
+		t.Fatal("draft marker was cleared by an ordinary settings update")
+	}
+	if updated.GetOtherSettings().VertexKeyType != "api_key" {
+		t.Fatal("the update's own settings were lost")
+	}
+}
+
+func TestPreserveDraftSettingIgnoresPublishedChannels(t *testing.T) {
+	origin := Channel{OtherSettings: `{}`}
+	updated := Channel{OtherSettings: `{"vertex_key_type":"api_key"}`}
+	updated.PreserveDraftSetting(&origin, true)
+	if updated.GetOtherSettings().Draft {
+		t.Fatal("a published channel must not be marked as a draft")
+	}
+}
+
+func TestPreserveDraftSettingLeavesOmittedSettingsAlone(t *testing.T) {
+	origin := Channel{OtherSettings: `{"draft":true}`}
+	updated := Channel{}
+	updated.PreserveDraftSetting(&origin, false)
+	if updated.OtherSettings != "" {
+		t.Fatalf("omitted settings must stay untouched, got %q", updated.OtherSettings)
+	}
+}
+
 func TestIsExpiredDraftChannel(t *testing.T) {
 	const cutoff = int64(1_000_000)
 	cases := []struct {

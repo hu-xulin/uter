@@ -26,11 +26,20 @@ import (
 // the matched/unmatched detail as JSON so the audit trail stays complete
 // without a second relational table.
 type UpstreamBillingInvoice struct {
-	Id               int64  `gorm:"primaryKey;autoIncrement"`
-	ChannelId        int    `gorm:"index"`
-	Provider         string `gorm:"size:64"`
-	Period           string `gorm:"size:64"`
-	Currency         string `gorm:"size:16"`
+	Id        int64  `gorm:"primaryKey;autoIncrement"`
+	ChannelId int    `gorm:"index"`
+	Provider  string `gorm:"size:64"`
+	Period    string `gorm:"size:64"`
+	Currency  string `gorm:"size:16"`
+	// FXRate converts OriginalTotal (supplier currency) into TotalUpstreamUSD.
+	// FXSource/FXVersion record where the rate came from and its historical
+	// entry, so the conversion can be reproduced later.
+	FXRate    float64
+	FXSource  string `gorm:"size:128"`
+	FXVersion string `gorm:"size:64"`
+	// OriginalTotal keeps the supplier's own amount so the conversion can be
+	// re-audited.
+	OriginalTotal    float64
 	Source           string `gorm:"size:255"`
 	Note             string `gorm:"size:255"`
 	TotalUpstreamUSD float64

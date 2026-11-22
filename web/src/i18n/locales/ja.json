@@ -8502,13 +8502,13 @@
     "No direct price in the catalogue": "カタログに直接価格がありません",
     "Pricing expression failed validation": "価格式の検証に失敗しました",
     "Apiko channels do not expose a balance API": "Apiko チャネルには残高 API がありません",
-    "Apiko catalogue sync": "Синхронизация каталога Apiko",
-    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Синхронизировать полный список моделей, публикуемый control plane Apiko. Существующие записи сохраняются.",
-    "Sync Apiko models": "Синхронизировать модели Apiko",
-    "Added {{count}} models from the Apiko catalogue": "Добавлено {{count}} моделей из каталога Apiko",
-    "{{total}} models after sync; {{added}} added": "Всего моделей после синхронизации: {{total}}, добавлено: {{added}}",
-    "Failed to sync Apiko models": "Не удалось синхронизировать модели Apiko",
-    "Save the channel before syncing models.": "Сохраните канал перед синхронизацией моделей.",
+    "Apiko catalogue sync": "Apiko カタログ同期",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Apiko コントロールプレーンが公開する完全なモデル一覧を同期します。既存の項目は保持されます。",
+    "Sync Apiko models": "Apiko モデルを同期",
+    "Added {{count}} models from the Apiko catalogue": "Apiko カタログから {{count}} 個のモデルを追加しました",
+    "{{total}} models after sync; {{added}} added": "同期後のモデル数 {{total}}、追加 {{added}}",
+    "Failed to sync Apiko models": "Apiko モデルの同期に失敗しました",
+    "Save the channel before syncing models.": "モデルを同期する前にチャネルを保存してください。",
     "Minimum margin": "最低マージン",
     "Percent per dimension. Leave empty to disable the margin floor.": "ディメンションごとの割合。空欄にすると最低マージンを無効にします。",
     "Enter a margin between 0 and 100.": "0〜100 のマージンを入力してください。",
@@ -8598,6 +8598,9 @@
     "Multimodal input/output": "マルチモーダル入力/出力",
     "Thinking multimodal input/output": "推論マルチモーダル入力/出力",
     "Price identity filters": "価格識別子フィルター",
-    "Comma separated; leave empty to match every value.": "カンマ区切り。空欄はすべてに一致します。"
+    "Comma separated; leave empty to match every value.": "カンマ区切り。空欄はすべてに一致します。",
+    "Tier rules must be a JSON array.": "階層ルールは JSON 配列である必要があります。",
+    "Per-tier rules (optional)": "階層別ルール（任意）",
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "range_name/time_band ごとの上書きを指定する JSON 配列。一致しない階層は基本ルールを継承し、不正な JSON はプレビューを止めます。"
   }
 }

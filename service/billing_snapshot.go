@@ -67,9 +67,6 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 			mode = snapshot.BillingMode
 		}
 	}
-	if !info.ChannelPricingApplied && exprString == "" {
-		return
-	}
 	modelName := info.GetBillingModelName()
 	if modelName == "" {
 		modelName = info.OriginModelName
@@ -77,8 +74,25 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 	if modelName == "" {
 		return
 	}
+	// 纯倍率任务没有渠道合同或表达式，但仍需要一份可审计凭证：冻结当时
+	// 的倍率组合，结算与退款才能对应到具体金额。同步请求保持原门槛；
+	// 没有任何计价依据的任务（例如零价插件任务）不写无意义的凭证。
+	if !info.ChannelPricingApplied && exprString == "" {
+		if taskID == "" {
+			return
+		}
+		if info.PriceData.ModelRatio <= 0 && info.PriceData.ModelPrice <= 0 && !info.PriceData.UsePrice {
+			return
+		}
+	}
 	usage := billingSnapshotUsage(info)
 	contract := strings.TrimSpace(info.ChannelPricingContractJSON)
+	if contract == "" && taskID != "" {
+		mode = ratioBillingMode(info)
+		if encoded, err := common.Marshal(ratioBillingContractFor(info)); err == nil {
+			contract = string(encoded)
+		}
+	}
 	contractHash := ""
 	priceSource := ""
 	if contract != "" {
@@ -92,22 +106,29 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 	preConsumed := int64(info.FinalPreConsumedQuota)
 	settled := int64(0)
 	refund := int64(0)
-	status := "pending"
+	status := model.BillingSnapshotStatusPending
 	if info.SettlementRecorded {
 		settled = info.SettledQuota
 		if preConsumed > settled {
 			refund = preConsumed - settled
 		}
-		status = "settled"
+		status = model.BillingSnapshotStatusSettled
 		if info.SettlementFailed {
-			status = "settle_failed"
+			status = model.BillingSnapshotStatusSettleFailed
 		}
+	}
+	purchaseContract := strings.TrimSpace(info.ChannelPricingPurchaseContract)
+	purchaseContractHash := ""
+	if purchaseContract != "" {
+		sum := sha256.Sum256([]byte(purchaseContract))
+		purchaseContractHash = hex.EncodeToString(sum[:])
 	}
 	row := model.BillingPriceSnapshot{
 		RequestId:             info.RequestId,
 		TaskId:                taskID,
 		ModelName:             modelName,
 		ChannelId:             info.GetChannelID(),
+		UserId:                info.UserId,
 		Provider:              info.ChannelPricingProvider,
 		Region:                info.ChannelPricingRegion,
 		DeploymentId:          info.ChannelPricingDeployment,
@@ -118,6 +139,8 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 		BillingExpressionHash: exprHash,
 		PriceContract:         contract,
 		PriceContractHash:     contractHash,
+		PurchaseContract:      purchaseContract,
+		PurchaseContractHash:  purchaseContractHash,
 		PriceSource:           priceSource,
 		PurchaseUSD:           info.ChannelPricingPurchaseUSD,
 		PurchaseVerified:      info.ChannelPricingPurchaseVerified,
@@ -126,6 +149,7 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 		UserPricingRatio:      info.UserPricingRatio,
 		Currency:              info.ChannelPricingCurrency,
 		FXRate:                info.ChannelPricingFXRate,
+		QuotaPerUnit:          common.QuotaPerUnit,
 		UsageBreakdown:        usage,
 		PreConsumedQuota:      preConsumed,
 		SettledQuota:          settled,
@@ -148,7 +172,9 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 	}
 	if err := model.UpdateBillingPriceSnapshotSettlement(info.RequestId, taskID, modelName, patch); err != nil {
 		markBillingSnapshotError(other, info, err)
+		return
 	}
+	recordRequestFinancials(&row, usage, settled, refund)
 }
 
 // billingSnapshotUsage prefers the settled metered quantities (which cover
@@ -202,4 +228,46 @@ func taskIDForLog(info *relaycommon.RelayInfo) string {
 		return info.TaskRelayInfo.PublicTaskID
 	}
 	return info.TaskRelayInfo.OriginTaskID
+}
+
+// ratioBillingMode names a task voucher that bills by global model ratios.
+func ratioBillingMode(info *relaycommon.RelayInfo) string {
+	if info != nil && info.PriceData.UsePrice {
+		return "fixed_price"
+	}
+	return "ratio"
+}
+
+// ratioBillingContract freezes the multiplier set a ratio-mode task was priced
+// with. Sold per-token prices are derivable from it; no purchase contract
+// exists for global models, so the ledger marks their profit as pending.
+func ratioBillingContractFor(info *relaycommon.RelayInfo) any {
+	price := info.PriceData
+	return struct {
+		Mode                 string  `json:"mode"`
+		ModelRatio           float64 `json:"model_ratio"`
+		ModelPrice           float64 `json:"model_price,omitempty"`
+		CompletionRatio      float64 `json:"completion_ratio"`
+		CacheRatio           float64 `json:"cache_ratio"`
+		CacheCreationRatio   float64 `json:"cache_creation_ratio"`
+		ImageRatio           float64 `json:"image_ratio"`
+		AudioRatio           float64 `json:"audio_ratio"`
+		AudioCompletionRatio float64 `json:"audio_completion_ratio"`
+		GroupRatio           float64 `json:"group_ratio"`
+		UserPricingRatio     float64 `json:"user_pricing_ratio,omitempty"`
+		UsePrice             bool    `json:"use_price,omitempty"`
+	}{
+		Mode:                 ratioBillingMode(info),
+		ModelRatio:           price.ModelRatio,
+		ModelPrice:           price.ModelPrice,
+		CompletionRatio:      price.CompletionRatio,
+		CacheRatio:           price.CacheRatio,
+		CacheCreationRatio:   price.CacheCreationRatio,
+		ImageRatio:           price.ImageRatio,
+		AudioRatio:           price.AudioRatio,
+		AudioCompletionRatio: price.AudioCompletionRatio,
+		GroupRatio:           price.GroupRatioInfo.GroupRatio,
+		UserPricingRatio:     info.UserPricingRatio,
+		UsePrice:             price.UsePrice,
+	}
 }

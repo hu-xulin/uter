@@ -1155,6 +1155,22 @@ func (channel *Channel) SetOtherSettings(setting dto.ChannelOtherSettings) {
 	channel.OtherSettings = string(settingBytes)
 }
 
+// PreserveDraftSetting keeps the create-wizard draft marker when a partial
+// update sends its own settings payload. Only PublishChannelDraft clears the
+// marker; otherwise the final save would make the following publish fail with
+// "Only draft channels can be published".
+func (channel *Channel) PreserveDraftSetting(origin *Channel, settingsProvided bool) {
+	if !settingsProvided || origin == nil || !origin.GetOtherSettings().Draft {
+		return
+	}
+	settings := channel.GetOtherSettings()
+	if settings.Draft {
+		return
+	}
+	settings.Draft = true
+	channel.SetOtherSettings(settings)
+}
+
 func (channel *Channel) GetParamOverride() map[string]any {
 	paramOverride := make(map[string]any)
 	if channel.ParamOverride != nil && *channel.ParamOverride != "" {

@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"math"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,14 +16,23 @@ const (
 
 // ChannelPricingReview is one upstream price change waiting for an operator.
 type ChannelPricingReview struct {
-	ID        int64   `gorm:"primaryKey;autoIncrement"`
-	ChannelID int     `gorm:"index:idx_channel_pricing_review_channel"`
-	ModelName string  `gorm:"size:255;index:idx_channel_pricing_review_model"`
-	Field     string  `gorm:"size:64"`
-	Old       float64 `gorm:"type:decimal(20,10)"`
-	New       float64 `gorm:"type:decimal(20,10)"`
-	Percent   float64 `gorm:"type:decimal(20,10)"`
-	Status    string  `gorm:"size:32;index"`
+	ID        int64  `gorm:"primaryKey;autoIncrement"`
+	ChannelID int    `gorm:"index:idx_channel_pricing_review_channel"`
+	ModelName string `gorm:"size:255;index:idx_channel_pricing_review_model"`
+	// Identity and PricingVersion tie the review to the exact row and price
+	// state it was raised on; approval must not apply to a newer state.
+	Provider       string `gorm:"size:64"`
+	Region         string `gorm:"size:64"`
+	DeploymentId   string `gorm:"size:128"`
+	PricingVersion string `gorm:"size:64"`
+	// SyncStartedAt ties the review to the sync attempt that raised it; the
+	// channel's channel_sync_states row carries the same last_started_at.
+	SyncStartedAt int64   `gorm:"index"`
+	Field         string  `gorm:"size:64"`
+	Old           float64 `gorm:"type:decimal(20,10)"`
+	New           float64 `gorm:"type:decimal(20,10)"`
+	Percent       float64 `gorm:"type:decimal(20,10)"`
+	Status        string  `gorm:"size:32;index"`
 	// Decision records who approved or rejected the change and why.
 	ReviewerID   int    `gorm:"index"`
 	ReviewerName string `gorm:"size:128"`
@@ -57,6 +67,27 @@ func AppendChannelPricingReviews(rows []ChannelPricingReview) error {
 				row.ChannelID, row.ModelName, row.Field, ChannelPricingReviewStatusPending).
 				Delete(&ChannelPricingReview{}).Error; err != nil {
 				return err
+			}
+			// A change that was already approved or rejected must not be
+			// re-queued on every sync: the operator's decision covers this
+			// exact old/new pair. Explicit values are compared in Go so no
+			// dialect-specific quoting of the `new` column is needed.
+			var decided []ChannelPricingReview
+			if err := tx.Where("channel_id = ? AND model_name = ? AND field = ? AND status IN ?",
+				row.ChannelID, row.ModelName, row.Field,
+				[]string{ChannelPricingReviewStatusApproved, ChannelPricingReviewStatusRejected}).
+				Find(&decided).Error; err != nil {
+				return err
+			}
+			alreadyDecided := false
+			for _, entry := range decided {
+				if math.Abs(entry.New-row.New) < 1e-9 {
+					alreadyDecided = true
+					break
+				}
+			}
+			if alreadyDecided {
+				continue
 			}
 			if err := tx.Create(&row).Error; err != nil {
 				return err

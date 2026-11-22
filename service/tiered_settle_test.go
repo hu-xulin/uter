@@ -1192,3 +1192,70 @@ func TestBuildTieredTokenParams_GPT_ReasoningMode(t *testing.T) {
 		t.Fatalf("quota = %f, want 3000", got)
 	}
 }
+
+// 混合多模态回放：同一请求同时包含文本、图片、图片缓存、音频与思考 tokens，
+// 归一化后每个维度只计一次，最终额度与逐项手算一致。
+func TestTieredSettleReplayMixedMultimodalUsage(t *testing.T) {
+	expr := `len <= 200000 ? tier("standard", p * 1 + c * (rt > 0 ? 10 : 2) + cr * 0.1 + img * 3 + img_cr * 0.5 + img_o * 6 + ai * 4 + ao * 8) : tier("long_context", p * 2 + c * 20 + cr * 0.2 + img * 6 + img_cr * 1 + img_o * 12 + ai * 8 + ao * 16)`
+	usage := &dto.Usage{
+		PromptTokens:     2000,
+		CompletionTokens: 800,
+		PromptTokensDetails: dto.InputTokenDetails{
+			TextTokens:   1200,
+			ImageTokens:  500,
+			AudioTokens:  300,
+			CachedTokens: 400,
+			CachedTokensDetails: &dto.CachedTokenDetails{
+				ImageTokens: common.GetPointer(150),
+				TextTokens:  common.GetPointer(250),
+			},
+		},
+		CompletionTokenDetails: dto.OutputTokenDetails{
+			TextTokens:      400,
+			ImageTokens:     200,
+			AudioTokens:     100,
+			ReasoningTokens: 100,
+		},
+	}
+
+	params := BuildTieredTokenParams(usage, false, billingexpr.UsedVars(expr))
+	assert.Equal(t, float64(950), params.P)
+	assert.Equal(t, float64(500), params.C)
+	assert.Equal(t, float64(250), params.CR)
+	assert.Equal(t, float64(350), params.Img)
+	assert.Equal(t, float64(150), params.ImgCR)
+	assert.Equal(t, float64(200), params.ImgO)
+	assert.Equal(t, float64(300), params.AI)
+	assert.Equal(t, float64(100), params.AO)
+	assert.Equal(t, float64(100), params.RT)
+	assert.Equal(t, float64(2000), params.Len)
+
+	result, err := billingexpr.ComputeTieredQuota(makeSnapshot(expr, 1, 2000, 800), params)
+	require.NoError(t, err)
+	// 950 + 500*10 + 25 + 1050 + 75 + 1200 + 1200 + 800 = 10300 USD/1M → 5150 quota
+	assert.Equal(t, "standard", result.MatchedTier)
+	assert.Equal(t, 5150, result.ActualQuotaAfterGroup)
+}
+
+// 按张计费的图片任务：省略数量按 1 张，越界数量必须拒绝而不是按 1 张兜底。
+func TestTieredSettleReplayImageCount(t *testing.T) {
+	const expr = `tier("image", fixed(0.04)) * image_count`
+	snap := makeSnapshot(expr, 1, 0, 0)
+
+	result, err := billingexpr.ComputeTieredQuota(snap, billingexpr.TokenParams{})
+	require.NoError(t, err)
+	require.NotNil(t, result.ImageCount)
+	assert.Equal(t, 1, *result.ImageCount)
+	assert.Equal(t, 20_000, result.ActualQuotaAfterGroup)
+
+	three := 3
+	result, err = billingexpr.ComputeTieredQuotaWithRequest(snap, billingexpr.TokenParams{}, billingexpr.RequestInput{ImageCount: &three})
+	require.NoError(t, err)
+	require.NotNil(t, result.ImageCount)
+	assert.Equal(t, 3, *result.ImageCount)
+	assert.Equal(t, 60_000, result.ActualQuotaAfterGroup)
+
+	zero := 0
+	_, err = billingexpr.ComputeTieredQuotaWithRequest(snap, billingexpr.TokenParams{}, billingexpr.RequestInput{ImageCount: &zero})
+	require.Error(t, err)
+}

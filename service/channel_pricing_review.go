@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -17,18 +18,25 @@ const channelPricingReviewLimit = 500
 // ChannelPricingReviewEntry is one upstream price change that needs approval
 // before the scheduled rule may touch the channel's effective price.
 type ChannelPricingReviewEntry struct {
-	ID        int64     `json:"id,omitempty"`
-	ChannelID int       `json:"channel_id"`
-	ModelName string    `json:"model_name"`
-	Field     string    `json:"field"`
-	Old       float64   `json:"old"`
-	New       float64   `json:"new"`
-	Percent   float64   `json:"percent"`
-	Status    string    `json:"status,omitempty"`
-	Reviewer  string    `json:"reviewer,omitempty"`
-	Note      string    `json:"note,omitempty"`
-	DecidedAt int64     `json:"decided_at,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
+	ID           int64  `json:"id,omitempty"`
+	ChannelID    int    `json:"channel_id"`
+	ModelName    string `json:"model_name"`
+	Provider     string `json:"provider,omitempty"`
+	Region       string `json:"region,omitempty"`
+	DeploymentId string `json:"deployment_id,omitempty"`
+	// PricingVersion is the price state the change was detected against.
+	PricingVersion string `json:"pricing_version,omitempty"`
+	// SyncStartedAt is the sync attempt that raised this review.
+	SyncStartedAt int64     `json:"sync_started_at,omitempty"`
+	Field         string    `json:"field"`
+	Old           float64   `json:"old"`
+	New           float64   `json:"new"`
+	Percent       float64   `json:"percent"`
+	Status        string    `json:"status,omitempty"`
+	Reviewer      string    `json:"reviewer,omitempty"`
+	Note          string    `json:"note,omitempty"`
+	DecidedAt     int64     `json:"decided_at,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 type channelPricingReviewSetting struct {
@@ -71,8 +79,14 @@ func BuildChannelPricingReviews(
 		if thresholdPercent > 0 && percent < thresholdPercent {
 			continue
 		}
+		syncStartedAt := int64(0)
+		if !change.DetectedAt.IsZero() {
+			syncStartedAt = change.DetectedAt.Unix()
+		}
 		out = append(out, ChannelPricingReviewEntry{
 			ChannelID: channelID, ModelName: change.ModelID, Field: change.Field,
+			Provider: change.ProviderID, Region: change.Region, DeploymentId: change.DeploymentId,
+			PricingVersion: change.PricingVersion, SyncStartedAt: syncStartedAt,
 			Old: oldValue, New: newValue, Percent: percent,
 			CreatedAt: time.Now().UTC(),
 		})
@@ -91,6 +105,8 @@ func AppendChannelPricingReviews(entries []ChannelPricingReviewEntry) error {
 	for _, entry := range entries {
 		rows = append(rows, model.ChannelPricingReview{
 			ChannelID: entry.ChannelID, ModelName: entry.ModelName, Field: entry.Field,
+			Provider: entry.Provider, Region: entry.Region, DeploymentId: entry.DeploymentId,
+			PricingVersion: entry.PricingVersion, SyncStartedAt: entry.SyncStartedAt,
 			Old: entry.Old, New: entry.New, Percent: entry.Percent,
 			CreatedAt: entry.CreatedAt.Unix(),
 		})
@@ -142,6 +158,8 @@ func ListChannelPricingReviews(channelID int) []ChannelPricingReviewEntry {
 		for _, row := range rows {
 			out = append(out, ChannelPricingReviewEntry{
 				ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+				Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
+				PricingVersion: row.PricingVersion, SyncStartedAt: row.SyncStartedAt,
 				Field: row.Field, Old: row.Old, New: row.New, Percent: row.Percent,
 				CreatedAt: time.Unix(row.CreatedAt, 0).UTC(),
 			})
@@ -196,6 +214,8 @@ func ListChannelPricingReviewsByStatus(channelID int, status string) []ChannelPr
 	for _, row := range rows {
 		out = append(out, ChannelPricingReviewEntry{
 			ID: row.ID, ChannelID: row.ChannelID, ModelName: row.ModelName,
+			Provider: row.Provider, Region: row.Region, DeploymentId: row.DeploymentId,
+			PricingVersion: row.PricingVersion, SyncStartedAt: row.SyncStartedAt,
 			Field: row.Field, Old: row.Old, New: row.New, Percent: row.Percent,
 			Status: row.Status, Reviewer: row.ReviewerName, Note: row.Note,
 			DecidedAt: row.DecidedAt, CreatedAt: time.Unix(row.CreatedAt, 0).UTC(),
@@ -216,6 +236,33 @@ func DecideChannelPricingReviews(channelID int, status string, reviewerID int, r
 		_ = clearChannelPricingReviewsOption(channelID)
 	}
 	return affected, nil
+}
+
+// ErrPricingReviewStale means the price moved on since the review was raised;
+// the operator must sync and review the new state instead of approving blindly.
+var ErrPricingReviewStale = errors.New("upstream price changed after the review was created; sync and review again")
+
+// ValidateChannelPricingReviewsCurrent verifies every pending review still
+// matches the pricing row version it was created against. Reviews without a
+// recorded version, or rows that cannot be located, are left to the reviewer.
+func ValidateChannelPricingReviewsCurrent(channelID int) error {
+	for _, entry := range ListChannelPricingReviews(channelID) {
+		if entry.PricingVersion == "" {
+			continue
+		}
+		row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+			ChannelId: channelID, ModelName: entry.ModelName,
+			Provider: entry.Provider, Region: entry.Region, DeploymentId: entry.DeploymentId,
+		})
+		if err != nil || row == nil {
+			continue
+		}
+		if row.PricingVersion != entry.PricingVersion {
+			return fmt.Errorf("%w: channel %d model %s (reviewed %s, current %s)",
+				ErrPricingReviewStale, channelID, entry.ModelName, entry.PricingVersion, row.PricingVersion)
+		}
+	}
+	return nil
 }
 
 // ClearChannelPricingReviews removes every pending entry for one channel.

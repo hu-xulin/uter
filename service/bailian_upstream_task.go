@@ -184,6 +184,8 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 		fail := func(err error) {
 			status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, err))
 			recordBailianSyncFailure(&state, now)
+			RecordChannelSyncOutcome(channel.Id, "bailian", now.Unix(), 0, 0, 0, 0, "", err,
+				model.ChannelSyncTypeModels, model.ChannelSyncTypePrices)
 			states.Channels[fmt.Sprintf("%d", channel.Id)] = state
 		}
 		if item.modelDue || item.officialDue || item.channelDue {
@@ -241,6 +243,11 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				status.Scheduled += applied
 				status.Reviews += reviewCount
 			}
+			summary, _ := common.Marshal(map[string]any{
+				"models": len(catalog.Models), "written": written, "changes": len(changes),
+			})
+			RecordChannelSyncOutcome(channel.Id, "bailian", now.Unix(), len(catalog.Models), written, 0, 0,
+				string(summary), nil, model.ChannelSyncTypeModels, model.ChannelSyncTypePrices)
 			state.Failures = 0
 			state.NextAttemptAt = 0
 			if item.modelDue {

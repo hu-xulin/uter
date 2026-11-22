@@ -105,7 +105,9 @@ func validateUpstreamEndpoint(raw string) (*url.URL, error) {
 		return nil, errors.New("upstream URL must not embed credentials")
 	}
 	if isBlockedUpstreamHost(parsed.Hostname()) {
-		return nil, fmt.Errorf("upstream host %q is not allowed", parsed.Hostname())
+		// Downstream contracts (and operators) look for "blocked address";
+		// keep that wording stable.
+		return nil, fmt.Errorf("upstream host %q is a blocked address", parsed.Hostname())
 	}
 	return parsed, nil
 }
@@ -145,7 +147,7 @@ func newUpstreamHTTPClient(timeout time.Duration) *http.Client {
 	}
 	return &http.Client{
 		Timeout:   timeout,
-		Transport: transport,
+		Transport: upstreamGuardTransport{next: transport},
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) >= 3 {
 				return errors.New("too many upstream redirects")
@@ -179,4 +181,22 @@ func safeUpstreamDialContext(ctx context.Context, network, address string) (net.
 	}
 	dialer := &net.Dialer{Timeout: 10 * time.Second}
 	return dialer.DialContext(ctx, network, address)
+}
+
+// upstreamGuardTransport validates the destination before any proxy or dial
+// runs. DialContext alone is not enough: with HTTP_PROXY configured the dialer
+// only sees the proxy host, so a metadata IP literal would otherwise bypass the
+// guard and hit the network.
+type upstreamGuardTransport struct {
+	next http.RoundTripper
+}
+
+func (t upstreamGuardTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req == nil || req.URL == nil {
+		return nil, errors.New("upstream request has no URL")
+	}
+	if _, err := validateUpstreamEndpoint(req.URL.String()); err != nil {
+		return nil, err
+	}
+	return t.next.RoundTrip(req)
 }

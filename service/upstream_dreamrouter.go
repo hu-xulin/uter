@@ -671,8 +671,12 @@ func LoadDreamRouterUpstreamSnapshot() *UpstreamSnapshot {
 // UpstreamPriceChange records one detected change between two snapshots.
 // Kind is price_changed, model_added, or model_removed.
 type UpstreamPriceChange struct {
-	ProviderID     string    `json:"provider_id"`
-	ModelID        string    `json:"model_id"`
+	ProviderID string `json:"provider_id"`
+	ModelID    string `json:"model_id"`
+	// Region/DeploymentId identify the exact pricing row when a model is
+	// published under several identities.
+	Region         string    `json:"region,omitempty"`
+	DeploymentId   string    `json:"deployment_id,omitempty"`
 	Kind           string    `json:"kind"`
 	Field          string    `json:"field,omitempty"`
 	Old            *float64  `json:"old,omitempty"`

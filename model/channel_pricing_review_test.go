@@ -101,3 +101,36 @@ func TestChannelPricingReviewDecisionKeepsHistory(t *testing.T) {
 	_, err = DecideChannelPricingReviews(12, "bogus", 0, "", "")
 	require.Error(t, err)
 }
+
+// 已拒绝的同一价格变化不得在每次同步时重复排队；换一个价格才重新待审。
+func TestChannelPricingReviewDoesNotRequeueDecidedChange(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&ChannelPricingReview{}))
+	previous := DB
+	DB = db
+	t.Cleanup(func() { DB = previous })
+
+	require.NoError(t, AppendChannelPricingReviews([]ChannelPricingReview{
+		{ChannelID: 13, ModelName: "gpt-a", Field: "input", Old: 1, New: 9, Percent: 800},
+	}))
+	_, err = DecideChannelPricingReviews(13, ChannelPricingReviewStatusRejected, 4, "ops", "upstream quote is wrong")
+	require.NoError(t, err)
+
+	// Same rejected change arrives again from a later sync.
+	require.NoError(t, AppendChannelPricingReviews([]ChannelPricingReview{
+		{ChannelID: 13, ModelName: "gpt-a", Field: "input", Old: 1, New: 9, Percent: 800},
+	}))
+	pending, err := ListChannelPricingReviews(13)
+	require.NoError(t, err)
+	assert.Empty(t, pending)
+
+	// A different value is a new decision to make.
+	require.NoError(t, AppendChannelPricingReviews([]ChannelPricingReview{
+		{ChannelID: 13, ModelName: "gpt-a", Field: "input", Old: 1, New: 10, Percent: 900},
+	}))
+	pending, err = ListChannelPricingReviews(13)
+	require.NoError(t, err)
+	require.Len(t, pending, 1)
+	assert.InDelta(t, 10, pending[0].New, 1e-9)
+}

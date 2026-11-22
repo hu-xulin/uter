@@ -343,6 +343,14 @@ func acquireSystemTaskLock(taskType string, taskID string, lockedBy string, now 
 	return true, existing.TaskID, nil
 }
 
+// TryAcquireSystemTaskLock claims one named cross-instance lock. It is the
+// exported form of the primitive used by system tasks, for jobs that must run
+// at most once across processes (for example an upstream price sync).
+func TryAcquireSystemTaskLock(taskType, taskID, lockedBy string, lockUntil int64) (bool, error) {
+	acquired, _, err := acquireSystemTaskLock(taskType, taskID, lockedBy, common.GetTimestamp(), lockUntil)
+	return acquired, err
+}
+
 func UpdateSystemTaskState(taskID string, lockedBy string, state any) error {
 	stateText, err := marshalSystemTaskJSON(state)
 	if err != nil {

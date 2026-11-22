@@ -206,6 +206,52 @@ func TestApikoSkipsPricingThatNeedsRequestParameters(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func TestApikoPerSecondExpressionUsesResolutionAndDuration(t *testing.T) {
+	tiers := []jsonTier{
+		{Name: "720p 4s", PerSecond: apikoFloatPtr(0.08)},
+		{Name: "720p 8s", PerSecond: apikoFloatPtr(0.06)},
+		{Name: "1080p 4s", PerSecond: apikoFloatPtr(0.12)},
+		{Name: "1080p 8s", PerSecond: apikoFloatPtr(0.09)},
+	}
+	expr, official, ok := apikoPerSecondExpression(tiers)
+	require.True(t, ok)
+	require.Len(t, official, 4)
+	require.NoError(t, func() error {
+		_, err := billingexpr.CompileFromCache(expr)
+		return err
+	}())
+
+	cost, trace, err := billingexpr.RunExprWithRequest(
+		expr, billingexpr.TokenParams{},
+		billingexpr.RequestInputForUsage(map[string]any{"seconds": float64(6), "resolution": "1080P"}),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, "1080p 8s", trace.MatchedTier)
+	assert.InDelta(t, 0.54, cost, 1e-9)
+
+	cost, trace, err = billingexpr.RunExprWithRequest(
+		expr, billingexpr.TokenParams{},
+		billingexpr.RequestInputForUsage(map[string]any{"seconds": float64(3), "resolution": "720p"}),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, "720p 4s", trace.MatchedTier)
+	assert.InDelta(t, 0.24, cost, 1e-9)
+}
+
+func TestApikoModelWithoutPriceIsNotAddedOrPriced(t *testing.T) {
+	disabled := apikoModel{ID: "gemini-disabled"}
+	assert.False(t, apikoHasAnyPrice(disabled.Pricing))
+
+	built := buildApikoChannelPricing([]apikoModel{
+		disabled,
+		{ID: "chat", Pricing: apikoPricing{InputPer1M: apikoFloatPtr(1)}},
+	}, 7, time.Unix(1000, 0))
+	require.Len(t, built.records, 1)
+	assert.Equal(t, "chat", built.records[0].ModelName)
+	require.Len(t, built.skipped, 1)
+	assert.Equal(t, "catalog lists no price", built.skipped[0].Reason)
+}
+
 func TestApikoModelsToPricingSyncData(t *testing.T) {
 	models := []apikoModel{
 		{ID: "a", Pricing: apikoPricing{InputPer1M: apikoFloatPtr(1), OutputPer1M: apikoFloatPtr(2)}},
@@ -288,7 +334,7 @@ func TestFetchApikoCatalogueModelIDs(t *testing.T) {
 func TestFetchChannelUpstreamModelIDsUsesApikoCatalogue(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
-		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-video"},{"id":"apiko-chat"}]}}`))
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-video","pricing":{"perSecondTiers":[{"name":"720p","perSecond":0.07}]}},{"id":"apiko-chat","pricing":{"inputPer1M":1}}]}}`))
 	}))
 	t.Cleanup(server.Close)
 
@@ -321,7 +367,7 @@ func TestSyncApikoChannelModelsAddsCatalogueModels(t *testing.T) {
 	db := setupModelListControllerTestDB(t)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
-		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-chat"},{"id":"apiko-video"}]}}`))
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"models":[{"id":"apiko-chat","pricing":{"inputPer1M":1}},{"id":"apiko-video","pricing":{"perSecondTiers":[{"name":"720p","perSecond":0.07}]}}]}}`))
 	}))
 	t.Cleanup(server.Close)
 	previous := apikoControlPlaneBase
@@ -347,6 +393,16 @@ func TestSyncApikoChannelModelsAddsCatalogueModels(t *testing.T) {
 	require.NoError(t, db.First(&stored, channel.Id).Error)
 	assert.Equal(t, "manual-model,apiko-chat,apiko-video", stored.Models)
 	assert.Contains(t, recorder.Body.String(), `"added":2`)
+
+	states, err := model.ListChannelSyncStates(channel.Id)
+	require.NoError(t, err)
+	byType := map[string]model.ChannelSyncState{}
+	for _, state := range states {
+		byType[state.SyncType] = state
+	}
+	require.Contains(t, byType, model.ChannelSyncTypeModels)
+	assert.Positive(t, byType[model.ChannelSyncTypeModels].LastSuccessAt)
+	assert.Contains(t, byType[model.ChannelSyncTypeModels].ChangeSummary, "apiko-chat")
 }
 
 func TestFetchApikoModelIDsPrefersCatalogue(t *testing.T) {
@@ -360,7 +416,7 @@ func TestFetchApikoModelIDsPrefersCatalogue(t *testing.T) {
 
 	catalogue := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
-		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"total":1,"models":[{"id":"catalogue-only"}]}}`))
+		_, _ = writer.Write([]byte(`{"code":0,"message":"ok","data":{"total":1,"models":[{"id":"catalogue-only","pricing":{"inputPer1M":1}}]}}`))
 	}))
 	t.Cleanup(catalogue.Close)
 	previous := apikoControlPlaneBase
@@ -478,6 +534,14 @@ func TestSyncApikoChannelPricingWritesChannelScopedPrices(t *testing.T) {
 	require.NotNil(t, internal.OutputUSDPerMillion)
 	assert.InDelta(t, 5, *internal.OutputUSDPerMillion, 1e-9)
 
+	states, err := model.ListChannelSyncStates(channel.Id)
+	require.NoError(t, err)
+	require.Len(t, states, 1)
+	assert.Equal(t, model.ChannelSyncTypePrices, states[0].SyncType)
+	assert.Equal(t, 2, states[0].Fetched)
+	assert.Positive(t, states[0].LastSuccessAt)
+	assert.Empty(t, states[0].LastError)
+
 	effective := model.ResolveEffectiveChannelPricingFor(identity)
 	require.True(t, effective.Billable)
 	require.NotNil(t, effective.Pricing)
@@ -485,17 +549,23 @@ func TestSyncApikoChannelPricingWritesChannelScopedPrices(t *testing.T) {
 	require.NotNil(t, effective.Pricing.CompletionRatio)
 	assert.InDelta(t, 4, *effective.Pricing.CompletionRatio, 1e-9)
 
-	// The video model has no request-parameter-free price; it gets an official
-	// row with a review reason instead of a first-tier guess.
+	// Per-second video models are executable: resolution selects the ladder and
+	// the measured duration selects the band, so they must not stay in review.
 	video, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
 		ChannelId: channel.Id, Provider: "apiko", ModelName: "apiko-video",
 	})
 	require.NoError(t, err)
-	assert.Empty(t, video.InternalPricing)
+	assert.Equal(t, model.ChannelPricingStatusConfigured, video.PricingStatus)
+	var videoInternal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(video.InternalPricing, &videoInternal))
+	assert.Equal(t, model.ChannelPricingModeTieredExpr, videoInternal.Mode)
+	assert.Contains(t, videoInternal.BillingExpr, "duration > 0 ? duration : 5")
 	var view model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(video.NormalizedPricing, &view))
-	assert.True(t, view.NeedsReview)
-	assert.Contains(t, view.ReviewReasons, "duration-tiered pricing requires request parameters")
+	assert.False(t, view.NeedsReview)
+	require.Len(t, view.Tiers, 1)
+	assert.Equal(t, "per_second", view.Tiers[0].Unit)
+	assert.InDelta(t, 0.07, *view.Tiers[0].PerUnitUSD, 1e-9)
 }
 
 func TestApikoChannelPricingRecordsUseExecutableExpression(t *testing.T) {
@@ -549,4 +619,63 @@ func TestApikoSyncBackoffAndPrimaryPriceChanges(t *testing.T) {
 	assert.Equal(t, "apiko-chat", changes[0].ModelID)
 	assert.InDelta(t, 1.0, *changes[0].Old, 1e-9)
 	assert.InDelta(t, 5.0, *changes[0].New, 1e-9)
+}
+
+// 目录里显式给 0 的价格是真实免费模型；字段缺失才是“未定价”。两者不能混为一谈。
+func TestApikoExplicitZeroPriceIsFreeNotMissing(t *testing.T) {
+	zero := 0.0
+	free := apikoModel{
+		ID: "free-chat", Capabilities: []string{"chat"},
+		Pricing: apikoPricing{InputPer1M: &zero, OutputPer1M: &zero, Currency: "USD"},
+	}
+	require.True(t, apikoHasAnyPrice(free.Pricing))
+	expr, ok := apikoPriceExpression(free)
+	require.True(t, ok)
+	require.NotEmpty(t, expr)
+
+	missing := apikoModel{ID: "no-price", Capabilities: []string{"chat"}}
+	require.False(t, apikoHasAnyPrice(missing.Pricing))
+	_, ok = apikoPriceExpression(missing)
+	require.False(t, ok)
+
+	freeCall := apikoModel{ID: "free-image", Capabilities: []string{"image"}, Pricing: apikoPricing{PerCall: &zero}}
+	require.True(t, apikoHasAnyPrice(freeCall.Pricing))
+	expr, ok = apikoPriceExpression(freeCall)
+	require.True(t, ok)
+	assert.Contains(t, expr, "image_count")
+}
+
+// 上游失败时同步状态必须记录错误，且不能伪造成功时间。
+func TestSyncApikoChannelPricingRecordsFailureState(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		http.Error(writer, "boom", http.StatusInternalServerError)
+	}))
+	t.Cleanup(server.Close)
+	previous := apikoControlPlaneBase
+	apikoControlPlaneBase = server.URL
+	t.Cleanup(func() { apikoControlPlaneBase = previous })
+
+	base := "https://api.apiko.app"
+	channel := &model.Channel{
+		Type: constant.ChannelTypeApiko, Name: "apiko-fail", BaseURL: &base,
+		Key: "test-key", Models: "apiko-chat", Group: "default", Status: 1,
+	}
+	require.NoError(t, db.Create(channel).Error)
+
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/channel/%d/apiko/prices/sync", channel.Id), nil)
+	ctx.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%d", channel.Id)}}
+
+	SyncApikoChannelPricing(ctx)
+
+	states, err := model.ListChannelSyncStates(channel.Id)
+	require.NoError(t, err)
+	require.Len(t, states, 1)
+	assert.Equal(t, model.ChannelSyncTypePrices, states[0].SyncType)
+	assert.NotEmpty(t, states[0].LastError)
+	assert.Zero(t, states[0].LastSuccessAt)
 }

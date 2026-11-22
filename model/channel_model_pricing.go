@@ -362,6 +362,10 @@ func validatePurchaseCost(pricing *ChannelInternalPricing) error {
 		if len(pricing.Tiers) == 0 {
 			return errors.New("tiered contract cost requires at least one tier")
 		}
+	case ChannelPricingModeTieredExpr:
+		if strings.TrimSpace(pricing.BillingExpr) == "" {
+			return errors.New("expression contract cost requires a billing expression")
+		}
 	default:
 		return errors.New("unsupported purchase pricing mode")
 	}
@@ -451,6 +455,10 @@ type ChannelBillingPricing struct {
 	// PurchaseVersion hashes the stored contract cost so a bill can be tied to
 	// the exact cost record, not only the sale price version.
 	PurchaseVersion string
+	// PurchaseContract is the raw per-dimension contract cost. Billing freezes
+	// it verbatim so settlement prices every dimension from the submitted
+	// contract instead of whatever the channel row says later.
+	PurchaseContract string
 	// Currency and FXRate snapshot the official source currency and the rate
 	// used to convert it, so a historical bill can be reproduced.
 	Currency string
@@ -1337,6 +1345,19 @@ func ListChannelModelPricing(channelId int) ([]ChannelModelPricing, error) {
 	return rows, err
 }
 
+// DeleteUnpricedChannelModelPricing removes review-only rows for models the
+// upstream no longer prices. Rows that carry an operator price or contract cost
+// are never touched, so price history survives catalogue churn.
+func DeleteUnpricedChannelModelPricing(channelId int, modelNames []string) error {
+	if channelId <= 0 || len(modelNames) == 0 {
+		return nil
+	}
+	return DB.Where(
+		"channel_id = ? AND model_name IN ? AND (internal_pricing IS NULL OR internal_pricing = '')",
+		channelId, modelNames,
+	).Delete(&ChannelModelPricing{}).Error
+}
+
 // selectChannelPricingRow picks the row for one request identity. It never
 // resolves an ambiguity by "configured first" or "newest": when several rows
 // exist and the identity cannot be matched, the caller must fail the charge.
@@ -1444,6 +1465,7 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 				pricing.PurchaseVerified = cost.Verified
 				pricing.PurchaseSource = cost.Source
 				pricing.PurchaseVersion = fmt.Sprintf("%x", sha256.Sum256([]byte(strings.TrimSpace(row.PurchasePricing))))
+				pricing.PurchaseContract = strings.TrimSpace(row.PurchasePricing)
 			}
 			if strings.TrimSpace(row.NormalizedPricing) != "" {
 				var view ChannelOfficialPricing

@@ -490,3 +490,36 @@ func runUpdateSystemTaskStateIdenticalPayloadKeepsLock(t *testing.T, taskType st
 	require.NotNil(t, finished)
 	assert.Equal(t, SystemTaskStatusSucceeded, finished.Status)
 }
+
+// 跨实例锁必须互斥，并在租约过期后允许抢占。
+func TestTryAcquireSystemTaskLockIsExclusiveAndReclaimsExpired(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&SystemTaskLock{}))
+	previous := DB
+	DB = db
+	t.Cleanup(func() { DB = previous })
+
+	const lockName = "apiko_price_sync:1"
+	now := common.GetTimestamp()
+
+	acquired, err := TryAcquireSystemTaskLock(lockName, lockName, "owner-a", now+60)
+	require.NoError(t, err)
+	require.True(t, acquired)
+
+	acquired, err = TryAcquireSystemTaskLock(lockName, lockName, "owner-b", now+60)
+	require.NoError(t, err)
+	assert.False(t, acquired, "a live lease must exclude a second instance")
+
+	// Expire the lease and let another instance reclaim it.
+	require.NoError(t, DB.Model(&SystemTaskLock{}).Where("type = ?", lockName).
+		Update("locked_until", now-10).Error)
+	acquired, err = TryAcquireSystemTaskLock(lockName, lockName, "owner-b", now+60)
+	require.NoError(t, err)
+	require.True(t, acquired)
+
+	require.NoError(t, ReleaseSystemTaskLock(lockName, "owner-b"))
+	acquired, err = TryAcquireSystemTaskLock(lockName, lockName, "owner-c", now+60)
+	require.NoError(t, err)
+	assert.True(t, acquired, "a released lock must be acquirable again")
+}

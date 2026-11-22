@@ -2,18 +2,22 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strings"
+	"time"
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
-// UpstreamInvoiceImportRequest is one supplier invoice import. Costs must be in
-// USD; a non-USD invoice converts its amounts before import.
+// UpstreamInvoiceImportRequest is one supplier invoice import. Rows carry the
+// supplier's own currency; FXRate converts them to USD. A non-USD invoice
+// without a rate is rejected instead of being stored as if it were USD.
 type UpstreamInvoiceImportRequest struct {
 	Period   string                  `json:"period"`
 	Currency string                  `json:"currency"`
+	FXRate   float64                 `json:"fx_rate,omitempty"`
 	Source   string                  `json:"source"`
 	Note     string                  `json:"note"`
 	Rows     []UpstreamBillingSample `json:"rows"`
@@ -73,6 +77,37 @@ func ImportUpstreamBillingInvoice(channel *model.Channel, req UpstreamInvoiceImp
 		}
 	}
 
+	currency := strings.ToUpper(strings.TrimSpace(req.Currency))
+	if currency == "" {
+		currency = "USD"
+	}
+	fxRate, fxSource, fxVersion, err := ResolveExchangeRateToUSD(currency, req.FXRate, "invoice_import")
+	if err != nil {
+		return result, err
+	}
+	if currency != "USD" && req.FXRate > 0 {
+		// 导入方提供的汇率写入历史表，后续同币种账单可复用同一口径。
+		if saveErr := model.SaveBillingExchangeRate(model.BillingExchangeRate{
+			BaseCurrency: currency, QuoteCurrency: "USD",
+			EffectiveAt: time.Now().Unix(), Rate: req.FXRate, Source: "invoice_import",
+		}); saveErr != nil {
+			common.SysError(common.LogText("save invoice exchange rate failed: %v", saveErr))
+		}
+	}
+	var originalTotal float64
+	for i := range req.Rows {
+		originalTotal += req.Rows[i].UpstreamCostUSD
+	}
+	// 对账与 USD 字段只接受换算后的金额；原始币种总额另行留痕。
+	if fxRate != 1 {
+		for i := range req.Rows {
+			req.Rows[i].UpstreamCostUSD *= fxRate
+			if math.IsNaN(req.Rows[i].UpstreamCostUSD) || math.IsInf(req.Rows[i].UpstreamCostUSD, 0) {
+				return result, errors.New("invoice row cost overflows after conversion")
+			}
+		}
+	}
+
 	report, err := ReconcileUpstreamBillingSamples(channel, req.Rows)
 	if err != nil {
 		return result, err
@@ -98,22 +133,32 @@ func ImportUpstreamBillingInvoice(channel *model.Channel, req UpstreamInvoiceImp
 	if err != nil {
 		return result, err
 	}
-	currency := strings.TrimSpace(req.Currency)
-	if currency == "" {
-		currency = "USD"
-	}
 	provider := UpstreamProviderForChannel(channel.Type, channel.GetBaseURL()).ID
 	invoice := model.UpstreamBillingInvoice{
 		ChannelId: channel.Id, Provider: provider,
-		Period: strings.TrimSpace(req.Period), Currency: currency,
-		Source: strings.TrimSpace(req.Source), Note: strings.TrimSpace(req.Note),
-		TotalUpstreamUSD: totalUpstream, TotalUterUSD: totalUter,
+		Period: strings.TrimSpace(req.Period), Currency: currency, FXRate: fxRate,
+		FXSource: fxSource, FXVersion: fxVersion,
+		OriginalTotal: originalTotal, TotalUpstreamUSD: totalUpstream,
+		TotalUterUSD: totalUter,
+		Source:       strings.TrimSpace(req.Source), Note: strings.TrimSpace(req.Note),
 		Matched: counts[UpstreamSampleMatched], Mismatched: counts[UpstreamSampleMismatched],
-		Unmatched: counts[UpstreamSampleNoPrice], Unsupported: counts[UpstreamSampleUnsupported],
-		Rows: string(encoded),
+		Unmatched:   counts[UpstreamSampleNoPrice] + counts[UpstreamSampleNoRequest] + counts[UpstreamSampleNoCost],
+		Unsupported: counts[UpstreamSampleUnsupported],
+		Rows:        string(encoded),
 	}
 	if err := model.SaveUpstreamBillingInvoice(&invoice); err != nil {
 		return result, err
+	}
+	if err := model.SaveBillingLedgerEntry(model.BillingFinancialLedger{
+		EntryKey:       fmt.Sprintf("supplier_invoice|%d", invoice.Id),
+		EntryType:      model.BillingLedgerEntrySupplierInvoice,
+		ChannelId:      channel.Id,
+		OriginalAmount: originalTotal, Currency: currency, FXRate: fxRate,
+		AmountUSD: totalUpstream,
+		Status:    model.BillingLedgerStatusRecorded,
+		Source:    invoice.Source, Reference: fmt.Sprintf("%d", invoice.Id),
+	}); err != nil {
+		common.SysError(common.LogText("supplier invoice ledger entry failed: channel=%d invoice=%d: %s", channel.Id, invoice.Id, err.Error()))
 	}
 	result.Invoice = invoice
 	result.Rows = rows

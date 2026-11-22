@@ -523,7 +523,10 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 		tier := tiers[0]
 		internal := model.ChannelInternalPricing{Source: bailianCatalogSource, UpdatedAt: normalized.FetchedAt}
 		switch tier.Unit {
-		case "per_1m_token", "per_1m_tokens":
+		// The official values are normalized to USD per 1M tokens even when the
+		// catalog quoted "每千tokens"; the unit label keeps the raw unit, so
+		// both labels must be accepted here.
+		case "per_1m_token", "per_1m_tokens", "per_1k_token", "per_1k_tokens":
 			if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
 				return ""
 			}

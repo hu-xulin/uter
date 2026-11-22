@@ -196,8 +196,11 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 				added, modelErr := appendDreamRouterChannelModels(channel, snapshot)
 				if modelErr != nil {
 					status.Errors = append(status.Errors, fmt.Sprintf("channel %d models: %v", channel.Id, modelErr))
+					RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), len(snapshot.Models), 0, 0, 0, "", modelErr, model.ChannelSyncTypeModels)
 				} else {
 					status.ModelsAdded += added
+					summary, _ := common.Marshal(map[string]any{"added": added})
+					RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), len(snapshot.Models), len(channel.GetModels()), 0, 0, string(summary), nil, model.ChannelSyncTypeModels)
 				}
 			}
 			state.ModelSyncAt = now.Unix()
@@ -208,14 +211,17 @@ func runDreamRouterUpstreamSync(ctx context.Context, force bool) (*DreamRouterUp
 			)
 			if recordErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, recordErr))
+				RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), 0, 0, 0, 0, "", recordErr, model.ChannelSyncTypePrices)
 				continue
 			}
 			count, upsertErr := model.UpsertChannelOfficialPricing(records)
 			if upsertErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, upsertErr))
+				RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), len(records), 0, 0, 0, "", upsertErr, model.ChannelSyncTypePrices)
 				continue
 			}
 			written += count
+			RecordChannelSyncOutcome(channel.Id, "dreamrouter", now.Unix(), len(records), count, 0, 0, "", nil, model.ChannelSyncTypePrices)
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
 			}

@@ -20,14 +20,19 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -162,4 +167,62 @@ func TestGenericPricingBlocksUnsupportedExpression(t *testing.T) {
 	require.Equal(t, UpstreamExpressionUnsupported, view.ExpressionStatus)
 	require.True(t, view.NeedsReview)
 	require.Empty(t, records[0].InternalPricing)
+}
+
+// 选择上游分组后，同步必须把该分组倍率冻结进表达式采购合同；成本按真实用量
+// 求值，未验证合同不进入已验证毛利。
+func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"group_ratio":{"Claude-稳定":3.5},"data":[
+			{"model_name":"m-a","billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 2)"}
+		]}`))
+	}))
+	t.Cleanup(server.Close)
+
+	base := server.URL
+	channel := &model.Channel{Type: constant.ChannelTypeCustom, Name: "xxapi", BaseURL: &base, Key: "sk-test", Models: "m-a", Group: "default", Status: 1}
+	require.NoError(t, db.Create(channel).Error)
+	common.OptionMap[GenericUpstreamBillingGroupKey] = fmt.Sprintf(`{"%d":"Claude-稳定"}`, channel.Id)
+
+	written, models, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.NoError(t, err)
+	require.Equal(t, 1, written)
+	require.Equal(t, []string{"m-a"}, models)
+
+	row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{ChannelId: channel.Id, ModelName: "m-a"})
+	require.NoError(t, err)
+	cost := model.ParseChannelPurchaseCost(row.PurchasePricing)
+	require.NotNil(t, cost, "group selection must freeze a purchase contract")
+	assert.Contains(t, cost.Pricing.BillingExpr, "* 3.5")
+	assert.False(t, cost.Verified)
+	assert.Contains(t, cost.Source, "Claude-稳定")
+
+	snapshot := &model.BillingPriceSnapshot{
+		RequestId: "req-group-cost", ModelName: "m-a", PurchaseContract: row.PurchasePricing,
+	}
+	recordRequestFinancials(snapshot, `{"prompt_tokens":1000}`, 1_000, 0)
+	costs, err := model.ListBillingCostBreakdowns("req-group-cost", "", "m-a")
+	require.NoError(t, err)
+	require.Len(t, costs, 1)
+	// 1000 tokens * $2/1M * 3.5 = $0.007
+	assert.InDelta(t, 0.007, costs[0].AmountUSD, 1e-9)
+	assert.Equal(t, "purchase_unverified", costs[0].Issue)
+	summary, err := model.SummarizeBillingFinancials("req-group-cost", "", "m-a")
+	require.NoError(t, err)
+	assert.False(t, summary.CostVerified)
+	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
 }

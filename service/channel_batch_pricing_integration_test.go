@@ -267,7 +267,7 @@ func TestApplyChannelBatchPricingRejectsStalePreviewVersion(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Zero(t, applied.Updated)
-	require.Equal(t, []string{"gpt-versioned"}, applied.Conflicts)
+	require.Equal(t, []string{"gpt-versioned|test||"}, applied.Conflicts)
 	require.Contains(t, applied.Skipped[0].Reason, "re-run the preview")
 
 	// Re-previewing against the new version applies cleanly.
@@ -818,4 +818,139 @@ func TestBatchPricingAppliesPerTierRule(t *testing.T) {
 		TierRules: []BatchTierRule{{RangeName: "0-32k", Mode: "bogus", Value: 1}},
 	})
 	require.Error(t, err)
+}
+
+// 同名模型存在多个区域/部署身份时，模型名版本键无法唯一定位：必须拒绝写入
+// 并要求调用方提供完整身份键。
+func TestBatchPricingRejectsModelNameVersionForMultiIdentityModel(t *testing.T) {
+	setupBatchPricingDB(t)
+	us := batchOfficialRecord(21, "gpt-multi")
+	us.Region = "us"
+	eu := batchOfficialRecord(21, "gpt-multi")
+	eu.Region = "eu"
+	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{us, eu})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(21, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, preview.Items, 2)
+
+	blocked, err := ApplyChannelBatchPricingWithOptions(21, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ExpectedVersions: map[string]string{"gpt-multi": preview.Items[0].Version},
+	})
+	require.NoError(t, err)
+	assert.Zero(t, blocked.Updated)
+	require.NotEmpty(t, blocked.Skipped)
+	assert.Equal(t, "gpt-multi|test|us|", blocked.Skipped[0].Identity)
+	assert.Contains(t, blocked.Skipped[0].Reason, "full identity version key")
+
+	versions := make(map[string]string, len(preview.Items))
+	for _, item := range preview.Items {
+		key := item.ModelName + "|" + item.Provider + "|" + item.Region + "|" + item.DeploymentId
+		versions[key] = item.Version
+	}
+	applied, err := ApplyChannelBatchPricingWithOptions(21, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
+		ExpectedVersions: versions,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 2, applied.Updated)
+}
+
+// 复核中的三档示例：0–32K 毛利 33%，32K–128K 9.1%，128K–256K -14.3%，
+// 最低毛利 10% 时后两档都必须进入保护，且不能写入任何价格。
+func TestBatchPricingThreeTierMarginBoundaries(t *testing.T) {
+	setupBatchPricingDB(t)
+	const channelID = 44
+	const modelName = "tiered-three"
+
+	purchase := []float64{1.0, 2.0, 4.0}
+	sale := []float64{1.5, 2.2, 3.5}
+	ranges := []struct {
+		name string
+		min  int64
+		max  int64
+	}{
+		{"0-32k", 0, 32 * 1024},
+		{"32k-128k", 32 * 1024, 128 * 1024},
+		{"128k-256k", 128 * 1024, 256 * 1024},
+	}
+	officialTiers := make([]model.ChannelPricingTier, 0, len(ranges))
+	saleTiers := make([]model.ChannelInternalPricingTier, 0, len(ranges))
+	purchaseTiers := make([]model.ChannelInternalPricingTier, 0, len(ranges))
+	for i, band := range ranges {
+		inputPurchase, outputPurchase := purchase[i], purchase[i]*4
+		inputSale, outputSale := sale[i], sale[i]*4
+		officialTiers = append(officialTiers, model.ChannelPricingTier{
+			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
+			Unit: "per_1m_token", InputPerMillionUSD: &inputPurchase, OutputPerMillionUSD: &outputPurchase,
+		})
+		saleTiers = append(saleTiers, model.ChannelInternalPricingTier{
+			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
+			Unit: "per_1m_token", InputUSDPerMillion: &inputSale, OutputUSDPerMillion: &outputSale,
+		})
+		purchaseTiers = append(purchaseTiers, model.ChannelInternalPricingTier{
+			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
+			Unit: "per_1m_token", InputUSDPerMillion: &inputPurchase, OutputUSDPerMillion: &outputPurchase,
+		})
+	}
+	encoded, err := common.Marshal(model.ChannelOfficialPricing{Currency: "USD", Unit: "per_1m_token", ChannelPriceTiers: officialTiers})
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(encoded),
+		Source: "test", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+	identity := model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+	}
+	require.NoError(t, model.SetChannelInternalPricingFor(identity, model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModeTieredTable, Tiers: saleTiers, Source: "manual",
+	}))
+	require.NoError(t, model.SetChannelPurchaseCostFor(identity, model.ChannelPurchaseCost{
+		Pricing: model.ChannelInternalPricing{
+			Mode: model.ChannelPricingModeTieredTable, Tiers: purchaseTiers, UpdatedAt: 100,
+		},
+		Verified: true, Source: "contract",
+	}))
+
+	minMargin := 0.1
+	result, err := ApplyChannelBatchPricingWithOptions(channelID, BatchPricingOptions{
+		Models: []string{modelName}, Basis: BatchPricingBasisCurrent, Mode: BatchPricingModeNone,
+		OverwriteManual: true, MinMarginRate: &minMargin, ProtectionMode: BatchProtectionModePartial,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.Blocked)
+	require.Len(t, result.Items, 1)
+	margins := map[string]BatchDimensionMargin{}
+	for _, margin := range result.Items[0].DimensionMargins {
+		margins[margin.Dimension] = margin
+	}
+	require.Contains(t, margins, "0-32k/input")
+	assert.Empty(t, margins["0-32k/input"].Issue)
+	require.InDelta(t, 1.0/3.0, *margins["0-32k/input"].MarginRate, 1e-6)
+
+	require.Contains(t, margins, "32k-128k/input")
+	assert.Equal(t, "below_min_margin", margins["32k-128k/input"].Issue)
+	require.InDelta(t, 0.2/2.2, *margins["32k-128k/input"].MarginRate, 1e-6)
+
+	require.Contains(t, margins, "128k-256k/input")
+	assert.Equal(t, "below_min_margin", margins["128k-256k/input"].Issue)
+	require.InDelta(t, -0.5/3.5, *margins["128k-256k/input"].MarginRate, 1e-6)
+
+	// 采购成本齐全，因此 cost verified；被阻止的是毛利，不是数据完整性。
+	assert.True(t, result.Items[0].CostVerified)
+
+	row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: channelID, Provider: "test", ModelName: modelName,
+	})
+	require.NoError(t, err)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	require.Len(t, internal.Tiers, 3)
+	assert.InDelta(t, 1.5, *internal.Tiers[0].InputUSDPerMillion, 1e-9, "blocked batch must not write")
 }

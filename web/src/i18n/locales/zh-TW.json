@@ -8502,13 +8502,13 @@
     "No direct price in the catalogue": "目錄中沒有直接價格",
     "Pricing expression failed validation": "定價運算式驗證失敗",
     "Apiko channels do not expose a balance API": "Apiko 頻道沒有公開的餘額介面",
-    "Apiko catalogue sync": "Synchronisation du catalogue Apiko",
-    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Synchroniser la liste complète publiée par le plan de contrôle Apiko. Les entrées existantes sont conservées.",
-    "Sync Apiko models": "Synchroniser les modèles Apiko",
-    "Added {{count}} models from the Apiko catalogue": "{{count}} modèles ajoutés depuis le catalogue Apiko",
-    "{{total}} models after sync; {{added}} added": "{{total}} modèles après synchronisation ; {{added}} ajoutés",
-    "Failed to sync Apiko models": "Échec de la synchronisation des modèles Apiko",
-    "Save the channel before syncing models.": "Enregistrez le canal avant de synchroniser les modèles.",
+    "Apiko catalogue sync": "Apiko 目錄同步",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "同步 Apiko 控制面發布的完整模型列表，保留既有項目。",
+    "Sync Apiko models": "同步 Apiko 模型",
+    "Added {{count}} models from the Apiko catalogue": "已從 Apiko 目錄新增 {{count}} 個模型",
+    "{{total}} models after sync; {{added}} added": "同步後共 {{total}} 個模型，新增 {{added}} 個",
+    "Failed to sync Apiko models": "同步 Apiko 模型失敗",
+    "Save the channel before syncing models.": "請先儲存頻道再同步模型。",
     "Minimum margin": "最低毛利率",
     "Percent per dimension. Leave empty to disable the margin floor.": "依維度計算的百分比。留空則關閉毛利下限。",
     "Enter a margin between 0 and 100.": "請輸入 0 到 100 之間的毛利率。",
@@ -8598,6 +8598,9 @@
     "Multimodal input/output": "多模態輸入/輸出",
     "Thinking multimodal input/output": "思考多模態輸入/輸出",
     "Price identity filters": "價格身分篩選",
-    "Comma separated; leave empty to match every value.": "用逗號分隔；留空表示符合所有值。"
+    "Comma separated; leave empty to match every value.": "用逗號分隔；留空表示符合所有值。",
+    "Tier rules must be a JSON array.": "逐檔規則必須是 JSON 陣列。",
+    "Per-tier rules (optional)": "逐檔規則（可選）",
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 陣列，按 range_name/time_band 覆寫規則；未命中的檔位沿用基礎規則，非法 JSON 會阻止預覽。"
   }
 }

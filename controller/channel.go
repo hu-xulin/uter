@@ -1234,6 +1234,10 @@ func UpdateChannel(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// A draft is published through its own endpoint. Keep the marker when the
+	// wizard's final save sends a settings payload that omits it.
+	_, settingsProvided := requestData["settings"]
+	channel.PreserveDraftSetting(originChannel, settingsProvided)
 	keptType := channel.Type
 	if keptType == 0 {
 		keptType = originChannel.Type

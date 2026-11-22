@@ -138,3 +138,22 @@ func TestUpstreamHTTPClientBlocksMetadataAddress(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "blocked address")
 }
+
+// 请求级拦截不依赖代理/拨号环境：元数据地址在 RoundTrip 之前就必须被拒绝。
+func TestUpstreamGuardTransportRejectsMetadataBeforeDial(t *testing.T) {
+	called := false
+	transport := upstreamGuardTransport{next: roundTripFunc(func(*http.Request) (*http.Response, error) {
+		called = true
+		return nil, nil
+	})}
+	req, err := http.NewRequest(http.MethodGet, "http://169.254.169.254/latest/meta-data/", nil)
+	require.NoError(t, err)
+	_, err = transport.RoundTrip(req)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "blocked address")
+	assert.False(t, called, "the guarded transport must not reach the proxy/dialer")
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }

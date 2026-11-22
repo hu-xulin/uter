@@ -210,6 +210,7 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 		info.ChannelPricingPurchaseVerified = channelPricing.PurchaseVerified
 		info.ChannelPricingPurchaseSource = channelPricing.PurchaseSource
 		info.ChannelPricingPurchaseVersion = channelPricing.PurchaseVersion
+		info.ChannelPricingPurchaseContract = channelPricing.PurchaseContract
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version
@@ -429,6 +430,7 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 		info.ChannelPricingPurchaseVerified = channelPricing.PurchaseVerified
 		info.ChannelPricingPurchaseSource = channelPricing.PurchaseSource
 		info.ChannelPricingPurchaseVersion = channelPricing.PurchaseVersion
+		info.ChannelPricingPurchaseContract = channelPricing.PurchaseContract
 		info.ChannelPricingCurrency = channelPricing.Currency
 		info.ChannelPricingFXRate = channelPricing.FXRate
 		info.ChannelPricingVersion = channelPricing.Version

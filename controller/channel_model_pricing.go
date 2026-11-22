@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -616,6 +617,22 @@ func SetChannelPricingSchedule(c *gin.Context) {
 	common.ApiSuccess(c, gin.H{"channel_id": channelID, "schedule": schedule})
 }
 
+// GetChannelSyncStates reports the last model and price sync for one channel,
+// so a catalogue success with a price failure is visible separately.
+func GetChannelSyncStates(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	states, err := model.ListChannelSyncStates(channelID)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "items": states})
+}
+
 // GetChannelPricingReviews lists pending manual-review entries.
 func GetChannelPricingReviews(c *gin.Context) {
 	channelID, err := strconv.Atoi(c.Param("id"))
@@ -629,6 +646,100 @@ func GetChannelPricingReviews(c *gin.Context) {
 		"status":     status,
 		"items":      service.ListChannelPricingReviewsByStatus(channelID, status),
 	})
+}
+
+// SyncGenericChannelPricing pulls a New API compatible /api/pricing document
+// on demand. Without this, a custom channel could only be refreshed by enabling
+// a background schedule.
+func SyncGenericChannelPricing(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil {
+		common.ApiErrorT(c, "Channel not found")
+		return
+	}
+	if strings.TrimSpace(channel.GetBaseURL()) == "" {
+		common.ApiErrorMsg(c, "Channel base URL is required")
+		return
+	}
+	var req struct {
+		// ApplyModels imports the catalogue model ids into the channel. It is
+		// opt-in so a price refresh never silently enables new models.
+		ApplyModels bool `json:"apply_models"`
+	}
+	_ = c.ShouldBindJSON(&req)
+
+	startedAt := time.Now().Unix()
+	written, discovered, syncErr := service.SyncGenericChannelPricingWithModels(c.Request.Context(), channel)
+	provider := service.UpstreamProviderForChannel(channel.Type, channel.GetBaseURL()).ID
+	summary := ""
+	if syncErr == nil {
+		summary = fmt.Sprintf(`{"written":%d,"models":%d}`, written, len(discovered))
+	}
+	service.RecordChannelSyncOutcome(channel.Id, provider, startedAt, len(discovered), written, 0, 0, summary, syncErr, model.ChannelSyncTypePrices)
+	if syncErr != nil {
+		common.ApiErrorMsg(c, syncErr.Error())
+		return
+	}
+
+	applied := 0
+	if req.ApplyModels && len(discovered) > 0 {
+		merged, added := mergeApikoModelIDs(channel.GetModels(), discovered)
+		if added > 0 {
+			channel.Models = strings.Join(merged, ",")
+			if err := model.DB.Model(channel).Update("models", channel.Models).Error; err != nil {
+				common.ApiError(c, err)
+				return
+			}
+			if err := channel.UpdateAbilities(nil); err != nil {
+				common.SysError(common.LogText("custom channel abilities update failed: channel_id=%d, error=%v", channel.Id, err))
+			}
+			model.BumpSyncTopic(model.SyncTopicChannels)
+			refreshChannelRuntimeCache()
+			applied = added
+		}
+	}
+	common.ApiSuccess(c, gin.H{
+		"channel_id": channelID, "written": written,
+		"models": discovered, "models_added": applied,
+	})
+}
+
+// GetGenericUpstreamBillingGroup reports the upstream group used for
+// procurement cost. An empty group means cost is not derived.
+func GetGenericUpstreamBillingGroup(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "group": service.GetGenericUpstreamBillingGroup(channelID)})
+}
+
+// SetGenericUpstreamBillingGroup selects (or clears) the upstream group whose
+// published ratio becomes the channel's expression purchase cost.
+func SetGenericUpstreamBillingGroup(c *gin.Context) {
+	channelID, err := strconv.Atoi(c.Param("id"))
+	if err != nil || channelID <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	var req struct {
+		Group string `json:"group"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	if err := service.SetGenericUpstreamBillingGroup(channelID, req.Group); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	common.ApiSuccess(c, gin.H{"channel_id": channelID, "group": service.GetGenericUpstreamBillingGroup(channelID)})
 }
 
 // ApproveChannelPricingReviews clears pending entries and applies the saved
@@ -648,6 +759,10 @@ func ApproveChannelPricingReviews(c *gin.Context) {
 		Note string `json:"note"`
 	}
 	_ = c.ShouldBindJSON(&req)
+	if err := service.ValidateChannelPricingReviewsCurrent(channelID); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
 	result, err := service.ApplyChannelBatchPricing(channelID, nil, schedule.Basis, schedule.Mode, schedule.Value, false)
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())

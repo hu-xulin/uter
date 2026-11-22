@@ -8502,13 +8502,13 @@
     "No direct price in the catalogue": "目录中没有直接价格",
     "Pricing expression failed validation": "定价表达式校验失败",
     "Apiko channels do not expose a balance API": "Apiko 渠道没有公开的余额接口",
-    "Apiko catalogue sync": "Apiko 目錄同步",
-    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "同步 Apiko 控制面發布的完整模型列表，保留既有項目。",
+    "Apiko catalogue sync": "Apiko 目录同步",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "同步 Apiko 控制面发布的完整模型列表，保留已有条目。",
     "Sync Apiko models": "同步 Apiko 模型",
-    "Added {{count}} models from the Apiko catalogue": "已從 Apiko 目錄新增 {{count}} 個模型",
-    "{{total}} models after sync; {{added}} added": "同步後共 {{total}} 個模型，新增 {{added}} 個",
-    "Failed to sync Apiko models": "同步 Apiko 模型失敗",
-    "Save the channel before syncing models.": "請先儲存頻道再同步模型。",
+    "Added {{count}} models from the Apiko catalogue": "已从 Apiko 目录新增 {{count}} 个模型",
+    "{{total}} models after sync; {{added}} added": "同步后共 {{total}} 个模型，新增 {{added}} 个",
+    "Failed to sync Apiko models": "同步 Apiko 模型失败",
+    "Save the channel before syncing models.": "请先保存渠道再同步模型。",
     "Minimum margin": "最低毛利率",
     "Percent per dimension. Leave empty to disable the margin floor.": "按维度计算的百分比。留空则关闭毛利下限。",
     "Enter a margin between 0 and 100.": "请输入 0 到 100 之间的毛利率。",
@@ -8598,6 +8598,9 @@
     "Multimodal input/output": "多模态输入/输出",
     "Thinking multimodal input/output": "思考多模态输入/输出",
     "Price identity filters": "价格身份筛选",
-    "Comma separated; leave empty to match every value.": "用逗号分隔；留空表示匹配所有值。"
+    "Comma separated; leave empty to match every value.": "用逗号分隔；留空表示匹配所有值。",
+    "Tier rules must be a JSON array.": "逐档规则必须是 JSON 数组。",
+    "Per-tier rules (optional)": "逐档规则（可选）",
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "JSON 数组，按 range_name/time_band 覆盖规则；未命中的档位沿用基础规则，非法 JSON 会阻止预览。"
   }
 }

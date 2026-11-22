@@ -8,6 +8,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -178,7 +179,7 @@ func fetchApikoModelIDs(channel *model.Channel) ([]string, error) {
 	// The public catalogue is the full upstream model list. The relay's
 	// /v1/models is key-scoped and only returns the subset enabled for that
 	// key, so it must not define what the channel can serve.
-	ids, catalogueErr := fetchApikoCatalogueModelIDs("")
+	ids, catalogueErr := fetchApikoSellableModelIDs("")
 	if catalogueErr == nil {
 		return ids, nil
 	}
@@ -214,17 +215,7 @@ func fetchApikoModelIDs(channel *model.Channel) ([]string, error) {
 // sync action. A blank base URL falls back to the production control plane so
 // a channel created with the default address still syncs.
 func fetchApikoCatalogueModelIDs(baseURL string) ([]string, error) {
-	controlPlane := apikoControlPlaneBase
-	if strings.TrimSpace(baseURL) != "" {
-		origin, ok := apikoControlPlaneFor(baseURL)
-		if !ok {
-			return nil, fmt.Errorf("channel base URL is not an Apiko address")
-		}
-		controlPlane = origin
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), apikoCatalogTimeoutSec*time.Second)
-	defer cancel()
-	models, err := fetchApikoCatalog(ctx, controlPlane)
+	models, err := fetchApikoCatalogueModels(baseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -243,6 +234,69 @@ func fetchApikoCatalogueModelIDs(baseURL string) ([]string, error) {
 	}
 	sort.Strings(ids)
 	return ids, nil
+}
+
+// fetchApikoSellableModelIDs keeps only models that carry a price. Apiko lists
+// temporarily disabled models with an empty pricing object; adding them to a
+// channel would make them routable without any way to charge for them.
+func fetchApikoSellableModelIDs(baseURL string) ([]string, error) {
+	models, err := fetchApikoCatalogueModels(baseURL)
+	if err != nil {
+		return nil, err
+	}
+	seen := make(map[string]bool, len(models))
+	ids := make([]string, 0, len(models))
+	for _, item := range models {
+		id := strings.TrimSpace(item.ID)
+		if id == "" || seen[id] || !apikoHasAnyPrice(item.Pricing) {
+			continue
+		}
+		seen[id] = true
+		ids = append(ids, id)
+	}
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("apiko catalogue has no priced models")
+	}
+	sort.Strings(ids)
+	return ids, nil
+}
+
+func fetchApikoCatalogueModels(baseURL string) ([]apikoModel, error) {
+	controlPlane := apikoControlPlaneBase
+	if strings.TrimSpace(baseURL) != "" {
+		origin, ok := apikoControlPlaneFor(baseURL)
+		if !ok {
+			return nil, fmt.Errorf("channel base URL is not an Apiko address")
+		}
+		controlPlane = origin
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), apikoCatalogTimeoutSec*time.Second)
+	defer cancel()
+	return fetchApikoCatalog(ctx, controlPlane)
+}
+
+// apikoHasAnyPrice distinguishes an explicit price from a missing one. The
+// catalogue omits fields it does not publish; a present field carrying 0 is an
+// explicit free model and must not be dropped as "no price".
+func apikoHasAnyPrice(pricing apikoPricing) bool {
+	if len(pricing.ContextTiers) > 0 || len(pricing.Tiers) > 0 || len(pricing.PerSecondTiers) > 0 {
+		return true
+	}
+	if pricing.TokenImage != nil {
+		if apikoPricePointerValid(pricing.TokenImage.TextInputPer1M) ||
+			apikoPricePointerValid(pricing.TokenImage.ImageInputPer1M) ||
+			apikoPricePointerValid(pricing.TokenImage.OutputPer1M) {
+			return true
+		}
+	}
+	return apikoPricePointerValid(pricing.InputPer1M) ||
+		apikoPricePointerValid(pricing.OutputPer1M) ||
+		apikoPricePointerValid(pricing.CachePer1M) ||
+		apikoPricePointerValid(pricing.PerCall)
+}
+
+func apikoPricePointerValid(value *float64) bool {
+	return value != nil && !math.IsNaN(*value) && !math.IsInf(*value, 0) && *value >= 0
 }
 
 func apikoModelsToPricingSyncData(models []apikoModel) (map[string]any, []apikoSkippedModel, error) {
@@ -301,7 +355,13 @@ func apikoPriceExpression(model apikoModel) (string, bool) {
 	if pricing.TokenImage != nil {
 		terms := apikoImageTokenTerms(pricing.TokenImage)
 		if terms == "" {
-			return "", false
+			// 显式 0 价是真实免费模型，不是缺价。
+			if !apikoPricePointerValid(pricing.TokenImage.TextInputPer1M) &&
+				!apikoPricePointerValid(pricing.TokenImage.ImageInputPer1M) &&
+				!apikoPricePointerValid(pricing.TokenImage.OutputPer1M) {
+				return "", false
+			}
+			terms = "p * 0"
 		}
 		return `tier("base", ` + terms + `)`, true
 	}
@@ -312,7 +372,10 @@ func apikoPriceExpression(model apikoModel) (string, bool) {
 			apikoValue(pricing.CachePer1M),
 		)
 		if terms == "" {
-			return "", false
+			if !apikoPricePointerValid(pricing.InputPer1M) && !apikoPricePointerValid(pricing.OutputPer1M) {
+				return "", false
+			}
+			terms = "p * 0"
 		}
 		return `tier("base", ` + terms + `)`, true
 	}
@@ -324,7 +387,7 @@ func apikoPriceExpression(model apikoModel) (string, bool) {
 		// 按产品映射把 size/resolution 编译为条件，未知参数回退最高档。
 		return apikoImageTierExpression(model)
 	}
-	if pricing.PerCall != nil && *pricing.PerCall > 0 {
+	if apikoPricePointerValid(pricing.PerCall) {
 		if len(pricing.PerSecondTiers) > 0 {
 			return "", false
 		}
@@ -417,6 +480,125 @@ func apikoNumber(value float64) string {
 	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
+var (
+	apikoPerSecondResolution = regexp.MustCompile(`(?i)^\s*([0-9]+(?:\.[0-9]+)?\s*[kp])\b`)
+	apikoPerSecondSeconds    = regexp.MustCompile(`(?i)\b([0-9]+)\s*s\b`)
+)
+
+type apikoPerSecondTier struct {
+	name       string
+	resolution string
+	seconds    int
+	rate       float64
+}
+
+// apikoPerSecondExpression turns Apiko's resolution/duration ladder into a
+// task billing expression. Each tier is a USD-per-second price; the request's
+// resolution usage fact selects the ladder and the measured duration selects
+// the duration band. A missing duration keeps the engine's 5-second fallback,
+// matching the existing DreamRouter task expressions.
+func apikoPerSecondExpression(tiers []jsonTier) (string, []model.ChannelPricingTier, bool) {
+	parsed := make([]apikoPerSecondTier, 0, len(tiers))
+	for _, tier := range tiers {
+		if tier.PerSecond == nil || *tier.PerSecond <= 0 {
+			return "", nil, false
+		}
+		resolution := apikoPerSecondResolution.FindStringSubmatch(tier.Name)
+		if resolution == nil {
+			return "", nil, false
+		}
+		normalized := strings.ToLower(strings.ReplaceAll(resolution[1], " ", ""))
+		seconds := 0
+		if duration := apikoPerSecondSeconds.FindStringSubmatch(tier.Name); duration != nil {
+			seconds, _ = strconv.Atoi(duration[1])
+		}
+		parsed = append(parsed, apikoPerSecondTier{
+			name: strings.TrimSpace(tier.Name), resolution: normalized,
+			seconds: seconds, rate: *tier.PerSecond,
+		})
+	}
+	if len(parsed) == 0 {
+		return "", nil, false
+	}
+
+	groups := make(map[string][]apikoPerSecondTier)
+	order := make([]string, 0, len(parsed))
+	for _, tier := range parsed {
+		if _, exists := groups[tier.resolution]; !exists {
+			order = append(order, tier.resolution)
+		}
+		groups[tier.resolution] = append(groups[tier.resolution], tier)
+	}
+	for _, resolution := range order {
+		band := groups[resolution]
+		sort.Slice(band, func(i, j int) bool { return band[i].seconds < band[j].seconds })
+		if len(band) > 1 && band[0].seconds == 0 {
+			return "", nil, false
+		}
+		for i := 1; i < len(band); i++ {
+			if band[i].seconds == band[i-1].seconds {
+				return "", nil, false
+			}
+		}
+		groups[resolution] = band
+	}
+
+	official := make([]model.ChannelPricingTier, 0, len(parsed))
+	for _, tier := range parsed {
+		rate := tier.rate
+		official = append(official, model.ChannelPricingTier{
+			RangeName: tier.name, PerUnitUSD: &rate, Unit: "per_second",
+		})
+	}
+
+	fallback := order[0]
+	if _, has720p := groups["720p"]; has720p {
+		fallback = "720p"
+	} else {
+		byRate := append([]string(nil), order...)
+		sort.Slice(byRate, func(i, j int) bool {
+			return groups[byRate[i]][0].rate < groups[byRate[j]][0].rate
+		})
+		fallback = byRate[len(byRate)/2]
+	}
+
+	expr := apikoPerSecondBandExpression(groups[fallback])
+	for _, resolution := range order {
+		if resolution == fallback {
+			continue
+		}
+		expr = apikoResolutionCondition(resolution) + " ? " + apikoPerSecondBandExpression(groups[resolution]) + " : " + expr
+	}
+	return expr, official, true
+}
+
+func apikoPerSecondBandExpression(band []apikoPerSecondTier) string {
+	duration := `(duration > 0 ? duration : 5)`
+	last := band[len(band)-1]
+	expr := "tier(" + strconv.Quote(last.name) + ", " + duration + " * " + apikoNumber(last.rate) + ")"
+	for i := len(band) - 2; i >= 0; i-- {
+		tier := band[i]
+		expr = fmt.Sprintf("duration <= %d ? tier(%s, %s * %s) : %s",
+			tier.seconds, strconv.Quote(tier.name), duration, apikoNumber(tier.rate), expr)
+	}
+	return expr
+}
+
+func apikoResolutionCondition(resolution string) string {
+	values := []string{resolution, strings.ToUpper(resolution)}
+	if resolution == "4k" {
+		values = append(values, "2160p", "2160P")
+	}
+	if resolution == "2k" {
+		values = append(values, "1440p", "1440P")
+	}
+	branches := make([]string, 0, len(values))
+	for _, value := range values {
+		branches = append(branches, fmt.Sprintf("u(\"resolution\") == %s", strconv.Quote(value)))
+	}
+	return "(" + strings.Join(branches, " || ") + ")"
+}
+
 // SyncApikoChannelModels adds every model the public Apiko catalogue lists to
 // an existing channel's model list. Models that a previous complete snapshot
 // listed but the current catalogue no longer contains are removed from the
@@ -436,8 +618,10 @@ func SyncApikoChannelModels(c *gin.Context) {
 		common.ApiErrorMsg(c, "This channel is not an Apiko channel")
 		return
 	}
+	startedAt := time.Now().Unix()
 	ids, err := fetchApikoModelIDs(channel)
 	if err != nil {
+		saveApikoModelSyncState(channelID, startedAt, 0, 0, "", err)
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
@@ -459,6 +643,15 @@ func SyncApikoChannelModels(c *gin.Context) {
 		refreshChannelRuntimeCache()
 	}
 	pricingCount, pricingErr := applyApikoChannelPricing(channel, ids)
+	if len(removed) > 0 {
+		names := make([]string, 0, len(removed))
+		for name := range removed {
+			names = append(names, name)
+		}
+		if err := model.DeleteUnpricedChannelModelPricing(channelID, names); err != nil {
+			common.SysError(common.LogText("delete removed apiko rows failed: channel_id=%d, error=%v", channelID, err))
+		}
+	}
 	saveApikoCatalogSnapshot(channelID, ids)
 	if len(ids) > 0 {
 		if _, _, _, lifecycleErr := model.ApplyChannelLifecycleSnapshot(
@@ -479,7 +672,71 @@ func SyncApikoChannelModels(c *gin.Context) {
 	if pricingErr != nil {
 		response["pricing_error"] = pricingErr.Error()
 	}
+	keptSet := make(map[string]bool, len(kept))
+	for _, name := range kept {
+		keptSet[name] = true
+	}
+	addedNames := make([]string, 0, added)
+	for _, name := range ids {
+		if keptSet[name] {
+			continue
+		}
+		if len(addedNames) >= added || len(addedNames) >= 50 {
+			break
+		}
+		addedNames = append(addedNames, name)
+	}
+	removedNames := make([]string, 0, len(removed))
+	for name := range removed {
+		if len(removedNames) >= 50 {
+			break
+		}
+		removedNames = append(removedNames, name)
+	}
+	sort.Strings(removedNames)
+	summary, _ := common.Marshal(gin.H{"added": addedNames, "removed": removedNames})
+	saveApikoModelSyncState(channelID, startedAt, len(ids), len(merged), string(summary), nil)
 	common.ApiSuccess(c, response)
+}
+
+// saveApikoModelSyncState records the catalogue half of one sync without
+// touching the price half.
+func saveApikoModelSyncState(channelID int, startedAt int64, fetched, written int, summary string, syncErr error) {
+	state := model.ChannelSyncState{
+		ChannelId: channelID, Provider: "apiko", SyncType: model.ChannelSyncTypeModels,
+		LastStartedAt: startedAt, Fetched: fetched, Written: written, ChangeSummary: summary,
+	}
+	if syncErr == nil {
+		state.LastSuccessAt = time.Now().Unix()
+	} else {
+		state.LastError = syncErr.Error()
+	}
+	if err := model.SaveChannelSyncState(state); err != nil {
+		common.SysError(common.LogText("save apiko model sync state failed: channel_id=%d, error=%v", channelID, err))
+	}
+}
+
+// summarizeApikoPriceChanges keeps a bounded audit excerpt of the last sync.
+func summarizeApikoPriceChanges(changes []service.UpstreamPriceChange) string {
+	if len(changes) == 0 {
+		return ""
+	}
+	type changeSummary struct {
+		Model string   `json:"model"`
+		Field string   `json:"field,omitempty"`
+		Old   *float64 `json:"old,omitempty"`
+		New   *float64 `json:"new,omitempty"`
+	}
+	limit := min(len(changes), 50)
+	out := make([]changeSummary, 0, limit)
+	for _, change := range changes[:limit] {
+		out = append(out, changeSummary{Model: change.ModelID, Field: change.Field, Old: change.Old, New: change.New})
+	}
+	raw, err := common.Marshal(out)
+	if err != nil {
+		return ""
+	}
+	return string(raw)
 }
 
 // mergeApikoModelIDs keeps the operator's order and appends missing catalogue
@@ -589,6 +846,13 @@ func buildApikoChannelPricing(models []apikoModel, channelID int, now time.Time)
 			official.ReviewReasons = append(official.ReviewReasons, reason)
 			result.skipped = append(result.skipped, apikoSkippedModel{Model: id, Reason: reason})
 		}
+		// Apiko lists temporarily disabled models with an empty pricing object.
+		// They cannot be charged and must not become channel rows; the model
+		// sync drops them from the channel list as well.
+		if !apikoHasAnyPrice(item.Pricing) {
+			review("catalog lists no price")
+			continue
+		}
 		switch {
 		case len(item.Pricing.ContextTiers) > 0:
 			tiers, reason := apikoContextTiers(item.Pricing.ContextTiers)
@@ -640,7 +904,26 @@ func buildApikoChannelPricing(models []apikoModel, channelID int, now time.Time)
 		case len(item.Pricing.Tiers) > 0:
 			review("resolution-tiered pricing requires request parameters")
 		case len(item.Pricing.PerSecondTiers) > 0:
-			review("duration-tiered pricing requires request parameters")
+			expr, tiers, ok := apikoPerSecondExpression(item.Pricing.PerSecondTiers)
+			if !ok {
+				review("duration-tiered pricing requires request parameters")
+				break
+			}
+			exprInfo := service.NormalizeUpstreamExpression(expr)
+			if !exprInfo.Executable {
+				review("duration-tiered pricing requires request parameters")
+				break
+			}
+			official.Unit = "expression"
+			official.Tiers = tiers
+			official.BillingMode = model.ChannelPricingModeTieredExpr
+			official.BillingExpr = exprInfo.Raw
+			official.ExpressionHash = exprInfo.Hash
+			official.ExpressionStatus = exprInfo.Status
+			internal = &model.ChannelInternalPricing{
+				Mode: model.ChannelPricingModeTieredExpr, BillingExpr: exprInfo.Raw,
+				Source: "apiko-expression", UpdatedAt: now.Unix(),
+			}
 		default:
 			review("catalog lists no price")
 		}
@@ -740,6 +1023,10 @@ func SyncApikoChannelPricing(c *gin.Context) {
 		return
 	}
 	result, err := syncApikoChannelPricing(channel)
+	if errors.Is(err, errApikoSyncInProgress) {
+		common.ApiErrorMsg(c, "A price sync is already running for this channel; retry shortly")
+		return
+	}
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
@@ -765,13 +1052,67 @@ type apikoPricingSyncResult struct {
 
 var apikoPricingSyncMu sync.Mutex
 
+// errApikoSyncInProgress means another process (or this one) is already syncing
+// this channel. The background scheduler must skip it without counting a
+// failure, otherwise a long sync would trip the backoff for no reason.
+var errApikoSyncInProgress = errors.New("another apiko sync is already running for this channel")
+
+// acquireApikoSyncLock takes the cross-instance lock for one channel's price
+// sync. Both the catalogue sync and the pricing sync write the same rows, so
+// they must share it; a second instance would otherwise interleave writes.
+func acquireApikoSyncLock(channelID int) (func(), error) {
+	owner, err := common.GenerateRandomCharsKey(16)
+	if err != nil {
+		return nil, err
+	}
+	lockName := "apiko_price_sync:" + strconv.Itoa(channelID)
+	lockUntil := time.Now().Unix() + int64(apikoCatalogTimeoutSec) + 120
+	acquired, err := model.TryAcquireSystemTaskLock(lockName, lockName, owner, lockUntil)
+	if err != nil {
+		return nil, err
+	}
+	if !acquired {
+		return nil, errApikoSyncInProgress
+	}
+	return func() {
+		if releaseErr := model.ReleaseSystemTaskLock(lockName, owner); releaseErr != nil {
+			common.SysError(common.LogText("release apiko sync lock failed: channel_id=%d, error=%v", channelID, releaseErr))
+		}
+	}, nil
+}
+
 // syncApikoChannelPricing fetches the public catalogue and writes this
 // channel's price view. Automatic and manual syncs share it so both produce the
 // same records and the same operator-price protection.
-func syncApikoChannelPricing(channel *model.Channel) (apikoPricingSyncResult, error) {
-	var result apikoPricingSyncResult
+func syncApikoChannelPricing(channel *model.Channel) (result apikoPricingSyncResult, err error) {
+	startedAt := time.Now().Unix()
+	defer func() {
+		if errors.Is(err, errApikoSyncInProgress) {
+			return
+		}
+		state := model.ChannelSyncState{
+			ChannelId: channel.Id, Provider: "apiko", SyncType: model.ChannelSyncTypePrices,
+			LastStartedAt: startedAt, Fetched: result.Fetched,
+			Written: result.Recorded + result.Seeded, Skipped: len(result.Skipped),
+		}
+		if err == nil {
+			state.LastSuccessAt = time.Now().Unix()
+			state.ChangeSummary = summarizeApikoPriceChanges(result.Changes)
+		} else {
+			state.LastError = err.Error()
+		}
+		if saveErr := model.SaveChannelSyncState(state); saveErr != nil {
+			common.SysError(common.LogText("save apiko price sync state failed: channel_id=%d, error=%v", channel.Id, saveErr))
+		}
+	}()
 	apikoPricingSyncMu.Lock()
 	defer apikoPricingSyncMu.Unlock()
+
+	release, lockErr := acquireApikoSyncLock(channel.Id)
+	if lockErr != nil {
+		return result, lockErr
+	}
+	defer release()
 
 	controlPlane, ok := apikoControlPlaneFor(channel.GetBaseURL())
 	if !ok {
@@ -791,6 +1132,26 @@ func syncApikoChannelPricing(channel *model.Channel) (apikoPricingSyncResult, er
 	written, err := model.UpsertChannelOfficialPricing(built.records)
 	if err != nil {
 		return result, err
+	}
+	// A review must be bound to the price state it was raised on. The version
+	// only exists after the upsert, so fill it in here.
+	for i := range result.Changes {
+		change := &result.Changes[i]
+		row, rowErr := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+			ChannelId: channel.Id, Provider: "apiko", ModelName: change.ModelID,
+		})
+		if rowErr == nil && row != nil {
+			change.PricingVersion = row.PricingVersion
+		}
+	}
+	unpriced := make([]string, 0, len(built.skipped))
+	for _, skipped := range built.skipped {
+		if skipped.Reason == "catalog lists no price" {
+			unpriced = append(unpriced, skipped.Model)
+		}
+	}
+	if err := model.DeleteUnpricedChannelModelPricing(channel.Id, unpriced); err != nil {
+		common.SysError(common.LogText("delete unpriced apiko rows failed: channel_id=%d, error=%v", channel.Id, err))
 	}
 	seeded := 0
 	for name, internal := range built.internals {
@@ -850,6 +1211,9 @@ func runApikoUpstreamSync(force bool) {
 			continue
 		}
 		synced, err := syncApikoChannelPricing(channel)
+		if errors.Is(err, errApikoSyncInProgress) {
+			continue
+		}
 		if err != nil {
 			common.SysError(common.LogText("apiko pricing sync failed for channel %d: %s", channel.Id, err.Error()))
 			recordApikoSyncFailure(channel.Id, now)
@@ -994,7 +1358,31 @@ func setApikoSyncState(channelID int, at int64) {
 // expression into this channel's isolated pricing rows. Apiko publishes the
 // channel price, so the flat tier goes to ChannelPriceTiers and the official
 // vendor tier list stays empty.
-func applyApikoChannelPricing(channel *model.Channel, ids []string) (int, error) {
+func applyApikoChannelPricing(channel *model.Channel, ids []string) (written int, err error) {
+	startedAt := time.Now().Unix()
+	defer func() {
+		if errors.Is(err, errApikoSyncInProgress) {
+			return
+		}
+		state := model.ChannelSyncState{
+			ChannelId: channel.Id, Provider: "apiko", SyncType: model.ChannelSyncTypePrices,
+			LastStartedAt: startedAt, Fetched: len(ids), Written: written,
+		}
+		if err == nil {
+			state.LastSuccessAt = time.Now().Unix()
+		} else {
+			state.LastError = err.Error()
+		}
+		if saveErr := model.SaveChannelSyncState(state); saveErr != nil {
+			common.SysError(common.LogText("save apiko price sync state failed: channel_id=%d, error=%v", channel.Id, saveErr))
+		}
+	}()
+	release, lockErr := acquireApikoSyncLock(channel.Id)
+	if lockErr != nil {
+		return 0, lockErr
+	}
+	defer release()
+
 	controlPlane, ok := apikoControlPlaneFor(channel.GetBaseURL())
 	if !ok {
 		controlPlane = apikoControlPlaneBase

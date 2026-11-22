@@ -69,6 +69,7 @@ func TestMain(m *testing.M) {
 		&model.MidjourneyRefundOperation{},
 		&model.MidjourneyRefundOutbox{},
 		&model.MidjourneyRefundLogReceipt{},
+		&model.BillingPriceSnapshot{},
 	); err != nil {
 		panic("failed to migrate: " + err.Error())
 	}
@@ -99,6 +100,7 @@ func truncate(t *testing.T) {
 		model.DB.Exec("DELETE FROM midjourney_refund_outbox")
 		model.DB.Exec("DELETE FROM midjourney_refund_operations")
 		model.DB.Exec("DELETE FROM refund_intents")
+		model.DB.Exec("DELETE FROM billing_price_snapshots")
 	})
 }
 
@@ -198,6 +200,7 @@ func makeTask(t *testing.T, userId, channelId, quota, tokenId int, billingSource
 			OrganizationId: &orgId,
 			BillingContext: &model.TaskBillingContext{
 				ModelPrice:      0.02,
+				ModelRatio:      1.0,
 				GroupRatio:      1.0,
 				OriginModelName: "test-model",
 			},
@@ -1183,8 +1186,17 @@ func TestRecalculate_ZeroDelta(t *testing.T) {
 	seedUser(t, userID, initQuota)
 
 	task := makeTask(t, userID, 0, preConsumed, 0, BillingSourceWallet, 0)
+	require.NoError(t, model.SaveBillingPriceSnapshot(model.BillingPriceSnapshot{
+		TaskId: task.TaskID, ModelName: "test-model",
+		PreConsumedQuota: preConsumed, SettleStatus: model.BillingSnapshotStatusPending,
+	}))
 
 	RecalculateTaskQuota(ctx, task, preConsumed, common.NewMessage("exact match"))
+
+	voucher, err := model.GetBillingPriceSnapshot("", task.TaskID, "test-model")
+	require.NoError(t, err)
+	assert.Equal(t, model.BillingSnapshotStatusSettled, voucher.SettleStatus)
+	assert.Equal(t, int64(preConsumed), voucher.SettledQuota)
 
 	// No change to user quota
 	assert.Equal(t, initQuota, getUserQuota(t, userID))
@@ -1873,4 +1885,94 @@ func TestSettle_TokenRecalcFallsBackToCompletionTokens(t *testing.T) {
 			assert.Equal(t, testCase.wantQuota, task.Quota)
 		})
 	}
+}
+
+// 结算只能使用提交时固化的倍率：任务执行期间修改模型倍率、分组倍率或
+// 渠道价格，都不得改变最终扣费。
+func TestRecalculateTaskQuotaByTokensUsesSubmitSnapshot(t *testing.T) {
+	previousModelRatios := ratio_setting.ModelRatio2JSONString()
+	previousGroupRatios := ratio_setting.GroupRatio2JSONString()
+	require.NoError(t, ratio_setting.UpdateModelRatioByJSONString(`{"test-model":4}`))
+	require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(`{"default":2}`))
+	t.Cleanup(func() {
+		require.NoError(t, ratio_setting.UpdateModelRatioByJSONString(previousModelRatios))
+		require.NoError(t, ratio_setting.UpdateGroupRatioByJSONString(previousGroupRatios))
+	})
+
+	t.Run("frozen snapshot wins over current settings", func(t *testing.T) {
+		truncate(t)
+		const userID, tokenID, channelID = 36, 36, 36
+		seedUser(t, userID, 10_000)
+		seedToken(t, tokenID, userID, "sk-snapshot-recalc", 8_000)
+		seedChannel(t, channelID)
+
+		task := makeTask(t, userID, channelID, 40, tokenID, BillingSourceWallet, 0)
+		task.PrivateData.BillingContext.ModelRatio = 0.5
+		task.PrivateData.BillingContext.GroupRatio = 0.8
+		task.PrivateData.BillingContext.OtherRatios = map[string]float64{"duration": 1.25}
+
+		settled := RecalculateTaskQuotaByTokens(context.Background(), task, 100)
+		require.True(t, settled)
+		// 100 * 0.5 * 0.8 * 1.25 = 50；当前全局倍率 (4 / 2) 不参与结算。
+		assert.Equal(t, 50, task.Quota)
+	})
+
+	t.Run("missing snapshot keeps the pre-consumed quota", func(t *testing.T) {
+		truncate(t)
+		const userID, tokenID, channelID = 37, 37, 37
+		seedUser(t, userID, 10_000)
+		seedToken(t, tokenID, userID, "sk-snapshot-missing", 8_000)
+		seedChannel(t, channelID)
+
+		task := makeTask(t, userID, channelID, 40, tokenID, BillingSourceWallet, 0)
+		task.PrivateData.BillingContext = nil
+
+		require.False(t, RecalculateTaskQuotaByTokens(context.Background(), task, 100))
+		assert.Equal(t, 40, task.Quota)
+	})
+
+	t.Run("per-call billing skips token recalculation", func(t *testing.T) {
+		truncate(t)
+		const userID, tokenID, channelID = 38, 38, 38
+		seedUser(t, userID, 10_000)
+		seedToken(t, tokenID, userID, "sk-snapshot-percall", 8_000)
+		seedChannel(t, channelID)
+
+		task := makeTask(t, userID, channelID, 40, tokenID, BillingSourceWallet, 0)
+		task.PrivateData.BillingContext.PerCallBilling = true
+
+		require.False(t, RecalculateTaskQuotaByTokens(context.Background(), task, 100))
+		assert.Equal(t, 40, task.Quota)
+	})
+}
+
+// 按次计费的成功任务没有差额结算，终态收尾必须把凭证写成 settled，
+// 金额等于已预扣额度。
+func TestFinalizeTerminalTaskSettlesPerCallVoucher(t *testing.T) {
+	truncate(t)
+	const userID, tokenID, channelID = 41, 41, 41
+	const preConsumed = 100
+	seedUser(t, userID, 10_000)
+	seedToken(t, tokenID, userID, "sk-percall-voucher", 8_000)
+	seedChannel(t, channelID)
+
+	task := makeTask(t, userID, channelID, preConsumed, tokenID, BillingSourceWallet, 0)
+	task.Status = model.TaskStatusSuccess
+	task.PrivateData.Execution = &model.TaskExecutionSnapshot{RequestID: "req-percall-voucher"}
+	task.PrivateData.BillingContext.PerCallBilling = true
+
+	info := &relaycommon.RelayInfo{
+		RequestId: "req-percall-voucher", OriginModelName: "test-model", UserId: userID,
+	}
+	info.ChannelMeta = &relaycommon.ChannelMeta{ChannelId: channelID}
+	info.PriceData.ModelRatio = 1
+	RecordBillingPriceSnapshotForTask(info, task.TaskID, nil)
+
+	finalizeTerminalTask(context.Background(), &mockAdaptor{}, task, &relaycommon.TaskInfo{Status: model.TaskStatusSuccess})
+
+	voucher, err := model.GetBillingPriceSnapshot("req-percall-voucher", task.TaskID, "test-model")
+	require.NoError(t, err)
+	assert.Equal(t, model.BillingSnapshotStatusSettled, voucher.SettleStatus)
+	assert.Equal(t, int64(preConsumed), voucher.SettledQuota)
+	assert.Equal(t, int64(preConsumed), voucher.PreConsumedQuota)
 }

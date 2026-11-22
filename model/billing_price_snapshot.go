@@ -19,10 +19,43 @@ For commercial licensing, please contact support@uter.ai
 package model
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
+// 快照结算状态。一旦进入 settled / refunded，快照即成为财务凭证，
+// 任何自动路径都不得再改写金额或状态。
+const (
+	BillingSnapshotStatusPending      = "pending"
+	BillingSnapshotStatusSettled      = "settled"
+	BillingSnapshotStatusRefunded     = "refunded"
+	BillingSnapshotStatusSettleFailed = "settle_failed"
+)
+
+// ErrBillingSnapshotSettlementConflict 表示本次更新与快照当前状态冲突。
+// 调用方必须把它当作「这笔钱已经收口，不得再次改动」，而不是重试。
+var ErrBillingSnapshotSettlementConflict = errors.New("billing price snapshot settlement state does not allow this transition")
+
+// billingSnapshotSettlementSources 返回目标状态允许的来源状态。
+// 空串代表历史写入或插入时未填写（等价于 pending）；NULL 由 SQL 条件单独覆盖。
+func billingSnapshotSettlementSources(target string) ([]string, bool) {
+	switch target {
+	case BillingSnapshotStatusPending:
+		return []string{"", BillingSnapshotStatusPending}, true
+	case BillingSnapshotStatusSettled:
+		return []string{"", BillingSnapshotStatusPending, BillingSnapshotStatusSettleFailed}, true
+	case BillingSnapshotStatusRefunded:
+		return []string{"", BillingSnapshotStatusPending, BillingSnapshotStatusSettleFailed}, true
+	case BillingSnapshotStatusSettleFailed:
+		return []string{"", BillingSnapshotStatusPending}, true
+	default:
+		return nil, false
+	}
+}
 
 // BillingPriceSnapshot is the immutable price contract one request or task was
 // billed with. It is written once per identity and never updated, so a later
@@ -36,6 +69,7 @@ type BillingPriceSnapshot struct {
 	ModelName string `gorm:"size:255;uniqueIndex:idx_billing_snapshot_identity,priority:3"`
 
 	ChannelId       int    `gorm:"index"`
+	UserId          int    `gorm:"index"`
 	Provider        string `gorm:"size:64"`
 	Region          string `gorm:"size:64"`
 	DeploymentId    string `gorm:"size:128"`
@@ -50,20 +84,27 @@ type BillingPriceSnapshot struct {
 	// derivable from it; BillingExpression is the executable normal form.
 	PriceContract     string `gorm:"type:text"`
 	PriceContractHash string `gorm:"size:64"`
-	PriceSource       string `gorm:"size:128"`
-	PurchaseUSD       *float64
-	PurchaseVerified  bool
-	PurchaseSource    string `gorm:"size:128"`
-	GroupRatio        float64
-	UserPricingRatio  float64
-	Currency          string `gorm:"size:16"`
-	FXRate            float64
-	UsageBreakdown    string `gorm:"type:text"`
-	PreConsumedQuota  int64
-	SettledQuota      int64
-	RefundQuota       int64
-	SettleStatus      string `gorm:"size:32"`
-	CreatedAt         int64  `gorm:"index"`
+	// PurchaseContract freezes the per-dimension contract cost next to the sale
+	// contract, so the cost breakdown never depends on the current channel row.
+	PurchaseContract     string `gorm:"type:text"`
+	PurchaseContractHash string `gorm:"size:64"`
+	PriceSource          string `gorm:"size:128"`
+	PurchaseUSD          *float64
+	PurchaseVerified     bool
+	PurchaseSource       string `gorm:"size:128"`
+	GroupRatio           float64
+	UserPricingRatio     float64
+	Currency             string `gorm:"size:16"`
+	FXRate               float64
+	// QuotaPerUnit freezes the quota-to-USD conversion used when the money
+	// ledger is booked, so a later platform setting cannot re-value history.
+	QuotaPerUnit     float64
+	UsageBreakdown   string `gorm:"type:text"`
+	PreConsumedQuota int64
+	SettledQuota     int64
+	RefundQuota      int64
+	SettleStatus     string `gorm:"size:32"`
+	CreatedAt        int64  `gorm:"index"`
 }
 
 func (BillingPriceSnapshot) TableName() string { return "billing_price_snapshots" }
@@ -92,25 +133,64 @@ type SettlementPatch struct {
 }
 
 // UpdateBillingPriceSnapshotSettlement fills in the settlement half of an
-// existing snapshot. It is idempotent and refuses to overwrite a settled row.
+// existing snapshot.
+//
+// 状态机与 CAS 同一条 SQL：只有来源状态在允许集合内的行才会被更新，因此并发
+// 回调最多一个能成功；settled / refunded 是终态，refunded 之后迟到的成功回调
+// 无法把凭证改回 settled。重复的同状态回调只在金额完全一致时视为幂等成功。
 func UpdateBillingPriceSnapshotSettlement(requestId, taskId, modelName string, patch SettlementPatch) error {
 	if DB == nil || modelName == "" {
 		return nil
 	}
+	status := patch.Status
+	if status == "" {
+		status = BillingSnapshotStatusPending
+	}
+	allowedFrom, ok := billingSnapshotSettlementSources(status)
+	if !ok {
+		return fmt.Errorf("%w: unknown target status %q (request=%s task=%s model=%s)", ErrBillingSnapshotSettlementConflict, status, requestId, taskId, modelName)
+	}
+
 	updates := map[string]any{
 		"pre_consumed_quota": patch.PreConsumed,
 		"settled_quota":      patch.Settled,
 		"refund_quota":       patch.Refund,
-		"settle_status":      patch.Status,
+		"settle_status":      status,
 	}
 	// A task without metered facts must not blank the usage captured at
 	// contract time.
 	if patch.UsageBreakdown != "" {
 		updates["usage_breakdown"] = patch.UsageBreakdown
 	}
-	return DB.Model(&BillingPriceSnapshot{}).
-		Where("request_id = ? AND task_id = ? AND model_name = ? AND (settle_status IS NULL OR settle_status <> ?)", requestId, taskId, modelName, "settled").
-		Updates(updates).Error
+
+	result := DB.Model(&BillingPriceSnapshot{}).
+		Where("request_id = ? AND task_id = ? AND model_name = ?", requestId, taskId, modelName).
+		Where("(settle_status IS NULL OR settle_status IN ?)", allowedFrom).
+		Updates(updates)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 1 {
+		return nil
+	}
+
+	var current BillingPriceSnapshot
+	err := DB.Where("request_id = ? AND task_id = ? AND model_name = ?", requestId, taskId, modelName).First(&current).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// 没有凭证可补全（历史请求或未落快照的数据），保持原有静默语义。
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if current.SettleStatus == status &&
+		current.PreConsumedQuota == patch.PreConsumed &&
+		current.SettledQuota == patch.Settled &&
+		current.RefundQuota == patch.Refund {
+		return nil
+	}
+	return fmt.Errorf("%w: request=%s task=%s model=%s status=%q refuses to move to %q",
+		ErrBillingSnapshotSettlementConflict, requestId, taskId, modelName, current.SettleStatus, status)
 }
 
 // GetBillingPriceSnapshot looks up the snapshot for one request or task.
@@ -133,4 +213,20 @@ func ListBillingPriceSnapshots(channelId, limit int) ([]BillingPriceSnapshot, er
 	var rows []BillingPriceSnapshot
 	err := DB.Where("channel_id = ?", channelId).Order("id desc").Limit(limit).Find(&rows).Error
 	return rows, err
+}
+
+// GetBillingPriceSnapshotByRequest finds the latest voucher for one request id
+// without requiring the task id, so a supplier invoice line can be matched to
+// either a synchronous request or an async task.
+func GetBillingPriceSnapshotByRequest(requestId, modelName string) (*BillingPriceSnapshot, error) {
+	var snapshot BillingPriceSnapshot
+	query := DB.Where("request_id = ?", requestId)
+	if modelName != "" {
+		query = query.Where("model_name = ?", modelName)
+	}
+	err := query.Order("id desc").First(&snapshot).Error
+	if err != nil {
+		return nil, err
+	}
+	return &snapshot, nil
 }

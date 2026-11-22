@@ -693,14 +693,32 @@ func finalizeTerminalTask(ctx context.Context, adaptor TaskPollingAdaptor, task 
 	if task.Status == model.TaskStatusFailure {
 		if task.Quota != 0 {
 			RefundTaskQuota(ctx, task, task.FailReason)
+			return
 		}
+		// 未产生扣费就失败：凭证仍要收口为 refunded，不能永久 pending。
+		updateTaskPriceSnapshotSettlement(task, 0, 0, taskSnapshotUsage(task), model.BillingSnapshotStatusRefunded)
 		return
 	}
 	if adaptor == nil {
 		logger.LogWarn(ctx, common.LogText("task %s completed but no adapter is available for final billing adjustment", task.TaskID))
+		settleTaskVoucherAtReservedQuota(task)
 		return
 	}
-	settleTaskBillingOnComplete(ctx, adaptor, task, taskResult)
+	if !settleTaskBillingOnComplete(ctx, adaptor, task, taskResult) {
+		// 按次计费或无可调整用量时，预扣即最终费用，凭证需要收口。
+		settleTaskVoucherAtReservedQuota(task)
+	}
+}
+
+// settleTaskVoucherAtReservedQuota closes a successful task voucher at the
+// amount already reserved. It is idempotent: a voucher another path already
+// settled with the same amounts is accepted as a no-op.
+func settleTaskVoucherAtReservedQuota(task *model.Task) {
+	if task == nil {
+		return
+	}
+	quota := int64(task.Quota)
+	updateTaskPriceSnapshotSettlement(task, quota, quota, taskSnapshotUsage(task), model.BillingSnapshotStatusSettled)
 }
 
 func redactVideoResponseBody(body []byte) []byte {

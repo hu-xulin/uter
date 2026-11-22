@@ -23,8 +23,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -34,21 +36,90 @@ import (
 )
 
 type GenericPricingEntry struct {
-	ModelName        string   `json:"model_name"`
-	QuotaType        int      `json:"quota_type"`
-	ModelRatio       float64  `json:"model_ratio"`
-	ModelPrice       float64  `json:"model_price"`
-	CompletionRatio  float64  `json:"completion_ratio"`
-	CacheRatio       float64  `json:"cache_ratio"`
-	CreateCacheRatio float64  `json:"create_cache_ratio"`
-	BillingMode      string   `json:"billing_mode"`
-	BillingExpr      string   `json:"billing_expr"`
-	OfficialPrice    *float64 `json:"official_price"`
-	OfficialRatio    *float64 `json:"official_ratio"`
+	ModelName        string  `json:"model_name"`
+	VendorID         int     `json:"vendor_id,omitempty"`
+	QuotaType        int     `json:"quota_type"`
+	ModelRatio       float64 `json:"model_ratio"`
+	ModelPrice       float64 `json:"model_price"`
+	CompletionRatio  float64 `json:"completion_ratio"`
+	CacheRatio       float64 `json:"cache_ratio"`
+	CreateCacheRatio float64 `json:"create_cache_ratio"`
+	BillingMode      string  `json:"billing_mode"`
+	BillingExpr      string  `json:"billing_expr"`
+	// EnableGroups/SupportedEndpointTypes/PricingVersion are the model's
+	// upstream identity: which billing groups may use it, which protocols it
+	// serves, and the price document version. They are kept verbatim in the
+	// official row for audit even though Uter does not bill by them directly.
+	EnableGroups           []string `json:"enable_groups,omitempty"`
+	SupportedEndpointTypes []string `json:"supported_endpoint_types,omitempty"`
+	PricingVersion         string   `json:"pricing_version,omitempty"`
+	OfficialPrice          *float64 `json:"official_price"`
+	OfficialRatio          *float64 `json:"official_ratio"`
+}
+
+// GenericModelNames returns the catalogue model ids in document order.
+func GenericModelNames(entries []GenericPricingEntry) []string {
+	out := make([]string, 0, len(entries))
+	seen := make(map[string]bool, len(entries))
+	for _, entry := range entries {
+		name := strings.TrimSpace(entry.ModelName)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		out = append(out, name)
+	}
+	return out
 }
 
 type GenericPricingPayload struct {
-	Data []GenericPricingEntry `json:"data"`
+	Data        []GenericPricingEntry `json:"data"`
+	GroupRatio  map[string]float64    `json:"group_ratio,omitempty"`
+	UsableGroup map[string]string     `json:"usable_group,omitempty"`
+}
+
+// GenericUpstreamBillingGroupKey stores the selected upstream billing group per
+// channel ({"<channel id>": "<group>"}). The group only affects procurement
+// cost, never the sale price.
+const GenericUpstreamBillingGroupKey = "GenericUpstreamBillingGroups"
+
+// GetGenericUpstreamBillingGroup returns the selected upstream group, or "".
+func GetGenericUpstreamBillingGroup(channelID int) string {
+	if channelID <= 0 {
+		return ""
+	}
+	raw := strings.TrimSpace(common.GetOption(GenericUpstreamBillingGroupKey))
+	if raw == "" {
+		return ""
+	}
+	groups := map[string]string{}
+	if err := common.UnmarshalJsonStr(raw, &groups); err != nil {
+		return ""
+	}
+	return strings.TrimSpace(groups[fmt.Sprintf("%d", channelID)])
+}
+
+// SetGenericUpstreamBillingGroup stores or clears the upstream group.
+func SetGenericUpstreamBillingGroup(channelID int, group string) error {
+	if channelID <= 0 {
+		return errors.New("channel id is required")
+	}
+	groups := map[string]string{}
+	raw := strings.TrimSpace(common.GetOption(GenericUpstreamBillingGroupKey))
+	if raw != "" {
+		_ = common.UnmarshalJsonStr(raw, &groups)
+	}
+	group = strings.TrimSpace(group)
+	if group == "" {
+		delete(groups, fmt.Sprintf("%d", channelID))
+	} else {
+		groups[fmt.Sprintf("%d", channelID)] = group
+	}
+	encoded, err := common.Marshal(groups)
+	if err != nil {
+		return err
+	}
+	return model.UpdateOption(GenericUpstreamBillingGroupKey, string(encoded))
 }
 
 // FetchGenericUpstreamPricing reads a New API compatible /api/pricing document.
@@ -295,24 +366,33 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64) (model.C
 
 // SyncGenericChannelPricing fetches and persists official rows for one channel.
 func SyncGenericChannelPricing(ctx context.Context, channel *model.Channel) (int, error) {
+	written, _, err := SyncGenericChannelPricingWithModels(ctx, channel)
+	return written, err
+}
+
+// SyncGenericChannelPricingWithModels also returns the catalogue model ids, so
+// a channel with no model list yet can import them from the same document.
+func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Channel) (int, []string, error) {
 	if channel == nil {
-		return 0, errors.New("channel is required")
+		return 0, nil, errors.New("channel is required")
 	}
 	entries, err := FetchGenericUpstreamPricing(ctx, channel.GetBaseURL(), channel.GetKeys())
 	if err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if len(entries.Data) == 0 {
-		return 0, errors.New("upstream returned no pricing entries")
+		return 0, nil, errors.New("upstream returned no pricing entries")
 	}
+	models := GenericModelNames(entries.Data)
 	records := GenericChannelPricingRecords(channel.Id, channel.GetModels(), entries.Data, time.Now().UTC())
 	if len(records) == 0 {
-		return 0, errors.New("no pricing entries matched the channel models")
+		return 0, models, errors.New("no pricing entries matched the channel models")
 	}
 	written, err := model.UpsertChannelOfficialPricing(records)
 	if err != nil {
-		return written, err
+		return written, models, err
 	}
+	applyGenericGroupPurchaseCost(channel.Id, entries, records)
 	seen := make([]string, 0, len(records))
 	for _, record := range records {
 		seen = append(seen, record.ModelName)
@@ -324,7 +404,7 @@ func SyncGenericChannelPricing(ctx context.Context, channel *model.Channel) (int
 			common.SysError(common.LogText("generic channel lifecycle update failed: channel_id=%d, error=%v", channel.Id, lifecycleErr))
 		}
 	}
-	return written, nil
+	return written, models, nil
 }
 
 // GenericUpstreamSyncTask refreshes generic New API channels on their official
@@ -361,10 +441,14 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 		if !force && now.Unix()-state < int64(officialInterval)*60 {
 			continue
 		}
-		if _, err := SyncGenericChannelPricing(ctx, channel); err != nil {
-			common.SysError(common.LogText("generic upstream sync failed for channel %d: %s", channel.Id, err.Error()))
+		startedAt := now.Unix()
+		written, syncErr := SyncGenericChannelPricing(ctx, channel)
+		if syncErr != nil {
+			common.SysError(common.LogText("generic upstream sync failed for channel %d: %s", channel.Id, syncErr.Error()))
+			RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, 0, 0, 0, "", syncErr, model.ChannelSyncTypePrices)
 			continue
 		}
+		RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, written, 0, 0, "", nil, model.ChannelSyncTypePrices)
 		setGenericSyncState(channel.Id, now.Unix())
 	}
 }
@@ -392,5 +476,52 @@ func setGenericSyncState(channelID int, at int64) {
 	raw, err := common.Marshal(state)
 	if err == nil {
 		_ = model.UpdateOption(genericUpstreamSyncStateKey, string(raw))
+	}
+}
+
+// applyGenericGroupPurchaseCost freezes the provider's group multiplier into a
+// per-model expression purchase contract. It is opt-in: without a selected
+// group the channel keeps no procurement cost and profit stays pending.
+func applyGenericGroupPurchaseCost(channelID int, payload *GenericPricingPayload, records []model.ChannelOfficialPricingRecord) {
+	group := GetGenericUpstreamBillingGroup(channelID)
+	if group == "" || payload == nil {
+		return
+	}
+	ratio := payload.GroupRatio[group]
+	if math.IsNaN(ratio) || math.IsInf(ratio, 0) || ratio <= 0 {
+		return
+	}
+	byName := make(map[string]GenericPricingEntry, len(payload.Data))
+	for _, entry := range payload.Data {
+		byName[strings.TrimSpace(entry.ModelName)] = entry
+	}
+	source := fmt.Sprintf("newapi:/api/pricing#group=%s", group)
+	updatedAt := time.Now().Unix()
+	for _, record := range records {
+		entry, ok := byName[record.ModelName]
+		if !ok || strings.TrimSpace(entry.BillingExpr) == "" {
+			continue
+		}
+		if !NormalizeUpstreamExpression(entry.BillingExpr).Executable {
+			continue
+		}
+		cost := model.ChannelPurchaseCost{
+			Pricing: model.ChannelInternalPricing{
+				Mode:        model.ChannelPricingModeTieredExpr,
+				BillingExpr: fmt.Sprintf("(%s) * %s", strings.TrimSpace(entry.BillingExpr), strconv.FormatFloat(ratio, 'f', -1, 64)),
+				Source:      source,
+				UpdatedAt:   updatedAt,
+			},
+			Verified:  false,
+			Source:    source,
+			UpdatedAt: updatedAt,
+		}
+		identity := model.ChannelPricingIdentity{
+			ChannelId: channelID, Provider: record.Provider, Region: record.Region,
+			DeploymentId: record.DeploymentId, ModelName: record.ModelName,
+		}
+		if err := model.SetChannelPurchaseCostFor(identity, cost); err != nil {
+			common.SysError(common.LogText("generic group purchase cost failed: channel_id=%d model=%s, error=%v", channelID, record.ModelName, err))
+		}
 	}
 }

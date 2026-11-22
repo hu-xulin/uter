@@ -162,6 +162,11 @@ var compileEnvPrototypeV1 = map[string]any{
 	"abs":     math.Abs,
 	"ceil":    math.Ceil,
 	"floor":   math.Floor,
+	// `duration` is bound at runtime from the request or measured task usage.
+	// Without a compile-time prototype expr resolves the identifier to its
+	// built-in time.ParseDuration helper, so otherwise-valid per-second task
+	// expressions fail validation before they can be stored.
+	"duration": float64(0),
 }
 
 func getCompileEnv(version int) map[string]any {

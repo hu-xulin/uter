@@ -8502,13 +8502,13 @@
     "No direct price in the catalogue": "No direct price in the catalogue",
     "Pricing expression failed validation": "Pricing expression failed validation",
     "Apiko channels do not expose a balance API": "Apiko channels do not expose a balance API",
-    "Apiko catalogue sync": "Apiko 目录同步",
-    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "同步 Apiko 控制面发布的完整模型列表，保留已有条目。",
-    "Sync Apiko models": "同步 Apiko 模型",
-    "Added {{count}} models from the Apiko catalogue": "已从 Apiko 目录新增 {{count}} 个模型",
-    "{{total}} models after sync; {{added}} added": "同步后共 {{total}} 个模型，新增 {{added}} 个",
-    "Failed to sync Apiko models": "同步 Apiko 模型失败",
-    "Save the channel before syncing models.": "请先保存渠道再同步模型。",
+    "Apiko catalogue sync": "Apiko catalogue sync",
+    "Sync the full model list published by the Apiko control plane. Existing entries are kept.": "Sync the full model list published by the Apiko control plane. Existing entries are kept.",
+    "Sync Apiko models": "Sync Apiko models",
+    "Added {{count}} models from the Apiko catalogue": "Added {{count}} models from the Apiko catalogue",
+    "{{total}} models after sync; {{added}} added": "{{total}} models after sync; {{added}} added",
+    "Failed to sync Apiko models": "Failed to sync Apiko models",
+    "Save the channel before syncing models.": "Save the channel before syncing models.",
     "Minimum margin": "Minimum margin",
     "Percent per dimension. Leave empty to disable the margin floor.": "Percent per dimension. Leave empty to disable the margin floor.",
     "Enter a margin between 0 and 100.": "Enter a margin between 0 and 100.",
@@ -8598,6 +8598,9 @@
     "Multimodal input/output": "Multimodal input/output",
     "Thinking multimodal input/output": "Thinking multimodal input/output",
     "Price identity filters": "Price identity filters",
-    "Comma separated; leave empty to match every value.": "Comma separated; leave empty to match every value."
+    "Comma separated; leave empty to match every value.": "Comma separated; leave empty to match every value.",
+    "Tier rules must be a JSON array.": "Tier rules must be a JSON array.",
+    "Per-tier rules (optional)": "Per-tier rules (optional)",
+    "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview.": "A JSON array of range_name/time_band overrides. Unmatched tiers keep the base rule. Invalid JSON blocks the preview."
   }
 }

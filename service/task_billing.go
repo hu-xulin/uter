@@ -19,8 +19,6 @@ import (
 	"github.com/uter-ai/uter/pkg/jsplugin"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/relaykit/dto"
-	"github.com/uter-ai/uter/setting/custom_pricing"
-	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/uter-ai/uter/types"
 	"gorm.io/gorm"
 )
@@ -148,11 +146,11 @@ func completeTaskPriceSnapshot(info *relaycommon.RelayInfo, task *model.Task) {
 		}
 	}
 	// A queued task has only reserved its quota; the final settlement or refund
-	// arrives later and must still be able to complete the voucher. Only a
-	// terminal task may be marked settled here.
-	status := "pending"
-	if task.Status == model.TaskStatusSuccess || task.Status == model.TaskStatusFailure {
-		status = "settled"
+	// arrives later and must still be able to complete the voucher. A failed
+	// task is finalized by the refund path (pending → refunded), never here.
+	status := model.BillingSnapshotStatusPending
+	if task.Status == model.TaskStatusSuccess {
+		status = model.BillingSnapshotStatusSettled
 	}
 	updateTaskPriceSnapshotSettlement(task, int64(info.FinalPreConsumedQuota), int64(info.PriceData.Quota), usage, status)
 }
@@ -182,7 +180,24 @@ func updateTaskPriceSnapshotSettlement(task *model.Task, pre, settled int64, usa
 	})
 	if err != nil {
 		common.SysError(common.LogText("complete task billing snapshot failed: task=%s model=%s: %s", task.TaskID, modelName, err.Error()))
+		return
 	}
+	if status != model.BillingSnapshotStatusSettled && status != model.BillingSnapshotStatusRefunded {
+		return
+	}
+	snapshot, snapErr := model.GetBillingPriceSnapshot(requestID, task.TaskID, modelName)
+	if snapErr != nil {
+		// 历史任务或未落凭证的请求：没有可记的财务流水，不是错误。
+		if !errors.Is(snapErr, gorm.ErrRecordNotFound) {
+			common.SysError(common.LogText("load task billing snapshot for financials failed: task=%s model=%s: %s", task.TaskID, modelName, snapErr.Error()))
+		}
+		return
+	}
+	saleQuota := settled
+	if status == model.BillingSnapshotStatusRefunded {
+		saleQuota = 0
+	}
+	recordRequestFinancials(snapshot, usage, saleQuota, refund)
 }
 
 // taskSnapshotUsage returns the metered facts captured with the task's billing
@@ -512,7 +527,7 @@ func RefundTaskQuota(ctx context.Context, task *model.Task, reason string) bool 
 	switch err := applyTaskRefund(ctx, task, quota, reason); {
 	case err == nil:
 		// 资金已退且任务记录已归零：先补全计费凭证，再进入终态。
-		updateTaskPriceSnapshotSettlement(task, int64(quota), 0, taskSnapshotUsage(task), "refunded")
+		updateTaskPriceSnapshotSettlement(task, int64(quota), 0, taskSnapshotUsage(task), model.BillingSnapshotStatusRefunded)
 		// 资金已退且任务记录已归零：进入终态。
 		finalized, serr := model.TransitionTaskBilling(task.TaskID, model.TaskBillingTransition{
 			FromState: model.TaskBillingRefundPending,
@@ -708,6 +723,8 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 			}
 			markTaskSettlementUnrecoverable(ctx, task, fmt.Sprintf("zero-delta settlement could not be finalized: %v", err))
 		}
+		// 差额为零同样要收口凭证，否则任务成功后凭证永久停在 pending。
+		updateTaskPriceSnapshotSettlement(task, int64(preConsumedQuota), int64(preConsumedQuota), taskSnapshotUsage(task), model.BillingSnapshotStatusSettled)
 		return
 	}
 
@@ -788,7 +805,7 @@ func RecalculateTaskQuota(ctx context.Context, task *model.Task, actualQuota int
 		return
 	}
 
-	updateTaskPriceSnapshotSettlement(task, int64(preConsumedQuota), int64(actualQuota), taskSnapshotUsage(task), "settled")
+	updateTaskPriceSnapshotSettlement(task, int64(preConsumedQuota), int64(actualQuota), taskSnapshotUsage(task), model.BillingSnapshotStatusSettled)
 
 	var logType int
 	var logQuota int
@@ -876,99 +893,45 @@ func markTaskSettlementUnrecoverable(ctx context.Context, task *model.Task, reas
 }
 
 // RecalculateTaskQuotaByTokens 根据实际 token 消耗重新计费（异步差额结算）。
-// 当任务成功且返回了 totalTokens 时，根据模型倍率和分组倍率重新计算实际扣费额度，
-// 与预扣费的差额进行补扣或退还。支持钱包和订阅计费来源。
+//
+// 资金口径只能来自提交时固化的 BillingContext：渠道价、模型倍率、用户组和
+// 用户阶梯价都可能在任务执行期间被改动，结算时重新解析会让最终费用偏离
+// 用户提交时的合同。历史任务缺少完整快照时保持预扣额度，转人工核对。
 func RecalculateTaskQuotaByTokens(ctx context.Context, task *model.Task, totalTokens int) bool {
 	if totalTokens <= 0 {
 		return false
 	}
 
-	modelName := taskModelName(task)
-
-	// 获取模型价格和倍率。渠道独立价格优先，且按任务实际执行渠道读取。
-	modelRatio, hasRatioSetting, _ := ratio_setting.GetModelRatio(modelName)
-	pricingIdentity := model.ChannelPricingIdentity{ChannelId: task.ChannelId, ModelName: modelName}
-	if channel, err := model.GetChannelById(task.ChannelId, true); err == nil && channel != nil {
-		pricingIdentity = ChannelPricingIdentityForRequest(
-			channel.Type, channel.GetBaseURL(), channel.GetOtherSettings().DeploymentID, modelName,
-		)
-		pricingIdentity.ChannelId = task.ChannelId
-	}
-	effective := model.ResolveEffectiveChannelPricingFor(pricingIdentity)
-	if effective.Exists && effective.Reason != "" {
-		common.SysError(common.LogText(
-			"task %s channel %d model %s pricing identity unmatched (%s); keeping the pre-consumed quota",
-			task.TaskID, task.ChannelId, modelName, effective.Reason,
-		))
-		return false
-	}
-	channelPricing, hasChannelPricing := effective.Pricing, effective.Billable
-	if hasChannelPricing {
-		if channelPricing.UsePrice {
-			return false
-		}
-		modelRatio = channelPricing.ModelRatio
-		hasRatioSetting = true
-	}
-	// 只有配置了倍率(非固定价格)时才按 token 重新计费
-	if !hasRatioSetting || modelRatio <= 0 {
-		return false
-	}
-
-	// 获取用户和组的倍率信息
-	// 资金口径只用提交时快照：task.Group 为空（存量数据缺快照）时不回查
-	// 用户「当前」分组——用户可能在任务执行期间被改组，按新组倍率重算会
-	// 让计费口径漂移。此时保持预扣额度不重算，并记录告警供人工核对。
-	group := task.Group
-	if group == "" {
+	bc := task.PrivateData.BillingContext
+	if bc == nil {
 		logger.LogWarn(ctx, common.LogText(
-			"task %s has no group snapshot; keep pre-deducted quota without token recalculation",
+			"task %s has no submit-time billing context; keep pre-deducted quota without token recalculation",
 			task.TaskID))
 		return false
 	}
-	if group == "" {
+	if bc.PerCallBilling {
+		return false
+	}
+	if bc.ModelRatio <= 0 || bc.GroupRatio <= 0 {
+		logger.LogWarn(ctx, common.LogText(
+			"task %s has an incomplete submit-time billing snapshot (model ratio %.4f, group ratio %.4f); keep pre-deducted quota",
+			task.TaskID, bc.ModelRatio, bc.GroupRatio))
 		return false
 	}
 
-	groupRatio := ratio_setting.GetGroupRatio(group)
-	userGroupRatio, hasUserGroupRatio := ratio_setting.GetGroupGroupRatio(group, group)
-
-	var finalGroupRatio float64
-	if hasUserGroupRatio {
-		finalGroupRatio = userGroupRatio
-	} else {
-		finalGroupRatio = groupRatio
-	}
-
-	// Mirror the multiplier HandleGroupRatio applied at pre-consume. Without it
-	// the token re-billing would refund the channel/model discount and the user
-	// tier discount on every async task.
-	channelId := task.ChannelId
-	if hasChannelPricing {
-		channelId = 0
-	}
-	finalGroupRatio *= customPricingMultiplier(custom_pricing.ChargeContext{
-		ChannelId:  channelId,
-		UserId:     task.UserId,
-		ModelName:  modelName,
-		BaseRatio:  modelRatio,
-		UsePrice:   false,
-		MonthlyUSD: monthToDateUSD(task.UserId),
-	})
-
 	// 计算 OtherRatios 乘积（视频折扣、时长等）
 	otherMultiplier := 1.0
-	if priceData := taskBillingContextPriceData(task.PrivateData.BillingContext); priceData != nil {
+	if priceData := taskBillingContextPriceData(bc); priceData != nil {
 		otherMultiplier = priceData.OtherRatioMultiplier()
 	}
 
 	// 计算实际应扣费额度: totalTokens * modelRatio * groupRatio * otherMultiplier（饱和转换，防止溢出成负数）
-	actualQuota, clamp := common.QuotaFromFloatChecked(float64(totalTokens) * modelRatio * finalGroupRatio * otherMultiplier)
+	actualQuota, clamp := common.QuotaFromFloatChecked(float64(totalTokens) * bc.ModelRatio * bc.GroupRatio * otherMultiplier)
 
 	reason := common.NewMessage("Recalculated from tokens: tokens {{tokens}}, model ratio {{model_ratio}}, group ratio {{group_ratio}}, other multiplier {{other_multiplier}}", map[string]any{
 		"tokens":           totalTokens,
-		"model_ratio":      fmt.Sprintf("%.2f", modelRatio),
-		"group_ratio":      fmt.Sprintf("%.2f", finalGroupRatio),
+		"model_ratio":      fmt.Sprintf("%.2f", bc.ModelRatio),
+		"group_ratio":      fmt.Sprintf("%.2f", bc.GroupRatio),
 		"other_multiplier": fmt.Sprintf("%.4f", otherMultiplier),
 	})
 	RecalculateTaskQuota(ctx, task, actualQuota, reason, clamp)
