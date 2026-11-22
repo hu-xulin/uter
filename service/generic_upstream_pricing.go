@@ -26,6 +26,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -499,6 +500,71 @@ func GenericUpstreamSyncTask() {
 	}
 }
 
+func genericPrimaryPriceUSD(view model.ChannelOfficialPricing) (float64, bool) {
+	if len(view.ChannelPriceTiers) > 0 {
+		tier := view.ChannelPriceTiers[0]
+		if tier.InputPerMillionUSD != nil {
+			return *tier.InputPerMillionUSD, true
+		}
+		if tier.PerUnitUSD != nil {
+			return *tier.PerUnitUSD, true
+		}
+	}
+	if view.ChannelPrice != nil {
+		if view.ChannelPrice.InputPerMillionUSD != nil {
+			return *view.ChannelPrice.InputPerMillionUSD, true
+		}
+		if view.ChannelPrice.PerUnitUSD != nil {
+			return *view.ChannelPrice.PerUnitUSD, true
+		}
+	}
+	if len(view.Tiers) > 0 {
+		if view.Tiers[0].InputPerMillionUSD != nil {
+			return *view.Tiers[0].InputPerMillionUSD, true
+		}
+		if view.Tiers[0].PerUnitUSD != nil {
+			return *view.Tiers[0].PerUnitUSD, true
+		}
+	}
+	return 0, false
+}
+
+func genericChannelPriceSnapshot(channelID int) map[string]float64 {
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return nil
+	}
+	out := make(map[string]float64, len(rows))
+	for _, row := range rows {
+		var view model.ChannelOfficialPricing
+		if common.UnmarshalJsonStr(row.NormalizedPricing, &view) != nil {
+			continue
+		}
+		if price, ok := genericPrimaryPriceUSD(view); ok && price > 0 {
+			out[row.ModelName] = price
+		}
+	}
+	return out
+}
+
+func genericPriceChanges(channelID int, before, after map[string]float64, now time.Time) []UpstreamPriceChange {
+	changes := make([]UpstreamPriceChange, 0)
+	for name, newPrice := range after {
+		oldPrice, ok := before[name]
+		if !ok || oldPrice <= 0 || math.Abs(newPrice-oldPrice) < 1e-12 {
+			continue
+		}
+		oldValue, newValue := oldPrice, newPrice
+		changes = append(changes, UpstreamPriceChange{
+			ProviderID: "newapi-compatible", ModelID: name,
+			Kind: "price_changed", Field: "input_per_million_usd",
+			Old: &oldValue, New: &newValue, DetectedAt: now,
+		})
+	}
+	sort.Slice(changes, func(i, j int) bool { return changes[i].ModelID < changes[j].ModelID })
+	return changes
+}
+
 func runGenericUpstreamSync(ctx context.Context, force bool) {
 	releaseLock, acquired, err := acquireUpstreamSyncLock(ctx, "generic-upstream")
 	if err != nil || !acquired {
@@ -520,6 +586,7 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 		}
 		if !explicit {
 			schedule.Enabled = true
+			schedule.ApplyOnSync = true
 		}
 		_, officialInterval, _ := schedule.EffectiveIntervals()
 		state := genericSyncStateFor(channel.Id)
@@ -530,6 +597,7 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 			continue
 		}
 		startedAt := now.Unix()
+		before := genericChannelPriceSnapshot(channel.Id)
 		written, syncErr := SyncGenericChannelPricing(ctx, channel)
 		if syncErr != nil {
 			common.SysError(common.LogText("generic upstream sync failed for channel %d: %s", channel.Id, syncErr.Error()))
@@ -537,8 +605,34 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 			RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, 0, 0, 0, "", syncErr, model.ChannelSyncTypePrices)
 			continue
 		}
+		changes := genericPriceChanges(channel.Id, before, genericChannelPriceSnapshot(channel.Id), now)
+		var reviews []ChannelPricingReviewEntry
+		if schedule.ReviewMode == "manual" || schedule.ThresholdPercent > 0 {
+			reviews = BuildChannelPricingReviews(changes, channel.Id, channel.GetModels(), schedule.ThresholdPercent)
+		}
+		if len(reviews) > 0 {
+			if reviewErr := AppendChannelPricingReviews(reviews); reviewErr != nil {
+				common.SysError(common.LogText("append generic pricing reviews failed: channel_id=%d, error=%v", channel.Id, reviewErr))
+			}
+			// A change above the threshold must not be applied in the same run.
+			RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, written, 0, len(reviews), "", nil, model.ChannelSyncTypePrices)
+			setGenericSyncState(channel.Id, now.Unix())
+			AutoVerifyChannelPricing(channel.Id)
+			continue
+		}
+		applied := 0
+		if schedule.ApplyOnSync && schedule.Mode != "" && schedule.Mode != BatchPricingModeNone {
+			result, applyErr := ApplyChannelBatchPricingWithOptions(channel.Id, BatchPricingOptions{
+				Basis: schedule.Basis, Mode: schedule.Mode, Value: schedule.Value,
+			})
+			if applyErr != nil {
+				common.SysError(common.LogText("apply generic pricing schedule failed: channel_id=%d, error=%v", channel.Id, applyErr))
+			} else {
+				applied = result.Updated
+			}
+		}
 		clearGenericSyncFailure(channel.Id)
-		RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, written, 0, 0, "", nil, model.ChannelSyncTypePrices)
+		RecordChannelSyncOutcome(channel.Id, "newapi-compatible", startedAt, 0, written, applied, 0, "", nil, model.ChannelSyncTypePrices)
 		setGenericSyncState(channel.Id, now.Unix())
 		AutoVerifyChannelPricing(channel.Id)
 	}

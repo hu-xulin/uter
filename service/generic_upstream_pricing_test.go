@@ -177,6 +177,7 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	require.NoError(t, db.AutoMigrate(
 		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
 		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
 	))
 	previousDB := model.DB
 	model.DB = db
@@ -205,6 +206,9 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 
 	row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{ChannelId: channel.Id, ModelName: "m-a"})
 	require.NoError(t, err)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	assert.Contains(t, internal.BillingExpr, "* 3.5", "periodic sync must keep the group multiplier on the sale price")
 	cost := model.ParseChannelPurchaseCost(row.PurchasePricing)
 	require.NotNil(t, cost, "group selection must freeze a purchase contract")
 	assert.Contains(t, cost.Pricing.BillingExpr, "* 3.5")
@@ -225,6 +229,43 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, summary.CostVerified)
 	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
+}
+
+// 价格文档是账号级目录，可能包含该密钥无法服务的模型：已有模型列表的渠道
+// 不能被每次价格同步扩张，只有完全没有模型列表的渠道才从文档导入。
+func TestGenericSyncDoesNotExpandExistingChannelModels(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":[
+			{"model_name":"served","billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 2)"},
+			{"model_name":"not-served","billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 3)"}
+		]}`))
+	}))
+	t.Cleanup(server.Close)
+
+	base := server.URL
+	channel := &model.Channel{Type: constant.ChannelTypeOpenAI, Name: "group-channel", BaseURL: &base, Key: "sk-test", Models: "served", Group: "default", Status: 1}
+	require.NoError(t, db.Create(channel).Error)
+
+	written, models, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.NoError(t, err)
+	require.Equal(t, 1, written)
+	assert.ElementsMatch(t, []string{"served", "not-served"}, models)
+
+	var stored model.Channel
+	require.NoError(t, db.First(&stored, channel.Id).Error)
+	assert.Equal(t, "served", stored.Models)
 }
 
 func TestGenericRatioWithoutQuotaStaysReviewOnly(t *testing.T) {
@@ -260,4 +301,18 @@ func TestGenericRatioUsesUpstreamQuotaPerUnit(t *testing.T) {
 		assert.InDelta(t, tc.want, *view.Tiers[0].InputPerMillionUSD, 1e-9)
 		assert.InDelta(t, tc.quota, 1000000/view.RatioBasis.BasisUSDPerMillion, 1e-6)
 	}
+}
+
+func TestGenericPriceChangesDetectsOnlyRealMovements(t *testing.T) {
+	now := time.Unix(1000, 0)
+	changes := genericPriceChanges(7,
+		map[string]float64{"same": 1, "moved": 1, "gone": 1},
+		map[string]float64{"same": 1, "moved": 1.2, "new": 2}, now)
+	require.Len(t, changes, 1)
+	assert.Equal(t, "moved", changes[0].ModelID)
+	assert.Equal(t, "price_changed", changes[0].Kind)
+	require.NotNil(t, changes[0].Old)
+	require.NotNil(t, changes[0].New)
+	assert.InDelta(t, 1, *changes[0].Old, 1e-9)
+	assert.InDelta(t, 1.2, *changes[0].New, 1e-9)
 }

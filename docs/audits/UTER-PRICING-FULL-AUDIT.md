@@ -70,6 +70,16 @@ Bailian pagination now fails the sync when the fetched model count is smaller
 than the upstream's reported total. A partial page set can no longer be
 published as a complete catalog and trigger mass model removal.
 
+### 3.4 Generic/XXAPI scheduled rules and change review
+
+Generic/New API and XXAPI scheduled syncs now:
+
+- snapshot prices before writing;
+- detect real price movements;
+- create review entries when `review_mode=manual` or a threshold is set;
+- skip applying the scheduled rule for changes above the threshold;
+- apply the configured basis/mode/value on sync when enabled.
+
 ### 3.5 Cross-instance price-sync lock
 
 Generic/New API and XXAPI channel price syncs now claim a database-backed
