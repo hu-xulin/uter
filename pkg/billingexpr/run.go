@@ -116,14 +116,22 @@ func runProgram(prog *vm.Program, requestRules []RequestRuleTrace, usedVars map[
 		},
 		"param": func(path string) any {
 			path = strings.TrimSpace(path)
-			if path == "" || len(request.Body) == 0 {
+			if path == "" {
 				return nil
 			}
-			result := gjson.GetBytes(request.Body, path)
-			if !result.Exists() {
-				return nil
+			if len(request.Body) > 0 {
+				result := gjson.GetBytes(request.Body, path)
+				if result.Exists() {
+					return result.Value()
+				}
 			}
-			return result.Value()
+			// Task plugins report resolution/size in usage facts, not in the
+			// chat body. Fall back to those facts so a resolution-tiered task
+			// expression does not silently charge the default tier.
+			if value, ok := usageParamValue(request.Usage, path); ok {
+				return value
+			}
+			return nil
 		},
 		"u": func(name string) any {
 			if request.Usage == nil {
@@ -213,4 +221,42 @@ func normalizeHeaders(headers map[string]string) map[string]string {
 		normalized[k] = v
 	}
 	return normalized
+}
+
+// usageParamValue resolves param("a.b") from task usage facts. It checks the
+// exact key, a nested map path, then the last path segment case-insensitively
+// (plugins commonly report "resolution" or "size" at the top level).
+func usageParamValue(usage map[string]any, path string) (any, bool) {
+	if len(usage) == 0 || path == "" {
+		return nil, false
+	}
+	if value, ok := usage[path]; ok {
+		return value, true
+	}
+	var current any = usage
+	for _, segment := range strings.Split(path, ".") {
+		object, ok := current.(map[string]any)
+		if !ok {
+			current = nil
+			break
+		}
+		current, ok = object[segment]
+		if !ok {
+			current = nil
+			break
+		}
+	}
+	if current != nil {
+		return current, true
+	}
+	last := path
+	if index := strings.LastIndex(path, "."); index >= 0 {
+		last = path[index+1:]
+	}
+	for key, value := range usage {
+		if strings.EqualFold(key, last) {
+			return value, true
+		}
+	}
+	return nil, false
 }

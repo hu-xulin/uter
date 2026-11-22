@@ -1259,3 +1259,18 @@ func TestFrontendSimulationContract(t *testing.T) {
 		})
 	}
 }
+
+func TestTaskUsageFactsFeedParamResolutionTier(t *testing.T) {
+	expr := `has(lower(param("metadata.parameters.resolution")), "2k") || has(lower(param("metadata.resolution")), "2k") || has(lower(param("size")), "2k") ? tier("2k", duration * 0.1194029851) : tier("768p", duration * 0.0746268657)`
+	high := map[string]any{"duration": 5.0, "resolution": "2k"}
+	cost, trace, err := billingexpr.RunExprWithRequest(expr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(high))
+	require.NoError(t, err)
+	assert.Equal(t, "2k", trace.MatchedTier)
+	assert.InDelta(t, 5*0.1194029851, cost, 1e-9)
+
+	low := map[string]any{"duration": 5.0}
+	cost, trace, err = billingexpr.RunExprWithRequest(expr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(low))
+	require.NoError(t, err)
+	assert.Equal(t, "768p", trace.MatchedTier)
+	assert.InDelta(t, 5*0.0746268657, cost, 1e-9)
+}

@@ -333,14 +333,14 @@ func TestDreamRouterTaskProbeRewrite(t *testing.T) {
 		}
 	}
 
-	// 改写前（上游原样表达式）在同一份用量事实下的结果——这就是被修掉的
-	// 少收费：1080P 十秒本该 1.2537315，实际只收 0.3134327。
+	// 上游原样表达式现在也能从任务用量事实里读到分辨率（param() 回退到
+	// RequestInput.Usage），因此高分辨率不再被按默认档少收。
 	original, trace, err := billingexpr.RunExprWithRequest(wan3VideoProbeExpr, billingexpr.TokenParams{}, billingexpr.RequestInputForUsage(cases[0].usage))
 	if err != nil {
 		t.Fatalf("original expression should still run: %v", err)
 	}
-	if trace.MatchedTier != "720p" || !nearlyEqualSync(original, 0.6268654) {
-		t.Fatalf("regression premise changed: original gives cost=%v tier=%q", original, trace.MatchedTier)
+	if trace.MatchedTier != "1080p" || !nearlyEqualSync(original, 1.2537315) {
+		t.Fatalf("usage-fact fallback regressed: original gives cost=%v tier=%q", original, trace.MatchedTier)
 	}
 }
 
