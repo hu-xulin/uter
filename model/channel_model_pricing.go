@@ -943,7 +943,10 @@ func formatInternalPrice(value float64) string {
 // approved prices are never touched.
 func autoDerivedInternalSource(source string) bool {
 	source = strings.ToLower(strings.TrimSpace(source))
-	for _, prefix := range []string{"dreamrouter-", "bailian-", "newapi-", "generic-"} {
+	for _, prefix := range []string{
+		"dreamrouter-", "bailian-", "newapi-", "newapi:",
+		"generic-", "generic:", "xxapi-", "apiko-",
+	} {
 		if strings.HasPrefix(source, prefix) {
 			return true
 		}
@@ -973,9 +976,7 @@ func internalPricingReplaceable(raw string) bool {
 	if err := common.UnmarshalJsonStr(raw, &pricing); err != nil {
 		return false
 	}
-	return strings.HasPrefix(pricing.Source, "dreamrouter-") ||
-		strings.HasPrefix(pricing.Source, "bailian-") ||
-		strings.HasPrefix(pricing.Source, "newapi-")
+	return autoDerivedInternalSource(pricing.Source)
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the
@@ -1105,6 +1106,9 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 	if err != nil {
 		return 0, err
 	}
+	for _, record := range records {
+		InvalidateChannelPricingPresence(record.ChannelId)
+	}
 	InvalidateChannelPricingCache()
 	InvalidatePricingCache()
 	return written, nil
@@ -1184,6 +1188,7 @@ func SetChannelInternalPricingFor(identity ChannelPricingIdentity, pricing Chann
 		return err
 	}
 	invalidateChannelPricingCache(identity.ChannelId, identity.ModelName)
+	InvalidateChannelPricingPresence(identity.ChannelId)
 	InvalidatePricingCache()
 	return nil
 }
@@ -1857,6 +1862,46 @@ func ResolveChannelBillingPricing(channelId int, modelName string) (*ChannelBill
 func ChannelPricingState(channelId int, modelName string) (string, bool) {
 	effective := ResolveEffectiveChannelPricing(channelId, modelName)
 	return effective.Status, effective.Exists
+}
+
+type channelPricingPresence struct {
+	has       bool
+	expiresAt time.Time
+}
+
+var channelPricingPresenceCache sync.Map
+
+// ChannelUsesScopedPricing reports whether a channel has any channel-scoped
+// pricing rows. Such a channel is managed by ChannelModelPricing, so a missing
+// row means "not synced / not priced" and must not fall back to another
+// channel's or the global price. Channels with no rows keep the legacy global
+// pricing path.
+func ChannelUsesScopedPricing(channelId int) bool {
+	if DB == nil || channelId <= 0 {
+		return false
+	}
+	if cached, ok := channelPricingPresenceCache.Load(channelId); ok {
+		entry := cached.(channelPricingPresence)
+		if time.Now().Before(entry.expiresAt) {
+			return entry.has
+		}
+	}
+	var count int64
+	err := DB.Model(&ChannelModelPricing{}).
+		Where("channel_id = ?", channelId).
+		Limit(1).
+		Count(&count).Error
+	has := err == nil && count > 0
+	channelPricingPresenceCache.Store(channelId, channelPricingPresence{
+		has: has, expiresAt: time.Now().Add(channelPricingCacheTTL),
+	})
+	return has
+}
+
+// InvalidateChannelPricingPresence clears the scoped-pricing presence cache so
+// the first row written by a sync takes effect immediately.
+func InvalidateChannelPricingPresence(channelId int) {
+	channelPricingPresenceCache.Delete(channelId)
 }
 
 // ChannelPricedModelNames returns every model that has a channel-scoped

@@ -142,7 +142,11 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	if channel == nil {
 		return 0, 0, "", errors.New("channel is required")
 	}
-	payload, err := fetchXXAPIPricingPayload(ctx, channel.GetBaseURL(), "")
+	apiKey, _, keyErr := channel.GetNextEnabledKey()
+	if keyErr != nil || strings.TrimSpace(apiKey) == "" {
+		return 0, 0, "", errors.New("xxapi channel has no usable API key")
+	}
+	payload, err := fetchXXAPIPricingPayload(ctx, channel.GetBaseURL(), apiKey)
 	if err != nil {
 		return 0, 0, "", err
 	}

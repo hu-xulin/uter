@@ -151,3 +151,25 @@ func TestBCustomerGroupsPayDifferentFinalQuota(t *testing.T) {
 		"B-side group ratio must lower the final quota without changing channel price")
 	assert.InDelta(t, 1.0, bPrice.ModelRatio, 1e-9)
 }
+
+func TestScopedChannelMissingModelDoesNotFallBackToGlobalPrice(t *testing.T) {
+	setupBillingConsistencyDB(t)
+	seedChannelModel(t, 7, "gpt-a", model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  floatPtr(2),
+		OutputUSDPerMillion: floatPtr(4),
+	})
+
+	ctx, info := consistencyContext()
+	info.OriginModelName = "gpt-3.5-turbo"
+	info.ChannelMeta.ChannelId = 7
+	_, err := ModelPriceHelper(ctx, info, 1000, &types.TokenCountMeta{})
+	require.Error(t, err, "a channel with scoped pricing must not borrow another channel's price")
+
+	// A channel with no scoped rows keeps the legacy global pricing path.
+	ctxLegacy, legacy := consistencyContext()
+	legacy.OriginModelName = "gpt-3.5-turbo"
+	legacy.ChannelMeta.ChannelId = 8
+	_, err = ModelPriceHelper(ctxLegacy, legacy, 1000, &types.TokenCountMeta{})
+	require.NoError(t, err)
+}

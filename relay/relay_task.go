@@ -287,6 +287,11 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 			"channel %d model %s pricing identity unmatched: %s", pricingIdentity.ChannelId, modelName, channelPricing.Reason,
 		), "model_price_error", http.StatusBadRequest)
 	}
+	if !channelPricing.Exists && model.ChannelUsesScopedPricing(pricingIdentity.ChannelId) {
+		return nil, service.TaskErrorWrapper(fmt.Errorf(
+			"channel %d model %s has no channel-scoped price", pricingIdentity.ChannelId, modelName,
+		), "model_price_error", http.StatusBadRequest)
+	}
 	if channelPricing.Billable && channelPricing.Pricing.UsePerSecond {
 		provider, supported := adaptor.(channel.TaskUsageFactsProvider)
 		if !supported {

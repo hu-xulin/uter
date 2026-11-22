@@ -1190,3 +1190,30 @@ func TestReviewGateKeepsBatchPriceAndClearsAutoPrice(t *testing.T) {
 	assert.Equal(t, ChannelPricingStatusNeedsReview, autoRow.PricingStatus)
 	assert.Empty(t, autoRow.InternalPricing)
 }
+
+func TestAutoDerivedSourcesAgreeAcrossFunctions(t *testing.T) {
+	for _, source := range []string{
+		"dreamrouter-discount", "bailian-channel", "newapi:/api/pricing",
+		"generic:/api/pricing", "xxapi-group", "apiko-expression",
+	} {
+		require.True(t, autoDerivedInternalSource(source), source)
+		encoded, err := common.Marshal(ChannelInternalPricing{Source: source})
+		require.NoError(t, err)
+		require.True(t, internalPricingReplaceable(string(encoded)), source)
+	}
+	encoded, err := common.Marshal(ChannelInternalPricing{Source: "operator"})
+	require.NoError(t, err)
+	require.False(t, internalPricingReplaceable(string(encoded)))
+}
+
+func TestChannelUsesScopedPricing(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	require.NoError(t, db.Create(&ChannelModelPricing{
+		ChannelId: 77, Provider: "xxapi", ModelName: "gpt-a",
+	}).Error)
+	InvalidateChannelPricingPresence(77)
+	InvalidateChannelPricingPresence(78)
+
+	assert.True(t, ChannelUsesScopedPricing(77))
+	assert.False(t, ChannelUsesScopedPricing(78))
+}

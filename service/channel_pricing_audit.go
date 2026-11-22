@@ -150,19 +150,23 @@ const (
 	UpstreamParityManualReview  = "MANUAL_REVIEW"
 )
 
-const upstreamParityStaleAfter = 7 * 24 * time.Hour
+// upstreamParityStaleAfter matches the channel-pricing screen's freshness
+// window so the audit and the operator view never disagree about staleness.
+const upstreamParityStaleAfter = 48 * time.Hour
 
 type UpstreamParityModel struct {
-	ModelName        string   `json:"model_name"`
-	Status           string   `json:"status"`
-	LifecycleStatus  string   `json:"lifecycle_status,omitempty"`
-	PricingStatus    string   `json:"pricing_status"`
-	HasOfficial      bool     `json:"has_official"`
-	HasChannelPrice  bool     `json:"has_channel_price"`
-	HasInternalPrice bool     `json:"has_internal_price"`
-	ExpressionStatus string   `json:"expression_status,omitempty"`
-	Stale            bool     `json:"stale"`
-	Reasons          []string `json:"reasons,omitempty"`
+	ModelName           string   `json:"model_name"`
+	Status              string   `json:"status"`
+	LifecycleStatus     string   `json:"lifecycle_status,omitempty"`
+	PricingStatus       string   `json:"pricing_status"`
+	PriceKind           string   `json:"price_kind,omitempty"`
+	HasOfficial         bool     `json:"has_official"`
+	HasOfficialEstimate bool     `json:"has_official_estimate"`
+	HasChannelPrice     bool     `json:"has_channel_price"`
+	HasInternalPrice    bool     `json:"has_internal_price"`
+	ExpressionStatus    string   `json:"expression_status,omitempty"`
+	Stale               bool     `json:"stale"`
+	Reasons             []string `json:"reasons,omitempty"`
 }
 
 type UpstreamParityReport struct {
@@ -190,8 +194,17 @@ func BuildUpstreamParityReport(channelID int, channelName string, rows []model.C
 		if strings.TrimSpace(row.NormalizedPricing) != "" {
 			_ = common.UnmarshalJsonStr(row.NormalizedPricing, &official)
 		}
-		item.HasOfficial = len(official.Tiers) > 0 || len(official.ChannelPriceTiers) > 0 || official.ChannelPrice != nil
-		item.HasChannelPrice = len(official.ChannelPriceTiers) > 0 || official.ChannelPrice != nil
+		item.PriceKind = official.PriceKind
+		item.HasChannelPrice = len(official.ChannelPriceTiers) > 0 ||
+			official.ChannelPrice != nil ||
+			official.PriceKind == "CHANNEL_QUOTE"
+		item.HasOfficial = len(official.Tiers) > 0 &&
+			official.PriceKind != "RATIO_ONLY" &&
+			official.PriceKind != "DERIVED_FROM_RATIOS" &&
+			official.PriceKind != "HISTORICAL_SNAPSHOT" &&
+			!item.HasChannelPrice
+		item.HasOfficialEstimate = len(official.Tiers) > 0 &&
+			(official.PriceKind == "RATIO_ONLY" || official.PriceKind == "DERIVED_FROM_RATIOS")
 		item.HasInternalPrice = row.PricingStatus == model.ChannelPricingStatusConfigured && strings.TrimSpace(row.InternalPricing) != ""
 		item.ExpressionStatus = official.ExpressionStatus
 		item.Stale = row.FetchedAt > 0 && now.Sub(time.Unix(row.FetchedAt, 0)) > upstreamParityStaleAfter
@@ -213,6 +226,11 @@ func BuildUpstreamParityReport(channelID int, channelName string, rows []model.C
 			item.Status = UpstreamParityPriceMismatch
 		}
 		if item.Status == "" && item.HasChannelPrice && !item.HasInternalPrice {
+			item.Status = UpstreamParityPriceMismatch
+		}
+		if item.Status == "" && item.HasOfficialEstimate && !item.HasChannelPrice {
+			// A ratio-derived estimate is not an official absolute price and
+			// must not make the model look fully reconciled.
 			item.Status = UpstreamParityPriceMismatch
 		}
 		if item.Status == "" && row.InternalPricing != "" {
@@ -247,6 +265,9 @@ func parityReason(item UpstreamParityModel) string {
 	case UpstreamParityModelMismatch:
 		return "model is no longer active upstream"
 	case UpstreamParityPriceMismatch:
+		if item.HasOfficialEstimate && !item.HasChannelPrice {
+			return "official absolute price unavailable; only a ratio-derived estimate"
+		}
 		if !item.HasOfficial && !item.HasChannelPrice {
 			return "no official or channel price"
 		}

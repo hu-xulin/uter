@@ -35,6 +35,7 @@ func registerUpstreamAdapter(adapter UpstreamProviderAdapter) {
 func init() {
 	registerUpstreamAdapter(dreamRouterAdapter{})
 	registerUpstreamAdapter(bailianAdapter{})
+	registerUpstreamAdapter(xxapiAdapter{})
 	for _, provider := range manualPricingProviders {
 		registerUpstreamAdapter(manualProviderAdapter{provider: provider})
 	}
@@ -128,6 +129,44 @@ func (bailianAdapter) Descriptor() UpstreamProvider {
 
 func (bailianAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
 	return FetchBailianCatalog(ctx, cfg.BaseURL, cfg.APIKey)
+}
+
+// xxapiAdapter reads XXAPI's New API compatible pricing document. The document
+// is public, but the channel's key identifies the billing group and must be
+// forwarded so an authenticated deployment can resolve the same quote.
+type xxapiAdapter struct{}
+
+func (xxapiAdapter) Descriptor() UpstreamProvider {
+	return UpstreamProvider{
+		ID: "xxapi", Name: "XXAPI",
+		PricingURL: xxapiPricingURL, ModelsURL: "https://xxapi.ai/v1/models",
+		AuthType:            "channel_key",
+		SourceDocumentation: xxapiPricingURL,
+		SyncFrequency:       "manual and channel cadence",
+		Capabilities: UpstreamProviderCapabilities{
+			ModelDiscovery:      capability(CapabilitySupported, "models embedded in /api/pricing"),
+			ModelMetadata:       capability(CapabilityPartial, "pricing rows cover ids, groups and endpoint types"),
+			OfficialPricing:     capability(CapabilityUnsupported, "publishes gateway quotes, not vendor list prices"),
+			ChannelPricing:      capability(CapabilitySupported, "group ratio applied to the gateway quote"),
+			DiscountInformation: capability(CapabilitySupported, "group_ratio and group_display"),
+			RegionPricing:       capability(CapabilityUnsupported, "no region dimension"),
+			TieredPricing:       capability(CapabilityPartial, "billing_expr preserved; unsupported shapes stay ratio-only"),
+			MediaPricing:        capability(CapabilityPartial, "image/video expressions when published"),
+			ScheduledSync:       capability(CapabilitySupported, "channel price cadence"),
+			TokenPricing:        capability(CapabilitySupported, "input/output/cache from billing_expr or ratios"),
+			ImagePricing:        capability(CapabilityPartial, "image_count expressions when published"),
+			VideoPricing:        capability(CapabilityPartial, "per-second expressions when published"),
+			AudioPricing:        capability(CapabilityPartial, "when the upstream publishes it"),
+			PerCallPricing:      capability(CapabilitySupported, "fixed per-request expressions"),
+			PerSecondPricing:    capability(CapabilityPartial, "duration expressions when published"),
+			PerMinutePricing:    capability(CapabilityUnsupported, "no per-minute unit"),
+			DeploymentPricing:   capability(CapabilityUnsupported, "no deployment dimension"),
+		},
+	}
+}
+
+func (xxapiAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
+	return fetchXXAPIPricingPayload(ctx, cfg.BaseURL, cfg.APIKey)
 }
 
 // manualPricingProviders have no supplier-level price API that Uter may call

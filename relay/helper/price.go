@@ -188,6 +188,9 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 			}
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
+		if model.ChannelUsesScopedPricing(channelId) {
+			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
+		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
 			return ModelPriceHelperUpstream(c, info, promptTokens, meta)
 		}
@@ -406,6 +409,9 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 			if effective.Reason != "" {
 				return hosttypes.PriceData{}, channelPriceIdentityError(c, channelId, billingModelName, effective.Reason)
 			}
+			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
+		}
+		if model.ChannelUsesScopedPricing(channelId) {
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
