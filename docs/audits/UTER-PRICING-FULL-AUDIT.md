@@ -82,7 +82,9 @@ Generic/New API and XXAPI scheduled syncs now:
 - detect real price movements;
 - create review entries when `review_mode=manual` or a threshold is set;
 - skip applying the scheduled rule for changes above the threshold;
-- apply the configured basis/mode/value on sync when enabled.
+- apply the configured basis/mode/value on sync when enabled;
+- append every detected change to a bounded
+  `GenericUpstreamPriceHistory` log (latest 1000 entries).
 
 ### 3.4.1 Catalog verification after every sync
 

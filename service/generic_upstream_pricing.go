@@ -613,6 +613,9 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 			continue
 		}
 		changes := genericPriceChanges(channel.Id, before, genericChannelPriceSnapshot(channel.Id), now)
+		if err := AppendGenericUpstreamHistory(changes); err != nil {
+			common.SysError(common.LogText("append generic upstream history failed: channel_id=%d, error=%v", channel.Id, err))
+		}
 		var reviews []ChannelPricingReviewEntry
 		if schedule.ReviewMode == "manual" || schedule.ThresholdPercent > 0 {
 			reviews = BuildChannelPricingReviews(changes, channel.Id, channel.GetModels(), schedule.ThresholdPercent)

@@ -323,3 +323,16 @@ func TestGenericPriceChangesDetectsOnlyRealMovements(t *testing.T) {
 	assert.InDelta(t, 1.2, *changes[0].New, 1e-9)
 	assert.Equal(t, "v2", changes[0].PricingVersion)
 }
+
+func TestMergeUpstreamHistoryKeepsNewestEntries(t *testing.T) {
+	old := &UpstreamPriceHistory{ProviderID: "newapi-compatible", Entries: []UpstreamPriceChange{
+		{ModelID: "a"}, {ModelID: "b"},
+	}}
+	merged := mergeUpstreamHistory(old, "newapi-compatible", []UpstreamPriceChange{
+		{ModelID: "c"}, {ModelID: "d"},
+	}, 3)
+	require.Len(t, merged.Entries, 3)
+	assert.Equal(t, []string{"b", "c", "d"}, []string{
+		merged.Entries[0].ModelID, merged.Entries[1].ModelID, merged.Entries[2].ModelID,
+	})
+}
