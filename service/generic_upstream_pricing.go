@@ -428,6 +428,14 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	if channel == nil {
 		return 0, nil, errors.New("channel is required")
 	}
+	release, acquired, err := acquireChannelPricingSyncLock(channel.Id)
+	if err != nil {
+		return 0, nil, err
+	}
+	if !acquired {
+		return 0, nil, ErrPricingSyncInProgress
+	}
+	defer release()
 	entries, err := FetchGenericUpstreamPricing(ctx, channel.GetBaseURL(), channel.GetKeys())
 	if err != nil {
 		return 0, nil, err
@@ -436,8 +444,14 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		return 0, nil, errors.New("upstream returned no pricing entries")
 	}
 	models := GenericModelNames(entries.Data)
-	if _, addErr := AppendChannelModelNames(channel, models); addErr != nil {
-		common.SysError(common.LogText("generic auto model add failed: channel_id=%d, error=%v", channel.Id, addErr))
+	// The pricing document is account-wide, so it may list models the channel's
+	// key cannot actually serve (xxapi group keys see a subset). Import the
+	// catalogue only when the channel has no model list yet; an existing list
+	// stays authoritative instead of being expanded by every price sync.
+	if len(channel.GetModels()) == 0 {
+		if _, addErr := AppendChannelModelNames(channel, models); addErr != nil {
+			common.SysError(common.LogText("generic auto model add failed: channel_id=%d, error=%v", channel.Id, addErr))
+		}
 	}
 	records := GenericChannelPricingRecordsWithQuota(
 		channel.Id, channel.GetModels(), entries.Data, time.Now().UTC(),
@@ -445,6 +459,17 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	)
 	if len(records) == 0 {
 		return 0, models, errors.New("no pricing entries matched the channel models")
+	}
+	// A channel bound to an upstream group is billed at the document price times
+	// that group's published ratio, exactly as the create path does. Without
+	// this, a periodic sync would silently revert group channels to catalogue
+	// prices.
+	if group := GetGenericUpstreamBillingGroup(channel.Id); group != "" {
+		if ratio := entries.GroupRatio[group]; ratio > 0 && ratio != 1 {
+			for i := range records {
+				applyGroupRatioToRecord(&records[i], group, ratio)
+			}
+		}
 	}
 	written, err := model.UpsertChannelOfficialPricing(records)
 	if err != nil {

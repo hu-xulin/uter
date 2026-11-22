@@ -70,7 +70,14 @@ Bailian pagination now fails the sync when the fetched model count is smaller
 than the upstream's reported total. A partial page set can no longer be
 published as a complete catalog and trigger mass model removal.
 
-### 3.5 No silent cross-channel fallback
+### 3.5 Cross-instance price-sync lock
+
+Generic/New API and XXAPI channel price syncs now claim a database-backed
+`channel_price_sync:<id>` lock before fetching or writing. A second instance
+returns `ErrPricingSyncInProgress` instead of writing a competing snapshot; the
+lock is released when the sync finishes.
+
+### 3.6 No silent cross-channel fallback
 
 `model.ChannelUsesScopedPricing(channelID)` marks channels that already have
 `channel_model_pricing` rows. For those channels, a missing model row now

@@ -145,6 +145,14 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	if channel == nil {
 		return 0, 0, "", errors.New("channel is required")
 	}
+	release, acquired, lockErr := acquireChannelPricingSyncLock(channel.Id)
+	if lockErr != nil {
+		return 0, 0, "", lockErr
+	}
+	if !acquired {
+		return 0, 0, "", ErrPricingSyncInProgress
+	}
+	defer release()
 	apiKey, _, keyErr := channel.GetNextEnabledKey()
 	if keyErr != nil || strings.TrimSpace(apiKey) == "" {
 		return 0, 0, "", errors.New("xxapi channel has no usable API key")
@@ -193,6 +201,7 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 		}
 		applyGenericGroupPurchaseCost(channel.Id, payload, records)
 	}
+	AutoVerifyChannelPricing(channel.Id)
 	return written, ratio, groupName, nil
 }
 
