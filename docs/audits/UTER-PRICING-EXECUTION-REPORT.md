@@ -53,6 +53,35 @@
 - DreamRouter: 86 records, 54 executable, 32 intentional review.
 - Bailian: 275 catalog models, 134 records, 105 internal prices.
 
+## Three-channel live validation (2026-11-23)
+
+Definition used: official price = model vendor's published list price; channel
+price = the selected upstream channel's published price after its group
+discount; Uter price = channel price × 1.10 unless an operator price exists.
+
+| Channel | Rows | Configured / review | Evidence |
+|---|---:|---:|---|
+| DreamRouter `32` (优特渠道) | 86 | 86 / 0 | `claude-fable-5`: expression `p*10+c*50+cr*1+cc*12.5+cc1h*20`, group `default` 0.6 → channel `6 / 30`, cache `0.6`, cache write `7.5`; Uter `6.6 / 33`, cache `0.66`, cache write `8.25` |
+| Alibaba Bailian `34` | 134 | 122 / 12 | 33 auto `bailian-channel` prices plus 89 operator `batch` prices; auto flat and tiered prices all include the 1.10 markup |
+| Alibaba Bailian `62` (new draft channel) | 3 | 1 / 2 | `MiniMax-M2.5`: channel `0.31390134529147984 / 1.2556053811659194`, Uter `0.34529147982062786 / 1.3811659192825114` (exact ×1.10); `qwen-plus` / `qwen-flash` stay review-only because the catalogue publishes both implicit cache-hit and explicit cache-read prices |
+| XXAPI `54`–`60` | 68 | 68 / 0 | All executable expressions refreshed to `(base × 1.10) × group`; `54` (`Claude-kiro` 0.9): channel `1.8 / 9`, Uter `(base × 1.10) × 0.9` = `1.98 / 9.9` |
+
+Commands used:
+
+```bash
+go run /tmp/uter_xxapi_refresh.go      # refresh XXAPI with the application sync path
+go run /tmp/uter_dreamrouter_refresh.go # refresh DreamRouter channel 32
+bunx vitest run src/features/channels/components/__tests__/channel-pricing-panel.test.tsx
+make test
+./scripts/verify-all.sh --quick
+```
+
+Results: `make test` exit 0; quick gates 9 PASS / 0 FAIL / 4 SKIP; the frontend
+pricing panel test 5/5 passed. A workspace-enabled `go test ./controller`
+selection still fails `TestManageUserQuotaMiddlewareKeepsOneOperationPerRequest`
+because a legacy token is rejected; the same package passes under the project
+gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
+
 ## Historical data snapshot
 
 - 711 channel pricing rows total.
