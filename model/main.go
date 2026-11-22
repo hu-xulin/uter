@@ -438,6 +438,14 @@ func migrateDB() error {
 	if err := MigrateSchemaUp(DB); err != nil {
 		return fmt.Errorf("versioned schema migration failed: %w", err)
 	}
+	// Enforce the price-review hard gate on every startup: a historical
+	// automatic sale price attached to a review-only record must never stay
+	// billable after a deploy.
+	if cleared, gateErr := EnforcePricingReviewGate(); gateErr != nil {
+		common.SysError(fmt.Sprintf("enforce pricing review gate failed: %v", gateErr))
+	} else if cleared > 0 {
+		common.SysLog(fmt.Sprintf("pricing review gate cleared %d automatic sale prices", cleared))
+	}
 	if err := InitializeUserAuthVersions(); err != nil {
 		return err
 	}
