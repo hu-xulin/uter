@@ -45,7 +45,12 @@ export function applyChannelView(
     }
     const merged = applyChannelPrice(model, channelPrice)
     if (channelPrice.quota_type !== 4) {
-      official[model.model_name] = officialEntry(channelPrice)
+      const entry = officialEntry(channelPrice)
+      // A channel row without official fields must not wipe the catalogue's
+      // official price; it only replaces the reference when it has one.
+      if (Object.keys(entry).length > 0) {
+        official[model.model_name] = entry
+      }
     }
     return merged
   })

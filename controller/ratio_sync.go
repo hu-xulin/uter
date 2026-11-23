@@ -1540,8 +1540,9 @@ func getPresetModelRatiosNonBlocking(presetID int) map[string]map[string]float64
 	}
 	data := clonePresetModelRatios(entry.data)
 	stale := time.Since(entry.fetchedAt) >= presetRatioCacheTTL
+	empty := len(entry.data) == 0
 	presetRatioCacheMu.Unlock()
-	if stale {
+	if stale || empty {
 		ensurePresetFreshAsync(presetID)
 	}
 	return data
@@ -1576,7 +1577,13 @@ func doRefreshPreset(presetID int) {
 
 	data := fetchPresetModelRatios(presetID)
 	presetRatioCacheMu.Lock()
-	presetRatioCache[presetID] = &presetRatioCacheEntry{data: data, fetchedAt: time.Now()}
+	if len(data) > 0 {
+		presetRatioCache[presetID] = &presetRatioCacheEntry{data: data, fetchedAt: time.Now()}
+	} else if entry, ok := presetRatioCache[presetID]; ok {
+		// Keep the last good catalogue; a transient fetch failure must not
+		// replace official prices with an empty map for a whole TTL.
+		entry.fetchedAt = time.Now()
+	}
 	presetRatioCacheMu.Unlock()
 
 	presetRefreshMu.Lock()

@@ -152,3 +152,20 @@ describe('applyChannelView', () => {
     })
   })
 })
+
+it('keeps the catalogue official price when a channel row has no official basis', () => {
+  const input = [
+    model({
+      channel_prices: {
+        阿里百炼: {
+          name: '阿里百炼',
+          quota_type: -1,
+          status: 'needs_review',
+        },
+      },
+    }),
+  ]
+  const preset = { 'text-model': { model_ratio: 1.5, completion_ratio: 3 } }
+  const result = applyChannelView(input, '阿里百炼', preset, ALL)
+  expect(result.officialPrices['text-model']).toEqual(preset['text-model'])
+})
