@@ -55,7 +55,7 @@ func resolveAuth(meta pluginruntime.AuthMeta, apiKey, proxy string) (map[string]
 // 声明的 auth 类型解析，oauth2_jwt 的原始凭据（服务账号 JSON）绝不能透给插件，
 // 那里面是可长期使用的签名密钥。
 func (a *TaskAdaptor) upstreamAuth(key, proxy string) (upstream, auth map[string]any, apiKey any, err error) {
-	if a.info != nil && a.info.ChannelMeta != nil && a.info.ChannelMeta.ChannelType == constant.ChannelTypeNewAPI {
+	if a.info != nil && a.info.ChannelMeta != nil && constant.IsNewAPICompatibleChannelType(a.info.ChannelMeta.ChannelType) {
 		return map[string]any{"kind": pluginruntime.UpstreamKindNewAPI},
 			map[string]any{"authHeader": "Bearer " + key},
 			key, nil
@@ -118,7 +118,7 @@ func (a *TaskAdaptor) applyUpstreamAuth(ctx map[string]any, key, proxy string) e
 // serves (meta.channelTypes) the channel's raw other setting as channelOther.
 func (a *TaskAdaptor) applyChannelContext(ctx map[string]any, channelType int) {
 	ctx["config"] = map[string]any{}
-	if a.info == nil || !a.info.HasChannelMeta() || a.info.ChannelId == 0 || channelType == constant.ChannelTypeNewAPI {
+	if a.info == nil || !a.info.HasChannelMeta() || a.info.ChannelId == 0 || constant.IsNewAPICompatibleChannelType(channelType) {
 		return
 	}
 	channel, err := model.CacheGetChannel(a.info.ChannelId)

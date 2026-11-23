@@ -836,6 +836,31 @@ test('searching a known type number selects that type and an unknown positive nu
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
 })
 
+test('creation shows distinct numbers for Uter and Uter.api', async () => {
+  const user = userEvent.setup()
+  render(
+    <ChannelProviderPicker
+      isCreating
+      plugins={[]}
+      canBindPlugin={false}
+      loading={false}
+      failed={false}
+      disabled={false}
+      onRetry={vi.fn()}
+      onSelect={vi.fn()}
+    />
+  )
+
+  const search = screen.getByRole('combobox')
+  await user.type(search, 'Uter')
+  expect(
+    screen.getByRole('option', { name: 'Uter Built-in #60' })
+  ).toBeVisible()
+  const uterApi = screen.getByRole('option', { name: /Uter\.api/ })
+  expect(within(uterApi).getByText('#64')).toBeVisible()
+  expect(within(uterApi).queryByText('#60')).not.toBeInTheDocument()
+})
+
 test('an empty plugin filter reports that no plugins can be bound', async () => {
   const user = userEvent.setup()
   render(

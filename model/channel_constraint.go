@@ -106,7 +106,7 @@ func channelMatchesFilter(ch *Channel, modelName string, filter dto.ChannelFilte
 		if filter.TaskPluginKey == "" {
 			return ch.Type != constant.ChannelTypeTaskPlugin
 		}
-		if ch.Type == constant.ChannelTypeTaskPlugin || ch.Type == constant.ChannelTypeNewAPI {
+		if ch.Type == constant.ChannelTypeTaskPlugin || constant.IsNewAPICompatibleChannelType(ch.Type) {
 			// A New API channel serves every plugin it is extended with; the
 			// pinned plugin or any shared-model candidate may execute there.
 			setting := ch.GetSetting()
@@ -118,7 +118,7 @@ func channelMatchesFilter(ch *Channel, modelName string, filter dto.ChannelFilte
 			return false
 		}
 		switch ch.Type {
-		case constant.ChannelTypeOpenAI, constant.ChannelTypeCodex, constant.ChannelTypeSub2API, constant.ChannelTypeNewAPI:
+		case constant.ChannelTypeOpenAI, constant.ChannelTypeCodex, constant.ChannelTypeSub2API, constant.ChannelTypeNewAPI, constant.ChannelTypeUterAPI:
 			return true
 		case constant.ChannelTypeAdvancedCustom:
 			// The session forwards native Responses events without protocol

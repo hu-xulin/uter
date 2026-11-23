@@ -21,8 +21,29 @@ import { describe, expect, test } from 'vitest'
 import {
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
+  CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
   channelTypeOptionsForTaskPluginBind,
 } from '../../constants'
+
+describe('channel type numbering', () => {
+  test('every option number is unique', () => {
+    const numbers = CHANNEL_TYPE_OPTIONS.map((option) => option.value)
+
+    expect(new Set(numbers).size).toBe(numbers.length)
+  })
+
+  test('Uter and Uter.api use distinct numbers and labels', () => {
+    expect(CHANNEL_TYPE_UTER).toBe(60)
+    expect(CHANNEL_TYPE_UTER_API).toBe(64)
+    const labels = new Map(
+      CHANNEL_TYPE_OPTIONS.map((option) => [option.value, option.label])
+    )
+
+    expect(labels.get(CHANNEL_TYPE_UTER)).toBe('Uter')
+    expect(labels.get(CHANNEL_TYPE_UTER_API)).toBe('Uter.api')
+  })
+})
 
 describe('channel type options for task plugin bind', () => {
   test('hides the task plugin type when the caller cannot bind', () => {

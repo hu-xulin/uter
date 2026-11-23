@@ -627,10 +627,10 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 	}
 
 	setting := channel.GetSetting()
-	if channel.Type != constant.ChannelTypeNewAPI && len(setting.TaskExtendPluginKeys) > 0 {
+	if !constant.IsNewAPICompatibleChannelType(channel.Type) && len(setting.TaskExtendPluginKeys) > 0 {
 		return fmt.Errorf("task_extend_plugin_keys is only supported on New API channels")
 	}
-	if channel.Type == constant.ChannelTypeNewAPI {
+	if constant.IsNewAPICompatibleChannelType(channel.Type) {
 		if len(setting.TaskExtendPluginKeys) > maxTaskExtendPluginKeys {
 			return fmt.Errorf("task_extend_plugin_keys must not exceed %d plugins", maxTaskExtendPluginKeys)
 		}
@@ -662,7 +662,7 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 		}
 	}
 
-	if channel.Type == constant.ChannelTypeNewAPI && strings.TrimSpace(channel.GetBaseURL()) == "" {
+	if constant.IsNewAPICompatibleChannelType(channel.Type) && strings.TrimSpace(channel.GetBaseURL()) == "" {
 		return fmt.Errorf("New API channel base URL cannot be empty")
 	}
 	if channel.Type == constant.ChannelTypeVLLM && strings.TrimSpace(channel.GetBaseURL()) == "" {

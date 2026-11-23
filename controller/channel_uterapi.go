@@ -98,7 +98,7 @@ func CreateUterAPIChannels(c *gin.Context) {
 			continue
 		}
 		channel := model.Channel{
-			Type: constant.ChannelTypeNewAPI, Name: name, BaseURL: &base, Key: strings.Join(usableKeys, "\n"),
+			Type: constant.ChannelTypeUterAPI, Name: name, BaseURL: &base, Key: strings.Join(usableKeys, "\n"),
 			Models: strings.Join(models, ","), Group: group, Status: status,
 			CreatedTime: common.GetTimestamp(),
 		}

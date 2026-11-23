@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -90,6 +91,8 @@ func TestCreateUterAPIChannelsCreatesOneChannelPerSlot(t *testing.T) {
 	codex := byName["Uter.api-codex-标准"]
 	require.NotNil(t, claude)
 	require.NotNil(t, codex)
+	assert.Equal(t, constant.ChannelTypeUterAPI, claude.Type)
+	assert.Equal(t, constant.ChannelTypeUterAPI, codex.Type)
 	assert.Equal(t, "claude-a", claude.Models)
 	assert.Equal(t, "gpt-a", codex.Models)
 	claudeSettings := claude.GetOtherSettings()

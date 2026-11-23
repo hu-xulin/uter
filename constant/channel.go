@@ -56,15 +56,26 @@ const (
 	ChannelTypeCodex          = 57
 	ChannelTypeAdvancedCustom = 58
 	ChannelTypeSub2API        = 59
-	ChannelTypeUter           = 60 // 中继到另一个 Uter 实例；上游同义类型称 New API
-	ChannelTypeNewAPI         = 60 // 上游 rc.38+ 命名，与 Uter 等价（「中继到同类平台实例」）
-	ChannelTypeTaskPlugin     = 61 // 上游同样定义为 61
-	ChannelTypeVLLM           = 62 // 采用上游编号（rc.38+ 起上游为 62）
-	ChannelTypeSGLang         = 63 // 采用上游编号（rc.38+ 起上游为 63）
+	ChannelTypeUter           = 60              // 中继到 Uter.ai 实例；协议与上游 New API 相同
+	ChannelTypeNewAPI         = ChannelTypeUter // 上游 rc.38+ 对同类中继渠道的命名
+	ChannelTypeTaskPlugin     = 61              // 上游同样定义为 61
+	ChannelTypeVLLM           = 62              // 采用上游编号（rc.38+ 起上游为 62）
+	ChannelTypeSGLang         = 63              // 采用上游编号（rc.38+ 起上游为 63）
+	// ChannelTypeUterAPI is the Uter.api gateway channel. It speaks the same
+	// New API relay protocol as ChannelTypeUter but keeps a distinct channel
+	// type number so the two offerings never share an identifier.
+	ChannelTypeUterAPI = 64
 	// ChannelTypeDummy is the upper bound used by the channel-type loops in
 	// controller/model.go. It must cover every supported channel type.
-	ChannelTypeDummy = ChannelTypeSGLang
+	ChannelTypeDummy = ChannelTypeUterAPI
 )
+
+// IsNewAPICompatibleChannelType reports whether a channel speaks the upstream
+// New API relay protocol. Uter.ai (ChannelTypeUter) and Uter.api
+// (ChannelTypeUterAPI) are distinct channel types with identical semantics.
+func IsNewAPICompatibleChannelType(channelType int) bool {
+	return channelType == ChannelTypeUter || channelType == ChannelTypeUterAPI
+}
 
 // IsAdvancedCustomChannelType reports whether the channel type behaves like an
 // "Advanced Custom" channel (type 58) for routing, billing, pricing, model
@@ -152,6 +163,7 @@ var ChannelBaseURLs = []string{
 	// 模型列表当成该渠道的真实状态展示。留空则由地址校验明确拒绝。
 	"", //62 vLLM
 	"", //63 SGLang
+	"", //64 Uter.api（地址由系统配置或用户填写）
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -221,6 +233,7 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeTaskPlugin:     "Task Plugin",
 	ChannelTypeVLLM:           "vLLM",
 	ChannelTypeSGLang:         "SGLang",
+	ChannelTypeUterAPI:        "Uter.api",
 }
 
 func GetChannelTypeName(channelType int) string {

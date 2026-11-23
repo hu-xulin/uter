@@ -34,7 +34,7 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 	// A Uter channel is Uter's own upstream contract even when its Base URL
 	// points at a UterRoute-compatible relay. Its price dimensions are fully
 	// supported by Uter's own pricing engine.
-	case channelType == constant.ChannelTypeUter:
+	case constant.IsNewAPICompatibleChannelType(channelType):
 		return uterProviderDescriptor()
 	case IsUterRouteHost(baseURL):
 		id = "uterroute"

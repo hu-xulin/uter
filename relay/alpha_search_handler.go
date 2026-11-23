@@ -25,6 +25,7 @@ func AlphaSearchHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError
 	switch info.ChannelType {
 	case constant.ChannelTypeSub2API,
 		constant.ChannelTypeNewAPI,
+		constant.ChannelTypeUterAPI,
 		constant.ChannelTypeCodex,
 		constant.ChannelTypeAdvancedCustom:
 	default:

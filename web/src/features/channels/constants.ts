@@ -27,9 +27,14 @@ export const CHANNEL_PRIORITY_GUIDE_KEYS = {
 
 export const CHANNEL_TYPE_UTER = 60
 
-// New API relay (connect to another new-api/Uter instance) shares type 60 with
-// Uter; exported to match the Go backend (constant.ChannelTypeNewAPI) and new-api.
-export const CHANNEL_TYPE_NEW_API = 60
+// Uter.api is a New API-compatible relay with its own channel type number so
+// it never shares an identifier with Uter.ai (type 60).
+export const CHANNEL_TYPE_UTER_API = 64
+export const CHANNEL_TYPE_NEW_API = CHANNEL_TYPE_UTER_API
+export const NEW_API_COMPATIBLE_CHANNEL_TYPES: ReadonlySet<number> = new Set([
+  CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
+])
 
 export const CHANNEL_TYPE_TASK_PLUGIN = 61
 
@@ -101,6 +106,7 @@ export const CHANNEL_TYPES = {
   61: 'Task Plugin',
   62: 'vLLM',
   63: 'SGLang',
+  64: 'Uter.api',
 } as const
 
 export type ChannelProviderPresentation = {
@@ -180,6 +186,9 @@ export const CHANNEL_PROVIDER_PRESENTATION: Partial<
   },
   63: {
     descriptionKey: 'Connect to self-hosted models served by SGLang',
+  },
+  64: {
+    descriptionKey: 'Connect to model services through the Uter.api gateway',
   },
 } satisfies Record<
   Exclude<keyof typeof CHANNEL_TYPES, 0 | typeof CHANNEL_TYPE_TASK_PLUGIN>,
@@ -457,7 +466,7 @@ export const FIELD_DESCRIPTIONS = {
 
 export const MODEL_FETCHABLE_TYPES = new Set([
   1, 4, 14, 17, 20, 23, 24, 25, 26, 27, 31, 34, 35, 40, 42, 43, 47, 48, 57, 58,
-  59, 60, 62, 63,
+  59, 60, 62, 63, 64,
 ])
 
 export const FIELD_PASSTHROUGH_TYPES = new Set([
@@ -467,6 +476,7 @@ export const FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
 ])
 
 export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -475,6 +485,7 @@ export const OPENAI_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
 ])
 
 export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
@@ -482,6 +493,7 @@ export const CLAUDE_FIELD_PASSTHROUGH_TYPES = new Set([
   58,
   59,
   CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
 ])
 
 // Channel types without a public balance API. The row action is hidden so an
@@ -499,6 +511,7 @@ export const TYPE_TO_KEY_PROMPT: Record<number, string> = {
   57: 'Paste Codex OAuth JSON credential (access_token / refresh_token / account_id)',
   59: 'Enter API key for this channel',
   60: 'Enter API key for this channel',
+  64: 'Enter API key for this channel',
   62: 'vLLM API key, or EMPTY if authentication is disabled',
   63: 'SGLang API key, or EMPTY if authentication is disabled',
 }

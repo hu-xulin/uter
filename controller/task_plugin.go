@@ -600,7 +600,7 @@ func SetTaskPluginStatus(c *gin.Context) {
 		}
 		if cascade {
 			for _, channel := range channels {
-				if channel.Type == constant.ChannelTypeNewAPI {
+				if constant.IsNewAPICompatibleChannelType(channel.Type) {
 					// A gateway channel also carries ordinary traffic, so the
 					// cascade only drops this plugin from its bindings.
 					unbound, unbindErr := model.UnbindTaskPlugin(channel.Id, key)

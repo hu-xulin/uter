@@ -262,7 +262,7 @@ func channelMatchesExpectedTaskPlugin(c *gin.Context, channel *model.Channel, ex
 	if expected == "" {
 		return true
 	}
-	if channel.Type == constant.ChannelTypeNewAPI {
+	if constant.IsNewAPICompatibleChannelType(channel.Type) {
 		return channel.GetSetting().BindsTaskPlugin(expected)
 	}
 
@@ -302,7 +302,7 @@ func pinnedEndpointCandidateForChannel(c *gin.Context, channel *model.Channel, e
 		}
 		// 类型 60/61 都按「渠道绑定了哪些插件」来判定：60 额外认扩展插件列表。
 		// 共享端点上多个候选插件服务同一模型时，实际执行的是该渠道绑定的那一个。
-		if channel.Type == constant.ChannelTypeTaskPlugin || channel.Type == constant.ChannelTypeNewAPI {
+		if channel.Type == constant.ChannelTypeTaskPlugin || constant.IsNewAPICompatibleChannelType(channel.Type) {
 			// 渠道同时绑住多个候选插件时，取**候选顺序里的第一个**：
 			// 候选表按注册/排序优先级生成，先到者优先，这样同一组绑定下的
 			// 选择是确定的，不受钉住插件的先后影响。

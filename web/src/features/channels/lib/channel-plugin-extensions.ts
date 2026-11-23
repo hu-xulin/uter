@@ -19,8 +19,10 @@ For commercial licensing, please contact support@uter.ai
 import type { TaskPluginOption } from '../api'
 import {
   CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_UTER_API,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
+  NEW_API_COMPATIBLE_CHANNEL_TYPES,
 } from '../constants'
 import type { ChannelSettings } from '../types'
 
@@ -54,7 +56,7 @@ export function readTaskExtendPluginKeys(
     | null
     | undefined
 ): string[] {
-  if (channelType !== CHANNEL_TYPE_UTER || !setting) return []
+  if (!NEW_API_COMPATIBLE_CHANNEL_TYPES.has(channelType) || !setting) return []
   const keys = Array.isArray(setting.task_extend_plugin_keys)
     ? setting.task_extend_plugin_keys.filter(
         (key): key is string => typeof key === 'string' && key.trim() !== ''
@@ -82,7 +84,7 @@ export function getChannelPluginExtensions(
   extendPluginKeys: readonly string[] = []
 ): TaskPluginOption[] {
   if (!supportsChannelPluginExtensions(channelType)) return []
-  if (channelType === CHANNEL_TYPE_UTER) {
+  if (channelType === CHANNEL_TYPE_UTER || channelType === CHANNEL_TYPE_UTER_API) {
     return plugins.filter((plugin) => extendPluginKeys.includes(plugin.key))
   }
   return plugins.filter((plugin) => plugin.channelTypes?.includes(channelType))

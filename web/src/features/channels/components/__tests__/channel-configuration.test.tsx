@@ -255,7 +255,9 @@ test('changing built-in providers updates server-provided URL placeholders witho
   expect(geminiAddress).toHaveValue('')
 
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
-  await user.click(screen.getByRole('option', { name: /^Uter / }))
+  await user.click(
+    screen.getByRole('option', { name: /^Uter Built-in #60$/ })
+  )
   expect(screen.getByRole('textbox', { name: 'Base URL' })).toHaveAttribute(
     'placeholder',
     'Leave empty to use default'
@@ -1817,7 +1819,7 @@ test('Uter.api create uses six steps and creates one chosen group at a time', as
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
   await user.click(
-    await screen.findByRole('option', { name: /Uter\.api.*#60/i })
+    await screen.findByRole('option', { name: /Uter\.api.*#64/i })
   )
 
   const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent)
@@ -1845,7 +1847,7 @@ test('Uter.api connection picks one group and one key box', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
   await user.click(
-    await screen.findByRole('option', { name: /Uter\.api.*#60/i })
+    await screen.findByRole('option', { name: /Uter\.api.*#64/i })
   )
 
   await user.click(screen.getByRole('combobox', { name: 'Group' }))

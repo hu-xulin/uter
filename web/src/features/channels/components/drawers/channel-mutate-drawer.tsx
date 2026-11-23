@@ -162,6 +162,7 @@ import {
   FIELD_DESCRIPTIONS,
   FIELD_PLACEHOLDERS,
   MODEL_FETCHABLE_TYPES,
+  NEW_API_COMPATIBLE_CHANNEL_TYPES,
   OPENAI_FIELD_PASSTHROUGH_TYPES,
 } from '../../constants'
 import { useChannelKeyDisclosure } from '../../hooks/use-channel-key-disclosure'
@@ -3772,7 +3773,7 @@ export function ChannelMutateDrawer({
             </section>
           )}
           <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
-            {currentType === CHANNEL_TYPE_NEW_API &&
+            {NEW_API_COMPATIBLE_CHANNEL_TYPES.has(currentType) &&
               canBindTaskPlugin &&
               taskPluginOptionsQuery.isSuccess &&
               !showProviderPicker && (

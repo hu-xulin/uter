@@ -170,6 +170,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         // Keep legacy Zhipu available when editing existing channels.
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
+        // Uter.api has a dedicated card with its group/key setup; the plain
+        // built-in entry would duplicate it during creation.
+        if (props.isCreating && option.value === CHANNEL_TYPE_NEW_API) continue
         if (replacedTypes.has(option.value)) continue
         const isCustom = option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
         const isGateway =

@@ -21,6 +21,7 @@ import { z } from 'zod'
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_TASK_PLUGIN,
   CHANNEL_TYPE_VLLM,
@@ -29,6 +30,7 @@ import {
   ERROR_MESSAGES,
   FIELD_PASSTHROUGH_TYPES,
   MODEL_FETCHABLE_TYPES,
+  NEW_API_COMPATIBLE_CHANNEL_TYPES,
   OPENAI_FIELD_PASSTHROUGH_TYPES,
 } from '../constants'
 import type { Channel } from '../types'
@@ -314,6 +316,7 @@ export const channelFormSchema = z
         36,
         45,
         CHANNEL_TYPE_NEW_API,
+        CHANNEL_TYPE_UTER,
         CHANNEL_TYPE_TASK_PLUGIN,
         CHANNEL_TYPE_VLLM,
         CHANNEL_TYPE_SGLANG,
@@ -706,7 +709,7 @@ export function buildSettingJSON(formData: ChannelFormValues): string {
         : undefined,
     pricing_engine: formData.pricing_engine || undefined,
     task_extend_plugin_keys:
-      formData.type === CHANNEL_TYPE_NEW_API &&
+      NEW_API_COMPATIBLE_CHANNEL_TYPES.has(formData.type) &&
       formData.task_extend_plugin_keys?.length
         ? formData.task_extend_plugin_keys
         : undefined,
