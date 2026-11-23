@@ -402,6 +402,10 @@
     "Channel price": "Giá kênh",
     "Per minute": "Mỗi phút",
     "Additional service price": "Giá dịch vụ bổ sung",
+    "Failed to prepare the draft channel": "Không thể chuẩn bị kênh nháp",
+    "Preparing the draft channel...": "Đang chuẩn bị kênh nháp…",
+    "Failed to fetch prices from the catalog": "Không thể lấy giá từ danh mục",
+    "A draft channel is created automatically to fetch prices.": "Kênh nháp được tạo tự động để lấy giá.",
     "Fetched prices": "Giá đã lấy",
     "Official and channel prices from the synced catalog.": "Giá chính thức và giá kênh lấy từ danh mục đã đồng bộ.",
     "No prices fetched yet. Sync the channel catalog first.": "Chưa lấy được giá. Hãy đồng bộ danh mục kênh trước.",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "Nguồn (Uter Route)",
     "Two-factor authentication enrollment": "Đăng ký xác thực hai yếu tố",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Cho phép người dùng bật xác thực hai yếu tố trong Bảo mật & Truy cập. Các liên kết hiện có vẫn hoạt động khi tắt tùy chọn này."
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Cho phép người dùng bật xác thực hai yếu tố trong Bảo mật & Truy cập. Các liên kết hiện có vẫn hoạt động khi tắt tùy chọn này.",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "Làm mới danh mục và giá chính thức/giá kênh từ nguồn theo chu kỳ này. Giá bán đã đặt trong Cấu hình giá sẽ không bao giờ bị thay đổi.",
+    "Refresh upstream data automatically.": "Tự động làm mới dữ liệu nguồn.",
+    "Automatic update cadence saved": "Đã lưu chu kỳ tự động cập nhật",
+    "Failed to save the automatic update cadence": "Không lưu được chu kỳ tự động cập nhật",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "Mỗi kênh nhóm được tạo sẽ kiểm tra thay đổi mô hình từ nguồn và tự động đồng bộ. Giá bán giữ nguyên đúng như đã đặt trong Cấu hình giá; tự động cập nhật chỉ làm mới danh mục và dữ liệu giá từ nguồn.",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "Phát hiện mô hình nguồn là chủ sở hữu duy nhất của danh sách mô hình kênh: nó thêm mô hình mới và báo mô hình bị gỡ. Chu kỳ bên dưới chỉ làm mới danh mục và giá chính thức/giá kênh. Giá bán được đặt một lần trong Cấu hình giá và không bao giờ bị thay đổi ở đây."
   }
 }

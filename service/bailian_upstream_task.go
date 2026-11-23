@@ -158,7 +158,6 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 		schedule, explicit := GetChannelPricingSchedule(channel.Id)
 		if !explicit {
 			schedule.Enabled = true
-			schedule.ApplyOnSync = true
 		}
 		_, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
@@ -235,25 +234,9 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 					continue
 				}
 			}
-			// Configure every model that has one unambiguous catalog price so a
-			// scheduled sync never leaves the channel waiting for a manual click.
-			// Operator prices keep their source and are skipped.
-			if _, _, seedErr := SeedBailianInternalPricing(channel.Id, channel.GetModels(), false); seedErr != nil {
-				fail(fmt.Errorf("auto configure prices: %w", seedErr))
-				continue
-			}
-			if _, clearErr := model.ClearAutoDerivedInternalExcept(channel.Id, "alibaba-bailian", channel.GetModels(), "bailian-"); clearErr != nil {
-				fail(fmt.Errorf("clear stale auto prices: %w", clearErr))
-				continue
-			}
+			// Automatic updates refresh catalog and official price data only.
+			// Sale prices are configured explicitly in the pricing step.
 			AutoVerifyChannelPricing(channel.Id)
-
-			if item.schedule.Enabled && item.schedule.ApplyOnSync {
-				item.schedule.Basis = BatchPricingBasisChannel
-				applied, reviewCount := applyProviderSyncSchedule(channel.Id, item.schedule, changes)
-				status.Scheduled += applied
-				status.Reviews += reviewCount
-			}
 			summary, _ := common.Marshal(map[string]any{
 				"models": len(catalog.Models), "written": written, "changes": len(changes),
 			})
@@ -287,30 +270,6 @@ func recordBailianSyncFailure(state *uterRouteChannelSyncState, now time.Time) {
 		backoff = time.Hour
 	}
 	state.NextAttemptAt = now.Add(backoff).Unix()
-}
-
-func applyProviderSyncSchedule(channelID int, schedule ChannelPricingSchedule, changes []UpstreamPriceChange) (int, int) {
-	if schedule.ReviewMode == "manual" {
-		reviews := BuildChannelPricingReviews(changes, channelID, nil, schedule.ThresholdPercent)
-		if len(reviews) > 0 {
-			if err := AppendChannelPricingReviews(reviews); err != nil {
-				common.SysError("append bailian pricing reviews failed: " + err.Error())
-			}
-			return 0, len(reviews)
-		}
-	}
-	basis := schedule.Basis
-	if basis == "" {
-		basis = BatchPricingBasisOfficial
-	}
-	result, err := ApplyChannelBatchPricingWithOptions(channelID, BatchPricingOptions{
-		Basis: basis, Mode: schedule.Mode, Value: schedule.Value,
-	})
-	if err != nil {
-		common.SysError("apply bailian scheduled pricing failed: " + err.Error())
-		return 0, 0
-	}
-	return result.Updated, 0
 }
 
 func bailianUpstreamChannels() []*model.Channel {

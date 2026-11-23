@@ -25,13 +25,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -40,14 +33,13 @@ import {
   setChannelPricingSchedule,
   type ChannelPricingSchedule,
 } from '../api'
-import { PRICING_MODES } from '../lib/pricing-schedule'
 
 const defaultSchedule: ChannelPricingSchedule = {
   enabled: false,
   basis: 'official',
   mode: 'multiply',
   value: 0.6,
-  apply_on_sync: true,
+  apply_on_sync: false,
   interval_minutes: 5,
   review_mode: 'auto',
   threshold_percent: 20,
@@ -56,20 +48,24 @@ const defaultSchedule: ChannelPricingSchedule = {
   channel_sync_interval_minutes: 60,
 }
 
-function scheduleNumberValid(text: string): boolean {
+function intervalValid(text: string): boolean {
   const trimmed = text.trim()
   if (trimmed === '') return false
   const value = Number(trimmed)
-  return Number.isFinite(value) && value >= 0
+  return Number.isInteger(value) && value >= 0
 }
 
 type ChannelPricingScheduleSectionProps = {
   channelId: number | null
-  baseUrl: string
-  /** False renders nothing (create wizard keeps it in the Automatic updates step). */
+  /** Kept for callers that share the pricing step; sync cadence has no host dependency. */
+  baseUrl?: string
+  /** False renders nothing (create wizard renders it in the Automatic updates step). */
   show?: boolean
 }
 
+// The schedule only refreshes upstream catalog and official/channel price
+// data. Sale prices are owned by the pricing step and are never re-derived
+// or overwritten here.
 export function ChannelPricingScheduleSection(
   props: ChannelPricingScheduleSectionProps
 ) {
@@ -77,15 +73,8 @@ export function ChannelPricingScheduleSection(
   const queryClient = useQueryClient()
   const [schedule, setSchedule] =
     useState<ChannelPricingSchedule>(defaultSchedule)
-  // Numeric fields keep the typed text so a decimal point survives the
-  // keystroke that has no digits after it yet ("0." must not collapse to "0").
-  const [scheduleValueText, setScheduleValueText] = useState('0.6')
-  const [thresholdText, setThresholdText] = useState('20')
-
-  const normalizedBaseUrl = props.baseUrl.toLowerCase()
-  const isBailian =
-    normalizedBaseUrl.includes('.maas.aliyuncs.com') ||
-    normalizedBaseUrl.includes('dashscope')
+  const [officialInterval, setOfficialInterval] = useState('1440')
+  const [channelInterval, setChannelInterval] = useState('60')
 
   const scheduleQuery = useQuery({
     queryKey: ['channel-pricing-schedule', props.channelId],
@@ -98,34 +87,31 @@ export function ChannelPricingScheduleSection(
   useEffect(() => {
     const saved = scheduleQuery.data?.schedule
     if (!saved) return
-    setSchedule({ ...defaultSchedule, ...saved })
-    setScheduleValueText(String(saved.value ?? defaultSchedule.value))
-    setThresholdText(String(saved.threshold_percent ?? 20))
+    const loaded = { ...defaultSchedule, ...saved }
+    setSchedule(loaded)
+    setOfficialInterval(String(loaded.official_sync_interval_minutes))
+    setChannelInterval(String(loaded.channel_sync_interval_minutes))
   }, [scheduleQuery.data])
-
-  useEffect(() => {
-    if (isBailian) {
-      setSchedule((current) => ({ ...current, basis: 'channel' }))
-    }
-  }, [isBailian])
 
   const saveSchedule = useMutation({
     mutationFn: () =>
       setChannelPricingSchedule(props.channelId ?? 0, {
         ...schedule,
-        basis: isBailian ? 'channel' : schedule.basis,
-        value: Number(scheduleValueText),
-        threshold_percent: Number(thresholdText),
+        official_sync_interval_minutes: Number(officialInterval),
+        channel_sync_interval_minutes: Number(channelInterval),
         interval_minutes: 5,
       }),
     onSuccess: () => {
-      toast.success(t('Pricing schedule saved'))
+      toast.success(t('Automatic update cadence saved'))
       void queryClient.invalidateQueries({
         queryKey: ['channel-pricing-schedule', props.channelId],
       })
     },
     onError: (error) =>
-      handleServerError(error, t('Failed to save pricing schedule')),
+      handleServerError(
+        error,
+        t('Failed to save the automatic update cadence')
+      ),
   })
 
   if (props.show === false) {
@@ -133,14 +119,16 @@ export function ChannelPricingScheduleSection(
   }
 
   const disabled = props.channelId == null
+  const valid =
+    intervalValid(officialInterval) && intervalValid(channelInterval)
 
   return (
     <section className='space-y-3 rounded-lg border p-3'>
       <div>
-        <Label>{t('Scheduled price update')}</Label>
+        <Label>{t('Automatic updates')}</Label>
         <p className='text-muted-foreground text-sm'>
           {t(
-            'Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.'
+            'Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.'
           )}
         </p>
       </div>
@@ -148,6 +136,7 @@ export function ChannelPricingScheduleSection(
         <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
           <Switch
             checked={schedule.enabled}
+            disabled={disabled}
             onCheckedChange={(checked) =>
               setSchedule((current) => ({ ...current, enabled: checked }))
             }
@@ -155,150 +144,9 @@ export function ChannelPricingScheduleSection(
           <div className='space-y-0.5'>
             <Label>{t('Enabled')}</Label>
             <p className='text-muted-foreground text-sm'>
-              {t('Save a pricing rule for this channel.')}
+              {t('Refresh upstream data automatically.')}
             </p>
           </div>
-        </div>
-        <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
-          <Switch
-            checked={schedule.apply_on_sync}
-            onCheckedChange={(checked) =>
-              setSchedule((current) => ({
-                ...current,
-                apply_on_sync: checked,
-              }))
-            }
-          />
-          <div className='space-y-0.5'>
-            <Label>{t('Apply after each upstream sync')}</Label>
-            <p className='text-muted-foreground text-sm'>
-              {t(
-                'When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.'
-              )}
-            </p>
-          </div>
-        </div>
-
-        <div className='space-y-1.5'>
-          <Label htmlFor='schedule-basis'>{t('Price basis')}</Label>
-          <Select
-            items={[
-              { value: 'official', label: t('Official price') },
-              { value: 'channel', label: t('Channel price') },
-            ]}
-            value={isBailian ? 'channel' : schedule.basis}
-            disabled={isBailian}
-            onValueChange={(value) =>
-              setSchedule((current) => ({
-                ...current,
-                basis:
-                  value === 'official' && !isBailian ? 'official' : 'channel',
-              }))
-            }
-          >
-            <SelectTrigger id='schedule-basis' className='w-full'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='official' disabled={isBailian}>
-                {t('Official price')}
-              </SelectItem>
-              <SelectItem value='channel'>{t('Channel price')}</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className='text-muted-foreground text-sm'>
-            {isBailian
-              ? t('Bailian schedules always use channel catalog prices.')
-              : t('Price basis hint')}
-          </p>
-        </div>
-
-        <div className='space-y-1.5'>
-          <Label htmlFor='schedule-mode'>{t('Pricing rule')}</Label>
-          <Select
-            items={PRICING_MODES.map((item) => ({
-              value: item.value,
-              label: t(item.label),
-            }))}
-            value={schedule.mode}
-            onValueChange={(next) =>
-              next && setSchedule((current) => ({ ...current, mode: next }))
-            }
-          >
-            <SelectTrigger id='schedule-mode' className='w-full'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {PRICING_MODES.map((item) => (
-                <SelectItem key={item.value} value={item.value}>
-                  {t(item.label)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className='text-muted-foreground text-sm'>
-            {t('Pricing rule hint')}
-          </p>
-        </div>
-
-        <div className='space-y-1.5'>
-          <Label htmlFor='schedule-value'>{t('Rule value')}</Label>
-          <Input
-            id='schedule-value'
-            inputMode='decimal'
-            value={scheduleValueText}
-            onChange={(event) => setScheduleValueText(event.target.value)}
-            placeholder='0.6'
-            disabled={schedule.mode === 'none'}
-          />
-          <p className='text-muted-foreground text-sm'>
-            {t('Rule value hint')}
-          </p>
-        </div>
-
-        <div className='space-y-1.5'>
-          <Label htmlFor='schedule-review-mode'>{t('Review mode')}</Label>
-          <Select
-            items={[
-              { value: 'auto', label: t('Auto apply') },
-              { value: 'manual', label: t('Manual review') },
-            ]}
-            value={schedule.review_mode}
-            onValueChange={(next) =>
-              next &&
-              setSchedule((current) => ({
-                ...current,
-                review_mode: next as 'auto' | 'manual',
-              }))
-            }
-          >
-            <SelectTrigger id='schedule-review-mode' className='w-full'>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='auto'>{t('Auto apply')}</SelectItem>
-              <SelectItem value='manual'>{t('Manual review')}</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className='text-muted-foreground text-sm'>
-            {t('Review mode hint')}
-          </p>
-        </div>
-
-        <div className='space-y-1.5'>
-          <Label htmlFor='schedule-threshold'>
-            {t('Review threshold (%)')}
-          </Label>
-          <Input
-            id='schedule-threshold'
-            inputMode='decimal'
-            value={thresholdText}
-            onChange={(event) => setThresholdText(event.target.value)}
-            placeholder='20'
-          />
-          <p className='text-muted-foreground text-sm'>
-            {t('Review threshold hint')}
-          </p>
         </div>
 
         <div className='space-y-1.5'>
@@ -308,18 +156,11 @@ export function ChannelPricingScheduleSection(
           <Input
             id='schedule-official-interval'
             inputMode='numeric'
-            value={String(schedule.official_sync_interval_minutes)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                official_sync_interval_minutes: Number(event.target.value),
-              }))
-            }
+            value={officialInterval}
+            onChange={(event) => setOfficialInterval(event.target.value)}
             placeholder='1440'
+            disabled={disabled}
           />
-          <p className='text-muted-foreground text-sm'>
-            {t('Official price interval hint')}
-          </p>
         </div>
 
         <div className='space-y-1.5'>
@@ -329,31 +170,19 @@ export function ChannelPricingScheduleSection(
           <Input
             id='schedule-channel-interval'
             inputMode='numeric'
-            value={String(schedule.channel_sync_interval_minutes)}
-            onChange={(event) =>
-              setSchedule((current) => ({
-                ...current,
-                channel_sync_interval_minutes: Number(event.target.value),
-              }))
-            }
+            value={channelInterval}
+            onChange={(event) => setChannelInterval(event.target.value)}
             placeholder='60'
+            disabled={disabled}
           />
-          <p className='text-muted-foreground text-sm'>
-            {t('Channel price interval hint')}
-          </p>
         </div>
 
-        <div className='flex items-end'>
+        <div className='flex items-end sm:col-span-2'>
           <Button
             type='button'
             size='sm'
             variant='outline'
-            disabled={
-              disabled ||
-              !scheduleNumberValid(scheduleValueText) ||
-              !scheduleNumberValid(thresholdText) ||
-              saveSchedule.isPending
-            }
+            disabled={disabled || !valid || saveSchedule.isPending}
             onClick={() => saveSchedule.mutate()}
           >
             <Save className='size-4' />

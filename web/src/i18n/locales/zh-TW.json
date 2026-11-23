@@ -402,6 +402,10 @@
     "Channel price": "渠道價格",
     "Per minute": "每分鐘",
     "Additional service price": "附加服務價",
+    "Failed to prepare the draft channel": "無法準備草稿渠道",
+    "Preparing the draft channel...": "正在準備草稿渠道…",
+    "Failed to fetch prices from the catalog": "無法從目錄取得價格",
+    "A draft channel is created automatically to fetch prices.": "系統會自動建立草稿渠道以取得價格。",
     "Fetched prices": "已取得價格",
     "Official and channel prices from the synced catalog.": "官方價格與渠道價格來自已同步的目錄。",
     "No prices fetched yet. Sync the channel catalog first.": "尚未取得價格，請先同步渠道目錄。",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "上游（Uter Route）",
     "Two-factor authentication enrollment": "雙重驗證註冊",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "允許使用者在「安全與存取」中啟用雙重驗證。關閉後，既有綁定仍可正常登入。"
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "允許使用者在「安全與存取」中啟用雙重驗證。關閉後，既有綁定仍可正常登入。",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "按此週期重新整理上游目錄與官方/渠道價格資料。在「設定價格」中設定的售價永遠不會被自動更新變更。",
+    "Refresh upstream data automatically.": "自動重新整理上游資料。",
+    "Automatic update cadence saved": "自動更新週期已儲存",
+    "Failed to save the automatic update cadence": "儲存自動更新週期失敗",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "每個建立的群組渠道都會檢查上游模型變更並自動同步。售價嚴格保持在「設定價格」中設定的值；自動更新只重新整理上游目錄與價格資料。",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "上游模型偵測是渠道模型清單的唯一負責人：新增模型並回報下線。下方週期只重新整理上游目錄與官方/渠道價格資料。售價只在「設定價格」中設定一次，這裡永遠不會變更。"
   }
 }

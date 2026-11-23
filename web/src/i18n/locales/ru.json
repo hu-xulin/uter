@@ -402,6 +402,10 @@
     "Channel price": "Цена канала",
     "Per minute": "За минуту",
     "Additional service price": "Цена дополнительной услуги",
+    "Failed to prepare the draft channel": "Не удалось подготовить черновик канала",
+    "Preparing the draft channel...": "Подготовка черновика канала…",
+    "Failed to fetch prices from the catalog": "Не удалось получить цены из каталога",
+    "A draft channel is created automatically to fetch prices.": "Черновик канала создаётся автоматически для получения цен.",
     "Fetched prices": "Полученные цены",
     "Official and channel prices from the synced catalog.": "Официальные цены и цены канала из синхронизированного каталога.",
     "No prices fetched yet. Sync the channel catalog first.": "Цены ещё не получены. Сначала синхронизируйте каталог канала.",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "Источник (Uter Route)",
     "Two-factor authentication enrollment": "Регистрация двухфакторной аутентификации",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Разрешить пользователям включать двухфакторную аутентификацию в разделе «Безопасность и доступ». Существующие привязки продолжат работать при отключении."
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Разрешить пользователям включать двухфакторную аутентификацию в разделе «Безопасность и доступ». Существующие привязки продолжат работать при отключении.",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "Обновляет каталог и официальные/канальные цены с указанной периодичностью. Цены продажи, заданные в «Настроить цены», никогда не изменяются.",
+    "Refresh upstream data automatically.": "Автоматически обновлять данные провайдера.",
+    "Automatic update cadence saved": "Периодичность автообновления сохранена",
+    "Failed to save the automatic update cadence": "Не удалось сохранить периодичность автообновления",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "Каждый созданный групповой канал проверяет изменения моделей у провайдера и синхронизирует их автоматически. Цены продажи остаются ровно такими, какими заданы в «Настроить цены»; автообновление обновляет только каталог и данные о ценах.",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "Обнаружение моделей провайдера — единственный владелец списка моделей канала: оно добавляет новые модели и сообщает об удалённых. Расписание ниже обновляет только каталог и официальные/канальные цены. Цены продажи задаются один раз в «Настроить цены» и здесь никогда не меняются."
   }
 }

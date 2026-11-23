@@ -402,6 +402,10 @@
     "Channel price": "チャネル価格",
     "Per minute": "1分あたり",
     "Additional service price": "追加サービス価格",
+    "Failed to prepare the draft channel": "下書きチャネルを準備できませんでした",
+    "Preparing the draft channel...": "下書きチャネルを準備しています…",
+    "Failed to fetch prices from the catalog": "カタログから価格を取得できませんでした",
+    "A draft channel is created automatically to fetch prices.": "価格取得用の下書きチャネルは自動で作成されます。",
     "Fetched prices": "取得済み価格",
     "Official and channel prices from the synced catalog.": "公式価格とチャネル価格は同期済みカタログから取得されます。",
     "No prices fetched yet. Sync the channel catalog first.": "まだ価格が取得されていません。先にチャネルカタログを同期してください。",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "上流（Uter Route）",
     "Two-factor authentication enrollment": "二要素認証の登録",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "ユーザーが「セキュリティとアクセス」で二要素認証を有効にできるようにします。オフでも既存の登録は引き続き利用できます。"
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "ユーザーが「セキュリティとアクセス」で二要素認証を有効にできるようにします。オフでも既存の登録は引き続き利用できます。",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "この周期で上流カタログと公式/チャネル価格データを更新します。価格設定で設定した販売価格は自動更新で変更されません。",
+    "Refresh upstream data automatically.": "上流データを自動更新します。",
+    "Automatic update cadence saved": "自動更新の周期を保存しました",
+    "Failed to save the automatic update cadence": "自動更新の周期を保存できませんでした",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "作成された各グループチャネルは上流モデルの変更を確認し、自動同期します。販売価格は価格設定で設定した値のままです。自動更新は上流カタログと価格データのみを更新します。",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "上流モデル検出はチャネルのモデル一覧の唯一の管理者です。新しいモデルを追加し、削除を報告します。下の周期は上流カタログと公式/チャネル価格データのみを更新します。販売価格は価格設定で一度だけ設定され、ここで変更されることはありません。"
   }
 }

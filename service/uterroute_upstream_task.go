@@ -132,7 +132,6 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 		schedule, explicit := GetChannelPricingSchedule(channel.Id)
 		if !explicit {
 			schedule.Enabled = true
-			schedule.ApplyOnSync = true
 		}
 		_, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
@@ -212,25 +211,9 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 				state.ChannelSyncAt = now.Unix()
 			}
 		}
-		if due.schedule.Enabled && due.schedule.ApplyOnSync && (due.officialDue || due.channelDue) {
-			if due.schedule.ReviewMode == "manual" {
-				reviews := BuildChannelPricingReviews(changes, channel.Id, channel.GetModels(), due.schedule.ThresholdPercent)
-				if len(reviews) > 0 {
-					if reviewErr := AppendChannelPricingReviews(reviews); reviewErr != nil {
-						status.Errors = append(status.Errors, fmt.Sprintf("channel %d reviews: %v", channel.Id, reviewErr))
-					} else {
-						status.Reviews += len(reviews)
-					}
-					states.Channels[fmt.Sprintf("%d", channel.Id)] = state
-					continue
-				}
-			}
-			if _, applyErr := ApplyChannelBatchPricing(channel.Id, nil, due.schedule.Basis, due.schedule.Mode, due.schedule.Value, false); applyErr != nil {
-				status.Errors = append(status.Errors, fmt.Sprintf("channel %d schedule: %v", channel.Id, applyErr))
-			} else {
-				status.Scheduled++
-			}
-		}
+		// Automatic updates only refresh upstream catalog/price data. Sale
+		// prices are configured explicitly in the pricing step and must never
+		// be re-derived or overwritten by the scheduler.
 		states.Channels[fmt.Sprintf("%d", channel.Id)] = state
 	}
 	saveUterRouteChannelSyncState(states)

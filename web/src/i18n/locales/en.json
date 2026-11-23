@@ -402,6 +402,10 @@
     "Channel price": "Channel price",
     "Per minute": "Per minute",
     "Additional service price": "Additional service price",
+    "Failed to prepare the draft channel": "Failed to prepare the draft channel",
+    "Preparing the draft channel...": "Preparing the draft channel...",
+    "Failed to fetch prices from the catalog": "Failed to fetch prices from the catalog",
+    "A draft channel is created automatically to fetch prices.": "A draft channel is created automatically to fetch prices.",
     "Fetched prices": "Fetched prices",
     "Official and channel prices from the synced catalog.": "Official and channel prices from the synced catalog.",
     "No prices fetched yet. Sync the channel catalog first.": "No prices fetched yet. Sync the channel catalog first.",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "Upstream (Uter Route)",
     "Two-factor authentication enrollment": "Two-factor authentication enrollment",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off."
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.",
+    "Refresh upstream data automatically.": "Refresh upstream data automatically.",
+    "Automatic update cadence saved": "Automatic update cadence saved",
+    "Failed to save the automatic update cadence": "Failed to save the automatic update cadence",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here."
   }
 }

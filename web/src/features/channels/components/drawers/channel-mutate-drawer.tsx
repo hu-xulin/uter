@@ -5478,7 +5478,7 @@ export function ChannelMutateDrawer({
           </p>
           <p className='text-muted-foreground text-sm'>
             {t(
-              'Every created group channel checks upstream model changes and syncs them automatically. Prices keep syncing on the channel pricing schedule.'
+              'Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.'
             )}
           </p>
         </div>
@@ -5489,7 +5489,7 @@ export function ChannelMutateDrawer({
             <p className='font-medium'>{t('Model detection vs. price sync')}</p>
             <p className='text-muted-foreground text-sm'>
               {t(
-                'Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.'
+                'Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.'
               )}
             </p>
           </div>

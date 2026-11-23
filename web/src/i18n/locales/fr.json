@@ -402,6 +402,10 @@
     "Channel price": "Prix du canal",
     "Per minute": "Par minute",
     "Additional service price": "Prix du service supplémentaire",
+    "Failed to prepare the draft channel": "Impossible de préparer le canal brouillon",
+    "Preparing the draft channel...": "Préparation du canal brouillon…",
+    "Failed to fetch prices from the catalog": "Impossible de récupérer les prix du catalogue",
+    "A draft channel is created automatically to fetch prices.": "Un canal brouillon est créé automatiquement pour récupérer les prix.",
     "Fetched prices": "Prix récupérés",
     "Official and channel prices from the synced catalog.": "Prix officiels et prix du canal issus du catalogue synchronisé.",
     "No prices fetched yet. Sync the channel catalog first.": "Aucun prix récupéré. Synchronisez d’abord le catalogue du canal.",
@@ -8672,6 +8676,12 @@
     "Uter Route": "Uter Route",
     "Upstream (Uter Route)": "Amont (Uter Route)",
     "Two-factor authentication enrollment": "Enrôlement de l'authentification à deux facteurs",
-    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Autoriser les utilisateurs à activer l'authentification à deux facteurs dans Sécurité et accès. Les liaisons existantes continuent de fonctionner lorsque cette option est désactivée."
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Autoriser les utilisateurs à activer l'authentification à deux facteurs dans Sécurité et accès. Les liaisons existantes continuent de fonctionner lorsque cette option est désactivée.",
+    "Refreshes the upstream catalog and official/channel prices on this cadence. Sale prices configured in Configure prices are never changed.": "Actualise le catalogue amont et les prix officiels/canal selon cette cadence. Les prix de vente définis dans Configurer les prix ne sont jamais modifiés.",
+    "Refresh upstream data automatically.": "Actualiser automatiquement les données amont.",
+    "Automatic update cadence saved": "Cadence de mise à jour enregistrée",
+    "Failed to save the automatic update cadence": "Échec de l’enregistrement de la cadence de mise à jour",
+    "Every created group channel checks upstream model changes and syncs them automatically. Sale prices stay exactly as configured in Configure prices; automatic updates only refresh upstream catalog and price data.": "Chaque canal de groupe créé vérifie les changements de modèles amont et les synchronise automatiquement. Les prix de vente restent exactement ceux définis dans Configurer les prix ; la mise à jour automatique ne rafraîchit que le catalogue et les prix amont.",
+    "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The schedule below only refreshes upstream catalog and official/channel price data. Sale prices are configured once in Configure prices and are never changed here.": "La détection des modèles amont est l’unique responsable de la liste des modèles du canal : elle ajoute les nouveaux modèles et signale les retraits. La cadence ci-dessous ne rafraîchit que le catalogue et les prix officiels/canal. Les prix de vente sont définis une fois dans Configurer les prix et ne sont jamais modifiés ici."
   }
 }
