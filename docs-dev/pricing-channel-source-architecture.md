@@ -98,7 +98,7 @@ L5 最终价 Effective Price
 
 - 来源：厂商官方价格目录、官方 API、维护的官方价格表。
 - 字段：模型、区域、币种、单位（USD/1M tokens、CNY/1K tokens、USD/秒、USD/张）、阶梯、生效时间。
-- 对聚合渠道（dreamrouter 等）：如果上游不提供官方价，则使用 Uter 自维护的官方目录；聚合渠道只负责提供渠道价。
+- 对聚合渠道（uterroute 等）：如果上游不提供官方价，则使用 Uter 自维护的官方目录；聚合渠道只负责提供渠道价。
 - 官方价只用于展示、折扣基准和审计，不直接作为计费价（除非没有渠道价）。
 
 ### 4.2 渠道价
@@ -156,9 +156,9 @@ channel_multiplier = 0.6   // 6 折
 
 推荐 UI 默认展示“目标最终折扣”，后台保存为 `multiplier` 或 `target_final_discount`，并在保存前显示最终价。
 
-### 4.5 示例：dreamrouter
+### 4.5 示例：uterroute
 
-假设官方价 100 元/单位，dreamrouter 渠道价为：
+假设官方价 100 元/单位，uterroute 渠道价为：
 
 ```text
 原始表达式：-40%（6 折）
@@ -291,7 +291,7 @@ pricing_shape:
 
 ```text
 id
-provider_key              // openai / aliyun / tencent / volcengine / aws / azure / vertex / dreamrouter
+provider_key              // openai / aliyun / tencent / volcengine / aws / azure / vertex / uterroute
 model_key
 region
 currency                  // USD / CNY
@@ -423,7 +423,7 @@ PriceSource
   ListChannelQuotes(ctx, models) -> []ChannelQuote
 ```
 
-### 7.1 new-api 聚合渠道（dreamrouter 等）
+### 7.1 new-api 聚合渠道（uterroute 等）
 
 - 认证：`Authorization: Bearer <channel key>`；
 - 模型：`GET /v1/models` 或上游 `/api/models`；
@@ -606,7 +606,7 @@ GET    /api/pricing/effective?channel=&model=
 
 ## 13. 分阶段实施
 
-### Phase 1：基础架构 + dreamrouter
+### Phase 1：基础架构 + uterroute
 
 - 新增数据表与解析器；
 - 渠道定价页面；
@@ -678,4 +678,4 @@ GET    /api/pricing/effective?channel=&model=
 ```
 
 四层可追溯、可版本化、可回滚的价格链。  
-这样既能表达 dreamrouter 的 `-40%`，也能在其上做渠道 6 折、模型 7 折、固定价、上调/下调，并保证 Uter 的计费与上游渠道一致。
+这样既能表达 uterroute 的 `-40%`，也能在其上做渠道 6 折、模型 7 折、固定价、上调/下调，并保证 Uter 的计费与上游渠道一致。

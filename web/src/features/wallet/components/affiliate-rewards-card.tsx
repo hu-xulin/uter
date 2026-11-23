@@ -27,10 +27,12 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatQuota } from '@/lib/format'
 
-import type { UserWalletData } from '../types'
-
 interface AffiliateRewardsCardProps {
-  user: UserWalletData | null
+  user: {
+    aff_quota?: number
+    aff_history_quota?: number
+    aff_count?: number
+  } | null
   affiliateLink: string
   onTransfer: () => void
   complianceConfirmed?: boolean

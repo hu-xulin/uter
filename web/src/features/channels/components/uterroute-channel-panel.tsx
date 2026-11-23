@@ -37,12 +37,13 @@ import { handleServerError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 
 import {
-  getDreamRouterUpstreamSnapshot,
-  syncDreamRouterUpstream,
-  type DreamRouterUpstreamSnapshot,
+  getUterRouteEndpoint,
+  getUterRouteUpstreamSnapshot,
+  syncUterRouteUpstream,
+  type UterRouteUpstreamSnapshot,
 } from '../api'
 
-type DreamRouterChannelPanelProps = {
+type UterRouteChannelPanelProps = {
   channelId: number | null
   baseUrl: string
   onCreateDraft?: () => Promise<number | null>
@@ -50,21 +51,28 @@ type DreamRouterChannelPanelProps = {
 }
 
 /**
- * DreamRouter upstream catalog for an advanced-custom channel.
+ * Uter Route upstream catalog for an advanced-custom channel.
  *
- * DreamRouter publishes billing ratios, not an absolute official/discounted
+ * Uter Route publishes billing ratios, not an absolute official/discounted
  * price, so this panel never invents USD prices. It syncs the official ratios
  * into this channel's isolated pricing rows; the operator sets the internal
  * sale price in the pricing tab before the channel can bill.
  */
-export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
+export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [creatingDraft, setCreatingDraft] = useState(false)
   const [pickedDiscountGroup, setPickedDiscountGroup] = useState('')
-  const snapshotQuery = useQuery<DreamRouterUpstreamSnapshot>({
-    queryKey: ['dreamrouter-upstream-snapshot', props.channelId],
-    queryFn: () => getDreamRouterUpstreamSnapshot(props.channelId ?? undefined),
+  const endpointQuery = useQuery({
+    queryKey: ['uterroute-endpoint'],
+    queryFn: getUterRouteEndpoint,
+    staleTime: Infinity,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const snapshotQuery = useQuery<UterRouteUpstreamSnapshot>({
+    queryKey: ['uterroute-upstream-snapshot', props.channelId],
+    queryFn: () => getUterRouteUpstreamSnapshot(props.channelId ?? undefined),
     retry: false,
     meta: { errorToast: false },
   })
@@ -81,11 +89,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
 
   const sync = useMutation({
     mutationFn: () =>
-      syncDreamRouterUpstream(
-        props.channelId ?? 0,
-        props.baseUrl,
-        discountGroup
-      ),
+      syncUterRouteUpstream(props.channelId ?? 0, props.baseUrl, discountGroup),
     onSuccess: (result) => {
       const written =
         typeof result === 'object' &&
@@ -97,19 +101,19 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
             )
           : 0
       toast.success(
-        t('DreamRouter catalog synced: {{count}} channel prices written', {
+        t('Uter Route catalog synced: {{count}} channel prices written', {
           count: written,
         })
       )
       void queryClient.invalidateQueries({
-        queryKey: ['dreamrouter-upstream-snapshot', props.channelId],
+        queryKey: ['uterroute-upstream-snapshot', props.channelId],
       })
       void queryClient.invalidateQueries({
         queryKey: ['channel-model-pricing', props.channelId],
       })
     },
     onError: (error) =>
-      handleServerError(error, t('Failed to sync DreamRouter catalog')),
+      handleServerError(error, t('Failed to sync Uter Route catalog')),
   })
 
   let syncStatusLabel = t('Not synced yet')
@@ -125,7 +129,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
   return (
     <div className='space-y-3 rounded-lg border p-3'>
       <div className='space-y-1'>
-        <Label>{t('DreamRouter upstream')}</Label>
+        <Label>{t('Uter Route upstream')}</Label>
         <p className='text-muted-foreground text-sm'>
           {t(
             'Sync the official model catalog and billing ratios into this channel only. Other channels are not affected.'
@@ -153,9 +157,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
       </div>
 
       <div className='space-y-1.5'>
-        <Label htmlFor='dreamrouter-discount-group'>
-          {t('Discount group')}
-        </Label>
+        <Label htmlFor='uterroute-discount-group'>{t('Discount group')}</Label>
         <Select
           value={discountGroup}
           onValueChange={(value) => {
@@ -163,7 +165,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
           }}
           disabled={sync.isPending || props.channelId == null}
         >
-          <SelectTrigger id='dreamrouter-discount-group' className='w-full'>
+          <SelectTrigger id='uterroute-discount-group' className='w-full'>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -176,18 +178,18 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
         </Select>
         <p className='text-muted-foreground text-sm'>
           {t(
-            'The channel price is the official price multiplied by the discount of this DreamRouter group. Manual prices are never overwritten.'
+            'The channel price is the official price multiplied by the discount of this Uter Route group. Manual prices are never overwritten.'
           )}
         </p>
       </div>
 
       <div className='space-y-1.5'>
-        <Label htmlFor='dreamrouter-base-url'>{t('Base URL')}</Label>
+        <Label htmlFor='uterroute-base-url'>{t('Base URL')}</Label>
         <Input
-          id='dreamrouter-base-url'
+          id='uterroute-base-url'
           mono
           value={props.baseUrl}
-          placeholder='https://dreamrouter.ai'
+          placeholder={endpointQuery.data?.base_url ?? ''}
           onChange={(event) => props.onChangeBaseUrl(event.target.value)}
         />
       </div>
@@ -204,7 +206,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
             <RefreshCw
               className={cn('size-4', sync.isPending && 'animate-spin')}
             />
-            {t('Sync DreamRouter catalog')}
+            {t('Sync Uter Route catalog')}
           </Button>
           <Badge variant={syncStatusVariant}>{syncStatusLabel}</Badge>
           {props.channelId == null && props.onCreateDraft ? (
@@ -253,7 +255,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
           </div>
         ) : (
           <p className='text-muted-foreground text-sm'>
-            {t('No DreamRouter catalog synced yet.')}
+            {t('No Uter Route catalog synced yet.')}
           </p>
         )}
 
@@ -266,7 +268,7 @@ export function DreamRouterChannelPanel(props: DreamRouterChannelPanelProps) {
         ) : null}
         <p className='text-muted-foreground text-sm'>
           {t(
-            'Official prices are reconstructed from DreamRouter ratios; the channel sale price remains separately editable in Pricing.'
+            'Official prices are reconstructed from Uter Route ratios; the channel sale price remains separately editable in Pricing.'
           )}
         </p>
       </div>

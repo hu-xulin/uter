@@ -84,7 +84,7 @@ function sidebarFor(
 }
 
 describe('security sidebar visibility', () => {
-  it('old configurations show Security & Access immediately after Profile and keep API Keys', () => {
+  it('old configurations show Security & Access after Settings and keep API Keys', () => {
     const { result } = sidebarFor(
       { personal: { enabled: true, personal: true, topup: true } },
       { personal: { enabled: true, personal: true } }
@@ -93,7 +93,14 @@ describe('security sidebar visibility', () => {
       result.current
         .find((group) => group.id === 'personal')
         ?.items.map((item) => item.title)
-    ).toEqual(['Wallet', 'Profile', 'Security & Access'])
+    ).toEqual([
+      'Wallet',
+      'Redemption Code',
+      'Referral Program',
+      'Daily Check-in',
+      'Settings',
+      'Security & Access',
+    ])
     expect(
       result.current
         .flatMap((group) => group.items)

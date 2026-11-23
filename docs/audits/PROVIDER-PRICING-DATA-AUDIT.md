@@ -1,11 +1,11 @@
-# PROVIDER PRICING DATA AUDIT — DreamRouter / 阿里百炼 / XXAPI
+# PROVIDER PRICING DATA AUDIT — Uter Route / 阿里百炼 / Uter.api
 
 - 审计基线：`0c5368177` + 本轮未提交整改（main，无分支）
 - 审计日期：2026-11-22
 - 数据来源：真实上游接口 + 本地 `one-api.db` 只读查询
 - 结论：**PARTIALLY_VERIFIED**；发现并修复多项计价口径问题，仍有需人工审批的数据库状态
 
-## 1. DreamRouter
+## 1. UterRoute
 
 真实请求：`/api/pricing` 成功。
 
@@ -59,10 +59,10 @@
 4. 同一维度存在多个不同缓存价格时不再取第一条，直接阻止自动播种。
 5. `PriceKind` 标记为 `CHANNEL_QUOTE`，不与官方绝对价混用。
 
-## 3. XXAPI
+## 3. Uter.api
 
-- 公开 `https://xxapi.ai/api/pricing` 在无鉴权下返回 **404**。
-- 仓库无 XXAPI 密钥，创建渠道、模型发现、分组价格同步无法做真实调用，
+- 公开 `https://<upstream-host>/api/pricing` 在无鉴权下返回 **404**。
+- 仓库无 Uter.api 密钥，创建渠道、模型发现、分组价格同步无法做真实调用，
   标记 **BLOCKED（缺少授权密钥）**。
 - 表达式/倍率解析已用确定性 fixture 覆盖：
   - QuotaPerUnit 250000/500000/1000000 → ratio 1 分别为 $4/$2/$1。
@@ -72,7 +72,7 @@
 ## 4. 数据库硬门禁迁移（已执行）
 
 预览：98 行 `needs_review=true` 且内部价非空、状态 `configured`。
-其中 DreamRouter 76 行来源为 `batch`（运营批量价），百炼 22 行为
+其中 Uter Route 76 行来源为 `batch`（运营批量价），百炼 22 行为
 `bailian-channel` 自动价。
 
 执行：
@@ -92,11 +92,11 @@
 | channel | 内部价 | 可计费 | 执行失败 |
 |---|---|---|---|
 | 31 百炼 | 21 | 15 | 0 |
-| 32 DreamRouter | 86（84 条批量价 + 2 条 H3 自动表达式 自动表达式；官方 46 表达式 + 8 绝对价已刷新） | 86 | 0 |
+| 32 Uter Route | 86（84 条批量价 + 2 条 H3 自动表达式 自动表达式；官方 46 表达式 + 8 绝对价已刷新） | 86 | 0 |
 | 33 Apiko | 52 | 52 | 0（fixed 表达式在任务路径可执行） |
 
 百炼 6 条内部价对应模型已不在上游目录，生命周期为 DISABLED，不计费。
-数据库中已无 `bailian-`/`dreamrouter-` 自动价同时处于 review + configured。
+数据库中已无 `bailian-`/`uterroute-` 自动价同时处于 review + configured。
 
 ## 5. 计费一致性
 
@@ -105,10 +105,10 @@
 | channel | 模型 | quota | 关键快照 |
 |---|---|---|---|
 | 31 百炼 | deepseek-v4.1-flash-1017 | 14 | CNY / FX 6.69 / tiered_expr / peak:Default |
-| 32 DreamRouter | claude-fable-5 | 290 | USD / ratio 3.3 / completion 5 / cache 0.1 |
+| 32 Uter Route | claude-fable-5 | 290 | USD / ratio 3.3 / completion 5 / cache 0.1 |
 | 33 Apiko | claude-fable-5 | 121 | USD / tiered_expr / base |
 
-- 52 个 DreamRouter 可执行内部价、15 个百炼内部价均通过确定性用量执行，
+- 52 个 Uter Route 可执行内部价、15 个百炼内部价均通过确定性用量执行，
   无零额度/异常值。
 - 任务/退款/重复回调的计费合同测试通过（`go test ./model ./service ./controller`）。
 - 页面展示、数据库归一化价与内部售价来自同一 `NormalizedPricing`；
@@ -116,8 +116,8 @@
 
 ## 6. 未完成/外部受限
 
-- XXAPI 真实创建与同步：缺少密钥（公开 `/api/pricing` 无鉴权返回 404）。
-- DreamRouter 6 个 seedance 模型：上游无元数据。
+- Uter.api 真实创建与同步：缺少密钥（公开 `/api/pricing` 无鉴权返回 404）。
+- Uter Route 6 个 seedance 模型：上游无元数据。
 - 百炼推理服务过滤是否需覆盖 `alibaba-cloud-modelstudio`：需官方接口确认，
   未擅自扩大过滤条件。
 
@@ -125,11 +125,11 @@
 
 - 未显式配置同步计划的渠道按默认周期自动运行（模型/官方价 24h，失败指数退避）。
   只有管理员显式关闭计划（`Enabled=false`）才跳过。
-- DreamRouter、New API 兼容、Apiko：同步时自动把上游新模型加入渠道模型列表；
-  DreamRouter/Bailian 自动播种缺失的销售价，人工/批量价永不覆盖。
+- UterRoute、New API 兼容、Apiko：同步时自动把上游新模型加入渠道模型列表；
+  UterRoute/Bailian 自动播种缺失的销售价，人工/批量价永不覆盖。
 - 每次同步结束自动执行 `AutoVerifyChannelPricing`：运行全部可执行表达式，
   报告写入 `ChannelPricingAutoVerify:<channel>` option；失败规则写入系统日志。
 - fixed 图片/任务表达式按 relay 实际请求路径校验，不再被 tiered token 校验误判。
 - 上游失败按 1/2/4…60 分钟退避，避免无效重试刷屏；成功即清除退避。
 - 自动价格处于 review 状态时仍由硬门禁阻止计费，不需要人工点击审核即可保证安全。
-- XXAPI 在提供密钥后自动沿用同一套模型发现、分组价格同步与自动校对流程。
+- Uter.api 在提供密钥后自动沿用同一套模型发现、分组价格同步与自动校对流程。

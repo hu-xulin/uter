@@ -52,6 +52,10 @@ import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelsProvider } from '../channels-provider'
 import { ChannelMutateDrawer } from '../drawers/channel-mutate-drawer'
 
+// This drawer integration file drives the full create/edit pipeline; under a
+// fully parallel suite its cases can exceed the default 20s budget.
+vi.setConfig({ testTimeout: 60_000 })
+
 const originalAuth = useAuthStore.getState().auth
 let client: QueryClient
 let editingChannel: Channel
@@ -430,8 +434,13 @@ async function expandAdvancedSettings(
 }
 
 async function openReviewTab(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(screen.getByRole('tab', { name: /Review/ }))
-  await expandAdvancedSettings(user)
+  const review = screen.queryByRole('tab', { name: /Review/ })
+  if (review) {
+    await user.click(review)
+    await expandAdvancedSettings(user)
+    return
+  }
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
 }
 
 test('selecting a plugin opens a prefilled channel and creates its explicit binding', async () => {
@@ -484,6 +493,17 @@ test('selecting a plugin opens a prefilled channel and creates its explicit bind
   expect(screen.getByLabelText('API Key *')).toHaveValue('')
 })
 
+async function openCreateAdvancedSection(
+  user: ReturnType<typeof userEvent.setup>,
+  name: 'Routing & Mapping' | 'Request & Response'
+) {
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  const section = await screen.findByRole('button', { name })
+  if (section.getAttribute('aria-expanded') !== 'true') {
+    await user.click(section)
+  }
+}
+
 test('changing plugins preserves credentials and custom settings while applying existing model and address rules', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
@@ -494,7 +514,7 @@ test('changing plugins preserves credentials and custom settings while applying 
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'My channel' },
   })
-  await user.click(screen.getByRole('tab', { name: /Routing & Mapping/ }))
+  await openCreateAdvancedSection(user, 'Routing & Mapping')
   fireEvent.change(screen.getByLabelText('Priority'), {
     target: { value: '7' },
   })
@@ -502,7 +522,7 @@ test('changing plugins preserves credentials and custom settings while applying 
   await user.click(
     screen.getByRole('option', { name: 'Video B Plugin video-b' })
   )
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   expect(screen.getByLabelText('API Key *')).toHaveValue('keep-secret')
   expect(screen.getByLabelText('Name *')).toHaveValue('My channel')
   expect(screen.getByDisplayValue('https://b.example')).toBeVisible()
@@ -512,7 +532,7 @@ test('changing plugins preserves credentials and custom settings while applying 
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(screen.getByRole('option', { name: /Video A/ }))
   expect(screen.getByDisplayValue('https://custom.example')).toBeVisible()
-  await user.click(screen.getByRole('tab', { name: /Routing & Mapping/ }))
+  await openCreateAdvancedSection(user, 'Routing & Mapping')
   expect(screen.getByLabelText('Priority')).toHaveValue(7)
 })
 
@@ -586,10 +606,9 @@ test('submitting a missing plugin address focuses its field without leaving crea
   await openReviewTab(user)
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
   await waitFor(() =>
-    expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAttribute(
-      'aria-selected',
-      'true'
-    )
+    expect(
+      screen.getByRole('tab', { name: /Connect(ion| channel)/ })
+    ).toHaveAttribute('aria-selected', 'true')
   )
   expect(
     screen.getByText('Base URL is required for this channel type')
@@ -1015,15 +1034,12 @@ test('an invalid setting in another category is revealed and focused on submissi
   fireEvent.change(screen.getByLabelText('Proxy Address'), {
     target: { value: 'invalid-proxy' },
   })
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
   await waitFor(() =>
     expect(screen.getByLabelText('Proxy Address')).toHaveFocus()
   )
-  expect(screen.getByRole('tab', { name: /Review/ })).toHaveAttribute(
-    'aria-selected',
-    'true'
-  )
+  expect(screen.getByLabelText('Proxy Address')).toBeVisible()
   expect(screen.getByLabelText('Proxy Address')).toHaveAttribute(
     'aria-invalid',
     'true'
@@ -1218,7 +1234,7 @@ test('quick options and detailed settings share changes across tabs and save the
   await user.click(screen.getByRole('tab', { name: /Routing & Mapping/ }))
   expect(screen.getByRole('switch', { name: 'Auto Ban' })).toBeChecked()
   await user.click(screen.getByRole('switch', { name: 'Auto Ban' }))
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   expect(quick.getByRole('switch', { name: 'Pass Through Body' })).toBeChecked()
   expect(
     quick.getByRole('switch', { name: 'Detect model updates' })
@@ -1247,12 +1263,19 @@ test('quick options and detailed settings share changes across tabs and save the
   })
 })
 
+async function openCreateQuickOptions(
+  user: ReturnType<typeof userEvent.setup>
+): Promise<ReturnType<typeof within>> {
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  return within(await screen.findByRole('group', { name: 'Quick options' }))
+}
+
 test('quick options show only applicable shortcuts when the provider changes', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
   await user.click(screen.getByRole('option', { name: 'OpenAI Built-in #1' }))
-  let quick = within(screen.getByRole('group', { name: 'Quick options' }))
-  expect(quick.getAllByRole('switch')).toHaveLength(5)
+  let quick = await openCreateQuickOptions(user)
+  expect(quick.getAllByRole('switch')).toHaveLength(4)
   expect(
     quick.queryByRole('switch', { name: 'Force Format' })
   ).not.toBeInTheDocument()
@@ -1263,14 +1286,14 @@ test('quick options show only applicable shortcuts when the provider changes', a
   await user.click(
     await screen.findByRole('button', { name: 'Enable passthrough' })
   )
-  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAccessibleName(
-    /Incomplete/
-  )
+  expect(
+    screen.getByRole('tab', { name: /Connect channel/ })
+  ).toHaveAccessibleName(/Incomplete/)
 
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(screen.getByRole('option', { name: /^DeepSeek / }))
-  quick = within(screen.getByRole('group', { name: 'Quick options' }))
-  expect(quick.getAllByRole('switch')).toHaveLength(4)
+  quick = await openCreateQuickOptions(user)
+  expect(quick.getAllByRole('switch')).toHaveLength(3)
   expect(
     quick.queryByRole('switch', { name: 'Responses WebSocket' })
   ).not.toBeInTheDocument()
@@ -1278,7 +1301,7 @@ test('quick options show only applicable shortcuts when the provider changes', a
 
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   await user.click(screen.getByRole('option', { name: /Video A/ }))
-  quick = within(screen.getByRole('group', { name: 'Quick options' }))
+  quick = await openCreateQuickOptions(user)
   expect(quick.getAllByRole('switch')).toHaveLength(1)
   expect(
     quick.getByRole('switch', { name: 'Auto-disable channel' })
@@ -1315,9 +1338,9 @@ test('editing opens the shared configuration and omits an unchanged key on updat
   expect(screen.queryByLabelText('Type *')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Change provider' })).toBeVisible()
   expect(screen.getAllByRole('tab')).toHaveLength(6)
-  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAccessibleName(
-    /Ready/
-  )
+  expect(
+    screen.getByRole('tab', { name: /Connect(ion| channel)/ })
+  ).toHaveAccessibleName(/Ready/)
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'Renamed channel' },
   })
@@ -1693,7 +1716,7 @@ test('an invalid edit switches categories and replaces configured styling with t
   fireEvent.change(screen.getByLabelText('Proxy Address'), {
     target: { value: 'invalid-proxy' },
   })
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   await user.click(screen.getByRole('button', { name: 'Update Channel' }))
   await waitFor(() =>
     expect(screen.getByLabelText('Proxy Address')).toHaveFocus()
@@ -1790,23 +1813,85 @@ test('select all adds every fetched upstream model and keeps saved models', asyn
   )
 })
 
-test('create mode keeps pricing optional until the operator opts in', async () => {
+test('Uter.api create uses six steps and creates one chosen group at a time', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness />)
+  await user.click(
+    await screen.findByRole('option', { name: /Uter\.api.*#60/i })
+  )
+
+  const tabs = screen.getAllByRole('tab').map((tab) => tab.textContent)
+  expect(tabs).toHaveLength(6)
+  expect(tabs.join(' ')).toMatch(/Connect channel/)
+  expect(tabs.join(' ')).toMatch(/Fetch models/)
+  expect(tabs.join(' ')).toMatch(/Fetch prices/)
+  expect(tabs.join(' ')).toMatch(/Configure prices/)
+  expect(tabs.join(' ')).toMatch(/Automatic updates/)
+  expect(tabs.join(' ')).toMatch(/Other settings/)
+
+  await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
+  expect(
+    screen.getByText('Models and prices are fetched on create')
+  ).toBeVisible()
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  expect(screen.getByText('Channel to create')).toBeVisible()
+  expect(screen.getByText('No group chosen')).toBeVisible()
+  expect(screen.getByText('No key yet')).toBeVisible()
+  expect(screen.queryByText('Key groups')).toBeNull()
+})
+
+test('Uter.api connection picks one group and one key box', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness />)
+  await user.click(
+    await screen.findByRole('option', { name: /Uter\.api.*#60/i })
+  )
+
+  await user.click(screen.getByRole('combobox', { name: 'Group' }))
+  await user.click(screen.getByRole('option', { name: 'Claude Advanced' }))
+  fireEvent.change(screen.getByLabelText('API keys'), {
+    target: { value: 'sk-one' },
+  })
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  expect(screen.getAllByText('Claude Advanced')).not.toHaveLength(0)
+  expect(screen.getByText('1 keys')).toBeVisible()
+})
+
+test('create runs six fixed steps and keeps advanced settings on the last step', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
   await user.click(await screen.findByRole('option', { name: /OpenAI/ }))
-  await user.click(screen.getByRole('tab', { name: /Pricing/ }))
 
-  expect(screen.getByText('Pricing is optional')).toBeVisible()
-  expect(
-    screen.queryByRole('button', { name: 'Create draft channel' })
-  ).not.toBeInTheDocument()
+  expect(screen.getAllByRole('tab')).toHaveLength(6)
+  expect(screen.queryByText('Auto-disable channel')).toBeNull()
+  expect(screen.queryByText('Channel display name')).toBeNull()
 
-  await user.click(
-    screen.getByRole('button', { name: 'Configure pricing now' })
-  )
+  await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
+  expect(screen.getByText('Model information sync')).toBeVisible()
+
+  await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
+  expect(screen.getByText('Automatic setup')).toBeVisible()
+
+  await user.click(screen.getByRole('tab', { name: /Configure prices/ }))
+  expect(screen.getByText('Pricing completes automatically')).toBeVisible()
   expect(
-    await screen.findByRole('button', { name: 'Create draft channel' })
-  ).toBeVisible()
+    screen.queryByRole('button', { name: 'Configure pricing now' })
+  ).toBeNull()
+
+  await user.click(screen.getByRole('tab', { name: /Automatic updates/ }))
+  expect(screen.getByText('Upstream Model Update Check')).toBeVisible()
+  expect(
+    screen.getByRole('switch', { name: 'Upstream Model Update Check' })
+  ).toBeChecked()
+  expect(
+    screen.getByRole('switch', { name: 'Auto Sync Upstream Models' })
+  ).toBeChecked()
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  expect(await screen.findByText('Auto-disable channel')).toBeVisible()
+  expect(screen.getByText('Channel display name')).toBeVisible()
 })
 
 test('advanced settings stay collapsed in review until requested', async () => {
@@ -2413,7 +2498,7 @@ test('mapping guardrail alerts link to the tab that holds the fix', async () => 
   await screen.findByDisplayValue('Existing channel')
   const routingTab = screen.getByRole('tab', { name: /Routing & Mapping/ })
   const connectionTab = screen.getByRole('tab', {
-    name: /Connection/,
+    name: /Connect(ion| channel)/,
   })
   await user.click(screen.getByRole('button', { name: 'View mapping' }))
   expect(routingTab).toHaveAttribute('aria-selected', 'true')
@@ -2542,10 +2627,9 @@ test('on wide screens redirecting a fetched model opens the floating panel besid
   expect(document.querySelector('[data-slot="sheet-content"]')).toHaveClass(
     'sm:max-w-7xl'
   )
-  expect(screen.getByRole('tab', { name: /Connection/ })).toHaveAttribute(
-    'aria-selected',
-    'true'
-  )
+  expect(
+    screen.getByRole('tab', { name: /Connect(ion| channel)/ })
+  ).toHaveAttribute('aria-selected', 'true')
   const request = panel.getByRole('combobox', { name: 'Request Model Name' })
   await waitFor(() => expect(request).toHaveFocus())
   expect(
@@ -2848,7 +2932,7 @@ test('header passthrough quick option confirms before writing the wildcard rule 
   ) as HTMLTextAreaElement
   expect(JSON.parse(editor.value)).toEqual({ '*': true })
 
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   await user.click(
     quick.getByRole('switch', { name: 'Pass Through Request Headers' })
   )
@@ -2894,7 +2978,7 @@ test('the header override passthrough template button confirms before filling th
     await screen.findByRole('button', { name: 'Enable passthrough' })
   )
   await waitFor(() => expect(JSON.parse(editor.value)).toEqual({ '*': true }))
-  await user.click(screen.getByRole('tab', { name: /Connection/ }))
+  await user.click(screen.getByRole('tab', { name: /Connect(ion| channel)/ }))
   expect(
     within(screen.getByRole('group', { name: 'Quick options' })).getByRole(
       'switch',

@@ -8,7 +8,7 @@ import (
 )
 
 // UpstreamFetchConfig carries the credentials a provider adapter may need.
-// DreamRouter's public pricing needs none; Bailian uses the channel key.
+// UterRoute's public pricing needs none; Bailian uses the channel key.
 type UpstreamFetchConfig struct {
 	BaseURL   string
 	APIKey    string
@@ -17,7 +17,7 @@ type UpstreamFetchConfig struct {
 
 // UpstreamProviderAdapter is the common contract for upstream catalogs.
 // Fetch returns the provider-specific payload (*UpstreamSnapshot for
-// DreamRouter, *BailianCatalog for Bailian) so adapters never force different
+// UterRoute, *BailianCatalog for Bailian) so adapters never force different
 // price models into one lossy structure.
 type UpstreamProviderAdapter interface {
 	Descriptor() UpstreamProvider
@@ -34,9 +34,9 @@ func registerUpstreamAdapter(adapter UpstreamProviderAdapter) {
 }
 
 func init() {
-	registerUpstreamAdapter(dreamRouterAdapter{})
+	registerUpstreamAdapter(uterRouteAdapter{})
 	registerUpstreamAdapter(bailianAdapter{})
-	registerUpstreamAdapter(xxapiAdapter{})
+	registerUpstreamAdapter(uterapiAdapter{})
 	for _, provider := range manualPricingProviders {
 		registerUpstreamAdapter(manualProviderAdapter{provider: provider})
 	}
@@ -105,15 +105,15 @@ func FetchUpstreamCatalog(ctx context.Context, providerID string, cfg UpstreamFe
 	return adapter.Fetch(ctx, cfg)
 }
 
-type dreamRouterAdapter struct{}
+type uterRouteAdapter struct{}
 
-func (dreamRouterAdapter) Descriptor() UpstreamProvider {
+func (uterRouteAdapter) Descriptor() UpstreamProvider {
 	return UpstreamProvider{
-		ID: "dreamrouter", Name: "DreamRouter",
-		PricingURL:          dreamRouterPricingPageURL,
-		ModelsURL:           dreamRouterModelsPageURL,
+		ID: "uterroute", Name: "UterRoute",
+		PricingURL:          uterRoutePricingPageURL(),
+		ModelsURL:           uterRouteModelsPageURL(),
 		AuthType:            "pricing_public_models_api_key",
-		SourceDocumentation: dreamRouterPricingPageURL,
+		SourceDocumentation: uterRoutePricingPageURL(),
 		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "GET /v1/models with the channel key"),
@@ -137,8 +137,8 @@ func (dreamRouterAdapter) Descriptor() UpstreamProvider {
 	}
 }
 
-func (dreamRouterAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
-	return FetchDreamRouterUpstream(ctx, cfg.BaseURL)
+func (uterRouteAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
+	return FetchUterRouteUpstream(ctx, cfg.BaseURL)
 }
 
 type bailianAdapter struct{}
@@ -176,17 +176,23 @@ func (bailianAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, 
 	return FetchBailianCatalog(ctx, cfg.BaseURL, cfg.APIKey)
 }
 
-// xxapiAdapter reads XXAPI's New API compatible pricing document. The document
+// uterapiAdapter reads UterAPI's New API compatible pricing document. The document
 // is public, but the channel's key identifies the billing group and must be
 // forwarded so an authenticated deployment can resolve the same quote.
-type xxapiAdapter struct{}
+type uterapiAdapter struct{}
 
-func (xxapiAdapter) Descriptor() UpstreamProvider {
+func (uterapiAdapter) Descriptor() UpstreamProvider {
+	base := UterAPIUpstreamBaseURL()
+	pricingURL := uterapiPricingURL()
+	modelsURL := ""
+	if base != "" {
+		modelsURL = base + "/v1/models"
+	}
 	return UpstreamProvider{
-		ID: "xxapi", Name: "XXAPI",
-		PricingURL: xxapiPricingURL, ModelsURL: "https://xxapi.ai/v1/models",
+		ID: "uterapi", Name: "Uter.api",
+		PricingURL: pricingURL, ModelsURL: modelsURL,
 		AuthType:            "channel_key",
-		SourceDocumentation: xxapiPricingURL,
+		SourceDocumentation: pricingURL,
 		SyncFrequency:       "manual and channel cadence",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "models embedded in /api/pricing"),
@@ -210,8 +216,8 @@ func (xxapiAdapter) Descriptor() UpstreamProvider {
 	}
 }
 
-func (xxapiAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
-	return fetchXXAPIPricingPayload(ctx, cfg.BaseURL, cfg.APIKey)
+func (uterapiAdapter) Fetch(ctx context.Context, cfg UpstreamFetchConfig) (any, error) {
+	return fetchUterAPIPricingPayload(ctx, cfg.BaseURL, cfg.APIKey)
 }
 
 // manualPricingProviders have no supplier-level price API that Uter may call

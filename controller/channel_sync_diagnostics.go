@@ -110,11 +110,11 @@ func ChannelSyncDiagnostics(c *gin.Context) {
 	}
 
 	// Diagnostics follow the price source, not the channel's capability
-	// descriptor: a Uter channel hosted on DreamRouter still reads official
-	// prices from the DreamRouter snapshot.
+	// descriptor: a Uter channel hosted on Uter Route still reads official
+	// prices from the Uter Route snapshot.
 	switch {
-	case service.IsDreamRouterHost(baseURL):
-		result.Official, result.ChannelPrice = dreamRouterDiagnostics()
+	case service.IsUterRouteHost(baseURL):
+		result.Official, result.ChannelPrice = uterRouteDiagnostics()
 	case provider.ID == "alibaba-bailian":
 		result.Official, result.ChannelPrice = bailianDiagnostics(channel.Id)
 	default:
@@ -140,14 +140,14 @@ func ChannelSyncDiagnostics(c *gin.Context) {
 	common.ApiSuccess(c, result)
 }
 
-func dreamRouterDiagnostics() (syncDiagnosticCheck, syncDiagnosticCheck) {
-	official := syncDiagnosticCheck{Source: "dreamrouter:/api/pricing"}
+func uterRouteDiagnostics() (syncDiagnosticCheck, syncDiagnosticCheck) {
+	official := syncDiagnosticCheck{Source: "uterroute:/api/pricing"}
 	channel := syncDiagnosticCheck{Source: "channel_model_pricing"}
-	snapshot := service.LoadDreamRouterUpstreamSnapshot()
+	snapshot := service.LoadUterRouteUpstreamSnapshot()
 	if snapshot == nil {
 		official.Status = "NOT_CONFIGURED"
 		official.Code = "not_configured"
-		official.Message = "No DreamRouter catalog synced yet."
+		official.Message = "No Uter Route catalog synced yet."
 		return official, channel
 	}
 	withPrice := 0

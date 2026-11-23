@@ -31,7 +31,7 @@ import (
 
 // priceSyncAliasResolver renames an upstream-advertised model name back to the
 // local model name the operator declared it under, so prices that an upstream
-// gateway files under a short alias (e.g. DreamRouter serves `seedance-2.0`
+// gateway files under a short alias (e.g. Uter Route serves `seedance-2.0`
 // while the task plugin declares `doubao-seedance-2-0-260128`) still attach to
 // the model uter actually routes.
 //

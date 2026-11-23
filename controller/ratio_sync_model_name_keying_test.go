@@ -13,7 +13,7 @@ import (
 // The Doubao task plugin (plugins/tasks/doubao/plugin.js) declares the
 // Volcengine Ark models by their full model IDs — `doubao-seedance-2-0-260128`,
 // `doubao-seedance-2-0-fast-260128`, `doubao-seedance-2-0-mini-260615`,
-// `doubao-seedance-2-5-260628`. DreamRouter's /api/pricing advertises the very
+// `doubao-seedance-2-5-260628`. UterRoute's /api/pricing advertises the very
 // same four models under short aliases — `seedance-2.0`, `seedance-2.0-fast`,
 // `seedance-2.0-mini`, `seedance-2.5` — dropping the `doubao-` prefix, dotting
 // the version and dropping the date suffix.
@@ -27,7 +27,7 @@ import (
 // If alias support is ever added to the sync, this test is the checklist of
 // names that must start resolving.
 func TestPricingSyncIsStrictlyModelNameKeyed(t *testing.T) {
-	// DreamRouter's ByteDance (vendor_id 8) slice of /api/pricing, verbatim
+	// UterRoute's ByteDance (vendor_id 8) slice of /api/pricing, verbatim
 	// shape: the four current Seedance 2.x video models plus the three
 	// Seedream image models that DO match the plugin's declared IDs.
 	payload := []byte(`{"success":true,"data":[
@@ -51,7 +51,7 @@ func TestPricingSyncIsStrictlyModelNameKeyed(t *testing.T) {
 	diff := buildDifferences(local, []struct {
 		name string
 		data map[string]any
-	}{{"dreamrouter", normalized}})
+	}{{"uterroute", normalized}})
 
 	// Every entry the upstream advertises survives the pipeline — nothing is
 	// dropped for being mis-shaped. The gap is purely the name.

@@ -244,6 +244,12 @@ func collectPendingUpstreamModelChanges(channel *model.Channel, settings dto.Cha
 	if err != nil {
 		return nil, nil, err
 	}
+	// A group-bound channel serves one model family; upstream occasionally
+	// answers /v1/models with the whole account catalogue, so never merge
+	// models the group key cannot call.
+	if group := service.GetGenericUpstreamBillingGroup(channel.Id); group != "" {
+		upstreamModels = service.FilterModelNamesByUpstreamGroup(group, upstreamModels)
+	}
 	pendingAddModels, pendingRemoveModels = collectPendingUpstreamModelChangesFromModels(
 		channel.GetModels(),
 		upstreamModels,

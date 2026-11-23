@@ -68,7 +68,7 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
       confirmText={t('Sign out')}
       handleConfirm={handleSignOut}
       isLoading={isSigningOut}
-      className='sm:max-w-sm'
+      className='min-h-0 sm:max-w-sm'
     />
   )
 }

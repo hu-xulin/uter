@@ -17,10 +17,10 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-// 三类创建渠道 — DreamRouter、阿里百炼、uterapi — 的同步矩阵：
+// 三类创建渠道 — UterRoute、阿里百炼、uterapi — 的同步矩阵：
 // 每个供应商都必须完成「模型信息 → 价格 → 计费规则可执行」三件事。
 func TestProviderSyncMatrix(t *testing.T) {
-	t.Run("dreamrouter", testDreamRouterSyncMatrix)
+	t.Run("uterroute", testUterRouteSyncMatrix)
 	t.Run("bailian", testBailianSyncMatrix)
 	t.Run("Uter.api", testUterAPISyncMatrix)
 }
@@ -68,7 +68,7 @@ func assertBillingRule(t *testing.T, channelID int, modelName string, params bil
 	assert.Positive(t, result.ActualQuotaAfterGroup, "%s must charge a positive quota", modelName)
 }
 
-func testDreamRouterSyncMatrix(t *testing.T) {
+func testUterRouteSyncMatrix(t *testing.T) {
 	db := migrateProviderMatrixDB(t)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		assert.Equal(t, "/api/pricing", request.URL.Path)
@@ -88,7 +88,7 @@ func testDreamRouterSyncMatrix(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	snapshot, err := service.FetchDreamRouterUpstream(context.Background(), server.URL)
+	snapshot, err := service.FetchUterRouteUpstream(context.Background(), server.URL)
 	require.NoError(t, err)
 	require.Len(t, snapshot.Models, 2)
 	byName := map[string]service.UpstreamModelRecord{}
@@ -99,8 +99,8 @@ func testDreamRouterSyncMatrix(t *testing.T) {
 	assert.Contains(t, byName["dr-token"].EnableGroups, "default")
 	assert.Contains(t, byName["dr-token"].SupportedEndpoints, "openai")
 
-	channel := newMatrixChannel(t, db, "dreamrouter", constant.ChannelTypeOpenAI, server.URL, "sk-test", "dr-token,dr-image")
-	records, err := service.DreamRouterChannelPricingRecords(snapshot, channel.Id, []string{"dr-token", "dr-image"}, "default")
+	channel := newMatrixChannel(t, db, "uterroute", constant.ChannelTypeOpenAI, server.URL, "sk-test", "dr-token,dr-image")
+	records, err := service.UterRouteChannelPricingRecords(snapshot, channel.Id, []string{"dr-token", "dr-image"}, "default")
 	require.NoError(t, err)
 	require.Len(t, records, 2)
 	recordsByName := map[string]model.ChannelOfficialPricingRecord{}
@@ -110,11 +110,11 @@ func testDreamRouterSyncMatrix(t *testing.T) {
 	_, err = model.UpsertChannelOfficialPricing(records)
 	require.NoError(t, err)
 
-	// dr-token is ratio-only. DreamRouter supplies a concrete official_price
+	// dr-token is ratio-only. Uter Route supplies a concrete official_price
 	// reference, so the default channel × 1.10 sale price is generated; the
 	// PriceKind stays RATIO_ONLY so the derivation remains visible.
 	drToken, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
-		ChannelId: channel.Id, Provider: "dreamrouter", ModelName: "dr-token",
+		ChannelId: channel.Id, Provider: "uterroute", ModelName: "dr-token",
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, drToken.InternalPricing)

@@ -86,7 +86,7 @@ export type ResolutionVideoMatrix = {
 
 /**
  * Compact price matrix shown on a model card for video-generation models with a
- * resolution × video-input usage schema. Mirrors the upstream dreamrouter
+ * resolution × video-input usage schema. Mirrors the upstream uterroute
  * layout: one row per resolution, one column per video-input option, cells hold
  * the matched tier's per-unit price.
  */
@@ -257,7 +257,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   /**
    * Resolution × video-input price matrix for video-generation models whose
    * usage schema exposes exactly two enum fields — a `resolution` axis and a
-   * `video_input` axis (e.g. dreamrouter-style seedance tiers). When present we
+   * `video_input` axis (e.g. uterroute-style seedance tiers). When present we
    * replace the generic 优特/官方 grid with a compact matrix that mirrors the
    * upstream layout: rows are resolutions, columns are video-input options, and
    * each cell is the matched tier's per-unit price.

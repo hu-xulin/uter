@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /**
  * 把「定价 = 汇率 ± N」里的 N 格式化成可以嵌进句子的一小段文字。
  *

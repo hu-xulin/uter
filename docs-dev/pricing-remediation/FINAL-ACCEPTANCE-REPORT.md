@@ -10,7 +10,7 @@
 > 本报告只记录本轮实际执行的命令与结果。未执行的真实验证、三库矩阵、浏览器
 > 回归均在“未完成/外部受限”中逐条列出，不以代码存在或编译通过冒充验收通过。
 >
-> **2026-11-23 状态更正**：报告中的 Apiko 运行时已删除并由 XXAPI 替代；本文
+> **2026-11-23 状态更正**：报告中的 Apiko 运行时已删除并由 Uter.api 替代；本文
 > 关于 Apiko 同步任务、路由和测试的描述仅为历史记录。当前状态以
 > `docs/audits/UTER-PRICING-EXECUTION-REPORT.md` 为准。
 
@@ -35,7 +35,7 @@
 - 合同采购价与实际结算成本无数据源，毛利只能标为“基于上游报价的估算”。
 - 表达式一致性校验与用量样本对账已实现；供应商发票导入/真实账单对账仍为 BLOCKED。
 - MySQL/PostgreSQL 真库矩阵未执行。
-- 浏览器端未逐页回归；真实供应商接口仅覆盖百炼/DreamRouter/Apiko 只读目录。
+- 浏览器端未逐页回归；真实供应商接口仅覆盖百炼/UterRoute/Apiko 只读目录。
 - 异步任务的结算额度补全与“任务创建—重试换渠道—跨版本结算”端到端一致性仍需验证；
   不可变快照已保存合同、成本、用量与额度，但合同采购价仍缺少供应商账单级数据源。
 
@@ -116,7 +116,7 @@
 - **P1-04 同步状态分离**：新增 `channel_sync_states`，按渠道 + `models`/`prices`
   分别记录最近尝试时间、最近成功时间、错误、抓取/写入/跳过/下架数量与有界变更摘要
   （新增/下架模型、价格变动）。目录同步成功而价格同步失败时，两条状态独立可见。
-  已接入 Apiko、DreamRouter、百炼；新增 `GET /api/channel/:id/sync_states`。
+  已接入 Apiko、UterRoute、百炼；新增 `GET /api/channel/:id/sync_states`。
 - **P1-05 账单行逐行匹配**：发票行可携带 `request_id`/`billing_line_id`。带请求号的行
   直接匹配不可变凭证与冻结的逐维采购成本，不再按当前目录价重估；用量与凭证不一致、
   渠道不符、无凭证、无成本分别返回 `MISMATCHED`/`NO_REQUEST`/`NO_COST` 进入人工核对。
@@ -126,7 +126,7 @@
   `cost_verified=true`，区分“毛利不达标”与“成本缺失”。
 - **审批与同步关联**：审核条目保存 `sync_started_at`，与 `channel_sync_states.last_started_at`
   对应，并保留 `pricing_version` 供审批前版本校验。
-- **上游分组采购成本**：New API 兼容渠道（如 xxapi）可选择上游分组
+- **上游分组采购成本**：New API 兼容渠道（如 Uter.api）可选择上游分组
   （`GET/PUT /api/channel/:id/upstream_billing_group`）；同步时把该渠道的
   `group_ratio` 冻结进表达式采购合同 `(<billing_expr>) * <ratio>`，标记未验证，
   成本按真实用量求值，毛利保持 `pending_purchase` 直到运营确认。
@@ -136,7 +136,7 @@
   分别扣 1000 / 800；Sora 任务插件（`task_plugin_key=sora`）提交 `/v1/videos`
   后轮询完成，按 `duration*1` 每秒计价 → 预扣与结算均为 1,600,000 quota / $3.2。
   四类场景的计费快照均 `settled`，财务流水销售金额与额度一致。
-- **四类渠道同步矩阵**：DreamRouter/百炼/Apiko/xxapi 统一矩阵测试覆盖
+- **四类渠道同步矩阵**：UterRoute/百炼/Apiko/Uter.api 统一矩阵测试覆盖
   「模型信息 → 价格 → 计费表达式可执行」；实拉验证 86/275/71/51 个模型，
   表达式 0 编译失败。矩阵同时发现并修复百炼 `per_1k_tokens` 无法生成渠道价的问题。
 - **纯倍率异步任务凭证**：任务即使没有渠道合同或表达式，也冻结当时的倍率组合
@@ -166,9 +166,9 @@ go test ./service/ -count=1                     # FAIL: TestUpstreamHTTPClientBl
 
 | 验收项目 | 状态 | 证据/限制 |
 |---|---|---|
-| 模型目录 | PARTIALLY_VERIFIED | DreamRouter/百炼/Apiko/New API 有同步代码与测试；无真实接口调用 |
+| 模型目录 | PARTIALLY_VERIFIED | UterRoute/百炼/Apiko/New API 有同步代码与测试；无真实接口调用 |
 | 官方价格 | PARTIALLY_VERIFIED | 分类与单位保护已实现；云厂商无自动来源 |
-| 折扣价格 | IMPLEMENTED_NOT_VERIFIED | DreamRouter 按折扣组反推；真实折扣组未在线复验 |
+| 折扣价格 | IMPLEMENTED_NOT_VERIFIED | Uter Route 按折扣组反推；真实折扣组未在线复验 |
 | 采购成本 | PARTIALLY_VERIFIED | 合同成本可手工录入、隔离存储、标记 verified；已按请求逐维落成本明细与账本条目；仍无供应商账单级实际成本 |
 | 渠道隔离 | IMPLEMENTED_AND_VERIFIED | 唯一键 + 隔离测试 |
 | 供应商隔离 | IMPLEMENTED_AND_VERIFIED | provider 进入身份 |
@@ -187,7 +187,7 @@ go test ./service/ -count=1                     # FAIL: TestUpstreamHTTPClientBl
 | 前端 | PARTIALLY_VERIFIED | typecheck/lint/design + 3204 条测试通过；登录后浏览器回归未执行 |
 | 数据库 | IMPLEMENTED_NOT_FULLY_VERIFIED | SQLite 旧库升级两次 PASS；MySQL 8.0/PostgreSQL 16 建表 PASS；三库旧库升级未验证；2026-11-22 新增的成本/账本表仅 SQLite 实测 |
 | 自动化测试 | IMPLEMENTED_AND_VERIFIED | `GOWORK=off go test ./...` exit 0 |
-| 真实验证 | PARTIALLY_VERIFIED | 百炼 275 模型、DreamRouter 86 模型、Apiko 68 模型真实拉取；其余厂商无凭据 |
+| 真实验证 | PARTIALLY_VERIFIED | 百炼 275 模型、Uter Route 86 模型、Apiko 68 模型真实拉取；其余厂商无凭据 |
 | 安全性 | PARTIALLY_VERIFIED | 校验/冲突/幂等已测；无压测/分布式锁验证 |
 
 **任何 P0 项目未全绿，故最终不得标记 ACCEPTANCE_PASS。**
@@ -248,7 +248,7 @@ cd web && bun run lint:design:strict                                     # exit 
 cd web && bun run i18n:sync                                              # 0/0；幂等
 sqlite3 one-api.db "select ... from channel_model_pricing ..."           # 只读统计
 BAILIAN_LIVE=1 go test -tags bailian_live ./service -run TestPullBailianCatalogLive -v        # PASS
-UPSTREAM_LIVE=1 go test -tags upstream_live ./service -run TestPullDreamRouterUpstreamLive -v # PASS
+UPSTREAM_LIVE=1 go test -tags upstream_live ./service -run TestPullUterRouteUpstreamLive -v # PASS
 UTER_TEST_MYSQL_DSN=... UTER_TEST_POSTGRES_DSN=... go test ./model -run TestChannelPricingTablesAcrossDatabases -v # PASS
 cd web && bun run test                                                 # 316 files / 3204 tests PASS
 ```
@@ -259,7 +259,7 @@ cd web && bun run test                                                 # 316 fil
 2. 不可变计费快照表与查询接口已实现，合同/成本/用量/额度已入库；历史数据回填未做。
 3. OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山官方价格自动同步：无稳定公开接口或凭据。
 4. SQLite 旧库升级与二次启动已验证；MySQL/PostgreSQL 旧库升级未验证。
-5. 百炼/DreamRouter/Apiko 已完成真实目录/价格拉取；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山仍无凭据。
+5. 百炼/UterRoute/Apiko 已完成真实目录/价格拉取；OpenAI/Anthropic/Gemini/Azure/AWS/腾讯/火山仍无凭据。
 6. 浏览器人工/视觉回归、前端全量测试。
 7. Decimal 账本、汇率历史表、供应商账单自动导出（发票 JSON 导入已实现）。
 8. ~~批量按模型能力筛选；阶梯逐档不同规则；同步退避重试、价格变更通知、审批队列状态机。~~

@@ -25,34 +25,34 @@ import (
 	"github.com/uter-ai/uter/common"
 )
 
-// setDreamRouterSnapshot 在测试里写入一份快照 option，并在用例结束时还原。
+// setUterRouteSnapshot 在测试里写入一份快照 option，并在用例结束时还原。
 //
 // common.OptionMap 在未初始化 DB 的测试进程里是 nil，必须先建表再写，
 // 否则「往 nil map 赋值」会 panic。
-func setDreamRouterSnapshot(t *testing.T, raw string) {
+func setUterRouteSnapshot(t *testing.T, raw string) {
 	t.Helper()
 	if common.OptionMap == nil {
 		common.OptionMap = map[string]string{}
 	}
-	previous, existed := common.OptionMap[dreamRouterSyncSnapshotKey]
-	common.OptionMap[dreamRouterSyncSnapshotKey] = raw
+	previous, existed := common.OptionMap[uterRouteSyncSnapshotKey]
+	common.OptionMap[uterRouteSyncSnapshotKey] = raw
 	t.Cleanup(func() {
 		if existed {
-			common.OptionMap[dreamRouterSyncSnapshotKey] = previous
+			common.OptionMap[uterRouteSyncSnapshotKey] = previous
 			return
 		}
-		delete(common.OptionMap, dreamRouterSyncSnapshotKey)
+		delete(common.OptionMap, uterRouteSyncSnapshotKey)
 	})
 }
 
-// TestLoadDreamRouterOfficialReferenceFromSnapshot 锁定「定价页官方价参照
+// TestLoadUterRouteOfficialReferenceFromSnapshot 锁定「定价页官方价参照
 // 来自上游快照」这条链路：上游官方价 $5/1M + 输出 $25 + 缓存 $0.5 必须换算成
 // 倍率空间的 model_ratio 2.5 / completion_ratio 5 / cache_ratio 0.1。
 //
 // 这是「折扣没获取到」的修复点：公开定价页此前只认 basellm / models.dev 预设，
 // 上游私有模型在预设里查不到 → 卡片没有官方价、没有折扣徽标。
-func TestLoadDreamRouterOfficialReferenceFromSnapshot(t *testing.T) {
-	setDreamRouterSnapshot(t, `{
+func TestLoadUterRouteOfficialReferenceFromSnapshot(t *testing.T) {
+	setUterRouteSnapshot(t, `{
 		"pricing_version": "test-version",
 		"synced_at": "2026-10-26T19:00:00+08:00",
 		"rule_direction": "increase",
@@ -76,7 +76,7 @@ func TestLoadDreamRouterOfficialReferenceFromSnapshot(t *testing.T) {
 		]
 	}`)
 
-	reference := LoadDreamRouterOfficialReference()
+	reference := LoadUterRouteOfficialReference()
 	if reference == nil {
 		t.Fatal("reference is nil")
 	}
@@ -110,7 +110,7 @@ func TestLoadDreamRouterOfficialReferenceFromSnapshot(t *testing.T) {
 	}
 }
 
-// TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels 锁定「按秒计费的
+// TestLoadUterRouteOfficialReferenceSkipsPerSecondModels 锁定「按秒计费的
 // 视频模型不能被换算成 token 倍率」。
 //
 // 回归背景（2026-11-04 用户反馈）：wan3.0-video 与 wan3.0-video-prime 的
@@ -121,8 +121,8 @@ func TestLoadDreamRouterOfficialReferenceFromSnapshot(t *testing.T) {
 //
 // 正确行为：按秒模型下发独立的 `official_price_per_second`（原值，不缩放），
 // 且**绝不**写入 model_ratio。
-func TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels(t *testing.T) {
-	setDreamRouterSnapshot(t, `{
+func TestLoadUterRouteOfficialReferenceSkipsPerSecondModels(t *testing.T) {
+	setUterRouteSnapshot(t, `{
 		"pricing_version": "test-persecond",
 		"synced_at": "2026-11-04T09:31:19+08:00",
 		"rule_direction": "increase",
@@ -144,7 +144,7 @@ func TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels(t *testing.T) {
 		]
 	}`)
 
-	reference := LoadDreamRouterOfficialReference()
+	reference := LoadUterRouteOfficialReference()
 	if reference == nil {
 		t.Fatal("reference is nil")
 	}
@@ -170,15 +170,15 @@ func TestLoadDreamRouterOfficialReferenceSkipsPerSecondModels(t *testing.T) {
 	}
 }
 
-// TestLoadDreamRouterOfficialReferenceEmpty 锁定「没同步过就没有参照」：
+// TestLoadUterRouteOfficialReferenceEmpty 锁定「没同步过就没有参照」：
 // 不能返回空 map 之外的任何默认值，否则定价页会拿平台自己的价当官方价。
-func TestLoadDreamRouterOfficialReferenceEmpty(t *testing.T) {
-	setDreamRouterSnapshot(t, "")
-	if reference := LoadDreamRouterOfficialReference(); reference != nil {
+func TestLoadUterRouteOfficialReferenceEmpty(t *testing.T) {
+	setUterRouteSnapshot(t, "")
+	if reference := LoadUterRouteOfficialReference(); reference != nil {
 		t.Errorf("reference = %v, want nil", reference)
 	}
-	setDreamRouterSnapshot(t, "not json")
-	if reference := LoadDreamRouterOfficialReference(); reference != nil {
+	setUterRouteSnapshot(t, "not json")
+	if reference := LoadUterRouteOfficialReference(); reference != nil {
 		t.Errorf("invalid json reference = %v, want nil", reference)
 	}
 }

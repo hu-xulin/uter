@@ -32,12 +32,12 @@ func UpstreamProviderForChannel(channelType int, baseURL string) UpstreamProvide
 	id := ""
 	switch {
 	// A Uter channel is Uter's own upstream contract even when its Base URL
-	// points at a DreamRouter-compatible relay. Its price dimensions are fully
+	// points at a UterRoute-compatible relay. Its price dimensions are fully
 	// supported by Uter's own pricing engine.
 	case channelType == constant.ChannelTypeUter:
 		return uterProviderDescriptor()
-	case IsDreamRouterHost(baseURL):
-		id = "dreamrouter"
+	case IsUterRouteHost(baseURL):
+		id = "uterroute"
 	case channelType == constant.ChannelTypeAli:
 		id = "alibaba-bailian"
 	default:

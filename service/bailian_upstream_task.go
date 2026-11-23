@@ -153,23 +153,22 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 	status.Channels = len(channels)
 	now := time.Now().UTC()
 	states := loadBailianChannelSyncState()
-	due := make([]dreamRouterDueChannel, 0, len(channels))
+	due := make([]uterRouteDueChannel, 0, len(channels))
 	for _, channel := range channels {
 		schedule, explicit := GetChannelPricingSchedule(channel.Id)
 		if !explicit {
 			schedule.Enabled = true
 			schedule.ApplyOnSync = true
 		}
-		modelInterval, officialInterval, channelInterval := schedule.EffectiveIntervals()
+		_, officialInterval, channelInterval := schedule.EffectiveIntervals()
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if !force && state.NextAttemptAt > now.Unix() {
 			continue
 		}
-		item := dreamRouterDueChannel{channel: channel, schedule: schedule}
+		item := uterRouteDueChannel{channel: channel, schedule: schedule}
 		if force {
-			item.modelDue, item.officialDue, item.channelDue = true, true, true
+			item.officialDue, item.channelDue = true, true
 		} else {
-			item.modelDue = now.Unix()-state.ModelSyncAt >= int64(modelInterval)*60
 			item.officialDue = now.Unix()-state.OfficialSyncAt >= int64(officialInterval)*60
 			item.channelDue = now.Unix()-state.ChannelSyncAt >= int64(channelInterval)*60
 		}
@@ -195,7 +194,7 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				model.ChannelSyncTypeModels, model.ChannelSyncTypePrices)
 			states.Channels[fmt.Sprintf("%d", channel.Id)] = state
 		}
-		if item.modelDue || item.officialDue || item.channelDue {
+		if item.officialDue || item.channelDue {
 			key, _, apiErr := channel.GetNextEnabledKey()
 			if apiErr != nil {
 				fail(fmt.Errorf("no enabled API key"))
@@ -262,9 +261,6 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 				string(summary), nil, model.ChannelSyncTypeModels, model.ChannelSyncTypePrices)
 			state.Failures = 0
 			state.NextAttemptAt = 0
-			if item.modelDue {
-				state.ModelSyncAt = now.Unix()
-			}
 			if item.officialDue {
 				state.OfficialSyncAt = now.Unix()
 			}
@@ -284,7 +280,7 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 	return status, nil
 }
 
-func recordBailianSyncFailure(state *dreamRouterChannelSyncState, now time.Time) {
+func recordBailianSyncFailure(state *uterRouteChannelSyncState, now time.Time) {
 	state.Failures++
 	backoff := time.Minute << min(state.Failures-1, 6)
 	if backoff > time.Hour {
@@ -335,17 +331,17 @@ func bailianUpstreamChannels() []*model.Channel {
 }
 
 type bailianChannelSyncStateSetting struct {
-	Channels map[string]dreamRouterChannelSyncState `json:"channels"`
+	Channels map[string]uterRouteChannelSyncState `json:"channels"`
 }
 
 func loadBailianChannelSyncState() bailianChannelSyncStateSetting {
-	setting := bailianChannelSyncStateSetting{Channels: map[string]dreamRouterChannelSyncState{}}
+	setting := bailianChannelSyncStateSetting{Channels: map[string]uterRouteChannelSyncState{}}
 	raw := strings.TrimSpace(common.GetOption(bailianChannelSyncStateKey))
 	if raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &setting)
 	}
 	if setting.Channels == nil {
-		setting.Channels = map[string]dreamRouterChannelSyncState{}
+		setting.Channels = map[string]uterRouteChannelSyncState{}
 	}
 	return setting
 }

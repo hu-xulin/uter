@@ -34,37 +34,79 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-const xxapiPricingURL = "https://xxapi.ai/api/pricing"
+// UterAPIUpstreamURLOption stores the operational endpoint for Uter.api. It is
+// deployment configuration rather than source code, so the white-labelled
+// codebase never names the supplier. Existing Uter.api channels keep working
+// when the option is unset because their base URL is reused.
+const UterAPIUpstreamURLOption = "UterAPIUpstreamBaseURL"
 
-// XXAPIGroup is one upstream billing group. A key belongs to exactly one group
+// UterAPIUpstreamBaseURL returns the configured endpoint. An empty result
+// means creation must stop until an administrator configures the option.
+func UterAPIUpstreamBaseURL() string {
+	value := strings.TrimSpace(common.GetOption(UterAPIUpstreamURLOption))
+	if value == "" {
+		return ""
+	}
+	if !strings.Contains(value, "://") {
+		value = "https://" + value
+	}
+	return strings.TrimRight(value, "/")
+}
+
+// UterAPIUpstreamHost exposes only the host for provider detection.
+func UterAPIUpstreamHost() string {
+	base := UterAPIUpstreamBaseURL()
+	if base == "" {
+		return ""
+	}
+	parsed, err := url.Parse(base)
+	if err != nil {
+		return ""
+	}
+	return parsed.Hostname()
+}
+
+func uterapiPricingURL() string {
+	base := UterAPIUpstreamBaseURL()
+	if base == "" {
+		return ""
+	}
+	return base + "/api/pricing"
+}
+
+// UterAPIGroup is one upstream billing group. A key belongs to exactly one group
 // and the group multiplier decides the actual price and visible models.
-type XXAPIGroup struct {
+type UterAPIGroup struct {
 	Key   string  `json:"key"`
 	Name  string  `json:"name"`
 	Ratio float64 `json:"ratio"`
 }
 
-// FetchXXAPIPricingGroups reads the public xxapi pricing document and returns
+// FetchUterAPIPricingGroups reads the public uterapi pricing document and returns
 // its billing groups with their multipliers.
-func FetchXXAPIPricingGroups(ctx context.Context) ([]XXAPIGroup, error) {
-	payload, err := fetchXXAPIPricingPayload(ctx, xxapiPricingURL, "")
+func FetchUterAPIPricingGroups(ctx context.Context) ([]UterAPIGroup, error) {
+	pricingURL := uterapiPricingURL()
+	if pricingURL == "" {
+		return nil, errors.New("Uter.api upstream endpoint is not configured")
+	}
+	payload, err := fetchUterAPIPricingPayload(ctx, pricingURL, "")
 	if err != nil {
 		return nil, err
 	}
-	return xxapiGroupsFromPayload(payload), nil
+	return uterapiGroupsFromPayload(payload), nil
 }
 
-func xxapiGroupsFromPayload(payload *GenericPricingPayload) []XXAPIGroup {
+func uterapiGroupsFromPayload(payload *GenericPricingPayload) []UterAPIGroup {
 	if payload == nil {
 		return nil
 	}
-	groups := make([]XXAPIGroup, 0, len(payload.GroupRatio))
+	groups := make([]UterAPIGroup, 0, len(payload.GroupRatio))
 	for key, ratio := range payload.GroupRatio {
 		name := key
 		if display, ok := payload.GroupDisplay[key]; ok && strings.TrimSpace(display.Name) != "" {
 			name = strings.TrimSpace(display.Name)
 		}
-		groups = append(groups, XXAPIGroup{Key: key, Name: name, Ratio: ratio})
+		groups = append(groups, UterAPIGroup{Key: key, Name: name, Ratio: ratio})
 	}
 	sort.Slice(groups, func(i, j int) bool {
 		if groups[i].Ratio != groups[j].Ratio {
@@ -75,8 +117,8 @@ func xxapiGroupsFromPayload(payload *GenericPricingPayload) []XXAPIGroup {
 	return groups
 }
 
-func fetchXXAPIPricingPayload(ctx context.Context, baseURL, apiKey string) (*GenericPricingPayload, error) {
-	endpoint, err := xxapiPricingEndpointFor(baseURL)
+func fetchUterAPIPricingPayload(ctx context.Context, baseURL, apiKey string) (*GenericPricingPayload, error) {
+	endpoint, err := uterapiPricingEndpointFor(baseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -104,31 +146,34 @@ func fetchXXAPIPricingPayload(ctx context.Context, baseURL, apiKey string) (*Gen
 		return nil, err
 	}
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return nil, fmt.Errorf("xxapi pricing returned status %d", res.StatusCode)
+		return nil, fmt.Errorf("Uter.api pricing returned status %d", res.StatusCode)
 	}
 	var payload GenericPricingPayload
 	if err := common.Unmarshal(body, &payload); err != nil {
-		return nil, errors.New("xxapi pricing payload is not valid JSON")
+		return nil, errors.New("Uter.api pricing payload is not valid JSON")
 	}
 	if len(payload.Data) == 0 {
-		return nil, errors.New("xxapi pricing returned no models")
+		return nil, errors.New("Uter.api pricing returned no models")
 	}
 	return &payload, nil
 }
 
-// xxapiPricingEndpointFor resolves /api/pricing at the site root, stripping a
+// uterapiPricingEndpointFor resolves /api/pricing at the site root, stripping a
 // pasted /v1 suffix.
-func xxapiPricingEndpointFor(baseURL string) (string, error) {
+func uterapiPricingEndpointFor(baseURL string) (string, error) {
 	base := strings.TrimSpace(baseURL)
 	if base == "" {
-		base = "https://xxapi.ai"
+		base = UterAPIUpstreamBaseURL()
+	}
+	if base == "" {
+		return "", errors.New("Uter.api upstream endpoint is not configured")
 	}
 	if !strings.Contains(base, "://") {
 		base = "https://" + base
 	}
 	parsed, err := url.Parse(strings.TrimRight(base, "/"))
 	if err != nil || parsed.Host == "" {
-		return "", errors.New("invalid xxapi base URL")
+		return "", errors.New("Invalid Uter.api base URL")
 	}
 	parsed.Path = strings.TrimSuffix(parsed.Path, "/v1")
 	parsed.RawQuery = ""
@@ -138,10 +183,10 @@ func xxapiPricingEndpointFor(baseURL string) (string, error) {
 	return parsed.String() + "/api/pricing", nil
 }
 
-// SyncXXAPIChannelPricing syncs one channel's prices and applies the key's
+// SyncUterAPIChannelPricing syncs one channel's prices and applies the key's
 // group multiplier. The channel price is the upstream expression times the
 // group ratio, and the same expression becomes the unverified purchase cost.
-func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group string) (int, float64, string, error) {
+func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, group string) (int, float64, string, error) {
 	if channel == nil {
 		return 0, 0, "", errors.New("channel is required")
 	}
@@ -155,9 +200,9 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	defer release()
 	apiKey, _, keyErr := channel.GetNextEnabledKey()
 	if keyErr != nil || strings.TrimSpace(apiKey) == "" {
-		return 0, 0, "", errors.New("xxapi channel has no usable API key")
+		return 0, 0, "", errors.New("Uter.api channel has no usable API key")
 	}
-	payload, err := fetchXXAPIPricingPayload(ctx, channel.GetBaseURL(), apiKey)
+	payload, err := fetchUterAPIPricingPayload(ctx, channel.GetBaseURL(), apiKey)
 	if err != nil {
 		return 0, 0, "", err
 	}
@@ -167,7 +212,7 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	if group != "" {
 		published, ok := payload.GroupRatio[group]
 		if !ok || published <= 0 {
-			return 0, 0, "", fmt.Errorf("xxapi group %q has no published ratio", group)
+			return 0, 0, "", fmt.Errorf("Uter.api group %q has no published ratio", group)
 		}
 		ratio = published
 		groupName = group
@@ -197,7 +242,7 @@ func SyncXXAPIChannelPricing(ctx context.Context, channel *model.Channel, group 
 	}
 	if group != "" {
 		if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
-			common.SysError(common.LogText("persist xxapi group failed: channel_id=%d, error=%v", channel.Id, err))
+			common.SysError(common.LogText("persist Uter.api group failed: channel_id=%d, error=%v", channel.Id, err))
 		}
 		applyGenericGroupPurchaseCost(channel.Id, payload, records)
 	}

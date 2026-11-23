@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import {
   Activity,
   Box,
+  CalendarDays,
   ClipboardList,
   CreditCard,
   FileText,
@@ -31,9 +32,9 @@ import {
   Radio,
   ServerCog,
   Settings,
+  Share2,
   ShieldCheck,
   Ticket,
-  User,
   Users,
   Wallet,
   Workflow,
@@ -122,9 +123,24 @@ export function useSidebarData(): SidebarData {
             icon: Wallet,
           },
           {
-            title: t('Profile'),
+            title: t('Redemption Code'),
+            url: '/redeem',
+            icon: Ticket,
+          },
+          {
+            title: t('Referral Program'),
+            url: '/referral',
+            icon: Share2,
+          },
+          {
+            title: t('Daily Check-in'),
+            url: '/checkin',
+            icon: CalendarDays,
+          },
+          {
+            title: t('Settings'),
             url: '/profile',
-            icon: User,
+            icon: Settings,
           },
           {
             title: t('Security & Access'),

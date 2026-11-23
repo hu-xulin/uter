@@ -31,12 +31,15 @@ import { supportsResponsesWebSocket } from './responses-websocket'
 export type ChannelProviderTarget =
   | { kind: 'builtin'; type: number }
   | { kind: 'plugin'; key: string }
-  | { kind: 'xxapi' }
+  | { kind: 'uterapi' }
 
 export type ChannelConfigurationSection =
   | 'connection'
   | 'models'
   | 'pricing'
+  | 'pricing_fetch'
+  | 'pricing_config'
+  | 'auto_update'
   | 'routing'
   | 'request'
   | 'other'
@@ -139,8 +142,10 @@ function hasConfiguredJson(value: string | undefined): boolean {
 export function getChannelConfigurationState(
   values: ChannelFormValues,
   errors: FieldErrors<ChannelFormValues>,
-  isEditing: boolean
+  isEditing: boolean,
+  options?: { managedCredentials?: boolean }
 ) {
+  const managedCredentials = options?.managedCredentials === true
   const openaiPassthrough = OPENAI_FIELD_PASSTHROUGH_TYPES.has(values.type)
   const claudePassthrough = CLAUDE_FIELD_PASSTHROUGH_TYPES.has(values.type)
   const configured: Record<ChannelConfigurationBlock, boolean> = {
@@ -205,6 +210,9 @@ export function getChannelConfigurationState(
     connection: 'idle',
     models: 'idle',
     pricing: 'idle',
+    pricing_fetch: 'idle',
+    pricing_config: 'idle',
+    auto_update: 'idle',
     routing: 'idle',
     request: 'idle',
     other: 'idle',
@@ -228,13 +236,15 @@ export function getChannelConfigurationState(
     !validation.success &&
     validation.error.issues.some(
       (issue) =>
-        getChannelConfigurationSection(String(issue.path[0])) === 'connection'
+        getChannelConfigurationSection(String(issue.path[0])) ===
+          'connection' &&
+        !(managedCredentials && String(issue.path[0]) === 'key')
     )
   if (
     !connectionInvalid &&
     values.name.trim() &&
     values.type > 0 &&
-    (isEditing || values.key?.trim())
+    (isEditing || managedCredentials || values.key?.trim())
   ) {
     sections.connection = 'ready'
   }

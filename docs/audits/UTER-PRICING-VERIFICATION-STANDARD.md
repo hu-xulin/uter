@@ -33,8 +33,8 @@ matched without a channel quote.
 ## Live audit commands
 
 ```bash
-PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditXXAPILive -v
-PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditDreamRouterLive|TestAuditBailianLive' -v
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditUter.apiLive -v
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditUterRouteLive|TestAuditBailianLive' -v
 ```
 
 Live results are evidence for the specific snapshot, not a permanent guarantee.

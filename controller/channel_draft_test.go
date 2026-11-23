@@ -19,11 +19,16 @@ For commercial licensing, please contact support@uter.ai
 package controller
 
 import (
+	"bytes"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -43,4 +48,35 @@ func TestDraftPublishBlockersRequireBillablePrices(t *testing.T) {
 
 func TestDraftPublishBlockersAllowChannelsWithoutPricingRows(t *testing.T) {
 	assert.Empty(t, draftPublishBlockers(nil))
+}
+
+func TestCreateChannelDraftEnablesAutomaticUpstreamUpdates(t *testing.T) {
+	setupModelListControllerTestDB(t)
+	body := []byte(`{"type":1,"name":"auto draft","base_url":"https://example.com","key":"sk-test","models":"m-a"}`)
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/api/channel/draft", bytes.NewReader(body))
+	ctx.Request.Header.Set("Content-Type", "application/json")
+
+	CreateChannelDraft(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	var response struct {
+		Success bool `json:"success"`
+		Data    struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
+	require.True(t, response.Success)
+	require.Positive(t, response.Data.ID)
+
+	channel, err := model.GetChannelById(response.Data.ID, true)
+	require.NoError(t, err)
+	require.NotNil(t, channel)
+	settings := channel.GetOtherSettings()
+	assert.True(t, settings.Draft)
+	assert.True(t, settings.UpstreamModelUpdateCheckEnabled)
+	assert.True(t, settings.UpstreamModelUpdateAutoSyncEnabled)
+	assert.Equal(t, 0, channel.Status)
 }

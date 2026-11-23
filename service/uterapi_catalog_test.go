@@ -32,14 +32,14 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-func xxapiPricingServer(t *testing.T) *httptest.Server {
+func uterapiPricingServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != "/api/pricing" {
 			http.NotFound(writer, request)
 			return
 		}
-		if request.Header.Get("Authorization") != "Bearer sk-xxapi-test" {
+		if request.Header.Get("Authorization") != "Bearer sk-uterapi-test" {
 			writer.WriteHeader(http.StatusUnauthorized)
 			return
 		}
@@ -53,20 +53,20 @@ func xxapiPricingServer(t *testing.T) *httptest.Server {
 	return server
 }
 
-func TestFetchXXAPIPricingPayloadSendsChannelKey(t *testing.T) {
-	server := xxapiPricingServer(t)
-	payload, err := fetchXXAPIPricingPayload(context.Background(), server.URL, "sk-xxapi-test")
+func TestFetchUterAPIPricingPayloadSendsChannelKey(t *testing.T) {
+	server := uterapiPricingServer(t)
+	payload, err := fetchUterAPIPricingPayload(context.Background(), server.URL, "sk-uterapi-test")
 	require.NoError(t, err)
 	require.Len(t, payload.Data, 1)
 	assert.Equal(t, "gpt-a", payload.Data[0].ModelName)
 	assert.InDelta(t, 0.5, payload.GroupRatio["Codex"], 1e-9)
 }
 
-func TestXXAPIProviderAdapterIsRegistered(t *testing.T) {
-	server := xxapiPricingServer(t)
-	payload, err := FetchUpstreamCatalog(context.Background(), "xxapi", UpstreamFetchConfig{
+func TestUterAPIProviderAdapterIsRegistered(t *testing.T) {
+	server := uterapiPricingServer(t)
+	payload, err := FetchUpstreamCatalog(context.Background(), "uterapi", UpstreamFetchConfig{
 		BaseURL: server.URL,
-		APIKey:  "sk-xxapi-test",
+		APIKey:  "sk-uterapi-test",
 	})
 	require.NoError(t, err)
 	result, ok := payload.(*GenericPricingPayload)
@@ -74,17 +74,17 @@ func TestXXAPIProviderAdapterIsRegistered(t *testing.T) {
 	require.Len(t, result.Data, 1)
 }
 
-func TestXXAPIPricingEndpointAcceptsFullPriceURL(t *testing.T) {
-	endpoint, err := xxapiPricingEndpointFor("https://xxapi.ai/api/pricing")
+func TestUterAPIPricingEndpointAcceptsFullPriceURL(t *testing.T) {
+	endpoint, err := uterapiPricingEndpointFor("https://uterapi.ai/api/pricing")
 	require.NoError(t, err)
-	assert.Equal(t, "https://xxapi.ai/api/pricing", endpoint)
+	assert.Equal(t, "https://uterapi.ai/api/pricing", endpoint)
 
-	endpoint, err = xxapiPricingEndpointFor("https://xxapi.ai/v1")
+	endpoint, err = uterapiPricingEndpointFor("https://uterapi.ai/v1")
 	require.NoError(t, err)
-	assert.Equal(t, "https://xxapi.ai/api/pricing", endpoint)
+	assert.Equal(t, "https://uterapi.ai/api/pricing", endpoint)
 }
 
-func TestXXAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
+func TestUterAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 	entry := GenericPricingEntry{
 		ModelName: "gpt-a", BillingMode: "tiered_expr",
 		BillingExpr: `tier("base", p * 10 + c * 50)`,
@@ -113,11 +113,11 @@ func TestXXAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 	assert.Contains(t, internal.BillingExpr, "1.1")
 }
 
-func TestXXAPIGenericSyncRequiresBillingGroup(t *testing.T) {
-	base := "https://xxapi.ai"
+func TestUterAPIGenericSyncRequiresBillingGroup(t *testing.T) {
+	base := "https://uterapi.ai"
 	channel := &model.Channel{
 		Id: 999999, Type: constant.ChannelTypeNewAPI,
-		BaseURL: &base, Key: "sk-xxapi-test",
+		BaseURL: &base, Key: "sk-uterapi-test",
 	}
 	_, _, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
 	require.ErrorContains(t, err, "no upstream billing group")

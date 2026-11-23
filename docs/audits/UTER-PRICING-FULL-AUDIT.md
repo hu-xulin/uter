@@ -23,9 +23,9 @@ Packages reviewed: `model/`, `service/`, `controller/`, `relay/`,
 
 | ID | Priority | Finding | Status |
 |---|---|---|---|
-| P0-1 | P0 | Price-source recognition diverged: `autoDerivedInternalSource` accepted `generic-` but `internalPricingReplaceable` did not, so generic/xxapi sync prices could not be updated reliably. | Fixed |
+| P0-1 | P0 | Price-source recognition diverged: `autoDerivedInternalSource` accepted `generic-` but `internalPricingReplaceable` did not, so generic/Uter.api sync prices could not be updated reliably. | Fixed |
 | P0-2 | P0 | Parity audit folded official and channel quotes into one `HasOfficial` flag, hiding ratio-only estimates. | Fixed |
-| P0-3 | P0 | XXAPI channel price sync called `/api/pricing` without the channel API key and XXAPI was absent from the provider adapter registry. | Fixed |
+| P0-3 | P0 | Uter.api channel price sync called `/api/pricing` without the channel API key and Uter.api was absent from the provider adapter registry. | Fixed |
 | P0-4 | P0 | A channel that already had channel-scoped prices fell back to global pricing when one model row was missing. | Fixed |
 | P1-1 | P1 | Audit freshness used 7 days while the pricing screen used 48 hours. | Fixed |
 | P1-2 | P1 | Full upstream catalog parity (upstream models absent from DB) is still not computed in the audit report. | Fixed: API now fetches the provider catalog and reports `MODEL_MISSING` |
@@ -39,8 +39,8 @@ Packages reviewed: `model/`, `service/`, `controller/`, `relay/`,
 
 `model/channel_model_pricing.go` now uses one prefix set for both
 `autoDerivedInternalSource` and `internalPricingReplaceable`:
-`dreamrouter-`, `bailian-`, `newapi-`, `newapi:`, `generic-`, `generic:`,
-`xxapi-`, `apiko-` (legacy cleanup). Operator, batch and approved prices remain
+`uterroute-`, `bailian-`, `newapi-`, `newapi:`, `generic-`, `generic:`,
+`Uter.api-`, `apiko-` (legacy cleanup). Operator, batch and approved prices remain
 protected.
 
 ### 3.2 Separate official price, estimate and channel quote
@@ -60,12 +60,12 @@ Ratio-only rows without a channel quote are reported as `PRICE_MISMATCH`
 instead of `FULLY_MATCHED`. Freshness is 48 hours, matching the channel pricing
 screen.
 
-### 3.3 XXAPI authentication and provider registration
+### 3.3 Uter.api authentication and provider registration
 
-- `SyncXXAPIChannelPricing` resolves the channel key with
+- `SyncUter.apiChannelPricing` resolves the channel key with
   `GetNextEnabledKey()` and forwards it as `Authorization: Bearer`.
 - A missing key fails the sync instead of claiming success.
-- `xxapiAdapter` is registered in `UpstreamProviderAdapter` with its real
+- `Uter.apiAdapter` is registered in `UpstreamProviderAdapter` with its real
   capability boundaries (gateway quote, not vendor official price).
 
 ### 3.4 Incomplete provider catalogs are rejected
@@ -74,9 +74,9 @@ Bailian pagination now fails the sync when the fetched model count is smaller
 than the upstream's reported total. A partial page set can no longer be
 published as a complete catalog and trigger mass model removal.
 
-### 3.4 Generic/XXAPI scheduled rules and change review
+### 3.4 Generic/Uter.api scheduled rules and change review
 
-Generic/New API and XXAPI scheduled syncs now:
+Generic/New API and Uter.api scheduled syncs now:
 
 - snapshot prices before writing;
 - detect real price movements;
@@ -95,7 +95,7 @@ claim.
 
 ### 3.5 Cross-instance price-sync lock
 
-Generic/New API and XXAPI channel price syncs now claim a database-backed
+Generic/New API and Uter.api channel price syncs now claim a database-backed
 `channel_price_sync:<id>` lock before fetching or writing. A second instance
 returns `ErrPricingSyncInProgress` instead of writing a competing snapshot; the
 lock is released when the sync finishes.
@@ -116,7 +116,7 @@ global path.
 | `go test ./model ./service ./relay/helper ./relay -count=1` | all passed |
 | `go test ./model -run 'TestAutoDerivedSourcesAgreeAcrossFunctions|TestChannelUsesScopedPricing'` | passed |
 | `go test ./service -run 'TestBuildUpstreamParityReport'` | passed |
-| `go test ./service -run 'TestFetchXXAPIPricingPayloadSendsChannelKey|TestXXAPIProviderAdapterIsRegistered'` | passed |
+| `go test ./service -run 'TestFetchUter.apiPricingPayloadSendsChannelKey|TestUter.apiProviderAdapterIsRegistered'` | passed |
 | `go test ./relay/helper -run 'TestScopedChannelMissingModelDoesNotFallBackToGlobalPrice'` | passed |
 
 ## 4.1 Live catalog verification (2026-11-22)
@@ -124,14 +124,14 @@ global path.
 Commands:
 
 ```bash
-PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditXXAPILive -v
-PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditDreamRouterLive|TestAuditBailianLive' -v
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditUter.apiLive -v
+PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run 'TestAuditUterRouteLive|TestAuditBailianLive' -v
 ```
 
 | Provider | Result |
 |---|---|
-| XXAPI | 51 models, 51 pricing records, 51 executable expressions, 14 groups, 0 failures |
-| DreamRouter | 86 records, 54 executable, 32 intentional review rows (24 ratio-only + 8 historical), 0 execution failures |
+| Uter.api | 51 models, 51 pricing records, 51 executable expressions, 14 groups, 0 failures |
+| Uter Route | 86 records; after the 2026-11-23 ratio/historical auto-pricing policy, all stored rows are configured and executable; 0 execution failures |
 | Bailian | 275 catalog models, 134 records, 105 internal prices, 105 executable with canonical facts for all referenced usage keys |
 
 The earlier three image-expression failures were audit-fixture gaps: the
@@ -156,7 +156,7 @@ catalog audit.
    field and must never be treated as full contract cost.
 3. Manual providers still require operator-confirmed prices or official
    documents; no automatic fetch was invented for them.
-4. XXAPI public catalog was verified live (51/51 executable). Real-key group
+4. Uter.api public catalog was verified live (51/51 executable). Real-key group
    sync still requires an authorized key; the pricing document itself is public.
 5. Real upstream invoice reconciliation is blocked without authorized billing
    exports.
@@ -171,17 +171,17 @@ catalog audit.
 
 | Channel | Official | Channel quote | Uter default |
 |---|---|---|---|
-| DreamRouter new channel, `claude-fable-5` | expression `p*10+c*50+cr*1+cc*12.5+cc1h*20` | 6 / 30 USD per 1M (0.6 group) | expression × 0.6 × **1.1** → 6.6 / 33 |
+| Uter Route new channel, `claude-fable-5` | expression `p*10+c*50+cr*1+cc*12.5+cc1h*20` | 6 / 30 USD per 1M (0.6 group) | expression × 0.6 × **1.1** → 6.6 / 33 |
 | Bailian, `MiniMax/MiniMax-M3` | channel catalog quote | 0.6278026906 / 2.5112107623 | 0.6905829596 / 2.7623318386 (×1.1) |
-| XXAPI, expression example | gateway expression (no vendor list price) | expression × group ratio (unit test: 5 / 25) | expression × group × **1.1** |
+| Uter.api, expression example | gateway expression (no vendor list price) | expression × group ratio (unit test: 5 / 25) | expression × group × **1.1** |
 
 Bailian seed now refreshes previous automatic prices (source `bailian-*`) while
-protecting operator/batch prices. XXAPI live groups: 14; creation without a key
+protecting operator/batch prices. Uter.api live groups: 14; creation without a key
 is rejected.
 
 ## 5.0 Sample reconciliation attempt (2026-11-23)
 
-DreamRouter usage page: 9 rows today (00:27–03:30), 7 matched to Uter consume
+Uter Route usage page: 9 rows today (00:27–03:30), 7 matched to Uter consume
 logs by timestamp, 2 unmatched (retry/timeout candidates).
 
 Supplier lines can now carry `occurred_at`; Uter resolves the nearest consume

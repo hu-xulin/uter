@@ -47,7 +47,7 @@ func TestBailianCatalogChangesIgnoresMissingSnapshotsAndModels(t *testing.T) {
 
 func TestRecordBailianSyncFailureBacksOffAndCaps(t *testing.T) {
 	now := time.Unix(1000, 0)
-	state := dreamRouterChannelSyncState{}
+	state := uterRouteChannelSyncState{}
 	recordBailianSyncFailure(&state, now)
 	require.Equal(t, 1, state.Failures)
 	require.Equal(t, now.Add(time.Minute).Unix(), state.NextAttemptAt)

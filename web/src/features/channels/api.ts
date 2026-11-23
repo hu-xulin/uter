@@ -1,3 +1,21 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
 import { getGroups as getUserGroups } from '@/features/users/api'
 import { api, type ApiRequestConfig } from '@/lib/api'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -195,7 +213,7 @@ export async function createChannel(
   return res.data
 }
 
-export type XXAPIChannelResult = {
+export type UterAPIChannelResult = {
   channel_id?: number
   name: string
   type?: number
@@ -206,43 +224,43 @@ export type XXAPIChannelResult = {
   error?: string
 }
 
-export type XXAPICreateResult = {
+export type UterAPICreateResult = {
   success: boolean
   message?: string
-  data?: { channels: XXAPIChannelResult[]; created: number }
+  data?: { channels: UterAPIChannelResult[]; created: number }
 }
 
 /**
- * Create one channel per xxapi key. The Claude key only enables the Claude
+ * Create one channel per uterapi key. The Claude key only enables the Claude
  * models it can access and the GPT key only the GPT models, so a single channel
  * never rotates across pools.
  */
-export type XXAPIKeySlot = {
+export type UterAPIKeySlot = {
   name: string
   group: string
   keys: string[]
 }
 
-export async function createXXAPIChannels(payload: {
-  slots: XXAPIKeySlot[]
+export async function createUterAPIChannels(payload: {
+  slots: UterAPIKeySlot[]
   group?: string
-}): Promise<XXAPICreateResult> {
+}): Promise<UterAPICreateResult> {
   const res = await api.post(
-    '/api/channel/xxapi',
+    '/api/channel/uterapi',
     payload,
     channelActionConfig()
   )
   return res.data
 }
 
-export type XXAPIPricingGroup = { key: string; name: string; ratio: number }
+export type UterAPIPricingGroup = { key: string; name: string; ratio: number }
 
-/** Billing groups published by the xxapi pricing document. */
-export async function getXXAPIPricingGroups(): Promise<{
+/** Billing groups published by the uterapi pricing document. */
+export async function getUterAPIPricingGroups(): Promise<{
   success: boolean
-  data?: { groups: XXAPIPricingGroup[] }
+  data?: { groups: UterAPIPricingGroup[] }
 }> {
-  const res = await api.get('/api/channel/xxapi/groups')
+  const res = await api.get('/api/channel/uterapi/groups')
   return res.data
 }
 
@@ -984,7 +1002,7 @@ export async function applyBailianCatalog(channelId: number) {
   return res.data?.data
 }
 
-export type DreamRouterUpstreamSummary = {
+export type UterRouteUpstreamSummary = {
   provider_id: string
   fetched_at: string
   pricing_version?: string
@@ -1001,39 +1019,46 @@ export type DreamRouterUpstreamSummary = {
   changes?: number
 }
 
-export type DreamRouterUpstreamSnapshot =
+export type UterRouteUpstreamSnapshot =
   | { synced: false }
   | {
       synced: true
-      summary: DreamRouterUpstreamSummary
+      summary: UterRouteUpstreamSummary
       models: Array<Record<string, unknown>>
       discount_group?: string
       discount_groups?: string[]
     }
 
-export type DreamRouterSyncResult = DreamRouterUpstreamSummary & {
+export type UterRouteSyncResult = UterRouteUpstreamSummary & {
   discount_group?: string
   discount_groups?: string[]
 }
 
-export async function getDreamRouterUpstreamSnapshot(
+export type UterRouteEndpoint = { base_url: string; host: string }
+
+export async function getUterRouteEndpoint(): Promise<UterRouteEndpoint> {
+  const res = await api.get('/api/upstream/uterroute/endpoint')
+  return requireServerSuccess(res.data).data as UterRouteEndpoint
+}
+
+export async function getUterRouteUpstreamSnapshot(
   channelId?: number
-): Promise<DreamRouterUpstreamSnapshot> {
-  const res = await api.get('/api/upstream/dreamrouter/snapshot', {
+): Promise<UterRouteUpstreamSnapshot> {
+  const res = await api.get('/api/upstream/uterroute/snapshot', {
     params: channelId ? { channel_id: channelId } : undefined,
   })
   return res.data?.data ?? { synced: false }
 }
 
-export async function syncDreamRouterUpstream(
+export async function syncUterRouteUpstream(
   channelId: number,
   baseUrl?: string,
   discountGroup?: string
-): Promise<DreamRouterSyncResult> {
+): Promise<UterRouteSyncResult> {
   const res = await api.post<{
     success: boolean
-    data: DreamRouterSyncResult
-  }>('/api/upstream/dreamrouter/sync', {
+    data: UterRouteSyncResult
+  }>('/api/upstream/uterroute/sync', {
     channel_id: channelId,
     base_url: baseUrl,
     discount_group: discountGroup,

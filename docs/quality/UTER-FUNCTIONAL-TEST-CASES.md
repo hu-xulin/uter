@@ -15,7 +15,7 @@
 | 全量测试套件 | **306 文件 / 3159 用例全部通过，exit 0**（第 6 轮） |
 | Go 四模块 | 68 个包全部 `ok`，exit 0 |
 | 真库矩阵 | MySQL 8 / PostgreSQL 16 全量 `controller` + `model` 通过；ClickHouse 24.8 冒烟通过 |
-| 真实上游（DreamRouter） | 文本 60 个：59 通过、1 上游账号受限；媒体 25 个：22 通过、3 上游限制；单次均 ≤ $0.2 |
+| 真实上游（UterRoute） | 文本 60 个：59 通过、1 上游账号受限；媒体 25 个：22 通过、3 上游限制；单次均 ≤ $0.2 |
 | axe 可访问性 | **14/14 通过，exit 0** |
 | 视觉回归（Playwright 29 项） | **29/29 通过，exit 0**（基线已按当前 UI 刷新） |
 | UAP 治理测试 | 101 项，exit 0 |
@@ -310,7 +310,7 @@
 | TC-DB-004 | PostgreSQL 真库 | 迁移/查询/方言行为 | 真实 PostgreSQL 16（命令 #16） | PASS |
 | TC-DB-005 | ClickHouse 日志库 | 打开/迁移/写入/读取 | 真实 ClickHouse 24.8（命令 #15） | PASS |
 
-### 4.15 真实上游 DreamRouter 验证（TC-UPSTREAM，新增）
+### 4.15 真实上游 Uter Route 验证（TC-UPSTREAM，新增）
 
 隔离栈（生产库只读复制、独立端口 3100）内，用真实 Key 走 Uter 链路逐模型调用。
 
@@ -338,8 +338,8 @@
 |---|---|---|---|
 | gpt-image 系列 | 5 | Uter `/v1/images/generations` | 5/5 PASS（均返回图片；单次最高 11886 quota ≈ $0.024） |
 | Gemini 图像系列 | 5 | Uter `/v1beta/...:generateContent` | 5/5 PASS（单次 8775–54000 quota ≈ $0.018–$0.108） |
-| seedream / qwen-image / wan2.7-image | 5 | 直连 DreamRouter（Uter 被任务插件认领、无可用插件渠道） | 5/5 PASS（均返回图片） |
-| Seedance（2.0/2.5/ab）与 wan3.0-video | 7 | 直连 DreamRouter `/v1/videos`（最短时长、480P） | 7/7 completed，均返回视频 URL |
+| seedream / qwen-image / wan2.7-image | 5 | 直连 UterRoute（Uter 被任务插件认领、无可用插件渠道） | 5/5 PASS（均返回图片） |
+| Seedance（2.0/2.5/ab）与 wan3.0-video | 7 | 直连 Uter Route `/v1/videos`（最短时长、480P） | 7/7 completed，均返回视频 URL |
 | `doubao-seedance-2-5-260628` | 1 | 直连 | 上游 500：分组 auto 无可用渠道 |
 | `seedance-2.0-fast` / `-mini` | 2 | 直连 | 上游 400：`invalid model parameter`（该视频 API 不接受这两个别名） |
 

@@ -33,7 +33,6 @@ Checkbox / Radio / Switch / Select / Combobox / Multi-select / Slider / Date Pic
 7. Slider 轨道 4px、滑块 16px；键盘方向键步进 1、PageUp/PageDown 步进 10；aria-valuenow/min/max 必填
 8. Date Picker 面板宽 320px，日期格 36×36px；今天 1px brand-1 边框，选中 brand-1 实底
 9. 所有控件 8 状态齐全；Disabled 不参与 Tab；Focus 2px 焦点环
-10. 下拉面板宽度 = max(触发器宽度, 内容宽度)，上限为视口可用宽度；选项文本必须完整显示，超长时换行。禁止用固定触发器宽度 + overflow-x-hidden / truncate / line-clamp / whitespace-nowrap 截断选项（Select / Combobox / DropdownMenu 共用此规则）
 
 ## 3. Tokens
 
@@ -82,7 +81,6 @@ Showcase 中 `#mod-20` 分区提供本模块的真实渲染：色块、字号、
 ## 8. Don't
 
 - Disabled 控件保留 Tab 焦点
-- 下拉选项被截断、省略或以触发器宽度裁剪（面板必须容纳完整选项文本）
 - 只用颜色表达选中
 
 ## 9. Accessibility

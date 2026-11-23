@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /** End of a sentence: CJK terminators, or a Latin period before a space/EOF. */
 const SENTENCE_END = /[。！？!?]|\.(?=\s|$)/u
 

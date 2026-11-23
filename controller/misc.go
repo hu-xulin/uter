@@ -131,6 +131,7 @@ func GetStatus(c *gin.Context) {
 		"oidc_authorization_endpoint": system_setting.GetOIDCSettings().AuthorizationEndpoint,
 		"oidc_display_name":           system_setting.GetOIDCSettings().GetEffectiveDisplayName(),
 		"passkey_login":               passkeySetting.Enabled,
+		"twofa_enabled":               service.TwoFAEnrollmentEnabled(),
 		"passkey_display_name":        passkeySetting.RPDisplayName,
 		"passkey_rp_id":               passkeySetting.EffectiveRPID(),
 		"passkey_rp_ids":              passkeySetting.RelyingPartyIDs(),

@@ -944,8 +944,8 @@ func formatInternalPrice(value float64) string {
 func autoDerivedInternalSource(source string) bool {
 	source = strings.ToLower(strings.TrimSpace(source))
 	for _, prefix := range []string{
-		"dreamrouter-", "bailian-", "newapi-", "newapi:",
-		"generic-", "generic:", "xxapi-", "apiko-",
+		"uterroute-", "bailian-", "newapi-", "newapi:",
+		"generic-", "generic:", "uterapi-", "apiko-",
 	} {
 		if strings.HasPrefix(source, prefix) {
 			return true

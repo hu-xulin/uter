@@ -10,16 +10,16 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-func TestChannelModelPricingViewExposesDreamRouterQuote(t *testing.T) {
+func TestChannelModelPricingViewExposesUterRouteQuote(t *testing.T) {
 	ratio, completion, cache := 2.5, 5.0, 0.1
 	raw, err := common.Marshal(service.UpstreamModelRecord{
-		ProviderID: "dreamrouter", ModelName: "gpt-a",
+		ProviderID: "uterroute", ModelName: "gpt-a",
 		ModelRatio: &ratio, CompletionRatio: &completion, CacheRatio: &cache,
 	})
 	require.NoError(t, err)
 
 	view := channelModelPricingToView(model.ChannelModelPricing{
-		ChannelId: 7, ModelName: "gpt-a", Provider: "dreamrouter",
+		ChannelId: 7, ModelName: "gpt-a", Provider: "uterroute",
 		OfficialPricing: string(raw), NormalizedPricing: `{}`,
 	})
 	require.NotNil(t, view.UpstreamQuote)
@@ -76,12 +76,12 @@ func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
 		},
 		DiscountRatio: &discount,
-		Source:        "dreamrouter-official",
+		Source:        "uterroute-official",
 	})
 	require.NoError(t, err)
 
 	view := channelModelPricingToView(model.ChannelModelPricing{
-		ChannelId: 9, ModelName: "claude-a", Provider: "dreamrouter",
+		ChannelId: 9, ModelName: "claude-a", Provider: "uterroute",
 		NormalizedPricing: string(normalized),
 	})
 	require.NotNil(t, view.UpstreamQuote)
@@ -129,7 +129,7 @@ func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
 	})
 	require.NoError(t, err)
 	view := channelModelPricingToView(model.ChannelModelPricing{
-		ChannelId: 11, ModelName: "vision-a", Provider: "xxapi",
+		ChannelId: 11, ModelName: "vision-a", Provider: "uterapi",
 		NormalizedPricing: string(normalized),
 	})
 	require.NotNil(t, view.UpstreamQuote)

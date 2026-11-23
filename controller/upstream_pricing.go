@@ -13,12 +13,12 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-// SyncDreamRouterUpstream fetches DreamRouter's public pricing document into
+// SyncUterRouteUpstream fetches UterRoute's public pricing document into
 // an isolated snapshot. It never writes ModelRatio, ModelPrice,
 // billing_expr, or another channel's configuration.
 //
-// POST /api/upstream/dreamrouter/sync
-func SyncDreamRouterUpstream(c *gin.Context) {
+// POST /api/upstream/uterroute/sync
+func SyncUterRouteUpstream(c *gin.Context) {
 	var req struct {
 		BaseURL       string `json:"base_url"`
 		ChannelID     int    `json:"channel_id"`
@@ -27,7 +27,7 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 	_ = c.ShouldBindJSON(&req)
 
 	var channelModels []string
-	discountGroup := service.DreamRouterDiscountGroupDefault
+	discountGroup := service.UterRouteDiscountGroupDefault
 	if req.ChannelID > 0 {
 		channel, err := model.GetChannelById(req.ChannelID, true)
 		if err != nil || channel == nil {
@@ -43,13 +43,13 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 		}
 		matched := false
 		for _, candidate := range baseURLs {
-			if service.IsDreamRouterHost(candidate) {
+			if service.IsUterRouteHost(candidate) {
 				matched = true
 				break
 			}
 		}
 		if !matched {
-			common.ApiErrorMsg(c, "The selected channel Base URL is not dreamrouter.ai")
+			common.ApiErrorMsg(c, "The selected channel Base URL is not the configured Uter Route endpoint")
 			return
 		}
 		release, acquired, lockErr := service.AcquireChannelPricingSyncLock(req.ChannelID)
@@ -63,18 +63,18 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 		}
 		defer release()
 		channelModels = channel.GetModels()
-		discountGroup = service.GetDreamRouterDiscountGroup(req.ChannelID)
+		discountGroup = service.GetUterRouteDiscountGroup(req.ChannelID)
 		if strings.TrimSpace(req.DiscountGroup) != "" {
 			discountGroup = strings.TrimSpace(req.DiscountGroup)
-			if err := service.SetDreamRouterDiscountGroup(req.ChannelID, discountGroup); err != nil {
+			if err := service.SetUterRouteDiscountGroup(req.ChannelID, discountGroup); err != nil {
 				common.ApiErrorMsg(c, err.Error())
 				return
 			}
 		}
 	}
 
-	previous := service.LoadDreamRouterUpstreamSnapshot()
-	snapshot, err := service.FetchDreamRouterUpstream(c.Request.Context(), req.BaseURL)
+	previous := service.LoadUterRouteUpstreamSnapshot()
+	snapshot, err := service.FetchUterRouteUpstream(c.Request.Context(), req.BaseURL)
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
@@ -83,19 +83,19 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 	// The first pull establishes the baseline; reporting 86 "model_added"
 	// entries for it would only be noise.
 	if previous != nil {
-		changes = service.DiffDreamRouterUpstream(previous, snapshot)
-		if err := service.AppendDreamRouterUpstreamHistory(snapshot.ProviderID, changes); err != nil {
+		changes = service.DiffUterRouteUpstream(previous, snapshot)
+		if err := service.AppendUterRouteUpstreamHistory(snapshot.ProviderID, changes); err != nil {
 			common.ApiErrorMsg(c, err.Error())
 			return
 		}
 	}
-	if err := service.SaveDreamRouterUpstreamSnapshot(snapshot); err != nil {
+	if err := service.SaveUterRouteUpstreamSnapshot(snapshot); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
 	channelPricingWritten := 0
 	if req.ChannelID > 0 {
-		records, err := service.DreamRouterChannelPricingRecords(snapshot, req.ChannelID, channelModels, discountGroup)
+		records, err := service.UterRouteChannelPricingRecords(snapshot, req.ChannelID, channelModels, discountGroup)
 		if err != nil {
 			common.ApiErrorMsg(c, err.Error())
 			return
@@ -107,38 +107,38 @@ func SyncDreamRouterUpstream(c *gin.Context) {
 		}
 		channelPricingWritten = written
 	}
-	data := dreamRouterUpstreamSummary(snapshot)
+	data := uterRouteUpstreamSummary(snapshot)
 	data["channel_id"] = req.ChannelID
 	data["channel_pricing_written"] = channelPricingWritten
 	data["discount_group"] = discountGroup
-	data["discount_groups"] = service.DreamRouterDiscountGroups(snapshot)
+	data["discount_groups"] = service.UterRouteDiscountGroups(snapshot)
 	data["changes"] = len(changes)
 	data["changes_preview"] = previewChanges(changes)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": data})
 }
 
-// GetDreamRouterUpstreamSnapshot returns the last isolated DreamRouter
+// GetUterRouteUpstreamSnapshot returns the last isolated UterRoute
 // snapshot and its per-model records.
 //
-// GET /api/upstream/dreamrouter/snapshot
-func GetDreamRouterUpstreamSnapshot(c *gin.Context) {
-	snapshot := service.LoadDreamRouterUpstreamSnapshot()
+// GET /api/upstream/uterroute/snapshot
+func GetUterRouteUpstreamSnapshot(c *gin.Context) {
+	snapshot := service.LoadUterRouteUpstreamSnapshot()
 	if snapshot == nil {
 		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"synced": false}})
 		return
 	}
 	channelID, _ := strconv.Atoi(c.Query("channel_id"))
-	discountGroup := service.GetDreamRouterDiscountGroup(channelID)
+	discountGroup := service.GetUterRouteDiscountGroup(channelID)
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
 		"synced":          true,
-		"summary":         dreamRouterUpstreamSummary(snapshot),
+		"summary":         uterRouteUpstreamSummary(snapshot),
 		"models":          snapshot.Models,
 		"discount_group":  discountGroup,
-		"discount_groups": service.DreamRouterDiscountGroups(snapshot),
+		"discount_groups": service.UterRouteDiscountGroups(snapshot),
 	}})
 }
 
-func dreamRouterUpstreamSummary(snapshot *service.UpstreamSnapshot) gin.H {
+func uterRouteUpstreamSummary(snapshot *service.UpstreamSnapshot) gin.H {
 	return gin.H{
 		"provider_id":       snapshot.ProviderID,
 		"fetched_at":        snapshot.FetchedAt.Format(time.RFC3339),
@@ -160,4 +160,13 @@ func previewChanges(changes []service.UpstreamPriceChange) []service.UpstreamPri
 		return changes
 	}
 	return changes[:limit]
+}
+
+// GetUterRouteEndpoint returns the configured operational endpoint so the admin
+// console can recognise Uter Route channels without hardcoding a supplier host.
+func GetUterRouteEndpoint(c *gin.Context) {
+	common.ApiSuccess(c, gin.H{
+		"base_url": service.UterRouteUpstreamBaseURL(),
+		"host":     service.UterRouteUpstreamHost(),
+	})
 }

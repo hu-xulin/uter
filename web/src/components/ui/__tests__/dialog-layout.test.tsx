@@ -99,7 +99,8 @@ describe('dialog viewport layout', () => {
       'top-[var(--dialog-viewport-center,50dvh)]',
       'max-h-[var(--dialog-available-height,calc(100dvh-2rem))]',
       'overflow-y-auto',
-      'overscroll-contain'
+      'overscroll-contain',
+      'min-h-[var(--ds-dialog-confirm-min-height)]'
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(onConfirm).toHaveBeenCalledOnce()

@@ -3,17 +3,18 @@ package controller
 import (
 	"io"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
 )
 
-// TestParseDreamrouterSeedance proves the upstream-compatible pricing parser
-// reads the seedance family out of the live DreamRouter /api/pricing payload
+// TestParseUterRouteSeedance proves the upstream-compatible pricing parser
+// reads the seedance family out of the live Uter Route /api/pricing payload
 // and turns each entry into a usable numeric `model_ratio`.
 //
 // It deliberately asserts on *parser behaviour* rather than on one specific
-// model name: DreamRouter renames and retires models over time (the original
+// model name: Uter Route renames and retires models over time (the original
 // probe pinned `doubao-seedance-2-0-260128`, which upstream has since dropped
 // in favour of `seedance-2-0-fast` / `seedance-2-0-mini`), and a hardcoded name
 // turns any upstream catalogue change into a red build. Pinning the family
@@ -21,9 +22,13 @@ import (
 // ratios") while staying stable across upstream churn.
 //
 // This is a read-only probe against the upstream; it mutates nothing.
-func TestParseDreamrouterSeedance(t *testing.T) {
+func TestParseUterRouteSeedance(t *testing.T) {
+	baseURL := strings.TrimSpace(os.Getenv("UTER_ROUTE_TEST_BASE_URL"))
+	if baseURL == "" {
+		t.Skip("set UTER_ROUTE_TEST_BASE_URL to run the live parse check")
+	}
 	client := &http.Client{Timeout: 40 * time.Second}
-	resp, err := client.Get("https://api.dreamrouter.ai/api/pricing")
+	resp, err := client.Get(strings.TrimRight(baseURL, "/") + "/api/pricing")
 	if err != nil {
 		t.Skip("upstream unreachable, skipping live parse check:", err)
 	}

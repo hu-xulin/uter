@@ -26,7 +26,7 @@ import (
 )
 
 // GenericUpstreamHistoryKey stores the bounded price-change log for New API
-// compatible channels. DreamRouter/Bailian keep their own provider logs.
+// compatible channels. UterRoute/Bailian keep their own provider logs.
 const GenericUpstreamHistoryKey = "GenericUpstreamPriceHistory"
 
 func mergeUpstreamHistory(

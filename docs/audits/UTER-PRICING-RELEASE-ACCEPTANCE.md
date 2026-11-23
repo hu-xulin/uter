@@ -18,11 +18,11 @@ Current decision: **NOT PRODUCTION READY**. Overall status:
 | No automatic overwrite of operator price | PASS | auto-source prefix protection |
 | Purchase contract dimensions | PARTIAL | backend stores full tiers/dimensions; editor exposes flat input/output/call/second/minute |
 | No cross-channel/region/deployment price reuse | PASS | channel id + model + region/deployment scoping; provider label is not the sole key |
-| Provider label normalization | PARTIAL | legacy type-60 channels may report `uter` while the row provider is DreamRouter/New API |
+| Provider label normalization | PARTIAL | legacy type-60 channels may report `uter` while the row provider is UterRoute/New API |
 | No unauthorized fallback | PASS for channels with scoped rows | channels without rows keep legacy path |
 | Missing dimensions not defaulted to zero | PASS in price parsers | missing output stays review-only |
 | Unreviewed price not auto-billed | PASS | review gate + threshold |
-| Expressions executable | PASS for live XXAPI/Bailian/DreamRouter except intentional review rows | live audit |
+| Expressions executable | PASS for live Uter.api/Bailian/Uter Route except intentional review rows | live audit |
 | Request price version traceability | PASS | billing snapshot + `pricing_version` |
 | Pre-consume/settle/refund same contract | PASS in code | billing tests |
 | Auto sync/update/verify | PASS (code) | locks, backoff, catalog verify |

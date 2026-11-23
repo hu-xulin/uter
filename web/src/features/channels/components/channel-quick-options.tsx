@@ -53,6 +53,8 @@ type ChannelQuickOptionsProps = {
    * is switched on. Resolves `false` when they decline; switching off never asks.
    */
   confirmEnablePassthrough: (kind: PassthroughKind) => Promise<boolean>
+  /** The dedicated update step owns this switch in the create flow. */
+  hideModelUpdateCheck?: boolean
 }
 
 type QuickOption = {
@@ -152,7 +154,10 @@ export function ChannelQuickOptions(props: ChannelQuickOptionsProps) {
       }),
     disabled: props.disabled,
   })
-  if (MODEL_FETCHABLE_TYPES.has(props.channelType)) {
+  if (
+    MODEL_FETCHABLE_TYPES.has(props.channelType) &&
+    !props.hideModelUpdateCheck
+  ) {
     options.push({
       key: 'model-check',
       label: t('Detect model updates'),

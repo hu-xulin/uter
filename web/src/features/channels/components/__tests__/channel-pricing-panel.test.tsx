@@ -118,13 +118,17 @@ beforeEach(() => {
   })
 })
 
-function renderPanel() {
+function renderPanel(options: { showSchedule?: boolean } = {}) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
   return render(
     <QueryClientProvider client={client}>
-      <ChannelPricingPanel channelId={7} baseUrl='https://example.com' />
+      <ChannelPricingPanel
+        channelId={7}
+        baseUrl='https://example.com'
+        showSchedule={options.showSchedule}
+      />
     </QueryClientProvider>
   )
 }
@@ -156,7 +160,6 @@ test('scheduled update fields expose labels and descriptions', async () => {
   for (const label of [
     'Review mode',
     'Review threshold (%)',
-    'Model sync interval (minutes)',
     'Official price interval (minutes)',
     'Channel price interval (minutes)',
   ]) {
@@ -164,7 +167,11 @@ test('scheduled update fields expose labels and descriptions', async () => {
   }
   expect(screen.getAllByText('Rule value hint').length).toBeGreaterThan(0)
   expect(screen.getByText('Review mode hint')).toBeVisible()
-  expect(screen.getByText('Model sync interval hint')).toBeVisible()
+  // The model list is owned by upstream model detection; the price schedule
+  // must not expose a second model-sync timer.
+  expect(
+    screen.queryByText('Model sync interval (minutes)')
+  ).not.toBeInTheDocument()
 })
 test('official-only rows expose an explicit adopt-official-price action', async () => {
   const post = vi.spyOn(api, 'post').mockResolvedValue({
@@ -199,10 +206,10 @@ test('renders official, channel and default-marked Uter prices separately', asyn
               {
                 channel_id: 7,
                 model_name: 'claude-fable-5',
-                provider: 'dreamrouter',
+                provider: 'uterroute',
                 region: '',
                 currency: 'USD',
-                pricing_source: 'dreamrouter-official',
+                pricing_source: 'uterroute-official',
                 pricing_status: 'configured',
                 pricing_version: 'v1',
                 fetched_at: Math.floor(Date.now() / 1000),
@@ -212,7 +219,7 @@ test('renders official, channel and default-marked Uter prices separately', asyn
                   unit: 'expression',
                   tiers: null,
                   price_kind: 'BILLING_EXPRESSION',
-                  source: 'dreamrouter-expression',
+                  source: 'uterroute-expression',
                   fetched_at: Math.floor(Date.now() / 1000),
                   billing_expr: 'tier("base", p * 10 + c * 50)',
                   expression_status: 'EXECUTABLE',
@@ -224,12 +231,12 @@ test('renders official, channel and default-marked Uter prices separately', asyn
                   input_per_million_usd: 6,
                   output_per_million_usd: 30,
                   discount_ratio: 0.6,
-                  source: 'dreamrouter-discount',
+                  source: 'uterroute-discount',
                 },
                 internal: {
                   mode: 'tiered_expr',
                   billing_expr: '((tier("base", p * 10 + c * 50)) * 0.6) * 1.1',
-                  source: 'dreamrouter-discount',
+                  source: 'uterroute-discount',
                   discount_ratio: 0.6,
                 },
               },
@@ -245,4 +252,11 @@ test('renders official, channel and default-marked Uter prices separately', asyn
   renderPanel()
   expect(await screen.findByText(/\$6\.0000 \/ \$30\.0000/)).toBeVisible()
   expect(await screen.findByText(/Uter sale price: Expression/)).toBeVisible()
+})
+
+test('create wizard hides the schedule because Automatic updates owns it', async () => {
+  renderPanel({ showSchedule: false })
+
+  expect((await screen.findAllByText('All models')).length).toBeGreaterThan(0)
+  expect(screen.queryByText('Scheduled price update')).not.toBeInTheDocument()
 })

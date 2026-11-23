@@ -8,11 +8,11 @@ import (
 	"github.com/uter-ai/uter/setting/config"
 )
 
-// TestLoadDreamRouterOfficialReferenceLegacySnapshotPerSecondFallback 锁定升级
+// TestLoadUterRouteOfficialReferenceLegacySnapshotPerSecondFallback 锁定升级
 // 兼容路径：**旧快照没有 per_second 标记**（上线前写入的历史数据）时，
 // 仍必须靠本地 billing_expr 的结构认出按秒计费模型，否则 ×586 的溢价角标
 // 要等到下一轮同步才消失——同步失败的话永远不消失。
-func TestLoadDreamRouterOfficialReferenceLegacySnapshotPerSecondFallback(t *testing.T) {
+func TestLoadUterRouteOfficialReferenceLegacySnapshotPerSecondFallback(t *testing.T) {
 	before := config.GlobalConfig.ExportAllConfigs()
 	t.Cleanup(func() {
 		config.GlobalConfig.LoadFromDB(map[string]string{
@@ -46,7 +46,7 @@ func TestLoadDreamRouterOfficialReferenceLegacySnapshotPerSecondFallback(t *test
 	}
 
 	// 历史快照：billing_class=tiered，**没有 per_second 字段**。
-	setDreamRouterSnapshot(t, `{
+	setUterRouteSnapshot(t, `{
 		"pricing_version":"legacy","synced_at":"2026-11-04T09:31:19+08:00",
 		"rule_direction":"increase","rule_amount":0.1,"channel_id":20,
 		"models":[
@@ -57,7 +57,7 @@ func TestLoadDreamRouterOfficialReferenceLegacySnapshotPerSecondFallback(t *test
 			 "uter":{"input":0.06268654}}
 		]}`)
 
-	entry, ok := LoadDreamRouterOfficialReference()["wan3.0-video"]
+	entry, ok := LoadUterRouteOfficialReference()["wan3.0-video"]
 	if !ok {
 		t.Fatal("旧快照的按秒模型也必须给出官方参照价")
 	}

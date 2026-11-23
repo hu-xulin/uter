@@ -7,17 +7,18 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 )
 
 func TestFetchUpstreamCatalogDispatchesAdapters(t *testing.T) {
-	dreamRouterServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	uterRouteServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/pricing", r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"success":true,"data":[{"model_name":"gpt-a","model_ratio":2.5}]}`))
 	}))
-	defer dreamRouterServer.Close()
+	defer uterRouteServer.Close()
 
-	payload, err := FetchUpstreamCatalog(context.Background(), "dreamrouter", UpstreamFetchConfig{BaseURL: dreamRouterServer.URL})
+	payload, err := FetchUpstreamCatalog(context.Background(), "uterroute", UpstreamFetchConfig{BaseURL: uterRouteServer.URL})
 	require.NoError(t, err)
 	snapshot, ok := payload.(*UpstreamSnapshot)
 	require.True(t, ok)
@@ -51,14 +52,17 @@ func TestManualProviderFetchNeverPretendsToSync(t *testing.T) {
 }
 
 func TestUpstreamProviderForChannelMapsTypesAndFallback(t *testing.T) {
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterRouteUpstreamURLOption: "https://example-upstream.test"}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
 	bailian := UpstreamProviderForChannel(17, "https://ws.cn-beijing.maas.aliyuncs.com")
 	require.Equal(t, "alibaba-bailian", bailian.ID)
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.OfficialPricing.Status)
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.DeploymentPricing.Status)
 
-	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
-	require.Equal(t, "dreamrouter", dreamRouter.ID)
-	require.Equal(t, CapabilityPartial, dreamRouter.Capabilities.OfficialPricing.Status)
+	uterRoute := UpstreamProviderForChannel(58, "https://example-upstream.test/v1")
+	require.Equal(t, "uterroute", uterRoute.ID)
+	require.Equal(t, CapabilityPartial, uterRoute.Capabilities.OfficialPricing.Status)
 
 	generic := UpstreamProviderForChannel(1, "https://api.example.com")
 	require.Equal(t, "newapi-compatible", generic.ID)
@@ -103,19 +107,22 @@ func TestUpstreamProvidersMarkUnsupportedPricingAsManual(t *testing.T) {
 }
 
 func TestProviderDescriptorsDeclarePerDimensionCoverage(t *testing.T) {
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterRouteUpstreamURLOption: "https://example-upstream.test"}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
 	bailian := UpstreamProviderForChannel(17, "")
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.TokenPricing.Status)
 	require.Equal(t, CapabilitySupported, bailian.Capabilities.PerMinutePricing.Status)
 
-	dreamRouter := UpstreamProviderForChannel(58, "https://dreamrouter.ai/v1")
-	require.Equal(t, CapabilityPartial, dreamRouter.Capabilities.PerSecondPricing.Status)
-	require.Equal(t, CapabilityUnsupported, dreamRouter.Capabilities.DeploymentPricing.Status)
-	require.NotEmpty(t, dreamRouter.SourceDocumentation)
-	require.NotEmpty(t, dreamRouter.SyncFrequency)
+	uterRoute := UpstreamProviderForChannel(58, "https://example-upstream.test/v1")
+	require.Equal(t, CapabilityPartial, uterRoute.Capabilities.PerSecondPricing.Status)
+	require.Equal(t, CapabilityUnsupported, uterRoute.Capabilities.DeploymentPricing.Status)
+	require.NotEmpty(t, uterRoute.SourceDocumentation)
+	require.NotEmpty(t, uterRoute.SyncFrequency)
 }
 
 func TestUterProviderSupportsEveryPriceDimension(t *testing.T) {
-	for _, baseURL := range []string{"https://api.uter.ai", "https://api.dreamrouter.ai"} {
+	for _, baseURL := range []string{"https://api.uter.ai", "https://api.example-upstream.test"} {
 		provider := UpstreamProviderForChannel(60, baseURL)
 		require.Equal(t, "uter", provider.ID, baseURL)
 		require.Equal(t, CapabilitySupported, provider.Capabilities.OfficialPricing.Status, baseURL)
@@ -133,11 +140,14 @@ func TestUterProviderSupportsEveryPriceDimension(t *testing.T) {
 	}
 }
 
-// A non-Uter relay whose base URL is DreamRouter keeps DreamRouter's pricing
+// A non-Uter relay whose base URL is Uter Route keeps UterRoute's pricing
 // adapter so its official price document is read with the right semantics.
-func TestDreamRouterHostWinsOverNonUterRelayType(t *testing.T) {
-	provider := UpstreamProviderForChannel(58, "https://api.dreamrouter.ai")
-	require.Equal(t, "dreamrouter", provider.ID)
+func TestUterRouteHostWinsOverNonUterRelayType(t *testing.T) {
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterRouteUpstreamURLOption: "https://example-upstream.test"}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+	provider := UpstreamProviderForChannel(58, "https://api.example-upstream.test")
+	require.Equal(t, "uterroute", provider.ID)
 	require.Equal(t, CapabilityPartial, provider.Capabilities.OfficialPricing.Status)
 	require.Equal(t, CapabilityPartial, provider.Capabilities.PerSecondPricing.Status)
 }

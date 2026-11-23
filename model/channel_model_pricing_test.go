@@ -378,12 +378,12 @@ func TestUpsertDerivedPricingPreservesManualOperatorPrice(t *testing.T) {
 			Mode:                ChannelPricingModePerMillionTokens,
 			InputUSDPerMillion:  floatPtr(input),
 			OutputUSDPerMillion: floatPtr(input * 5),
-			Source:              "dreamrouter-discount",
+			Source:              "uterroute-discount",
 		})
 		require.NoError(t, err)
 		return string(encoded)
 	}
-	record := officialRecord(7, "gpt-a", "dreamrouter-official")
+	record := officialRecord(7, "gpt-a", "uterroute-official")
 	record.InternalPricing = derived(3)
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
 	require.NoError(t, err)
@@ -432,13 +432,13 @@ func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
 			Unit:       "per_second",
 			PerUnitUSD: &channel,
 		},
-		Source: "dreamrouter-official",
+		Source: "uterroute-official",
 	}
 	normalized, err := common.Marshal(view)
 	require.NoError(t, err)
 	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
-		ChannelId: 8, Provider: "dreamrouter", ModelName: "wan-video",
-		Currency: "USD", NormalizedPricing: string(normalized), Source: "dreamrouter-official",
+		ChannelId: 8, Provider: "uterroute", ModelName: "wan-video",
+		Currency: "USD", NormalizedPricing: string(normalized), Source: "uterroute-official",
 	}})
 	require.NoError(t, err)
 
@@ -451,7 +451,7 @@ func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
 	internal, err := common.Marshal(ChannelInternalPricing{
 		Mode:         ChannelPricingModePerSecond,
 		PerSecondUSD: &seconds,
-		Source:       "dreamrouter-discount",
+		Source:       "uterroute-discount",
 	})
 	require.NoError(t, err)
 	var row ChannelModelPricing
@@ -484,14 +484,14 @@ func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
 			Mode:                ChannelPricingModePerMillionTokens,
 			InputUSDPerMillion:  floatPtr(input),
 			OutputUSDPerMillion: floatPtr(output),
-			Source:              "dreamrouter-discount",
+			Source:              "uterroute-discount",
 		})
 		require.NoError(t, err)
 		return string(encoded)
 	}
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{
-		{ChannelId: 1, Provider: "dreamrouter", ModelName: "m", Currency: "USD", InternalPricing: internal(0.3, 1.2), Source: "dreamrouter-official"},
-		{ChannelId: 2, Provider: "dreamrouter", ModelName: "m", Currency: "USD", InternalPricing: internal(0.2, 0.8), Source: "dreamrouter-official"},
+		{ChannelId: 1, Provider: "uterroute", ModelName: "m", Currency: "USD", InternalPricing: internal(0.3, 1.2), Source: "uterroute-official"},
+		{ChannelId: 2, Provider: "uterroute", ModelName: "m", Currency: "USD", InternalPricing: internal(0.2, 0.8), Source: "uterroute-official"},
 	})
 	require.NoError(t, err)
 	prices, _ := loadChannelInternalPrices([]AbilityWithChannel{
@@ -1142,14 +1142,14 @@ func TestUpsertReviewRecordNeverBecomesBillable(t *testing.T) {
 	input, output := 2.0, 4.0
 	internal, err := common.Marshal(ChannelInternalPricing{
 		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "dreamrouter-discount", UpdatedAt: 1,
+		OutputUSDPerMillion: &output, Source: "uterroute-discount", UpdatedAt: 1,
 	})
 	require.NoError(t, err)
 	normalized := `{"currency":"USD","unit":"expression","needs_review":true,"review_reasons":["HISTORICAL_SNAPSHOT"]}`
 	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
-		ChannelId: 61, Provider: "dreamrouter", ModelName: "reviewed", Currency: "USD",
+		ChannelId: 61, Provider: "uterroute", ModelName: "reviewed", Currency: "USD",
 		OfficialPricing: `{}`, NormalizedPricing: normalized,
-		InternalPricing: string(internal), Source: "dreamrouter-official", FetchedAt: 1,
+		InternalPricing: string(internal), Source: "uterroute-official", FetchedAt: 1,
 	}})
 	require.NoError(t, err)
 	var row ChannelModelPricing
@@ -1193,8 +1193,8 @@ func TestReviewGateKeepsBatchPriceAndClearsAutoPrice(t *testing.T) {
 
 func TestAutoDerivedSourcesAgreeAcrossFunctions(t *testing.T) {
 	for _, source := range []string{
-		"dreamrouter-discount", "bailian-channel", "newapi:/api/pricing",
-		"generic:/api/pricing", "xxapi-group", "apiko-expression",
+		"uterroute-discount", "bailian-channel", "newapi:/api/pricing",
+		"generic:/api/pricing", "uterapi-group", "apiko-expression",
 	} {
 		require.True(t, autoDerivedInternalSource(source), source)
 		encoded, err := common.Marshal(ChannelInternalPricing{Source: source})
@@ -1209,7 +1209,7 @@ func TestAutoDerivedSourcesAgreeAcrossFunctions(t *testing.T) {
 func TestChannelUsesScopedPricing(t *testing.T) {
 	db := setupChannelModelPricingDB(t)
 	require.NoError(t, db.Create(&ChannelModelPricing{
-		ChannelId: 77, Provider: "xxapi", ModelName: "gpt-a",
+		ChannelId: 77, Provider: "uterapi", ModelName: "gpt-a",
 	}).Error)
 	InvalidateChannelPricingPresence(77)
 	InvalidateChannelPricingPresence(78)

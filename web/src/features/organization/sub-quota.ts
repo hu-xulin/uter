@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 export type SubQuotaAmountResult =
   | { kind: 'unlimited'; quota: 0 }
   | { kind: 'quota'; quota: number }

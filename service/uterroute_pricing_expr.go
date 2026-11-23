@@ -43,7 +43,7 @@ import (
 // 缓存写入」的**官方目录价（美元）**，表达式本身只描述计费结构，不含用户组
 // 折扣——折扣由 group_group_ratio 在渲染时乘上去。
 //
-// 历史实现把 16 个 tiered 模型的页面折后价抄成 dreamRouterTieredBaselines
+// 历史实现把 16 个 tiered 模型的页面折后价抄成 uterRouteTieredBaselines
 // 常量表，再用组倍率线性缩放。那条路有两个必然失效点：
 //
 //  1. 上游新增 tiered 模型时表里没有 → 整条跳过，价格永远不更新；
@@ -52,21 +52,21 @@ import (
 // 现在直接从表达式里取官方单价：公式与 A 类（按量计费）完全同构
 // （uter = 官方价 × (r + 加价幅度)），既不需要抓页面，也不需要人工维护表。
 
-// dreamRouterUnitPrices 是表达式里解出的官方目录价，单位美元 / 1M tokens。
-type dreamRouterUnitPrices struct {
+// uterRouteUnitPrices 是表达式里解出的官方目录价，单位美元 / 1M tokens。
+type uterRouteUnitPrices struct {
 	Input       float64
 	Output      float64
 	Cache       float64
 	CreateCache float64
 }
 
-// dreamRouterExprTerm 匹配表达式里 `<标识符> * <数字>` 形式的计价项。
+// uterRouteExprTerm 匹配表达式里 `<标识符> * <数字>` 形式的计价项。
 //
 // 标识符只允许小写字母与下划线：这样 `cc1h * 0.2`（1 小时缓存写入）不会被
 // 误认成 `cc`，只会匹配到尾部独立的 `h`（不在取值范围内，直接忽略）。
-var dreamRouterExprTerm = regexp.MustCompile(`([a-z_]+)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+var uterRouteExprTerm = regexp.MustCompile(`([a-z_]+)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
 
-// dreamRouterOfficialUnitPrices 从 billing_expr 中解出官方目录价。
+// uterRouteOfficialUnitPrices 从 billing_expr 中解出官方目录价。
 //
 // 同一标识符可能出现在多个分层（如 standard / long_context）里，取**首次
 // 出现**的值：表达式按「基准层在前、加价层在后」书写，首次出现即基准层，
@@ -74,10 +74,10 @@ var dreamRouterExprTerm = regexp.MustCompile(`([a-z_]+)\s*\*\s*([0-9]+(?:\.[0-9]
 //
 // 返回 ok=false 表示表达式里没有可用的输入单价——调用方据此跳过该模型并告警，
 // 绝不套用猜测值。
-func dreamRouterOfficialUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
-	var prices dreamRouterUnitPrices
+func uterRouteOfficialUnitPrices(expr string) (uterRouteUnitPrices, bool) {
+	var prices uterRouteUnitPrices
 	seen := make(map[string]struct{}, 4)
-	for _, match := range dreamRouterExprTerm.FindAllStringSubmatch(expr, -1) {
+	for _, match := range uterRouteExprTerm.FindAllStringSubmatch(expr, -1) {
 		identifier := match[1]
 		if _, duplicate := seen[identifier]; duplicate {
 			continue
@@ -101,18 +101,18 @@ func dreamRouterOfficialUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
 	return prices, prices.Input > 0
 }
 
-// dreamRouterExprUnitTermScaled 匹配表达式里 `<标识符> * <数字>` 的计价项，
+// uterRouteExprUnitTermScaled 匹配表达式里 `<标识符> * <数字>` 的计价项，
 // 并保留标识符，供缩放时整体替换。
 //
-// 与 dreamRouterExprTerm 的区别：允许标识符里出现数字（`cc1h`、`img_o` 之外
+// 与 uterRouteExprTerm 的区别：允许标识符里出现数字（`cc1h`、`img_o` 之外
 // 还有上游自定义的 `img2` 之类），否则 `cc1h * 0.2` 会被截成 `h * 0.2`，
 // 缩放后仍然"看起来对"，但标识符已经不是原变量了。
 //
 // 只匹配「标识符 × 数字」，因此时段条件里的裸系数（`... ? 0.5 : 1`）与
 // 阈值（`len <= 272000`）都不会被改动——这是缩放能安全落地的前提。
-var dreamRouterExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+var uterRouteExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]*)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
 
-// dreamRouterExprDurationTerm 匹配「按秒计费」的视频模型计价项：
+// uterRouteExprDurationTerm 匹配「按秒计费」的视频模型计价项：
 //
 //	tier("720p", (duration > 0 ? duration : 5) * 0.0895522)
 //	tier("768p", duration * 0.0746268657)
@@ -120,14 +120,14 @@ var dreamRouterExprUnitTermScaled = regexp.MustCompile(`\b([A-Za-z_][A-Za-z0-9_]
 // 即 `(…duration…) * <每秒单价>` 或裸 `duration * <每秒单价>`。上游（创梦）
 // 的视频模型用这种表达式描述「分辨率档 × 视频时长」计费：ternary 链按请求
 // 参数选分辨率档，每一档的单价是美元/秒 × duration（缺省 5 秒）。这类表达式
-// 没有 p/c token 系数，dreamRouterOfficialUnitPrices 解不出来，历史上被标记
+// 没有 p/c token 系数，uterRouteOfficialUnitPrices 解不出来，历史上被标记
 // tiered_unparsable 跳过——模型价格永远停在「未配置」。
 //
 // 2026-11 起上游把括号省略成裸 `duration * 0.1194029851`，因此两种写法都要
 // 支持；否则 MiniMax-H3 一类模型会再次被判为无价格。
-var dreamRouterExprDurationTerm = regexp.MustCompile(`(?:\(([^()]*\bduration\b[^()]*)\)|\bduration\b)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
+var uterRouteExprDurationTerm = regexp.MustCompile(`(?:\(([^()]*\bduration\b[^()]*)\)|\bduration\b)\s*\*\s*([0-9]+(?:\.[0-9]+)?)`)
 
-// dreamRouterDurationUnitPrices 从按秒计费的表达式里解出官方单价（美元/秒）。
+// uterRouteDurationUnitPrices 从按秒计费的表达式里解出官方单价（美元/秒）。
 //
 // 一条表达式可能有多档（1080p/720p/480p）。ternary 链的书写顺序是
 // 「高优先档在前、兜底档在后」：所有条件都不命中时走最后一支 tier，
@@ -138,21 +138,21 @@ var dreamRouterExprDurationTerm = regexp.MustCompile(`(?:\(([^()]*\bduration\b[^
 // Output/Cache/CreateCache 恒为 0：视频模型没有输出 token 与缓存计价。
 // 返回 ok=false 表示表达式里没有 duration 计价项——调用方继续走原有的
 // tiered_unparsable 告警路径，绝不套用猜测值。
-func dreamRouterDurationUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
-	var prices dreamRouterUnitPrices
-	matches := dreamRouterExprDurationTerm.FindAllStringSubmatch(expr, -1)
+func uterRouteDurationUnitPrices(expr string) (uterRouteUnitPrices, bool) {
+	var prices uterRouteUnitPrices
+	matches := uterRouteExprDurationTerm.FindAllStringSubmatch(expr, -1)
 	if len(matches) == 0 {
 		return prices, false
 	}
 	value, err := strconv.ParseFloat(matches[len(matches)-1][2], 64)
 	if err != nil || value <= 0 {
-		return dreamRouterUnitPrices{}, false
+		return uterRouteUnitPrices{}, false
 	}
 	prices.Input = value
 	return prices, true
 }
 
-// dreamRouterScaleExpr 把表达式里所有单价系数乘以 factor，返回新表达式。
+// uterRouteScaleExpr 把表达式里所有单价系数乘以 factor，返回新表达式。
 //
 // 为什么必须改表达式而不是只改 ModelRatio：分层计费模型在运行时与定价页
 // 都**只读 billing_expr**，ModelRatio 对它们不参与计价。历史同步只写
@@ -165,14 +165,14 @@ func dreamRouterDurationUnitPrices(expr string) (dreamRouterUnitPrices, bool) {
 //
 // 返回 ok=false 表示没有可缩放的计价项（空表达式或两类计价项都不存在），
 // 调用方据此保留原值并告警，绝不写入一条未经确认的表达式。
-func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
+func uterRouteScaleExpr(expr string, factor float64) (string, bool) {
 	if factor <= 0 || strings.TrimSpace(expr) == "" {
 		return "", false
 	}
 	scaled := false
 	// 第一遍：按秒计费项 `(…duration…) * <数字>` 与裸 `duration * <数字>`。
-	result := dreamRouterExprDurationTerm.ReplaceAllStringFunc(expr, func(term string) string {
-		match := dreamRouterExprDurationTerm.FindStringSubmatch(term)
+	result := uterRouteExprDurationTerm.ReplaceAllStringFunc(expr, func(term string) string {
+		match := uterRouteExprDurationTerm.FindStringSubmatch(term)
 		value, err := strconv.ParseFloat(match[2], 64)
 		if err != nil {
 			return term
@@ -186,8 +186,8 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 	})
 	// 第二遍：标识符计价项 `p * <数字>`。duration 已由第一遍处理，这里必须
 	// 跳过，否则裸 duration 会被缩放两次。
-	result = dreamRouterExprUnitTermScaled.ReplaceAllStringFunc(result, func(term string) string {
-		match := dreamRouterExprUnitTermScaled.FindStringSubmatch(term)
+	result = uterRouteExprUnitTermScaled.ReplaceAllStringFunc(result, func(term string) string {
+		match := uterRouteExprUnitTermScaled.FindStringSubmatch(term)
 		if match[1] == "duration" {
 			return term
 		}
@@ -210,7 +210,7 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 // 任务表达式的请求探测改写
 // ---------------------------------------------------------------------------
 
-// dreamRouterTaskProbeFunctions 是「读请求参数」的辅助函数。
+// uterRouteTaskProbeFunctions 是「读请求参数」的辅助函数。
 //
 // 任务计费与聊天计费在这一点上不同：聊天请求的 Body 会随 RequestInput 一起
 // 传到表达式里（relay/helper.ResolveIncomingBillingExprRequestInput），所以
@@ -220,17 +220,17 @@ func dreamRouterScaleExpr(expr string, factor float64) (string, bool) {
 //
 // 于是上游同步下来的任务表达式如果按请求参数选档，落库后**永远走兜底档**：
 // wan3.0-video 的 1080P 请求会被按 720p 计费。这不是展示问题，是收入侧少收。
-var dreamRouterTaskProbeFunctions = map[string]struct{}{
+var uterRouteTaskProbeFunctions = map[string]struct{}{
 	"param": {},
 	"lower": {},
 	"upper": {},
 	"has":   {},
 }
 
-// dreamRouterTaskRequestAccessors 是「结算时读不到值」的请求访问器全集：
+// uterRouteTaskRequestAccessors 是「结算时读不到值」的请求访问器全集：
 // 探测函数之外还包括 header()。header 无法用用量事实等价表达，所以它的
 // 存在只用于判定「这条条件必须处理」，不参与改写白名单。
-var dreamRouterTaskRequestAccessors = map[string]struct{}{
+var uterRouteTaskRequestAccessors = map[string]struct{}{
 	"param":  {},
 	"header": {},
 	"lower":  {},
@@ -238,7 +238,7 @@ var dreamRouterTaskRequestAccessors = map[string]struct{}{
 	"has":    {},
 }
 
-// dreamRouterTaskProbeRewrite 把一个「按请求参数选档」的任务表达式改写为
+// uterRouteTaskProbeRewrite 把一个「按请求参数选档」的任务表达式改写为
 // 「按用量事实选档」的等价表达式。
 //
 // 改写规则只有一条，但要求条件里给出的证据自洽：
@@ -254,13 +254,13 @@ var dreamRouterTaskRequestAccessors = map[string]struct{}{
 //
 // 返回 ok=false 表示存在无法改写的请求探测条件（含 header 探测、证据不唯一、
 // 或改写后仍引用未声明的用量字段）。调用方据此**放弃写入该表达式**。
-func dreamRouterTaskProbeRewrite(expr string, schema map[string]jsplugin.UsageFieldSchema) (string, bool) {
+func uterRouteTaskProbeRewrite(expr string, schema map[string]jsplugin.UsageFieldSchema) (string, bool) {
 	if strings.TrimSpace(expr) == "" || len(schema) == 0 {
 		return "", false
 	}
 	// 表达式可能带 `v1:` 版本前缀：expr 的 parser 不认它，先剥掉再按原样加回，
 	// 否则带前缀的表达式会被误判成「无法解析」而整条不写。
-	prefix, body := splitDreamRouterExprVersion(expr)
+	prefix, body := splitUterRouteExprVersion(expr)
 	tree, err := parser.Parse(body)
 	if err != nil {
 		return "", false
@@ -268,7 +268,7 @@ func dreamRouterTaskProbeRewrite(expr string, schema map[string]jsplugin.UsageFi
 
 	failed := false
 	seen := make(map[string]struct{}, 4)
-	rewriter := &dreamRouterProbeRewriter{schema: schema, seen: seen, failed: &failed}
+	rewriter := &uterRouteProbeRewriter{schema: schema, seen: seen, failed: &failed}
 	ast.Walk(&tree.Node, rewriter)
 	if failed {
 		return "", false
@@ -284,7 +284,7 @@ func dreamRouterTaskProbeRewrite(expr string, schema map[string]jsplugin.UsageFi
 	}
 	// 改写后引用的每个 u("k") 都必须是 schema 声明过的字段，否则运行时
 	// 拿不到值，等于换了一种方式走兜底档。
-	for _, key := range dreamRouterUsageKeys(rewritten) {
+	for _, key := range uterRouteUsageKeys(rewritten) {
 		if _, declared := schema[key]; !declared {
 			return "", false
 		}
@@ -292,8 +292,8 @@ func dreamRouterTaskProbeRewrite(expr string, schema map[string]jsplugin.UsageFi
 	return prefix + rewritten, true
 }
 
-// splitDreamRouterExprVersion 拆出 `vN:` 版本前缀与其后的表达式正文。
-func splitDreamRouterExprVersion(expr string) (prefix, body string) {
+// splitUterRouteExprVersion 拆出 `vN:` 版本前缀与其后的表达式正文。
+func splitUterRouteExprVersion(expr string) (prefix, body string) {
 	trimmed := strings.TrimSpace(expr)
 	if len(trimmed) > 3 && trimmed[0] == 'v' && trimmed[2] == ':' &&
 		trimmed[1] >= '0' && trimmed[1] <= '9' {
@@ -302,14 +302,14 @@ func splitDreamRouterExprVersion(expr string) (prefix, body string) {
 	return "", expr
 }
 
-type dreamRouterProbeRewriter struct {
+type uterRouteProbeRewriter struct {
 	schema  map[string]jsplugin.UsageFieldSchema
 	seen    map[string]struct{}
 	changed bool
 	failed  *bool
 }
 
-func (r *dreamRouterProbeRewriter) Visit(node *ast.Node) {
+func (r *uterRouteProbeRewriter) Visit(node *ast.Node) {
 	conditional, ok := (*node).(*ast.ConditionalNode)
 	if !ok || !conditional.Ternary {
 		return
@@ -317,18 +317,18 @@ func (r *dreamRouterProbeRewriter) Visit(node *ast.Node) {
 	condition := conditional.Cond
 	// 只有「读请求参数」的条件才需要处理。时间函数（hour/weekday）不读
 	// 请求，按原样保留。
-	if !dreamRouterContainsRequestAccessor(condition) {
+	if !uterRouteContainsRequestAccessor(condition) {
 		return
 	}
 	// 一旦条件里出现了请求参数访问器，就必须成功改写：header() 这类无法
 	// 用用量事实等价表达，含裸变量（duration 等）的条件也不是纯探测。
 	// 放过它们等于让表达式带着「结算时恒为 nil 的判断」上线，结果就是
 	// 静默走兜底档。这里一律判失败，由调用方放弃写这条表达式。
-	if !dreamRouterIsRequestProbe(condition) {
+	if !uterRouteIsRequestProbe(condition) {
 		*r.failed = true
 		return
 	}
-	field, value, ok := dreamRouterMatchEnumValue(condition, r.schema)
+	field, value, ok := uterRouteMatchEnumValue(condition, r.schema)
 	if !ok {
 		*r.failed = true
 		return
@@ -349,11 +349,11 @@ func (r *dreamRouterProbeRewriter) Visit(node *ast.Node) {
 	r.changed = true
 }
 
-// dreamRouterContainsRequestAccessor 判断条件里是否调用了请求参数访问器。
+// uterRouteContainsRequestAccessor 判断条件里是否调用了请求参数访问器。
 //
 // 只要出现过一次，这条条件在任务结算时就读不到值，必须改写或拒绝——
 // 即使它同时混了 header() 或裸变量，也不能当成「无需处理」放过。
-func dreamRouterContainsRequestAccessor(node ast.Node) bool {
+func uterRouteContainsRequestAccessor(node ast.Node) bool {
 	return ast.Find(node, func(part ast.Node) bool {
 		switch typed := part.(type) {
 		case *ast.CallNode:
@@ -361,10 +361,10 @@ func dreamRouterContainsRequestAccessor(node ast.Node) bool {
 			if !ok {
 				return false
 			}
-			_, found := dreamRouterTaskRequestAccessors[callee.Value]
+			_, found := uterRouteTaskRequestAccessors[callee.Value]
 			return found
 		case *ast.BuiltinNode:
-			_, found := dreamRouterTaskRequestAccessors[typed.Name]
+			_, found := uterRouteTaskRequestAccessors[typed.Name]
 			return found
 		default:
 			return false
@@ -372,7 +372,7 @@ func dreamRouterContainsRequestAccessor(node ast.Node) bool {
 	}) != nil
 }
 
-// dreamRouterIsRequestProbe 判断条件是否「只由请求探测与字面量构成」。
+// uterRouteIsRequestProbe 判断条件是否「只由请求探测与字面量构成」。
 //
 // 含 duration 等裸标识符的条件不算：它读的是表达式变量，不是请求参数。
 // 含 header() 的条件也不算改写目标——头信息在任务结算里同样拿不到，无法
@@ -382,7 +382,7 @@ func dreamRouterContainsRequestAccessor(node ast.Node) bool {
 // IdentifierNode 访问，那样每个 `param(...)` 都会被误判成裸变量。另外
 // lower/upper 是 expr 的内建函数，解析出来是 BuiltinNode 而不是 CallNode，
 // 两种调用形态都要认。
-func dreamRouterIsRequestProbe(node ast.Node) bool {
+func uterRouteIsRequestProbe(node ast.Node) bool {
 	probe := false
 	var walk func(ast.Node) bool
 	walk = func(part ast.Node) bool {
@@ -392,7 +392,7 @@ func dreamRouterIsRequestProbe(node ast.Node) bool {
 			if !ok {
 				return false
 			}
-			if _, known := dreamRouterTaskProbeFunctions[callee.Value]; !known {
+			if _, known := uterRouteTaskProbeFunctions[callee.Value]; !known {
 				return false
 			}
 			probe = true
@@ -403,7 +403,7 @@ func dreamRouterIsRequestProbe(node ast.Node) bool {
 			}
 			return true
 		case *ast.BuiltinNode:
-			if _, known := dreamRouterTaskProbeFunctions[typed.Name]; !known {
+			if _, known := uterRouteTaskProbeFunctions[typed.Name]; !known {
 				return false
 			}
 			probe = true
@@ -427,15 +427,15 @@ func dreamRouterIsRequestProbe(node ast.Node) bool {
 	return walk(node) && probe
 }
 
-// dreamRouterMatchEnumValue 从条件的字面量里反解出唯一的 (字段, 枚举值)。
-func dreamRouterMatchEnumValue(node ast.Node, schema map[string]jsplugin.UsageFieldSchema) (string, string, bool) {
-	literals := dreamRouterProbeLiterals(node)
+// uterRouteMatchEnumValue 从条件的字面量里反解出唯一的 (字段, 枚举值)。
+func uterRouteMatchEnumValue(node ast.Node, schema map[string]jsplugin.UsageFieldSchema) (string, string, bool) {
+	literals := uterRouteProbeLiterals(node)
 	if len(literals) == 0 {
 		return "", "", false
 	}
 	var matchedField, matchedValue string
 	for _, literal := range literals {
-		field, value, ok := dreamRouterEnumValueFor(literal, schema)
+		field, value, ok := uterRouteEnumValueFor(literal, schema)
 		if !ok {
 			return "", "", false
 		}
@@ -450,11 +450,11 @@ func dreamRouterMatchEnumValue(node ast.Node, schema map[string]jsplugin.UsageFi
 	return matchedField, matchedValue, true
 }
 
-// dreamRouterProbeLiterals 收集条件里的字符串字面量，跳过 param/header 的键名。
+// uterRouteProbeLiterals 收集条件里的字符串字面量，跳过 param/header 的键名。
 //
 // 键名是字段路径（"size"、"metadata.resolution"），不是档位取值，拿它去比对
 // 枚举只会命中不相干的值。
-func dreamRouterProbeLiterals(node ast.Node) []string {
+func uterRouteProbeLiterals(node ast.Node) []string {
 	skipped := make(map[string]struct{}, 4)
 	ast.Find(node, func(part ast.Node) bool {
 		call, ok := part.(*ast.CallNode)
@@ -487,13 +487,13 @@ func dreamRouterProbeLiterals(node ast.Node) []string {
 	return values
 }
 
-// dreamRouterEnumValueFor 把一个探测字面量对到 (枚举字段, 枚举值)。
+// uterRouteEnumValueFor 把一个探测字面量对到 (枚举字段, 枚举值)。
 //
 // 命中要求唯一：同一个字面量命中两个不同字段的枚举，说明它无法区分档位，
 // 按未命中处理。比较忽略大小写，并接受 "1080" 与 "1080P" 这种一方是另一方
 // 前缀的情形——上游用 `has(lower(param("size")), "1080")` 描述 1080P 档，
 // 而插件 schema 里的枚举值是 "1080P"。
-func dreamRouterEnumValueFor(literal string, schema map[string]jsplugin.UsageFieldSchema) (string, string, bool) {
+func uterRouteEnumValueFor(literal string, schema map[string]jsplugin.UsageFieldSchema) (string, string, bool) {
 	needle := strings.ToLower(strings.TrimSpace(literal))
 	if needle == "" {
 		return "", "", false
@@ -508,7 +508,7 @@ func dreamRouterEnumValueFor(literal string, schema map[string]jsplugin.UsageFie
 	sort.Strings(names)
 	for _, name := range names {
 		for _, candidate := range schema[name].Enum {
-			if !dreamRouterEnumTokenMatches(needle, strings.ToLower(candidate)) {
+			if !uterRouteEnumTokenMatches(needle, strings.ToLower(candidate)) {
 				continue
 			}
 			hits++
@@ -521,12 +521,12 @@ func dreamRouterEnumValueFor(literal string, schema map[string]jsplugin.UsageFie
 	return field, value, true
 }
 
-// dreamRouterEnumTokenMatches 判断探测值能否代表一个枚举值。
+// uterRouteEnumTokenMatches 判断探测值能否代表一个枚举值。
 //
 // 规则刻意保守：只接受「完全相等」或「一方是另一方的整段数字前缀」。
 // "1080" vs "1080p" 命中；"1080" vs "1080p30" 不命中（后者的数字前缀与
 // 前者相同但语义不同），因此还要求短的一方以数字结尾。
-func dreamRouterEnumTokenMatches(needle, candidate string) bool {
+func uterRouteEnumTokenMatches(needle, candidate string) bool {
 	if needle == candidate {
 		return true
 	}
@@ -544,8 +544,8 @@ func dreamRouterEnumTokenMatches(needle, candidate string) bool {
 	return last >= '0' && last <= '9'
 }
 
-// dreamRouterUsageKeys 列出表达式里引用的 u("k") 字段名。
-func dreamRouterUsageKeys(expr string) []string {
+// uterRouteUsageKeys 列出表达式里引用的 u("k") 字段名。
+func uterRouteUsageKeys(expr string) []string {
 	keys := make([]string, 0, 4)
 	for key := range billingexpr.UsedUsageKeys(expr) {
 		keys = append(keys, key)
@@ -554,7 +554,7 @@ func dreamRouterUsageKeys(expr string) []string {
 	return keys
 }
 
-// dreamRouterTaskUsageSchema 返回模型所属任务插件声明的用量事实 schema。
+// uterRouteTaskUsageSchema 返回模型所属任务插件声明的用量事实 schema。
 //
 // 改写请求探测条件需要知道「哪些枚举值是可计费档位」：这只有插件自己声明。
 // 模型没绑定任何任务插件（聊天/纯 token 计费模型）时返回 nil——这类模型
@@ -563,7 +563,7 @@ func dreamRouterUsageKeys(expr string) []string {
 // 先按精确名查，再用规范名回退：同步拿到的是**上游**模型名，插件的声明
 // 可能与它只差大小写或连字符。查不到就如实返回 nil，让调用方 fail-closed
 // （不改价 + 告警），绝不猜 schema。
-func dreamRouterTaskUsageSchema(model string) map[string]jsplugin.UsageFieldSchema {
+func uterRouteTaskUsageSchema(model string) map[string]jsplugin.UsageFieldSchema {
 	generation := jsplugin.DefaultRegistry.Generation()
 	candidates := []string{model}
 	if canonical, ok := generation.CanonicalModel(model); ok && canonical != model {
@@ -581,7 +581,7 @@ func dreamRouterTaskUsageSchema(model string) map[string]jsplugin.UsageFieldSche
 	return nil
 }
 
-// dreamRouterAdaptTaskExpr 把「已缩放的表达式」调整成可安全落库的形态。
+// uterRouteAdaptTaskExpr 把「已缩放的表达式」调整成可安全落库的形态。
 //
 // 两类模型必须区别对待，判据是「它是不是任务插件模型」：
 //
@@ -590,11 +590,11 @@ func dreamRouterTaskUsageSchema(model string) map[string]jsplugin.UsageFieldSche
 //     写这条表达式（宁可本轮不改价，也不写一条会算错钱的表达式）。
 //   - 其它模型（聊天/按量计费）：`param()` 走的是聊天请求写入的 Body，
 //     运行时能求值，原样保留——改写它们反而会破坏正常的按请求参数计价。
-func dreamRouterAdaptTaskExpr(expr, model string) (string, bool) {
-	schema := dreamRouterTaskUsageSchema(model)
+func uterRouteAdaptTaskExpr(expr, model string) (string, bool) {
+	schema := uterRouteTaskUsageSchema(model)
 	if len(schema) == 0 {
 		// 不是任务插件模型：不做任何改写。
 		return expr, true
 	}
-	return dreamRouterTaskProbeRewrite(expr, schema)
+	return uterRouteTaskProbeRewrite(expr, schema)
 }

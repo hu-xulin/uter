@@ -18,24 +18,24 @@ import (
 	"github.com/uter-ai/uter/model"
 )
 
-// DreamRouterUpstreamSnapshotKey stores DreamRouter's official catalog and
+// UterRouteUpstreamSnapshotKey stores UterRoute's official catalog and
 // billing ratios in an isolated snapshot. It is deliberately separate from
 // ModelRatio/ModelPrice/billing_expr: reading or refreshing this snapshot never
 // changes what Uter charges on any channel.
-const DreamRouterUpstreamSnapshotKey = "DreamRouterUpstreamSnapshot"
+const UterRouteUpstreamSnapshotKey = "UterRouteUpstreamSnapshot"
 
-// DreamRouterUpstreamHistoryKey stores a bounded change log derived from
+// UterRouteUpstreamHistoryKey stores a bounded change log derived from
 // consecutive isolated snapshots. It never stores secrets or absolute prices
 // the provider did not publish.
-const DreamRouterUpstreamHistoryKey = "DreamRouterUpstreamPriceHistory"
+const UterRouteUpstreamHistoryKey = "UterRouteUpstreamPriceHistory"
 
 const upstreamHistoryLimit = 1000
 
-// dreamRouterPlaceholderModelRatio marks models whose public model_ratio is a
+// uterRoutePlaceholderModelRatio marks models whose public model_ratio is a
 // placeholder because their real price lives in billing_expr (tiered/media).
-const dreamRouterPlaceholderModelRatio = 37.5
+const uterRoutePlaceholderModelRatio = 37.5
 
-var dreamRouterFixedPriceDiscount = regexp.MustCompile(`fixed\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)`)
+var uterRouteFixedPriceDiscount = regexp.MustCompile(`fixed\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)`)
 
 type UpstreamCapabilityStatus string
 
@@ -95,25 +95,69 @@ type UpstreamProvider struct {
 	LastVerifiedAt int64 `json:"last_verified_at,omitempty"`
 }
 
-const (
-	dreamRouterPricingPageURL = "https://dreamrouter.ai/api/pricing"
-	dreamRouterModelsPageURL  = "https://dreamrouter.ai/v1/models"
+// UterRouteUpstreamURLOption stores the operational endpoint for Uter Route.
+// It lives in deployment configuration, so the white-labelled codebase never
+// names the supplier.
+const UterRouteUpstreamURLOption = "UterRouteUpstreamBaseURL"
 
+// UterRouteUpstreamBaseURL returns the configured endpoint or "" when the
+// administrator has not configured it yet.
+func UterRouteUpstreamBaseURL() string {
+	value := strings.TrimSpace(common.GetOption(UterRouteUpstreamURLOption))
+	if value == "" {
+		return ""
+	}
+	if !strings.Contains(value, "://") {
+		value = "https://" + value
+	}
+	return strings.TrimRight(value, "/")
+}
+
+// UterRouteUpstreamHost exposes only the host for provider detection.
+func UterRouteUpstreamHost() string {
+	base := UterRouteUpstreamBaseURL()
+	if base == "" {
+		return ""
+	}
+	parsed, err := url.Parse(base)
+	if err != nil {
+		return ""
+	}
+	return parsed.Hostname()
+}
+
+func uterRoutePricingPageURL() string {
+	base := UterRouteUpstreamBaseURL()
+	if base == "" {
+		return ""
+	}
+	return base + "/api/pricing"
+}
+
+func uterRouteModelsPageURL() string {
+	base := UterRouteUpstreamBaseURL()
+	if base == "" {
+		return ""
+	}
+	return base + "/v1/models"
+}
+
+const (
 	// UpstreamPriceBasisRatioOnly means the provider publishes billing ratios
 	// (model_ratio / completion_ratio / group_ratio), not an absolute official
 	// or discounted list price. No USD price may be inferred from them.
 	UpstreamPriceBasisRatioOnly = "UPSTREAM_RATIO_ONLY"
 )
 
-// dreamRouterLegacyReference indexes the full sync snapshot (when present).
+// uterRouteLegacyReference indexes the full sync snapshot (when present).
 // That snapshot already reconstructs absolute USD prices from billing_expr and
 // per-call records, so it is preferred over ratio-derived estimates.
-func dreamRouterLegacyReference() map[string]DreamRouterModelRow {
-	snapshot := LoadDreamRouterSnapshot()
+func uterRouteLegacyReference() map[string]UterRouteModelRow {
+	snapshot := LoadUterRouteSnapshot()
 	if snapshot == nil || len(snapshot.Models) == 0 {
 		return nil
 	}
-	reference := make(map[string]DreamRouterModelRow, len(snapshot.Models)*2)
+	reference := make(map[string]UterRouteModelRow, len(snapshot.Models)*2)
 	for _, row := range snapshot.Models {
 		if row.Official.Input <= 0 {
 			continue
@@ -126,22 +170,22 @@ func dreamRouterLegacyReference() map[string]DreamRouterModelRow {
 	return reference
 }
 
-// dreamRouterExprPriceLine derives the list price from the provider's tiered
+// uterRouteExprPriceLine derives the list price from the provider's tiered
 // billing expression. It reuses the same coefficient parser as the full sync:
 // coefficients are USD per million tokens (or per second for duration terms),
 // not quota-space numbers, so they are taken as-is.
-func dreamRouterExprPriceLine(expr string) (*UpstreamPriceLine, string) {
+func uterRouteExprPriceLine(expr string) (*UpstreamPriceLine, string) {
 	expr = strings.TrimSpace(expr)
 	if expr == "" {
 		return nil, ""
 	}
-	if prices, ok := dreamRouterDurationUnitPrices(expr); ok {
+	if prices, ok := uterRouteDurationUnitPrices(expr); ok {
 		value := prices.Input
 		return &UpstreamPriceLine{
 			Input: &value, Currency: "USD", Unit: "per_second", PerSecond: true,
 		}, "DERIVED_FROM_EXPR"
 	}
-	prices, ok := dreamRouterOfficialUnitPrices(expr)
+	prices, ok := uterRouteOfficialUnitPrices(expr)
 	if !ok {
 		return nil, ""
 	}
@@ -165,10 +209,10 @@ func dreamRouterExprPriceLine(expr string) (*UpstreamPriceLine, string) {
 	return line, "DERIVED_FROM_EXPR"
 }
 
-// dreamRouterOfficialLine returns the absolute official price line for a model.
+// uterRouteOfficialLine returns the absolute official price line for a model.
 // It prefers the full sync snapshot and only falls back to the documented
 // ratio space (model_ratio 1 = $2 / 1M tokens, model_price = USD / call).
-func dreamRouterRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
+func uterRouteRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
 	for _, endpoint := range item.SupportedEndpoints {
 		lower := strings.ToLower(endpoint)
 		if strings.Contains(lower, "video") ||
@@ -180,14 +224,14 @@ func dreamRouterRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
 	return false
 }
 
-func dreamRouterOfficialLine(
+func uterRouteOfficialLine(
 	item UpstreamModelRecord,
-	legacy map[string]DreamRouterModelRow,
+	legacy map[string]UterRouteModelRow,
 ) (*UpstreamPriceLine, string) {
 	// The complete billing expression is the richest live source: it carries
 	// context tiers, media duration terms and cache rules that a single ratio
 	// cannot represent. It must win before any flat price field.
-	if line, status := dreamRouterExprPriceLine(item.BillingExpr); line != nil {
+	if line, status := uterRouteExprPriceLine(item.BillingExpr); line != nil {
 		return line, status
 	}
 	// An explicitly published per-call price is an absolute live price.
@@ -199,8 +243,8 @@ func dreamRouterOfficialLine(
 	// into a clearly-labelled reference so it never masquerades as official or
 	// contract cost.
 	if item.ModelRatio != nil && *item.ModelRatio > 0 &&
-		*item.ModelRatio != dreamRouterPlaceholderModelRatio &&
-		!dreamRouterRecordUsesMediaEndpoint(item) {
+		*item.ModelRatio != uterRoutePlaceholderModelRatio &&
+		!uterRouteRecordUsesMediaEndpoint(item) {
 		input := *item.ModelRatio * 2
 		line := &UpstreamPriceLine{Input: &input, Currency: "USD", Unit: "per_1m_token"}
 		if item.CompletionRatio != nil && *item.CompletionRatio > 0 {
@@ -256,11 +300,11 @@ type UpstreamPriceLine struct {
 	PerCall    bool     `json:"per_call,omitempty"`
 }
 
-// LoadDreamRouterUpstreamOfficialReference exposes the current isolated
+// LoadUterRouteUpstreamOfficialReference exposes the current isolated
 // snapshot's list prices in the ratio-shaped map the plaza consumes. It is the
 // authoritative reference for strike-through prices and discount badges.
-func LoadDreamRouterUpstreamOfficialReference() map[string]map[string]float64 {
-	snapshot := LoadDreamRouterUpstreamSnapshot()
+func LoadUterRouteUpstreamOfficialReference() map[string]map[string]float64 {
+	snapshot := LoadUterRouteUpstreamSnapshot()
 	if snapshot == nil || len(snapshot.Models) == 0 {
 		return nil
 	}
@@ -297,16 +341,16 @@ func LoadDreamRouterUpstreamOfficialReference() map[string]map[string]float64 {
 	return reference
 }
 
-// DreamRouterDiscountGroupDefault is the public billing group used when a
-// channel has not selected its DreamRouter account group.
-const DreamRouterDiscountGroupDefault = "default"
+// UterRouteDiscountGroupDefault is the public billing group used when a
+// channel has not selected its Uter Route account group.
+const UterRouteDiscountGroupDefault = "default"
 
-// DreamRouterDiscountGroupOptionKey stores the selected upstream billing group
+// UterRouteDiscountGroupOptionKey stores the selected upstream billing group
 // per channel ({"<channel id>": "<group>"}). It only affects that channel.
-const DreamRouterDiscountGroupOptionKey = "DreamRouterChannelDiscountGroups"
+const UterRouteDiscountGroupOptionKey = "UterRouteChannelDiscountGroups"
 
-// DreamRouterDiscountGroups lists the billing groups the provider publishes.
-func DreamRouterDiscountGroups(snapshot *UpstreamSnapshot) []string {
+// UterRouteDiscountGroups lists the billing groups the provider publishes.
+func UterRouteDiscountGroups(snapshot *UpstreamSnapshot) []string {
 	if snapshot == nil {
 		return nil
 	}
@@ -318,30 +362,30 @@ func DreamRouterDiscountGroups(snapshot *UpstreamSnapshot) []string {
 	return groups
 }
 
-// GetDreamRouterDiscountGroup returns the selected upstream billing group for
+// GetUterRouteDiscountGroup returns the selected upstream billing group for
 // one channel.
-func GetDreamRouterDiscountGroup(channelID int) string {
+func GetUterRouteDiscountGroup(channelID int) string {
 	if channelID <= 0 {
-		return DreamRouterDiscountGroupDefault
+		return UterRouteDiscountGroupDefault
 	}
-	raw := strings.TrimSpace(common.GetOption(DreamRouterDiscountGroupOptionKey))
+	raw := strings.TrimSpace(common.GetOption(UterRouteDiscountGroupOptionKey))
 	if raw == "" {
-		return DreamRouterDiscountGroupDefault
+		return UterRouteDiscountGroupDefault
 	}
 	groups := map[string]string{}
 	if err := common.UnmarshalJsonStr(raw, &groups); err != nil {
-		return DreamRouterDiscountGroupDefault
+		return UterRouteDiscountGroupDefault
 	}
 	group := strings.TrimSpace(groups[fmt.Sprintf("%d", channelID)])
 	if group == "" {
-		return DreamRouterDiscountGroupDefault
+		return UterRouteDiscountGroupDefault
 	}
 	return group
 }
 
-// SetDreamRouterDiscountGroup stores the upstream billing group for one
+// SetUterRouteDiscountGroup stores the upstream billing group for one
 // channel.
-func SetDreamRouterDiscountGroup(channelID int, group string) error {
+func SetUterRouteDiscountGroup(channelID int, group string) error {
 	if channelID <= 0 {
 		return errors.New("channel id is required")
 	}
@@ -350,7 +394,7 @@ func SetDreamRouterDiscountGroup(channelID int, group string) error {
 		return errors.New("discount group is required")
 	}
 	groups := map[string]string{}
-	raw := strings.TrimSpace(common.GetOption(DreamRouterDiscountGroupOptionKey))
+	raw := strings.TrimSpace(common.GetOption(UterRouteDiscountGroupOptionKey))
 	if raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &groups)
 	}
@@ -359,13 +403,13 @@ func SetDreamRouterDiscountGroup(channelID int, group string) error {
 	if err != nil {
 		return err
 	}
-	return model.UpdateOption(DreamRouterDiscountGroupOptionKey, string(encoded))
+	return model.UpdateOption(UterRouteDiscountGroupOptionKey, string(encoded))
 }
 
-// DreamRouterDiscountForModel resolves the upstream discount multiplier for a
+// UterRouteDiscountForModel resolves the upstream discount multiplier for a
 // model under the selected billing group. It prefers the provider's
 // group-group table and falls back to the flat model-group table.
-func DreamRouterDiscountForModel(
+func UterRouteDiscountForModel(
 	snapshot *UpstreamSnapshot,
 	item UpstreamModelRecord,
 	group string,
@@ -375,7 +419,7 @@ func DreamRouterDiscountForModel(
 	}
 	group = strings.TrimSpace(group)
 	if group == "" {
-		group = DreamRouterDiscountGroupDefault
+		group = UterRouteDiscountGroupDefault
 	}
 	overrides := snapshot.GroupGroupRatio[group]
 	for _, modelGroup := range item.EnableGroups {
@@ -416,10 +460,10 @@ func scaleUpstreamPriceLine(line *UpstreamPriceLine, factor float64) *UpstreamPr
 	}
 }
 
-// dreamRouterChannelInternalPricing turns a discounted absolute line into the
+// uterRouteChannelInternalPricing turns a discounted absolute line into the
 // channel's default sale price. Tiered or per-second prices cannot be expressed
 // in the flat internal form and stay official-only for manual review.
-func dreamRouterChannelInternalPricing(
+func uterRouteChannelInternalPricing(
 	line *UpstreamPriceLine,
 	group string,
 	modelGroup string,
@@ -430,7 +474,7 @@ func dreamRouterChannelInternalPricing(
 	}
 	now := time.Now().Unix()
 	pricing := model.ChannelInternalPricing{
-		Source:             "dreamrouter-discount",
+		Source:             "uterroute-discount",
 		DiscountGroup:      group,
 		DiscountModelGroup: modelGroup,
 		DiscountRatio:      factor,
@@ -463,18 +507,18 @@ func dreamRouterChannelInternalPricing(
 	return string(encoded), true
 }
 
-func dreamRouterRatioValue(value *float64) float64 {
+func uterRouteRatioValue(value *float64) float64 {
 	if value == nil {
 		return 0
 	}
 	return *value
 }
 
-// dreamRouterChannelExpressionPricing applies the channel discount to the
+// uterRouteChannelExpressionPricing applies the channel discount to the
 // complete upstream rule by wrapping it, so every tier and condition keeps its
 // own coefficients. Flattening the expression to the first tier would charge
 // long-context requests at the short-context price.
-func dreamRouterChannelExpressionPricing(
+func uterRouteChannelExpressionPricing(
 	expr string,
 	group string,
 	modelGroup string,
@@ -488,8 +532,8 @@ func dreamRouterChannelExpressionPricing(
 	if strings.Contains(raw, "fixed(") {
 		// The expression engine forbids multiplying a fixed charge by a request
 		// multiplier, so the discount is applied inside fixed(amount).
-		scaled = dreamRouterFixedPriceDiscount.ReplaceAllStringFunc(raw, func(term string) string {
-			match := dreamRouterFixedPriceDiscount.FindStringSubmatch(term)
+		scaled = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(raw, func(term string) string {
+			match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
 			value, err := strconv.ParseFloat(match[1], 64)
 			if err != nil {
 				return term
@@ -503,7 +547,7 @@ func dreamRouterChannelExpressionPricing(
 	pricing := model.ChannelInternalPricing{
 		Mode:               model.ChannelPricingModeTieredExpr,
 		BillingExpr:        scaled,
-		Source:             "dreamrouter-discount",
+		Source:             "uterroute-discount",
 		DiscountGroup:      group,
 		DiscountModelGroup: modelGroup,
 		DiscountRatio:      factor,
@@ -563,7 +607,7 @@ type UpstreamSnapshot struct {
 	Models          []UpstreamModelRecord         `json:"models"`
 }
 
-type dreamRouterPublicModel struct {
+type uterRoutePublicModel struct {
 	ModelName              string   `json:"model_name"`
 	VendorID               int      `json:"vendor_id"`
 	QuotaType              int      `json:"quota_type"`
@@ -579,10 +623,10 @@ type dreamRouterPublicModel struct {
 	PricingVersion         string   `json:"pricing_version"`
 }
 
-type dreamRouterPublicPricing struct {
-	Success        bool                     `json:"success"`
-	PricingVersion string                   `json:"pricing_version"`
-	Data           []dreamRouterPublicModel `json:"data"`
+type uterRoutePublicPricing struct {
+	Success        bool                   `json:"success"`
+	PricingVersion string                 `json:"pricing_version"`
+	Data           []uterRoutePublicModel `json:"data"`
 	Vendors        []struct {
 		ID   int    `json:"id"`
 		Name string `json:"name"`
@@ -593,11 +637,11 @@ type dreamRouterPublicPricing struct {
 	UsableGroup     map[string]string             `json:"usable_group"`
 }
 
-// FetchDreamRouterUpstream fetches the public pricing document and normalizes
+// FetchUterRouteUpstream fetches the public pricing document and normalizes
 // it without writing any Uter model price. baseURL is injectable for tests;
 // production callers pass the empty string.
-func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSnapshot, error) {
-	baseURL = dreamRouterPricingOrigin(baseURL)
+func FetchUterRouteUpstream(ctx context.Context, baseURL string) (*UpstreamSnapshot, error) {
+	baseURL = uterRoutePricingOrigin(baseURL)
 	endpoint := baseURL + "/api/pricing"
 	if _, err := validateUpstreamEndpoint(endpoint); err != nil {
 		return nil, err
@@ -611,7 +655,7 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 	client := newUpstreamHTTPClient(30 * time.Second)
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("fetch dreamrouter pricing: %w", err)
+		return nil, fmt.Errorf("fetch uterroute pricing: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(resp.Body, 8<<20))
@@ -619,18 +663,18 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("dreamrouter pricing returned HTTP %d: %s", resp.StatusCode, truncateBailianBody(body))
+		return nil, fmt.Errorf("uterroute pricing returned HTTP %d: %s", resp.StatusCode, truncateBailianBody(body))
 	}
 
-	var payload dreamRouterPublicPricing
+	var payload uterRoutePublicPricing
 	if err := common.Unmarshal(body, &payload); err != nil {
-		return nil, fmt.Errorf("decode dreamrouter pricing: %w", err)
+		return nil, fmt.Errorf("decode uterroute pricing: %w", err)
 	}
 	if !payload.Success {
-		return nil, errors.New("dreamrouter pricing returned success=false")
+		return nil, errors.New("uterroute pricing returned success=false")
 	}
 	if len(payload.Data) == 0 {
-		return nil, errors.New("dreamrouter pricing returned no models")
+		return nil, errors.New("uterroute pricing returned no models")
 	}
 
 	vendorNames := make(map[int]string, len(payload.Vendors))
@@ -639,9 +683,9 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 	}
 
 	now := time.Now().UTC()
-	legacy := dreamRouterLegacyReference()
+	legacy := uterRouteLegacyReference()
 	snapshot := &UpstreamSnapshot{
-		ProviderID:      "dreamrouter",
+		ProviderID:      "uterroute",
 		FetchedAt:       now,
 		PricingVersion:  payload.PricingVersion,
 		SourceEndpoint:  endpoint,
@@ -679,11 +723,11 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 			PricingVersion:     item.PricingVersion,
 			VerifiedAt:         now,
 		}
-		record.OfficialPrice, record.PriceStatus = dreamRouterOfficialLine(record, legacy)
+		record.OfficialPrice, record.PriceStatus = uterRouteOfficialLine(record, legacy)
 		snapshot.Models = append(snapshot.Models, record)
 	}
 	if len(snapshot.Models) == 0 {
-		return nil, errors.New("dreamrouter pricing contained no usable model names")
+		return nil, errors.New("uterroute pricing contained no usable model names")
 	}
 	sort.Slice(snapshot.Models, func(i, j int) bool {
 		return snapshot.Models[i].UpstreamModelID < snapshot.Models[j].UpstreamModelID
@@ -691,13 +735,13 @@ func FetchDreamRouterUpstream(ctx context.Context, baseURL string) (*UpstreamSna
 	return snapshot, nil
 }
 
-// dreamRouterPricingOrigin strips the OpenAI-compatible path operators often
-// paste into Base URL (for example https://dreamrouter.ai/v1) so the public
+// uterRoutePricingOrigin strips the OpenAI-compatible path operators often
+// paste into Base URL (for example a pasted /v1 address) so the public
 // pricing endpoint is always requested at the site root.
-func dreamRouterPricingOrigin(raw string) string {
+func uterRoutePricingOrigin(raw string) string {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
-		return "https://dreamrouter.ai"
+		return UterRouteUpstreamBaseURL()
 	}
 	parsed, err := url.Parse(raw)
 	if err != nil || parsed.Scheme == "" || parsed.Host == "" {
@@ -706,21 +750,21 @@ func dreamRouterPricingOrigin(raw string) string {
 	return parsed.Scheme + "://" + parsed.Host
 }
 
-// SaveDreamRouterUpstreamSnapshot persists the isolated snapshot.
-func SaveDreamRouterUpstreamSnapshot(snapshot *UpstreamSnapshot) error {
+// SaveUterRouteUpstreamSnapshot persists the isolated snapshot.
+func SaveUterRouteUpstreamSnapshot(snapshot *UpstreamSnapshot) error {
 	if snapshot == nil {
-		return errors.New("dreamrouter upstream snapshot is nil")
+		return errors.New("uterroute upstream snapshot is nil")
 	}
 	raw, err := common.Marshal(snapshot)
 	if err != nil {
 		return err
 	}
-	return model.UpdateOption(DreamRouterUpstreamSnapshotKey, string(raw))
+	return model.UpdateOption(UterRouteUpstreamSnapshotKey, string(raw))
 }
 
-// LoadDreamRouterUpstreamSnapshot returns the last isolated snapshot.
-func LoadDreamRouterUpstreamSnapshot() *UpstreamSnapshot {
-	raw := strings.TrimSpace(common.GetOption(DreamRouterUpstreamSnapshotKey))
+// LoadUterRouteUpstreamSnapshot returns the last isolated snapshot.
+func LoadUterRouteUpstreamSnapshot() *UpstreamSnapshot {
+	raw := strings.TrimSpace(common.GetOption(UterRouteUpstreamSnapshotKey))
 	if raw == "" {
 		return nil
 	}
@@ -756,9 +800,9 @@ type UpstreamPriceHistory struct {
 	Entries    []UpstreamPriceChange `json:"entries"`
 }
 
-// DiffDreamRouterUpstream compares two isolated snapshots. Only raw upstream
+// DiffUterRouteUpstream compares two isolated snapshots. Only raw upstream
 // ratio fields are compared; an absolute price is never derived or stored.
-func DiffDreamRouterUpstream(prev, next *UpstreamSnapshot) []UpstreamPriceChange {
+func DiffUterRouteUpstream(prev, next *UpstreamSnapshot) []UpstreamPriceChange {
 	if next == nil {
 		return nil
 	}
@@ -840,9 +884,9 @@ func upstreamRatioEqual(a, b *float64) bool {
 	return math.Abs(*a-*b) < 1e-12
 }
 
-// AppendDreamRouterUpstreamHistory merges new changes into the bounded log.
-func AppendDreamRouterUpstreamHistory(providerID string, changes []UpstreamPriceChange) error {
-	history := LoadDreamRouterUpstreamHistory()
+// AppendUterRouteUpstreamHistory merges new changes into the bounded log.
+func AppendUterRouteUpstreamHistory(providerID string, changes []UpstreamPriceChange) error {
+	history := LoadUterRouteUpstreamHistory()
 	if history == nil {
 		history = &UpstreamPriceHistory{ProviderID: providerID}
 	}
@@ -854,12 +898,12 @@ func AppendDreamRouterUpstreamHistory(providerID string, changes []UpstreamPrice
 	if err != nil {
 		return err
 	}
-	return model.UpdateOption(DreamRouterUpstreamHistoryKey, string(raw))
+	return model.UpdateOption(UterRouteUpstreamHistoryKey, string(raw))
 }
 
-// LoadDreamRouterUpstreamHistory returns the persisted change log.
-func LoadDreamRouterUpstreamHistory() *UpstreamPriceHistory {
-	raw := strings.TrimSpace(common.GetOption(DreamRouterUpstreamHistoryKey))
+// LoadUterRouteUpstreamHistory returns the persisted change log.
+func LoadUterRouteUpstreamHistory() *UpstreamPriceHistory {
+	raw := strings.TrimSpace(common.GetOption(UterRouteUpstreamHistoryKey))
 	if raw == "" {
 		return nil
 	}
@@ -870,9 +914,9 @@ func LoadDreamRouterUpstreamHistory() *UpstreamPriceHistory {
 	return &history
 }
 
-// DreamRouterNormalizedPricing is stored in the per-channel pricing row.
+// UterRouteNormalizedPricing is stored in the per-channel pricing row.
 // It intentionally has no absolute price: the provider publishes ratios only.
-type DreamRouterNormalizedPricing struct {
+type UterRouteNormalizedPricing struct {
 	PriceBasis         string                        `json:"price_basis"`
 	Currency           string                        `json:"currency"`
 	Unit               string                        `json:"unit"`
@@ -896,17 +940,17 @@ type DreamRouterNormalizedPricing struct {
 	ReviewReasons      []string                      `json:"review_reasons,omitempty"`
 }
 
-// DreamRouterChannelPricingRecords builds channel-scoped official records.
+// UterRouteChannelPricingRecords builds channel-scoped official records.
 // Only models the channel actually serves are written, and the provider's
 // ratios are preserved as ratios rather than converted into a fake USD price.
-func DreamRouterChannelPricingRecords(
+func UterRouteChannelPricingRecords(
 	snapshot *UpstreamSnapshot,
 	channelID int,
 	channelModels []string,
 	billingGroup string,
 ) ([]model.ChannelOfficialPricingRecord, error) {
 	if snapshot == nil || channelID <= 0 {
-		return nil, errors.New("dreamrouter snapshot and channel id are required")
+		return nil, errors.New("uterroute snapshot and channel id are required")
 	}
 	wanted := make(map[string]bool, len(channelModels))
 	for _, name := range channelModels {
@@ -920,7 +964,7 @@ func DreamRouterChannelPricingRecords(
 		if len(wanted) > 0 && !wanted[item.ModelName] {
 			continue
 		}
-		officialView, internalPricing := dreamRouterChannelOfficialPricing(
+		officialView, internalPricing := uterRouteChannelOfficialPricing(
 			snapshot, item, snapshot.FetchedAt.Unix(), billingGroup,
 		)
 		if officialView.NeedsReview {
@@ -936,22 +980,22 @@ func DreamRouterChannelPricingRecords(
 		}
 		records = append(records, model.ChannelOfficialPricingRecord{
 			ChannelId:         channelID,
-			Provider:          "dreamrouter",
+			Provider:          "uterroute",
 			ModelName:         item.ModelName,
 			Currency:          "USD",
 			OfficialPricing:   string(officialRaw),
 			NormalizedPricing: string(normalizedRaw),
 			InternalPricing:   internalPricing,
-			Source:            "dreamrouter-official",
+			Source:            "uterroute-official",
 			FetchedAt:         snapshot.FetchedAt.Unix(),
 		})
 	}
 	return records, nil
 }
 
-// dreamRouterPricingTier converts one absolute price line into the stored tier
+// uterRoutePricingTier converts one absolute price line into the stored tier
 // shape shared by official and channel prices.
-func dreamRouterPricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
+func uterRoutePricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 	tier := model.ChannelPricingTier{RangeName: "base", Unit: line.Unit}
 	switch line.Unit {
 	case "per_second":
@@ -970,10 +1014,10 @@ func dreamRouterPricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 	return tier
 }
 
-// dreamRouterChannelOfficialPricing converts the upstream price line into the
+// uterRouteChannelOfficialPricing converts the upstream price line into the
 // channel pricing table's normalized view. Derived prices stay reviewable so an
 // operator can audit the ratio-to-price conversion before billing.
-func dreamRouterChannelOfficialPricing(
+func uterRouteChannelOfficialPricing(
 	snapshot *UpstreamSnapshot,
 	item UpstreamModelRecord,
 	fetchedAt int64,
@@ -982,7 +1026,7 @@ func dreamRouterChannelOfficialPricing(
 	view := model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "unknown",
-		Source:    dreamRouterPriceSource(item.PriceStatus),
+		Source:    uterRoutePriceSource(item.PriceStatus),
 		FetchedAt: fetchedAt,
 	}
 	switch item.PriceStatus {
@@ -993,10 +1037,10 @@ func dreamRouterChannelOfficialPricing(
 		if item.ModelRatio != nil && *item.ModelRatio > 0 {
 			view.RatioBasis = &model.ChannelRatioBasis{
 				RawRatio:           *item.ModelRatio,
-				RawCompletionRatio: dreamRouterRatioValue(item.CompletionRatio),
+				RawCompletionRatio: uterRouteRatioValue(item.CompletionRatio),
 				BasisUSDPerMillion: 2,
 				Formula:            "reference_only: usd_per_1m = model_ratio * 2",
-				FormulaVersion:     "dreamrouter-ratio-v1",
+				FormulaVersion:     "uterroute-ratio-v1",
 			}
 		}
 	case "HISTORICAL_SNAPSHOT":
@@ -1024,9 +1068,9 @@ func dreamRouterChannelOfficialPricing(
 		}
 		group := strings.TrimSpace(billingGroup)
 		if group == "" {
-			group = DreamRouterDiscountGroupDefault
+			group = UterRouteDiscountGroupDefault
 		}
-		discount, modelGroup, ok := DreamRouterDiscountForModel(snapshot, item, group)
+		discount, modelGroup, ok := UterRouteDiscountForModel(snapshot, item, group)
 		if !ok {
 			view.NeedsReview = true
 			view.ReviewReasons = append(view.ReviewReasons, "NO_UPSTREAM_DISCOUNT")
@@ -1038,7 +1082,7 @@ func dreamRouterChannelOfficialPricing(
 		// The expression carries official unit coefficients. Expose the
 		// discounted absolute reference so the pricing page can show the
 		// channel price separately from the official expression.
-		if units, ok := dreamRouterOfficialUnitPrices(normalized.Raw); ok {
+		if units, ok := uterRouteOfficialUnitPrices(normalized.Raw); ok {
 			// The expression coefficients are the upstream official unit
 			// prices. Keep the undiscounted tier as the official reference and
 			// store the group-discounted tier separately as the channel price.
@@ -1075,7 +1119,7 @@ func dreamRouterChannelOfficialPricing(
 				tier.CreateCachePerMillionUSD = &createCache
 			}
 			view.ChannelPrice = &tier
-		} else if units, ok := dreamRouterDurationUnitPrices(normalized.Raw); ok {
+		} else if units, ok := uterRouteDurationUnitPrices(normalized.Raw); ok {
 			officialPerSecond := units.Input
 			view.Tiers = []model.ChannelPricingTier{{
 				RangeName: "base", Unit: "per_second", PerUnitUSD: &officialPerSecond,
@@ -1085,7 +1129,7 @@ func dreamRouterChannelOfficialPricing(
 				RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
 			}
 		}
-		internalPricing, priced := dreamRouterChannelExpressionPricing(
+		internalPricing, priced := uterRouteChannelExpressionPricing(
 			item.BillingExpr, group, modelGroup, discount,
 		)
 		if !priced {
@@ -1131,22 +1175,22 @@ func dreamRouterChannelOfficialPricing(
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"DERIVED_FROM_RATIOS"}
 		if line != nil && line.Input != nil {
-			view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+			view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
 		}
 	case "HISTORICAL_SNAPSHOT":
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"HISTORICAL_SNAPSHOT"}
 		if line != nil && line.Input != nil {
-			view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+			view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
 		}
 	default:
-		view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+		view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
 	}
 	group := strings.TrimSpace(billingGroup)
 	if group == "" {
-		group = DreamRouterDiscountGroupDefault
+		group = UterRouteDiscountGroupDefault
 	}
-	discount, modelGroup, ok := DreamRouterDiscountForModel(snapshot, item, group)
+	discount, modelGroup, ok := UterRouteDiscountForModel(snapshot, item, group)
 	if !ok {
 		view.NeedsReview = true
 		view.ReviewReasons = append(view.ReviewReasons, "NO_UPSTREAM_DISCOUNT")
@@ -1156,7 +1200,7 @@ func dreamRouterChannelOfficialPricing(
 	var internalPricing string
 	priced := false
 	if expressionRule {
-		internalPricing, priced = dreamRouterChannelExpressionPricing(
+		internalPricing, priced = uterRouteChannelExpressionPricing(
 			item.BillingExpr, group, modelGroup, discount,
 		)
 		if priced {
@@ -1169,12 +1213,12 @@ func dreamRouterChannelOfficialPricing(
 			view.ReviewReasons = append(view.ReviewReasons, "EXPRESSION_DISCOUNT_UNVERIFIED")
 		}
 	} else {
-		internalPricing, priced = dreamRouterChannelInternalPricing(channelLine, group, modelGroup, discount)
+		internalPricing, priced = uterRouteChannelInternalPricing(channelLine, group, modelGroup, discount)
 		if !priced {
 			view.NeedsReview = true
 			view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
 		} else if item.PriceStatus == "DERIVED_FROM_RATIOS" || item.PriceStatus == "HISTORICAL_SNAPSHOT" {
-			// DreamRouter supplies a concrete official_price reference for these
+			// Uter Route supplies a concrete official_price reference for these
 			// rows even though the absolute list price is derived or historical.
 			// The reference already carries the channel discount and the default
 			// Uter markup is applied to the generated sale price, so the model can
@@ -1188,7 +1232,7 @@ func dreamRouterChannelOfficialPricing(
 		// Hard gate: a review-only record may never auto-enable billing.
 		internalPricing = ""
 	}
-	channelTier := dreamRouterPricingTier(channelLine)
+	channelTier := uterRoutePricingTier(channelLine)
 	view.ChannelPrice = &channelTier
 	view.DiscountGroup = group
 	view.DiscountModelGroup = modelGroup
@@ -1196,17 +1240,17 @@ func dreamRouterChannelOfficialPricing(
 	return view, internalPricing
 }
 
-func dreamRouterPriceSource(status string) string {
+func uterRoutePriceSource(status string) string {
 	switch status {
 	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
-		return "dreamrouter-expression"
+		return "uterroute-expression"
 	case "OFFICIAL_API":
-		return "dreamrouter-official-api"
+		return "uterroute-official-api"
 	case "HISTORICAL_SNAPSHOT":
-		return "dreamrouter-historical-snapshot"
+		return "uterroute-historical-snapshot"
 	case "DERIVED_FROM_RATIOS":
-		return "dreamrouter-ratio-reference"
+		return "uterroute-ratio-reference"
 	default:
-		return "dreamrouter-ratio-only"
+		return "uterroute-ratio-only"
 	}
 }

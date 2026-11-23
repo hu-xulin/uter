@@ -34,7 +34,10 @@ groups is never one price.
 
 1. Official, channel quote, contract and sale price must never overwrite each
    other.
-2. A ratio-derived estimate is not an absolute official price.
+2. A ratio-derived estimate is not an absolute official price. It may seed a
+   sale price only when the upstream also supplies the concrete reference
+   amount, and the row must keep `RATIO_ONLY`/`HISTORICAL_SNAPSHOT` as its
+   price-kind marker.
 3. A public quote is not a verified purchase contract.
 4. Missing dimensions are omitted, never defaulted to zero.
 5. Currency conversion stores the original amount, currency, FX rate, FX source

@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -16,6 +17,7 @@ import (
 	"github.com/uter-ai/uter/i18n"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
 )
 
 func newAdvancedCustomModelListChannel(baseURL string, key string, upstreamPath string, auth *dto.AdvancedCustomRouteAuth) *model.Channel {
@@ -359,6 +361,40 @@ func TestFailedAdvancedCustomDetectionDoesNotStageFullRemoval(t *testing.T) {
 	require.Empty(t, persistedSettings.UpstreamModelUpdateLastDetectedModels)
 	require.Empty(t, persistedSettings.UpstreamModelUpdateLastRemovedModels)
 	require.Equal(t, "gpt-4.1,o3", reloaded.Models)
+}
+
+// 分组绑定渠道的自动更新只能采纳该家族的模型：上游偶发返回整账号目录时，
+// GPT 模型不能进入 Claude 渠道。
+func TestGroupBoundChannelIgnoresOutOfFamilyUpstreamModels(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`{"data":[{"id":"claude-a"},{"id":"claude-b"},{"id":"gpt-x"}]}`))
+	}))
+	defer server.Close()
+
+	channel := newAdvancedCustomModelListChannel(server.URL, "secret-key", "/v1/models", nil)
+	channel.Name = "group bound channel"
+	channel.Models = "claude-a"
+	settings := channel.GetOtherSettings()
+	settings.UpstreamModelUpdateCheckEnabled = true
+	settings.UpstreamModelUpdateAutoSyncEnabled = true
+	channel.SetOtherSettings(settings)
+	require.NoError(t, db.Create(channel).Error)
+
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+	common.OptionMap[service.GenericUpstreamBillingGroupKey] = fmt.Sprintf(`{"%d":"Claude-max"}`, channel.Id)
+
+	modelsChanged, autoAdded, err := checkAndPersistChannelUpstreamModelUpdates(channel, &settings, true, true)
+	require.NoError(t, err)
+	require.True(t, modelsChanged)
+	require.Equal(t, 1, autoAdded)
+
+	reloaded, err := model.GetChannelById(channel.Id, true)
+	require.NoError(t, err)
+	require.Equal(t, "claude-a,claude-b", reloaded.Models)
+	require.NotContains(t, reloaded.Models, "gpt-x")
 }
 
 func TestFetchModelsUsesSharedChannelFetchBehavior(t *testing.T) {

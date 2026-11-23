@@ -8,13 +8,13 @@
 
 | Commit | Change |
 |---|---|
-| `cb87d0d93` | Isolate channel price fallback; XXAPI auth; parity source split |
-| `3b7015420` | Full upstream catalog parity and XXAPI live verification |
+| `cb87d0d93` | Isolate channel price fallback; Uter.api auth; parity source split |
+| `3b7015420` | Full upstream catalog parity and Uter.api live verification |
 | `39fc636a9` | Live audit uses real usage keys |
 | `5c59113c5` | Reject incomplete Bailian pagination |
 | `40e6258d5` | Cross-instance channel price-sync lock |
-| `f532239dd` | DreamRouter manual sync reuses the channel lock |
-| `032bcfa83` | Generic/XXAPI scheduled review and pricing rules |
+| `f532239dd` | Uter Route manual sync reuses the channel lock |
+| `032bcfa83` | Generic/Uter.api scheduled review and pricing rules |
 | `16d20b426` | Review entries carry pricing version |
 | `bb18b1501` | Post-sync catalog completeness verification |
 | `8035ddf94` | Parity counts unverified purchase cost |
@@ -23,13 +23,13 @@
 
 ## Problems closed
 
-1. Automatic source recognition divergence (`generic:`/`xxapi-`/legacy `apiko-`).
+1. Automatic source recognition divergence (`generic:`/`Uter.api-`/legacy `apiko-`).
 2. Official vs channel vs estimate conflation in parity.
-3. XXAPI price sync missing API key; XXAPI absent from adapter registry.
+3. Uter.api price sync missing API key; Uter.api absent from adapter registry.
 4. Silent global fallback for channels that already have scoped pricing.
 5. Missing upstream models invisible to parity.
-6. Generic/XXAPI scheduled sync ignored review/threshold/rules.
-7. No cross-instance lock for generic/XXAPI/DreamRouter manual sync.
+6. Generic/Uter.api scheduled sync ignored review/threshold/rules.
+7. No cross-instance lock for generic/Uter.api/Uter Route manual sync.
 8. Incomplete Bailian catalogs accepted.
 9. Review approval could use a stale price state (version now checked).
 10. Orphan and Apiko historical rows invisible.
@@ -41,16 +41,16 @@
 | `go build ./...` | exit 0 |
 | `make test` | exit 0 |
 | `go test ./model ./service ./relay/helper ./relay -count=1` | passed |
-| `PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditXXAPILive` | 51 models, 51 executable |
-| `PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditDreamRouterLive` | 86 records, 54 executable, 32 review, 0 failures |
+| `PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditUter.apiLive` | 51 models, 51 executable |
+| `PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditUterRouteLive` | 86 records, 54 executable, 32 review, 0 failures |
 | `PRICING_AUDIT=1 go test -tags pricing_audit_live ./service -run TestAuditBailianLive` | 275 catalog, 134 records, 105 executable |
 | `bun run typecheck` / `lint` / `format:check` | passed at last run |
 | `./scripts/verify-all.sh --quick` | 9 PASS / 0 FAIL / 4 SKIP at last run |
 
 ## Model/price counts (live snapshot)
 
-- XXAPI: 51 models, 51 records, 51 executable expressions.
-- DreamRouter: 86 records, 54 executable, 32 intentional review.
+- Uter.api: 51 models, 51 records, 51 executable expressions.
+- UterRoute: 86 records, 54 executable, 32 intentional review.
 - Bailian: 275 catalog models, 134 records, 105 internal prices.
 
 ## Three-channel live validation (2026-11-23)
@@ -61,16 +61,16 @@ discount; Uter price = channel price × 1.10 unless an operator price exists.
 
 | Channel | Rows | Configured / review | Evidence |
 |---|---:|---:|---|
-| DreamRouter `32` (优特渠道) | 86 | 86 / 0 | `claude-fable-5`: expression `p*10+c*50+cr*1+cc*12.5+cc1h*20`, group `default` 0.6 → channel `6 / 30`, cache `0.6`, cache write `7.5`; Uter `6.6 / 33`, cache `0.66`, cache write `8.25` |
+| Uter Route `32` (优特渠道) | 86 | 86 / 0 | `claude-fable-5`: expression `p*10+c*50+cr*1+cc*12.5+cc1h*20`, group `default` 0.6 → channel `6 / 30`, cache `0.6`, cache write `7.5`; Uter `6.6 / 33`, cache `0.66`, cache write `8.25` |
 | Alibaba Bailian `34` | 134 | 122 / 12 | 33 auto `bailian-channel` prices plus 89 operator `batch` prices; auto flat and tiered prices all include the 1.10 markup |
 | Alibaba Bailian `62` (new draft channel) | 3 | 1 / 2 | `MiniMax-M2.5`: channel `0.31390134529147984 / 1.2556053811659194`, Uter `0.34529147982062786 / 1.3811659192825114` (exact ×1.10); `qwen-plus` / `qwen-flash` stay review-only because the catalogue publishes both implicit cache-hit and explicit cache-read prices |
-| XXAPI `54`–`60` | 68 | 68 / 0 | All executable expressions refreshed to `(base × 1.10) × group`; `54` (`Claude-kiro` 0.9): channel `1.8 / 9`, Uter `(base × 1.10) × 0.9` = `1.98 / 9.9` |
+| Uter.api `54`–`60` | 68 | 68 / 0 | All executable expressions refreshed to `(base × 1.10) × group`; `54` (`Claude-kiro` 0.9): channel `1.8 / 9`, Uter `(base × 1.10) × 0.9` = `1.98 / 9.9` |
 
 Commands used:
 
 ```bash
-go run /tmp/uter_xxapi_refresh.go      # refresh XXAPI with the application sync path
-go run /tmp/uter_dreamrouter_refresh.go # refresh DreamRouter channel 32
+go run /tmp/uter_Uter.api_refresh.go      # refresh Uter.api with the application sync path
+go run /tmp/uter_uterroute_refresh.go # refresh Uter Route channel 32
 bunx vitest run src/features/channels/components/__tests__/channel-pricing-panel.test.tsx
 make test
 ./scripts/verify-all.sh --quick
@@ -96,12 +96,12 @@ gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
   task, controller or model code. Only the `apiko-` prefix in the automatic
   source classifier remains, intentionally, for historical-row audit.
 - `docs-dev/pricing-remediation/PHASE-03-PROVIDER-SYNC.md` and
-  `PHASE-06-PRICE-GOVERNANCE.md` now describe XXAPI in place of the removed
+  `PHASE-06-PRICE-GOVERNANCE.md` now describe Uter.api in place of the removed
   Apiko runtime and state the historical-prefix boundary.
 
-## DreamRouter official-price display fix (2026-11-23)
+## Uter Route official-price display fix (2026-11-23)
 
-Root cause: DreamRouter expression models only wrote a discounted
+Root cause: Uter Route expression models only wrote a discounted
 `channel_price`; the expression coefficients were never copied into `tiers`, so
 the page's "Upstream official price" stayed empty. Ratio-only rows also had the
 upstream-provided `official_price` deliberately discarded.
@@ -115,42 +115,46 @@ The parser now:
   reason unchanged so neither can auto-enable billing;
 - leaves `HasOfficial`/`HasOfficialEstimate` semantics unchanged.
 
-Live channel `61` now has 84/84 DreamRouter rows with both official and channel
+Live channel `61` now has 84/84 Uter Route rows with both official and channel
 prices. A second set of 84 duplicate `newapi-compatible` rows with the same
 model identities had no official price and made the page look inconsistent;
-they were removed after the database backup, leaving only the DreamRouter rows.
+they were removed after the database backup, leaving only the Uter Route rows.
 Examples:
 
 | Model | Official | Channel | Uter | State |
 |---|---|---|---|---|
 | `claude-fable-5` | `$10 / $50`, cache `$1`, cache write `$12.5` | `$6 / $30` | `$6.6 / $33` | configured |
-| `MiniMax-M2.5` | `$0.3 / $1.2` | `$0.285 / $1.14` | operator price unchanged | review-only (`DERIVED_FROM_RATIOS`) |
+| `MiniMax-M2.5` | `$0.3 / $1.2` | `$0.285 / $1.14` | `$0.3135 / $1.254` | configured (`RATIO_ONLY` source preserved) |
 
-Tests: `TestDreamRouterRatioDerivedPriceStaysReviewOnly`,
-`TestDreamRouterExpressionKeepsAllTiersAndReviewGate`, and the DreamRouter
+Tests: `TestUterRouteRatioDerivedPriceStaysReviewOnly`,
+`TestUterRouteExpressionKeepsAllTiersAndReviewGate`, and the UterRoute
 pricing suite pass. The database was backed up to
-`/tmp/one-api.before-dreamrouter-official.db` before the refresh.
+`/tmp/one-api.before-uterroute-official.db` before the refresh.
 
 ## Post-rebuild live verification (2026-11-23)
 
 | Check | Result |
 |---|---|
-| `PRICING_AUDIT=1 ... TestAuditDreamRouterLive` | 86 records, 54 executable, 32 review, 0 failures |
+| `PRICING_AUDIT=1 ... TestAuditUterRouteLive` | 86 records, 54 executable, 32 review, 0 failures |
 | `PRICING_AUDIT=1 ... TestAuditBailianLive` | 275 catalog, 134 records, 105 executable, 29 review, 0 stale |
-| `PRICING_AUDIT=1 ... TestAuditXXAPILive` | 51 models, 14 groups, 51 executable, 0 failures |
-| `GOWORK=off go test -race ./service -run 'XXAPI\|Bailian\|Pricing\|Markup\|Upstream'` | PASS |
+| `PRICING_AUDIT=1 ... TestAuditUter.apiLive` | 51 models, 14 groups, 51 executable, 0 failures |
+| `GOWORK=off go test -race ./service -run 'Uter.api\|Bailian\|Pricing\|Markup\|Upstream'` | PASS |
 | `GOWORK=off go test -race ./model -run 'ChannelPricing\|ScopedPricing\|Purchase\|BillingSnapshot'` | PASS |
 | `TestChannelPricing*AcrossDatabases` | SQLite PASS; MySQL/PostgreSQL skipped without DSN |
 
 The live audits fetch the current upstream documents; they do not write database
-rows. The 32 DreamRouter review rows are rechecked against operator `batch`
-prices already stored in the channel, so the channel's current 86 rows remain
-configured while the automatic derivation correctly refuses ratio-only and
-historical rows.
+rows. Uter Route ratio-only and historical rows now use the upstream
+`official_price` reference to generate a configured sale price
+(`channel price × 1.10`) while retaining `RATIO_ONLY` / `HISTORICAL_SNAPSHOT` as
+the price-kind marker. Unsupported or missing shapes still stop at review.
 
-A new guard rejects scheduled generic sync for an `xxapi.ai` channel that has no
-stored billing group, instead of silently syncing the undiscounted catalogue
-price (`TestXXAPIGenericSyncRequiresBillingGroup`).
+Current channel `61` parity: `FULLY_MATCHED: 84`, `MANUAL_REVIEW: 0`,
+`PRICE_MISMATCH: 0`. The 44 expression, 24 ratio-only, 8 historical and 8
+absolute records are all `configured`.
+
+A new guard rejects scheduled generic sync for an Uter.api channel that has
+no stored billing group, instead of silently syncing the undiscounted catalogue
+price (`TestUterAPIGenericSyncRequiresBillingGroup`).
 
 ## Request-level billing reconciliation samples (2026-11-23)
 
@@ -176,7 +180,7 @@ validation. Channels `32`, `34` and `54`–`60` disappeared from the active
 channel table and a draft channel `61` appeared; pricing rows for the removed
 channels still exist and are now orphaned. This task did not delete any channel
 or run a database reset. The pre-change database backup is
-`/tmp/one-api.before-xxapi-refresh.db`; it was not restored because restoring
+`/tmp/one-api.before-Uter.api-refresh.db`; it was not restored because restoring
 could overwrite concurrent user work. The counts and channel evidence above
 describe the validated snapshot, not the current drifted database. Re-sync and
 re-validate the active channels before release.

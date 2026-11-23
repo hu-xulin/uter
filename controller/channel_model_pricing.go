@@ -193,7 +193,7 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 }
 
 // channelUpstreamQuote exposes the provider's purchase quote separately from
-// the official list price. DreamRouter publishes ratios, so its quote is
+// the official list price. Uter Route publishes ratios, so its quote is
 // converted with Uter's documented ratio convention; absolute providers reuse
 // the first normalized tier.
 func channelUpstreamQuote(row model.ChannelModelPricing, official *model.ChannelOfficialPricing) *channelUpstreamQuoteView {
@@ -211,7 +211,7 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 				PriceBasis:    "CHANNEL_DISCOUNT",
 				Currency:      official.Currency,
 				Unit:          official.ChannelPrice.Unit,
-				Source:        "dreamrouter-discount",
+				Source:        "uterroute-discount",
 				DiscountGroup: official.DiscountGroup,
 				DiscountRatio: official.DiscountRatio,
 			}
@@ -227,12 +227,12 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 			return quote
 		}
 	}
-	if row.Provider == "dreamrouter" && strings.TrimSpace(row.OfficialPricing) != "" {
+	if row.Provider == "uterroute" && strings.TrimSpace(row.OfficialPricing) != "" {
 		var record service.UpstreamModelRecord
 		if err := common.UnmarshalJsonStr(row.OfficialPricing, &record); err == nil {
 			quote := &channelUpstreamQuoteView{
 				PriceBasis: "DERIVED_FROM_RATIOS", Currency: "USD",
-				Source: "dreamrouter-official",
+				Source: "uterroute-official",
 			}
 			if record.QuotaType == 1 && record.ModelPrice != nil && *record.ModelPrice > 0 {
 				quote.Unit = "per_call"

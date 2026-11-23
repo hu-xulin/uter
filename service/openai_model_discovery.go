@@ -42,7 +42,7 @@ func OpenAIModelIDs(ctx context.Context, baseURL, apiKey string) ([]string, erro
 	}
 	base := strings.TrimSpace(baseURL)
 	if base == "" {
-		base = "https://xxapi.ai"
+		return nil, errors.New("base URL is required")
 	}
 	if !strings.Contains(base, "://") {
 		base = "https://" + base

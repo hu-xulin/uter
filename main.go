@@ -195,9 +195,9 @@ func main() {
 	common.SMTPSenderProvider = service.SelectSMTPSender
 	common.SMTPSentRecorder = service.RecordEmailSent
 
-	// 创梦渠道（DreamRouter）隔离目录同步：按渠道定价计划定时拉取官方
+	// 创梦渠道（UterRoute）隔离目录同步：按渠道定价计划定时拉取官方
 	// 模型目录与折扣，只写该渠道的 channel_model_pricing。
-	go service.DreamRouterUpstreamSyncTask()
+	go service.UterRouteUpstreamSyncTask()
 	go service.BailianUpstreamSyncTask()
 	go service.GenericUpstreamSyncTask()
 	go service.DraftChannelCleanupTask()

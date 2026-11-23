@@ -46,7 +46,13 @@ func CreateChannelDraft(c *gin.Context) {
 		group = "default"
 	}
 	baseURL := strings.TrimSpace(req.BaseURL)
-	other := dto.ChannelOtherSettings{Draft: true}
+	other := dto.ChannelOtherSettings{
+		Draft: true,
+		// The unified create flow keeps the channel in sync without a second
+		// manual step: follow upstream model additions and apply them.
+		UpstreamModelUpdateCheckEnabled:    true,
+		UpstreamModelUpdateAutoSyncEnabled: true,
+	}
 	raw, err := common.Marshal(other)
 	if err != nil {
 		common.ApiError(c, err)

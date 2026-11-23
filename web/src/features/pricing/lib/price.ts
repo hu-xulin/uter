@@ -378,7 +378,7 @@ export function getOfficialReferenceRatio(
 
 /**
  * `official_prices` 里「美元/秒」官方价的键名，与后端
- * `service.dreamrouter_sync.go` 的 `officialPerSecondField` 必须逐字一致。
+ * `service.uterroute_sync.go` 的 `officialPerSecondField` 必须逐字一致。
  *
  * 按秒计费的视频模型（wan3.0-video / wan3.0-video-prime 等）的计价系数是
  * 「每秒多少美元」，与 $2/1M tokens 的倍率空间无关，因此不能借用
@@ -528,7 +528,7 @@ function getDynamicInputPriceUSD(model: PricingModel): number | null {
  * Uter 的「美元/秒」报价，取自按秒计费的 billing_expr。非按秒计费的模型
  * 返回 null。
  *
- * 取哪个系数必须与后端 `dreamRouterDurationUnitPrices` **逐字同口径**：
+ * 取哪个系数必须与后端 `uterRouteDurationUnitPrices` **逐字同口径**：
  * 后端用 `\(([^()]*\bduration\b[^()]*)\)\s*\*\s*(数字)` 遍历全部匹配并取
  * **最后一个**，即表达式最右侧的 fallback 档（wan3.0-video 是 720p 的
  * 0.06268654），因为三元链按「前面的档位 → 最后的兜底档」书写。

@@ -29,7 +29,7 @@ func TestResolveBatchBasePriceBailianUsesChannelCatalog(t *testing.T) {
 	require.NotEmpty(t, reason, "Bailian must not present its channel quote as an official vendor price")
 }
 
-func TestResolveBatchBasePriceDreamRouterRejectsOfficialBasis(t *testing.T) {
+func TestResolveBatchBasePriceUterRouteRejectsOfficialBasis(t *testing.T) {
 	row := model.ChannelModelPricing{
 		ModelName: "gpt-a",
 		NormalizedPricing: `{
@@ -49,7 +49,7 @@ func TestResolveBatchBasePriceDreamRouterRejectsOfficialBasis(t *testing.T) {
 	require.Equal(t, 25.0, *base.outputUSD)
 }
 
-func TestResolveBatchBasePriceDreamRouterPerCall(t *testing.T) {
+func TestResolveBatchBasePriceUterRoutePerCall(t *testing.T) {
 	row := model.ChannelModelPricing{
 		ModelName: "image-a",
 		NormalizedPricing: `{

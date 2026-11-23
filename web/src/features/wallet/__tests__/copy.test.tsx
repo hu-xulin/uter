@@ -110,13 +110,9 @@ it.each([
           priceRatio={priceRatio}
           calculating={false}
           paymentLoading={null}
-          redemptionCode=''
-          redeeming={false}
           onSelectPreset={vi.fn()}
           onTopupAmountChange={vi.fn()}
           onPaymentMethodSelect={vi.fn()}
-          onRedemptionCodeChange={vi.fn()}
-          onRedeem={vi.fn()}
         />
       </I18nextProvider>
     )

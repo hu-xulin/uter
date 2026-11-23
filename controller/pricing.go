@@ -147,7 +147,7 @@ func normalizePricingSource(raw string) string {
 //
 // Priority depends on the selected source:
 //  1. `channel`: the upstream reference captured by the last channel sync
-//     (创梦 / DreamRouter) wins for every model it covers. Uter's selling price
+//     (创梦 / UterRoute) wins for every model it covers. Uter's selling price
 //     is derived from that same official base, so the strike-through price and
 //     discount badge must use it too; a public catalogue can disagree (for
 //     example models.dev lists sonnet-4-5 at $3.3 while the upstream base is
@@ -174,7 +174,7 @@ func resolveOfficialPrices(pricingSource string) map[string]map[string]float64 {
 	return mergeOfficialPriceSourcesForSource(
 		pricingSource,
 		getPresetModelRatiosNonBlocking(referencePresetID),
-		service.LoadDreamRouterOfficialReference(),
+		service.LoadUterRouteOfficialReference(),
 		getPresetModelRatiosNonBlocking(fallbackPresetID),
 	)
 }

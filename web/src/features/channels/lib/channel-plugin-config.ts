@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 type LocalizedText = Record<string, string> | string | null | undefined
 
 export type ChannelConfigField = {

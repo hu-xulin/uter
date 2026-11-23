@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 import { describe, expect, it } from 'vitest'
 
 import { shouldUseSolidHeader } from '../public-header-variant'

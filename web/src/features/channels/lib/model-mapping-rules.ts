@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 export type ModelMappingPair = {
   /** Request model name that users call. */
   from: string

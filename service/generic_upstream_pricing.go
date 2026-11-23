@@ -312,7 +312,7 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 	if official == nil || factor <= 0 {
 		return
 	}
-	if units, ok := dreamRouterOfficialUnitPrices(expr); ok {
+	if units, ok := uterRouteOfficialUnitPrices(expr); ok {
 		tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 		input := units.Input * factor
 		tier.InputPerMillionUSD = &input
@@ -331,7 +331,7 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 		official.ChannelPrice = &tier
 		return
 	}
-	if units, ok := dreamRouterDurationUnitPrices(expr); ok {
+	if units, ok := uterRouteDurationUnitPrices(expr); ok {
 		perSecond := units.Input * factor
 		official.ChannelPrice = &model.ChannelPricingTier{
 			RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
@@ -494,12 +494,13 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	if channel == nil {
 		return 0, nil, errors.New("channel is required")
 	}
-	// XXAPI binds each key to one billing group; the public document has no
+	// UterAPI binds each key to one billing group; the public document has no
 	// group context, so syncing without the stored group would silently price
 	// the channel at the undiscounted catalogue rate.
-	if MatchesUpstreamHost(channel.GetBaseURL(), "xxapi.ai") &&
+	if (MatchesUpstreamHost(channel.GetBaseURL(), UterAPIUpstreamHost()) ||
+		MatchesUpstreamHost(channel.GetBaseURL(), "uterapi.ai")) &&
 		GetGenericUpstreamBillingGroup(channel.Id) == "" {
-		return 0, nil, errors.New("xxapi channel has no upstream billing group; refuse catalogue-price sync")
+		return 0, nil, errors.New("Uter.api channel has no upstream billing group; refuse catalogue-price sync")
 	}
 	release, acquired, err := acquireChannelPricingSyncLock(channel.Id)
 	if err != nil {
@@ -518,7 +519,7 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	}
 	models := GenericModelNames(entries.Data)
 	// The pricing document is account-wide, so it may list models the channel's
-	// key cannot actually serve (xxapi group keys see a subset). Import the
+	// key cannot actually serve (uterapi group keys see a subset). Import the
 	// catalogue only when the channel has no model list yet; an existing list
 	// stays authoritative instead of being expanded by every price sync.
 	if len(channel.GetModels()) == 0 {
@@ -563,7 +564,7 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 }
 
 // GenericUpstreamSyncTask refreshes generic New API channels on their official
-// price cadence. DreamRouter and Bailian keep their provider-specific tasks.
+// price cadence. Uter Route and Bailian keep their provider-specific tasks.
 func GenericUpstreamSyncTask() {
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
@@ -656,7 +657,7 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 	}
 	now := time.Now().UTC()
 	for _, channel := range channels {
-		if channel.Type == 17 || strings.Contains(strings.ToLower(channel.GetBaseURL()), "dreamrouter.ai") {
+		if channel.Type == 17 || IsUterRouteHost(channel.GetBaseURL()) {
 			continue
 		}
 		schedule, explicit := GetChannelPricingSchedule(channel.Id)

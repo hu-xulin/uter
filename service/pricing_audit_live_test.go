@@ -100,16 +100,16 @@ func auditInternal(t *testing.T, raw string) (string, bool) {
 
 func floatPtr(v float64) *float64 { return &v }
 
-func TestAuditDreamRouterLive(t *testing.T) {
+func TestAuditUterRouteLive(t *testing.T) {
 	if os.Getenv("PRICING_AUDIT") == "" {
 		t.Skip("set PRICING_AUDIT=1")
 	}
 	auditInit(t)
 	channel, err := model.GetChannelById(32, true)
 	require.NoError(t, err)
-	snapshot, err := FetchDreamRouterUpstream(context.Background(), "")
+	snapshot, err := FetchUterRouteUpstream(context.Background(), "")
 	require.NoError(t, err)
-	records, err := DreamRouterChannelPricingRecords(snapshot, channel.Id, channel.GetModels(), GetDreamRouterDiscountGroup(channel.Id))
+	records, err := UterRouteChannelPricingRecords(snapshot, channel.Id, channel.GetModels(), GetUterRouteDiscountGroup(channel.Id))
 	require.NoError(t, err)
 
 	counts := map[string]int{}
@@ -139,7 +139,7 @@ func TestAuditDreamRouterLive(t *testing.T) {
 			counts["no_internal"]++
 		}
 	}
-	t.Logf("dreamrouter: records=%d with_internal=%d exec_ok=%d counts=%v reasons=%v failures=%v",
+	t.Logf("uterroute: records=%d with_internal=%d exec_ok=%d counts=%v reasons=%v failures=%v",
 		len(records), withInternal, execOK, counts, reasons, failures)
 }
 
@@ -205,13 +205,13 @@ func TestAuditBailianLive(t *testing.T) {
 		len(catalog.Models), len(records), withInternal, execOK, stale, counts, reasons, failures)
 }
 
-func TestAuditXXAPILive(t *testing.T) {
+func TestAuditUterAPILive(t *testing.T) {
 	if os.Getenv("PRICING_AUDIT") == "" {
 		t.Skip("set PRICING_AUDIT=1")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	payload, err := fetchXXAPIPricingPayload(ctx, xxapiPricingURL, "")
+	payload, err := fetchUterAPIPricingPayload(ctx, uterapiPricingURL, "")
 	require.NoError(t, err)
 	quota := genericQuotaPerUnit(GenericPricingEntry{}, payload)
 	models := GenericModelNames(payload.Data)
@@ -244,6 +244,6 @@ func TestAuditXXAPILive(t *testing.T) {
 			counts["no_internal"]++
 		}
 	}
-	t.Logf("xxapi: models=%d quota_per_unit=%v groups=%d records=%d with_internal=%d exec_ok=%d counts=%v reasons=%v failures=%v",
+	t.Logf("uterapi: models=%d quota_per_unit=%v groups=%d records=%d with_internal=%d exec_ok=%d counts=%v reasons=%v failures=%v",
 		len(models), payload.QuotaPerUnit, len(payload.GroupRatio), len(records), withInternal, execOK, counts, reasons, failures)
 }

@@ -23,7 +23,7 @@ import "strings"
 
 // 上游模型的采样参数兼容表。
 //
-// 背景：创梦（DreamRouter，渠道 #20）对一批新模型的采样参数做了硬校验，请求体里
+// 背景：创梦（UterRoute，渠道 #20）对一批新模型的采样参数做了硬校验，请求体里
 // 只要带上就直接 400，且**三种报错文案各说各话**：
 //
 //	`top_p` is deprecated for this model.                              (Claude 5 代)

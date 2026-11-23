@@ -1,4 +1,4 @@
-//go:build dreamrouter_live
+//go:build uterroute_live
 
 /*
 Copyright (C) 2023-2026 Uter.ai
@@ -29,7 +29,7 @@ For commercial licensing, please contact support@uter.ai
 // 用法（在仓库根目录）：
 //
 //	SQLITE_PATH=$PWD/one-api.db \
-//	go test -tags dreamrouter_live ./controller -run TestDumpPricingPayload -v
+//	go test -tags uterroute_live ./controller -run TestDumpPricingPayload -v
 package controller
 
 import (

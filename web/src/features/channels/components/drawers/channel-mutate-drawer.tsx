@@ -1,3 +1,21 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -115,7 +133,7 @@ import { useAuthStore } from '@/stores/auth-store'
 
 import {
   createChannelDraft,
-  createXXAPIChannels,
+  createUterAPIChannels,
   getAllModels,
   getChannel,
   getChannelDefaultBaseURLs,
@@ -123,6 +141,7 @@ import {
   getGroups,
   getPrefillGroups,
   getTaskPluginOptions,
+  getUterRouteEndpoint,
   refreshCodexCredential,
   syncChannelUpstreamPrices,
 } from '../../api'
@@ -176,6 +195,7 @@ import {
   findMissingModelsInMapping,
   validateModelMappingJson,
 } from '../../lib'
+import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
 import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
@@ -197,11 +217,13 @@ import {
   assessBaseUrlTrust,
   nextTaskPluginBaseUrl,
 } from '../../lib/task-plugin-base-url'
+import { isUterRouteBaseUrl } from '../../lib/uterroute'
 import type { Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
 import { ChannelBrandingEditor } from '../channel-branding-editor'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelPricingPanel } from '../channel-pricing-panel'
+import { ChannelPricingScheduleSection } from '../channel-pricing-schedule-section'
 import { ChannelQuickOptions } from '../channel-quick-options'
 import { ChannelTypeLogo } from '../channel-type-badge'
 import { useChannels } from '../channels-provider'
@@ -218,7 +240,6 @@ import {
   type PassthroughKind,
 } from '../dialogs/passthrough-warning-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
-import { DreamRouterChannelPanel } from '../dreamrouter-channel-panel'
 import {
   ModelMappingBatchDialog,
   type ModelMappingBatchResult,
@@ -231,6 +252,7 @@ import {
 import { ModelRedirectPanel } from '../model-redirect-panel'
 import { ResponsesWebSocketSetting } from '../responses-websocket-setting'
 import { UpstreamModelSelection } from '../upstream-model-selection'
+import { UterRouteChannelPanel } from '../uterroute-channel-panel'
 import {
   ChannelConfiguration,
   ChannelConfigurationStatusIndicator,
@@ -399,23 +421,47 @@ function SubHeading(props: {
 /** Stable empty list so memoized consumers do not re-run on every render. */
 const NO_UPSTREAM_MODELS: string[] = []
 
-const XXAPI_GROUP_SLOTS = [
-  { name: 'xxapi-claude-经济', label: 'Claude Economy', group: 'Claude-kiro' },
-  { name: 'xxapi-claude-标准', label: 'Claude Standard', group: 'Claude-max' },
-  { name: 'xxapi-claude-高级', label: 'Claude Advanced', group: 'Claude-稳定' },
+const UterAPI_GROUP_SLOTS = [
   {
-    name: 'xxapi-claude-企业',
+    name: 'Uter.api-claude-经济',
+    label: 'Claude Economy',
+    group: 'Claude-kiro',
+  },
+  {
+    name: 'Uter.api-claude-标准',
+    label: 'Claude Standard',
+    group: 'Claude-max',
+  },
+  {
+    name: 'Uter.api-claude-高级',
+    label: 'Claude Advanced',
+    group: 'Claude-稳定',
+  },
+  {
+    name: 'Uter.api-claude-企业',
     label: 'Claude Enterprise',
     group: 'Claude-企业稳定-Ultra-毫秒响应',
   },
-  { name: 'xxapi-codex-标准', label: 'Codex Standard', group: 'Codex Pro' },
-  { name: 'xxapi-codex-高级', label: 'Codex Advanced', group: 'Codex-高级' },
+  { name: 'Uter.api-codex-标准', label: 'Codex Standard', group: 'Codex Pro' },
+  { name: 'Uter.api-codex-高级', label: 'Codex Advanced', group: 'Codex-高级' },
   {
-    name: 'xxapi-codex-企业',
+    name: 'Uter.api-codex-企业',
     label: 'Codex Enterprise',
     group: 'Codex-企业稳定-专线毫秒响应',
   },
 ] as const
+
+// One API key per line; blank lines and duplicates are ignored.
+function splitKeyLines(raw: string): string[] {
+  return [
+    ...new Set(
+      raw
+        .split('\n')
+        .map((value) => value.trim())
+        .filter(Boolean)
+    ),
+  ]
+}
 
 type AutoProvisionStep = 'idle' | 'running' | 'done' | 'error'
 type AutoProvisionState = {
@@ -513,7 +559,8 @@ export function ChannelMutateDrawer({
   }, [open, isEditing])
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
-  const [xxapiSlotKeys, setXxapiSlotKeys] = useState<Record<string, string>>({})
+  const [uterapiGroupName, setUterapiGroupName] = useState('')
+  const [uterapiKeysText, setUterapiKeysText] = useState('')
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
@@ -654,19 +701,42 @@ export function ChannelMutateDrawer({
   const currentTaskPluginKey = formValues.task_plugin_key
   const currentTaskExtendPluginKeys = formValues.task_extend_plugin_keys
   const currentKey = formValues.key
-  const isXxapiTarget = providerTarget?.kind === 'xxapi'
+  const isUterApiTarget = providerTarget?.kind === 'uterapi'
   const isBailianProvider = currentType === 17
-  const isDreamRouterProvider =
+  const uterRouteEndpointQuery = useQuery({
+    queryKey: ['uterroute-endpoint'],
+    queryFn: getUterRouteEndpoint,
+    staleTime: Infinity,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const isUterRouteProvider =
     isAdvancedCustomLikeChannelType(currentType) &&
-    (currentBaseUrl ?? '').toLowerCase().includes('dreamrouter.ai')
+    isUterRouteBaseUrl(currentBaseUrl, uterRouteEndpointQuery.data?.host)
   // Providers whose catalog and prices can be read automatically run the whole
   // pipeline during creation; only credentials still need the operator.
   const canAutoProvision =
     !isEditing &&
-    !isXxapiTarget &&
+    !isUterApiTarget &&
     MODEL_FETCHABLE_TYPES.has(currentType) &&
     !isBailianProvider &&
-    !isDreamRouterProvider
+    !isUterRouteProvider
+
+  // Validation still speaks the editing section names; map them onto the six
+  // creation steps so a focused field is never hidden in an unreachable tab.
+  const resolveCreateSection = useCallback(
+    (
+      section: ChannelConfigurationSection,
+      field?: string
+    ): ChannelConfigurationSection => {
+      if (isEditing) return section
+      if (field?.startsWith('upstream_model_update')) return 'auto_update'
+      if (section === 'connection' || section === 'models') return section
+      if (section === 'pricing') return 'pricing_config'
+      return 'other'
+    },
+    [isEditing]
+  )
   const currentModels = formValues.models
   const currentModelMapping = formValues.model_mapping
   const awsKeyType = formValues.aws_key_type
@@ -891,7 +961,7 @@ export function ChannelMutateDrawer({
     (target: ChannelProviderTarget) => {
       if (!canEditSensitive) return
       // Two providers are "the same" only when their builtin type (or plugin
-      // key / xxapi identity) matches.
+      // key / uterapi identity) matches.
       const sameBuiltinProvider =
         target.kind === 'builtin' &&
         providerTarget?.kind === 'builtin' &&
@@ -900,24 +970,25 @@ export function ChannelMutateDrawer({
         target.kind === 'plugin' &&
         providerTarget?.kind === 'plugin' &&
         target.key === providerTarget.key
-      const sameXXAPIProvider =
-        target.kind === 'xxapi' && providerTarget?.kind === 'xxapi'
-      if (sameBuiltinProvider || samePluginProvider || sameXXAPIProvider) {
+      const sameUterAPIProvider =
+        target.kind === 'uterapi' && providerTarget?.kind === 'uterapi'
+      if (sameBuiltinProvider || samePluginProvider || sameUterAPIProvider) {
         setChoosingProvider(false)
         return
       }
-      if (target.kind === 'xxapi') {
+      if (target.kind === 'uterapi') {
         if (isEditing) return
         form.setValue('type', CHANNEL_TYPE_NEW_API, { shouldDirty: true })
-        form.setValue('base_url', 'https://xxapi.ai', {
+        form.setValue('base_url', 'https://api.uter.ai', {
           shouldDirty: true,
           shouldValidate: true,
         })
-        form.setValue('name', 'xxapi')
-        form.setValue('branding_display_name', 'xxapi')
+        form.setValue('name', 'Uter.api')
+        form.setValue('branding_display_name', 'Uter.api')
         form.setValue('models', '')
         form.setValue('key', '')
-        setXxapiSlotKeys({})
+        setUterapiGroupName('')
+        setUterapiKeysText('')
         setProviderTarget(target)
         setChoosingProvider(false)
         setShowDraftPricing(false)
@@ -995,7 +1066,8 @@ export function ChannelMutateDrawer({
   const configuration = getChannelConfigurationState(
     formValues,
     formErrors,
-    isEditing
+    isEditing,
+    { managedCredentials: isUterApiTarget && !isEditing }
   )
 
   // Extract redirect models from model_mapping (target values)
@@ -1454,36 +1526,36 @@ export function ChannelMutateDrawer({
     autoProvisionChannelRef.current = -1
     const discovered = discovery.models
     const run = async () => {
-      setAutoProvision({
-        models: 'done',
-        modelsCount: discovered.length,
-        prices: 'running',
-        verification: 'idle',
-        priceCount: 0,
-      })
       try {
         if (currentModelsArray.length === 0) {
           updateModels(discovered)
         }
-        const channelIdForDraft = await createDraftChannel()
-        const synced = await syncChannelUpstreamPrices(channelIdForDraft)
-        const report = await getChannelUpstreamReconciliation(
-          channelIdForDraft
-        ).catch(() => null)
-        autoProvisionChannelRef.current = channelIdForDraft
+        const result = await runChannelAutoProvision({
+          createDraft: createDraftChannel,
+          syncPrices: syncChannelUpstreamPrices,
+          getReconciliation: getChannelUpstreamReconciliation,
+          onPricesStarted: () =>
+            setAutoProvision({
+              models: 'done',
+              modelsCount: discovered.length,
+              prices: 'running',
+              verification: 'idle',
+              priceCount: 0,
+            }),
+        })
+        autoProvisionChannelRef.current = result.channelId
         setAutoProvision({
           models: 'done',
           modelsCount: discovered.length,
           prices: 'done',
-          priceCount: synced.written,
-          verification:
-            report?.status === 'RULES_PASSED' ? 'passed' : 'attention',
+          priceCount: result.written,
+          verification: result.verification,
         })
         void queryClient.invalidateQueries({
-          queryKey: ['channel-model-pricing', channelIdForDraft],
+          queryKey: ['channel-model-pricing', result.channelId],
         })
         void queryClient.invalidateQueries({
-          queryKey: ['channel-upstream-reconciliation', channelIdForDraft],
+          queryKey: ['channel-upstream-reconciliation', result.channelId],
         })
       } catch (error) {
         autoProvisionChannelRef.current = null
@@ -1638,10 +1710,10 @@ export function ChannelMutateDrawer({
   // the editor on the routing tab. Drafts are saved once both names are set.
   const requestMappingDraft = useCallback(
     (from: string, to: string) => {
-      setConfigurationSection('routing')
+      setConfigurationSection(resolveCreateSection('routing'))
       raiseMappingDraft(from, to)
     },
-    [raiseMappingDraft]
+    [raiseMappingDraft, resolveCreateSection]
   )
 
   // Keep the model list in step with mappings edited from the redirect panel:
@@ -1861,25 +1933,19 @@ export function ChannelMutateDrawer({
       if (isEditing && !channelData?.data) return
       if (!isEditing && (!providerTarget || !canEditSensitive)) return
 
-      if (!isEditing && providerTarget?.kind === 'xxapi') {
-        const splitKeys = (raw: string) =>
-          raw
-            .split('\n')
-            .map((value) => value.trim())
-            .filter(Boolean)
-        const slots = XXAPI_GROUP_SLOTS.map((slot) => ({
-          name: slot.name,
-          group: slot.group,
-          keys: splitKeys(xxapiSlotKeys[slot.name] ?? ''),
-        })).filter((slot) => slot.keys.length > 0)
-        if (slots.length === 0) {
-          toast.error(t('Enter at least one Claude or Codex API key'))
+      if (!isEditing && providerTarget?.kind === 'uterapi') {
+        const slot = UterAPI_GROUP_SLOTS.find(
+          (candidate) => candidate.name === uterapiGroupName
+        )
+        const keys = splitKeyLines(uterapiKeysText)
+        if (!slot || keys.length === 0) {
+          toast.error(t('Choose a group and enter at least one API key'))
           setConfigurationSection('connection')
           return
         }
         try {
-          const response = await createXXAPIChannels({
-            slots,
+          const response = await createUterAPIChannels({
+            slots: [{ name: slot.name, group: slot.group, keys }],
             group: (data.group ?? []).join(',') || 'default',
           })
           const created = response.data?.created ?? 0
@@ -1888,21 +1954,21 @@ export function ChannelMutateDrawer({
           ).length
           if (pricingIssues > 0) {
             toast.warning(
-              t('xxapi channels created, but some pricing syncs failed')
+              t('Uter.api channel created, but pricing sync failed')
             )
           } else {
-            toast.success(t('xxapi channels created'))
+            toast.success(t('Uter.api channel created'))
           }
           if (created > 0) {
             handleSuccess()
           }
         } catch (error) {
-          handleServerError(error, t('Failed to create xxapi channels'))
+          handleServerError(error, t('Failed to create the Uter.api channel'))
         }
         return
       }
 
-      if (providerTarget?.kind !== 'xxapi' && !data.models?.trim()) {
+      if (providerTarget?.kind !== 'uterapi' && !data.models?.trim()) {
         form.setError('models', {
           type: 'manual',
           message: ERROR_MESSAGES.REQUIRED_MODELS,
@@ -1913,7 +1979,11 @@ export function ChannelMutateDrawer({
       }
 
       // Validate key is required when creating
-      if (!isEditing && !data.key?.trim()) {
+      if (
+        !isEditing &&
+        providerTarget?.kind !== 'uterapi' &&
+        !data.key?.trim()
+      ) {
         form.setError('key', {
           type: 'manual',
           message: ERROR_MESSAGES.REQUIRED_KEY,
@@ -1951,7 +2021,7 @@ export function ChannelMutateDrawer({
             }
           )
           form.setError('status_code_mapping', { type: 'manual', message })
-          setConfigurationSection('request')
+          setConfigurationSection(resolveCreateSection('request'))
           setPendingErrorFocus('status_code_mapping')
           toast.error(message)
           return
@@ -1980,7 +2050,7 @@ export function ChannelMutateDrawer({
             type: 'manual',
             message: t(validation.error || 'Invalid model mapping'),
           })
-          setConfigurationSection('routing')
+          setConfigurationSection(resolveCreateSection('routing'))
           setPendingErrorFocus('model_mapping')
           handleServerError(
             validation,
@@ -2041,7 +2111,9 @@ export function ChannelMutateDrawer({
       confirmStatusCodeRisk,
       channelMutation,
       handleSuccess,
-      xxapiSlotKeys,
+      uterapiGroupName,
+      uterapiKeysText,
+      resolveCreateSection,
       t,
     ]
   )
@@ -2050,12 +2122,14 @@ export function ChannelMutateDrawer({
     (errors) => {
       const field = Object.keys(errors)[0]
       if (field) {
-        setConfigurationSection(getChannelConfigurationSection(field))
+        setConfigurationSection(
+          resolveCreateSection(getChannelConfigurationSection(field), field)
+        )
         setPendingErrorFocus(field)
       }
       toast.error(t('Please fix the highlighted fields before saving'))
     },
-    [t]
+    [t, resolveCreateSection]
   )
 
   useEffect(() => {
@@ -2879,6 +2953,36 @@ export function ChannelMutateDrawer({
     </Alert>
   )
 
+  const brandingEditor = !isAdvancedCustomLikeChannelType(currentType) ? (
+    <ChannelBrandingEditor
+      displayName={form.watch('branding_display_name') ?? ''}
+      logo={form.watch('branding_logo') ?? ''}
+      logoDark={form.watch('branding_logo_dark') ?? ''}
+      fallbackLabel={t(
+        CHANNEL_TYPES[currentType as keyof typeof CHANNEL_TYPES] ?? 'Channel'
+      )}
+      disabled={sensitiveLocked || isSubmitting}
+      onDisplayNameChange={(value) =>
+        form.setValue('branding_display_name', value, {
+          shouldDirty: true,
+          shouldValidate: true,
+        })
+      }
+      onLogoChange={(value) =>
+        form.setValue('branding_logo', value, {
+          shouldDirty: true,
+          shouldValidate: true,
+        })
+      }
+      onLogoDarkChange={(value) =>
+        form.setValue('branding_logo_dark', value, {
+          shouldDirty: true,
+          shouldValidate: true,
+        })
+      }
+    />
+  ) : null
+
   const basicSection = (
     <div className='scroll-mt-4'>
       <ChannelBasicSection>
@@ -2896,36 +3000,7 @@ export function ChannelMutateDrawer({
               </FormItem>
             )}
           />
-          {!isAdvancedCustomLikeChannelType(currentType) ? (
-            <ChannelBrandingEditor
-              displayName={form.watch('branding_display_name') ?? ''}
-              logo={form.watch('branding_logo') ?? ''}
-              logoDark={form.watch('branding_logo_dark') ?? ''}
-              fallbackLabel={t(
-                CHANNEL_TYPES[currentType as keyof typeof CHANNEL_TYPES] ??
-                  'Channel'
-              )}
-              disabled={sensitiveLocked || isSubmitting}
-              onDisplayNameChange={(value) =>
-                form.setValue('branding_display_name', value, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-              onLogoChange={(value) =>
-                form.setValue('branding_logo', value, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-              onLogoDarkChange={(value) =>
-                form.setValue('branding_logo_dark', value, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-            />
-          ) : null}
+          {isEditing ? brandingEditor : null}
         </div>
 
         {!isEditing && (
@@ -3579,12 +3654,17 @@ export function ChannelMutateDrawer({
 
   const modelsSection = (
     <div className='scroll-mt-4'>
-      <ChannelModelsSection>
+      <ChannelModelsSection
+        description={
+          isEditing
+            ? undefined
+            : t('Models and groups to publish with this channel.')
+        }
+      >
         <div className='space-y-5'>
-          {autoProvisionPanel}
           {MODEL_FETCHABLE_TYPES.has(currentType) &&
           !isBailianProvider &&
-          !isDreamRouterProvider ? (
+          !isUterRouteProvider ? (
             <section
               aria-live='polite'
               className='border-border/60 bg-muted/10 space-y-3 rounded-lg border p-4'
@@ -3652,7 +3732,7 @@ export function ChannelMutateDrawer({
               </div>
             </section>
           ) : null}
-          {(isBailianProvider || isDreamRouterProvider) && (
+          {(isBailianProvider || isUterRouteProvider) && (
             <section className='space-y-3'>
               <div>
                 <p className='font-medium'>{t('Model information sync')}</p>
@@ -3675,8 +3755,8 @@ export function ChannelMutateDrawer({
                   }
                 />
               )}
-              {isDreamRouterProvider && (
-                <DreamRouterChannelPanel
+              {isUterRouteProvider && (
+                <UterRouteChannelPanel
                   channelId={effectiveChannelId}
                   baseUrl={form.watch('base_url') ?? ''}
                   onCreateDraft={isEditing ? undefined : createDraftChannel}
@@ -3784,7 +3864,9 @@ export function ChannelMutateDrawer({
                       variant='link'
                       size='inline'
                       className='text-sm'
-                      onClick={() => setConfigurationSection('routing')}
+                      onClick={() =>
+                        setConfigurationSection(resolveCreateSection('routing'))
+                      }
                     >
                       {mappingCount > 0
                         ? t('Edit mapping')
@@ -3857,7 +3939,11 @@ export function ChannelMutateDrawer({
                             type='button'
                             variant='ghost'
                             size='sm'
-                            onClick={() => setConfigurationSection('routing')}
+                            onClick={() =>
+                              setConfigurationSection(
+                                resolveCreateSection('routing')
+                              )
+                            }
                           >
                             {t('View mapping')}
                           </Button>
@@ -4786,92 +4872,93 @@ export function ChannelMutateDrawer({
             )}
 
             {/* General base_url for other types */}
-            {![3, 8, 22, 36, 45].includes(currentType) && (
-              <FormField
-                control={form.control}
-                name='base_url'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      required={
-                        currentType === CHANNEL_TYPE_TASK_PLUGIN ||
-                        currentType === CHANNEL_TYPE_VLLM ||
-                        currentType === CHANNEL_TYPE_SGLANG
-                      }
-                    >
-                      {t('Base URL')}
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder={baseUrlPlaceholder} {...field} />
-                    </FormControl>
-                    {currentType !== CHANNEL_TYPE_TASK_PLUGIN && (
-                      <FormDescription>
-                        {t(
-                          'Custom API base URL. For official channels, Uter has built-in addresses. Only fill this for third-party proxy sites or special endpoints. Do not add /v1 or trailing slash.'
-                        )}
-                      </FormDescription>
-                    )}
-                    {currentType === CHANNEL_TYPE_TASK_PLUGIN &&
-                      !boundTaskPlugin?.baseUrl && (
+            {![3, 8, 22, 36, 45].includes(currentType) &&
+              !(isUterApiTarget && !isEditing) && (
+                <FormField
+                  control={form.control}
+                  name='base_url'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        required={
+                          currentType === CHANNEL_TYPE_TASK_PLUGIN ||
+                          currentType === CHANNEL_TYPE_VLLM ||
+                          currentType === CHANNEL_TYPE_SGLANG
+                        }
+                      >
+                        {t('Base URL')}
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder={baseUrlPlaceholder} {...field} />
+                      </FormControl>
+                      {currentType !== CHANNEL_TYPE_TASK_PLUGIN && (
                         <FormDescription>
                           {t(
-                            'The upstream address this plugin sends requests to. The plugin declares no default, so it must be filled in.'
+                            'Custom API base URL. For official channels, Uter has built-in addresses. Only fill this for third-party proxy sites or special endpoints. Do not add /v1 or trailing slash.'
                           )}
                         </FormDescription>
                       )}
-                    {currentType === CHANNEL_TYPE_TASK_PLUGIN &&
-                      boundTaskPlugin?.baseUrl && (
-                        <FormDescription className='flex flex-wrap items-center gap-x-1'>
-                          <span>{t('Plugin default')}:</span>
-                          <span className='text-mono font-mono break-all'>
-                            {boundTaskPlugin.baseUrl}
-                          </span>
-                          {(field.value ?? '').trim().replace(/\/+$/, '') !==
-                            boundTaskPlugin.baseUrl && (
-                            <Button
-                              type='button'
-                              variant='link'
-                              size='inline'
-                              onClick={() =>
-                                form.setValue(
-                                  'base_url',
-                                  boundTaskPlugin.baseUrl ?? '',
-                                  {
-                                    shouldDirty: true,
-                                    shouldValidate: true,
-                                  }
-                                )
-                              }
-                            >
-                              {t('Use default')}
-                            </Button>
-                          )}
-                        </FormDescription>
+                      {currentType === CHANNEL_TYPE_TASK_PLUGIN &&
+                        !boundTaskPlugin?.baseUrl && (
+                          <FormDescription>
+                            {t(
+                              'The upstream address this plugin sends requests to. The plugin declares no default, so it must be filled in.'
+                            )}
+                          </FormDescription>
+                        )}
+                      {currentType === CHANNEL_TYPE_TASK_PLUGIN &&
+                        boundTaskPlugin?.baseUrl && (
+                          <FormDescription className='flex flex-wrap items-center gap-x-1'>
+                            <span>{t('Plugin default')}:</span>
+                            <span className='text-mono font-mono break-all'>
+                              {boundTaskPlugin.baseUrl}
+                            </span>
+                            {(field.value ?? '').trim().replace(/\/+$/, '') !==
+                              boundTaskPlugin.baseUrl && (
+                              <Button
+                                type='button'
+                                variant='link'
+                                size='inline'
+                                onClick={() =>
+                                  form.setValue(
+                                    'base_url',
+                                    boundTaskPlugin.baseUrl ?? '',
+                                    {
+                                      shouldDirty: true,
+                                      shouldValidate: true,
+                                    }
+                                  )
+                                }
+                              >
+                                {t('Use default')}
+                              </Button>
+                            )}
+                          </FormDescription>
+                        )}
+                      <FormMessage />
+                      {(taskPluginBaseUrlTrust?.plainHttp ||
+                        taskPluginBaseUrlTrust?.privateHost) && (
+                        <Alert>
+                          <AlertCircle />
+                          <AlertDescription>
+                            {taskPluginBaseUrlTrust?.plainHttp &&
+                              t(
+                                'This base URL uses plain HTTP, so the channel key is sent unencrypted.'
+                              )}
+                            {taskPluginBaseUrlTrust?.plainHttp &&
+                              taskPluginBaseUrlTrust?.privateHost &&
+                              ' '}
+                            {taskPluginBaseUrlTrust?.privateHost &&
+                              t(
+                                'This base URL points at a private or local network host. Make sure it is an upstream you control.'
+                              )}
+                          </AlertDescription>
+                        </Alert>
                       )}
-                    <FormMessage />
-                    {(taskPluginBaseUrlTrust?.plainHttp ||
-                      taskPluginBaseUrlTrust?.privateHost) && (
-                      <Alert>
-                        <AlertCircle />
-                        <AlertDescription>
-                          {taskPluginBaseUrlTrust?.plainHttp &&
-                            t(
-                              'This base URL uses plain HTTP, so the channel key is sent unencrypted.'
-                            )}
-                          {taskPluginBaseUrlTrust?.plainHttp &&
-                            taskPluginBaseUrlTrust?.privateHost &&
-                            ' '}
-                          {taskPluginBaseUrlTrust?.privateHost &&
-                            t(
-                              'This base URL points at a private or local network host. Make sure it is an upstream you control.'
-                            )}
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </FormItem>
-                )}
-              />
-            )}
+                    </FormItem>
+                  )}
+                />
+              )}
 
             {isAdvancedCustomLikeChannelType(currentType) && (
               <FormField
@@ -4976,45 +5063,54 @@ export function ChannelMutateDrawer({
                 />
               )}
 
-              {!isEditing && providerTarget?.kind === 'xxapi' && (
-                <div className='space-y-5'>
+              {!isEditing && providerTarget?.kind === 'uterapi' && (
+                <div className='space-y-4'>
                   <p className='text-muted-foreground text-sm'>
                     {t(
-                      'Each group has its own key and price. Fill only the groups you have keys for; every line is one key.'
+                      'One channel per creation. Choose the group this key belongs to, then paste its key (one per line).'
                     )}
                   </p>
-                  {(['Claude', 'Codex'] as const).map((family) => (
-                    <div key={family} className='space-y-3'>
-                      <p className='text-sm font-medium'>
-                        {t(
-                          family === 'Claude' ? 'Claude groups' : 'Codex groups'
-                        )}
-                      </p>
-                      <div className='grid gap-3 sm:grid-cols-2'>
-                        {XXAPI_GROUP_SLOTS.filter((slot) =>
-                          slot.name.startsWith(`xxapi-${family.toLowerCase()}-`)
-                        ).map((slot) => (
-                          <div key={slot.name} className='space-y-2'>
-                            <Label>{t(slot.label)}</Label>
-                            <Textarea
-                              rows={3}
-                              value={xxapiSlotKeys[slot.name] ?? ''}
-                              onChange={(event) =>
-                                setXxapiSlotKeys((current) => ({
-                                  ...current,
-                                  [slot.name]: event.target.value,
-                                }))
-                              }
-                              placeholder={t('One key per line')}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                  <div className='space-y-2'>
+                    <Label>{t('Group')}</Label>
+                    <Select
+                      value={uterapiGroupName}
+                      onValueChange={(value) =>
+                        setUterapiGroupName(value ?? '')
+                      }
+                      items={UterAPI_GROUP_SLOTS.map((slot) => ({
+                        value: slot.name,
+                        label: t(slot.label),
+                      }))}
+                    >
+                      <SelectTrigger aria-label={t('Group')}>
+                        <SelectValue placeholder={t('Choose a group')} />
+                      </SelectTrigger>
+                      <SelectContent alignItemWithTrigger={false}>
+                        <SelectGroup>
+                          {UterAPI_GROUP_SLOTS.map((slot) => (
+                            <SelectItem key={slot.name} value={slot.name}>
+                              {t(slot.label)}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className='space-y-2'>
+                    <Label>{t('API keys')}</Label>
+                    <Textarea
+                      aria-label={t('API keys')}
+                      rows={3}
+                      value={uterapiKeysText}
+                      onChange={(event) =>
+                        setUterapiKeysText(event.target.value)
+                      }
+                      placeholder={t('One key per line')}
+                    />
+                  </div>
                 </div>
               )}
-              {providerTarget?.kind !== 'xxapi' && (
+              {providerTarget?.kind !== 'uterapi' && (
                 <FormField
                   control={form.control}
                   name='key'
@@ -5320,6 +5416,78 @@ export function ChannelMutateDrawer({
     </div>
   )
 
+  let pricingFetchSection: ReactNode
+  if (isUterApiTarget && !isEditing) {
+    pricingFetchSection = (
+      <div className='space-y-2 rounded-lg border p-4'>
+        <p className='font-medium'>
+          {t('Models and prices are fetched on create')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'Each filled key group fetches its own models and upstream prices when the channel is created; price checks and billing rules are verified in the same step.'
+          )}
+        </p>
+      </div>
+    )
+  } else if (canAutoProvision) {
+    pricingFetchSection = autoProvisionPanel
+  } else {
+    pricingFetchSection = (
+      <div className='space-y-2 rounded-lg border p-4'>
+        <p className='font-medium'>
+          {t('Automatic price fetch is unavailable')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'This channel type does not publish machine-readable prices. Configure official and sale prices manually after creation.'
+          )}
+        </p>
+      </div>
+    )
+  }
+
+  const autoUpdateSection = (
+    <div className='space-y-5'>
+      {isUterApiTarget && !isEditing ? (
+        <div className='space-y-2 rounded-lg border p-4'>
+          <p className='font-medium'>
+            {t('Updates follow the created channels')}
+          </p>
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'Every created group channel checks upstream model changes and syncs them automatically. Prices keep syncing on the channel pricing schedule.'
+            )}
+          </p>
+        </div>
+      ) : (
+        <>
+          {upstreamModelDetectionFields}
+          <div className='space-y-2 rounded-lg border p-4'>
+            <p className='font-medium'>{t('Model detection vs. price sync')}</p>
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.'
+              )}
+            </p>
+          </div>
+          {effectiveChannelId ? (
+            <ChannelPricingScheduleSection
+              channelId={effectiveChannelId}
+              baseUrl={form.watch('base_url') ?? ''}
+            />
+          ) : (
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Create the channel (or configure pricing) first; the pricing schedule is saved per channel.'
+              )}
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  )
+
   const reviewModels = form.watch('models')
   const reviewModelCount = Array.isArray(reviewModels)
     ? reviewModels.length
@@ -5374,6 +5542,16 @@ export function ChannelMutateDrawer({
     },
   ]
 
+  const selectedUterapiSlot = UterAPI_GROUP_SLOTS.find(
+    (slot) => slot.name === uterapiGroupName
+  )
+  const uterapiKeyCount = splitKeyLines(uterapiKeysText).length
+
+  const visibleReviewRows =
+    !isEditing && isUterApiTarget
+      ? reviewRows.filter((row) => row.label !== t('Base URL'))
+      : reviewRows
+
   const reviewSection = (
     <div className='space-y-4'>
       <div className='flex flex-wrap items-start justify-between gap-3'>
@@ -5383,7 +5561,7 @@ export function ChannelMutateDrawer({
             {t('Review the configuration before creating the channel.')}
           </p>
         </div>
-        {!isEditing && isXxapiTarget ? null : (
+        {!isEditing && isUterApiTarget ? null : (
           <Button
             type='button'
             variant='outline'
@@ -5396,8 +5574,41 @@ export function ChannelMutateDrawer({
           </Button>
         )}
       </div>
+      {!isEditing && isUterApiTarget ? (
+        <section className='space-y-3 rounded-lg border p-4'>
+          <div className='space-y-1'>
+            <p className='font-medium'>{t('Channel to create')}</p>
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Only this group becomes a channel; run the flow again for another group.'
+              )}
+            </p>
+          </div>
+          <div className='flex items-center justify-between gap-2 text-sm'>
+            <span className='font-medium'>
+              {selectedUterapiSlot
+                ? t(selectedUterapiSlot.label)
+                : t('No group chosen')}
+            </span>
+            {uterapiKeyCount > 0 ? (
+              <Badge variant='secondary'>
+                {t('{{count}} keys', { count: uterapiKeyCount })}
+              </Badge>
+            ) : (
+              <span className='text-muted-foreground text-xs'>
+                {t('No key yet')}
+              </span>
+            )}
+          </div>
+          <p className='text-muted-foreground text-sm'>
+            {t(
+              'Models, prices and billing rules are fetched automatically when you create.'
+            )}
+          </p>
+        </section>
+      ) : null}
       <dl className='overflow-hidden rounded-lg border'>
-        {reviewRows.map((row, index) => (
+        {visibleReviewRows.map((row, index) => (
           <div
             key={row.label}
             className={cn(
@@ -5422,6 +5633,7 @@ export function ChannelMutateDrawer({
         channelId={effectiveChannelId}
         baseUrl={form.watch('base_url') ?? ''}
         onCreateDraft={isEditing ? undefined : createDraftChannel}
+        showSchedule={isEditing}
       />
     )
   } else if (canAutoProvision) {
@@ -5481,7 +5693,6 @@ export function ChannelMutateDrawer({
         onSectionChange={setConfigurationSection}
         statuses={configuration.sections}
         mode={isEditing ? 'edit' : 'create'}
-        hideModelsPricing={!isEditing && isXxapiTarget}
         badges={{
           routing: {
             count: mappingCount,
@@ -5496,12 +5707,15 @@ export function ChannelMutateDrawer({
         }
         models={modelsSection}
         pricing={pricingSection}
+        pricingFetch={pricingFetchSection}
+        autoUpdate={autoUpdateSection}
         quickOptions={
-          viewportWide ? null : (
+          viewportWide && isEditing ? null : (
             <ChannelQuickOptions
               channelType={currentType}
               sensitiveLocked={sensitiveLocked}
               disabled={isSubmitting}
+              hideModelUpdateCheck={!isEditing}
               confirmEnablePassthrough={confirmEnablePassthrough}
             />
           )
@@ -5551,6 +5765,7 @@ export function ChannelMutateDrawer({
         review={reviewSection}
         other={
           <>
+            {!isEditing ? brandingEditor : null}
             <div
               role='group'
               aria-label={t('Channel Extra Settings')}
@@ -5612,7 +5827,7 @@ export function ChannelMutateDrawer({
                 {tlsInsecureSkipVerifyFields}
               </fieldset>
             </div>
-            {upstreamModelDetectionFields}
+            {isEditing ? upstreamModelDetectionFields : null}
             {notesFields}
           </>
         }
@@ -5753,6 +5968,7 @@ export function ChannelMutateDrawer({
                   </SheetDescription>
                 </div>
                 {viewportWide &&
+                  isEditing &&
                   !showProviderPicker &&
                   !channelError &&
                   !isChannelDetailLoading && (

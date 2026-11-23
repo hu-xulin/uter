@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /**
  * Plugin / marketplace copy that may be a bare string (legacy marketplace
  * index) or a BCP-47 map. Gateway APIs always emit the map form.

@@ -62,7 +62,9 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   } = props
   return (
     <AlertDialog {...actions}>
-      <AlertDialogContent className={cn(className)}>
+      <AlertDialogContent
+        className={cn('min-h-[var(--ds-dialog-confirm-min-height)]', className)}
+      >
         <AlertDialogHeader className='text-start'>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription render={<div />}>

@@ -2,12 +2,21 @@ package service
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/uter-ai/uter/common"
 
 	"github.com/uter-ai/uter/model"
 )
+
+// TwoFAEnrollmentEnabled reports whether users may create new two-factor
+// bindings. Existing bindings continue to work so disabling enrollment cannot
+// lock enrolled users out of their accounts.
+func TwoFAEnrollmentEnabled() bool {
+	raw := strings.TrimSpace(common.GetOption("TwoFAEnabled"))
+	return raw == "" || strings.EqualFold(raw, "true")
+}
 
 type TwoFASetup struct {
 	Secret      string   `json:"secret"`

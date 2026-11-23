@@ -46,6 +46,7 @@ import {
   CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
+  CHANNEL_TYPE_NEW_API,
   type ChannelProviderPresentation,
 } from '../../constants'
 import {
@@ -73,8 +74,14 @@ type ChannelProviderPickerProps = {
 
 function providerLogoChannelType(target: ChannelProviderTarget): number {
   if (target.kind === 'builtin') return target.type
-  if (target.kind === 'xxapi') return CHANNEL_TYPE_ADVANCED_CUSTOM
+  if (target.kind === 'uterapi') return CHANNEL_TYPE_ADVANCED_CUSTOM
   return CHANNEL_TYPE_TASK_PLUGIN
+}
+
+function providerChannelType(target: ChannelProviderTarget): number | null {
+  if (target.kind === 'builtin') return target.type
+  if (target.kind === 'uterapi') return CHANNEL_TYPE_NEW_API
+  return null
 }
 
 function providerOptionAriaLabel(
@@ -82,13 +89,14 @@ function providerOptionAriaLabel(
   translate: (key: string) => string
 ): string {
   const target = option.target
-  if (target.kind === 'builtin') {
-    return `${option.label} ${translate('Built-in')} #${target.type}`
+  const channelType = providerChannelType(target)
+  if (channelType !== null) {
+    return `${option.label} ${translate('Built-in')} #${channelType}`
   }
   if (target.kind === 'plugin') {
     return `${option.label} ${translate('Plugin')} ${target.key}`
   }
-  return `${option.label} xxapi`
+  return option.label
 }
 
 export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
@@ -208,13 +216,13 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
       filter !== 'gateway'
     ) {
       entries.push({
-        id: 'xxapi',
-        label: 'xxapi',
-        target: { kind: 'xxapi' },
+        id: 'uterapi',
+        label: 'Uter.api',
+        target: { kind: 'uterapi' },
         description: t(
-          'xxapi gateway: the Claude key and the GPT key create two channels'
+          'Uter.api gateway: pick one group per channel and paste its key'
         ),
-        searchText: `xxapi claude gpt ${t('xxapi gateway: the Claude key and the GPT key create two channels')}`,
+        searchText: `uterapi claude gpt ${t('Uter.api gateway: pick one group per channel and paste its key')}`,
       })
     }
     return entries.filter((entry) =>
@@ -433,9 +441,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                           {option.plugin.key}
                         </span>
                       )}
-                      {option.target.kind === 'builtin' && (
+                      {providerChannelType(option.target) !== null && (
                         <span className='text-muted-foreground ml-auto shrink-0 text-xs tabular-nums'>
-                          #{option.target.type}
+                          #{providerChannelType(option.target)}
                         </span>
                       )}
                       {option.plugin && (

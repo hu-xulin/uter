@@ -20,6 +20,10 @@ type Verify2FARequest struct {
 }
 
 func Setup2FA(c *gin.Context) {
+	if !service.TwoFAEnrollmentEnabled() {
+		common.ApiErrorMsg(c, "Two-factor authentication is disabled by the administrator")
+		return
+	}
 	authorization := middleware.RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeTwoFASetup})
 	if authorization == nil {
 		return
@@ -35,6 +39,10 @@ func Setup2FA(c *gin.Context) {
 }
 
 func Enable2FA(c *gin.Context) {
+	if !service.TwoFAEnrollmentEnabled() {
+		common.ApiErrorMsg(c, "Two-factor authentication is disabled by the administrator")
+		return
+	}
 	identity, ok := middleware.GetStepUpIdentity(c)
 	if !ok {
 		writeSecurityOperationError(c, service.ErrAuthTokenInvalid)

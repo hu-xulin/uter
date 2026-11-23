@@ -27,7 +27,7 @@
 
 ## Current evidence
 
-- DreamRouter: 46 upstream calls, 41 matched to consume logs; matched cost
+- UterRoute: 46 upstream calls, 41 matched to consume logs; matched cost
   `$0.020268` exactly. Five upstream calls (`$0.002310`) have no local log.
 - Apiko: one `$0` request with no local channel/log at audit time.
 - Bailian: shared account; only the Uter API key subset is attributable.

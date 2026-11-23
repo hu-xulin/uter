@@ -164,7 +164,7 @@ function pricingRuleLabel(
   if (internal.source === 'schedule') {
     return internal.note || t('Scheduled rule')
   }
-  if (internal.source === 'dreamrouter-discount') {
+  if (internal.source === 'uterroute-discount') {
     return t('Upstream discount {{group}} ×{{ratio}}', {
       group:
         internal.discount_model_group || internal.discount_group || 'default',

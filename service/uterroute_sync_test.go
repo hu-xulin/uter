@@ -25,7 +25,7 @@ import (
 )
 
 // The ratio login sync engine was retired in favour of the public pricing
-// adapter in upstream_dreamrouter.go. roundRatioValue is still used by that
+// adapter in upstream_uterroute.go. roundRatioValue is still used by that
 // path, so its rounding contract stays covered here; the engine-specific
 // compute-target tests went away together with the engine.
 func TestRoundRatioValue(t *testing.T) {

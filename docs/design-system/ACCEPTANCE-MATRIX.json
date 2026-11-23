@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-ACCEPTANCE",
   "version": "8.0.0",
-  "generated_at": "2026-11-21T12:52:31.000Z",
+  "generated_at": "2026-11-23T08:34:47.419Z",
   "status_definitions": {
     "IMPLEMENTED": "已完成实现",
     "VERIFIED": "已通过真实自动化与必要的视觉验证",

@@ -74,8 +74,8 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 		if strings.Contains(expr, "fixed(") {
 			// Task expressions reject a multiplier outside fixed(), so scale the
 			// fixed amount in place.
-			expr = dreamRouterFixedPriceDiscount.ReplaceAllStringFunc(expr, func(term string) string {
-				match := dreamRouterFixedPriceDiscount.FindStringSubmatch(term)
+			expr = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(expr, func(term string) string {
+				match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
 				value, err := strconv.ParseFloat(match[1], 64)
 				if err != nil {
 					return term

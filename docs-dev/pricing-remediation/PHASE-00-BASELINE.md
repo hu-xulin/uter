@@ -10,7 +10,7 @@
 
 ```
 上游供应商
-  ├─ DreamRouter  /api/pricing + 折扣组
+  ├─ Uter Route  /api/pricing + 折扣组
   ├─ 阿里百炼     /api/v1/models（分页，CNY→USD）
   ├─ Apiko        /api/public/models?billing=all（USD）
   └─ New API 兼容 /api/pricing（ratio / 表达式）
@@ -54,9 +54,9 @@ from channel_model_pricing group by channel_id, provider;
 
 | channel_id | provider | 行数 | 有销售价 |
 |---|---|---|---|
-| 26 | dreamrouter | 84 | 0（渠道已删除，历史保留） |
+| 26 | uterroute | 84 | 0（渠道已删除，历史保留） |
 | 31 | alibaba-bailian | 158 | 153 |
-| 32 | dreamrouter | 84 | 84 |
+| 32 | uterroute | 84 | 84 |
 
 销售价模式分布：
 
@@ -79,7 +79,7 @@ from channel_model_pricing group by channel_id, provider;
 | `gofmt -l model service controller pkg main.go` | 无输出 |
 | `go vet ./model/... ./service/... ./controller/... ./pkg/billingexpr/...` | exit 0 |
 
-补充执行：MySQL 8.0/PostgreSQL 16 建表矩阵 PASS；百炼/DreamRouter/Apiko
+补充执行：MySQL 8.0/PostgreSQL 16 建表矩阵 PASS；百炼/UterRoute/Apiko
 真实价格拉取 PASS；未执行旧库升级与浏览器人工回归。
 
 ## 5. 风险

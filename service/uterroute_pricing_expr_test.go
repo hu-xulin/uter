@@ -29,11 +29,11 @@ import (
 	_ "github.com/uter-ai/uter/plugins"
 )
 
-// TestDreamRouterScaleExpr 锁定「表达式系数 × 价格规则系数」的改写结果。
+// TestUterRouteScaleExpr 锁定「表达式系数 × 价格规则系数」的改写结果。
 //
 // 这是分层计费模型价格同步的核心：模型的实际售价由 billing_expr 决定，
 // 只写 ModelRatio 不会改变计价，卡片上的「优特」与「官方」两行会永远相同。
-func TestDreamRouterScaleExpr(t *testing.T) {
+func TestUterRouteScaleExpr(t *testing.T) {
 	cases := []struct {
 		name   string
 		expr   string
@@ -97,7 +97,7 @@ func TestDreamRouterScaleExpr(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, ok := dreamRouterScaleExpr(c.expr, c.factor)
+		got, ok := uterRouteScaleExpr(c.expr, c.factor)
 		if ok != c.ok {
 			t.Errorf("%s: ok = %v, want %v（got %q）", c.name, ok, c.ok, got)
 			continue
@@ -111,11 +111,11 @@ func TestDreamRouterScaleExpr(t *testing.T) {
 	}
 }
 
-// TestDreamRouterScaledExprCompiles 确保改写后的表达式仍然可编译。
+// TestUterRouteScaledExprCompiles 确保改写后的表达式仍然可编译。
 //
 // 缩放是纯文本替换，一旦产出语法上不成立的表达式，写库后该模型会在计费
 // 时抛错——这比价格不对齐更严重，所以每条真实形态的表达式都要过一遍编译。
-func TestDreamRouterScaledExprCompiles(t *testing.T) {
+func TestUterRouteScaledExprCompiles(t *testing.T) {
 	exprs := []string{
 		`tier("base", p * 5 + c * 30 + cr * 0.5)`,
 		`len <= 272000 ? tier("standard", p * 10 + c * 50 + cr * 1 + cc * 12.5) : tier("long_context", p * 20 + c * 75 + cr * 2 + cc * 25)`,
@@ -124,7 +124,7 @@ func TestDreamRouterScaledExprCompiles(t *testing.T) {
 		`tier("base", p * 0.5 + c * 0.75 + cr * 0.5 + cc * 0.75 + img_o * 120)`,
 	}
 	for _, expr := range exprs {
-		scaled, ok := dreamRouterScaleExpr(expr, 0.7)
+		scaled, ok := uterRouteScaleExpr(expr, 0.7)
 		if !ok {
 			t.Fatalf("scale %q: ok = false", expr)
 		}
@@ -134,20 +134,20 @@ func TestDreamRouterScaledExprCompiles(t *testing.T) {
 	}
 }
 
-// TestDreamRouterScaledExprKeepsUnitPriceRatio 验证缩放后的单价正好等于
+// TestUterRouteScaledExprKeepsUnitPriceRatio 验证缩放后的单价正好等于
 // 官方单价 × 系数——这是「与上游完全对齐」的数学定义。
-func TestDreamRouterScaledExprKeepsUnitPriceRatio(t *testing.T) {
+func TestUterRouteScaledExprKeepsUnitPriceRatio(t *testing.T) {
 	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long_context", p * 2.5 + c * 15 + cr * 0.25)`
-	official, ok := dreamRouterOfficialUnitPrices(expr)
+	official, ok := uterRouteOfficialUnitPrices(expr)
 	if !ok {
 		t.Fatal("official unit prices not parsed")
 	}
 	for _, factor := range []float64{0.7, 0.55, 1.0} {
-		scaled, ok := dreamRouterScaleExpr(expr, factor)
+		scaled, ok := uterRouteScaleExpr(expr, factor)
 		if !ok {
 			t.Fatalf("scale factor %v: ok = false", factor)
 		}
-		got, ok := dreamRouterOfficialUnitPrices(scaled)
+		got, ok := uterRouteOfficialUnitPrices(scaled)
 		if !ok {
 			t.Fatalf("factor %v: scaled unit prices not parsed", factor)
 		}
@@ -166,19 +166,19 @@ func TestDreamRouterScaledExprKeepsUnitPriceRatio(t *testing.T) {
 	}
 }
 
-// TestDreamRouterDurationUnitPrices 锁定按秒计费视频模型的官方单价解析。
+// TestUterRouteDurationUnitPrices 锁定按秒计费视频模型的官方单价解析。
 //
-// 表达式取自上游 dreamrouter.ai /api/pricing 的真实记录（2026-11-03，
+// 表达式取自上游 /api/pricing 的真实记录（2026-11-03，
 // wan3.0-video）：ternary 链按请求参数选分辨率档，每档单价 = 美元/秒 ×
 // duration（缺省 5 秒）。兜底档（最后一支，720p）是上游定价页的默认档。
-func TestDreamRouterDurationUnitPrices(t *testing.T) {
+func TestUterRouteDurationUnitPrices(t *testing.T) {
 	const wan3Video = `has(lower(param("size")), "1080") || has(lower(param("metadata.size")), "1080") || lower(param("metadata.resolution")) == "1080p" || lower(param("parameters.resolution")) == "1080p" || has(lower(param("parameters.size")), "1080")
   ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
   : has(lower(param("size")), "480") || has(lower(param("metadata.size")), "480") || lower(param("metadata.resolution")) == "480p" || lower(param("parameters.resolution")) == "480p" || has(lower(param("parameters.size")), "480")
   ? tier("480p", (duration > 0 ? duration : 5) * 0.0447761)
   : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
 
-	prices, ok := dreamRouterDurationUnitPrices(wan3Video)
+	prices, ok := uterRouteDurationUnitPrices(wan3Video)
 	if !ok {
 		t.Fatal("duration unit prices not parsed")
 	}
@@ -195,7 +195,7 @@ func TestDreamRouterDurationUnitPrices(t *testing.T) {
 	const miniMaxH3 = `has(lower(param("metadata.parameters.resolution")), "2k") || has(lower(param("metadata.resolution")), "2k")
   ? tier("2k", duration * 0.1194029851)
   : tier("768p", duration * 0.0746268657)`
-	barePrices, ok := dreamRouterDurationUnitPrices(miniMaxH3)
+	barePrices, ok := uterRouteDurationUnitPrices(miniMaxH3)
 	if !ok {
 		t.Fatal("bare duration term not parsed")
 	}
@@ -204,24 +204,24 @@ func TestDreamRouterDurationUnitPrices(t *testing.T) {
 	}
 
 	// token 表达式没有 duration 计价项，解不出来。
-	if _, ok := dreamRouterDurationUnitPrices(`tier("base", p * 5 + c * 30)`); ok {
+	if _, ok := uterRouteDurationUnitPrices(`tier("base", p * 5 + c * 30)`); ok {
 		t.Error("token expression should not parse as duration-priced")
 	}
 
 	// 非 duration 的括号乘法不误中。
-	if _, ok := dreamRouterDurationUnitPrices(`(tier("base", p * 2)) * (weekday("Asia/Shanghai") == 0 ? 0.5 : 1)`); ok {
+	if _, ok := uterRouteDurationUnitPrices(`(tier("base", p * 2)) * (weekday("Asia/Shanghai") == 0 ? 0.5 : 1)`); ok {
 		t.Error("time-discount parenthesis should not parse as duration-priced")
 	}
 }
 
-// TestDreamRouterScaleExprDuration 验证按秒计费项随规则系数缩放，且缩放后
+// TestUterRouteScaleExprDuration 验证按秒计费项随规则系数缩放，且缩放后
 // 的表达式仍可编译、解出的单价正好等于官方单价 × 系数。
-func TestDreamRouterScaleExprDuration(t *testing.T) {
+func TestUterRouteScaleExprDuration(t *testing.T) {
 	const wan3Video = `has(lower(param("size")), "1080")
   ? tier("1080p", (duration > 0 ? duration : 5) * 0.1791045)
   : tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`
 
-	scaled, ok := dreamRouterScaleExpr(wan3Video, 1.1)
+	scaled, ok := uterRouteScaleExpr(wan3Video, 1.1)
 	if !ok {
 		t.Fatal("scale: ok = false")
 	}
@@ -239,8 +239,8 @@ func TestDreamRouterScaleExprDuration(t *testing.T) {
 	}
 
 	// 缩放后的单价 = 官方单价 × factor（对齐复核的数学定义）。
-	official, _ := dreamRouterDurationUnitPrices(wan3Video)
-	got, ok := dreamRouterDurationUnitPrices(scaled)
+	official, _ := uterRouteDurationUnitPrices(wan3Video)
+	got, ok := uterRouteDurationUnitPrices(scaled)
 	if !ok {
 		t.Fatal("scaled expression not duration-parsable")
 	}
@@ -250,7 +250,7 @@ func TestDreamRouterScaleExprDuration(t *testing.T) {
 
 	// 裸 duration 形式也要缩放，否则同步规则对 MiniMax-H3 无效。
 	const bareVideo = `tier("2k", duration * 0.1194029851)`
-	scaledBare, ok := dreamRouterScaleExpr(bareVideo, 2)
+	scaledBare, ok := uterRouteScaleExpr(bareVideo, 2)
 	if !ok {
 		t.Fatal("bare scale: ok = false")
 	}
@@ -283,14 +283,14 @@ func wan3VideoUsageSchema() map[string]jsplugin.UsageFieldSchema {
 	}
 }
 
-// TestDreamRouterTaskProbeRewrite 锁定「请求参数选档 → 用量事实选档」的改写。
+// TestUterRouteTaskProbeRewrite 锁定「请求参数选档 → 用量事实选档」的改写。
 //
 // 为什么必须改：任务结算只把用量事实传给表达式（relay_task / task_polling
 // 都只传 Usage），`param()` 恒为 nil。上游表达式原样落库的结果是每个请求
 // 都命中兜底档——1080P 按 720p 收钱，不报错、也不体现在任何告警里。
-func TestDreamRouterTaskProbeRewrite(t *testing.T) {
+func TestUterRouteTaskProbeRewrite(t *testing.T) {
 	schema := wan3VideoUsageSchema()
-	rewritten, ok := dreamRouterTaskProbeRewrite(wan3VideoProbeExpr, schema)
+	rewritten, ok := uterRouteTaskProbeRewrite(wan3VideoProbeExpr, schema)
 	if !ok {
 		t.Fatal("rewrite failed on the wan3.0-video expression")
 	}
@@ -344,12 +344,12 @@ func TestDreamRouterTaskProbeRewrite(t *testing.T) {
 	}
 }
 
-// TestDreamRouterTaskProbeRewriteRejectsAmbiguous 锁定「证据不唯一就不改写」。
+// TestUterRouteTaskProbeRewriteRejectsAmbiguous 锁定「证据不唯一就不改写」。
 //
 // 这些情况都会让改写结果无法确定档位，或者改写后引用了运行时拿不到的字段。
 // 一律返回 ok=false，由调用方放弃写这条表达式——宁可本轮不改价，也不能写
 // 一条会把请求判错档的表达式。
-func TestDreamRouterTaskProbeRewriteRejectsAmbiguous(t *testing.T) {
+func TestUterRouteTaskProbeRewriteRejectsAmbiguous(t *testing.T) {
 	schema := wan3VideoUsageSchema()
 
 	cases := []struct {
@@ -378,22 +378,22 @@ func TestDreamRouterTaskProbeRewriteRejectsAmbiguous(t *testing.T) {
 		},
 	}
 	for _, tc := range cases {
-		if rewritten, ok := dreamRouterTaskProbeRewrite(tc.expr, schema); ok {
+		if rewritten, ok := uterRouteTaskProbeRewrite(tc.expr, schema); ok {
 			t.Errorf("%s: rewrite should have failed, got %s", tc.name, rewritten)
 		}
 	}
 
 	// 没有 schema 就无法判断枚举值，同样不改写。
-	if _, ok := dreamRouterTaskProbeRewrite(wan3VideoProbeExpr, nil); ok {
+	if _, ok := uterRouteTaskProbeRewrite(wan3VideoProbeExpr, nil); ok {
 		t.Error("rewrite without a usage schema should fail")
 	}
 }
 
-// TestDreamRouterTaskProbeRewriteKeepsFactExpressions 锁定「已经是用量事实
+// TestUterRouteTaskProbeRewriteKeepsFactExpressions 锁定「已经是用量事实
 // 形态的表达式不被无谓改动」。
-func TestDreamRouterTaskProbeRewriteKeepsFactExpressions(t *testing.T) {
+func TestUterRouteTaskProbeRewriteKeepsFactExpressions(t *testing.T) {
 	const factExpr = `u("resolution") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315) : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
-	rewritten, ok := dreamRouterTaskProbeRewrite(factExpr, wan3VideoUsageSchema())
+	rewritten, ok := uterRouteTaskProbeRewrite(factExpr, wan3VideoUsageSchema())
 	if !ok {
 		t.Fatal("fact-shaped expression should pass through")
 	}
@@ -403,16 +403,16 @@ func TestDreamRouterTaskProbeRewriteKeepsFactExpressions(t *testing.T) {
 
 	// token 表达式没有任何探测条件，也不该被拒绝。
 	const tokenExpr = `tier("base", p * 0.4 + cr * 0.08 + cc * 0.5 + c * 1.2)`
-	rewritten, ok = dreamRouterTaskProbeRewrite(tokenExpr, wan3VideoUsageSchema())
+	rewritten, ok = uterRouteTaskProbeRewrite(tokenExpr, wan3VideoUsageSchema())
 	if !ok || rewritten != tokenExpr {
 		t.Errorf("token expression should pass through unchanged, got (%q, %v)", rewritten, ok)
 	}
 }
 
-// TestDreamRouterTaskProbeRewriteKeepsVersionPrefix 锁定 `v1:` 版本前缀在
+// TestUterRouteTaskProbeRewriteKeepsVersionPrefix 锁定 `v1:` 版本前缀在
 // 改写后仍然保留：丢了前缀，表达式会被按默认版本解释，计费口径整个变化。
-func TestDreamRouterTaskProbeRewriteKeepsVersionPrefix(t *testing.T) {
-	rewritten, ok := dreamRouterTaskProbeRewrite("v1:"+wan3VideoProbeExpr, wan3VideoUsageSchema())
+func TestUterRouteTaskProbeRewriteKeepsVersionPrefix(t *testing.T) {
+	rewritten, ok := uterRouteTaskProbeRewrite("v1:"+wan3VideoProbeExpr, wan3VideoUsageSchema())
 	if !ok {
 		t.Fatal("rewrite failed on a version-prefixed expression")
 	}
@@ -437,19 +437,19 @@ func TestDreamRouterTaskProbeRewriteKeepsVersionPrefix(t *testing.T) {
 // `param()` 有值。
 const chatProbeExpr = `param("enable_thinking") == true ? tier("thinking", input * 3 + output * 15) : tier("standard", input * 1 + output * 8)`
 
-// TestDreamRouterAdaptTaskExprLeavesChatModelsAlone 锁定「改写只针对任务
+// TestUterRouteAdaptTaskExprLeavesChatModelsAlone 锁定「改写只针对任务
 // 插件模型」这条边界。
 //
 // 判据不能用「表达式里有没有 param()」：聊天模型的 param() 是**有效**的，
 // 统一改写会把它换成一个永远读不到的 `u()` 字段（聊天结算的用量里没有
 // 这个 key），结果是把「开了思考就多收」变成「永远按标准档收」——静默
 // 少收，且没有任何告警。分派必须按「模型是否绑定任务插件」来判。
-func TestDreamRouterAdaptTaskExprLeavesChatModelsAlone(t *testing.T) {
+func TestUterRouteAdaptTaskExprLeavesChatModelsAlone(t *testing.T) {
 	for _, model := range []string{"qwen-plus", "gpt-4o", "deepseek-chat"} {
-		if schema := dreamRouterTaskUsageSchema(model); len(schema) != 0 {
+		if schema := uterRouteTaskUsageSchema(model); len(schema) != 0 {
 			t.Fatalf("%s unexpectedly declares a task usage schema: %v", model, schema)
 		}
-		adapted, ok := dreamRouterAdaptTaskExpr(chatProbeExpr, model)
+		adapted, ok := uterRouteAdaptTaskExpr(chatProbeExpr, model)
 		if !ok {
 			t.Errorf("%s: adapt rejected a chat expression it should leave alone", model)
 			continue
@@ -460,10 +460,10 @@ func TestDreamRouterAdaptTaskExprLeavesChatModelsAlone(t *testing.T) {
 	}
 }
 
-// TestDreamRouterAdaptTaskExprRewritesTaskModels 是上一条的反面：任务插件
+// TestUterRouteAdaptTaskExprRewritesTaskModels 是上一条的反面：任务插件
 // 模型的探测条件必须被改写，且改写结果能编译。
-func TestDreamRouterAdaptTaskExprRewritesTaskModels(t *testing.T) {
-	adapted, ok := dreamRouterAdaptTaskExpr(wan3VideoProbeExpr, "wan3.0-video")
+func TestUterRouteAdaptTaskExprRewritesTaskModels(t *testing.T) {
+	adapted, ok := uterRouteAdaptTaskExpr(wan3VideoProbeExpr, "wan3.0-video")
 	if !ok {
 		t.Fatal("adapt failed on the wan3.0-video expression")
 	}
@@ -478,16 +478,16 @@ func TestDreamRouterAdaptTaskExprRewritesTaskModels(t *testing.T) {
 	}
 }
 
-// TestDreamRouterAdaptTaskExprFailsClosedOnTaskModels 覆盖「是任务模型但
+// TestUterRouteAdaptTaskExprFailsClosedOnTaskModels 覆盖「是任务模型但
 // 改不动」：必须 ok=false，让同步侧放弃写这条表达式，而不是把改不动的
 // 原文落库（那会让每个请求都命中兜底档）。
-func TestDreamRouterAdaptTaskExprFailsClosedOnTaskModels(t *testing.T) {
+func TestUterRouteAdaptTaskExprFailsClosedOnTaskModels(t *testing.T) {
 	headerProbe := `header("X-Res") == "1080P" ? tier("1080p", (duration > 0 ? duration : 5) * 0.12537315) : tier("720p", (duration > 0 ? duration : 5) * 0.06268654)`
-	if _, ok := dreamRouterAdaptTaskExpr(headerProbe, "wan3.0-video"); ok {
+	if _, ok := uterRouteAdaptTaskExpr(headerProbe, "wan3.0-video"); ok {
 		t.Error("header-probing task expression should not be adapted")
 	}
 	// 同一表达式在聊天模型上不受影响：聊天结算带 Headers，header() 能求值。
-	adapted, ok := dreamRouterAdaptTaskExpr(headerProbe, "qwen-plus")
+	adapted, ok := uterRouteAdaptTaskExpr(headerProbe, "qwen-plus")
 	if !ok || adapted != headerProbe {
 		t.Errorf("header probe should pass through untouched for chat models (ok=%v): %s", ok, adapted)
 	}

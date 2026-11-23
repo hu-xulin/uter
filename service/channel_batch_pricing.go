@@ -202,7 +202,7 @@ type batchBasePrice struct {
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
 // The official basis uses absolute official prices only. The channel basis may
-// use DreamRouter's ratio-only quote, converted with Uter's ratio convention
+// use UterRoute's ratio-only quote, converted with Uter's ratio convention
 // (ratio 1 = 2 USD / 1M tokens); it is never labelled as an official price.
 // BatchTierRule overrides the batch rule for a matching price tier. An empty
 // RangeName and TimeBand match every tier; the first matching rule wins.
@@ -1109,37 +1109,37 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 		return batchBaseFromTier(official.Tiers[0])
 	}
 
-	var dreamRouter DreamRouterNormalizedPricing
+	var uterRoute UterRouteNormalizedPricing
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
-		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &dreamRouter); err == nil {
-			if dreamRouter.Unit == "per_second" && dreamRouter.ModelPrice != nil && *dreamRouter.ModelPrice > 0 {
-				return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: dreamRouter.ModelPrice}, ""
+		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &uterRoute); err == nil {
+			if uterRoute.Unit == "per_second" && uterRoute.ModelPrice != nil && *uterRoute.ModelPrice > 0 {
+				return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: uterRoute.ModelPrice}, ""
 			}
-			if dreamRouter.Unit == "per_minute" && dreamRouter.ModelPrice != nil && *dreamRouter.ModelPrice > 0 {
-				return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: dreamRouter.ModelPrice}, ""
+			if uterRoute.Unit == "per_minute" && uterRoute.ModelPrice != nil && *uterRoute.ModelPrice > 0 {
+				return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: uterRoute.ModelPrice}, ""
 			}
 			if basis == BatchPricingBasisOfficial {
 				return batchBasePrice{}, "absolute official price unavailable (ratio-only upstream)"
 			}
-			if dreamRouter.ModelRatio != nil && *dreamRouter.ModelRatio > 0 {
-				input := *dreamRouter.ModelRatio * 2
+			if uterRoute.ModelRatio != nil && *uterRoute.ModelRatio > 0 {
+				input := *uterRoute.ModelRatio * 2
 				base := batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, inputUSD: &input}
-				if dreamRouter.CompletionRatio != nil && *dreamRouter.CompletionRatio > 0 {
-					output := input * *dreamRouter.CompletionRatio
+				if uterRoute.CompletionRatio != nil && *uterRoute.CompletionRatio > 0 {
+					output := input * *uterRoute.CompletionRatio
 					base.outputUSD = &output
 				}
-				if dreamRouter.CacheRatio != nil && *dreamRouter.CacheRatio > 0 {
-					cache := input * *dreamRouter.CacheRatio
+				if uterRoute.CacheRatio != nil && *uterRoute.CacheRatio > 0 {
+					cache := input * *uterRoute.CacheRatio
 					base.cacheUSD = &cache
 				}
-				if dreamRouter.CreateCacheRatio != nil && *dreamRouter.CreateCacheRatio > 0 {
-					cacheWrite := input * *dreamRouter.CreateCacheRatio
+				if uterRoute.CreateCacheRatio != nil && *uterRoute.CreateCacheRatio > 0 {
+					cacheWrite := input * *uterRoute.CreateCacheRatio
 					base.cacheWriteUSD = &cacheWrite
 				}
 				return base, ""
 			}
-			if dreamRouter.ModelPrice != nil && *dreamRouter.ModelPrice > 0 {
-				return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: dreamRouter.ModelPrice}, ""
+			if uterRoute.ModelPrice != nil && *uterRoute.ModelPrice > 0 {
+				return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: uterRoute.ModelPrice}, ""
 			}
 		}
 	}
@@ -1331,18 +1331,18 @@ func resolvePurchasePrimaryPrice(row model.ChannelModelPricing) *float64 {
 		}
 		return primaryBatchPrice(mode, nil, tier.PerUnitUSD, nil, nil)
 	}
-	var dreamRouter DreamRouterNormalizedPricing
-	if err := common.UnmarshalJsonStr(raw, &dreamRouter); err != nil {
+	var uterRoute UterRouteNormalizedPricing
+	if err := common.UnmarshalJsonStr(raw, &uterRoute); err != nil {
 		return nil
 	}
-	if dreamRouter.Unit == "per_second" || dreamRouter.Unit == "per_minute" {
-		return dreamRouter.ModelPrice
+	if uterRoute.Unit == "per_second" || uterRoute.Unit == "per_minute" {
+		return uterRoute.ModelPrice
 	}
-	if dreamRouter.ModelRatio != nil && *dreamRouter.ModelRatio > 0 {
-		input := *dreamRouter.ModelRatio * 2
+	if uterRoute.ModelRatio != nil && *uterRoute.ModelRatio > 0 {
+		input := *uterRoute.ModelRatio * 2
 		return &input
 	}
-	return dreamRouter.ModelPrice
+	return uterRoute.ModelPrice
 }
 
 func resolveCurrentPrimaryPrice(row model.ChannelModelPricing) *float64 {
@@ -1460,7 +1460,7 @@ func manualModelPrice(row model.ChannelModelPricing) bool {
 	switch {
 	case internal.Source == "batch":
 		return false
-	case strings.HasPrefix(internal.Source, "dreamrouter-"),
+	case strings.HasPrefix(internal.Source, "uterroute-"),
 		strings.HasPrefix(internal.Source, "bailian-"),
 		strings.HasPrefix(internal.Source, "generic"):
 		return false
@@ -1520,7 +1520,10 @@ type ChannelPricingSchedule struct {
 	ReviewMode       string  `json:"review_mode"`       // auto | manual
 	ThresholdPercent float64 `json:"threshold_percent"` // manual review above this absolute change
 
-	// Independent sync cadences in minutes. Zero uses the defaults below.
+	// Independent price sync cadences in minutes. Zero uses the defaults below.
+	// ModelSyncIntervalMinutes is accepted for backward compatibility but no
+	// longer schedules model additions: the upstream model detection task is
+	// the single owner of the channel model list.
 	ModelSyncIntervalMinutes    int `json:"model_sync_interval_minutes"`
 	OfficialSyncIntervalMinutes int `json:"official_sync_interval_minutes"`
 	ChannelSyncIntervalMinutes  int `json:"channel_sync_interval_minutes"`

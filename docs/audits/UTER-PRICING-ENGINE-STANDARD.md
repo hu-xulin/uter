@@ -31,7 +31,10 @@ When no operator/batch rule exists, an automatically derived Uter sale price is
 the upstream channel quote × **1.10**. The markup is applied to flat monetary
 dimensions and to executable expressions (fixed charges are scaled in place so
 task billing still accepts them). Operator, batch and approved prices are never
-scaled or overwritten.
+scaled or overwritten. If the provider supplies only a ratio-derived or
+historical reference but also a concrete amount, that amount may seed this
+default sale price; the price-kind marker remains `RATIO_ONLY` or
+`HISTORICAL_SNAPSHOT` so the derivation stays visible.
 
 ## Group and customer pricing
 
@@ -50,8 +53,8 @@ pre-consume and settlement.
 
 - Upstream sync may write automatic sale prices only when the row has no
   operator price or the previous price was itself auto-derived.
-- Source prefixes recognized as automatic: `dreamrouter-`, `bailian-`,
-  `newapi-`, `newapi:`, `generic-`, `generic:`, `xxapi-`, `apiko-`.
+- Source prefixes recognized as automatic: `uterroute-`, `bailian-`,
+  `newapi-`, `newapi:`, `generic-`, `generic:`, `Uter.api-`, `apiko-`.
 - Operator, batch and approved prices are never overwritten.
 
 ## Failure behavior

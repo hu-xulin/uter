@@ -212,7 +212,7 @@ export const channelFormSchema = z
     task_extend_plugin_keys: z.array(z.string()).optional(),
     key: z.string(),
     openai_organization: z.string().optional(),
-    // Models are validated in the submit handler: the xxapi dual-key flow
+    // Models are validated in the submit handler: the uterapi dual-key flow
     // discovers them from the upstream key instead of the form.
     models: z.string(),
     group: z.array(z.string()).min(1, ERROR_MESSAGES.REQUIRED_GROUP),
@@ -500,8 +500,8 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   claude_beta_query: false,
   ollama_openai_chat: false,
   disable_task_polling_sleep: false,
-  upstream_model_update_check_enabled: false,
-  upstream_model_update_auto_sync_enabled: false,
+  upstream_model_update_check_enabled: true,
+  upstream_model_update_auto_sync_enabled: true,
   upstream_model_update_ignored_models: '',
   advanced_custom: '',
   plugin_config: '',

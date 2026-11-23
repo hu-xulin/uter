@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /*
  * Markdown prose scale — explicit descendant selectors for native docs and
  * bundled legal documents. UDS 8.0.0 §04 (type scale) and §24 (code and

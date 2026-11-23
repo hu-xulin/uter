@@ -40,11 +40,11 @@ func channelWithMapping(mapping string, exposed ...string) *model.Channel {
 	return channel
 }
 
-// DreamRouter's ByteDance slice of /api/pricing: the four Seedance 2.x video
+// UterRoute's ByteDance slice of /api/pricing: the four Seedance 2.x video
 // models are filed under short aliases while the doubao task plugin declares
 // them by their full Ark model IDs. The three Seedream image models already
 // match and must be left alone.
-const dreamRouterPayload = `{"success":true,"data":[
+const uterRoutePayload = `{"success":true,"data":[
 	{"model_name":"seedance-2.0","vendor_id":8,"quota_type":0,"model_ratio":3.45,"completion_ratio":1},
 	{"model_name":"seedance-2.0-fast","vendor_id":8,"quota_type":0,"model_ratio":2.775,"completion_ratio":1},
 	{"model_name":"seedance-2.0-mini","vendor_id":8,"quota_type":0,"model_ratio":1.725,"completion_ratio":1},
@@ -55,7 +55,7 @@ const dreamRouterPayload = `{"success":true,"data":[
 ]}`
 
 // The operator-declared mapping on the Doubao channel: every declared Ark ID
-// paired with the short alias DreamRouter serves it under.
+// paired with the short alias Uter Route serves it under.
 const doubaoAliasMapping = `{
 	"doubao-seedance-2-0-260128":"seedance-2.0",
 	"doubao-seedance-2-0-fast-260128":"seedance-2.0-fast",
@@ -67,7 +67,7 @@ const doubaoAliasMapping = `{
 // "4 个大模型无法同步" gap: upstream prices filed under an alias must land on
 // the model the local catalogue actually declares, so the sync can import them.
 func TestPriceSyncAliasResolvesDeclaredModelNames(t *testing.T) {
-	parsed, err := parseUpstreamPricingPayload([]byte(dreamRouterPayload))
+	parsed, err := parseUpstreamPricingPayload([]byte(uterRoutePayload))
 	require.NoError(t, err)
 
 	resolver := buildPriceSyncAliasResolver(channelWithMapping(
@@ -106,7 +106,7 @@ func TestPriceSyncAliasResolvesDeclaredModelNames(t *testing.T) {
 // is the only name the local catalogue knows. This is what makes the sync able
 // to import the price at all.
 func TestPriceSyncAliasSurvivesTheDiffPipeline(t *testing.T) {
-	parsed, err := parseUpstreamPricingPayload([]byte(dreamRouterPayload))
+	parsed, err := parseUpstreamPricingPayload([]byte(uterRoutePayload))
 	require.NoError(t, err)
 	resolver := buildPriceSyncAliasResolver(channelWithMapping(
 		doubaoAliasMapping,
@@ -122,7 +122,7 @@ func TestPriceSyncAliasSurvivesTheDiffPipeline(t *testing.T) {
 	diff := buildDifferences(local, []struct {
 		name string
 		data map[string]any
-	}{{"dreamrouter", normalized}})
+	}{{"uterroute", normalized}})
 
 	for _, declared := range []string{
 		"doubao-seedance-2-0-260128",

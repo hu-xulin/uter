@@ -18,11 +18,12 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { formatQuotaWithCurrency } from '@/lib/currency'
 
-import { getCheckinStatus } from '../api'
+import { getCheckinStatus, performCheckin } from '../api'
 import { CheckinCalendarCard } from '../components/checkin-calendar-card'
 import type { CheckinStatusResponse } from '../types'
 
@@ -32,6 +33,7 @@ vi.mock('../api', () => ({
 }))
 
 const mockedGetCheckinStatus = vi.mocked(getCheckinStatus)
+const mockedPerformCheckin = vi.mocked(performCheckin)
 
 // Uter.ai 账号的真实签到数据（quotaPerUnit = 500000，1 USD = 500000 额度）。
 // 合计 1,340,277 额度 = $2.6806。
@@ -122,5 +124,47 @@ describe('CheckinCalendarCard 统计金额精度', () => {
       expect(container.textContent).toContain(`+${rounded}`)
     })
     expect(container.textContent).not.toContain(`+${raw}`)
+  })
+
+  it('refreshes the account balance after a successful check-in', async () => {
+    const onCheckinSuccess = vi.fn()
+    mockedGetCheckinStatus.mockResolvedValue({
+      success: true,
+      message: 'success',
+      data: {
+        enabled: true,
+        min_quota: 50000,
+        max_quota: 250000,
+        stats: { ...stats, checked_in_today: false },
+      },
+    } as unknown as Awaited<ReturnType<typeof getCheckinStatus>>)
+    mockedPerformCheckin.mockResolvedValue({
+      success: true,
+      message: 'success',
+      data: { quota_awarded: 100000 },
+    } as unknown as Awaited<ReturnType<typeof performCheckin>>)
+
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <CheckinCalendarCard
+          checkinEnabled
+          turnstileEnabled={false}
+          turnstileSiteKey=''
+          onCheckinSuccess={onCheckinSuccess}
+        />
+      </QueryClientProvider>
+    )
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Check in now' })
+    )
+
+    await waitFor(() => {
+      expect(mockedPerformCheckin).toHaveBeenCalledOnce()
+      expect(onCheckinSuccess).toHaveBeenCalledOnce()
+    })
   })
 })

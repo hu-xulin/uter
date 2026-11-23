@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Activity, Calculator, RefreshCw, Save } from 'lucide-react'
+import { Activity, Calculator, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -34,7 +34,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { handleServerError } from '@/lib/handle-server-error'
 
@@ -48,38 +47,27 @@ import {
   getChannelUpstreamParity,
   getChannelUpstreamReconciliation,
   getChannelPricingReviews,
-  getChannelPricingSchedule,
   getChannelSyncCapabilities,
+  getUterRouteEndpoint,
   importChannelUpstreamInvoice,
   rejectChannelPricingReviews,
   rollbackChannelPricingHistory,
   runChannelSyncDiagnostics,
-  setChannelPricingSchedule,
-  syncDreamRouterUpstream,
+  syncUterRouteUpstream,
   type ChannelBatchPricingResult,
-  type ChannelPricingSchedule,
   type UpstreamInvoiceImportResult,
 } from '../api'
+import { PRICING_MODES } from '../lib/pricing-schedule'
+import { isUterRouteBaseUrl } from '../lib/uterroute'
 import { ChannelModelPricingSection } from './channel-model-pricing-section'
+import { ChannelPricingScheduleSection } from './channel-pricing-schedule-section'
 
 type ChannelPricingPanelProps = {
   channelId: number | null
   baseUrl: string
   onCreateDraft?: () => Promise<number | null>
-}
-
-const defaultSchedule: ChannelPricingSchedule = {
-  enabled: false,
-  basis: 'official',
-  mode: 'multiply',
-  value: 0.6,
-  apply_on_sync: true,
-  interval_minutes: 5,
-  review_mode: 'auto',
-  threshold_percent: 20,
-  model_sync_interval_minutes: 360,
-  official_sync_interval_minutes: 1440,
-  channel_sync_interval_minutes: 60,
+  /** Create wizard moves the schedule to the Automatic updates step. */
+  showSchedule?: boolean
 }
 
 const MODEL_CATEGORY_LABELS: Record<string, string> = {
@@ -89,15 +77,6 @@ const MODEL_CATEGORY_LABELS: Record<string, string> = {
   audio: 'Audio model',
   embedding: 'Embedding model',
 }
-
-const PRICING_MODES = [
-  { value: 'discount', label: 'Discount' },
-  { value: 'markup', label: 'Markup' },
-  { value: 'multiply', label: 'Fixed multiplier' },
-  { value: 'add', label: 'Fixed amount' },
-  { value: 'fixed', label: 'Fixed price' },
-  { value: 'none', label: 'No change' },
-] as const
 
 const PRICE_COVERAGE = [
   { key: 'token_pricing', label: 'Token' },
@@ -136,13 +115,6 @@ const PRICE_DIMENSIONS = [
   { value: 'per_second', label: 'Per second' },
   { value: 'per_minute', label: 'Per minute' },
 ] as const
-
-function scheduleNumberValid(text: string): boolean {
-  const trimmed = text.trim()
-  if (trimmed === '') return false
-  const value = Number(trimmed)
-  return Number.isFinite(value) && value >= 0
-}
 
 function diagnosticMessage(
   check: {
@@ -287,12 +259,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const [invoiceResult, setInvoiceResult] =
     useState<UpstreamInvoiceImportResult | null>(null)
   const [creatingDraft, setCreatingDraft] = useState(false)
-  const [schedule, setSchedule] =
-    useState<ChannelPricingSchedule>(defaultSchedule)
-  // Numeric fields keep the typed text so a decimal point survives the
-  // keystroke that has no digits after it yet ("0." must not collapse to "0").
-  const [scheduleValueText, setScheduleValueText] = useState('0.6')
-  const [thresholdText, setThresholdText] = useState('20')
 
   const historyQuery = useQuery({
     queryKey: ['channel-pricing-history', props.channelId],
@@ -322,13 +288,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
-  const scheduleQuery = useQuery({
-    queryKey: ['channel-pricing-schedule', props.channelId],
-    queryFn: () => getChannelPricingSchedule(props.channelId ?? 0),
-    enabled: props.channelId != null,
-    retry: false,
-    meta: { errorToast: false },
-  })
   const auditQuery = useQuery({
     queryKey: ['channel-pricing-audit', props.channelId],
     queryFn: () => getChannelPricingAudit(props.channelId ?? 0),
@@ -347,6 +306,13 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     queryKey: ['channel-sync-capabilities', props.channelId],
     queryFn: () => getChannelSyncCapabilities(props.channelId ?? 0),
     enabled: props.channelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const uterRouteEndpointQuery = useQuery({
+    queryKey: ['uterroute-endpoint'],
+    queryFn: getUterRouteEndpoint,
+    staleTime: Infinity,
     retry: false,
     meta: { errorToast: false },
   })
@@ -377,15 +343,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     onError: (error) =>
       handleServerError(error, t('Failed to run sync diagnostics')),
   })
-  useEffect(() => {
-    if (scheduleQuery.data?.schedule) {
-      const loaded = { ...defaultSchedule, ...scheduleQuery.data.schedule }
-      setSchedule(loaded)
-      setScheduleValueText(String(loaded.value))
-      setThresholdText(String(loaded.threshold_percent))
-    }
-  }, [scheduleQuery.data])
-
   // A preview only describes the rule that produced it. Editing the rule
   // invalidates those row versions, so apply must preview again first.
   useEffect(() => {
@@ -535,25 +492,6 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       handleServerError(error, t('Failed to apply batch pricing')),
   })
 
-  const saveSchedule = useMutation({
-    mutationFn: () =>
-      setChannelPricingSchedule(props.channelId ?? 0, {
-        ...schedule,
-        basis: isBailian ? 'channel' : schedule.basis,
-        value: Number(scheduleValueText),
-        threshold_percent: Number(thresholdText),
-        interval_minutes: 5,
-      }),
-    onSuccess: () => {
-      toast.success(t('Pricing schedule saved'))
-      void queryClient.invalidateQueries({
-        queryKey: ['channel-pricing-schedule', props.channelId],
-      })
-    },
-    onError: (error) =>
-      handleServerError(error, t('Failed to save pricing schedule')),
-  })
-
   const approveReviews = useMutation({
     mutationFn: () => approveChannelPricingReviews(props.channelId ?? 0),
     onSuccess: () => {
@@ -599,14 +537,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
 
   const syncUpstream = useMutation({
     mutationFn: () =>
-      syncDreamRouterUpstream(props.channelId ?? 0, props.baseUrl),
+      syncUterRouteUpstream(props.channelId ?? 0, props.baseUrl),
     onSuccess: () => {
       toast.success(t('Upstream catalog synchronized'))
       void queryClient.invalidateQueries({
         queryKey: ['channel-model-pricing', props.channelId],
       })
       void queryClient.invalidateQueries({
-        queryKey: ['dreamrouter-upstream-snapshot'],
+        queryKey: ['uterroute-upstream-snapshot'],
       })
     },
     onError: (error) =>
@@ -614,7 +552,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   })
 
   const normalizedBaseUrl = props.baseUrl.toLowerCase()
-  const isDreamRouter = normalizedBaseUrl.includes('dreamrouter.ai')
+  const isUterRoute = isUterRouteBaseUrl(
+    props.baseUrl,
+    uterRouteEndpointQuery.data?.host
+  )
   const isBailian =
     normalizedBaseUrl.includes('.maas.aliyuncs.com') ||
     normalizedBaseUrl.includes('dashscope')
@@ -622,7 +563,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     if (isBailian) setBasis('channel')
   }, [isBailian])
   let capabilityLabel = 'Manual pricing required'
-  if (isDreamRouter) capabilityLabel = 'Ratio-only upstream prices'
+  if (isUterRoute) capabilityLabel = 'Ratio-only upstream prices'
   else if (isBailian) capabilityLabel = 'Automatic official prices'
 
   const disabled = props.channelId == null
@@ -758,14 +699,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         </div>
       ) : null}
 
-      {isDreamRouter && !disabled ? (
+      {isUterRoute && !disabled ? (
         <section className='space-y-2 rounded-lg border p-3'>
           <div className='flex flex-wrap items-center justify-between gap-2'>
             <div>
               <Label>{t('Upstream catalog')}</Label>
               <p className='text-muted-foreground text-sm'>
                 {t(
-                  'Official prices are reconstructed from DreamRouter ratios; channel prices stay independent.'
+                  'Official prices are reconstructed from Uter Route ratios; channel prices stay independent.'
                 )}
               </p>
             </div>
@@ -1471,254 +1412,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         ) : null}
       </section>
 
-      <section className='space-y-3 rounded-lg border p-3'>
-        <div>
-          <Label>{t('Scheduled price update')}</Label>
-          <p className='text-muted-foreground text-sm'>
-            {t(
-              'Fetches the upstream catalog and prices on the cadence below, then re-applies the batch rule. No manual sync is required.'
-            )}
-          </p>
-        </div>
-        <div className='grid gap-3 sm:grid-cols-2 xl:grid-cols-4'>
-          <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
-            <Switch
-              checked={schedule.enabled}
-              onCheckedChange={(checked) =>
-                setSchedule((current) => ({ ...current, enabled: checked }))
-              }
-            />
-            <div className='space-y-0.5'>
-              <Label>{t('Enabled')}</Label>
-              <p className='text-muted-foreground text-sm'>
-                {t('Save a pricing rule for this channel.')}
-              </p>
-            </div>
-          </div>
-          <div className='flex items-start gap-3 sm:col-span-2 xl:col-span-4'>
-            <Switch
-              checked={schedule.apply_on_sync}
-              onCheckedChange={(checked) =>
-                setSchedule((current) => ({
-                  ...current,
-                  apply_on_sync: checked,
-                }))
-              }
-            />
-            <div className='space-y-0.5'>
-              <Label>{t('Apply after each upstream sync')}</Label>
-              <p className='text-muted-foreground text-sm'>
-                {t(
-                  'When off, the rule is saved but only a manual Apply changes prices. When on, new upstream models are also added to this channel (removals stay manual).'
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-basis'>{t('Price basis')}</Label>
-            <Select
-              items={[
-                { value: 'official', label: t('Official price') },
-                { value: 'channel', label: t('Channel price') },
-              ]}
-              value={isBailian ? 'channel' : schedule.basis}
-              disabled={isBailian}
-              onValueChange={(value) =>
-                setSchedule((current) => ({
-                  ...current,
-                  basis:
-                    value === 'official' && !isBailian ? 'official' : 'channel',
-                }))
-              }
-            >
-              <SelectTrigger id='schedule-basis' className='w-full'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='official' disabled={isBailian}>
-                  {t('Official price')}
-                </SelectItem>
-                <SelectItem value='channel'>{t('Channel price')}</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className='text-muted-foreground text-sm'>
-              {isBailian
-                ? t('Bailian schedules always use channel catalog prices.')
-                : t('Price basis hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-mode'>{t('Pricing rule')}</Label>
-            <Select
-              items={PRICING_MODES.map((item) => ({
-                value: item.value,
-                label: t(item.label),
-              }))}
-              value={schedule.mode}
-              onValueChange={(next) =>
-                next && setSchedule((current) => ({ ...current, mode: next }))
-              }
-            >
-              <SelectTrigger id='schedule-mode' className='w-full'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRICING_MODES.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {t(item.label)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className='text-muted-foreground text-sm'>
-              {t('Pricing rule hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-value'>{t('Rule value')}</Label>
-            <Input
-              id='schedule-value'
-              inputMode='decimal'
-              value={scheduleValueText}
-              onChange={(event) => setScheduleValueText(event.target.value)}
-              placeholder='0.6'
-              disabled={schedule.mode === 'none'}
-            />
-            <p className='text-muted-foreground text-sm'>
-              {t('Rule value hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-review-mode'>{t('Review mode')}</Label>
-            <Select
-              items={[
-                { value: 'auto', label: t('Auto apply') },
-                { value: 'manual', label: t('Manual review') },
-              ]}
-              value={schedule.review_mode}
-              onValueChange={(next) =>
-                next &&
-                setSchedule((current) => ({
-                  ...current,
-                  review_mode: next as 'auto' | 'manual',
-                }))
-              }
-            >
-              <SelectTrigger id='schedule-review-mode' className='w-full'>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='auto'>{t('Auto apply')}</SelectItem>
-                <SelectItem value='manual'>{t('Manual review')}</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className='text-muted-foreground text-sm'>
-              {t('Review mode hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-threshold'>
-              {t('Review threshold (%)')}
-            </Label>
-            <Input
-              id='schedule-threshold'
-              inputMode='decimal'
-              value={thresholdText}
-              onChange={(event) => setThresholdText(event.target.value)}
-              placeholder='20'
-            />
-            <p className='text-muted-foreground text-sm'>
-              {t('Review threshold hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-model-interval'>
-              {t('Model sync interval (minutes)')}
-            </Label>
-            <Input
-              id='schedule-model-interval'
-              inputMode='numeric'
-              value={String(schedule.model_sync_interval_minutes)}
-              onChange={(event) =>
-                setSchedule((current) => ({
-                  ...current,
-                  model_sync_interval_minutes: Number(event.target.value),
-                }))
-              }
-              placeholder='360'
-            />
-            <p className='text-muted-foreground text-sm'>
-              {t('Model sync interval hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-official-interval'>
-              {t('Official price interval (minutes)')}
-            </Label>
-            <Input
-              id='schedule-official-interval'
-              inputMode='numeric'
-              value={String(schedule.official_sync_interval_minutes)}
-              onChange={(event) =>
-                setSchedule((current) => ({
-                  ...current,
-                  official_sync_interval_minutes: Number(event.target.value),
-                }))
-              }
-              placeholder='1440'
-            />
-            <p className='text-muted-foreground text-sm'>
-              {t('Official price interval hint')}
-            </p>
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='schedule-channel-interval'>
-              {t('Channel price interval (minutes)')}
-            </Label>
-            <Input
-              id='schedule-channel-interval'
-              inputMode='numeric'
-              value={String(schedule.channel_sync_interval_minutes)}
-              onChange={(event) =>
-                setSchedule((current) => ({
-                  ...current,
-                  channel_sync_interval_minutes: Number(event.target.value),
-                }))
-              }
-              placeholder='60'
-            />
-            <p className='text-muted-foreground text-sm'>
-              {t('Channel price interval hint')}
-            </p>
-          </div>
-
-          <div className='flex items-end'>
-            <Button
-              type='button'
-              size='sm'
-              variant='outline'
-              disabled={
-                disabled ||
-                !scheduleNumberValid(scheduleValueText) ||
-                !scheduleNumberValid(thresholdText) ||
-                saveSchedule.isPending
-              }
-              onClick={() => saveSchedule.mutate()}
-            >
-              <Save className='size-4' />
-              {t('Save schedule')}
-            </Button>
-          </div>
-        </div>
-      </section>
+      <ChannelPricingScheduleSection
+        channelId={props.channelId}
+        baseUrl={props.baseUrl}
+        show={props.showSchedule !== false}
+      />
 
       {!disabled && props.channelId != null ? (
         <section className='space-y-2 rounded-lg border p-3'>

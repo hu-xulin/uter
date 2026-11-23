@@ -25,7 +25,7 @@
   failed.
 - Cache invalidation after writes.
 - Audit log and bounded history (`GenericUpstreamPriceHistory`,
-  DreamRouter/Bailian provider logs).
+  UterRoute/Bailian provider logs).
 - Review entries capture the price version; approval revalidates it.
 
 ## Schedule rules

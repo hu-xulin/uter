@@ -56,10 +56,6 @@ function renderCard(props: {
       calculating={false}
       onPaymentMethodSelect={() => undefined}
       paymentLoading={null}
-      redemptionCode=''
-      onRedemptionCodeChange={() => undefined}
-      onRedeem={() => undefined}
-      redeeming={false}
       priceRatio={7.3}
       usdExchangeRate={1}
     />

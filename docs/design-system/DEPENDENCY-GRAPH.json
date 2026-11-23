@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-DEPENDENCIES",
   "version": "8.0.0",
-  "generated_at": "2026-11-21T12:52:31.000Z",
+  "generated_at": "2026-11-23T08:34:47.419Z",
   "layers": [
     "Primitive Tokens",
     "Semantic Tokens",
@@ -30,7 +30,7 @@
     },
     {
       "id": "routes",
-      "count": 73
+      "count": 76
     }
   ],
   "edges": [

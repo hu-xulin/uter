@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 import { SquareArrowOutUpRight } from 'lucide-react'
 
 import { cn } from '@/lib/utils'

@@ -13,7 +13,7 @@ import (
 
 // MatchesUpstreamHost reports whether raw points at one of the allowed domains
 // or a subdomain of them. Matching is done on the parsed hostname so lookalike
-// hosts such as dreamrouter.ai.evil.example never match.
+// lookalike hosts never match.
 func MatchesUpstreamHost(raw string, domains ...string) bool {
 	host := upstreamHostname(raw)
 	if host == "" {
@@ -31,9 +31,13 @@ func MatchesUpstreamHost(raw string, domains ...string) bool {
 	return false
 }
 
-// IsDreamRouterHost reports whether the channel address belongs to DreamRouter.
-func IsDreamRouterHost(raw string) bool {
-	return MatchesUpstreamHost(raw, "dreamrouter.ai")
+// IsUterRouteHost reports whether the channel address belongs to UterRoute.
+func IsUterRouteHost(raw string) bool {
+	host := UterRouteUpstreamHost()
+	if host == "" {
+		return false
+	}
+	return MatchesUpstreamHost(raw, host)
 }
 
 // IsBailianHost reports whether the channel address is a DashScope or Model
@@ -67,8 +71,8 @@ func manualUpstreamProviderForHost(baseURL string) string {
 		return "tencent-hunyuan"
 	case MatchesUpstreamHost(baseURL, "volces.com"):
 		return "volcengine"
-	case MatchesUpstreamHost(baseURL, "xxapi.ai"):
-		return "xxapi"
+	case MatchesUpstreamHost(baseURL, UterAPIUpstreamHost()):
+		return "uterapi"
 	default:
 		return ""
 	}

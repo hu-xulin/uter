@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 )
 
 func TestMatchesUpstreamHost(t *testing.T) {
@@ -19,19 +20,22 @@ func TestMatchesUpstreamHost(t *testing.T) {
 		url  string
 		want bool
 	}{
-		{"exact host", "https://dreamrouter.ai", true},
-		{"subdomain", "https://api.dreamrouter.ai/v1", true},
-		{"uppercase and trailing dot", "https://API.DreamRouter.AI./v1", true},
-		{"bare host", "dreamrouter.ai", true},
-		{"lookalike suffix", "https://dreamrouter.ai.evil.example", false},
-		{"lookalike prefix", "https://evil-dreamrouter.ai", false},
+		{"exact host", "https://example-upstream.test", true},
+		{"subdomain", "https://api.example-upstream.test/v1", true},
+		{"uppercase and trailing dot", "https://API.Example-Upstream.Test./v1", true},
+		{"bare host", "example-upstream.test", true},
+		{"lookalike suffix", "https://example-upstream.test.evil.example", false},
+		{"lookalike prefix", "https://evil-example-upstream.test", false},
 		{"other host", "https://api.example.com", false},
 		{"empty", "", false},
 	}
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterRouteUpstreamURLOption: "https://example-upstream.test"}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			assert.Equal(t, testCase.want, MatchesUpstreamHost(testCase.url, "dreamrouter.ai"))
-			assert.Equal(t, testCase.want, IsDreamRouterHost(testCase.url))
+			assert.Equal(t, testCase.want, MatchesUpstreamHost(testCase.url, "example-upstream.test"))
+			assert.Equal(t, testCase.want, IsUterRouteHost(testCase.url))
 		})
 	}
 }
