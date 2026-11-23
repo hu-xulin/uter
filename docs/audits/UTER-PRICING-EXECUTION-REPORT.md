@@ -137,11 +137,33 @@ verified contract. These samples close the flat-ratio and tiered-expression
 request-level checks; supplier invoice reconciliation still needs the vendor
 export and a supplier→Uter request-id mapping.
 
-## Release matrix blocker
+## Three-database matrix (2026-11-23)
 
-The local environment has no Docker daemon and no MySQL/PostgreSQL server, so
-the required three-database matrix cannot be executed here. It must not be
-reported as passed until real SQLite, MySQL and PostgreSQL runs are recorded.
+MySQL 8.4.13 and PostgreSQL 16.16 were installed locally and started as
+temporary instances; SQLite runs in memory.
+
+```bash
+export UTER_TEST_MYSQL_DSN='uter:uter@tcp(127.0.0.1:3306)/uter?parseTime=true&charset=utf8mb4'
+export UTER_TEST_POSTGRES_DSN='postgres://uter:uter@127.0.0.1:5432/uter?sslmode=disable'
+GOWORK=off go test -count=1 ./model \
+  -run 'TestChannelPricing.*AcrossDatabases|TestMultiDBDialectCompat' -v
+```
+
+| Test | SQLite | MySQL 8.4.13 | PostgreSQL 16.16 |
+|---|---|---|---|
+| `TestChannelPricingTablesAcrossDatabases` | PASS | PASS | PASS |
+| `TestChannelPricingIdentityMigrationAcrossDatabases` | PASS | PASS | PASS |
+| `TestMultiDBDialectCompat` | PASS | PASS | PASS |
+
+The pricing tests migrate every pricing/snapshot/invoice table twice to prove
+idempotency, assert the full identity unique constraint, assert a second region
+is a separate identity, and reproduce a pre-migration duplicate identity to
+prove the merge and index swap. The expected `Duplicate entry` log lines are
+negative assertions. ClickHouse is a log-database dialect and is not used by
+these primary-database pricing tables, so its subtest remains skipped.
+
+Full application startup against MySQL/PostgreSQL (not just the pricing schema)
+is still not part of this matrix.
 
 ## Historical data snapshot
 
@@ -157,7 +179,7 @@ No production data was deleted or rewritten.
 2. Backup/preview/approval for orphan and Apiko rows.
 3. Decimal/FX migration.
 4. Runtime image-task usage facts.
-5. Full SQLite/MySQL/PostgreSQL release-candidate matrix.
+5. Full application startup matrix on the release candidate (pricing schema matrix passes on SQLite/MySQL/PostgreSQL).
 6. Real token/image/video/B-C group request closure.
 
 ## Final status
