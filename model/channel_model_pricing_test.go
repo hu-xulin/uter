@@ -1013,6 +1013,57 @@ func TestLoadChannelInternalPricesKeepsPerChannelAndReviewEntries(t *testing.T) 
 	require.NotNil(t, review.officialTier)
 }
 
+// Regression: a tiered-expression row carries no single amount (its inputUSD is
+// a placeholder of 1). It must never win the lowest-price comparison against a
+// configured absolute row for the same channel and model, whichever order the
+// database returns them in.
+func TestLoadChannelInternalPricesAbsolutePriceWinsOverExpressionRow(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	input, output := 6.6, 33.0
+	officialInput, officialOutput := 10.0, 50.0
+	normalized, err := common.Marshal(ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		Tiers: []ChannelPricingTier{{
+			RangeName: "Default", Unit: "per_1m_token",
+			InputPerMillionUSD: &officialInput, OutputPerMillionUSD: &officialOutput,
+		}},
+	})
+	require.NoError(t, err)
+	absolute, err := common.Marshal(ChannelInternalPricing{
+		Mode:               ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Source: "batch",
+	})
+	require.NoError(t, err)
+	expression, err := common.Marshal(ChannelInternalPricing{
+		Mode:        ChannelPricingModeTieredExpr,
+		BillingExpr: `tier("base", p * 10 + c * 50) * 1.1`,
+		Source:      "newapi-expression",
+	})
+	require.NoError(t, err)
+	records := []ChannelOfficialPricingRecord{
+		{ChannelId: 9, Provider: "uterroute", ModelName: "m", Currency: "USD",
+			NormalizedPricing: string(normalized), InternalPricing: string(absolute), Source: "uterroute-official"},
+		{ChannelId: 9, Provider: "newapi-compatible", ModelName: "m", Currency: "USD",
+			NormalizedPricing: `{}`, InternalPricing: string(expression), Source: "newapi:/api/pricing"},
+	}
+	// Both orders must select the absolute row.
+	for _, order := range [][]ChannelOfficialPricingRecord{records, {records[1], records[0]}} {
+		require.NoError(t, DB.Exec("DELETE FROM channel_model_pricing").Error)
+		_, err = UpsertChannelOfficialPricing(order)
+		require.NoError(t, err)
+		InvalidatePricingCache()
+
+		best, byChannel := loadChannelInternalPrices([]AbilityWithChannel{
+			{Ability: Ability{ChannelId: 9, Model: "m", Enabled: true}, ChannelName: "优特精选", ChannelStatus: common.ChannelStatusEnabled},
+		})
+		require.Equal(t, 0, best["m"].quotaType, "expression placeholder must not outrank the absolute price")
+		require.InDelta(t, 3.3, best["m"].modelRatio, 1e-9) // $6.6 / 2
+		require.Equal(t, 0, byChannel["m"]["优特精选"].quotaType)
+	}
+}
+
 func TestCanonicalModelTagClassifiesSixCategories(t *testing.T) {
 	modalities := func(raw string) *Model { return &Model{InputModalities: raw} }
 	cases := []struct {

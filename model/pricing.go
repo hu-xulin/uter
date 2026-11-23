@@ -431,15 +431,29 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 		if byChannel[row.ModelName] == nil {
 			byChannel[row.ModelName] = map[string]channelInternalPrice{}
 		}
-		if previous, exists := byChannel[row.ModelName][channelName]; !exists || candidate.inputUSD < previous.inputUSD {
+		if previous, exists := byChannel[row.ModelName][channelName]; !exists || channelPricePreferred(candidate, previous) {
 			byChannel[row.ModelName][channelName] = candidate
 		}
 		current, exists := best[row.ModelName]
-		if !exists || candidate.inputUSD < current.inputUSD {
+		if !exists || channelPricePreferred(candidate, current) {
 			best[row.ModelName] = candidate
 		}
 	}
 	return best, byChannel
+}
+
+// channelPricePreferred decides which configured row represents a model on the
+// pricing page. An expression row carries no single amount: its inputUSD is a
+// placeholder, so it must never win a "lowest price" comparison against a row
+// with a real absolute price. Between two absolute rows the lower price wins;
+// between two expression rows the incumbent stays.
+func channelPricePreferred(candidate, previous channelInternalPrice) bool {
+	candidateExpr := candidate.quotaType == 4
+	previousExpr := previous.quotaType == 4
+	if candidateExpr != previousExpr {
+		return !candidateExpr
+	}
+	return candidate.inputUSD < previous.inputUSD
 }
 
 // canonicalModelTag classifies a model into the catalog's six model
