@@ -623,3 +623,19 @@ func TestValidateAuthSessionWithTxChecksAccessTokenIdentity(t *testing.T) {
 		})
 	}
 }
+
+func TestInsertDefaultsUserGroupToDefault(t *testing.T) {
+	setupUserUpdateTestState(t)
+
+	user := &User{
+		Username: "default-group-user",
+		Role:     common.RoleCommonUser,
+		Status:   common.UserStatusEnabled,
+	}
+	require.NoError(t, user.Insert(0))
+
+	var stored User
+	require.NoError(t, DB.Where("username = ?", user.Username).First(&stored).Error)
+	assert.Equal(t, common.DefaultUserGroup, stored.Group)
+	assert.Equal(t, "default", stored.Group)
+}

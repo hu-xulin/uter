@@ -11,7 +11,8 @@ import (
 // The default descriptions are English source keys that the web console
 // translates; descriptions an administrator saves are shown as written.
 var userUsableGroups = map[string]string{
-	"VIP0": "Default group",
+	"default": "Default group",
+	"VIP0":    "Default group",
 }
 var userUsableGroupsMutex sync.RWMutex
 

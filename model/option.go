@@ -247,6 +247,32 @@ func loadOptionsFromDatabase() {
 		}
 	}
 	applyPasskeyDomainOptions(passkeyOptions)
+	EnsureDefaultUserGroupSettings()
+}
+
+// EnsureDefaultUserGroupSettings makes the registration default group usable:
+// it adds the missing usable-group and ratio entries without overwriting any
+// administrator-defined group, and repairs legacy users with an empty group.
+func EnsureDefaultUserGroupSettings() {
+	groups := setting.GetUserUsableGroupsCopy()
+	if _, ok := groups[common.DefaultUserGroup]; !ok {
+		groups[common.DefaultUserGroup] = "Default group"
+		if raw, err := common.Marshal(groups); err == nil {
+			_ = UpdateOption("UserUsableGroups", string(raw))
+		}
+	}
+	ratios := ratio_setting.GetGroupRatioCopy()
+	if _, ok := ratios[common.DefaultUserGroup]; !ok {
+		ratios[common.DefaultUserGroup] = 1
+		if raw, err := common.Marshal(ratios); err == nil {
+			_ = UpdateOption("GroupRatio", string(raw))
+		}
+	}
+	if DB != nil {
+		_ = DB.Model(&User{}).
+			Where(commonGroupCol+" = '' OR "+commonGroupCol+" IS NULL").
+			Update("group", common.DefaultUserGroup).Error
+	}
 }
 
 func SyncOptions(frequency int) {

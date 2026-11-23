@@ -55,7 +55,7 @@ var SessionCookieTrustedURLs []string
 // 之所以在代码里显式赋值而不是只依赖 `users.group` 列的 DB 默认值：SQLite
 // 无法 ALTER COLUMN SET DEFAULT，存量库的列默认值仍是建表时的值，改 GORM
 // tag 对已存在的表不生效。
-const DefaultUserGroup = "VIP0"
+const DefaultUserGroup = "default"
 
 const (
 	DefaultUserSessionActiveLimit           = 50
