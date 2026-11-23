@@ -99,6 +99,35 @@ gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
   `PHASE-06-PRICE-GOVERNANCE.md` now describe XXAPI in place of the removed
   Apiko runtime and state the historical-prefix boundary.
 
+## DreamRouter official-price display fix (2026-11-23)
+
+Root cause: DreamRouter expression models only wrote a discounted
+`channel_price`; the expression coefficients were never copied into `tiers`, so
+the page's "Upstream official price" stayed empty. Ratio-only rows also had the
+upstream-provided `official_price` deliberately discarded.
+
+The parser now:
+
+- writes the undiscounted expression coefficients as the official tier while
+  keeping the group-discounted tier as `channel_price`;
+- exposes the upstream `official_price` as a reference tier for ratio-only and
+  historical rows, while keeping `PriceKind`, `NeedsReview` and the review
+  reason unchanged so neither can auto-enable billing;
+- leaves `HasOfficial`/`HasOfficialEstimate` semantics unchanged.
+
+Live channel `61` now has 84/84 DreamRouter rows with both official and channel
+prices. Examples:
+
+| Model | Official | Channel | Uter | State |
+|---|---|---|---|---|
+| `claude-fable-5` | `$10 / $50`, cache `$1`, cache write `$12.5` | `$6 / $30` | `$6.6 / $33` | configured |
+| `MiniMax-M2.5` | `$0.3 / $1.2` | `$0.285 / $1.14` | operator price unchanged | review-only (`DERIVED_FROM_RATIOS`) |
+
+Tests: `TestDreamRouterRatioDerivedPriceStaysReviewOnly`,
+`TestDreamRouterExpressionKeepsAllTiersAndReviewGate`, and the DreamRouter
+pricing suite pass. The database was backed up to
+`/tmp/one-api.before-dreamrouter-official.db` before the refresh.
+
 ## Post-rebuild live verification (2026-11-23)
 
 | Check | Result |

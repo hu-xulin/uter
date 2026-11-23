@@ -1039,6 +1039,26 @@ func dreamRouterChannelOfficialPricing(
 		// discounted absolute reference so the pricing page can show the
 		// channel price separately from the official expression.
 		if units, ok := dreamRouterOfficialUnitPrices(normalized.Raw); ok {
+			// The expression coefficients are the upstream official unit
+			// prices. Keep the undiscounted tier as the official reference and
+			// store the group-discounted tier separately as the channel price.
+			officialTier := model.ChannelPricingTier{RangeName: "base", Unit: "per_1m_token"}
+			officialInput := units.Input
+			officialTier.InputPerMillionUSD = &officialInput
+			if units.Output > 0 {
+				officialOutput := units.Output
+				officialTier.OutputPerMillionUSD = &officialOutput
+			}
+			if units.Cache > 0 {
+				officialCache := units.Cache
+				officialTier.CachePerMillionUSD = &officialCache
+			}
+			if units.CreateCache > 0 {
+				officialCreateCache := units.CreateCache
+				officialTier.CreateCachePerMillionUSD = &officialCreateCache
+			}
+			view.Tiers = []model.ChannelPricingTier{officialTier}
+
 			tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 			input := units.Input * discount
 			tier.InputPerMillionUSD = &input
@@ -1056,6 +1076,10 @@ func dreamRouterChannelOfficialPricing(
 			}
 			view.ChannelPrice = &tier
 		} else if units, ok := dreamRouterDurationUnitPrices(normalized.Raw); ok {
+			officialPerSecond := units.Input
+			view.Tiers = []model.ChannelPricingTier{{
+				RangeName: "base", Unit: "per_second", PerUnitUSD: &officialPerSecond,
+			}}
 			perSecond := units.Input * discount
 			view.ChannelPrice = &model.ChannelPricingTier{
 				RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
@@ -1100,13 +1124,21 @@ func dreamRouterChannelOfficialPricing(
 		}
 		expressionRule = true
 	case "DERIVED_FROM_RATIOS":
-		// A ratio is not an official list price. Keep the derived amount as the
-		// channel reference and leave the official tier list empty.
+		// The upstream supplies an official_price derived from its ratios.
+		// Expose it as a reference tier so the page is not blank, but keep the
+		// record review-only: it must never auto-enable billing or count as a
+		// verified absolute official price.
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"DERIVED_FROM_RATIOS"}
+		if line != nil && line.Input != nil {
+			view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+		}
 	case "HISTORICAL_SNAPSHOT":
 		view.NeedsReview = true
 		view.ReviewReasons = []string{"HISTORICAL_SNAPSHOT"}
+		if line != nil && line.Input != nil {
+			view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
+		}
 	default:
 		view.Tiers = []model.ChannelPricingTier{dreamRouterPricingTier(line)}
 	}
