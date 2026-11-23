@@ -296,7 +296,7 @@ func TestDreamRouterOfficialLineMarksHistoricalSnapshot(t *testing.T) {
 	require.Equal(t, 2.0, *line.Input)
 }
 
-func TestDreamRouterRatioDerivedPriceStaysReviewOnly(t *testing.T) {
+func TestDreamRouterRatioDerivedPriceIsAutoConfigured(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		GroupRatio:      map[string]float64{"openai": 0.6},
@@ -309,15 +309,17 @@ func TestDreamRouterRatioDerivedPriceStaysReviewOnly(t *testing.T) {
 			Input: ratio(5), Output: ratio(25), Currency: "USD", Unit: "per_1m_token",
 		},
 	}
-	view, _ := dreamRouterChannelOfficialPricing(snapshot, item, 100, "default")
+	view, internal := dreamRouterChannelOfficialPricing(snapshot, item, 100, "default")
 	require.Len(t, view.Tiers, 1, "the upstream ratio reference must stay visible")
 	require.Equal(t, 5.0, *view.Tiers[0].InputPerMillionUSD)
 	require.Equal(t, "RATIO_ONLY", view.PriceKind)
 	require.NotNil(t, view.ChannelPrice)
 	require.Equal(t, 3.0, *view.ChannelPrice.InputPerMillionUSD)
-	require.True(t, view.NeedsReview)
+	require.False(t, view.NeedsReview)
+	require.Empty(t, view.ReviewReasons)
 	require.Equal(t, "dreamrouter-ratio-reference", view.Source)
-	require.Contains(t, view.ReviewReasons, "DERIVED_FROM_RATIOS")
+	require.NotEmpty(t, internal)
+	require.Contains(t, internal, `"input_per_million_usd":3.3`)
 }
 
 func TestDiffDreamRouterUpstreamDetectsBillingExpressionChange(t *testing.T) {
@@ -335,7 +337,29 @@ func TestDiffDreamRouterUpstreamDetectsBillingExpressionChange(t *testing.T) {
 	require.Contains(t, changes[0].NewText, "p * 2")
 }
 
-func TestDreamRouterExpressionKeepsAllTiersAndReviewGate(t *testing.T) {
+func TestDreamRouterHistoricalSnapshotIsAutoConfigured(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"openai": 0.6}},
+	}
+	item := UpstreamModelRecord{
+		ModelName: "seedance", EnableGroups: []string{"openai"},
+		PriceStatus: "HISTORICAL_SNAPSHOT",
+		OfficialPrice: &UpstreamPriceLine{
+			Input: ratio(2), Output: ratio(4), Currency: "USD", Unit: "per_1m_token",
+		},
+	}
+	view, internal := dreamRouterChannelOfficialPricing(snapshot, item, 100, "default")
+	require.Len(t, view.Tiers, 1)
+	require.Equal(t, 2.0, *view.Tiers[0].InputPerMillionUSD)
+	require.Equal(t, 1.2, *view.ChannelPrice.InputPerMillionUSD)
+	require.False(t, view.NeedsReview)
+	require.Contains(t, view.Source, "historical")
+	require.NotEmpty(t, internal)
+}
+
+func TestDreamRouterExpressionKeepsAllTiersAndAutoConfiguresRatio(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long", p * 2.5 + c * 15 + cr * 0.25)`
 	snapshot := &UpstreamSnapshot{
@@ -369,8 +393,9 @@ func TestDreamRouterExpressionKeepsAllTiersAndReviewGate(t *testing.T) {
 	require.Contains(t, records[0].NormalizedPricing, `"tiers":[`)
 	require.Contains(t, records[0].NormalizedPricing, `"input_per_million_usd":1.25`)
 
-	require.Empty(t, records[1].InternalPricing, "ratio-derived price must not auto-enable billing")
-	require.Contains(t, records[1].NormalizedPricing, `"needs_review":true`)
+	require.NotEmpty(t, records[1].InternalPricing, "ratio-derived rows still need a default sale price")
+	require.NotContains(t, records[1].NormalizedPricing, `"needs_review":true`)
+	require.Contains(t, records[1].NormalizedPricing, `"price_kind":"RATIO_ONLY"`)
 	require.Contains(t, records[1].NormalizedPricing, `"tiers":[`)
 }
 

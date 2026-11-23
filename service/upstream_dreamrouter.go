@@ -1173,6 +1173,15 @@ func dreamRouterChannelOfficialPricing(
 		if !priced {
 			view.NeedsReview = true
 			view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
+		} else if item.PriceStatus == "DERIVED_FROM_RATIOS" || item.PriceStatus == "HISTORICAL_SNAPSHOT" {
+			// DreamRouter supplies a concrete official_price reference for these
+			// rows even though the absolute list price is derived or historical.
+			// The reference already carries the channel discount and the default
+			// Uter markup is applied to the generated sale price, so the model can
+			// be configured instead of parking every request in manual review.
+			// PriceKind and Source keep the derivation visible.
+			view.NeedsReview = false
+			view.ReviewReasons = nil
 		}
 	}
 	if view.NeedsReview {

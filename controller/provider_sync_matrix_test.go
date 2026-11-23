@@ -17,12 +17,12 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
-// 三类创建渠道 — DreamRouter、阿里百炼、xxapi — 的同步矩阵：
+// 三类创建渠道 — DreamRouter、阿里百炼、uterapi — 的同步矩阵：
 // 每个供应商都必须完成「模型信息 → 价格 → 计费规则可执行」三件事。
 func TestProviderSyncMatrix(t *testing.T) {
 	t.Run("dreamrouter", testDreamRouterSyncMatrix)
 	t.Run("bailian", testBailianSyncMatrix)
-	t.Run("xxapi", testXXAPISyncMatrix)
+	t.Run("Uter.api", testUterAPISyncMatrix)
 }
 
 func migrateProviderMatrixDB(t *testing.T) *gorm.DB {
@@ -110,17 +110,18 @@ func testDreamRouterSyncMatrix(t *testing.T) {
 	_, err = model.UpsertChannelOfficialPricing(records)
 	require.NoError(t, err)
 
-	// dr-token is ratio-only. Its derived USD amount is a reference, not an
-	// official absolute price, so it must stay review-only and never bill.
+	// dr-token is ratio-only. DreamRouter supplies a concrete official_price
+	// reference, so the default channel × 1.10 sale price is generated; the
+	// PriceKind stays RATIO_ONLY so the derivation remains visible.
 	drToken, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
 		ChannelId: channel.Id, Provider: "dreamrouter", ModelName: "dr-token",
 	})
 	require.NoError(t, err)
-	require.Empty(t, drToken.InternalPricing)
-	require.Equal(t, model.ChannelPricingStatusNeedsReview, drToken.PricingStatus)
-	require.Contains(t, drToken.NormalizedPricing, "DERIVED_FROM_RATIOS")
+	require.NotEmpty(t, drToken.InternalPricing)
+	require.Equal(t, model.ChannelPricingStatusConfigured, drToken.PricingStatus)
+	require.Contains(t, drToken.NormalizedPricing, `"price_kind":"RATIO_ONLY"`)
 	_, billable := model.ResolveChannelBillingPricing(channel.Id, "dr-token")
-	require.False(t, billable)
+	require.True(t, billable)
 
 	// The complete expression rule is executable and keeps its image count.
 	two := 2
@@ -192,7 +193,7 @@ func testBailianSyncMatrix(t *testing.T) {
 	assertBillingRule(t, channel.Id, "qwen-vl", billingexpr.TokenParams{P: 1000, C: 500, Len: 1000}, billingexpr.RequestInput{})
 }
 
-func testXXAPISyncMatrix(t *testing.T) {
+func testUterAPISyncMatrix(t *testing.T) {
 	db := migrateProviderMatrixDB(t)
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
 		writer.Header().Set("Content-Type", "application/json")
@@ -210,7 +211,7 @@ func testXXAPISyncMatrix(t *testing.T) {
 	}))
 	t.Cleanup(server.Close)
 
-	channel := newMatrixChannel(t, db, "xxapi", constant.ChannelTypeOpenAI, server.URL, "sk-placeholder", "")
+	channel := newMatrixChannel(t, db, "uterapi", constant.ChannelTypeOpenAI, server.URL, "sk-placeholder", "")
 	written, discovered, err := service.SyncGenericChannelPricingWithModels(context.Background(), channel)
 	require.NoError(t, err)
 	assert.Equal(t, 3, written)
