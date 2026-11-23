@@ -28,6 +28,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -110,4 +111,14 @@ func TestXXAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))
 	assert.Contains(t, internal.BillingExpr, "0.5")
 	assert.Contains(t, internal.BillingExpr, "1.1")
+}
+
+func TestXXAPIGenericSyncRequiresBillingGroup(t *testing.T) {
+	base := "https://xxapi.ai"
+	channel := &model.Channel{
+		Id: 999999, Type: constant.ChannelTypeNewAPI,
+		BaseURL: &base, Key: "sk-xxapi-test",
+	}
+	_, _, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.ErrorContains(t, err, "no upstream billing group")
 }

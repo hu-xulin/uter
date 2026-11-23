@@ -102,8 +102,8 @@ func genericQuotaPerUnit(entry GenericPricingEntry, payload *GenericPricingPaylo
 }
 
 // GenericUpstreamBillingGroupKey stores the selected upstream billing group per
-// channel ({"<channel id>": "<group>"}). The group only affects procurement
-// cost, never the sale price.
+// channel ({"<channel id>": "<group>"}). The group determines which upstream
+// quote the key can call and therefore the channel price before Uter markup.
 const GenericUpstreamBillingGroupKey = "GenericUpstreamBillingGroups"
 
 // GetGenericUpstreamBillingGroup returns the selected upstream group, or "".
@@ -493,6 +493,13 @@ func SyncGenericChannelPricing(ctx context.Context, channel *model.Channel) (int
 func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Channel) (int, []string, error) {
 	if channel == nil {
 		return 0, nil, errors.New("channel is required")
+	}
+	// XXAPI binds each key to one billing group; the public document has no
+	// group context, so syncing without the stored group would silently price
+	// the channel at the undiscounted catalogue rate.
+	if MatchesUpstreamHost(channel.GetBaseURL(), "xxapi.ai") &&
+		GetGenericUpstreamBillingGroup(channel.Id) == "" {
+		return 0, nil, errors.New("xxapi channel has no upstream billing group; refuse catalogue-price sync")
 	}
 	release, acquired, err := acquireChannelPricingSyncLock(channel.Id)
 	if err != nil {

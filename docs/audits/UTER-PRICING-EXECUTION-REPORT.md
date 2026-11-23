@@ -99,6 +99,27 @@ gate (`GOWORK=off`, as used by `make test`). It is unrelated to pricing.
   `PHASE-06-PRICE-GOVERNANCE.md` now describe XXAPI in place of the removed
   Apiko runtime and state the historical-prefix boundary.
 
+## Post-rebuild live verification (2026-11-23)
+
+| Check | Result |
+|---|---|
+| `PRICING_AUDIT=1 ... TestAuditDreamRouterLive` | 86 records, 54 executable, 32 review, 0 failures |
+| `PRICING_AUDIT=1 ... TestAuditBailianLive` | 275 catalog, 134 records, 105 executable, 29 review, 0 stale |
+| `PRICING_AUDIT=1 ... TestAuditXXAPILive` | 51 models, 14 groups, 51 executable, 0 failures |
+| `GOWORK=off go test -race ./service -run 'XXAPI\|Bailian\|Pricing\|Markup\|Upstream'` | PASS |
+| `GOWORK=off go test -race ./model -run 'ChannelPricing\|ScopedPricing\|Purchase\|BillingSnapshot'` | PASS |
+| `TestChannelPricing*AcrossDatabases` | SQLite PASS; MySQL/PostgreSQL skipped without DSN |
+
+The live audits fetch the current upstream documents; they do not write database
+rows. The 32 DreamRouter review rows are rechecked against operator `batch`
+prices already stored in the channel, so the channel's current 86 rows remain
+configured while the automatic derivation correctly refuses ratio-only and
+historical rows.
+
+A new guard rejects scheduled generic sync for an `xxapi.ai` channel that has no
+stored billing group, instead of silently syncing the undiscounted catalogue
+price (`TestXXAPIGenericSyncRequiresBillingGroup`).
+
 ## Request-level billing reconciliation samples (2026-11-23)
 
 Two real consume logs were matched to their written price contracts by channel,

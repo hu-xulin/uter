@@ -12,6 +12,7 @@ Current decision: **NOT PRODUCTION READY**. Overall status:
 | Official vs channel vs purchase vs sale separation | PASS | separate columns + parity flags |
 | No unverified purchase cost treated as contract | PASS | `purchase_verified=false`, estimate path |
 | No automatic overwrite of operator price | PASS | auto-source prefix protection |
+| Purchase contract dimensions | PARTIAL | backend stores full tiers/dimensions; editor exposes flat input/output/call/second/minute |
 | No cross-channel/region/deployment price reuse | PASS | full identity + scoped fallback block |
 | No unauthorized fallback | PASS for channels with scoped rows | channels without rows keep legacy path |
 | Missing dimensions not defaulted to zero | PASS in price parsers | missing output stays review-only |
@@ -23,9 +24,9 @@ Current decision: **NOT PRODUCTION READY**. Overall status:
 | Historical data audit/migration | PARTIAL | 413 orphan rows, 69 Apiko rows pending backup/preview |
 | Apiko runtime cleanup | PASS | runtime code removed |
 | Full test suite | PASS | `make test` exit 0 |
-| Real supplier calls/billing samples | PARTIAL/BLOCKED | XXAPI public live, invoice export missing |
+| Real supplier calls/billing samples | PARTIAL/BLOCKED | two real consume logs reconciled to their snapshots; supplier invoice export still missing |
 | Database/bill/price audit consistency | PARTIAL | local SQLite audited; MySQL/PostgreSQL full matrix not rerun in this pass |
-| Frontend gate | PASS | quick gate 9/0 at last run |
+| Frontend gate | PARTIAL | typecheck/lint/unit/build PASS; authenticated browser visual BLOCKED by email-code login |
 
 ## Not allowed
 
