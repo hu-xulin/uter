@@ -162,8 +162,18 @@ prove the merge and index swap. The expected `Duplicate entry` log lines are
 negative assertions. ClickHouse is a log-database dialect and is not used by
 these primary-database pricing tables, so its subtest remains skipped.
 
-Full application startup against MySQL/PostgreSQL (not just the pricing schema)
-is still not part of this matrix.
+A full application startup matrix was then run against fresh databases:
+
+| Engine | First start | Second start | Marker rows |
+|---|---|---|---|
+| MySQL 8.4.13 | `/api/status` 200 | `/api/status` 200 | 1 |
+| PostgreSQL 16.16 | `/api/status` 200 | `/api/status` 200 | 1 |
+
+This exposed a real MySQL-only defect: the log-cache backfill marker used the
+reserved word `key` unquoted in raw SQL, so every MySQL start logged
+`Error 1064`. `model/main.go` now builds the statement with `commonKeyCol`; the
+second MySQL start wrote exactly one marker row and logged no SQL error. Both
+temporary database servers were stopped after the matrix.
 
 ## Historical data snapshot
 
@@ -179,7 +189,7 @@ No production data was deleted or rewritten.
 2. Backup/preview/approval for orphan and Apiko rows.
 3. Decimal/FX migration.
 4. Runtime image-task usage facts.
-5. Full application startup matrix on the release candidate (pricing schema matrix passes on SQLite/MySQL/PostgreSQL).
+5. Production release-candidate smoke on the real deployment topology (local full startup matrix now passes on SQLite/MySQL/PostgreSQL).
 6. Real token/image/video/B-C group request closure.
 
 ## Final status

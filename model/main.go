@@ -517,9 +517,10 @@ func markLogCacheTokenBackfillDone() {
 	}
 	// INSERT ... SELECT ... WHERE NOT EXISTS 在 SQLite/MySQL/PostgreSQL 上通用，
 	// 避免各库 upsert 语法差异（ON CONFLICT / ON DUPLICATE KEY / ON CONFLICT DO UPDATE）。
-	if err := DB.Exec(
-		"INSERT INTO options (key, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM options WHERE key = ?)",
-		logCacheTokensBackfillKey, "1", logCacheTokensBackfillKey).Error; err != nil {
+	query := fmt.Sprintf(
+		"INSERT INTO options (%s, value) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM options WHERE %s = ?)",
+		commonKeyCol, commonKeyCol)
+	if err := DB.Exec(query, logCacheTokensBackfillKey, "1", logCacheTokensBackfillKey).Error; err != nil {
 		common.SysLog(fmt.Sprintf("Warning: failed to record log cache token backfill marker: %v", err))
 	}
 }

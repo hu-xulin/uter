@@ -26,7 +26,7 @@ Current decision: **NOT PRODUCTION READY**. Overall status:
 | Apiko runtime cleanup | PASS | runtime code removed |
 | Full test suite | PASS | `make test` exit 0 |
 | Real supplier calls/billing samples | PARTIAL/BLOCKED | two real consume logs reconciled to their snapshots; supplier invoice export still missing |
-| Database/bill/price audit consistency | PASS (pricing schema) | SQLite/MySQL 8.4.13/PostgreSQL 16.16 migration, identity and dialect tests PASS |
+| Database/bill/price audit consistency | PASS | SQLite/MySQL 8.4.13/PostgreSQL 16.16 pricing schema tests PASS; full app started twice on each external engine |
 | Frontend gate | PARTIAL | typecheck/lint/unit/build PASS; authenticated browser visual BLOCKED by email-code login |
 
 ## Not allowed
@@ -40,6 +40,5 @@ gate above is PARTIAL/BLOCKED.
 2. Backup + preview + approval for orphan/Apiko historical data.
 3. Decimal/FX migration plan or explicit accepted risk.
 4. Runtime image-task usage-fact verification.
-5. Full application startup matrix on the release candidate (the pricing schema matrix already passes on all three databases).
-6. Real request closure for token, image, video task and B/C group pricing.
-7. Provider-label normalization for legacy type-60 channels.
+5. Real request closure for token, image, video task and B/C group pricing.
+6. Provider-label normalization for legacy type-60 channels.
