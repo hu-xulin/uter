@@ -402,6 +402,11 @@
     "Channel price": "Giá kênh",
     "Per minute": "Mỗi phút",
     "Additional service price": "Giá dịch vụ bổ sung",
+    "Fetched prices": "Giá đã lấy",
+    "Official and channel prices from the synced catalog.": "Giá chính thức và giá kênh lấy từ danh mục đã đồng bộ.",
+    "No prices fetched yet. Sync the channel catalog first.": "Chưa lấy được giá. Hãy đồng bộ danh mục kênh trước.",
+    "Prices are fetched from the official catalog": "Giá được lấy từ danh mục chính thức",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "Tạo ID kênh nháp và đồng bộ danh mục ở bước Mô hình; giá chính thức và giá kênh sẽ hiển thị tại đây.",
     "Price per minute (USD)": "Giá mỗi phút (USD)",
     "Uter price": "Giá Uter",
     "USD / second": "USD / giây",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "Khi tắt, quy tắc chỉ được lưu; giá chỉ đổi khi bấm Áp dụng thủ công. Việc thêm/xóa mô hình thượng nguồn do bước Cập nhật tự động xử lý, không phải lịch này.",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "Phát hiện mô hình là chủ sở hữu duy nhất danh sách mô hình của kênh: thêm mô hình mới và báo cáo mô hình bị gỡ. Lịch giá bên dưới chỉ làm mới giá chính thức và giá kênh rồi áp dụng lại quy tắc; mô hình mới sẽ được định giá ở lần đồng bộ giá tiếp theo.",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "Nguồn (Uter Route)"
+    "Upstream (Uter Route)": "Nguồn (Uter Route)",
+    "Two-factor authentication enrollment": "Đăng ký xác thực hai yếu tố",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Cho phép người dùng bật xác thực hai yếu tố trong Bảo mật & Truy cập. Các liên kết hiện có vẫn hoạt động khi tắt tùy chọn này."
   }
 }

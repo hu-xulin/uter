@@ -68,6 +68,8 @@ type ChannelPricingPanelProps = {
   onCreateDraft?: () => Promise<number | null>
   /** Create wizard moves the schedule to the Automatic updates step. */
   showSchedule?: boolean
+  // Creation flow: only the price configuration controls, no audits/history.
+  configureOnly?: boolean
 }
 
 const MODEL_CATEGORY_LABELS: Record<string, string> = {
@@ -699,7 +701,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         </div>
       ) : null}
 
-      {isUterRoute && !disabled ? (
+      {isUterRoute && !disabled && !props.configureOnly ? (
         <section className='space-y-2 rounded-lg border p-3'>
           <div className='flex flex-wrap items-center justify-between gap-2'>
             <div>
@@ -1412,357 +1414,371 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
         ) : null}
       </section>
 
-      <ChannelPricingScheduleSection
-        channelId={props.channelId}
-        baseUrl={props.baseUrl}
-        show={props.showSchedule !== false}
-      />
+      {!props.configureOnly ? (
+        <>
+          <ChannelPricingScheduleSection
+            channelId={props.channelId}
+            baseUrl={props.baseUrl}
+            show={props.showSchedule !== false}
+          />
 
-      {!disabled && props.channelId != null ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <Label>{t('Pending price reviews')}</Label>
-            <span className='text-muted-foreground text-sm'>
-              {reviewsQuery.data?.items?.length ?? 0}
-            </span>
-          </div>
-          {reviewsQuery.data?.items?.length ? (
-            <>
-              <ul className='text-muted-foreground space-y-1 text-sm'>
-                {reviewsQuery.data.items.slice(0, 5).map((entry) => (
-                  <li
-                    key={`${entry.model_name}-${entry.field}-${entry.created_at}`}
-                  >
-                    {entry.model_name} · {t(entry.field)} ·{' '}
-                    {entry.percent.toFixed(1)}%
-                  </li>
-                ))}
-              </ul>
-              <div className='flex gap-2'>
-                <Button
-                  type='button'
-                  size='sm'
-                  onClick={() => approveReviews.mutate()}
-                  disabled={approveReviews.isPending}
-                >
-                  {t('Approve')}
-                </Button>
-                <Button
-                  type='button'
-                  size='sm'
-                  variant='outline'
-                  onClick={() => rejectReviews.mutate()}
-                  disabled={rejectReviews.isPending}
-                >
-                  {t('Reject')}
-                </Button>
-              </div>
-            </>
-          ) : (
-            <p className='text-muted-foreground text-sm'>
-              {t('No pending price reviews.')}
-            </p>
-          )}
-        </section>
-      ) : null}
-
-      {!disabled && props.channelId != null ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <div>
-              <Label>{t('Sync diagnostics')}</Label>
-              <p className='text-muted-foreground text-sm'>
-                {t(
-                  'Check model discovery, official prices and channel prices independently.'
-                )}
-              </p>
-            </div>
-            <Button
-              type='button'
-              size='sm'
-              variant='outline'
-              onClick={() => diagnostics.mutate()}
-              disabled={diagnostics.isPending}
-            >
-              <Activity className='size-4' />
-              {diagnostics.isPending ? t('Running...') : t('Run diagnostics')}
-            </Button>
-          </div>
-          {diagnostics.data ? (
-            <div className='space-y-2'>
-              {[
-                {
-                  label: t('Models'),
-                  check: diagnostics.data.models,
-                  kind: 'models' as const,
-                },
-                {
-                  label: t('Official price'),
-                  check: diagnostics.data.official_pricing,
-                  kind: 'official' as const,
-                },
-                {
-                  label: t('Channel price'),
-                  check: diagnostics.data.channel_pricing,
-                  kind: 'channel' as const,
-                },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className='flex flex-wrap items-center gap-2 text-sm'
-                >
-                  <span className='text-muted-foreground w-28 shrink-0'>
-                    {item.label}
-                  </span>
-                  <Badge
-                    variant={
-                      item.check.status === 'FAILED' ? 'warning' : 'secondary'
-                    }
-                  >
-                    {item.check.status ? t(item.check.status) : t('Unknown')}
-                  </Badge>
-                  <span className='text-muted-foreground'>
-                    {diagnosticMessage(item.check, item.kind, t)}
-                  </span>
-                </div>
-              ))}
-              {diagnostics.data.warnings?.map((warning, index) => (
-                <p
-                  key={warning}
-                  className='text-warning-soft-foreground text-sm'
-                >
-                  {diagnosticWarning(
-                    diagnostics.data?.warning_codes?.[index],
-                    warning,
-                    t
-                  )}
-                </p>
-              ))}
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      {!disabled && parityQuery.data ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <Label>{t('Upstream parity')}</Label>
-            <Badge
-              variant={
-                (parityQuery.data.summary?.FULLY_MATCHED ?? 0) ===
-                (parityQuery.data.models?.length ?? 0)
-                  ? 'secondary'
-                  : 'warning'
-              }
-            >
-              {t('{{matched}} / {{total}} fully matched', {
-                matched: parityQuery.data.summary?.FULLY_MATCHED ?? 0,
-                total: parityQuery.data.models?.length ?? 0,
-              })}
-            </Badge>
-          </div>
-          <div className='flex flex-wrap gap-1.5'>
-            {Object.entries(parityQuery.data.summary ?? {}).map(
-              ([status, count]) => (
-                <Badge
-                  key={status}
-                  variant={status === 'FULLY_MATCHED' ? 'secondary' : 'warning'}
-                >
-                  {t(status)}: {count}
-                </Badge>
-              )
-            )}
-          </div>
-          {(parityQuery.data.models ?? []).filter(
-            (item) => item.status !== 'FULLY_MATCHED'
-          ).length ? (
-            <ul className='text-muted-foreground space-y-1 text-sm'>
-              {(parityQuery.data.models ?? [])
-                .filter((item) => item.status !== 'FULLY_MATCHED')
-                .slice(0, 8)
-                .map((item) => (
-                  <li key={item.model_name}>
-                    <span className='text-foreground font-medium'>
-                      {item.model_name}
-                    </span>{' '}
-                    · {t(item.status)}
-                    {item.reasons?.[0] ? ` · ${item.reasons[0]}` : ''}
-                  </li>
-                ))}
-            </ul>
-          ) : null}
-        </section>
-      ) : null}
-
-      {!disabled && reconciliationQuery.data ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <Label>{t('Upstream reconciliation')}</Label>
-            <Badge
-              variant={
-                reconciliationQuery.data.status === 'RULES_PASSED'
-                  ? 'secondary'
-                  : 'warning'
-              }
-            >
-              {t(reconciliationQuery.data.status)}
-            </Badge>
-          </div>
-          <div className='text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm'>
-            <span>
-              {t('Rules passed')}:{' '}
-              {reconciliationQuery.data.summary?.RULES_PASSED ?? 0}
-            </span>
-            <span>
-              {t('Rule failed')}:{' '}
-              {reconciliationQuery.data.summary?.RULE_FAILED ?? 0}
-            </span>
-            <span>
-              {t('Price changes')}:{' '}
-              {reconciliationQuery.data.price_change_count}
-            </span>
-            <span>
-              {t('Upstream invoice')}:{' '}
-              {reconciliationQuery.data.upstream_invoice}
-            </span>
-          </div>
-          {reconciliationQuery.data.blocked_reason ? (
-            <p className='text-muted-foreground text-sm'>
-              {reconciliationQuery.data.blocked_reason}
-            </p>
-          ) : null}
-          <div className='space-y-2 border-t pt-2'>
-            <Label>{t('Import upstream invoice')}</Label>
-            <Textarea
-              value={invoiceText}
-              onChange={(event) => setInvoiceText(event.target.value)}
-              placeholder='{"period":"2026-11","rows":[{"model_name":"gpt-4.1","input_tokens":1000,"output_tokens":500,"upstream_cost_usd":0.012}]}'
-              className='min-h-24 font-mono'
-            />
-            <div className='flex flex-wrap items-center gap-2'>
-              <Button
-                type='button'
-                size='sm'
-                disabled={!invoiceText.trim() || importInvoice.isPending}
-                onClick={() => importInvoice.mutate()}
-              >
-                {t('Import invoice')}
-              </Button>
-              {invoiceResult ? (
+          {!disabled && props.channelId != null ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <div className='flex flex-wrap items-center justify-between gap-2'>
+                <Label>{t('Pending price reviews')}</Label>
                 <span className='text-muted-foreground text-sm'>
-                  {t(
-                    'Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}',
-                    {
-                      matched: invoiceResult.invoice.matched,
-                      mismatched: invoiceResult.invoice.mismatched,
-                      unmatched: invoiceResult.invoice.unmatched,
-                    }
-                  )}{' '}
-                  · ${invoiceResult.invoice.total_upstream_usd.toFixed(4)} → $
-                  {invoiceResult.invoice.total_uter_usd.toFixed(4)}
+                  {reviewsQuery.data?.items?.length ?? 0}
                 </span>
-              ) : null}
-            </div>
-            {(invoiceQuery.data?.length ?? 0) > 0 ? (
-              <ul className='text-muted-foreground space-y-1 text-xs'>
-                {invoiceQuery.data?.map((invoice) => (
-                  <li key={invoice.id}>
-                    #{invoice.id} · {invoice.period || '—'} ·{' '}
-                    {invoice.provider || '—'} · $
-                    {invoice.total_upstream_usd.toFixed(4)} → $
-                    {invoice.total_uter_usd.toFixed(4)} · {t('Matched')}{' '}
-                    {invoice.matched}/{invoice.unmatched}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </div>
-          {(reconciliationQuery.data.models ?? []).filter(
-            (item) => item.status === 'RULE_FAILED'
-          ).length ? (
-            <ul className='text-destructive space-y-1 text-sm'>
-              {(reconciliationQuery.data.models ?? [])
-                .filter((item) => item.status === 'RULE_FAILED')
-                .slice(0, 5)
-                .map((item) => (
-                  <li key={item.model_name}>
-                    {item.model_name}: {item.error}
-                  </li>
-                ))}
-            </ul>
-          ) : null}
-        </section>
-      ) : null}
-      {!disabled && props.channelId != null && auditQuery.data ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <div className='flex flex-wrap items-center justify-between gap-2'>
-            <Label>{t('Price source audit')}</Label>
-            <Badge
-              variant={
-                auditQuery.data.conflicts.length > 0 ? 'warning' : 'secondary'
-              }
-            >
-              {authorityText(auditQuery.data.authority)}
-            </Badge>
-          </div>
-          <p className='text-muted-foreground text-sm'>
-            {t('{{models}} models · {{conflicts}} conflicts', {
-              models: auditQuery.data.models.length,
-              conflicts: auditQuery.data.conflicts.length,
-            })}
-          </p>
-          {auditQuery.data.conflicts.length > 0 ? (
-            <ul className='text-muted-foreground space-y-1 text-sm'>
-              {auditQuery.data.conflicts.slice(0, 5).map((conflict) => (
-                <li key={conflict.model_name}>
-                  <span className='text-foreground font-medium'>
-                    {conflict.model_name}
-                  </span>{' '}
-                  · {conflict.channel_status} · {t('takes precedence')}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className='text-muted-foreground text-sm'>
-              {t('No conflicting price sources.')}
-            </p>
-          )}
-        </section>
-      ) : null}
-
-      {!disabled && props.channelId != null ? (
-        <section className='space-y-2 rounded-lg border p-3'>
-          <Label>{t('Recent price changes')}</Label>
-          {historyQuery.data?.items?.length ? (
-            <ul className='text-muted-foreground space-y-1 text-sm'>
-              {historyQuery.data.items.slice(0, 5).map((entry) => (
-                <li
-                  key={`${entry.model_name}-${entry.source}-${entry.changed_at}`}
-                  className='flex flex-wrap items-center gap-2'
-                >
-                  <span className='min-w-0 flex-1 truncate'>
-                    {entry.model_name} · {entry.source} · {entry.changed_at}
-                  </span>
-                  {entry.id ? (
+              </div>
+              {reviewsQuery.data?.items?.length ? (
+                <>
+                  <ul className='text-muted-foreground space-y-1 text-sm'>
+                    {reviewsQuery.data.items.slice(0, 5).map((entry) => (
+                      <li
+                        key={`${entry.model_name}-${entry.field}-${entry.created_at}`}
+                      >
+                        {entry.model_name} · {t(entry.field)} ·{' '}
+                        {entry.percent.toFixed(1)}%
+                      </li>
+                    ))}
+                  </ul>
+                  <div className='flex gap-2'>
+                    <Button
+                      type='button'
+                      size='sm'
+                      onClick={() => approveReviews.mutate()}
+                      disabled={approveReviews.isPending}
+                    >
+                      {t('Approve')}
+                    </Button>
                     <Button
                       type='button'
                       size='sm'
                       variant='outline'
-                      disabled={rollback.isPending}
-                      onClick={() => rollback.mutate(entry.id as number)}
+                      onClick={() => rejectReviews.mutate()}
+                      disabled={rejectReviews.isPending}
                     >
-                      {t('Rollback')}
+                      {t('Reject')}
                     </Button>
+                  </div>
+                </>
+              ) : (
+                <p className='text-muted-foreground text-sm'>
+                  {t('No pending price reviews.')}
+                </p>
+              )}
+            </section>
+          ) : null}
+
+          {!disabled && props.channelId != null ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <div className='flex flex-wrap items-center justify-between gap-2'>
+                <div>
+                  <Label>{t('Sync diagnostics')}</Label>
+                  <p className='text-muted-foreground text-sm'>
+                    {t(
+                      'Check model discovery, official prices and channel prices independently.'
+                    )}
+                  </p>
+                </div>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  onClick={() => diagnostics.mutate()}
+                  disabled={diagnostics.isPending}
+                >
+                  <Activity className='size-4' />
+                  {diagnostics.isPending
+                    ? t('Running...')
+                    : t('Run diagnostics')}
+                </Button>
+              </div>
+              {diagnostics.data ? (
+                <div className='space-y-2'>
+                  {[
+                    {
+                      label: t('Models'),
+                      check: diagnostics.data.models,
+                      kind: 'models' as const,
+                    },
+                    {
+                      label: t('Official price'),
+                      check: diagnostics.data.official_pricing,
+                      kind: 'official' as const,
+                    },
+                    {
+                      label: t('Channel price'),
+                      check: diagnostics.data.channel_pricing,
+                      kind: 'channel' as const,
+                    },
+                  ].map((item) => (
+                    <div
+                      key={item.label}
+                      className='flex flex-wrap items-center gap-2 text-sm'
+                    >
+                      <span className='text-muted-foreground w-28 shrink-0'>
+                        {item.label}
+                      </span>
+                      <Badge
+                        variant={
+                          item.check.status === 'FAILED'
+                            ? 'warning'
+                            : 'secondary'
+                        }
+                      >
+                        {item.check.status
+                          ? t(item.check.status)
+                          : t('Unknown')}
+                      </Badge>
+                      <span className='text-muted-foreground'>
+                        {diagnosticMessage(item.check, item.kind, t)}
+                      </span>
+                    </div>
+                  ))}
+                  {diagnostics.data.warnings?.map((warning, index) => (
+                    <p
+                      key={warning}
+                      className='text-warning-soft-foreground text-sm'
+                    >
+                      {diagnosticWarning(
+                        diagnostics.data?.warning_codes?.[index],
+                        warning,
+                        t
+                      )}
+                    </p>
+                  ))}
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {!disabled && parityQuery.data ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <div className='flex flex-wrap items-center justify-between gap-2'>
+                <Label>{t('Upstream parity')}</Label>
+                <Badge
+                  variant={
+                    (parityQuery.data.summary?.FULLY_MATCHED ?? 0) ===
+                    (parityQuery.data.models?.length ?? 0)
+                      ? 'secondary'
+                      : 'warning'
+                  }
+                >
+                  {t('{{matched}} / {{total}} fully matched', {
+                    matched: parityQuery.data.summary?.FULLY_MATCHED ?? 0,
+                    total: parityQuery.data.models?.length ?? 0,
+                  })}
+                </Badge>
+              </div>
+              <div className='flex flex-wrap gap-1.5'>
+                {Object.entries(parityQuery.data.summary ?? {}).map(
+                  ([status, count]) => (
+                    <Badge
+                      key={status}
+                      variant={
+                        status === 'FULLY_MATCHED' ? 'secondary' : 'warning'
+                      }
+                    >
+                      {t(status)}: {count}
+                    </Badge>
+                  )
+                )}
+              </div>
+              {(parityQuery.data.models ?? []).filter(
+                (item) => item.status !== 'FULLY_MATCHED'
+              ).length ? (
+                <ul className='text-muted-foreground space-y-1 text-sm'>
+                  {(parityQuery.data.models ?? [])
+                    .filter((item) => item.status !== 'FULLY_MATCHED')
+                    .slice(0, 8)
+                    .map((item) => (
+                      <li key={item.model_name}>
+                        <span className='text-foreground font-medium'>
+                          {item.model_name}
+                        </span>{' '}
+                        · {t(item.status)}
+                        {item.reasons?.[0] ? ` · ${item.reasons[0]}` : ''}
+                      </li>
+                    ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
+
+          {!disabled && reconciliationQuery.data ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <div className='flex flex-wrap items-center justify-between gap-2'>
+                <Label>{t('Upstream reconciliation')}</Label>
+                <Badge
+                  variant={
+                    reconciliationQuery.data.status === 'RULES_PASSED'
+                      ? 'secondary'
+                      : 'warning'
+                  }
+                >
+                  {t(reconciliationQuery.data.status)}
+                </Badge>
+              </div>
+              <div className='text-muted-foreground flex flex-wrap gap-x-4 gap-y-1 text-sm'>
+                <span>
+                  {t('Rules passed')}:{' '}
+                  {reconciliationQuery.data.summary?.RULES_PASSED ?? 0}
+                </span>
+                <span>
+                  {t('Rule failed')}:{' '}
+                  {reconciliationQuery.data.summary?.RULE_FAILED ?? 0}
+                </span>
+                <span>
+                  {t('Price changes')}:{' '}
+                  {reconciliationQuery.data.price_change_count}
+                </span>
+                <span>
+                  {t('Upstream invoice')}:{' '}
+                  {reconciliationQuery.data.upstream_invoice}
+                </span>
+              </div>
+              {reconciliationQuery.data.blocked_reason ? (
+                <p className='text-muted-foreground text-sm'>
+                  {reconciliationQuery.data.blocked_reason}
+                </p>
+              ) : null}
+              <div className='space-y-2 border-t pt-2'>
+                <Label>{t('Import upstream invoice')}</Label>
+                <Textarea
+                  value={invoiceText}
+                  onChange={(event) => setInvoiceText(event.target.value)}
+                  placeholder='{"period":"2026-11","rows":[{"model_name":"gpt-4.1","input_tokens":1000,"output_tokens":500,"upstream_cost_usd":0.012}]}'
+                  className='min-h-24 font-mono'
+                />
+                <div className='flex flex-wrap items-center gap-2'>
+                  <Button
+                    type='button'
+                    size='sm'
+                    disabled={!invoiceText.trim() || importInvoice.isPending}
+                    onClick={() => importInvoice.mutate()}
+                  >
+                    {t('Import invoice')}
+                  </Button>
+                  {invoiceResult ? (
+                    <span className='text-muted-foreground text-sm'>
+                      {t(
+                        'Matched {{matched}} · mismatched {{mismatched}} · unmatched {{unmatched}}',
+                        {
+                          matched: invoiceResult.invoice.matched,
+                          mismatched: invoiceResult.invoice.mismatched,
+                          unmatched: invoiceResult.invoice.unmatched,
+                        }
+                      )}{' '}
+                      · ${invoiceResult.invoice.total_upstream_usd.toFixed(4)} →
+                      ${invoiceResult.invoice.total_uter_usd.toFixed(4)}
+                    </span>
                   ) : null}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className='text-muted-foreground text-sm'>
-              {t('No price changes yet.')}
-            </p>
-          )}
-        </section>
+                </div>
+                {(invoiceQuery.data?.length ?? 0) > 0 ? (
+                  <ul className='text-muted-foreground space-y-1 text-xs'>
+                    {invoiceQuery.data?.map((invoice) => (
+                      <li key={invoice.id}>
+                        #{invoice.id} · {invoice.period || '—'} ·{' '}
+                        {invoice.provider || '—'} · $
+                        {invoice.total_upstream_usd.toFixed(4)} → $
+                        {invoice.total_uter_usd.toFixed(4)} · {t('Matched')}{' '}
+                        {invoice.matched}/{invoice.unmatched}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+              {(reconciliationQuery.data.models ?? []).filter(
+                (item) => item.status === 'RULE_FAILED'
+              ).length ? (
+                <ul className='text-destructive space-y-1 text-sm'>
+                  {(reconciliationQuery.data.models ?? [])
+                    .filter((item) => item.status === 'RULE_FAILED')
+                    .slice(0, 5)
+                    .map((item) => (
+                      <li key={item.model_name}>
+                        {item.model_name}: {item.error}
+                      </li>
+                    ))}
+                </ul>
+              ) : null}
+            </section>
+          ) : null}
+          {!disabled && props.channelId != null && auditQuery.data ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <div className='flex flex-wrap items-center justify-between gap-2'>
+                <Label>{t('Price source audit')}</Label>
+                <Badge
+                  variant={
+                    auditQuery.data.conflicts.length > 0
+                      ? 'warning'
+                      : 'secondary'
+                  }
+                >
+                  {authorityText(auditQuery.data.authority)}
+                </Badge>
+              </div>
+              <p className='text-muted-foreground text-sm'>
+                {t('{{models}} models · {{conflicts}} conflicts', {
+                  models: auditQuery.data.models.length,
+                  conflicts: auditQuery.data.conflicts.length,
+                })}
+              </p>
+              {auditQuery.data.conflicts.length > 0 ? (
+                <ul className='text-muted-foreground space-y-1 text-sm'>
+                  {auditQuery.data.conflicts.slice(0, 5).map((conflict) => (
+                    <li key={conflict.model_name}>
+                      <span className='text-foreground font-medium'>
+                        {conflict.model_name}
+                      </span>{' '}
+                      · {conflict.channel_status} · {t('takes precedence')}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className='text-muted-foreground text-sm'>
+                  {t('No conflicting price sources.')}
+                </p>
+              )}
+            </section>
+          ) : null}
+
+          {!disabled && props.channelId != null ? (
+            <section className='space-y-2 rounded-lg border p-3'>
+              <Label>{t('Recent price changes')}</Label>
+              {historyQuery.data?.items?.length ? (
+                <ul className='text-muted-foreground space-y-1 text-sm'>
+                  {historyQuery.data.items.slice(0, 5).map((entry) => (
+                    <li
+                      key={`${entry.model_name}-${entry.source}-${entry.changed_at}`}
+                      className='flex flex-wrap items-center gap-2'
+                    >
+                      <span className='min-w-0 flex-1 truncate'>
+                        {entry.model_name} · {entry.source} · {entry.changed_at}
+                      </span>
+                      {entry.id ? (
+                        <Button
+                          type='button'
+                          size='sm'
+                          variant='outline'
+                          disabled={rollback.isPending}
+                          onClick={() => rollback.mutate(entry.id as number)}
+                        >
+                          {t('Rollback')}
+                        </Button>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className='text-muted-foreground text-sm'>
+                  {t('No price changes yet.')}
+                </p>
+              )}
+            </section>
+          ) : null}
+        </>
       ) : null}
     </div>
   )

@@ -402,6 +402,11 @@
     "Channel price": "チャネル価格",
     "Per minute": "1分あたり",
     "Additional service price": "追加サービス価格",
+    "Fetched prices": "取得済み価格",
+    "Official and channel prices from the synced catalog.": "公式価格とチャネル価格は同期済みカタログから取得されます。",
+    "No prices fetched yet. Sync the channel catalog first.": "まだ価格が取得されていません。先にチャネルカタログを同期してください。",
+    "Prices are fetched from the official catalog": "価格は公式カタログから取得します",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "「モデル」ステップで下書きチャネル ID を生成しカタログを同期すると、取得した公式価格とチャネル価格がここに表示されます。",
     "Price per minute (USD)": "1分あたりの価格（USD）",
     "Uter price": "Uter 価格",
     "USD / second": "USD / 秒",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "オフの場合、ルールは保存のみで、手動で「適用」したときだけ価格が変わります。上流モデルの追加・削除は「自動更新」ステップが担当し、このスケジュールでは行いません。",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "上流モデル検出がチャネルのモデル一覧を唯一管理し、新規追加と削除の報告を行います。下の価格スケジュールは公式価格とチャネル価格の更新およびルール再適用のみを行い、追加されたモデルは次回の価格同期で価格設定されます。",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "上流（Uter Route）"
+    "Upstream (Uter Route)": "上流（Uter Route）",
+    "Two-factor authentication enrollment": "二要素認証の登録",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "ユーザーが「セキュリティとアクセス」で二要素認証を有効にできるようにします。オフでも既存の登録は引き続き利用できます。"
   }
 }

@@ -118,7 +118,9 @@ beforeEach(() => {
   })
 })
 
-function renderPanel(options: { showSchedule?: boolean } = {}) {
+function renderPanel(
+  options: { showSchedule?: boolean; configureOnly?: boolean } = {}
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
@@ -128,6 +130,7 @@ function renderPanel(options: { showSchedule?: boolean } = {}) {
         channelId={7}
         baseUrl='https://example.com'
         showSchedule={options.showSchedule}
+        configureOnly={options.configureOnly}
       />
     </QueryClientProvider>
   )
@@ -259,4 +262,23 @@ test('create wizard hides the schedule because Automatic updates owns it', async
 
   expect((await screen.findAllByText('All models')).length).toBeGreaterThan(0)
   expect(screen.queryByText('Scheduled price update')).not.toBeInTheDocument()
+})
+
+test('creation pricing step keeps only configuration controls', async () => {
+  renderPanel({ configureOnly: true })
+
+  expect(await screen.findByText('Batch pricing')).toBeVisible()
+  expect(await screen.findByText('qwen-plus')).toBeVisible()
+  for (const hidden of [
+    'Upstream catalog',
+    'Scheduled price update',
+    'Pending price reviews',
+    'Sync diagnostics',
+    'Upstream parity',
+    'Upstream reconciliation',
+    'Price source audit',
+    'Recent price changes',
+  ]) {
+    expect(screen.queryByText(hidden)).not.toBeInTheDocument()
+  }
 })

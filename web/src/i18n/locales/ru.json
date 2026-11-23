@@ -402,6 +402,11 @@
     "Channel price": "Цена канала",
     "Per minute": "За минуту",
     "Additional service price": "Цена дополнительной услуги",
+    "Fetched prices": "Полученные цены",
+    "Official and channel prices from the synced catalog.": "Официальные цены и цены канала из синхронизированного каталога.",
+    "No prices fetched yet. Sync the channel catalog first.": "Цены ещё не получены. Сначала синхронизируйте каталог канала.",
+    "Prices are fetched from the official catalog": "Цены берутся из официального каталога",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "Создайте черновик канала и синхронизируйте каталог на шаге «Модели» — полученные официальные цены и цены канала появятся здесь.",
     "Price per minute (USD)": "Цена за минуту (USD)",
     "Uter price": "Цена Uter",
     "USD / second": "USD / секунда",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "Выключено: правило только сохраняется, цены меняются лишь при ручном применении. Добавление и удаление моделей выполняет шаг «Автообновления», а не это расписание.",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "Обнаружение моделей — единственный владелец списка моделей канала: добавляет новые и сообщает об удалениях. Расписание ниже только обновляет официальные цены и цены канала и повторно применяет правило; новые модели получают цену при следующей синхронизации.",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "Источник (Uter Route)"
+    "Upstream (Uter Route)": "Источник (Uter Route)",
+    "Two-factor authentication enrollment": "Регистрация двухфакторной аутентификации",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Разрешить пользователям включать двухфакторную аутентификацию в разделе «Безопасность и доступ». Существующие привязки продолжат работать при отключении."
   }
 }

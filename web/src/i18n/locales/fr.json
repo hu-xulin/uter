@@ -402,6 +402,11 @@
     "Channel price": "Prix du canal",
     "Per minute": "Par minute",
     "Additional service price": "Prix du service supplémentaire",
+    "Fetched prices": "Prix récupérés",
+    "Official and channel prices from the synced catalog.": "Prix officiels et prix du canal issus du catalogue synchronisé.",
+    "No prices fetched yet. Sync the channel catalog first.": "Aucun prix récupéré. Synchronisez d’abord le catalogue du canal.",
+    "Prices are fetched from the official catalog": "Les prix proviennent du catalogue officiel",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "Générez un identifiant de brouillon et synchronisez le catalogue à l’étape Modèles ; les prix officiels et du canal apparaîtront ici.",
     "Price per minute (USD)": "Prix par minute (USD)",
     "Uter price": "Prix Uter",
     "USD / second": "USD / seconde",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "Désactivé : la règle est seulement enregistrée ; seul un clic sur Appliquer modifie les prix. L'ajout et le retrait de modèles amont sont gérés par l'étape Mises à jour automatiques, pas par ce calendrier.",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "La détection des modèles est l'unique responsable de la liste du canal : elle ajoute les nouveaux modèles et signale les retraits. Le calendrier ci-dessous actualise seulement les prix officiels et du canal puis réapplique la règle ; les modèles ajoutés sont tarifés à la prochaine synchronisation.",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "Amont (Uter Route)"
+    "Upstream (Uter Route)": "Amont (Uter Route)",
+    "Two-factor authentication enrollment": "Enrôlement de l'authentification à deux facteurs",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Autoriser les utilisateurs à activer l'authentification à deux facteurs dans Sécurité et accès. Les liaisons existantes continuent de fonctionner lorsque cette option est désactivée."
   }
 }

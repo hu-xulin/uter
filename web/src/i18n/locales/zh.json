@@ -402,6 +402,11 @@
     "Channel price": "渠道价格",
     "Per minute": "每分钟",
     "Additional service price": "附加服务价",
+    "Fetched prices": "已获取价格",
+    "Official and channel prices from the synced catalog.": "官方价格与渠道价格来自已同步的目录。",
+    "No prices fetched yet. Sync the channel catalog first.": "还没有获取到价格，请先同步渠道目录。",
+    "Prices are fetched from the official catalog": "价格从官方目录获取",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "先在“模型”步骤生成草稿渠道并同步目录，获取到的官方价格与渠道价格会显示在这里。",
     "Price per minute (USD)": "每分钟价格（USD）",
     "Uter price": "优特价格",
     "USD / second": "USD / 秒",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "关闭时仅保存规则，只有手动执行“应用”才会改价。上游模型的增减由“自动更新”步骤负责，不在本计划中处理。",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "上游模型检测是渠道模型列表的唯一维护者：负责新增模型并报告下线模型。下方的价格计划只刷新官方价与渠道价并重新应用定价规则；新增模型会在下一次价格同步时定价。",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "上游（Uter Route）"
+    "Upstream (Uter Route)": "上游（Uter Route）",
+    "Two-factor authentication enrollment": "两步验证注册",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "允许用户在“安全与访问”中启用两步验证。关闭后，已有绑定仍可正常登录。"
   }
 }

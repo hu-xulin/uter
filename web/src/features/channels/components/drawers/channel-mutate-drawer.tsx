@@ -240,6 +240,7 @@ import {
   type PassthroughKind,
 } from '../dialogs/passthrough-warning-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
+import { FetchedPricePreview } from '../fetched-price-preview'
 import {
   ModelMappingBatchDialog,
   type ModelMappingBatchResult,
@@ -5416,9 +5417,9 @@ export function ChannelMutateDrawer({
     </div>
   )
 
-  let pricingFetchSection: ReactNode
+  let pricingFetchBase: ReactNode
   if (isUterApiTarget && !isEditing) {
-    pricingFetchSection = (
+    pricingFetchBase = (
       <div className='space-y-2 rounded-lg border p-4'>
         <p className='font-medium'>
           {t('Models and prices are fetched on create')}
@@ -5430,10 +5431,23 @@ export function ChannelMutateDrawer({
         </p>
       </div>
     )
+  } else if (isBailianProvider) {
+    pricingFetchBase = (
+      <div className='space-y-2 rounded-lg border p-4'>
+        <p className='font-medium'>
+          {t('Prices are fetched from the official catalog')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {t(
+            'Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.'
+          )}
+        </p>
+      </div>
+    )
   } else if (canAutoProvision) {
-    pricingFetchSection = autoProvisionPanel
+    pricingFetchBase = autoProvisionPanel
   } else {
-    pricingFetchSection = (
+    pricingFetchBase = (
       <div className='space-y-2 rounded-lg border p-4'>
         <p className='font-medium'>
           {t('Automatic price fetch is unavailable')}
@@ -5446,6 +5460,14 @@ export function ChannelMutateDrawer({
       </div>
     )
   }
+  const pricingFetchSection = (
+    <div className='space-y-4'>
+      {pricingFetchBase}
+      {effectiveChannelId ? (
+        <FetchedPricePreview channelId={effectiveChannelId} />
+      ) : null}
+    </div>
+  )
 
   const autoUpdateSection = (
     <div className='space-y-5'>
@@ -5634,6 +5656,7 @@ export function ChannelMutateDrawer({
         baseUrl={form.watch('base_url') ?? ''}
         onCreateDraft={isEditing ? undefined : createDraftChannel}
         showSchedule={isEditing}
+        configureOnly={!isEditing}
       />
     )
   } else if (canAutoProvision) {

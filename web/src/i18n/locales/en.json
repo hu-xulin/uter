@@ -402,6 +402,11 @@
     "Channel price": "Channel price",
     "Per minute": "Per minute",
     "Additional service price": "Additional service price",
+    "Fetched prices": "Fetched prices",
+    "Official and channel prices from the synced catalog.": "Official and channel prices from the synced catalog.",
+    "No prices fetched yet. Sync the channel catalog first.": "No prices fetched yet. Sync the channel catalog first.",
+    "Prices are fetched from the official catalog": "Prices are fetched from the official catalog",
+    "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.": "Generate a draft channel ID and sync the catalog in the model step; the fetched official and channel prices appear here.",
     "Price per minute (USD)": "Price per minute (USD)",
     "Uter price": "Uter price",
     "USD / second": "USD / second",
@@ -8665,6 +8670,8 @@
     "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.": "When off, the rule is saved but only a manual Apply changes prices. Upstream model additions and removals are handled by the Automatic updates step, not by this schedule.",
     "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.": "Upstream model detection is the single owner of the channel model list: it adds new models and reports removals. The pricing schedule below only refreshes official and channel prices and re-applies the pricing rule. Newly added models are priced on the next price sync.",
     "Uter Route": "Uter Route",
-    "Upstream (Uter Route)": "Upstream (Uter Route)"
+    "Upstream (Uter Route)": "Upstream (Uter Route)",
+    "Two-factor authentication enrollment": "Two-factor authentication enrollment",
+    "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.": "Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off."
   }
 }
