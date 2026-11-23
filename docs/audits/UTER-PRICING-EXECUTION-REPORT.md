@@ -116,7 +116,10 @@ The parser now:
 - leaves `HasOfficial`/`HasOfficialEstimate` semantics unchanged.
 
 Live channel `61` now has 84/84 DreamRouter rows with both official and channel
-prices. Examples:
+prices. A second set of 84 duplicate `newapi-compatible` rows with the same
+model identities had no official price and made the page look inconsistent;
+they were removed after the database backup, leaving only the DreamRouter rows.
+Examples:
 
 | Model | Official | Channel | Uter | State |
 |---|---|---|---|---|
