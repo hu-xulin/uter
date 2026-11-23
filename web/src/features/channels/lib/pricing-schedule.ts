@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 export const PRICING_MODES = [
   { value: 'discount', label: 'Discount' },
   { value: 'markup', label: 'Markup' },
+  { value: 'discount_plus', label: 'Discount plus' },
   { value: 'multiply', label: 'Fixed multiplier' },
   { value: 'add', label: 'Fixed amount' },
   { value: 'fixed', label: 'Fixed price' },

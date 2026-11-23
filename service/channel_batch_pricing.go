@@ -21,10 +21,16 @@ const (
 
 	BatchPricingModeDiscount = "discount" // value 0.6 -> base * 0.6
 	BatchPricingModeMarkup   = "markup"   // value 0.1 -> base * (1 + 0.1)
-	BatchPricingModeMultiply = "multiply" // value 0.8 -> base * 0.8
-	BatchPricingModeAdd      = "add"      // value 0.5 -> base + 0.5
-	BatchPricingModeFixed    = "fixed"    // value 2.5 -> 2.5
-	BatchPricingModeNone     = "none"     // keep the base price
+	// BatchPricingModeDiscountPlus adds percentage points of the official price
+	// on top of the channel price: value 0.1 with official 10 and channel 6
+	// (a 0.6 quote) sells at 7, i.e. the 0.7 discount. It needs both prices, so
+	// the selected basis only filters which models are reachable, never which
+	// amount the rule starts from.
+	BatchPricingModeDiscountPlus = "discount_plus" // value 0.1 -> channel + official * 0.1
+	BatchPricingModeMultiply     = "multiply"      // value 0.8 -> base * 0.8
+	BatchPricingModeAdd          = "add"           // value 0.5 -> base + 0.5
+	BatchPricingModeFixed        = "fixed"         // value 2.5 -> 2.5
+	BatchPricingModeNone         = "none"          // keep the base price
 
 	BatchProtectionModeStrict   = "strict"   // any violation blocks the whole batch
 	BatchProtectionModePartial  = "partial"  // skip the violating model, apply the rest
@@ -83,6 +89,11 @@ type BatchPricingItem struct {
 	ProtectionState string `json:"protection_state,omitempty"`
 	// Tiers echoes the tiered sale prices this rule produced.
 	Tiers []BatchPricingTier `json:"tiers,omitempty"`
+	// BillingExpr is the scaled rule produced for a model priced by an
+	// executable upstream expression. The preview shows it instead of a flat
+	// amount because the rule carries image/audio/cache dimensions that a
+	// single number cannot represent.
+	BillingExpr string `json:"billing_expr,omitempty"`
 }
 
 // BatchPricingTier is one tiered sale-price preview row.
@@ -198,6 +209,75 @@ type batchBasePrice struct {
 	perCallUSD                  *float64
 	perSecondUSD                *float64
 	perMinuteUSD                *float64
+	// expr carries the complete upstream billing expression when a model is
+	// priced by an executable rule rather than a flat amount. A multiplicative
+	// rule scales its coefficients so every dimension (image, audio, cache)
+	// stays priced exactly like the upstream instead of being flattened.
+	expr string
+}
+
+// batchExpressionFactor maps a multiplicative rule onto a single factor that
+// scales every coefficient of a billing expression. Additive and fixed rules
+// change the total, not each coefficient, so they cannot be applied to an
+// expression and report ok=false.
+func batchExpressionFactor(mode string, value float64) (float64, bool) {
+	switch mode {
+	case BatchPricingModeDiscount, BatchPricingModeMultiply:
+		if value <= 0 {
+			return 0, false
+		}
+		return value, true
+	case BatchPricingModeMarkup:
+		if value < 0 {
+			return 0, false
+		}
+		return 1 + value, true
+	case BatchPricingModeNone:
+		return 1, true
+	default:
+		return 0, false
+	}
+}
+
+// dimensionValue returns the amount this base carries for one rule dimension.
+func (b batchBasePrice) dimensionValue(dimension string) *float64 {
+	switch dimension {
+	case "input":
+		return b.inputUSD
+	case "output":
+		return b.outputUSD
+	case "cache_read":
+		return b.cacheUSD
+	case "cache_write":
+		return b.cacheWriteUSD
+	case "audio_input":
+		return b.audioInputUSD
+	case "audio_output":
+		return b.audioOutputUSD
+	case "image_input":
+		return b.imageInputUSD
+	case "thinking_input":
+		return b.thinkingInputUSD
+	case "thinking_output":
+		return b.thinkingOutputUSD
+	case "thinking_cache":
+		return b.thinkingCacheUSD
+	case "thinking_create_cache":
+		return b.thinkingCreateCacheUSD
+	case "thinking_image_input":
+		return b.thinkingImageInputUSD
+	case "multi_input_output":
+		return b.multiInputOutputUSD
+	case "thinking_multi_input_output":
+		return b.thinkingMultiInputOutputUSD
+	case "per_call":
+		return b.perCallUSD
+	case "per_second":
+		return b.perSecondUSD
+	case "per_minute":
+		return b.perMinuteUSD
+	}
+	return nil
 }
 
 // ApplyChannelBatchPricing applies one multiplier to a channel's model prices.
@@ -298,7 +378,13 @@ func ApplyChannelBatchPricingWithOptions(
 	if err := validateBatchRule(mode, value); err != nil {
 		return nil, err
 	}
+	if mode == BatchPricingModeDiscountPlus && basis == BatchPricingBasisCurrent {
+		return nil, errors.New("discount plus rebases the channel price on the official price; choose the official or channel basis")
+	}
 	for _, rule := range options.TierRules {
+		if rule.Mode == BatchPricingModeDiscountPlus {
+			return nil, fmt.Errorf("tier rule %s/%s: discount plus is only supported as the channel rule", rule.RangeName, rule.TimeBand)
+		}
 		if err := validateBatchRule(rule.Mode, rule.Value); err != nil {
 			return nil, fmt.Errorf("tier rule %s/%s: %w", rule.RangeName, rule.TimeBand, err)
 		}
@@ -406,10 +492,23 @@ func ApplyChannelBatchPricingWithOptions(
 			})
 			continue
 		}
-		base, reason := resolveBatchBasePrice(row, basis)
+		ruleBasis := basis
+		if mode == BatchPricingModeDiscountPlus {
+			ruleBasis = BatchPricingBasisChannel
+		}
+		base, reason := resolveBatchBasePrice(row, ruleBasis)
 		if reason != "" {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: reason})
 			continue
+		}
+		var officialBase batchBasePrice
+		if mode == BatchPricingModeDiscountPlus {
+			var officialReason string
+			officialBase, officialReason = resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+			if officialReason != "" {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: officialReason})
+				continue
+			}
 		}
 		item := BatchPricingItem{
 			ModelName:    row.ModelName,
@@ -423,10 +522,11 @@ func ApplyChannelBatchPricingWithOptions(
 		}
 		internal := model.ChannelInternalPricing{
 			Mode:      base.mode,
-			Note:      fmt.Sprintf("batch: %s %s %.4f", basis, mode, value),
+			Note:      fmt.Sprintf("batch: %s %s %.4f", ruleBasis, mode, value),
 			Source:    "batch",
 			UpdatedAt: 0,
 		}
+		ruleFailure := "rule produced a negative price"
 		apply := func(raw *float64, dimension string) (*float64, bool) {
 			if raw == nil {
 				return nil, true
@@ -437,6 +537,19 @@ func ApplyChannelBatchPricingWithOptions(
 				// model is priced on.
 				unchanged := *raw
 				return &unchanged, true
+			}
+			if mode == BatchPricingModeDiscountPlus {
+				official := officialBase.dimensionValue(dimension)
+				if official == nil || *official <= 0 {
+					ruleFailure = "discount plus needs the official price for dimension " + dimension
+					return nil, false
+				}
+				out := *raw + *official*value
+				if math.IsNaN(out) || math.IsInf(out, 0) || out < 0 {
+					return nil, false
+				}
+				rounded := roundPrice(out)
+				return &rounded, true
 			}
 			out, ok := applyBatchRule(*raw, mode, value)
 			if !ok {
@@ -449,28 +562,28 @@ func ApplyChannelBatchPricingWithOptions(
 			item.InputUSD = next
 			internal.InputUSDPerMillion = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.outputUSD, "output"); ok && next != nil {
 			item.OutputUSD = next
 			internal.OutputUSDPerMillion = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.cacheUSD, "cache_read"); ok && next != nil {
 			item.CacheUSD = next
 			internal.CacheUSDPerMillion = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.cacheWriteUSD, "cache_write"); ok && next != nil {
 			item.CacheWriteUSD = next
 			internal.CreateCacheUSDPerMillion = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.audioInputUSD, "audio_input"); ok && next != nil {
@@ -478,7 +591,7 @@ func ApplyChannelBatchPricingWithOptions(
 			internal.AudioInputUSDPerMillion = next
 			internal.AudioRatio = nil
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.audioOutputUSD, "audio_output"); ok && next != nil {
@@ -486,13 +599,13 @@ func ApplyChannelBatchPricingWithOptions(
 			internal.AudioOutputUSDPerMillion = next
 			internal.AudioCompletionRatio = nil
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		applyDimension := func(raw *float64, dimension string, internalTarget, itemTarget **float64) bool {
 			next, ok := apply(raw, dimension)
 			if !ok {
-				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 				return false
 			}
 			*internalTarget = next
@@ -513,21 +626,21 @@ func ApplyChannelBatchPricingWithOptions(
 			item.PerCallUSD = next
 			internal.PerCallUSD = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.perSecondUSD, "per_second"); ok && next != nil {
 			item.PerSecondUSD = next
 			internal.PerSecondUSD = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.perMinuteUSD, "per_minute"); ok && next != nil {
 			item.PerMinuteUSD = next
 			internal.PerMinuteUSD = next
 		} else if !ok {
-			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if len(base.tiers) > 0 {
@@ -654,7 +767,7 @@ func ApplyChannelBatchPricingWithOptions(
 				})
 			}
 			if failed {
-				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "rule produced a negative price"})
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 				continue
 			}
 			internal.Mode = model.ChannelPricingModeTieredTable
@@ -1404,7 +1517,7 @@ func validateBatchRule(mode string, value float64) error {
 		if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 {
 			return errors.New("value must be a finite non-negative number")
 		}
-	case BatchPricingModeMarkup, BatchPricingModeAdd:
+	case BatchPricingModeMarkup, BatchPricingModeAdd, BatchPricingModeDiscountPlus:
 		if math.IsNaN(value) || math.IsInf(value, 0) {
 			return errors.New("value must be a finite number")
 		}
@@ -1414,7 +1527,7 @@ func validateBatchRule(mode string, value float64) error {
 		}
 	case BatchPricingModeNone:
 	default:
-		return errors.New("mode must be discount, markup, multiply, add, fixed or none")
+		return errors.New("mode must be discount, markup, discount plus, multiply, add, fixed or none")
 	}
 	return nil
 }

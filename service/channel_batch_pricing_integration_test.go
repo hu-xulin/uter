@@ -954,3 +954,85 @@ func TestBatchPricingThreeTierMarginBoundaries(t *testing.T) {
 	require.Len(t, internal.Tiers, 3)
 	assert.InDelta(t, 1.5, *internal.Tiers[0].InputUSDPerMillion, 1e-9, "blocked batch must not write")
 }
+
+func TestApplyChannelBatchPricingDiscountPlusAddsOfficialPoints(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, output := 10.0, 20.0
+	channelInput, channelOutput := 6.0, 12.0
+	withChannel := model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName:           "Default",
+			InputPerMillionUSD:  &input,
+			OutputPerMillionUSD: &output,
+			Unit:                "per_1m_token",
+		}},
+		ChannelPrice: &model.ChannelPricingTier{
+			RangeName:           "Default",
+			InputPerMillionUSD:  &channelInput,
+			OutputPerMillionUSD: &channelOutput,
+			Unit:                "per_1m_token",
+		},
+	}
+	withoutChannel := model.ChannelOfficialPricing{
+		Currency: "USD",
+		Unit:     "per_1m_token",
+		Tiers: []model.ChannelPricingTier{{
+			RangeName:           "Default",
+			InputPerMillionUSD:  &input,
+			OutputPerMillionUSD: &output,
+			Unit:                "per_1m_token",
+		}},
+	}
+	encodedWith, err := common.Marshal(withChannel)
+	require.NoError(t, err)
+	encodedWithout, err := common.Marshal(withoutChannel)
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		{ChannelId: 7, Provider: "test", ModelName: "gpt-plus", Currency: "USD",
+			OfficialPricing: `{}`, NormalizedPricing: string(encodedWith), Source: "test", FetchedAt: 100},
+		{ChannelId: 7, Provider: "test", ModelName: "gpt-official-only", Currency: "USD",
+			OfficialPricing: `{}`, NormalizedPricing: string(encodedWithout), Source: "test", FetchedAt: 100},
+	})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(7, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, preview.Items, 1)
+	// 渠道 6 是官方 10 的 0.6 折扣；加 10 个百分点 -> 0.7 折扣 -> 7。
+	assert.InDelta(t, 7.0, *preview.Items[0].InputUSD, 1e-9)
+	assert.InDelta(t, 14.0, *preview.Items[0].OutputUSD, 1e-9)
+	require.Len(t, preview.Skipped, 1)
+	assert.Equal(t, "gpt-official-only", preview.Skipped[0].ModelName)
+
+	applied, err := ApplyChannelBatchPricingWithOptions(7, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, applied.Updated)
+	pricing, ok := model.ResolveChannelBillingPricing(7, "gpt-plus")
+	require.True(t, ok)
+	assert.InDelta(t, 3.5, pricing.ModelRatio, 1e-9) // $7 / 2
+	if _, ok := model.ResolveChannelBillingPricing(7, "gpt-official-only"); ok {
+		t.Fatal("model without a channel price must stay unbillable")
+	}
+}
+
+func TestApplyChannelBatchPricingDiscountPlusRejectsCurrentBasisAndTierRules(t *testing.T) {
+	setupBatchPricingDB(t)
+	_, err := ApplyChannelBatchPricingWithOptions(8, BatchPricingOptions{
+		Basis: BatchPricingBasisCurrent, Mode: BatchPricingModeDiscountPlus, Value: 0.1,
+	})
+	require.ErrorContains(t, err, "official or channel basis")
+
+	_, err = ApplyChannelBatchPricingWithOptions(8, BatchPricingOptions{
+		Basis:     BatchPricingBasisChannel,
+		Mode:      BatchPricingModeDiscount,
+		Value:     0.5,
+		TierRules: []BatchTierRule{{Mode: BatchPricingModeDiscountPlus, Value: 0.1}},
+	})
+	require.ErrorContains(t, err, "only supported as the channel rule")
+}

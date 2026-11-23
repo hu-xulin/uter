@@ -785,7 +785,14 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                 label: t(item.label),
               }))}
               value={mode}
-              onValueChange={(next) => next && setMode(next)}
+              onValueChange={(next) => {
+                if (!next) return
+                setMode(next)
+                // 折扣加点以渠道价与官方价两个基准计算，与现价基准互斥。
+                if (next === 'discount_plus' && basis === 'current') {
+                  setBasis('official')
+                }
+              }}
             >
               <SelectTrigger id='batch-pricing-mode' className='w-full'>
                 <SelectValue />
