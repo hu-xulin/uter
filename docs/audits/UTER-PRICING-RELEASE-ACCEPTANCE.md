@@ -3,6 +3,10 @@
 Current decision: **NOT PRODUCTION READY**. Overall status:
 **PARTIALLY_VERIFIED**.
 
+> 2026-11-23 10:17: shared local `one-api.db` drifted outside this task
+> (channels 32/34/54–60 removed, draft 61 added). The evidence matrix below
+> describes the validated snapshot; re-sync and re-validate the active channels.
+
 ## Gate checklist
 
 | Gate | Result | Evidence / blocker |

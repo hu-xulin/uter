@@ -137,6 +137,18 @@ verified contract. These samples close the flat-ratio and tiered-expression
 request-level checks; supplier invoice reconciliation still needs the vendor
 export and a supplier→Uter request-id mapping.
 
+## Active local DB drift (2026-11-23 10:17)
+
+The shared local `one-api.db` changed outside this task after the pricing
+validation. Channels `32`, `34` and `54`–`60` disappeared from the active
+channel table and a draft channel `61` appeared; pricing rows for the removed
+channels still exist and are now orphaned. This task did not delete any channel
+or run a database reset. The pre-change database backup is
+`/tmp/one-api.before-xxapi-refresh.db`; it was not restored because restoring
+could overwrite concurrent user work. The counts and channel evidence above
+describe the validated snapshot, not the current drifted database. Re-sync and
+re-validate the active channels before release.
+
 ## Three-database matrix (2026-11-23)
 
 MySQL 8.4.13 and PostgreSQL 16.16 were installed locally and started as
