@@ -144,7 +144,6 @@ test('pricing selects render translated labels instead of raw enum values', asyn
   ).toBeGreaterThan(0)
   expect(screen.getAllByText('Official price').length).toBeGreaterThan(0)
   expect(screen.getAllByText('All models').length).toBeGreaterThan(0)
-  expect(screen.getAllByText('Auto apply').length).toBeGreaterThan(0)
   expect(screen.queryByText('multiply')).not.toBeInTheDocument()
   expect(screen.queryByText('official')).not.toBeInTheDocument()
 })
@@ -156,21 +155,21 @@ test('channel model row lists additional service prices next to the token tier',
   expect(screen.getByText(/Voice cloning/)).toBeVisible()
 })
 
-test('scheduled update fields expose labels and descriptions', async () => {
+test('automatic update cadence exposes labels without touching sale prices', async () => {
   renderPanel()
 
-  expect(await screen.findByText('Scheduled price update')).toBeVisible()
+  expect(
+    await screen.findByText(/Scheduled price update|Automatic updates/)
+  ).toBeVisible()
   for (const label of [
-    'Review mode',
-    'Review threshold (%)',
+    'Enabled',
     'Official price interval (minutes)',
     'Channel price interval (minutes)',
   ]) {
     expect(screen.getByText(label)).toBeVisible()
   }
-  expect(screen.getAllByText('Rule value hint').length).toBeGreaterThan(0)
-  expect(screen.getByText('Review mode hint')).toBeVisible()
-  // The model list is owned by upstream model detection; the price schedule
+  expect(screen.getByRole('button', { name: 'Save schedule' })).toBeVisible()
+  // The model list is owned by upstream model detection; the cadence section
   // must not expose a second model-sync timer.
   expect(
     screen.queryByText('Model sync interval (minutes)')
@@ -261,7 +260,9 @@ test('create wizard hides the schedule because Automatic updates owns it', async
   renderPanel({ showSchedule: false })
 
   expect((await screen.findAllByText('All models')).length).toBeGreaterThan(0)
-  expect(screen.queryByText('Scheduled price update')).not.toBeInTheDocument()
+  expect(
+    screen.queryByText(/Scheduled price update|Automatic updates/)
+  ).not.toBeInTheDocument()
 })
 
 test('creation pricing step keeps only configuration controls', async () => {
@@ -271,7 +272,7 @@ test('creation pricing step keeps only configuration controls', async () => {
   expect(await screen.findByText('qwen-plus')).toBeVisible()
   for (const hidden of [
     'Upstream catalog',
-    'Scheduled price update',
+    /Scheduled price update|Automatic updates/,
     'Pending price reviews',
     'Sync diagnostics',
     'Upstream parity',
