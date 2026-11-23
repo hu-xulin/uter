@@ -1070,7 +1070,7 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			incomingAuto := record.InternalPricing != "" &&
 				autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
 			if record.InternalPricing != "" && internalPricingReplaceable(existing.InternalPricing) &&
-				!(reviewOnly && incomingAuto) {
+				!reviewOnly || !incomingAuto {
 				existing.InternalPricing = record.InternalPricing
 				existing.PricingStatus = ChannelPricingStatusConfigured
 			}
