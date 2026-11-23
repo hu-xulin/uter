@@ -23,6 +23,7 @@ import (
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
 	"github.com/uter-ai/uter/pkg/jsplugin"
+	"github.com/uter-ai/uter/pkg/testdb"
 	relaycommon "github.com/uter-ai/uter/relay/common"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	"github.com/uter-ai/uter/types"
@@ -83,6 +84,7 @@ func TestMain(m *testing.M) {
 
 func truncate(t *testing.T) {
 	t.Helper()
+	testdb.RequireDisposable(t, model.DB, model.LOG_DB)
 	t.Cleanup(func() {
 		model.DB.Exec("DELETE FROM tasks")
 		model.DB.Exec("DELETE FROM users")

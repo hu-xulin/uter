@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"gorm.io/gorm"
 )
 
@@ -75,6 +76,7 @@ func TestMain(m *testing.M) {
 
 func truncateTables(t *testing.T) {
 	t.Helper()
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	t.Cleanup(func() {
 		DB.Exec("DELETE FROM tasks")
 		DB.Exec("DELETE FROM auth_flows")

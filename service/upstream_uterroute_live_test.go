@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/testdb"
 )
 
 // Pulls the real public Uter Route pricing document into the isolated
@@ -24,7 +25,7 @@ func TestPullUterRouteUpstreamLive(t *testing.T) {
 	_ = godotenv.Load("../.env")
 	absDB, err := os.Getwd()
 	require.NoError(t, err)
-	require.NoError(t, os.Setenv("SQLITE_PATH", absDB+"/../one-api.db"))
+	require.NoError(t, os.Setenv("SQLITE_PATH", testdb.LiveDBForTest(t, absDB+"/../one-api.db")))
 	common.InitEnv()
 	require.NoError(t, model.InitDB())
 	model.InitOptionMap()

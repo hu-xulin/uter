@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"gorm.io/gorm"
 )
 
@@ -601,6 +602,7 @@ func TestValidateAuthSessionWithTxChecksAccessTokenIdentity(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			testdb.RequireDisposable(t, DB, LOG_DB)
 			require.NoError(t, DB.Exec("DELETE FROM user_access_tokens").Error)
 			require.NoError(t, DB.Exec("DELETE FROM users").Error)
 			user := createAccessTokenTestUser(t, "token-identity-user")

@@ -40,6 +40,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"github.com/uter-ai/uter/service"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 )
@@ -53,7 +54,7 @@ func TestDumpPricingPayload(t *testing.T) {
 	if os.Getenv("SQLITE_PATH") == "" {
 		abs, err := os.Getwd()
 		require.NoError(t, err)
-		require.NoError(t, os.Setenv("SQLITE_PATH", abs+"/../one-api.db"))
+		require.NoError(t, os.Setenv("SQLITE_PATH", testdb.LiveDBForTest(t, abs+"/../one-api.db")))
 	}
 	ratio_setting.InitRatioSettings()
 	require.NoError(t, model.InitDB(), "初始化数据库失败")

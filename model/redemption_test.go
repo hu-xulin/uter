@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"gorm.io/gorm"
 )
 
@@ -103,6 +104,7 @@ func TestSearchRedemptionsFiltersAndPaginates(t *testing.T) {
 
 func setupRedeemFixture(t *testing.T, quota int) (userId int, key string) {
 	t.Helper()
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	require.NoError(t, DB.AutoMigrate(&Redemption{}))
 	require.NoError(t, DB.Session(&gorm.Session{AllowGlobalUpdate: true}).Unscoped().Delete(&Redemption{}).Error)
 	t.Cleanup(func() {

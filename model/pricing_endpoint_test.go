@@ -9,11 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 func resetPricingEndpointTestTables(t *testing.T) {
 	t.Helper()
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	originalMemoryCacheEnabled := common.MemoryCacheEnabled
 	common.MemoryCacheEnabled = true
 	require.NoError(t, DB.AutoMigrate(&Channel{}, &Ability{}, &Model{}, &Vendor{}))

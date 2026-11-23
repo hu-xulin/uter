@@ -23,6 +23,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/pkg/testdb"
 )
 
 // prepareEnsureModelRowsDB 为 EnsureModelRows 准备最小表结构。
@@ -33,6 +34,7 @@ import (
 func prepareEnsureModelRowsDB(t *testing.T) {
 	t.Helper()
 	require.NoError(t, DB.AutoMigrate(&Model{}, &Vendor{}, &Option{}))
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	t.Cleanup(func() {
 		DB.Exec("DELETE FROM models")
 		DB.Exec("DELETE FROM vendors")

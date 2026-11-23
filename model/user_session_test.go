@@ -14,6 +14,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,7 @@ func (setMiniRedisTimeOnEvalHook) AfterProcessPipeline(context.Context, []redis.
 
 func setupUserSessionTest(t *testing.T) {
 	t.Helper()
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	require.NoError(t, DB.AutoMigrate(&User{}, &UserSession{}))
 	require.NoError(t, DB.Exec("DELETE FROM user_sessions").Error)
 	oldRedisEnabled := common.RedisEnabled

@@ -12,6 +12,7 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/testdb"
 	"github.com/uter-ai/uter/service"
 )
 
@@ -29,7 +30,7 @@ func TestBailianSyncAfterCreateLive(t *testing.T) {
 	if liveDB == "" {
 		liveDB = absDB + "/../one-api.db"
 	}
-	require.NoError(t, os.Setenv("SQLITE_PATH", liveDB))
+	require.NoError(t, os.Setenv("SQLITE_PATH", testdb.LiveDBForTest(t, liveDB)))
 	common.InitEnv()
 	require.NoError(t, model.InitDB())
 	model.InitOptionMap()

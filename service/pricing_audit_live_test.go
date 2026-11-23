@@ -16,13 +16,14 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	billingexpr "github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/pkg/testdb"
 )
 
 func auditInit(t *testing.T) {
 	t.Helper()
 	_ = godotenv.Load("../.env")
 	abs, _ := os.Getwd()
-	require.NoError(t, os.Setenv("SQLITE_PATH", abs+"/../one-api.db"))
+	require.NoError(t, os.Setenv("SQLITE_PATH", testdb.LiveDBForTest(t, abs+"/../one-api.db")))
 	common.InitEnv()
 	require.NoError(t, model.InitDB())
 	model.InitOptionMap()
@@ -211,7 +212,7 @@ func TestAuditUterAPILive(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	payload, err := fetchUterAPIPricingPayload(ctx, uterapiPricingURL, "")
+	payload, err := fetchUterAPIPricingPayload(ctx, uterapiPricingURL(), "")
 	require.NoError(t, err)
 	quota := genericQuotaPerUnit(GenericPricingEntry{}, payload)
 	models := GenericModelNames(payload.Data)

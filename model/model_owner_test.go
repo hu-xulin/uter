@@ -8,10 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/pkg/testdb"
 )
 
 func clearPreferredOwnerTables(t *testing.T) {
 	t.Helper()
+	testdb.RequireDisposable(t, DB, LOG_DB)
 	require.NoError(t, DB.Exec("DELETE FROM abilities").Error)
 	require.NoError(t, DB.Exec("DELETE FROM channels").Error)
 }
