@@ -219,7 +219,7 @@ function scanAdr() {
     const text = readText(abs);
     const fm = parseFrontmatter(text);
     const titleMatch = text.match(/^#\s+(.+)$/m);
-    const formal = Boolean((fm && /^ADR-/i.test(fm.id || '')) || rel.startsWith('docs/adr/'));
+    const formal = Boolean(rel.startsWith('docs/adr/') && fm && /^ADR-\d{4}$/i.test(fm.id || ''));
     let mtime = null;
     try { mtime = fs.statSync(abs).mtime.toISOString(); } catch { mtime = null; }
     documents.push({

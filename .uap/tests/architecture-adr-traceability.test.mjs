@@ -36,6 +36,12 @@ test('architecture index refresh excludes historical reports and preserves curre
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const inventory = JSON.parse(readFileSync(path.join(root, '.uap/state/adr-inventory.json'), 'utf8'));
   assert.equal(inventory.generated_for_head, gitHead());
+  const formalAdrs = inventory.documents.filter((d) => d.formal_adr);
+  assert.equal(inventory.formal_adr_count, formalAdrs.length);
+  assert.ok(formalAdrs.every((d) => d.scope === 'adr' && d.has_frontmatter && /^ADR-\d{4}$/i.test(d.id)));
+  const adrIndex = inventory.documents.find((d) => d.path === 'docs/adr/README.md');
+  assert.ok(adrIndex, 'ADR index must be included in the inventory');
+  assert.equal(adrIndex.formal_adr, false, 'README is an index, not a formal ADR record');
   const legacyPath = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
   assert.ok(inventory.documents.some((d) => d.path === 'docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md'));
   assert.equal(inventory.documents.some((d) => d.path.startsWith('.uap/reports/') || d.path.startsWith('.uap/evidence/') || d.path.startsWith('.uap/state/')), false);
