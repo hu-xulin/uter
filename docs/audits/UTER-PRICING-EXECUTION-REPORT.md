@@ -223,6 +223,36 @@ reserved word `key` unquoted in raw SQL, so every MySQL start logged
 second MySQL start wrote exactly one marker row and logged no SQL error. Both
 temporary database servers were stopped after the matrix.
 
+## DreamRouter/UterRoute channel-price correction (2026-11-23 21:13)
+
+Channels 63–66 had been populated by the generic New API sync with provider
+`newapi-compatible`. That path has no model-group discount context, so the
+undiscounted expression price was written into `channel_price`: the official
+price was presented as the channel price and the real discounted channel price
+was missing.
+
+The fix:
+
+- Generic sync now routes every UterRoute host channel to
+  `UterRouteChannelPricingRecords`; it no longer writes generic New API price
+  rows for those channels.
+- Discount selection ignores unstable `enable_groups` order and deterministically
+  chooses the lowest positive published model-group ratio.
+- 332 erroneous `newapi-compatible` rows were deleted after backing up the
+  database to `/tmp/one-api.before-uterroute-fix.db`.
+- Channels 61, 63, 64, 65 and 66 were re-synced. Each now has 83 UterRoute rows
+  with both official and channel prices.
+- `claude-fable-5` is consistent across all five channels: official `$10/$50`,
+  channel `$6/$30`, Uter sale `$6.6/$33`.
+
+Tests:
+
+- `TestGenericSyncPrunesUterRouteModelsWithoutVendor` now asserts the provider
+  route and `discount_model_group=claude`.
+- `TestUterRouteDiscountSelectionIgnoresEnableGroupOrder` proves both group
+  orderings select `claude` at 0.6.
+- `GOWORK=off go test -count=1 ./service` and `make test`: exit 0.
+
 ## Historical data snapshot
 
 - 711 channel pricing rows total.
