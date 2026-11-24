@@ -478,3 +478,27 @@ test('R28 fingerprint drift diagnostics identify bound source paths and separate
   ]);
   assert.equal(JSON.stringify(result).includes('file contents'), false);
 });
+
+test('R29 [静态守卫] 渠道删除必须在同一事务内级联清理所有 channel_id 引用表', () => {
+  const helper = src('model/channel_cascade_delete.go');
+  const channel = src('model/channel.go');
+  // All production channel-referencing tables are enumerated (no silent omissions).
+  for (const table of [
+    'abilities', 'billing_cost_breakdowns', 'billing_financial_ledgers',
+    'billing_price_snapshots', 'channel_model_pricing', 'channel_pricing_history',
+    'channel_pricing_review', 'channel_sync_states', 'logs',
+    'midjourney_refund_operations', 'quota_data', 'tasks',
+    'upstream_billing_invoices',
+  ]) {
+    assert.ok(helper.includes(`"${table}"`), `cascade table list missing ${table}`);
+  }
+  assert.match(helper, /midjourneys.*billing_channel_id|"billing_channel_id"/);
+  // Sentinel 0 must never be purged (it means "no channel" in ledger/quota rows).
+  assert.match(helper, /if id > 0/);
+  // All three deletion entry points must call the cascade helper.
+  assert.match(channel, /func \(channel \*Channel\) Delete\(\)[\s\S]{0,400}deleteChannelCascadeRows\(tx/);
+  assert.match(channel, /func BatchDeleteChannels[\s\S]{0,1200}deleteChannelCascadeRows\(tx, chunk\)/);
+  assert.match(channel, /func DeleteDisabledChannel[\s\S]{0,1600}deleteChannelCascadeRows\(tx, ids\)/);
+  // Every entry point deletes the channel row inside the SAME transaction.
+  assert.match(channel, /DB\.Transaction\(func\(tx \*gorm\.DB\) error \{[\s\S]{0,300}tx\.Delete\(channel\)/);
+});

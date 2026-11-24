@@ -515,7 +515,7 @@ func BatchDeleteChannels(ids []int) (int64, error) {
 			return 0, result.Error
 		}
 		deletedCount += result.RowsAffected
-		if err := tx.Where("channel_id in (?)", chunk).Delete(&Ability{}).Error; err != nil {
+		if err := deleteChannelCascadeRows(tx, chunk); err != nil {
 			tx.Rollback()
 			return 0, err
 		}
@@ -648,13 +648,15 @@ func (channel *Channel) UpdateBalance(balance float64) {
 
 func (channel *Channel) Delete() error {
 	defer BumpSyncTopic(SyncTopicChannels)
-	var err error
-	err = DB.Delete(channel).Error
-	if err != nil {
-		return err
-	}
-	err = channel.DeleteAbilities()
-	return err
+	// Delete the channel row and every dependent row in ONE transaction. A
+	// channel removed without its pricing/sync/quota/log rows left 10k+ orphan
+	// records behind (see model/channel_cascade_delete.go).
+	return DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(channel).Error; err != nil {
+			return err
+		}
+		return deleteChannelCascadeRows(tx, []int{channel.Id})
+	})
 }
 
 var channelStatusLock sync.Mutex
@@ -1030,8 +1032,27 @@ func DeleteDisabledChannel() (int64, error) {
 	// A write to the channels bumps its sync topic, so every node reloads
 	// the channel cache within seconds.
 	defer BumpSyncTopic(SyncTopicChannels)
-	result := DB.Where("status = ? or status = ?", common.ChannelStatusAutoDisabled, common.ChannelStatusManuallyDisabled).Delete(&Channel{})
-	return result.RowsAffected, result.Error
+	// Collect the ids first so their dependent rows can be purged in the same
+	// transaction as the channel deletion.
+	var ids []int
+	if err := DB.Model(&Channel{}).
+		Where("status = ? or status = ?", common.ChannelStatusAutoDisabled, common.ChannelStatusManuallyDisabled).
+		Pluck("id", &ids).Error; err != nil {
+		return 0, err
+	}
+	if len(ids) == 0 {
+		return 0, nil
+	}
+	var deletedCount int64
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		result := tx.Where("id IN (?)", ids).Delete(&Channel{})
+		if result.Error != nil {
+			return result.Error
+		}
+		deletedCount = result.RowsAffected
+		return deleteChannelCascadeRows(tx, ids)
+	})
+	return deletedCount, err
 }
 
 func GetPaginatedChannelTags(query *gorm.DB, offset int, limit int) ([]*string, error) {
