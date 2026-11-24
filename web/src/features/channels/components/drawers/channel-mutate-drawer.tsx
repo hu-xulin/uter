@@ -51,7 +51,11 @@ import {
   useCallback,
   useRef,
 } from 'react'
-import { type SubmitErrorHandler, useForm } from 'react-hook-form'
+import {
+  type Resolver,
+  type SubmitErrorHandler,
+  useForm,
+} from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -143,6 +147,7 @@ import {
   getChannelUpstreamReconciliation,
   getGroups,
   getPrefillGroups,
+  getUterAPIPricingGroups,
   getTaskPluginOptions,
   getUterRouteEndpoint,
   syncUterRouteUpstream,
@@ -353,6 +358,8 @@ const SENSITIVE_FORM_FIELDS = [
   'upstream_model_update_ignored_models',
 ] satisfies (keyof ChannelFormValues)[]
 
+const baseChannelFormResolver = zodResolver(channelFormSchema)
+
 function parseSettingsRecord(
   settings: string | undefined
 ): Record<string, unknown> {
@@ -432,36 +439,6 @@ function SubHeading(props: {
 
 /** Stable empty list so memoized consumers do not re-run on every render. */
 const NO_UPSTREAM_MODELS: string[] = []
-
-const UterAPI_GROUP_SLOTS = [
-  {
-    name: 'Uter.api-claude-经济',
-    label: 'Claude Economy',
-    group: 'Claude-kiro',
-  },
-  {
-    name: 'Uter.api-claude-标准',
-    label: 'Claude Standard',
-    group: 'Claude-max',
-  },
-  {
-    name: 'Uter.api-claude-高级',
-    label: 'Claude Advanced',
-    group: 'Claude-稳定',
-  },
-  {
-    name: 'Uter.api-claude-企业',
-    label: 'Claude Enterprise',
-    group: 'Claude-企业稳定-Ultra-毫秒响应',
-  },
-  { name: 'Uter.api-codex-标准', label: 'Codex Standard', group: 'Codex Pro' },
-  { name: 'Uter.api-codex-高级', label: 'Codex Advanced', group: 'Codex-高级' },
-  {
-    name: 'Uter.api-codex-企业',
-    label: 'Codex Enterprise',
-    group: 'Codex-企业稳定-专线毫秒响应',
-  },
-] as const
 
 // One API key per line; blank lines and duplicates are ignored.
 function splitKeyLines(raw: string): string[] {
@@ -591,6 +568,9 @@ export function ChannelMutateDrawer({
   }, [open, isEditing])
   const [providerTarget, setProviderTarget] =
     useState<ChannelProviderTarget | null>(null)
+  const managedCredentialsRef = useRef(false)
+  managedCredentialsRef.current =
+    providerTarget?.kind === 'uterapi' && !isEditing
   const [uterapiGroupName, setUterapiGroupName] = useState('')
   const [uterapiKeysText, setUterapiKeysText] = useState('')
   const [choosingProvider, setChoosingProvider] = useState(true)
@@ -707,9 +687,29 @@ export function ChannelMutateDrawer({
   const isMultiKeyChannel =
     isEditing && channelData?.data?.channel_info?.is_multi_key === true
 
+  // Uter.api owns its gateway address and credentials in server-side options.
+  // The shared schema still requires base_url/key for generic New API channels,
+  // so strip only those two issues while this managed create flow is active.
+  const channelFormResolver = useCallback<Resolver<ChannelFormValues>>(
+    async (values, context, options) => {
+      const result = await baseChannelFormResolver(values, context, options)
+      if (!managedCredentialsRef.current || !result.errors) {
+        return result
+      }
+      const errors = { ...result.errors }
+      delete errors.key
+      delete errors.base_url
+      if (Object.keys(errors).length === 0) {
+        return { values, errors: {} }
+      }
+      return { values: {}, errors }
+    },
+    []
+  )
+
   // Form setup
   const form = useForm<ChannelFormValues>({
-    resolver: zodResolver(channelFormSchema),
+    resolver: channelFormResolver,
     defaultValues: CHANNEL_FORM_DEFAULT_VALUES,
   })
 
@@ -738,6 +738,29 @@ export function ChannelMutateDrawer({
   const currentTaskExtendPluginKeys = formValues.task_extend_plugin_keys
   const currentKey = formValues.key
   const isUterApiTarget = providerTarget?.kind === 'uterapi'
+  // Uter.api billing groups are operational data: the gateway can add, rename
+  // or retire groups without a code release. Read them from the same upstream
+  // catalogue the create flow validates against, never from a hard-coded list.
+  const uterapiGroupsQuery = useQuery({
+    queryKey: ['uterapi-pricing-groups'],
+    queryFn: async () => {
+      const response = requireServerSuccess(await getUterAPIPricingGroups())
+      return response.data?.groups ?? []
+    },
+    enabled: open && !isEditing && isUterApiTarget,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const uterapiGroupSlots = useMemo(
+    () =>
+      (uterapiGroupsQuery.data ?? []).map((group) => ({
+        name: `Uter.api-${group.key}`,
+        label: group.name || group.key,
+        group: group.key,
+      })),
+    [uterapiGroupsQuery.data]
+  )
   const isUterRouteTarget = providerTarget?.kind === 'uterroute'
   const isBailianProvider = currentType === 17
   const uterRouteEndpointQuery = useQuery({
@@ -1070,7 +1093,10 @@ export function ChannelMutateDrawer({
       if (target.kind === 'uterapi') {
         if (isEditing) return
         form.setValue('type', CHANNEL_TYPE_NEW_API, { shouldDirty: true })
-        form.setValue('base_url', 'https://api.uter.ai', {
+        // Uter.api resolves its gateway from the server-side option. Leaving
+        // the form address empty prevents a stale hard-coded host from being
+        // used by generic model discovery or saved into the channel.
+        form.setValue('base_url', '', {
           shouldDirty: true,
           shouldValidate: true,
         })
@@ -1078,6 +1104,9 @@ export function ChannelMutateDrawer({
         form.setValue('branding_display_name', 'Uter.api')
         form.setValue('models', '')
         form.setValue('key', '')
+        // The base_url validation above runs before providerTarget is updated,
+        // so clear its transient error now that managed mode is active.
+        form.clearErrors(['key', 'base_url'])
         setUterapiGroupName('')
         setUterapiKeysText('')
         setProviderTarget(target)
@@ -2276,7 +2305,7 @@ export function ChannelMutateDrawer({
       if (!isEditing && (!providerTarget || !canEditSensitive)) return
 
       if (!isEditing && providerTarget?.kind === 'uterapi') {
-        const slot = UterAPI_GROUP_SLOTS.find(
+        const slot = uterapiGroupSlots.find(
           (candidate) => candidate.name === uterapiGroupName
         )
         const keys = splitKeyLines(uterapiKeysText)
@@ -2476,6 +2505,7 @@ export function ChannelMutateDrawer({
       pricingRows,
       uterapiGroupName,
       uterapiKeysText,
+      uterapiGroupSlots,
       openAdvancedBlock,
       t,
     ]
@@ -5469,9 +5499,9 @@ export function ChannelMutateDrawer({
                       onValueChange={(value) =>
                         setUterapiGroupName(value ?? '')
                       }
-                      items={UterAPI_GROUP_SLOTS.map((slot) => ({
+                      items={uterapiGroupSlots.map((slot) => ({
                         value: slot.name,
-                        label: t(slot.label),
+                        label: slot.label,
                       }))}
                     >
                       <SelectTrigger aria-label={t('Group')}>
@@ -5479,9 +5509,9 @@ export function ChannelMutateDrawer({
                       </SelectTrigger>
                       <SelectContent alignItemWithTrigger={false}>
                         <SelectGroup>
-                          {UterAPI_GROUP_SLOTS.map((slot) => (
+                          {uterapiGroupSlots.map((slot) => (
                             <SelectItem key={slot.name} value={slot.name}>
-                              {t(slot.label)}
+                              {slot.label}
                             </SelectItem>
                           ))}
                         </SelectGroup>
@@ -6017,7 +6047,7 @@ export function ChannelMutateDrawer({
     },
   ]
 
-  const selectedUterapiSlot = UterAPI_GROUP_SLOTS.find(
+  const selectedUterapiSlot = uterapiGroupSlots.find(
     (slot) => slot.name === uterapiGroupName
   )
   const uterapiKeyCount = splitKeyLines(uterapiKeysText).length
@@ -6062,7 +6092,7 @@ export function ChannelMutateDrawer({
           <div className='flex items-center justify-between gap-2 text-sm'>
             <span className='font-medium'>
               {selectedUterapiSlot
-                ? t(selectedUterapiSlot.label)
+                ? selectedUterapiSlot.label
                 : t('No group chosen')}
             </span>
             {uterapiKeyCount > 0 ? (

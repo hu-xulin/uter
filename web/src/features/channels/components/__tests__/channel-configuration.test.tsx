@@ -188,6 +188,21 @@ beforeEach(() => {
     if (url === '/api/group/') {
       return { data: { success: true, data: ['default', 'premium'] } }
     }
+    if (url === '/api/channel/uterapi/groups') {
+      return {
+        data: {
+          success: true,
+          data: {
+            groups: [
+              { key: 'Claude-kiro', name: 'Claude Economy', ratio: 0.9 },
+              { key: 'Claude-max', name: 'Claude Standard', ratio: 2.5 },
+              { key: 'Claude-稳定', name: 'Claude Advanced', ratio: 3.5 },
+              { key: 'Codex Pro', name: 'Codex Standard', ratio: 0.4 },
+            ],
+          },
+        },
+      }
+    }
     if (url === '/api/prefill_group') {
       return { data: { success: true, data: [] } }
     }
@@ -1839,6 +1854,10 @@ test('Uter.api connection picks one group and one key box', async () => {
   )
 
   await user.click(screen.getByRole('combobox', { name: 'Group' }))
+  await screen.findByRole('option', { name: 'Claude Advanced' })
+  // The retired hard-coded group must not be offered: upstream enable_groups
+  // no longer publishes it, so creating from it fails model authorization.
+  expect(screen.queryByRole('option', { name: 'Claude Enterprise' })).toBeNull()
   await user.click(screen.getByRole('option', { name: 'Claude Advanced' }))
   fireEvent.change(screen.getByLabelText('API keys'), {
     target: { value: 'sk-one' },
@@ -1857,7 +1876,9 @@ test('Uter.api mirrors its pasted key into the form so fetching models never rep
   )
 
   await user.click(screen.getByRole('combobox', { name: 'Group' }))
-  await user.click(screen.getByRole('option', { name: 'Claude Economy' }))
+  await user.click(
+    await screen.findByRole('option', { name: 'Claude Economy' })
+  )
   fireEvent.change(screen.getByLabelText('API keys'), {
     target: { value: 'sk-one' },
   })

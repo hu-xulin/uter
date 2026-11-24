@@ -183,6 +183,64 @@ func uterapiPricingEndpointFor(baseURL string) (string, error) {
 	return parsed.String() + "/api/pricing", nil
 }
 
+// AuthorizedUterAPIModels intersects the models a key can actually call with
+// the models the selected upstream billing group is allowed to use. Group
+// membership comes from each pricing entry's enable_groups — never from model
+// name prefixes. A model whose group membership cannot be confirmed is excluded
+// so it cannot silently inherit another group's multiplier.
+func AuthorizedUterAPIModels(ctx context.Context, baseURL, group string, keys []string, discovered []string) ([]string, error) {
+	group = strings.TrimSpace(group)
+	if group == "" {
+		return nil, errors.New("billing group is required")
+	}
+	var payload *GenericPricingPayload
+	var lastErr error
+	for _, key := range keys {
+		key = strings.TrimSpace(key)
+		if key == "" {
+			continue
+		}
+		payload, lastErr = fetchUterAPIPricingPayload(ctx, baseURL, key)
+		if lastErr == nil && payload != nil {
+			break
+		}
+	}
+	if payload == nil {
+		if lastErr == nil {
+			lastErr = errors.New("Uter.api pricing is unavailable")
+		}
+		return nil, lastErr
+	}
+	wanted := make(map[string]bool, len(discovered))
+	for _, name := range discovered {
+		if name = strings.TrimSpace(name); name != "" {
+			wanted[name] = true
+		}
+	}
+	allowed := make(map[string]bool)
+	for _, entry := range payload.Data {
+		name := strings.TrimSpace(entry.ModelName)
+		if name == "" || !wanted[name] {
+			continue
+		}
+		// No enable_groups means upstream did not publish group membership.
+		// Fail closed: the model must not receive this group's ratio without
+		// evidence that the group may call it.
+		for _, enabled := range entry.EnableGroups {
+			if strings.EqualFold(strings.TrimSpace(enabled), group) {
+				allowed[name] = true
+				break
+			}
+		}
+	}
+	out := make([]string, 0, len(allowed))
+	for name := range allowed {
+		out = append(out, name)
+	}
+	sort.Strings(out)
+	return out, nil
+}
+
 // SyncUterAPIChannelPricing syncs one channel's prices and applies the key's
 // group multiplier. The channel price is the upstream expression times the
 // group ratio, and the same expression becomes the unverified purchase cost.
@@ -220,7 +278,12 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 			groupName = strings.TrimSpace(display.Name)
 		}
 	}
-	records := GenericChannelPricingRecords(channel.Id, channel.GetModels(), payload.Data, time.Now().UTC())
+	// Uter.api 是独立供应商，不能再写成通用的 newapi-compatible。
+	// UpsertChannelOfficialPricing 会按渠道+模型身份接管旧 Provider 的行，
+	// 避免同一模型出现两个身份；人工销售价不会被自动同步覆盖。
+	records := GenericChannelPricingRecords(
+		channel.Id, channel.GetModels(), payload.Data, time.Now().UTC(), "uterapi",
+	)
 	if len(records) == 0 {
 		return 0, ratio, groupName, errors.New("no pricing entries matched the channel models")
 	}

@@ -459,6 +459,14 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		return normalizeModelNames(models), nil
 	}
 
+	// Uter.api is a managed gateway: its catalogue comes from the configured
+	// upstream endpoint, never from a base URL typed into the drawer. The
+	// create flow and the "Sync model information" button must resolve models
+	// through the same key-scoped /v1/models endpoint.
+	if channel.Type == constant.ChannelTypeUterAPI {
+		return fetchUterAPIModelIDs(channel)
+	}
+
 	// Uter Route hides vendor-less entries on its own pricing page while the
 	// raw /v1/models list still returns them. Treat the pricing catalogue as
 	// the authoritative model list so unpriced and hidden models never reach
@@ -541,6 +549,33 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		return item.ID
 	})
 	return normalizeModelNames(ids), nil
+}
+
+// fetchUterAPIModelIDs always discovers Uter.api models at the operational
+// upstream configured for this deployment. A stale form value must not be able
+// to send the key to an obsolete or attacker-supplied host. Existing channels
+// remain usable when the option is unset by falling back to their saved base.
+func fetchUterAPIModelIDs(channel *model.Channel) ([]string, error) {
+	if channel == nil {
+		return nil, errors.New("Uter.api channel is required")
+	}
+	base := strings.TrimSpace(uterapiBaseURL())
+	if base == "" {
+		base = strings.TrimSpace(channel.GetBaseURL())
+	}
+	if base == "" {
+		return nil, errors.New("Uter.api upstream endpoint is not configured")
+	}
+	key, _, apiErr := channel.GetNextEnabledKey()
+	if apiErr != nil {
+		return nil, fmt.Errorf("failed to get channel key: %w", apiErr)
+	}
+	key = strings.TrimSpace(key)
+	models, err := service.OpenAIModelIDs(context.Background(), base, key)
+	if err != nil {
+		return nil, sanitizeFetchModelsError(err, key)
+	}
+	return normalizeModelNames(models), nil
 }
 
 func fetchAdvancedCustomUpstreamModelIDs(channel *model.Channel, baseURL string) ([]string, error) {

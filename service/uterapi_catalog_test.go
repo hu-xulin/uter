@@ -62,6 +62,51 @@ func TestFetchUterAPIPricingPayloadSendsChannelKey(t *testing.T) {
 	assert.InDelta(t, 0.5, payload.GroupRatio["Codex"], 1e-9)
 }
 
+// 分组归属来自上游 enable_groups，不能由模型名称推断。
+func TestAuthorizedUterAPIModelsUsesEnableGroups(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"success":true,"data":[
+			{"model_name":"claude-a","enable_groups":["Claude-max"],"billing_mode":"tiered_expr","billing_expr":"p"},
+			{"model_name":"gpt-a","enable_groups":["Codex"],"billing_mode":"tiered_expr","billing_expr":"p"},
+			{"model_name":"mixed","enable_groups":["Claude-max","Codex"],"billing_mode":"tiered_expr","billing_expr":"p"}
+		],"group_ratio":{"Claude-max":2,"Codex":0.5}}`))
+	}))
+	t.Cleanup(server.Close)
+
+	allowed, err := AuthorizedUterAPIModels(
+		context.Background(), server.URL, "Claude-max", []string{"key"},
+		[]string{"claude-a", "gpt-a", "mixed"},
+	)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"claude-a", "mixed"}, allowed)
+
+	// 名称像 claude 但没有声明该分组的模型不得混入。
+	allowed, err = AuthorizedUterAPIModels(
+		context.Background(), server.URL, "Codex", []string{"key"},
+		[]string{"claude-a", "gpt-a", "mixed"},
+	)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"gpt-a", "mixed"}, allowed)
+}
+
+// 上游没有发布 enable_groups 时不能仅凭模型名称放行。
+func TestAuthorizedUterAPIModelsFailsClosedWithoutGroupMetadata(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		_, _ = writer.Write([]byte(`{"success":true,"data":[
+			{"model_name":"claude-a","billing_mode":"tiered_expr","billing_expr":"p"}
+		],"group_ratio":{"Claude-max":2}}`))
+	}))
+	t.Cleanup(server.Close)
+
+	allowed, err := AuthorizedUterAPIModels(
+		context.Background(), server.URL, "Claude-max", []string{"key"}, []string{"claude-a"},
+	)
+	require.NoError(t, err)
+	assert.Empty(t, allowed)
+}
+
 func TestUterAPIProviderAdapterIsRegistered(t *testing.T) {
 	server := uterapiPricingServer(t)
 	payload, err := FetchUpstreamCatalog(context.Background(), "uterapi", UpstreamFetchConfig{
@@ -104,8 +149,8 @@ func TestUterAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 	var view model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(record.NormalizedPricing, &view))
 	require.NotNil(t, view.ChannelPrice)
-	assert.InDelta(t, 5, *view.ChannelPrice.InputPerMillionUSD, 1e-9)
-	assert.InDelta(t, 25, *view.ChannelPrice.OutputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 5, view.ChannelPrice.InputPerMillionUSD.Float64(), 1e-9)
+	assert.InDelta(t, 25, view.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-9)
 
 	var internal model.ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))

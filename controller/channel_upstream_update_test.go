@@ -675,3 +675,30 @@ func TestDetectAllChannelUpstreamModelUpdatesRejectsExistingActiveTask(t *testin
 	require.Contains(t, recorder.Body.String(), existing.TaskID)
 	require.Contains(t, recorder.Body.String(), "A model update task is already running or queued")
 }
+
+func TestFetchUterAPIModelsIgnoresStaleFormBaseURL(t *testing.T) {
+	requests := make(chan string, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests <- r.URL.Path
+		require.Equal(t, "Bearer sk-uter", r.Header.Get("Authorization"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":[{"id":"claude-sonnet"},{"id":"gpt-5"}]}`))
+	}))
+	defer server.Close()
+
+	previous := uterapiBaseURLForTest
+	uterapiBaseURLForTest = server.URL
+	t.Cleanup(func() { uterapiBaseURLForTest = previous })
+
+	staleBase := "https://api.uter.ai"
+	channel := &model.Channel{
+		Type:    constant.ChannelTypeUterAPI,
+		Key:     "sk-uter",
+		BaseURL: &staleBase,
+	}
+
+	models, err := fetchChannelUpstreamModelIDs(channel)
+	require.NoError(t, err)
+	require.Equal(t, []string{"claude-sonnet", "gpt-5"}, models)
+	require.Equal(t, "/v1/models", <-requests)
+}

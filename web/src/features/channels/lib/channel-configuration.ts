@@ -239,7 +239,11 @@ export function getChannelConfigurationState(
       (issue) =>
         getChannelConfigurationSection(String(issue.path[0])) ===
           'connection' &&
-        !(managedCredentials && String(issue.path[0]) === 'key')
+        !(
+          managedCredentials &&
+          (String(issue.path[0]) === 'key' ||
+            String(issue.path[0]) === 'base_url')
+        )
     )
   if (
     !connectionInvalid &&
@@ -249,11 +253,13 @@ export function getChannelConfigurationState(
   ) {
     sections.connection = 'ready'
   }
-  if (
-    Object.keys(errors).some(
-      (field) => getChannelConfigurationSection(field) === 'connection'
-    )
-  ) {
+  const hasConnectionFieldError = Object.keys(errors).some((field) => {
+    if (managedCredentials && (field === 'key' || field === 'base_url')) {
+      return false
+    }
+    return getChannelConfigurationSection(field) === 'connection'
+  })
+  if (hasConnectionFieldError) {
     sections.connection = 'error'
   }
   if (sections.models === 'idle' && values.models.trim()) {
