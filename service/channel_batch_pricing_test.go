@@ -116,6 +116,30 @@ func TestChannelPricingScheduleEffectiveIntervals(t *testing.T) {
 	require.Equal(t, 30, channel)
 }
 
+func TestNormalizeChannelPricingSchedule(t *testing.T) {
+	// A channel that never saved a cadence is read back as a zero-value
+	// struct; enabling it used to fail basis/mode validation.
+	normalized := normalizeChannelPricingSchedule(ChannelPricingSchedule{Enabled: true})
+	require.Equal(t, BatchPricingBasisOfficial, normalized.Basis)
+	require.Equal(t, BatchPricingModeMultiply, normalized.Mode)
+	require.Equal(t, 0.6, normalized.Value)
+	require.Equal(t, "auto", normalized.ReviewMode)
+	require.True(t, normalized.Enabled)
+
+	// Explicit values must survive normalization, including a zero fixed price.
+	explicit := normalizeChannelPricingSchedule(ChannelPricingSchedule{
+		Enabled:    true,
+		Basis:      BatchPricingBasisChannel,
+		Mode:       BatchPricingModeFixed,
+		Value:      0,
+		ReviewMode: "manual",
+	})
+	require.Equal(t, BatchPricingBasisChannel, explicit.Basis)
+	require.Equal(t, BatchPricingModeFixed, explicit.Mode)
+	require.Equal(t, 0.0, explicit.Value)
+	require.Equal(t, "manual", explicit.ReviewMode)
+}
+
 func TestClassifyModelCategory(t *testing.T) {
 	cases := map[string]string{
 		"gpt-5":             "text",

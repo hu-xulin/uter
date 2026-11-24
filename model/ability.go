@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"slices"
 	"sort"
 	"strings"
@@ -38,9 +39,12 @@ type AbilityWithChannel struct {
 
 func GetAllEnableAbilityWithChannels() ([]AbilityWithChannel, error) {
 	var abilities []AbilityWithChannel
+	// The join is intentionally inner: an ability whose channel row no longer
+	// exists is orphaned data and must not make that deleted channel's models
+	// appear in the pricing or model metadata.
 	err := DB.Table("abilities").
 		Select("abilities.*, channels.type as channel_type, channels.name as channel_name, channels.status as channel_status").
-		Joins("left join channels on abilities.channel_id = channels.id").
+		Joins("join channels on abilities.channel_id = channels.id").
 		Where("abilities.enabled = ?", true).
 		Scan(&abilities).Error
 	return abilities, err
@@ -373,51 +377,30 @@ func FixAbility() (int, int, error) {
 	}
 	defer fixLock.Unlock()
 
-	// truncate abilities table
-	if common.UsingMainDatabase(common.DatabaseTypeSQLite) {
-		err := DB.Exec("DELETE FROM abilities").Error
-		if err != nil {
-			common.SysLog(common.LogText("Delete abilities failed: %s", err.Error()))
-			return 0, 0, err
+	// Rebuild inside one transaction. A mid-rebuild failure used to leave the
+	// abilities table truncated, which silently removed every channel from
+	// routing until an operator ran the repair again.
+	rebuilt := 0
+	err := DB.Transaction(func(tx *gorm.DB) error {
+		var channels []*Channel
+		if err := tx.Model(&Channel{}).Find(&channels).Error; err != nil {
+			return err
 		}
-	} else {
-		err := DB.Exec("TRUNCATE TABLE abilities").Error
-		if err != nil {
-			common.SysLog(common.LogText("Truncate abilities failed: %s", err.Error()))
-			return 0, 0, err
+		if err := tx.Session(&gorm.Session{AllowGlobalUpdate: true}).Delete(&Ability{}).Error; err != nil {
+			return err
 		}
-	}
-	var channels []*Channel
-	// Find all channels
-	err := DB.Model(&Channel{}).Find(&channels).Error
-	if err != nil {
-		return 0, 0, err
-	}
-	if len(channels) == 0 {
-		return 0, 0, nil
-	}
-	successCount := 0
-	failCount := 0
-	for _, chunk := range lo.Chunk(channels, 50) {
-		ids := lo.Map(chunk, func(c *Channel, _ int) int { return c.Id })
-		// Delete all abilities of this channel
-		err = DB.Where("channel_id IN ?", ids).Delete(&Ability{}).Error
-		if err != nil {
-			common.SysLog(common.LogText("Delete abilities failed: %s", err.Error()))
-			failCount += len(chunk)
-			continue
-		}
-		// Then add new abilities
-		for _, channel := range chunk {
-			err = channel.AddAbilities(nil)
-			if err != nil {
-				common.SysLog(common.LogText("Add abilities for channel %d failed: %s", channel.Id, err.Error()))
-				failCount++
-			} else {
-				successCount++
+		for _, channel := range channels {
+			if err := channel.AddAbilities(tx); err != nil {
+				return fmt.Errorf("add abilities for channel %d: %w", channel.Id, err)
 			}
+			rebuilt++
 		}
+		return nil
+	})
+	if err != nil {
+		common.SysLog(common.LogText("Fix abilities rolled back: %s", err.Error()))
+		return 0, 1, err
 	}
 	InitChannelCache()
-	return successCount, failCount, nil
+	return rebuilt, 0, nil
 }

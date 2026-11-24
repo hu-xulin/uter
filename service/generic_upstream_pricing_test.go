@@ -347,3 +347,190 @@ func TestMergeUpstreamHistoryKeepsNewestEntries(t *testing.T) {
 		merged.Entries[0].ModelID, merged.Entries[1].ModelID, merged.Entries[2].ModelID,
 	})
 }
+
+// Uter Route 与页面口径一致：无厂商模型的定价行会被删除，并从渠道模型列表移除。
+func TestGenericSyncPrunesUterRouteModelsWithoutVendor(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":true,
+			"group_ratio":{"claude":0.6},
+			"group_group_ratio":{"default":{"claude":0.6}},
+			"vendors":[{"id":3,"name":"Vendor"}],
+			"data":[
+			{"model_name":"visible-a","vendor_id":3,"quota_type":0,"model_ratio":1,"completion_ratio":2,"enable_groups":["claude"]},
+			{"model_name":"hidden-a","vendor_id":0,"quota_type":0,"model_ratio":37.5,"completion_ratio":1}
+		]}`))
+	}))
+	t.Cleanup(server.Close)
+	common.OptionMap[UterRouteUpstreamURLOption] = server.URL
+
+	base := server.URL
+	channel := &model.Channel{
+		Type: constant.ChannelTypeOpenAI, Name: "Uter Route", BaseURL: &base,
+		Key: "sk-test", Models: "visible-a,hidden-a", Group: "default", Status: 1,
+	}
+	require.NoError(t, db.Create(channel).Error)
+	require.NoError(t, db.Create(&model.ChannelModelPricing{
+		ChannelId: channel.Id, ModelName: "hidden-a", Provider: "uterroute", PricingStatus: model.ChannelPricingStatusConfigured,
+	}).Error)
+
+	written, _, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.NoError(t, err)
+	require.Equal(t, 1, written)
+
+	var stored model.Channel
+	require.NoError(t, db.First(&stored, channel.Id).Error)
+	assert.Equal(t, "visible-a", stored.Models)
+
+	var hiddenRows int64
+	require.NoError(t, db.Model(&model.ChannelModelPricing{}).
+		Where("channel_id = ? AND model_name = ?", channel.Id, "hidden-a").Count(&hiddenRows).Error)
+	assert.Zero(t, hiddenRows)
+
+	var visible model.ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ? AND model_name = ?", channel.Id, "visible-a").First(&visible).Error)
+	assert.Equal(t, "uterroute", visible.Provider)
+	assert.Contains(t, visible.NormalizedPricing, `"discount_ratio":0.6`)
+	assert.Contains(t, visible.NormalizedPricing, `"channel_price"`)
+}
+
+// Uter Route 渠道（type 65）即使 Base URL 指向白标中继主机，也必须走专用目录
+// 同步；此前的按主机判断让通用同步双写 provider=newapi-compatible 行，导致
+// 编辑渠道「已获取价格」每个模型出现两行（第二行官方价不可用）。
+func TestUterRouteChannelTypeReroutesGenericSyncToCatalog(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/pricing", r.URL.Path)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":true,"pricing_version":"t1","data":[
+			{"model_name":"m-a","vendor_id":1,"quota_type":0,"model_ratio":2.5,"completion_ratio":5}
+		],"vendors":[{"id":1,"name":"V"}],"group_ratio":{"VIP0":1},"usable_group":{"VIP0":""}}`))
+	}))
+	t.Cleanup(server.Close)
+
+	base := server.URL
+	channel := &model.Channel{Type: constant.ChannelTypeUterRoute, Name: "route", BaseURL: &base, Key: "sk-route", Models: "m-a", Group: "VIP0", Status: 1}
+	require.NoError(t, db.Create(channel).Error)
+	// A stale row left behind by the old host-blind generic sync.
+	require.NoError(t, db.Create(&model.ChannelModelPricing{
+		ChannelId: channel.Id, Provider: "newapi-compatible", ModelName: "m-a", Currency: "USD",
+		OfficialPricing: `{"model_name":"m-a"}`, PricingSource: "newapi:/api/pricing", PricingStatus: "configured",
+	}).Error)
+
+	written, models, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.NoError(t, err)
+	require.Equal(t, []string{"m-a"}, models)
+	require.GreaterOrEqual(t, written, 1)
+
+	var rows []model.ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ?", channel.Id).Find(&rows).Error)
+	require.NotEmpty(t, rows)
+	for _, row := range rows {
+		assert.Equal(t, "uterroute", row.Provider, "generic duplicate rows must be pruned for Uter Route channels")
+	}
+}
+
+// 收口：三类 Uter 自有渠道必须由同一判定识别，禁止 newapi 通用文档同步落行。
+func TestIsUterOwnedPricingChannelCoversAllDedicatedTypes(t *testing.T) {
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{
+		UterRouteUpstreamURLOption: "https://dreamrouter.test",
+		UterAPIUpstreamURLOption:   "https://api.uterapi.test",
+	}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+
+	// Dedicated types are authoritative regardless of host.
+	for _, channelType := range []int{
+		constant.ChannelTypeUter,
+		constant.ChannelTypeUterAPI,
+		constant.ChannelTypeUterRoute,
+	} {
+		assert.True(t, IsUterOwnedPricingChannel(channelType, "https://unrelated.example"),
+			"channel type %d must always be Uter-owned", channelType)
+	}
+	// Legacy channels are still caught by host.
+	assert.True(t, IsUterOwnedPricingChannel(constant.ChannelTypeOpenAI, "https://api.dreamrouter.test"))
+	assert.True(t, IsUterOwnedPricingChannel(constant.ChannelTypeNewAPI, "https://x.api.uterapi.test"))
+	// A genuine third-party channel stays on the generic sync.
+	assert.False(t, IsUterOwnedPricingChannel(constant.ChannelTypeOpenAI, "https://api.openai.com"))
+}
+
+// 收口：Uter.ai(type 60) 即使指向非 UterRoute 主机，通用同步也必须改道到
+// UterRoute catalog，绝不能写出 provider=newapi-compatible / source=newapi 的行。
+func TestUterAITypeNeverWritesGenericPricingRows(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"success":true,"pricing_version":"uter-1",
+			"group_ratio":{"default":1},"group_group_ratio":{"default":{"claude":0.6}},
+			"vendors":[{"id":3,"name":"Vendor"}],
+			"data":[{"model_name":"m-a","vendor_id":3,"quota_type":0,"model_ratio":1,"completion_ratio":2,"enable_groups":["claude"]}]}`))
+	}))
+	t.Cleanup(server.Close)
+	common.OptionMap[UterRouteUpstreamURLOption] = server.URL
+
+	base := server.URL
+	channel := &model.Channel{
+		Type: constant.ChannelTypeUter, Name: "uter-ai", BaseURL: &base,
+		Key: "sk-test", Models: "m-a", Group: "default", Status: 1,
+	}
+	require.NoError(t, db.Create(channel).Error)
+	// A stale generic row from before the ownership gate must be pruned.
+	require.NoError(t, db.Create(&model.ChannelModelPricing{
+		ChannelId: channel.Id, Provider: "newapi-compatible", ModelName: "m-a", Currency: "USD",
+		OfficialPricing: `{"model_name":"m-a"}`, PricingSource: "newapi:/api/pricing", PricingStatus: "configured",
+	}).Error)
+
+	written, models, err := SyncGenericChannelPricingWithModels(context.Background(), channel)
+	require.NoError(t, err)
+	require.Equal(t, []string{"m-a"}, models)
+	require.GreaterOrEqual(t, written, 1)
+
+	var rows []model.ChannelModelPricing
+	require.NoError(t, db.Where("channel_id = ?", channel.Id).Find(&rows).Error)
+	require.NotEmpty(t, rows)
+	for _, row := range rows {
+		assert.Equal(t, "uterroute", row.Provider, "Uter-owned channels must never keep newapi-compatible rows")
+		assert.NotEqual(t, "newapi:/api/pricing", row.PricingSource)
+	}
+}

@@ -54,10 +54,13 @@ import (
 
 // uterRouteUnitPrices 是表达式里解出的官方目录价，单位美元 / 1M tokens。
 type uterRouteUnitPrices struct {
-	Input       float64
-	Output      float64
-	Cache       float64
-	CreateCache float64
+	Input              float64
+	Output             float64
+	Cache              float64
+	CreateCache        float64
+	OutputPresent      bool
+	CachePresent       bool
+	CreateCachePresent bool
 }
 
 // uterRouteExprTerm 匹配表达式里 `<标识符> * <数字>` 形式的计价项。
@@ -92,10 +95,13 @@ func uterRouteOfficialUnitPrices(expr string) (uterRouteUnitPrices, bool) {
 			prices.Input = value
 		case "c":
 			prices.Output = value
+			prices.OutputPresent = true
 		case "cr":
 			prices.Cache = value
+			prices.CachePresent = true
 		case "cc":
 			prices.CreateCache = value
+			prices.CreateCachePresent = true
 		}
 	}
 	return prices, prices.Input > 0

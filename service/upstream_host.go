@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/uter-ai/uter/constant"
 )
 
 // MatchesUpstreamHost reports whether raw points at one of the allowed domains
@@ -38,6 +40,33 @@ func IsUterRouteHost(raw string) bool {
 		return false
 	}
 	return MatchesUpstreamHost(raw, host)
+}
+
+// IsUterAPIHost reports whether the channel address belongs to Uter.api.
+func IsUterAPIHost(raw string) bool {
+	host := UterAPIUpstreamHost()
+	if host == "" {
+		return false
+	}
+	return MatchesUpstreamHost(raw, host)
+}
+
+// IsUterOwnedPricingChannel is the single source of truth for the question
+// "must this channel never be priced by the generic New API /api/pricing sync?"
+//
+// Uter.ai, Uter.api and Uter Route are Uter's own upstream contracts. Their
+// prices carry model-group discount context that the generic document does not
+// have; letting the generic sync write "newapi:/api/pricing" rows for them
+// creates two contradictory price paths. The channel-type check is
+// authoritative so a channel cannot escape by pointing at a lookalike host;
+// the host checks cover legacy channels created before the dedicated types
+// existed. Every sync gate MUST call this function instead of maintaining its
+// own type/host list.
+func IsUterOwnedPricingChannel(channelType int, baseURL string) bool {
+	if constant.IsNewAPICompatibleChannelType(channelType) {
+		return true
+	}
+	return IsUterRouteHost(baseURL) || IsUterAPIHost(baseURL)
 }
 
 // IsBailianHost reports whether the channel address is a DashScope or Model

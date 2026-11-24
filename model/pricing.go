@@ -791,11 +791,23 @@ func updatePricing() {
 		if perChannel := channelPricesByChannel[model]; len(perChannel) > 0 {
 			entries := make(map[string]PricingChannelPrice, len(perChannel))
 			for name, candidate := range perChannel {
+				// The per-channel view must carry the same pricing contract as
+				// the top-level view above. Expression and review rows have no
+				// flat ratio: dropping billing_expr/status here made the plaza
+				// render an empty price whenever a channel filter was active.
 				entry := PricingChannelPrice{
-					Name: name, ModelRatio: candidate.modelRatio,
-					CompletionRatio: candidate.completionRatio,
-					ModelPrice:      candidate.modelPrice, PerSecondUSD: candidate.perSecondUSD,
-					QuotaType: candidate.quotaType,
+					Name:                 name,
+					ModelRatio:           candidate.modelRatio,
+					CompletionRatio:      candidate.completionRatio,
+					ModelPrice:           candidate.modelPrice,
+					PerSecondUSD:         candidate.perSecondUSD,
+					QuotaType:            candidate.quotaType,
+					BillingExpr:          candidate.billingExpr,
+					CacheRatio:           candidate.cacheRatio,
+					CreateCacheRatio:     candidate.createCacheRatio,
+					AudioRatio:           candidate.audioRatio,
+					AudioCompletionRatio: candidate.audioCompletion,
+					Status:               candidate.status,
 				}
 				if tier := candidate.officialTier; tier != nil {
 					switch candidate.officialUnit {

@@ -421,16 +421,33 @@ func UterRouteDiscountForModel(
 	if group == "" {
 		group = UterRouteDiscountGroupDefault
 	}
-	overrides := snapshot.GroupGroupRatio[group]
+	// Upstream serializes enable_groups in unstable order. Pick the lowest
+	// positive ratio deterministically so identical channels cannot receive
+	// different channel prices from the same document.
+	bestRatio, bestGroup := 0.0, ""
 	for _, modelGroup := range item.EnableGroups {
-		if ratio, ok := overrides[modelGroup]; ok && ratio > 0 {
-			return ratio, modelGroup, true
+		ratio, ok := snapshot.GroupGroupRatio[group][modelGroup]
+		if !ok || ratio <= 0 {
+			continue
+		}
+		if bestRatio == 0 || ratio < bestRatio {
+			bestRatio, bestGroup = ratio, modelGroup
 		}
 	}
+	if bestGroup != "" {
+		return bestRatio, bestGroup, true
+	}
 	for _, modelGroup := range item.EnableGroups {
-		if ratio, ok := snapshot.GroupRatio[modelGroup]; ok && ratio > 0 {
-			return ratio, modelGroup, true
+		ratio, ok := snapshot.GroupRatio[modelGroup]
+		if !ok || ratio <= 0 {
+			continue
 		}
+		if bestRatio == 0 || ratio < bestRatio {
+			bestRatio, bestGroup = ratio, modelGroup
+		}
+	}
+	if bestGroup != "" {
+		return bestRatio, bestGroup, true
 	}
 	return 0, "", false
 }
@@ -605,6 +622,9 @@ type UpstreamSnapshot struct {
 	AutoGroups      []string                      `json:"auto_groups,omitempty"`
 	UsableGroups    map[string]string             `json:"usable_group,omitempty"`
 	Models          []UpstreamModelRecord         `json:"models"`
+	// ExcludedModels lists upstream entries hidden from its own pricing page
+	// (no vendor). They are pruned from channels so both counts agree.
+	ExcludedModels []string `json:"excluded_models,omitempty"`
 }
 
 type uterRoutePublicModel struct {
@@ -635,6 +655,43 @@ type uterRoutePublicPricing struct {
 	GroupGroupRatio map[string]map[string]float64 `json:"group_group_ratio"`
 	AutoGroups      []string                      `json:"auto_groups"`
 	UsableGroup     map[string]string             `json:"usable_group"`
+}
+
+// pruneHiddenUterRouteModels drops models the upstream hides from its pricing
+// page (no vendor) from one channel and removes their pricing rows, so Uter's
+// count matches the upstream page instead of the raw API payload.
+func PruneHiddenUterRouteModels(channel *model.Channel, hidden []string) {
+	pruneHiddenUterRouteModels(channel, hidden)
+}
+
+func pruneHiddenUterRouteModels(channel *model.Channel, hidden []string) {
+	if channel == nil || len(hidden) == 0 {
+		return
+	}
+	hiddenSet := make(map[string]struct{}, len(hidden))
+	for _, name := range hidden {
+		hiddenSet[name] = struct{}{}
+	}
+	current := channel.GetModels()
+	kept := make([]string, 0, len(current))
+	for _, name := range current {
+		if _, drop := hiddenSet[name]; !drop {
+			kept = append(kept, name)
+		}
+	}
+	if len(kept) != len(current) {
+		channel.Models = strings.Join(kept, ",")
+		if err := channel.Update(); err != nil {
+			common.SysError(common.LogText("prune hidden uterroute models failed: channel_id=%d, error=%v", channel.Id, err))
+		} else if err := channel.UpdateAbilities(nil); err != nil {
+			common.SysError(common.LogText("update abilities after pruning hidden models failed: channel_id=%d, error=%v", channel.Id, err))
+		} else {
+			model.BumpSyncTopic(model.SyncTopicChannels)
+		}
+	}
+	if err := model.DeleteChannelModelPricingForModels(channel.Id, hidden); err != nil {
+		common.SysError(common.LogText("delete hidden uterroute pricing failed: channel_id=%d, error=%v", channel.Id, err))
+	}
 }
 
 // FetchUterRouteUpstream fetches the public pricing document and normalizes
@@ -699,6 +756,10 @@ func FetchUterRouteUpstream(ctx context.Context, baseURL string) (*UpstreamSnaps
 	for _, item := range payload.Data {
 		name := strings.TrimSpace(item.ModelName)
 		if name == "" {
+			continue
+		}
+		if item.VendorID <= 0 {
+			snapshot.ExcludedModels = append(snapshot.ExcludedModels, name)
 			continue
 		}
 		record := UpstreamModelRecord{
@@ -1089,15 +1150,15 @@ func uterRouteChannelOfficialPricing(
 			officialTier := model.ChannelPricingTier{RangeName: "base", Unit: "per_1m_token"}
 			officialInput := units.Input
 			officialTier.InputPerMillionUSD = &officialInput
-			if units.Output > 0 {
+			if units.OutputPresent {
 				officialOutput := units.Output
 				officialTier.OutputPerMillionUSD = &officialOutput
 			}
-			if units.Cache > 0 {
+			if units.CachePresent {
 				officialCache := units.Cache
 				officialTier.CachePerMillionUSD = &officialCache
 			}
-			if units.CreateCache > 0 {
+			if units.CreateCachePresent {
 				officialCreateCache := units.CreateCache
 				officialTier.CreateCachePerMillionUSD = &officialCreateCache
 			}
@@ -1106,15 +1167,15 @@ func uterRouteChannelOfficialPricing(
 			tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 			input := units.Input * discount
 			tier.InputPerMillionUSD = &input
-			if units.Output > 0 {
+			if units.OutputPresent {
 				output := units.Output * discount
 				tier.OutputPerMillionUSD = &output
 			}
-			if units.Cache > 0 {
+			if units.CachePresent {
 				cache := units.Cache * discount
 				tier.CachePerMillionUSD = &cache
 			}
-			if units.CreateCache > 0 {
+			if units.CreateCachePresent {
 				createCache := units.CreateCache * discount
 				tier.CreateCachePerMillionUSD = &createCache
 			}

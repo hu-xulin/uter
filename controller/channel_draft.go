@@ -126,8 +126,24 @@ func PublishChannelDraft(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
-	if blockers := draftPublishBlockers(rows); len(blockers) > 0 {
-		common.ApiErrorMsg(c, "Pricing is not billable for: "+strings.Join(blockers, "; "))
+	// Only models this channel actually serves can be routed to it: abilities
+	// are generated one-for-one from channel.Models. A draft catalogue sync
+	// writes the whole upstream directory (including review-only rows for
+	// models the operator never selected); those rows can never bill a request
+	// on this channel, so they must not block publishing.
+	if blockers := draftPublishBlockers(rows, channel.GetModels()); len(blockers) > 0 {
+		common.ApiErrorStatus(
+			c,
+			http.StatusOK,
+			common.NewMessage(
+				"Set a billable sale price for {{models}} before publishing",
+				map[string]any{"models": strings.Join(blockers, "; ")},
+			),
+			gin.H{
+				"code": "CHANNEL_DRAFT_PRICING_NOT_BILLABLE",
+				"data": gin.H{"models": blockers},
+			},
+		)
 		return
 	}
 	other.Draft = false
@@ -149,12 +165,28 @@ func PublishChannelDraft(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"id": id}})
 }
 
-// draftPublishBlockers lists channel-pricing rows that cannot bill yet. A draft
-// with any official-only or needs-review row must not be published: requests
-// would reach a channel that deliberately refuses to charge.
-func draftPublishBlockers(rows []model.ChannelModelPricing) []string {
+// draftPublishBlockers lists channel-pricing rows that cannot bill yet, but
+// only for models the channel actually serves (channel.Models maps one-for-one
+// to its abilities). A draft catalogue sync writes the whole upstream
+// directory, so review-only rows for models the operator never selected are
+// expected; they can never receive a request on this channel and must not
+// block publishing. When selectedModels is empty the channel serves no model
+// yet, so there is nothing that could bill and nothing to block.
+func draftPublishBlockers(rows []model.ChannelModelPricing, selectedModels []string) []string {
+	wanted := make(map[string]bool, len(selectedModels))
+	for _, name := range selectedModels {
+		if name = strings.TrimSpace(name); name != "" {
+			wanted[name] = true
+		}
+	}
+	if len(wanted) == 0 {
+		return nil
+	}
 	blockers := make([]string, 0)
 	for _, row := range rows {
+		if !wanted[strings.TrimSpace(row.ModelName)] {
+			continue
+		}
 		if row.PricingStatus == model.ChannelPricingStatusConfigured {
 			continue
 		}

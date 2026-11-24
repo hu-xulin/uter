@@ -32,6 +32,7 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 )
 
@@ -246,25 +247,50 @@ func genericPricingEndpoint(baseURL string) (string, error) {
 }
 
 // GenericChannelPricingRecords converts upstream entries into official-price
-// rows. Official and provider ratios are preserved; internal sale prices are
-// never written here.
+// rows for the channel-creation path. A first-time channel derives a default
+// sale price from an executable upstream expression; every later sync must use
+// GenericOfficialPricingRecords so it never rewrites a sale price.
 func GenericChannelPricingRecords(
 	channelID int,
 	channelModels []string,
 	entries []GenericPricingEntry,
 	now time.Time,
 ) []model.ChannelOfficialPricingRecord {
-	return GenericChannelPricingRecordsWithQuota(channelID, channelModels, entries, now, 0)
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, 0, true)
+}
+
+// GenericOfficialPricingRecords builds sync rows: official data and the channel
+// quote only. Automatic updates must never re-derive or overwrite a sale price.
+func GenericOfficialPricingRecords(
+	channelID int,
+	channelModels []string,
+	entries []GenericPricingEntry,
+	now time.Time,
+	quotaPerUnit float64,
+) []model.ChannelOfficialPricingRecord {
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, false)
 }
 
 // GenericChannelPricingRecordsWithQuota also applies a document-level
-// quota_per_unit when an entry does not carry its own basis.
+// quota_per_unit when an entry does not carry its own basis. It keeps the
+// creation-time default sale price and must not be used by scheduled syncs.
 func GenericChannelPricingRecordsWithQuota(
 	channelID int,
 	channelModels []string,
 	entries []GenericPricingEntry,
 	now time.Time,
 	quotaPerUnit float64,
+) []model.ChannelOfficialPricingRecord {
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, true)
+}
+
+func genericChannelPricingRecords(
+	channelID int,
+	channelModels []string,
+	entries []GenericPricingEntry,
+	now time.Time,
+	quotaPerUnit float64,
+	deriveSalePrice bool,
 ) []model.ChannelOfficialPricingRecord {
 	wanted := make(map[string]bool, len(channelModels))
 	for _, name := range channelModels {
@@ -316,15 +342,15 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 		tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 		input := units.Input * factor
 		tier.InputPerMillionUSD = &input
-		if units.Output > 0 {
+		if units.OutputPresent {
 			output := units.Output * factor
 			tier.OutputPerMillionUSD = &output
 		}
-		if units.Cache > 0 {
+		if units.CachePresent {
 			cache := units.Cache * factor
 			tier.CachePerMillionUSD = &cache
 		}
-		if units.CreateCache > 0 {
+		if units.CreateCachePresent {
 			createCache := units.CreateCache * factor
 			tier.CreateCachePerMillionUSD = &createCache
 		}
@@ -482,6 +508,12 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPer
 	return view, view.NeedsReview, view.ReviewReasons
 }
 
+// isUterAPIPricingChannel reports whether a channel uses the Uter.api contract,
+// either by its dedicated type or (for legacy channels) by its host.
+func isUterAPIPricingChannel(channel *model.Channel) bool {
+	return channel.Type == constant.ChannelTypeUterAPI || IsUterAPIHost(channel.GetBaseURL())
+}
+
 // SyncGenericChannelPricing fetches and persists official rows for one channel.
 func SyncGenericChannelPricing(ctx context.Context, channel *model.Channel) (int, error) {
 	written, _, err := SyncGenericChannelPricingWithModels(ctx, channel)
@@ -494,13 +526,19 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	if channel == nil {
 		return 0, nil, errors.New("channel is required")
 	}
-	// UterAPI binds each key to one billing group; the public document has no
-	// group context, so syncing without the stored group would silently price
-	// the channel at the undiscounted catalogue rate.
-	if (MatchesUpstreamHost(channel.GetBaseURL(), UterAPIUpstreamHost()) ||
-		MatchesUpstreamHost(channel.GetBaseURL(), "uterapi.ai")) &&
-		GetGenericUpstreamBillingGroup(channel.Id) == "" {
-		return 0, nil, errors.New("Uter.api channel has no upstream billing group; refuse catalogue-price sync")
+	// Uter.api is an Uter-owned contract: its prices come only from the
+	// authenticated per-key document with the key's billing group applied.
+	// Dispatch to the dedicated sync before taking this function's lock
+	// (SyncUterAPIChannelPricing takes the same lock itself). This prevents the
+	// generic "newapi:/api/pricing" path from ever writing a second,
+	// contradictory price row for an Uter.api channel.
+	if isUterAPIPricingChannel(channel) {
+		group := GetGenericUpstreamBillingGroup(channel.Id)
+		if group == "" {
+			return 0, nil, errors.New("Uter.api channel has no upstream billing group; refuse catalogue-price sync")
+		}
+		written, _, _, err := SyncUterAPIChannelPricing(ctx, channel, group)
+		return written, nil, err
 	}
 	release, acquired, err := acquireChannelPricingSyncLock(channel.Id)
 	if err != nil {
@@ -510,6 +548,55 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		return 0, nil, ErrPricingSyncInProgress
 	}
 	defer release()
+	// Every Uter-owned channel other than Uter.api (dispatched above) prices
+	// through Uter Route's own catalogue: Uter.ai relays and white-labelled
+	// Uter Route channels alike. The generic New API document has no
+	// model-group discount context and would store the official base price as
+	// the channel price, duplicating catalogue rows under a second provider
+	// key. Using the unified ownership predicate here closes the gap where a
+	// channel of a dedicated type pointed at a non-Uter host.
+	if IsUterOwnedPricingChannel(channel.Type, channel.GetBaseURL()) {
+		// UterRoute publishes per-model-group discounts. Generic New API
+		// pricing has no model-group context, so syncing it here would store
+		// the official base price as the channel price. Route the channel
+		// through the provider parser instead.
+		snapshot, err := FetchUterRouteUpstream(ctx, channel.GetBaseURL())
+		if err != nil {
+			return 0, nil, err
+		}
+		models := make([]string, 0, len(snapshot.Models))
+		for _, item := range snapshot.Models {
+			if name := strings.TrimSpace(item.ModelName); name != "" {
+				models = append(models, name)
+			}
+		}
+		if len(channel.GetModels()) == 0 {
+			if _, addErr := AppendChannelModelNames(channel, models); addErr != nil {
+				common.SysError(common.LogText("uterroute auto model add failed: channel_id=%d, error=%v", channel.Id, addErr))
+			}
+		}
+		records, err := UterRouteChannelPricingRecords(
+			snapshot, channel.Id, channel.GetModels(), GetUterRouteDiscountGroup(channel.Id),
+		)
+		if err != nil {
+			return 0, models, err
+		}
+		written, err := model.UpsertChannelOfficialPricing(records)
+		if err != nil {
+			return written, models, err
+		}
+		pruneHiddenUterRouteModels(channel, snapshot.ExcludedModels)
+		// Remove rows an earlier generic sync left behind for this channel:
+		// they duplicate every model in the fetched-price table with the
+		// undiscounted base price as the channel price. Operator and batch
+		// rows under another provider are kept for manual review.
+		if _, keptRows, delErr := model.DeleteAutoDerivedPricingForOtherProvider(channel.Id, "uterroute"); delErr != nil {
+			common.SysError(common.LogText("prune generic uterroute pricing rows failed: channel_id=%d, error=%v", channel.Id, delErr))
+		} else if keptRows > 0 {
+			common.SysLog(common.LogText("kept %d manually priced rows under other providers for uterroute channel %d", keptRows, channel.Id))
+		}
+		return written, models, nil
+	}
 	entries, err := FetchGenericUpstreamPricing(ctx, channel.GetBaseURL(), channel.GetKeys())
 	if err != nil {
 		return 0, nil, err
@@ -657,7 +744,12 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 	}
 	now := time.Now().UTC()
 	for _, channel := range channels {
-		if channel.Type == 17 || IsUterRouteHost(channel.GetBaseURL()) {
+		// Uter.ai / Uter.api / Uter Route are priced by their own catalog
+		// sync tasks. Running the generic New API document sync over them
+		// would write "newapi:/api/pricing" rows and leave two contradictory
+		// price paths on the same channel. Bailian (type 17) has its own
+		// deployment-pricing sync and is likewise excluded.
+		if channel.Type == 17 || IsUterOwnedPricingChannel(channel.Type, channel.GetBaseURL()) {
 			continue
 		}
 		schedule, explicit := GetChannelPricingSchedule(channel.Id)

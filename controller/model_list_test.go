@@ -333,6 +333,11 @@ func TestListModelsIncludesTieredBillingModel(t *testing.T) {
 	})
 
 	db := setupModelListControllerTestDB(t)
+	tieredBaseURL := "https://tiered.example"
+	require.NoError(t, db.Create(&model.Channel{
+		Id: 1, Type: constant.ChannelTypeOpenAI, Name: "tiered-channel",
+		Status: common.ChannelStatusEnabled, BaseURL: &tieredBaseURL,
+	}).Error)
 	require.NoError(t, db.Create(&model.User{
 		Id:       1001,
 		Username: "model-list-user",

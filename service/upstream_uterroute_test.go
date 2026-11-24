@@ -233,6 +233,24 @@ func TestUterRouteDiscountForModelFallsBackToGroupRatio(t *testing.T) {
 	require.Equal(t, 0.75, discount)
 }
 
+func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
+	snapshot := &UpstreamSnapshot{
+		GroupRatio: map[string]float64{},
+		GroupGroupRatio: map[string]map[string]float64{
+			"default": {"claude": 0.6, "claude-aws": 0.9},
+		},
+	}
+	for _, groups := range [][]string{
+		{"claude-aws", "claude"},
+		{"claude", "claude-aws"},
+	} {
+		discount, modelGroup, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: groups}, "default")
+		require.True(t, ok)
+		assert.Equal(t, 0.6, discount)
+		assert.Equal(t, "claude", modelGroup)
+	}
+}
+
 func TestFetchUterRouteUpstreamStripsCompatibleVersionPath(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/pricing", r.URL.Path)
@@ -420,4 +438,32 @@ func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *te
 	assert.InDelta(t, 6, *view.ChannelPrice.InputPerMillionUSD, 1e-9)
 	assert.InDelta(t, 30, *view.ChannelPrice.OutputPerMillionUSD, 1e-9)
 	require.Contains(t, records[0].InternalPricing, ") * 1.1")
+}
+
+// 上游定价页不展示没有厂商信息的模型；快照与渠道都必须与页面口径一致。
+func TestFetchUterRouteUpstreamExcludesModelsWithoutVendor(t *testing.T) {
+	payload := `{
+	  "success": true,
+	  "pricing_version": "fixture-v2",
+	  "data": [
+	    {"model_name": "visible-a", "vendor_id": 7, "quota_type": 0, "model_ratio": 1, "model_price": 0, "completion_ratio": 2},
+	    {"model_name": "hidden-a", "vendor_id": 0, "quota_type": 0, "model_ratio": 37.5, "model_price": 0, "completion_ratio": 1}
+	  ],
+	  "vendors": [{"id": 7, "name": "Vendor"}],
+	  "group_ratio": {"default": 1},
+	  "group_group_ratio": {},
+	  "auto_groups": ["default"],
+	  "usable_group": {"default": ""}
+	}`
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(payload))
+	}))
+	defer server.Close()
+
+	snapshot, err := FetchUterRouteUpstream(context.Background(), server.URL)
+	require.NoError(t, err)
+	require.Len(t, snapshot.Models, 1)
+	require.Equal(t, "visible-a", snapshot.Models[0].ModelName)
+	require.Equal(t, []string{"hidden-a"}, snapshot.ExcludedModels)
 }

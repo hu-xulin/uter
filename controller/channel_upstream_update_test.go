@@ -199,6 +199,34 @@ func TestFetchOrdinaryOpenAIModelsKeepsExistingEmptyDataBehavior(t *testing.T) {
 	require.Empty(t, models)
 }
 
+func TestFetchUterRouteModelsUsesPricingCatalogNotRawModelList(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/api/pricing":
+			w.Header().Set("Content-Type", "application/json")
+			_, _ = w.Write([]byte(`{"success":true,"pricing_version":"t1","data":[
+				{"model_name":"shown-model","vendor_id":1,"quota_type":0,"model_ratio":2.5,"completion_ratio":5},
+				{"model_name":"hidden-model","vendor_id":0,"quota_type":0,"model_ratio":1}
+			],"vendors":[{"id":1,"name":"OpenAI"}],"group_ratio":{"default":1},"usable_group":{"default":""}}`))
+		default:
+			// The raw model list leaks the hidden entry; the catalogue branch
+			// must win so it never reaches the selection step.
+			_, _ = w.Write([]byte(`{"object":"list","data":[{"id":"shown-model"},{"id":"hidden-model"}]}`))
+		}
+	}))
+	defer server.Close()
+
+	baseURL := server.URL
+	channel := &model.Channel{
+		Type:    constant.ChannelTypeUterRoute,
+		Key:     "route-key",
+		BaseURL: &baseURL,
+	}
+	models, err := fetchChannelUpstreamModelIDs(channel)
+	require.NoError(t, err)
+	require.Equal(t, []string{"shown-model"}, models)
+}
+
 func TestFetchModelsAdvancedCustomCreatePreview(t *testing.T) {
 	receivedAuthorization := make(chan string, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -459,6 +459,24 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		return normalizeModelNames(models), nil
 	}
 
+	// Uter Route hides vendor-less entries on its own pricing page while the
+	// raw /v1/models list still returns them. Treat the pricing catalogue as
+	// the authoritative model list so unpriced and hidden models never reach
+	// the selection step or get synced.
+	if channel.Type == constant.ChannelTypeUterRoute {
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+		snapshot, err := service.FetchUterRouteUpstream(ctx, channel.GetBaseURL())
+		if err != nil {
+			return nil, err
+		}
+		names := make([]string, 0, len(snapshot.Models))
+		for _, record := range snapshot.Models {
+			names = append(names, record.UpstreamModelID)
+		}
+		return normalizeModelNames(names), nil
+	}
+
 	if constant.IsAdvancedCustomChannel(channel.Type) {
 		return fetchAdvancedCustomUpstreamModelIDs(channel, baseURL)
 	}

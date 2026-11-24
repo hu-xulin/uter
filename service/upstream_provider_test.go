@@ -14,7 +14,7 @@ func TestFetchUpstreamCatalogDispatchesAdapters(t *testing.T) {
 	uterRouteServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "/api/pricing", r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"success":true,"data":[{"model_name":"gpt-a","model_ratio":2.5}]}`))
+		_, _ = w.Write([]byte(`{"success":true,"data":[{"model_name":"gpt-a","vendor_id":1,"model_ratio":2.5}]}`))
 	}))
 	defer uterRouteServer.Close()
 

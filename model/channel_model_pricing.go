@@ -938,10 +938,13 @@ func formatInternalPrice(value float64) string {
 	return strconv.FormatFloat(value, 'f', -1, 64)
 }
 
-// autoDerivedInternalSource reports whether a sale price was written by an
-// upstream sync. Only these may be cleared automatically; operator, batch and
-// approved prices are never touched.
-func autoDerivedInternalSource(source string) bool {
+// IsAutoDerivedPricingSource reports whether a sale price was written by an
+// upstream sync or another automatic rule. Only these may be replaced or
+// cleared automatically; operator, batch and approved prices are never touched.
+// Every subsystem that decides "is this price automatic?" must use this list,
+// otherwise one of them treats a synced price as manual and silently refuses to
+// act on it.
+func IsAutoDerivedPricingSource(source string) bool {
 	source = strings.ToLower(strings.TrimSpace(source))
 	for _, prefix := range []string{
 		"uterroute-", "bailian-", "newapi-", "newapi:",
@@ -952,6 +955,10 @@ func autoDerivedInternalSource(source string) bool {
 		}
 	}
 	return false
+}
+
+func autoDerivedInternalSource(source string) bool {
+	return IsAutoDerivedPricingSource(source)
 }
 
 // internalPricingReplaceable reports whether a sync may rewrite the stored
@@ -977,6 +984,45 @@ func internalPricingReplaceable(raw string) bool {
 		return false
 	}
 	return autoDerivedInternalSource(pricing.Source)
+}
+
+// IsAutoDerivedPricingRow reports whether a whole pricing row was produced by an
+// upstream sync, judged by the record source or the sale-price source. Used when
+// a channel has to drop rows written under a provider identity it no longer
+// speaks; operator and batch rows must survive that cleanup.
+func IsAutoDerivedPricingRow(source, internalPricing string) bool {
+	return IsAutoDerivedPricingSource(source) ||
+		IsAutoDerivedPricingSource(internalPricingSource(internalPricing))
+}
+
+// DeleteAutoDerivedPricingForOtherProvider removes the pricing rows of one
+// channel that belong to a different provider identity and were written
+// automatically. Operator and batch rows are never removed; kept reports how
+// many such rows were left for manual review.
+func DeleteAutoDerivedPricingForOtherProvider(channelID int, keepProvider string) (removed int, kept int, err error) {
+	if channelID <= 0 {
+		return 0, 0, nil
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("channel_id = ? AND provider <> ?", channelID, keepProvider).Find(&rows).Error; err != nil {
+		return 0, 0, err
+	}
+	ids := make([]int64, 0, len(rows))
+	for _, row := range rows {
+		if !IsAutoDerivedPricingRow(row.PricingSource, row.InternalPricing) {
+			kept++
+			continue
+		}
+		ids = append(ids, row.Id)
+	}
+	if len(ids) == 0 {
+		return 0, kept, nil
+	}
+	if err := DB.Where("id IN ?", ids).Delete(&ChannelModelPricing{}).Error; err != nil {
+		return 0, kept, err
+	}
+	InvalidateChannelPricingCache()
+	return len(ids), kept, nil
 }
 
 // UpsertChannelOfficialPricing writes official data without touching the
@@ -1507,6 +1553,17 @@ func DeleteUnpricedChannelModelPricing(channelId int, modelNames []string) error
 		"channel_id = ? AND model_name IN ? AND (internal_pricing IS NULL OR internal_pricing = '')",
 		channelId, modelNames,
 	).Delete(&ChannelModelPricing{}).Error
+}
+
+// DeleteChannelModelPricingForModels removes pricing rows for models an
+// upstream explicitly hides from its own pricing page, so Uter matches that
+// visible catalogue instead of keeping orphan rows.
+func DeleteChannelModelPricingForModels(channelId int, modelNames []string) error {
+	if channelId <= 0 || len(modelNames) == 0 {
+		return nil
+	}
+	return DB.Where("channel_id = ? AND model_name IN ?", channelId, modelNames).
+		Delete(&ChannelModelPricing{}).Error
 }
 
 // selectChannelPricingRow picks the row for one request identity. It never

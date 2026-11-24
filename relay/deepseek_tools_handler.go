@@ -32,6 +32,7 @@ func DeepSeekToolsHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIErr
 	case constant.ChannelTypeDeepSeek,
 		constant.ChannelTypeNewAPI,
 		constant.ChannelTypeUterAPI,
+		constant.ChannelTypeUterRoute,
 		constant.ChannelTypeSub2API,
 		constant.ChannelTypeAdvancedCustom:
 	default:

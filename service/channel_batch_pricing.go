@@ -501,6 +501,73 @@ func ApplyChannelBatchPricingWithOptions(
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: reason})
 			continue
 		}
+		// An executable upstream rule carries dimensions (image, audio, cache,
+		// thinking, tier) that a flat per-1M amount cannot represent. Scale the
+		// whole expression instead of flattening it, so the sale price stays
+		// identical to the upstream for every dimension. Additive and fixed
+		// rules change the total, not the coefficients, so they are refused.
+		if base.mode == model.ChannelPricingModeTieredExpr && strings.TrimSpace(base.expr) != "" {
+			factor, factorOK := batchExpressionFactor(mode, value)
+			if !factorOK {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{
+					ModelName: row.ModelName,
+					Reason:    "additive and fixed rules cannot be applied to a billing expression; edit the expression directly",
+				})
+				continue
+			}
+			scaled := base.expr
+			if factor != 1 {
+				scaledResult, scaleOK := uterRouteScaleExpr(base.expr, factor)
+				if !scaleOK {
+					result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "billing expression could not be scaled"})
+					continue
+				}
+				scaled = scaledResult
+			}
+			if !NormalizeUpstreamExpression(scaled).Executable {
+				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: "scaled billing expression is not executable"})
+				continue
+			}
+			exprInternal := model.ChannelInternalPricing{
+				Mode:        model.ChannelPricingModeTieredExpr,
+				BillingExpr: scaled,
+				Note:        fmt.Sprintf("batch: %s %s %.4f (expression)", ruleBasis, mode, value),
+				Source:      "batch",
+			}
+			exprItem := BatchPricingItem{
+				ModelName:    row.ModelName,
+				Provider:     row.Provider,
+				Region:       row.Region,
+				DeploymentId: row.DeploymentId,
+				Mode:         model.ChannelPricingModeTieredExpr,
+				BillingExpr:  scaled,
+				Version:      row.PricingVersion,
+				PurchaseUSD:  resolvePurchasePrimaryPrice(row),
+				PreviousUSD:  resolveCurrentPrimaryPrice(row),
+			}
+			result.Items = append(result.Items, exprItem)
+			if !dryRun {
+				identityKey := batchPricingIdentityKey(row)
+				expectedVersion := options.ExpectedVersions[identityKey]
+				var oldPricing *model.ChannelInternalPricing
+				if strings.TrimSpace(row.InternalPricing) != "" {
+					var parsed model.ChannelInternalPricing
+					if common.UnmarshalJsonStr(row.InternalPricing, &parsed) == nil {
+						oldPricing = &parsed
+					}
+				}
+				pending = append(pending, batchPendingWrite{
+					row: row,
+					identity: model.ChannelPricingIdentity{
+						ChannelId: channelID, Provider: row.Provider, Region: row.Region,
+						DeploymentId: row.DeploymentId, ModelName: row.ModelName,
+					},
+					internal: exprInternal, oldPricing: oldPricing,
+					expectedVersion: expectedVersion, item: exprItem,
+				})
+			}
+			continue
+		}
 		var officialBase batchBasePrice
 		if mode == BatchPricingModeDiscountPlus {
 			var officialReason string
@@ -1195,6 +1262,23 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 	if strings.TrimSpace(row.NormalizedPricing) != "" {
 		parsedOfficial = common.UnmarshalJsonStr(row.NormalizedPricing, &official) == nil
 	}
+	// A model priced by an executable upstream rule (image/audio/cache
+	// dimensions) cannot be flattened to a single amount without losing those
+	// dimensions. Hand the expression to the caller so a multiplicative rule
+	// scales every coefficient and the price stays identical to the upstream.
+	if parsedOfficial && strings.TrimSpace(official.BillingExpr) != "" &&
+		official.ExpressionStatus == "EXECUTABLE" {
+		expr := strings.TrimSpace(official.BillingExpr)
+		if basis == BatchPricingBasisChannel && official.DiscountRatio != nil &&
+			*official.DiscountRatio > 0 && *official.DiscountRatio != 1 {
+			scaled, ok := uterRouteScaleExpr(expr, *official.DiscountRatio)
+			if !ok {
+				return batchBasePrice{}, "channel discount could not be applied to the billing expression"
+			}
+			expr = scaled
+		}
+		return batchBasePrice{mode: model.ChannelPricingModeTieredExpr, expr: expr}, ""
+	}
 	if basis == BatchPricingBasisChannel {
 		// The purchase price is deliberately separate from the list price. A
 		// row without one must not silently fall back to the official price.
@@ -1384,6 +1468,11 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 			return batchBasePrice{}, "current channel price has no per-minute price"
 		}
 		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: internal.PerMinuteUSD}, ""
+	case model.ChannelPricingModeTieredExpr:
+		if strings.TrimSpace(internal.BillingExpr) == "" {
+			return batchBasePrice{}, "current channel price has no billing expression"
+		}
+		return batchBasePrice{mode: model.ChannelPricingModeTieredExpr, expr: strings.TrimSpace(internal.BillingExpr)}, ""
 	default:
 		return batchBasePrice{}, "current channel price has an unsupported mode"
 	}
@@ -1570,12 +1659,7 @@ func manualModelPrice(row model.ChannelModelPricing) bool {
 	if strings.HasPrefix(strings.TrimSpace(internal.Note), "batch:") {
 		return false
 	}
-	switch {
-	case internal.Source == "batch":
-		return false
-	case strings.HasPrefix(internal.Source, "uterroute-"),
-		strings.HasPrefix(internal.Source, "bailian-"),
-		strings.HasPrefix(internal.Source, "generic"):
+	if internal.Source == "batch" || model.IsAutoDerivedPricingSource(internal.Source) {
 		return false
 	}
 	return true
@@ -1663,6 +1747,30 @@ func (s ChannelPricingSchedule) EffectiveIntervals() (model, official, channel i
 	return model, official, channel
 }
 
+// normalizeChannelPricingSchedule fills zero-value or legacy fields with the
+// same defaults the UI uses. A channel that never saved a cadence used to be
+// read back as {"basis":"","mode":""}; the UI merged those empty strings over
+// its defaults, and enabling the schedule then failed with
+// "basis must be official, channel or current".
+func normalizeChannelPricingSchedule(schedule ChannelPricingSchedule) ChannelPricingSchedule {
+	schedule.Basis = strings.TrimSpace(schedule.Basis)
+	if schedule.Basis == "" {
+		schedule.Basis = BatchPricingBasisOfficial
+	}
+	schedule.Mode = strings.TrimSpace(schedule.Mode)
+	if schedule.Mode == "" {
+		schedule.Mode = BatchPricingModeMultiply
+		if schedule.Value == 0 {
+			schedule.Value = 0.6
+		}
+	}
+	schedule.ReviewMode = strings.TrimSpace(schedule.ReviewMode)
+	if schedule.ReviewMode == "" {
+		schedule.ReviewMode = "auto"
+	}
+	return schedule
+}
+
 // ChannelPricingScheduleSetting persists schedules by channel ID.
 type ChannelPricingScheduleSetting struct {
 	Channels map[string]ChannelPricingSchedule `json:"channels"`
@@ -1687,7 +1795,7 @@ func GetChannelPricingSchedule(channelID int) (ChannelPricingSchedule, bool) {
 		return ChannelPricingSchedule{}, false
 	}
 	schedule, ok := setting.Channels[fmt.Sprintf("%d", channelID)]
-	return schedule, ok
+	return normalizeChannelPricingSchedule(schedule), ok
 }
 
 // SetChannelPricingSchedule validates and persists one channel's schedule.
@@ -1697,6 +1805,7 @@ func SetChannelPricingSchedule(channelID int, schedule ChannelPricingSchedule) e
 	}
 	channelPricingScheduleMutex.Lock()
 	defer channelPricingScheduleMutex.Unlock()
+	schedule = normalizeChannelPricingSchedule(schedule)
 	if schedule.Enabled {
 		if schedule.Basis != BatchPricingBasisOfficial && schedule.Basis != BatchPricingBasisChannel && schedule.Basis != BatchPricingBasisCurrent {
 			return errors.New("basis must be official, channel or current")

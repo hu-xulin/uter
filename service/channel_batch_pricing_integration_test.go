@@ -1036,3 +1036,68 @@ func TestApplyChannelBatchPricingDiscountPlusRejectsCurrentBasisAndTierRules(t *
 	})
 	require.ErrorContains(t, err, "only supported as the channel rule")
 }
+
+func TestApplyChannelBatchPricingScalesBillingExpression(t *testing.T) {
+	setupBatchPricingDB(t)
+	discount := 0.75
+	expr := `tier("base", p * 5 + c * 0 + cr * 1.25 + img * 8 + img_o * 30)`
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "expression", PriceKind: "BILLING_EXPRESSION",
+		BillingExpr: expr, ExpressionStatus: "EXECUTABLE", DiscountRatio: &discount,
+	}
+	encoded, err := common.Marshal(normalized)
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 9, Provider: "uterroute", ModelName: "gpt-image-2", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "uterroute-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(9, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeMarkup, Value: 0.1, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Empty(t, preview.Skipped, "an expression-priced model must not be flattened or skipped")
+	require.Len(t, preview.Items, 1)
+	// channel basis discounts the official rule (0.75) then the markup (1.1):
+	// p 5*0.75*1.1=4.125, c 0 stays 0, img 8*0.75*1.1=6.6, img_o 30*0.75*1.1=24.75.
+	assert.Contains(t, preview.Items[0].BillingExpr, "p * 4.125")
+	assert.Contains(t, preview.Items[0].BillingExpr, "c * 0")
+	assert.Contains(t, preview.Items[0].BillingExpr, "img * 6.6")
+	assert.Contains(t, preview.Items[0].BillingExpr, "img_o * 24.75")
+
+	applied, err := ApplyChannelBatchPricingWithOptions(9, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeMarkup, Value: 0.1, DryRun: false,
+	})
+	require.NoError(t, err)
+	require.Empty(t, applied.Skipped)
+
+	pricing, ok := model.ResolveChannelBillingPricing(9, "gpt-image-2")
+	require.True(t, ok, "the scaled expression must become billable")
+	require.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
+	assert.Contains(t, pricing.BillingExpr, "img_o * 24.75")
+}
+
+func TestApplyChannelBatchPricingRefusesAdditiveRuleOnExpression(t *testing.T) {
+	setupBatchPricingDB(t)
+	expr := `tier("base", p * 5 + c * 0 + img * 8 + img_o * 30)`
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "expression", PriceKind: "BILLING_EXPRESSION",
+		BillingExpr: expr, ExpressionStatus: "EXECUTABLE",
+	}
+	encoded, err := common.Marshal(normalized)
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 10, Provider: "uterroute", ModelName: "gpt-image-2", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "uterroute-official", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(10, BatchPricingOptions{
+		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeAdd, Value: 0.5, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, preview.Skipped, 1)
+	assert.Contains(t, preview.Skipped[0].Reason, "cannot be applied to a billing expression")
+	require.Empty(t, preview.Items)
+}

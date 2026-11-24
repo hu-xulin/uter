@@ -114,7 +114,10 @@ func TestUterAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 }
 
 func TestUterAPIGenericSyncRequiresBillingGroup(t *testing.T) {
-	base := "https://uterapi.ai"
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterAPIUpstreamURLOption: "https://example-uterapi.test"}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+	base := "https://api.example-uterapi.test"
 	channel := &model.Channel{
 		Id: 999999, Type: constant.ChannelTypeNewAPI,
 		BaseURL: &base, Key: "sk-uterapi-test",

@@ -65,16 +65,21 @@ const (
 	// New API relay protocol as ChannelTypeUter but keeps a distinct channel
 	// type number so the two offerings never share an identifier.
 	ChannelTypeUterAPI = 64
+	// ChannelTypeUterRoute is the white-labelled Uter Route gateway. It speaks
+	// the New API relay protocol and keeps its own number (65).
+	ChannelTypeUterRoute = 65
 	// ChannelTypeDummy is the upper bound used by the channel-type loops in
 	// controller/model.go. It must cover every supported channel type.
-	ChannelTypeDummy = ChannelTypeUterAPI
+	ChannelTypeDummy = ChannelTypeUterRoute
 )
 
 // IsNewAPICompatibleChannelType reports whether a channel speaks the upstream
 // New API relay protocol. Uter.ai (ChannelTypeUter) and Uter.api
 // (ChannelTypeUterAPI) are distinct channel types with identical semantics.
 func IsNewAPICompatibleChannelType(channelType int) bool {
-	return channelType == ChannelTypeUter || channelType == ChannelTypeUterAPI
+	return channelType == ChannelTypeUter ||
+		channelType == ChannelTypeUterAPI ||
+		channelType == ChannelTypeUterRoute
 }
 
 // IsAdvancedCustomChannelType reports whether the channel type behaves like an
@@ -164,6 +169,7 @@ var ChannelBaseURLs = []string{
 	"", //62 vLLM
 	"", //63 SGLang
 	"", //64 Uter.api（地址由系统配置或用户填写）
+	"", //65 Uter Route（地址由系统配置或用户填写）
 }
 
 func GetChannelBaseURL(channelType int) string {
@@ -234,6 +240,7 @@ var ChannelTypeNames = map[int]string{
 	ChannelTypeVLLM:           "vLLM",
 	ChannelTypeSGLang:         "SGLang",
 	ChannelTypeUterAPI:        "Uter.api",
+	ChannelTypeUterRoute:      "Uter Route",
 }
 
 func GetChannelTypeName(channelType int) string {

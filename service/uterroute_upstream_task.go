@@ -185,6 +185,7 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 	written := 0
 	for _, due := range dueChannels {
 		channel := due.channel
+		pruneHiddenUterRouteModels(channel, snapshot.ExcludedModels)
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if due.officialDue || due.channelDue {
 			records, recordErr := UterRouteChannelPricingRecords(

@@ -136,6 +136,22 @@ func TestUterRouteScaledExprCompiles(t *testing.T) {
 
 // TestUterRouteScaledExprKeepsUnitPriceRatio 验证缩放后的单价正好等于
 // 官方单价 × 系数——这是「与上游完全对齐」的数学定义。
+func TestUterRouteOfficialUnitPricesPreservesExplicitZeroOutput(t *testing.T) {
+	units, ok := uterRouteOfficialUnitPrices(`tier("base", p * 5 + c * 0 + cr * 1.25 + img * 8 + img_o * 30)`)
+	if !ok {
+		t.Fatal("official unit prices not parsed")
+	}
+	if !units.OutputPresent {
+		t.Fatal("explicit c * 0 must preserve the output dimension")
+	}
+	if units.Output != 0 {
+		t.Fatalf("output = %v, want 0", units.Output)
+	}
+	if !units.CachePresent || units.Cache != 1.25 {
+		t.Fatalf("cache present/value = %v/%v, want true/1.25", units.CachePresent, units.Cache)
+	}
+}
+
 func TestUterRouteScaledExprKeepsUnitPriceRatio(t *testing.T) {
 	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long_context", p * 2.5 + c * 15 + cr * 0.25)`
 	official, ok := uterRouteOfficialUnitPrices(expr)

@@ -14,6 +14,7 @@ func TestGetChannelBaseURLIsBoundsSafe(t *testing.T) {
 
 func TestChannelTypeNumbersAreUnique(t *testing.T) {
 	all := []int{
+		ChannelTypeUnknown,
 		ChannelTypeOpenAI,
 		ChannelTypeMidjourney,
 		ChannelTypeAzure,
@@ -73,9 +74,16 @@ func TestChannelTypeNumbersAreUnique(t *testing.T) {
 		ChannelTypeVLLM,
 		ChannelTypeSGLang,
 		ChannelTypeUterAPI,
+		ChannelTypeUterRoute,
 	}
 
 	seen := make(map[int]string, len(all))
+	maxType := 0
+	for _, channelType := range all {
+		if channelType > maxType {
+			maxType = channelType
+		}
+	}
 	for _, channelType := range all {
 		name := GetChannelTypeName(channelType)
 		previous, duplicate := seen[channelType]
@@ -84,8 +92,8 @@ func TestChannelTypeNumbersAreUnique(t *testing.T) {
 	}
 	assert.Equal(t, 60, ChannelTypeUter)
 	assert.Equal(t, 64, ChannelTypeUterAPI)
-	assert.Equal(t, ChannelTypeUterAPI, ChannelTypeDummy)
-	require.Greater(t, len(ChannelBaseURLs), ChannelTypeUterAPI)
+	assert.Equal(t, maxType, ChannelTypeDummy)
+	require.Greater(t, len(ChannelBaseURLs), maxType)
 	assert.Equal(t, "Uter", GetChannelTypeName(ChannelTypeUter))
 	assert.Equal(t, "Uter.api", GetChannelTypeName(ChannelTypeUterAPI))
 }
@@ -93,6 +101,7 @@ func TestChannelTypeNumbersAreUnique(t *testing.T) {
 func TestNewAPICompatibleChannelTypes(t *testing.T) {
 	assert.True(t, IsNewAPICompatibleChannelType(ChannelTypeUter))
 	assert.True(t, IsNewAPICompatibleChannelType(ChannelTypeUterAPI))
+	assert.True(t, IsNewAPICompatibleChannelType(ChannelTypeUterRoute))
 	assert.False(t, IsNewAPICompatibleChannelType(ChannelTypeAdvancedCustom))
 	assert.False(t, IsNewAPICompatibleChannelType(ChannelTypeTaskPlugin))
 }
