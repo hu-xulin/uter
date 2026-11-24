@@ -2,6 +2,15 @@
 
 概览是登录后的首页，汇总你的余额与用量、展示 API 接入信息，并回答常见的上手问题。
 
+## 设置引导
+
+首次进入概览时，页面顶部会展开**设置引导**，把接入前的准备集中到一处。它按顺序列出三个步骤：**创建 API 密钥**（为应用或服务生成鉴权密钥）、**添加额度**（在生产流量前保证余额充足）、**发送请求**（用游乐场或自己的客户端验证路由是否打通）。已完成的步骤会显示勾选。
+
+引导右侧给出一段**首个 API 请求**示例（可一键复制），并实时显示三项就绪状态：**路由已启用**、**认证已配置**、**已选择模型**。最右侧的**推荐操作**提供通往 API 密钥、使用日志与定价页的快捷入口。完成接入后点击**隐藏设置引导**即可收起。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="设置引导" src="/user-guide/zh/overview/light/00-setup-guide.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="设置引导" src="/user-guide/zh/overview/dark/00-setup-guide.webp" />
+
 ## 用量概览
 
 顶部卡片展示当前余额、今日请求数与近期消耗。这些数字与计费共用同一套额度账本，因此反映真实扣费。

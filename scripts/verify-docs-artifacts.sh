@@ -46,7 +46,7 @@ done
 # 4. user-guide 明暗主题截图：MDX 里是绝对路径，缺文件就是裂图。
 for loc in zh en; do
   for theme in light dark; do
-    shot="$DIST/user-guide/$loc/auth/$theme/01-login.webp"
+    shot="$DIST/user-guide/$loc/auth/$theme/02-email-code.webp"
     [ -s "$shot" ] || fail "$shot is missing or empty (user-guide screenshot)"
   done
 done

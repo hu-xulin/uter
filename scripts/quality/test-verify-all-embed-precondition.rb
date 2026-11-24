@@ -82,7 +82,7 @@ class VerifyAllEmbedPreconditionTest < Minitest::Test
                     "the verifier must iterate all seven docs locales"
     assert_includes body, 'index="$DIST/docs-search/$lang.json"',
                     "each locale must resolve to its own search index"
-    assert_includes body, "user-guide/$loc/auth/$theme/01-login.webp",
+    assert_includes body, "user-guide/$loc/auth/$theme/02-email-code.webp",
                     "the verifier must check light/dark screenshot pairs"
   end
 

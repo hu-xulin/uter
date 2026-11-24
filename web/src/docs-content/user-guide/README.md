@@ -19,8 +19,8 @@ web/src/docs-content/user-guide/
 
 ```
 web/public/user-guide/zh/auth/
-  light/01-login.webp
-  dark/01-login.webp
+  light/02-email-code.webp
+  dark/02-email-code.webp
   ...
 ```
 
@@ -71,11 +71,11 @@ web/public/user-guide/zh/auth/
 正文里的截图必须是 `web/public` 下的**绝对路径**，并按亮/暗双图成对出现：
 
 ```mdx
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="登录页" src="/user-guide/zh/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="登录页" src="/user-guide/zh/auth/dark/01-login.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="邮箱验证码登录" src="/user-guide/zh/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="邮箱验证码登录" src="/user-guide/zh/auth/dark/02-email-code.webp" />
 ```
 
-裸文件名写法（`src="01-login.webp"`）不被原生渲染器解析，会破图。
+裸文件名写法（`src="02-email-code.webp"`）不被原生渲染器解析，会破图。
 `web/scripts/resolve-docs-screenshots.mjs` 会把同步脚本产出的裸文件名批量改写
 成上面的双图形式，并可用 `--check` 做门禁。
 
