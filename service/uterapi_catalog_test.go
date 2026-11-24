@@ -30,6 +30,7 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
 func uterapiPricingServer(t *testing.T) *httptest.Server {
@@ -154,8 +155,13 @@ func TestUterAPIGroupRatioUpdatesChannelPriceAndUterMarkup(t *testing.T) {
 
 	var internal model.ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))
-	assert.Contains(t, internal.BillingExpr, "0.5")
-	assert.Contains(t, internal.BillingExpr, "1.1")
+	// Assert the price semantics, not an implementation-specific string form:
+	// the group ratio and the Uter markup must both be reflected in the
+	// computed charge (10*0.5*1.1 = 5.5 input, 50*0.5*1.1 = 27.5 output).
+	params := billingexpr.TokenParams{P: 1, C: 1}
+	charge, _, err := billingexpr.RunExprWithRequest(internal.BillingExpr, params, billingexpr.RequestInput{})
+	require.NoError(t, err)
+	assert.InDelta(t, 33, charge, 1e-6, "discounted then marked up: (10+50)*0.5*1.1")
 }
 
 func TestUterAPIGenericSyncRequiresBillingGroup(t *testing.T) {

@@ -111,6 +111,36 @@ func officialRecord(channelID int, modelName, source string) ChannelOfficialPric
 
 func floatPtr(value float64) *float64 { return &value }
 
+// TestProviderIdentityMigrationDetectsConflict verifies that the legacy
+// no-provider fallback in UpsertChannelOfficialPricing refuses to merge two
+// distinct price identities. First() on an ambiguous match would silently
+// attach one provider's cost/quote to another, breaking channel isolation.
+func TestProviderIdentityMigrationDetectsConflict(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	for _, provider := range []string{"provider-a", "provider-b"} {
+		row := officialRecord(90, "same-model", "test")
+		row.Provider = provider
+		row.Region = ""
+		row.DeploymentId = ""
+		require.NoError(t, DB.Create(&ChannelModelPricing{
+			ChannelId: row.ChannelId, Provider: provider, ModelName: row.ModelName,
+			Currency: row.Currency, OfficialPricing: row.OfficialPricing,
+			NormalizedPricing: row.NormalizedPricing, PricingSource: row.Source,
+			PricingStatus: ChannelPricingStatusOfficialOnly,
+			FetchedAt:     row.FetchedAt, UpdatedAt: 100,
+		}).Error)
+	}
+	// Incoming record uses an unknown provider, so the exact/legacy-provider
+	// lookups miss and only the provider-less fallback can match both rows.
+	incoming := officialRecord(90, "same-model", "test")
+	incoming.Provider = "provider-new"
+	incoming.Region = ""
+	incoming.DeploymentId = ""
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{incoming})
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "ambiguous channel pricing identity")
+}
+
 func TestChannelPricingIsolatedPerChannel(t *testing.T) {
 	setupChannelModelPricingDB(t)
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{

@@ -337,8 +337,16 @@ func applyGroupRatioToRecord(record *model.ChannelOfficialPricingRecord, group s
 	}
 	var official model.ChannelOfficialPricing
 	if common.UnmarshalJsonStr(record.NormalizedPricing, &official) == nil {
-		if originalExpr != "" {
-			setChannelPriceFromExpression(&official, originalExpr, ratio)
+		// The channel quote is the UPSTREAM price under this discount group,
+		// never the operator sale price. Use the official upstream expression
+		// as the base; the internal expression already carries Uter's markup
+		// and would contaminate the quote (e.g. 10 -> 11 before the discount).
+		quoteExpr := official.BillingExpr
+		if strings.TrimSpace(quoteExpr) == "" {
+			quoteExpr = originalExpr
+		}
+		if quoteExpr != "" {
+			setChannelPriceFromExpression(&official, quoteExpr, ratio)
 		}
 		official.DiscountGroup = group
 		official.DiscountRatio = &ratio

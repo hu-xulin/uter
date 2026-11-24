@@ -1139,15 +1139,32 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 				).First(&existing).Error
 			}
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// A channel has one upstream, so a row with a stale provider
-				// label is the same price identity. Adopt it and rewrite the
-				// provider instead of leaving two rows that make every billing
-				// request ambiguous. The stored sale price is never replaced
-				// here unless its own source is auto-derived.
-				err = tx.Where(
+				// Last-resort legacy match: a row with a stale provider label is
+				// adopted and rewritten. Unlike the scoped lookups above, this
+				// query cannot constrain provider, so MULTIPLE candidate rows may
+				// match (e.g. an empty-provider row and an old-provider row for
+				// the same model). Silently taking First() would merge two
+				// distinct price identities and could apply one channel's cost
+				// to another. Fail closed on ambiguity instead.
+				var candidates []ChannelModelPricing
+				if findErr := tx.Where(
 					"channel_id = ? AND region = ? AND deployment_id = ? AND model_name = ?",
 					record.ChannelId, record.Region, record.DeploymentId, record.ModelName,
-				).First(&existing).Error
+				).Find(&candidates).Error; findErr != nil {
+					return findErr
+				}
+				switch len(candidates) {
+				case 0:
+					err = gorm.ErrRecordNotFound
+				case 1:
+					existing = candidates[0]
+					err = nil
+				default:
+					return fmt.Errorf(
+						"ambiguous channel pricing identity for channel %d model %s: %d rows match with no provider constraint; refusing to merge",
+						record.ChannelId, record.ModelName, len(candidates),
+					)
+				}
 			}
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				row := ChannelModelPricing{
