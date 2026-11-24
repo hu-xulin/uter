@@ -327,3 +327,71 @@ func TestPublishChannelDraftEnablesAbilitiesForPricingVisibility(t *testing.T) {
 		assert.True(t, ability.Enabled)
 	}
 }
+
+// The create wizard persists the channel as a draft first. A multi-key draft
+// must be created with IsMultiKey already set: otherwise the final save keeps
+// the false value and the newline-joined keys are sent as one Authorization
+// header, which net/http rejects. This regression test pins the wizard path.
+func TestCreateChannelDraftMultiKeyModeIsPersisted(t *testing.T) {
+	setupModelListControllerTestDB(t)
+	body := []byte(`{"type":65,"name":"draft multi","base_url":"https://dreamrouter.ai","key":"key-a\nkey-b\nkey-c","models":"m-a","mode":"multi_to_single","multi_key_mode":"polling"}`)
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/api/channel/draft", bytes.NewReader(body))
+	ctx.Request.Header.Set("Content-Type", "application/json")
+
+	CreateChannelDraft(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	var response struct {
+		Success bool `json:"success"`
+		Data    struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
+	require.True(t, response.Success)
+	require.Positive(t, response.Data.ID)
+
+	channel, err := model.GetChannelById(response.Data.ID, true)
+	require.NoError(t, err)
+	require.NotNil(t, channel)
+	assert.True(t, channel.ChannelInfo.IsMultiKey, "draft must be a multi-key channel from creation")
+	assert.Equal(t, 3, channel.ChannelInfo.MultiKeySize)
+	assert.Equal(t, "polling", string(channel.ChannelInfo.MultiKeyMode))
+	assert.Equal(t, "key-a\nkey-b\nkey-c", channel.Key)
+
+	// The wizard's final save omits channel_info; the persisted multi-key
+	// state must survive an ordinary update (UpdateChannel copies it back).
+	assert.True(t, channel.GetOtherSettings().Draft)
+}
+
+// Abandoned drafts used to be hidden from the management list by a hard
+// settings.draft filter. They became unmanageable ghosts: operators could see
+// a deleted channel "turn into" a disabled one but could not find it to clean
+// it up. The list query must include drafts as ordinary disabled channels.
+func TestBuildChannelListQueryIncludesDraftChannels(t *testing.T) {
+	setupModelListControllerTestDB(t)
+
+	draftSettings, err := common.Marshal(dto.ChannelOtherSettings{Draft: true})
+	require.NoError(t, err)
+	draft := model.Channel{
+		Type: 1, Name: "visible draft", Key: "sk-draft", Status: 0,
+		OtherSettings: string(draftSettings),
+	}
+	require.NoError(t, model.DB.Create(&draft).Error)
+	// Channel.Status has gorm:"default:1", so the zero value above is replaced
+	// on insert. Production draft creation forces it back to disabled; mirror
+	// that here so the test reflects a real abandoned draft.
+	require.NoError(t, model.DB.Model(&model.Channel{}).Where("id = ?", draft.Id).Update("status", 0).Error)
+
+	var ids []int64
+	require.NoError(t, buildChannelListQuery("", -1, -1).
+		Where("name = ?", "visible draft").Pluck("id", &ids).Error)
+	assert.NotEmpty(t, ids, "draft channels must be visible in the management list")
+
+	var enabledIDs []int64
+	require.NoError(t, buildChannelListQuery("", 1, -1).
+		Where("name = ?", "visible draft").Pluck("id", &enabledIDs).Error)
+	assert.Empty(t, enabledIDs, "drafts are disabled and must not appear in the enabled filter")
+}

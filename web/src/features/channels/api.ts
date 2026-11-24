@@ -1201,6 +1201,8 @@ export async function createChannelDraft(payload: {
   key?: string
   models?: string
   group?: string
+  mode?: 'single' | 'batch' | 'multi_to_single'
+  multi_key_mode?: 'random' | 'polling'
 }): Promise<{ success: boolean; message?: string; data?: { id: number } }> {
   const res = await api.post(
     '/api/channel/draft',

@@ -11,17 +11,20 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 type channelDraftRequest struct {
-	Name    string `json:"name"`
-	Type    int    `json:"type"`
-	BaseURL string `json:"base_url"`
-	Key     string `json:"key"`
-	Models  string `json:"models"`
-	Group   string `json:"group"`
+	Name         string                `json:"name"`
+	Type         int                   `json:"type"`
+	BaseURL      string                `json:"base_url"`
+	Key          string                `json:"key"`
+	Models       string                `json:"models"`
+	Group        string                `json:"group"`
+	Mode         string                `json:"mode"`
+	MultiKeyMode constant.MultiKeyMode `json:"multi_key_mode"`
 }
 
 // CreateChannelDraft creates a disabled, hidden channel so the create wizard
@@ -47,6 +50,38 @@ func CreateChannelDraft(c *gin.Context) {
 		group = "default"
 	}
 	baseURL := strings.TrimSpace(req.BaseURL)
+
+	// The create wizard persists the channel as a draft first, then finishes
+	// configuration through UpdateChannel. The direct-create path (AddChannel)
+	// derives multi-key state from mode; the draft path must do the same,
+	// otherwise a wizard-created multi-key channel keeps IsMultiKey=false and
+	// sends the newline-joined keys as one Authorization header, which net/http
+	// rejects. Normalise the key here so the draft is correct from creation.
+	channelInfo := model.ChannelInfo{}
+	key := strings.TrimSpace(req.Key)
+	if req.Mode == "multi_to_single" {
+		cleanKeys := make([]string, 0)
+		for _, rawKey := range strings.Split(req.Key, "\n") {
+			trimmed := strings.TrimSpace(rawKey)
+			if trimmed == "" {
+				continue
+			}
+			cleanKeys = append(cleanKeys, trimmed)
+		}
+		if len(cleanKeys) == 0 {
+			common.ApiErrorMsg(c, "Channel key cannot be empty")
+			return
+		}
+		channelInfo.IsMultiKey = true
+		channelInfo.MultiKeyMode = req.MultiKeyMode
+		if channelInfo.MultiKeyMode != constant.MultiKeyModeRandom &&
+			channelInfo.MultiKeyMode != constant.MultiKeyModePolling {
+			channelInfo.MultiKeyMode = constant.MultiKeyModeRandom
+		}
+		channelInfo.MultiKeySize = len(cleanKeys)
+		key = strings.Join(cleanKeys, "\n")
+	}
+
 	other := dto.ChannelOtherSettings{
 		Draft: true,
 		// A new channel is scoped-pending from the first write onward. It must
@@ -66,12 +101,13 @@ func CreateChannelDraft(c *gin.Context) {
 	channel := model.Channel{
 		Type:          req.Type,
 		Name:          name,
-		Key:           strings.TrimSpace(req.Key),
+		Key:           key,
 		Status:        0,
 		BaseURL:       &baseURL,
 		Models:        strings.TrimSpace(req.Models),
 		Group:         group,
 		OtherSettings: string(raw),
+		ChannelInfo:   channelInfo,
 		CreatedTime:   common.GetTimestamp(),
 	}
 	channels := []model.Channel{channel}

@@ -1554,6 +1554,15 @@ export function ChannelMutateDrawer({
         group: Array.isArray(values.group)
           ? values.group.join(',')
           : values.group,
+        // The draft is the real channel row the wizard keeps editing. Its
+        // multi-key state must be decided at creation time, otherwise the
+        // final save inherits IsMultiKey=false and sends newline-joined keys
+        // as a single Authorization header (net/http rejects it).
+        mode: values.multi_key_mode,
+        multi_key_mode:
+          values.multi_key_mode === 'multi_to_single'
+            ? values.multi_key_type
+            : undefined,
       }
       const existing = draftChannelIdRef.current
       if (existing) {

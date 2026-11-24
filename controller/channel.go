@@ -153,10 +153,13 @@ func applyChannelStatusFilter(query *gorm.DB, statusFilter int) *gorm.DB {
 
 func buildChannelListQuery(group string, statusFilter int, typeFilter int) *gorm.DB {
 	query := model.DB.Model(&model.Channel{})
-	// Draft channels are disabled rows created before the create wizard is
-	// finished. They stay addressable by ID for pricing, but never appear as
-	// ordinary disabled channels in the list.
-	query = query.Where("(settings IS NULL OR settings NOT LIKE ?)", "%\"draft\":true%")
+	// Draft channels (status=0, settings.draft=true) are the persisted first
+	// step of the create wizard. If the wizard is abandoned before publish,
+	// the draft row lingers. Hiding it from the management list made abandoned
+	// drafts unmanageable "ghost" channels: operators saw a deleted channel
+	// "turn into a disabled one" yet could not find or delete it. Show drafts
+	// as ordinary disabled channels so they stay visible and removable. They
+	// never route traffic: the channel cache only loads status=Enabled rows.
 	query = model.ApplyChannelGroupFilter(query, group)
 	query = applyChannelStatusFilter(query, statusFilter)
 	if typeFilter >= 0 {
