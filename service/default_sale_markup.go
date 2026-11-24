@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 package service
 
 import (
-	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -29,6 +29,56 @@ import (
 // DefaultUterSaleMarkup is the default Uter sale price relative to the
 // upstream channel quote when the operator has not configured a rule.
 const DefaultUterSaleMarkup = 1.10
+
+// scaleBillingExprByFactor multiplies every price coefficient in an upstream
+// billing expression by factor, preserving the complete tier structure.
+//
+// It must not be replaced by a string-level "(expr) * factor" wrap: the
+// billing engine rejects an ordinary multiplier outside fixed() charges, and
+// such a wrap would silently leave a fixed() branch unscaled in mixed
+// expressions (e.g. `len <= K ? tier("short", p * 1) : tier("long", fixed(0.05))`).
+// Instead each coefficient is scaled in place:
+//   - fixed(amount) charges: the numeric literal inside fixed();
+//   - token/duration unit coefficients: the numeric literal in `<var> * n`.
+//
+// A failed normalization means the result is not executable, so callers must
+// fail closed and leave the price unconfigured rather than charge an
+// unscaled branch.
+func scaleBillingExprByFactor(expr string, factor float64) (string, bool) {
+	raw := strings.TrimSpace(expr)
+	if raw == "" || factor <= 0 || math.IsNaN(factor) || math.IsInf(factor, 0) {
+		return "", false
+	}
+	scaled := raw
+	if len(uterRouteFixedPriceDiscount.FindAllString(raw, -1)) > 0 {
+		scaled = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(scaled, func(term string) string {
+			match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
+			value, err := strconv.ParseFloat(match[1], 64)
+			if err != nil {
+				return term
+			}
+			return "fixed(" + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64) + ")"
+		})
+	}
+	// Scale per-unit token/duration coefficients in place. image_count is a
+	// request quantity, not a price coefficient, so it is never scaled.
+	scaled = uterRouteExprUnitTermScaled.ReplaceAllStringFunc(scaled, func(term string) string {
+		match := uterRouteExprUnitTermScaled.FindStringSubmatch(term)
+		if match[1] == "image_count" {
+			return term
+		}
+		value, err := strconv.ParseFloat(match[2], 64)
+		if err != nil {
+			return term
+		}
+		return match[1] + " * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
+	})
+	normalized := NormalizeUpstreamExpression(scaled)
+	if !normalized.Executable {
+		return "", false
+	}
+	return scaled, true
+}
 
 // applyDefaultSaleMarkup scales an automatically derived sale price by the
 // default markup. Operator, batch and approved prices never pass through this
@@ -71,23 +121,8 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 		}
 	}
 	if pricing.BillingExpr != "" {
-		expr := pricing.BillingExpr
-		if strings.Contains(expr, "fixed(") {
-			// Task expressions reject a multiplier outside fixed(), so scale the
-			// fixed amount in place.
-			expr = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(expr, func(term string) string {
-				match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
-				value, err := strconv.ParseFloat(match[1], 64)
-				if err != nil {
-					return term
-				}
-				return "fixed(" + strconv.FormatFloat(value*DefaultUterSaleMarkup, 'f', -1, 64) + ")"
-			})
-		} else {
-			expr = fmt.Sprintf("(%s) * %s", expr,
-				strconv.FormatFloat(DefaultUterSaleMarkup, 'f', -1, 64))
-		}
-		if !NormalizeUpstreamExpression(expr).Executable {
+		expr, ok := scaleBillingExprByFactor(pricing.BillingExpr, DefaultUterSaleMarkup)
+		if !ok {
 			return false
 		}
 		pricing.BillingExpr = expr

@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -75,7 +74,6 @@ type UpstreamProviderCapabilities struct {
 	DeploymentPricing UpstreamProviderCapability `json:"deployment_pricing"`
 }
 
-
 // floatMoneyPtr converts an upstream float64 price into the exact Money
 // pointer used by stored pricing. Nil stays nil (meaning "no published price").
 func floatMoneyPtr(value *float64) *model.Money {
@@ -85,7 +83,6 @@ func floatMoneyPtr(value *float64) *model.Money {
 	m := model.MoneyFromFloat(*value)
 	return &m
 }
-
 
 func capability(status UpstreamCapabilityStatus, detail string) UpstreamProviderCapability {
 	return UpstreamProviderCapability{Status: status, Detail: detail}
@@ -433,35 +430,71 @@ func UterRouteDiscountForModel(
 	if group == "" {
 		group = UterRouteDiscountGroupDefault
 	}
-	// Upstream serializes enable_groups in unstable order. Pick the lowest
-	// positive ratio deterministically so identical channels cannot receive
-	// different channel prices from the same document.
-	bestRatio, bestGroup := 0.0, ""
-	for _, modelGroup := range item.EnableGroups {
-		ratio, ok := snapshot.GroupGroupRatio[group][modelGroup]
-		if !ok || ratio <= 0 {
-			continue
-		}
-		if bestRatio == 0 || ratio < bestRatio {
-			bestRatio, bestGroup = ratio, modelGroup
-		}
+	// Collect every positive, finite ratio among the model's enable_groups
+	// for this channel's group. Upstream serializes enable_groups in unstable
+	// order, so ordering can never decide the billing identity.
+	//
+	// Business rule (production safety): the selected modelGroup must be the
+	// one this channel actually settles under. If two enabled groups carry
+	// DIFFERENT ratios there is no evidence in the catalog about which one is
+	// the real settlement group — picking the lowest would silently misstate
+	// both purchase cost and margin. Return false so the caller parks the row
+	// in NEEDS_REVIEW instead of guessing. Equal ratios are unambiguous: every
+	// candidate resolves to the same price.
+	if resolve := resolveUterRouteGroupRatio(item.EnableGroups, snapshot.GroupGroupRatio[group]); resolve.ok {
+		return resolve.ratio, resolve.group, true
 	}
-	if bestGroup != "" {
-		return bestRatio, bestGroup, true
-	}
-	for _, modelGroup := range item.EnableGroups {
-		ratio, ok := snapshot.GroupRatio[modelGroup]
-		if !ok || ratio <= 0 {
-			continue
-		}
-		if bestRatio == 0 || ratio < bestRatio {
-			bestRatio, bestGroup = ratio, modelGroup
-		}
-	}
-	if bestGroup != "" {
-		return bestRatio, bestGroup, true
+	if resolve := resolveUterRouteGroupRatio(item.EnableGroups, snapshot.GroupRatio); resolve.ok {
+		return resolve.ratio, resolve.group, true
 	}
 	return 0, "", false
+}
+
+type uterRouteGroupResolution struct {
+	ratio float64
+	group string
+	ok    bool
+}
+
+// resolveUterRouteGroupRatio resolves one ratio table deterministically.
+// It returns ok=false when two enabled groups produce different ratios (the
+// real settlement group cannot be proven) or when no valid ratio exists.
+// When equal ratios make the price unambiguous, the group name is still
+// chosen deterministically (lexicographic minimum) so the recorded billing
+// identity is independent of the upstream's unstable array order.
+func resolveUterRouteGroupRatio(enableGroups []string, table map[string]float64) uterRouteGroupResolution {
+	var ratio float64
+	groups := make([]string, 0, len(enableGroups))
+	seen := make(map[string]bool, len(enableGroups))
+	for _, modelGroup := range enableGroups {
+		value, exists := table[modelGroup]
+		if !exists || !validUpstreamRatio(value) || seen[modelGroup] {
+			continue
+		}
+		seen[modelGroup] = true
+		if ratio == 0 {
+			ratio = value
+		} else if !ratiosEqual(value, ratio) {
+			// Different settlement ratios cannot be resolved from the catalog.
+			return uterRouteGroupResolution{}
+		}
+		groups = append(groups, modelGroup)
+	}
+	if ratio == 0 || len(groups) == 0 {
+		return uterRouteGroupResolution{}
+	}
+	sort.Strings(groups)
+	return uterRouteGroupResolution{ratio: ratio, group: groups[0], ok: true}
+}
+
+// validUpstreamRatio rejects zero, negative, NaN and infinite group ratios so
+// a malformed upstream document cannot enter the pricing path.
+func validUpstreamRatio(ratio float64) bool {
+	return ratio > 0 && !math.IsNaN(ratio) && !math.IsInf(ratio, 0)
+}
+
+func ratiosEqual(a, b float64) bool {
+	return math.Abs(a-b) <= 1e-12*math.Max(1, math.Max(math.Abs(a), math.Abs(b)))
 }
 
 // scaleUpstreamPriceLine applies an upstream discount to an absolute price.
@@ -557,20 +590,11 @@ func uterRouteChannelExpressionPricing(
 	if raw == "" || factor <= 0 {
 		return "", false
 	}
-	scaled := fmt.Sprintf("(%s) * %s", raw, strconv.FormatFloat(factor, 'f', -1, 64))
-	if strings.Contains(raw, "fixed(") {
-		// The expression engine forbids multiplying a fixed charge by a request
-		// multiplier, so the discount is applied inside fixed(amount).
-		scaled = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(raw, func(term string) string {
-			match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
-			value, err := strconv.ParseFloat(match[1], 64)
-			if err != nil {
-				return term
-			}
-			return "fixed(" + strconv.FormatFloat(value*factor, 'f', -1, 64) + ")"
-		})
-	}
-	if !NormalizeUpstreamExpression(scaled).Executable {
+	// Scale every price coefficient in place so all tiers/branches receive the
+	// discount. A string-level "(expr) * factor" wrap leaves fixed() branches
+	// unscaled and is rejected by the billing engine for fixed expressions.
+	scaled, ok := scaleBillingExprByFactor(raw, factor)
+	if !ok {
 		return "", false
 	}
 	pricing := model.ChannelInternalPricing{

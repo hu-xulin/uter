@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
 const uterRoutePricingFixture = `{
@@ -233,11 +235,33 @@ func TestUterRouteDiscountForModelFallsBackToGroupRatio(t *testing.T) {
 	require.Equal(t, 0.75, discount)
 }
 
-func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
+func TestUterRouteMultipleEnableGroupsAmbiguous(t *testing.T) {
+	// Two enabled groups resolve to different settlement ratios for this
+	// channel. The catalog gives no evidence which one is the real settlement
+	// group, so the discount must NOT be guessed (e.g. by taking the lowest):
+	// doing so would misstate purchase cost and margin. Order must not matter.
 	snapshot := &UpstreamSnapshot{
 		GroupRatio: map[string]float64{},
 		GroupGroupRatio: map[string]map[string]float64{
 			"default": {"claude": 0.6, "claude-aws": 0.9},
+		},
+	}
+	for _, groups := range [][]string{
+		{"claude-aws", "claude"},
+		{"claude", "claude-aws"},
+	} {
+		_, _, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: groups}, "default")
+		require.False(t, ok, "ambiguous settlement group must require review, not be guessed")
+	}
+}
+
+func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
+	// Equal ratios across enabled groups are unambiguous: every candidate
+	// resolves to the same price, so ordering still cannot change the result.
+	snapshot := &UpstreamSnapshot{
+		GroupRatio: map[string]float64{},
+		GroupGroupRatio: map[string]map[string]float64{
+			"default": {"claude": 0.6, "claude-aws": 0.6},
 		},
 	}
 	for _, groups := range [][]string{
@@ -249,6 +273,41 @@ func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
 		assert.Equal(t, 0.6, discount)
 		assert.Equal(t, "claude", modelGroup)
 	}
+}
+
+// TestUterRouteDiscountGroupChangeIsChannelIsolated verifies that changing
+// one channel's upstream billing group never changes another channel's
+// discount. Discounts are stored as a per-channel map; a shared/global value
+// would leak one channel's purchase cost into every other channel.
+func TestUterRouteDiscountGroupChangeIsChannelIsolated(t *testing.T) {
+	previous := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previous })
+
+	common.OptionMap[UterRouteDiscountGroupOptionKey] = `{"7":"vip","8":"default"}`
+	require.Equal(t, "vip", GetUterRouteDiscountGroup(7))
+	require.Equal(t, "default", GetUterRouteDiscountGroup(8))
+
+	// Simulate an operator changing only channel 7.
+	var groups map[string]string
+	require.NoError(t, common.UnmarshalJsonStr(common.OptionMap[UterRouteDiscountGroupOptionKey], &groups))
+	groups["7"] = "svip"
+	encoded, err := common.Marshal(groups)
+	require.NoError(t, err)
+	common.OptionMap[UterRouteDiscountGroupOptionKey] = string(encoded)
+
+	require.Equal(t, "svip", GetUterRouteDiscountGroup(7))
+	require.Equal(t, "default", GetUterRouteDiscountGroup(8), "channel 8 must be unaffected")
+	require.Equal(t, UterRouteDiscountGroupDefault, GetUterRouteDiscountGroup(99), "unset channel keeps the default")
+}
+
+func TestUterRouteDiscountRejectsInvalidRatios(t *testing.T) {
+	snapshot := &UpstreamSnapshot{
+		GroupRatio:      map[string]float64{},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"bad": 0}},
+	}
+	_, _, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: []string{"bad"}}, "default")
+	require.False(t, ok, "zero ratio must not enter the pricing path")
 }
 
 func TestFetchUterRouteUpstreamStripsCompatibleVersionPath(t *testing.T) {
@@ -406,7 +465,15 @@ func TestUterRouteExpressionKeepsAllTiersAndAutoConfiguresRatio(t *testing.T) {
 	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
 	require.Contains(t, records[0].InternalPricing, `tier(\"standard\"`)
 	require.Contains(t, records[0].InternalPricing, `tier(\"long\"`)
-	require.Contains(t, records[0].InternalPricing, `) * 0.6`)
+	// The discount must scale every coefficient in every tier, not wrap the
+	// whole expression in a multiplier (which would be non-executable for
+	// fixed-charge rules and could leave a branch unscaled). Verify the real
+	// computed result instead of asserting an implementation-specific string.
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].InternalPricing, &internal))
+	assertExprScaledBy(t, expr, internal.BillingExpr, 0.6*DefaultUterSaleMarkup,
+		billingexpr.TokenParams{P: 1000, C: 500, Len: 1000},
+		billingexpr.TokenParams{P: 1000, C: 500, Len: 300000})
 	require.NotContains(t, records[0].NormalizedPricing, `"needs_review":true`)
 	require.Contains(t, records[0].NormalizedPricing, `"tiers":[`)
 	require.Contains(t, records[0].NormalizedPricing, `"input_per_million_usd":1.25`)
@@ -415,6 +482,55 @@ func TestUterRouteExpressionKeepsAllTiersAndAutoConfiguresRatio(t *testing.T) {
 	require.NotContains(t, records[1].NormalizedPricing, `"needs_review":true`)
 	require.Contains(t, records[1].NormalizedPricing, `"price_kind":"RATIO_ONLY"`)
 	require.Contains(t, records[1].NormalizedPricing, `"tiers":[`)
+}
+
+// assertExprScaledBy proves that `scaled` computes `base * factor` for every
+// supplied usage probe. This is a semantic assertion: it catches a discount
+// applied to only one tier/branch, which a string-contains check cannot.
+func assertExprScaledBy(t *testing.T, baseExpr, scaledExpr string, factor float64, probes ...billingexpr.TokenParams) {
+	t.Helper()
+	require.NotEmpty(t, scaledExpr)
+	require.True(t, NormalizeUpstreamExpression(scaledExpr).Executable,
+		"scaled expression must be executable: %s", NormalizeUpstreamExpression(scaledExpr).Error)
+	for _, params := range probes {
+		base, _, baseErr := billingexpr.RunExprWithRequest(baseExpr, params, billingexpr.RequestInput{})
+		got, _, gotErr := billingexpr.RunExprWithRequest(scaledExpr, params, billingexpr.RequestInput{})
+		require.NoError(t, baseErr)
+		require.NoError(t, gotErr)
+		require.InDelta(t, base*factor, got, math.Max(1e-6, math.Abs(base*factor)*1e-9),
+			"usage %+v: base=%v scaled=%v factor=%v", params, base, got, factor)
+	}
+}
+
+// TestUterRouteMixedFixedExpressionDiscountPreservesAllTerms is a regression
+// test for a production defect: a billing rule that mixes a token tier with a
+// fixed-charge tier had its discount applied only inside fixed(), leaving the
+// token tier unscaled (overcharging short-context requests). A plain
+// "(expr) * factor" wrap is not a fix — the billing engine rejects an ordinary
+// multiplier on fixed expressions. Every coefficient must be scaled in place.
+func TestUterRouteMixedFixedExpressionDiscountPreservesAllTerms(t *testing.T) {
+	const raw = `len <= 100 ? tier("short", p * 1) : tier("long", fixed(0.05))`
+	scaled, ok := scaleBillingExprByFactor(raw, 0.6)
+	require.True(t, ok)
+	assertExprScaledBy(t, raw, scaled, 0.6,
+		billingexpr.TokenParams{P: 50, Len: 50},
+		billingexpr.TokenParams{P: 300, Len: 300},
+	)
+	// A fixed-charge task rule multiplied by image_count must scale only the
+	// fixed amount, never the request quantity.
+	const taskRaw = `tier("image", fixed(0.04)) * image_count`
+	taskScaled, ok := scaleBillingExprByFactor(taskRaw, 0.5)
+	require.True(t, ok)
+	require.Contains(t, taskScaled, "fixed(0.02)")
+	require.Contains(t, taskScaled, "* image_count")
+	imageCount := 2
+	base, _, baseErr := billingexpr.RunExprWithRequest(taskRaw, billingexpr.TokenParams{},
+		billingexpr.RequestInput{ImageCount: &imageCount})
+	got, _, gotErr := billingexpr.RunExprWithRequest(taskScaled, billingexpr.TokenParams{},
+		billingexpr.RequestInput{ImageCount: &imageCount})
+	require.NoError(t, baseErr)
+	require.NoError(t, gotErr)
+	require.InDelta(t, base*0.5, got, 1e-6)
 }
 
 func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *testing.T) {
@@ -437,7 +553,12 @@ func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *te
 	require.NotNil(t, view.ChannelPrice)
 	assert.InDelta(t, 6, view.ChannelPrice.InputPerMillionUSD.Float64(), 1e-9)
 	assert.InDelta(t, 30, view.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-9)
-	require.Contains(t, records[0].InternalPricing, ") * 1.1")
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].InternalPricing, &internal))
+	assertExprScaledBy(t, `tier("base", p * 10 + c * 50 + cr * 1)`, internal.BillingExpr,
+		0.6*DefaultUterSaleMarkup,
+		billingexpr.TokenParams{P: 1000, C: 500, Len: 1000},
+		billingexpr.TokenParams{P: 2000, C: 100, Len: 2000, CR: 50})
 }
 
 // 上游定价页不展示没有厂商信息的模型；快照与渠道都必须与页面口径一致。
