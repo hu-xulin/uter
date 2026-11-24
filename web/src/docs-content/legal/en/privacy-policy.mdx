@@ -120,10 +120,10 @@ We collect only the following 4 categories of personal information directly rela
 
 | Category | Specific Fields | Required | Collection Scenario |
 |---|---|---|---|
-| **① Account Information** | Mobile phone number, email, account password (encrypted storage), nickname/enterprise name | Required | Registration, login |
-| **② Identity Verification Information** | Natural person: name, ID number (verified by a third-party identity verification institution); Enterprise: enterprise name, unified social credit code, legal representative name, business license image | Required | Fulfilling real-name obligation under the Cybersecurity Law and the Interim Measures for the Management of Generative AI Services |
-| **③ Payment and Invoicing Information** | Top-up order number, payment channel, transaction amount, invoicing entity and tax number | Required | Top-up, invoicing |
-| **④ Logs and Metadata** | IP address, device identifier (User-Agent), access time, model identifier, input/output Token count, request status code, response latency, API Key identifier | Required | Providing service, billing, security audit |
+| **Account Information** | Mobile phone number, email, account password (encrypted storage), nickname/enterprise name | Required | Registration, login |
+| **Identity Verification Information** | Natural person: name, ID number (verified by a third-party identity verification institution); Enterprise: enterprise name, unified social credit code, legal representative name, business license image | Required | Fulfilling real-name obligation under the Cybersecurity Law and the Interim Measures for the Management of Generative AI Services |
+| **Payment and Invoicing Information** | Top-up order number, payment channel, transaction amount, invoicing entity and tax number | Required | Top-up, invoicing |
+| **Logs and Metadata** | IP address, device identifier (User-Agent), access time, model identifier, input/output Token count, request status code, response latency, API Key identifier | Required | Providing service, billing, security audit |
 
 **3.2 Information We Will Not Collect**
 
@@ -170,11 +170,11 @@ To provide you with the Service, we may entrust the following types of partners 
 | Type of Entrusted Party | Processing Purpose | Information Types Involved |
 |---|---|---|
 | Cloud infrastructure provider (domestic) | Server hosting, data storage, network transmission | All four categories |
-| Identity verification institution | Identity/enterprise information verification | ② Identity verification information |
-| Third-party payment institution | Payment settlement | ③ Payment and invoicing information |
-| Electronic invoice service provider | Invoice issuance | ③ Payment and invoicing information |
-| SMS/email service provider | Sending verification codes and service notices | ① Account information |
-| Security risk-control service provider | Anti-fraud and anomaly identification | ④ Logs and metadata |
+| Identity verification institution | Identity/enterprise information verification | Identity verification information |
+| Third-party payment institution | Payment settlement | Payment and invoicing information |
+| Electronic invoice service provider | Invoice issuance | Payment and invoicing information |
+| SMS/email service provider | Sending verification codes and service notices | Account information |
+| Security risk-control service provider | Anti-fraud and anomaly identification | Logs and metadata |
 | **Upstream Model Provider** | **Model inference** | **Your request content (only when you initiate a call)** |
 
 We have or will require the above entrusted parties by written agreement to comply with the same personal information protection standards, sign confidentiality agreements, not process beyond the entrusted purpose, and delete or return data upon termination of the entrustment relationship.

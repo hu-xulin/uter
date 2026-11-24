@@ -118,10 +118,10 @@ Nous ne collectons que les 4 catégories de Données personnelles suivantes, dir
 
 | Catégorie | Champs précis | Obligatoire | Scénario de collecte |
 |---|---|---|---|
-| **① Informations de compte** | Numéro de téléphone mobile, courriel, mot de passe du compte (stockage chiffré), pseudonyme / raison sociale | Obligatoire | Inscription, connexion |
-| **② Informations de vérification d'identité** | Personne physique : nom, numéro de pièce d'identité (vérifié par une institution tiers de vérification d'identité) ; Entreprise : raison sociale, code de crédit social unifié, nom du représentant légal, image de la licence d'exploitation | Obligatoire | Exécution de l'obligation d'identité réelle prévue par la Loi sur la cybersécurité et les Mesures provisoires relatives à la gestion des services d'IA générative |
-| **③ Informations de paiement et de facturation** | Numéro de commande de recharge, canal de paiement, montant de la transaction, entité de facturation et numéro fiscal | Obligatoire | Recharge, facturation |
-| **④ Journaux et métadonnées** | Adresse IP, identifiant d'appareil (User-Agent), heure d'accès, identifiant de modèle, nombre de jetons d'entrée/sortie, code de statut de la requête, latence de réponse, identifiant de Clé API | Obligatoire | Fourniture du Service, facturation, audit de sécurité |
+| **Informations de compte** | Numéro de téléphone mobile, courriel, mot de passe du compte (stockage chiffré), pseudonyme / raison sociale | Obligatoire | Inscription, connexion |
+| **Informations de vérification d'identité** | Personne physique : nom, numéro de pièce d'identité (vérifié par une institution tiers de vérification d'identité) ; Entreprise : raison sociale, code de crédit social unifié, nom du représentant légal, image de la licence d'exploitation | Obligatoire | Exécution de l'obligation d'identité réelle prévue par la Loi sur la cybersécurité et les Mesures provisoires relatives à la gestion des services d'IA générative |
+| **Informations de paiement et de facturation** | Numéro de commande de recharge, canal de paiement, montant de la transaction, entité de facturation et numéro fiscal | Obligatoire | Recharge, facturation |
+| **Journaux et métadonnées** | Adresse IP, identifiant d'appareil (User-Agent), heure d'accès, identifiant de modèle, nombre de jetons d'entrée/sortie, code de statut de la requête, latence de réponse, identifiant de Clé API | Obligatoire | Fourniture du Service, facturation, audit de sécurité |
 
 **3.2 Informations que nous ne collecterons pas**
 
@@ -168,11 +168,11 @@ Afin de vous fournir le Service, nous pouvons confier le traitement de vos Donn�
 | Type de partie déléguée | Finalité du traitement | Types d'informations concernés |
 |---|---|---|
 | Fournisseur d'infrastructure cloud (national) | Hébergement des serveurs, stockage des données, transmission réseau | Les quatre catégories |
-| Institution de vérification d'identité | Vérification des informations d'identité ou d'entreprise | ② Informations de vérification d'identité |
-| Établissement de paiement de tiers | Règlement des paiements | ③ Informations de paiement et de facturation |
-| Prestataire de services de facturation électronique | Émission des factures | ③ Informations de paiement et de facturation |
-| Prestataire de services SMS/courriel | Envoi de codes de vérification et de notifications relatives au Service | ① Informations de compte |
-| Prestataire de services de contrôle des risques de sécurité | Lutte contre la fraude et identification des anomalies | ④ Journaux et métadonnées |
+| Institution de vérification d'identité | Vérification des informations d'identité ou d'entreprise | Informations de vérification d'identité |
+| Établissement de paiement de tiers | Règlement des paiements | Informations de paiement et de facturation |
+| Prestataire de services de facturation électronique | Émission des factures | Informations de paiement et de facturation |
+| Prestataire de services SMS/courriel | Envoi de codes de vérification et de notifications relatives au Service | Informations de compte |
+| Prestataire de services de contrôle des risques de sécurité | Lutte contre la fraude et identification des anomalies | Journaux et métadonnées |
 | **Fournisseur de modèle en amont** | **Inférence de modèle** | **Le contenu de vos requêtes (uniquement lorsque vous initiez un appel)** |
 
 Nous avons conclu, et conclurons avec les parties déléguées ci-dessus, des accords écrits leur imposant de respecter les mêmes normes de protection des Données personnelles, de signer des accords de confidentialité, de ne pas traiter au-delà de la finalité confiée et de supprimer ou de restituer les données à la fin de la relation de sous-traitance.
