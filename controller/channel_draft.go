@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -48,6 +49,10 @@ func CreateChannelDraft(c *gin.Context) {
 	baseURL := strings.TrimSpace(req.BaseURL)
 	other := dto.ChannelOtherSettings{
 		Draft: true,
+		// A new channel is scoped-pending from the first write onward. It must
+		// never reach the global legacy price path, even while its price rows
+		// are empty.
+		PricingMode: dto.ChannelPricingModeScopedPending,
 		// The unified create flow keeps the channel in sync without a second
 		// manual step: follow upstream model additions and apply them.
 		UpstreamModelUpdateCheckEnabled:    true,
@@ -88,6 +93,13 @@ func CreateChannelDraft(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// GORM applies the status=1 default before AddAbilities runs, so the
+	// generated abilities can be enabled even though the draft is disabled.
+	// Keep pricing/routing views consistent with the forced status=0.
+	if err := model.UpdateAbilityStatus(channelID, false); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	model.InitChannelCache()
 	recordManageAudit(c, "channel.draft.create", map[string]any{
 		"name": name,
@@ -112,7 +124,14 @@ func PublishChannelDraft(c *gin.Context) {
 	}
 	if channel.Status != 0 {
 		// Already enabled: publishing is idempotent so a retried final save
-		// does not fail after the first publish succeeded.
+		// does not fail after the first publish succeeded. Rebuild abilities
+		// anyway: an older publish only flipped channels.status and left the
+		// draft's disabled abilities behind, hiding the channel from pricing.
+		if err := model.RebuildChannelAbilities(id); err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		model.InitChannelCache()
 		common.ApiSuccess(c, gin.H{"id": id, "already_published": true})
 		return
 	}
@@ -147,16 +166,24 @@ func PublishChannelDraft(c *gin.Context) {
 		return
 	}
 	other.Draft = false
+	// Only a fully verified draft becomes a channel-scoped billable channel.
+	// Leaving it pending would block every request; promoting it here keeps the
+	// DRAFT -> ... -> ACTIVE transition atomic with status=1.
+	other.PricingMode = dto.ChannelPricingModeScopedActive
 	raw, err := common.Marshal(other)
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
-	if err := model.DB.Model(channel).Updates(map[string]any{
-		"status":    1,
+	// Draft abilities were created with enabled=false while the channel was
+	// disabled. A bare channels.status update leaves them disabled: the pricing
+	// page reads abilities.enabled, so the channel and all its models vanish.
+	// Promote the channel and rewrite abilities from the final model/group
+	// selection in one transaction.
+	if err := model.ActivateChannelWithAbilities(id, map[string]any{
 		"settings":  string(raw),
 		"test_time": time.Now().Unix(),
-	}).Error; err != nil {
+	}); err != nil {
 		common.ApiError(c, err)
 		return
 	}
@@ -165,13 +192,16 @@ func PublishChannelDraft(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"id": id}})
 }
 
-// draftPublishBlockers lists channel-pricing rows that cannot bill yet, but
-// only for models the channel actually serves (channel.Models maps one-for-one
-// to its abilities). A draft catalogue sync writes the whole upstream
-// directory, so review-only rows for models the operator never selected are
-// expected; they can never receive a request on this channel and must not
-// block publishing. When selectedModels is empty the channel serves no model
-// yet, so there is nothing that could bill and nothing to block.
+// draftPublishBlockers validates every selected model against its channel price
+// rows. The selected model list — not the price table — is the baseline: a
+// failed upstream sync writes zero rows, and iterating an empty table would
+// otherwise declare an unpriced draft publishable.
+//
+// A row counts as publishable only when it is uniquely identifiable, configured,
+// has a normalized internal sale price with an executable expression, and
+// carries a price version. Full identity (provider/region/deployment/model)
+// will narrow the match further when the channel serves several identities;
+// today multiple rows for one selected model are rejected rather than guessed.
 func draftPublishBlockers(rows []model.ChannelModelPricing, selectedModels []string) []string {
 	wanted := make(map[string]bool, len(selectedModels))
 	for _, name := range selectedModels {
@@ -182,15 +212,51 @@ func draftPublishBlockers(rows []model.ChannelModelPricing, selectedModels []str
 	if len(wanted) == 0 {
 		return nil
 	}
-	blockers := make([]string, 0)
+	byModel := make(map[string][]model.ChannelModelPricing, len(wanted))
 	for _, row := range rows {
-		if !wanted[strings.TrimSpace(row.ModelName)] {
+		name := strings.TrimSpace(row.ModelName)
+		if wanted[name] {
+			byModel[name] = append(byModel[name], row)
+		}
+	}
+	names := make([]string, 0, len(wanted))
+	for name := range wanted {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+
+	blockers := make([]string, 0)
+	for _, name := range names {
+		matched := byModel[name]
+		switch {
+		case len(matched) == 0:
+			blockers = append(blockers, name+" (PRICE_MISSING)")
+			continue
+		case len(matched) != 1:
+			blockers = append(blockers, name+" (PRICE_IDENTITY_AMBIGUOUS)")
 			continue
 		}
-		if row.PricingStatus == model.ChannelPricingStatusConfigured {
+		row := matched[0]
+		if row.PricingStatus != model.ChannelPricingStatusConfigured {
+			blockers = append(blockers, name+" ("+row.PricingStatus+")")
 			continue
 		}
-		blockers = append(blockers, row.ModelName+" ("+row.PricingStatus+")")
+		if strings.TrimSpace(row.InternalPricing) == "" {
+			blockers = append(blockers, name+" (SALE_PRICE_MISSING)")
+			continue
+		}
+		var internal model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
+			blockers = append(blockers, name+" (PRICE_EXPRESSION_INVALID)")
+			continue
+		}
+		if _, err := model.NormalizeChannelInternalPricing(&internal); err != nil {
+			blockers = append(blockers, name+" (PRICE_EXPRESSION_INVALID)")
+			continue
+		}
+		if strings.TrimSpace(row.PricingVersion) == "" {
+			blockers = append(blockers, name+" (PRICE_VERSION_MISSING)")
+		}
 	}
 	return blockers
 }

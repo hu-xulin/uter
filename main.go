@@ -165,6 +165,25 @@ func main() {
 
 		go model.SyncChannelCache(common.SyncFrequency)
 	}
+
+	// Repair channels that were enabled by a direct status write while their
+	// abilities stayed disabled (notably drafts published before the atomic
+	// promotion fix). Without this, an already-broken channel stays invisible
+	// on the pricing page until an operator touches it. Only the master node
+	// performs the write so multiple nodes cannot rebuild abilities at once.
+	if common.IsMasterNode {
+		drift, driftErr := model.HasAbilityStatusDrift()
+		if driftErr != nil {
+			common.SysLog(common.LogText("check ability drift failed: %s", driftErr.Error()))
+		} else if drift {
+			if rebuilt, _, fixErr := model.FixAbility(); fixErr != nil {
+				common.SysLog(common.LogText("startup ability repair failed: %s", fixErr.Error()))
+			} else {
+				common.SysLog(common.LogText("startup ability repair rebuilt %d channels", rebuilt))
+			}
+		}
+	}
+
 	wsmanager.StartSubscriber(context.Background())
 
 	// Warm pricing after channel cache initialization so Advanced Custom

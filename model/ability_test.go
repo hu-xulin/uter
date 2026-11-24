@@ -21,6 +21,7 @@ package model
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/uter-ai/uter/common"
@@ -57,4 +58,36 @@ func TestGetAllEnableAbilityWithChannelsExcludesDeletedChannels(t *testing.T) {
 	require.Len(t, abilities, 1)
 	require.Equal(t, "active-model", abilities[0].Model)
 	require.Equal(t, active.Id, abilities[0].ChannelId)
+}
+
+func TestAbilityDriftDetectionAndRebuild(t *testing.T) {
+	testdb.RequireDisposable(t, DB, LOG_DB)
+	require.NoError(t, DB.Exec("DELETE FROM abilities").Error)
+	require.NoError(t, DB.Exec("DELETE FROM channels").Error)
+
+	channel := &Channel{
+		Type: constant.ChannelTypeUterRoute, Name: "drifted", Key: "sk-drift",
+		Status: common.ChannelStatusEnabled, Group: "default", Models: "m-a,m-b",
+	}
+	require.NoError(t, DB.Create(channel).Error)
+	require.NoError(t, DB.Create(&Ability{
+		Group: "default", Model: "m-a", ChannelId: channel.Id, Enabled: false,
+	}).Error)
+
+	drift, err := HasAbilityStatusDrift()
+	require.NoError(t, err)
+	require.True(t, drift, "an enabled channel with disabled abilities must be detected")
+
+	require.NoError(t, RebuildChannelAbilities(channel.Id))
+	var rebuilt []Ability
+	require.NoError(t, DB.Where("channel_id = ?", channel.Id).Find(&rebuilt).Error)
+	require.Len(t, rebuilt, 2, "rebuild follows the channel's final model list")
+	for _, ability := range rebuilt {
+		assert.True(t, ability.Enabled)
+		assert.Equal(t, "default", ability.Group)
+	}
+
+	drift, err = HasAbilityStatusDrift()
+	require.NoError(t, err)
+	require.False(t, drift, "a rebuilt channel must no longer be reported as drifted")
 }

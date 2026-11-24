@@ -16,7 +16,7 @@ func TestApplyChannelLifecycleSnapshotDisablesMissingModels(t *testing.T) {
 	for _, name := range []string{"active-model", "removed-model"} {
 		input, output := 2.0, 4.0
 		require.NoError(t, SetChannelInternalPricing(71, name, ChannelInternalPricing{
-			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 			Source: "bailian-channel",
 		}))
 	}
@@ -67,11 +67,11 @@ func TestApplyChannelLifecycleSnapshotRetainsManualPrice(t *testing.T) {
 	require.NoError(t, err)
 	input, output := 2.0, 4.0
 	require.NoError(t, SetChannelInternalPricing(73, "catalog-model", ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 		Source: "bailian-channel",
 	}))
 	require.NoError(t, SetChannelInternalPricing(73, "contract-model", ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 		Source: "manual",
 	}))
 
@@ -90,7 +90,7 @@ func TestManualPriceReactivatesDisabledModel(t *testing.T) {
 	require.NoError(t, err)
 	price := 2.0
 	require.NoError(t, SetChannelInternalPricing(74, "removed", ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&price), OutputUSDPerMillion: MoneyFromFloatPtr(&price),
 		Source: "bailian-channel",
 	}))
 	_, _, _, err = ApplyChannelLifecycleSnapshot(74, []string{"another-model"}, 100, 1)
@@ -101,7 +101,7 @@ func TestManualPriceReactivatesDisabledModel(t *testing.T) {
 	require.False(t, ResolveEffectiveChannelPricing(74, "removed").Billable)
 
 	require.NoError(t, SetChannelInternalPricing(74, "removed", ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&price), OutputUSDPerMillion: MoneyFromFloatPtr(&price),
 		Source: "manual",
 	}))
 	row, err = GetChannelModelPricing(74, "removed")

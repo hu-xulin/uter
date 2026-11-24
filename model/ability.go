@@ -343,6 +343,91 @@ func (channel *Channel) UpdateAbilities(tx *gorm.DB) error {
 	return nil
 }
 
+// rebuildChannelAbilitiesTx rewrites one channel's abilities from the row as
+// it exists inside tx. Enabled follows the persisted channel status, and the
+// model/group list follows the final saved selection. The caller owns the
+// transaction so a channel status promotion and its abilities commit together.
+func rebuildChannelAbilitiesTx(tx *gorm.DB, channelID int) error {
+	var current Channel
+	if err := tx.First(&current, channelID).Error; err != nil {
+		return err
+	}
+	return current.UpdateAbilities(tx)
+}
+
+// RebuildChannelAbilities repairs status or model/group drift for one channel.
+// Draft creation writes abilities while the channel is disabled; if the draft
+// is later enabled by a direct status write, those abilities stay disabled and
+// the channel disappears from pricing and routing. Rebuilding from the row is
+// idempotent for a healthy channel.
+func RebuildChannelAbilities(channelID int) error {
+	if channelID <= 0 {
+		return fmt.Errorf("channel id is required")
+	}
+	if err := DB.Transaction(func(tx *gorm.DB) error {
+		return rebuildChannelAbilitiesTx(tx, channelID)
+	}); err != nil {
+		return err
+	}
+	InvalidatePricingCache()
+	BumpSyncTopic(SyncTopicChannels)
+	return nil
+}
+
+// HasAbilityStatusDrift reports whether any channel/ability pair disagrees,
+// or an enabled channel with a model list has no abilities at all. A direct
+// channels.status write (the old draft publish path) is the common cause.
+func HasAbilityStatusDrift() (bool, error) {
+	var mismatched int64
+	if err := DB.Raw(
+		`SELECT COUNT(*) FROM abilities a
+		 JOIN channels c ON c.id = a.channel_id
+		 WHERE a.enabled <> (c.status = ?)`,
+		common.ChannelStatusEnabled,
+	).Scan(&mismatched).Error; err != nil {
+		return false, err
+	}
+	if mismatched > 0 {
+		return true, nil
+	}
+	var missing int64
+	if err := DB.Raw(
+		`SELECT COUNT(*) FROM channels c
+		 WHERE c.status = ? AND COALESCE(c.models, '') <> ''
+		   AND NOT EXISTS (SELECT 1 FROM abilities a WHERE a.channel_id = c.id)`,
+		common.ChannelStatusEnabled,
+	).Scan(&missing).Error; err != nil {
+		return false, err
+	}
+	return missing > 0, nil
+}
+
+// ActivateChannelWithAbilities enables a channel and rewrites its abilities in
+// one transaction. Enabling only the channel row leaves draft abilities at
+// enabled=false, which makes an otherwise active channel invisible on the
+// pricing page (GetAllEnableAbilityWithChannels filters on abilities.enabled).
+func ActivateChannelWithAbilities(channelID int, updates map[string]any) error {
+	if channelID <= 0 {
+		return fmt.Errorf("channel id is required")
+	}
+	values := make(map[string]any, len(updates)+1)
+	for key, value := range updates {
+		values[key] = value
+	}
+	values["status"] = common.ChannelStatusEnabled
+	if err := DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&Channel{}).Where("id = ?", channelID).Updates(values).Error; err != nil {
+			return err
+		}
+		return rebuildChannelAbilitiesTx(tx, channelID)
+	}); err != nil {
+		return err
+	}
+	InvalidatePricingCache()
+	BumpSyncTopic(SyncTopicChannels)
+	return nil
+}
+
 func UpdateAbilityStatus(channelId int, status bool) error {
 	return DB.Model(&Ability{}).Where("channel_id = ?", channelId).Select("enabled").Update("enabled", status).Error
 }
