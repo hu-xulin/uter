@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "Needs a sale price before publishing: {{models}}",
     "No pricing row yet: {{models}}": "No pricing row yet: {{models}}",
     "Publish blocked by pricing": "Publish blocked by pricing",
-    "Set a billable sale price for {{models}} before publishing": "Set a billable sale price for {{models}} before publishing"
+    "Set a billable sale price for {{models}} before publishing": "Set a billable sale price for {{models}} before publishing",
+    "Allowed channels & models": "Allowed channels & models",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "Restrict this plan to specific models on specific channels. Leave empty to allow all.",
+    "Add channel": "Add channel",
+    "Remove channel": "Remove channel",
+    "This channel has no models": "This channel has no models",
+    "No channel restriction configured.": "No channel restriction configured."
   }
 }

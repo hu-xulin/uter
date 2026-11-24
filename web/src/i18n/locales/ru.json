@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "Перед публикацией укажите цену продажи: {{models}}",
     "No pricing row yet: {{models}}": "Строк тарифа пока нет: {{models}}",
     "Publish blocked by pricing": "Публикация заблокирована из-за тарифов",
-    "Set a billable sale price for {{models}} before publishing": "Перед публикацией укажите тарифицируемую цену продажи для {{models}}"
+    "Set a billable sale price for {{models}} before publishing": "Перед публикацией укажите тарифицируемую цену продажи для {{models}}",
+    "Allowed channels & models": "Разрешённые каналы и модели",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "Ограничить тариф определёнными моделями на определённых каналах. Оставьте пустым, чтобы разрешить все.",
+    "Add channel": "Добавить канал",
+    "Remove channel": "Удалить канал",
+    "This channel has no models": "У этого канала нет моделей",
+    "No channel restriction configured.": "Ограничения каналов не настроены."
   }
 }

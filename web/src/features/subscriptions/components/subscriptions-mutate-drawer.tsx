@@ -82,6 +82,7 @@ import {
   type PlanFormValues,
 } from '../lib'
 import type { PlanRecord } from '../types'
+import { PlanChannelModelsField } from './plan-channel-models-field'
 import { useSubscriptions } from './subscriptions-provider'
 
 interface Props {
@@ -400,7 +401,7 @@ export function SubscriptionsMutateDrawer({
                 />
               </div>
 
-              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+              <div className='grid grid-cols-1 items-start gap-3 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='upgrade_group'
@@ -464,7 +465,25 @@ export function SubscriptionsMutateDrawer({
                     </FormItem>
                   )}
                 />
+              </div>
 
+              <FormField
+                control={form.control}
+                name='allowed_channel_models'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <PlanChannelModelsField
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='max_purchase_per_user'

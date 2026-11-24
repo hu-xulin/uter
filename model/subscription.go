@@ -178,6 +178,12 @@ type SubscriptionPlan struct {
 	// Downgrade user group on expiry (empty = revert to the group held before purchase)
 	DowngradeGroup string `json:"downgrade_group" gorm:"type:varchar(64);default:''"`
 
+	// AllowedChannelModels restricts this plan to specific models on specific
+	// channels. JSON object: {"<channelID>": ["model-a", "model-b"]}. Empty or
+	// "{}" means no restriction (all eligible channels/models). The key is the
+	// numeric channel id so a model name can be limited to one channel only.
+	AllowedChannelModels string `json:"allowed_channel_models" gorm:"type:text;default:''"`
+
 	// Total quota (amount in quota units, 0 = unlimited)
 	TotalAmount int64 `json:"total_amount" gorm:"type:bigint;not null;default:0"`
 
@@ -285,6 +291,10 @@ type UserSubscription struct {
 
 	// Downgrade target group on expiry (snapshot from plan; empty = revert to PrevUserGroup)
 	DowngradeGroup string `json:"downgrade_group" gorm:"type:varchar(64);default:''"`
+
+	// Snapshot of plan's channel/model restriction (JSON map[channelID][]model).
+	// Empty means this subscription does not restrict channel/model choice.
+	AllowedChannelModels string `json:"allowed_channel_models" gorm:"type:text;default:''"`
 
 	// Whether wallet fallback is allowed after this subscription's quota is exhausted (snapshot from plan)
 	AllowWalletOverflow bool `json:"allow_wallet_overflow"`
@@ -547,19 +557,22 @@ func CreateUserSubscriptionFromPlanTx(tx *gorm.DB, userId int, plan *Subscriptio
 		allowWalletOverflow = *plan.AllowWalletOverflow
 	}
 	sub := &UserSubscription{
-		UserId:              userId,
-		PlanId:              plan.Id,
-		AmountTotal:         plan.TotalAmount,
-		AmountUsed:          0,
-		StartTime:           now.Unix(),
-		EndTime:             endUnix,
-		Status:              "active",
-		Source:              source,
-		LastResetTime:       lastReset,
-		NextResetTime:       nextReset,
-		UpgradeGroup:        upgradeGroup,
-		PrevUserGroup:       prevGroup,
-		DowngradeGroup:      strings.TrimSpace(plan.DowngradeGroup),
+		UserId:         userId,
+		PlanId:         plan.Id,
+		AmountTotal:    plan.TotalAmount,
+		AmountUsed:     0,
+		StartTime:      now.Unix(),
+		EndTime:        endUnix,
+		Status:         "active",
+		Source:         source,
+		LastResetTime:  lastReset,
+		NextResetTime:  nextReset,
+		UpgradeGroup:   upgradeGroup,
+		PrevUserGroup:  prevGroup,
+		DowngradeGroup: strings.TrimSpace(plan.DowngradeGroup),
+		AllowedChannelModels: NormalizeAllowedChannelModels(
+			plan.AllowedChannelModels,
+		),
 		AllowWalletOverflow: allowWalletOverflow,
 		CreatedAt:           common.GetTimestamp(),
 		UpdatedAt:           common.GetTimestamp(),

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -13,6 +14,22 @@ import (
 )
 
 // ---- Shared types ----
+
+// normalizePlanChannelModels canonicalizes a plan's channel/model restriction
+// and rejects references to channels that no longer exist. Invalid JSON or an
+// empty map is collapsed to "" (unrestricted) by the model layer.
+func normalizePlanChannelModels(raw string) (string, error) {
+	normalized := model.NormalizeAllowedChannelModels(raw)
+	if normalized == "" {
+		return "", nil
+	}
+	for channelID := range model.ParseAllowedChannelModels(normalized) {
+		if channel, err := model.CacheGetChannel(channelID); err != nil || channel == nil {
+			return "", fmt.Errorf("channel %d in allowed_channel_models does not exist", channelID)
+		}
+	}
+	return normalized, nil
+}
 
 type SubscriptionPlanDTO struct {
 	Plan model.SubscriptionPlan `json:"plan"`
@@ -217,6 +234,12 @@ func AdminCreateSubscriptionPlan(c *gin.Context) {
 		common.ApiErrorT(c, "Custom reset cycle must be greater than 0 seconds")
 		return
 	}
+	if normalized, err := normalizePlanChannelModels(req.Plan.AllowedChannelModels); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	} else {
+		req.Plan.AllowedChannelModels = normalized
+	}
 	err := model.DB.Create(&req.Plan).Error
 	if err != nil {
 		common.ApiError(c, err)
@@ -291,6 +314,12 @@ func AdminUpdateSubscriptionPlan(c *gin.Context) {
 		common.ApiErrorT(c, "Custom reset cycle must be greater than 0 seconds")
 		return
 	}
+	if normalized, err := normalizePlanChannelModels(req.Plan.AllowedChannelModels); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	} else {
+		req.Plan.AllowedChannelModels = normalized
+	}
 
 	err := model.DB.Transaction(func(tx *gorm.DB) error {
 		// update plan (allow zero values updates with map)
@@ -311,6 +340,7 @@ func AdminUpdateSubscriptionPlan(c *gin.Context) {
 			"total_amount":               req.Plan.TotalAmount,
 			"upgrade_group":              req.Plan.UpgradeGroup,
 			"downgrade_group":            req.Plan.DowngradeGroup,
+			"allowed_channel_models":     req.Plan.AllowedChannelModels,
 			"quota_reset_period":         req.Plan.QuotaResetPeriod,
 			"quota_reset_custom_seconds": req.Plan.QuotaResetCustomSeconds,
 			"updated_at":                 common.GetTimestamp(),

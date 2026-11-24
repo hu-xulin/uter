@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "Prix de vente à définir avant la publication : {{models}}",
     "No pricing row yet: {{models}}": "Aucune ligne de tarif pour le moment : {{models}}",
     "Publish blocked by pricing": "Publication bloquée par la tarification",
-    "Set a billable sale price for {{models}} before publishing": "Définissez un prix de vente facturable pour {{models}} avant la publication"
+    "Set a billable sale price for {{models}} before publishing": "Définissez un prix de vente facturable pour {{models}} avant la publication",
+    "Allowed channels & models": "Canaux et modèles autorisés",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "Limitez ce forfait à des modèles spécifiques sur des canaux spécifiques. Laissez vide pour tout autoriser.",
+    "Add channel": "Ajouter un canal",
+    "Remove channel": "Supprimer le canal",
+    "This channel has no models": "Ce canal n'a aucun modèle",
+    "No channel restriction configured.": "Aucune restriction de canal configurée."
   }
 }

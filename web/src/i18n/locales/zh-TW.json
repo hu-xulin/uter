@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "發布前需設定售價：{{models}}",
     "No pricing row yet: {{models}}": "尚無定價行：{{models}}",
     "Publish blocked by pricing": "定價未就緒，無法發布",
-    "Set a billable sale price for {{models}} before publishing": "發布前請為 {{models}} 設定可計費售價"
+    "Set a billable sale price for {{models}} before publishing": "發布前請為 {{models}} 設定可計費售價",
+    "Allowed channels & models": "允許的渠道與模型",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "將此套餐限制為指定渠道下的指定模型。留空則不限制。",
+    "Add channel": "新增渠道",
+    "Remove channel": "移除渠道",
+    "This channel has no models": "該渠道沒有模型",
+    "No channel restriction configured.": "未設定渠道限制。"
   }
 }

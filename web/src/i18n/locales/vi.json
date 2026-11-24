@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "Cần đặt giá bán trước khi xuất bản: {{models}}",
     "No pricing row yet: {{models}}": "Chưa có dòng giá: {{models}}",
     "Publish blocked by pricing": "Xuất bản bị chặn do cấu hình giá",
-    "Set a billable sale price for {{models}} before publishing": "Hãy đặt giá bán có thể tính tiền cho {{models}} trước khi xuất bản"
+    "Set a billable sale price for {{models}} before publishing": "Hãy đặt giá bán có thể tính tiền cho {{models}} trước khi xuất bản",
+    "Allowed channels & models": "Kênh và mô hình được phép",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "Giới hạn gói này với các mô hình cụ thể trên các kênh cụ thể. Để trống để cho phép tất cả.",
+    "Add channel": "Thêm kênh",
+    "Remove channel": "Xóa kênh",
+    "This channel has no models": "Kênh này không có mô hình",
+    "No channel restriction configured.": "Chưa cấu hình giới hạn kênh."
   }
 }

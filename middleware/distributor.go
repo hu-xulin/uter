@@ -52,6 +52,18 @@ func Distribute() func(c *gin.Context) {
 			RequestPath: c.Request.URL.Path,
 		})
 		service.AppendTaskPluginIdentityFilter(c, c.GetString("expected_task_plugin_key"))
+		// An active subscription plan may restrict model choice to specific
+		// models on specific channels. Inject that allow-list as a channel
+		// filter so every selection path (pin, affinity, random) honours it.
+		// A nil map (no restriction) is a no-op in the filter evaluator.
+		if userID := c.GetInt("id"); userID > 0 {
+			if allowed := model.GetActiveSubscriptionChannelModels(userID); len(allowed) > 0 {
+				constraints.AddFilter(taskdto.ChannelFilter{
+					Kind:                 taskdto.FilterSubscriptionPlan,
+					AllowedChannelModels: allowed,
+				})
+			}
+		}
 		modelRequest, shouldSelectChannel, err := getModelRequest(c)
 		if err != nil {
 			abortDistributorRequestError(c, err)

@@ -39,6 +39,7 @@ const (
 	FilterRequestPath        ChannelFilterKind = "request_path"
 	FilterTaskPluginIdentity ChannelFilterKind = "task_plugin_identity"
 	FilterResponsesWebSocket ChannelFilterKind = "responses_websocket"
+	FilterSubscriptionPlan   ChannelFilterKind = "subscription_plan"
 )
 
 type ChannelFilter struct {
@@ -47,6 +48,10 @@ type ChannelFilter struct {
 	TaskPluginKey          string
 	TaskPluginKeys         []string
 	TaskPluginChannelTypes []int
+	// AllowedChannelModels carries a subscription plan's channel->models
+	// restriction for FilterSubscriptionPlan. A candidate channel passes only
+	// when its id is a key and the requested model is in that key's list.
+	AllowedChannelModels map[int][]string
 }
 
 type ChannelConstraints struct {

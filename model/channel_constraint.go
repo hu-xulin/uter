@@ -12,6 +12,7 @@ var filterEvalOrder = []dto.ChannelFilterKind{
 	dto.FilterRequestPath,
 	dto.FilterTaskPluginIdentity,
 	dto.FilterResponsesWebSocket,
+	dto.FilterSubscriptionPlan,
 }
 
 // ChannelSatisfiesFilters reports whether ch passes every filter.
@@ -113,6 +114,19 @@ func channelMatchesFilter(ch *Channel, modelName string, filter dto.ChannelFilte
 			return setting.BindsTaskPlugin(filter.TaskPluginKey) || slices.ContainsFunc(filter.TaskPluginKeys, setting.BindsTaskPlugin)
 		}
 		return slices.Contains(filter.TaskPluginChannelTypes, ch.Type)
+	case dto.FilterSubscriptionPlan:
+		// A subscription plan restriction is an allow-list of channels and,
+		// within each channel, the models that may be served. When the map is
+		// empty the filter is a no-op. This filter applies to every channel
+		// type (unlike request_path, which is advanced-custom only).
+		if len(filter.AllowedChannelModels) == 0 {
+			return true
+		}
+		models, ok := filter.AllowedChannelModels[ch.Id]
+		if !ok {
+			return false
+		}
+		return slices.Contains(models, modelName)
 	case dto.FilterResponsesWebSocket:
 		if !ch.GetSetting().ResponsesWebSocketEnabled {
 			return false

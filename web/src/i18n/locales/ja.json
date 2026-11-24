@@ -8708,6 +8708,12 @@
     "Needs a sale price before publishing: {{models}}": "公開前に販売価格を設定してください：{{models}}",
     "No pricing row yet: {{models}}": "料金行がまだありません：{{models}}",
     "Publish blocked by pricing": "料金設定のため公開できません",
-    "Set a billable sale price for {{models}} before publishing": "公開前に {{models}} の課金可能な販売価格を設定してください"
+    "Set a billable sale price for {{models}} before publishing": "公開前に {{models}} の課金可能な販売価格を設定してください",
+    "Allowed channels & models": "許可されたチャネルとモデル",
+    "Restrict this plan to specific models on specific channels. Leave empty to allow all.": "このプランを特定チャネルの特定モデルのみに制限します。空欄の場合は制限なしです。",
+    "Add channel": "チャネルを追加",
+    "Remove channel": "チャネルを削除",
+    "This channel has no models": "このチャネルにはモデルがありません",
+    "No channel restriction configured.": "チャネルの制限は設定されていません。"
   }
 }
