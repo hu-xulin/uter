@@ -7,14 +7,17 @@
 | 项 | 值 |
 | --- | --- |
 | 仓库 | `/Users/lincolnhu/uter`（本地 main 工作区） |
-| 价格代码审计 HEAD | `b63e9c20293c1e8cd053bffcad3a57f5080c0e5b`（审计开始时 HEAD） |
-| 报告写成时 HEAD | `3fb493a83ab11ed5e24474f729053a131343401b`（并发会话后续两次提交：`3197c741` design-system 文档、`3fb493a83` channel 草稿修复，**均不含**本次价格代码变更） |
+| 价格代码审计 HEAD | `b63e9c20293c1e8cd053bffcad3a57f5080c0e5b`（首轮审计开始时 HEAD） |
+| 首轮报告写成时 HEAD | `3fb493a83ab11ed5e24474f729053a131343401b`（并发会话后续两次提交：`3197c741` design-system 文档、`3fb493a83` channel 草稿修复，**均不含**本次价格代码变更） |
+| 最新复审起点 HEAD | `829bfa9`（用户指定；指令要求若 HEAD 更新则以最新 main 为准） |
+| 最新复审与报告写成时 HEAD | `d5c9796068c9704276d3d542f398a00c5a9ce85a` |
 | 分支 | `main`（未创建/切换分支） |
-| 审计时间 | 2026-11-24 23:10 – 23:57 GMT+8 |
+| 审计时间 | 2026-11-24 23:10 – 2026-11-25 02:12 GMT+8（含最新 HEAD 复审） |
 | 审计开始时工作区 | `M VERSION`（保留未动） |
+| 报告写成时工作区 | 49 个变更条目：本轮价格整改与并发会话改动并存，**均未提交** |
 | 唯一审计依据 | 上述工作区实际代码；未引用历史审计报告作为当前实现证据 |
 
-**并发会话说明**：执行期间另有会话提交了 `3197c741`（design-system 文档）与 `3fb493a83`（channel 草稿向导修复，5 文件）。这些均**非本次审计改动**，本次未触碰、未提交；价格整改全部留在本工作区未提交状态，便于逐项复核。每次提交前后均已用 `git show --stat HEAD` 核对，确认本次价格文件没有被并发会话一并提交。
+**并发会话说明**：执行期间另有会话提交了 `3197c741`（design-system 文档）与 `3fb493a83`（channel 草稿向导修复，5 文件）。这些均**非本次审计改动**，本次未触碰、未提交；价格整改全部留在本工作区未提交状态，便于逐项复核。最新复审期间工作区还存在并发会话写入的 `controller/channel_upstream_update.go`、`router/channel-router.go`、`controller/channel_uterapi_preview.go`、`service/uterapi_price_preview.go`、多份 i18n 与 channel 前端文件，均已排除出本轮改动范围。
 
 ### 本次修改文件（12 个，均为价格/测试代码）
 
@@ -38,7 +41,7 @@
 
 **代码事实**：采购成本 `ChannelPurchaseCost` 是与销售价 `InternalPricing` **完全独立**的字段；`SetChannelPurchaseCostFor` 是唯一写入口（operator 合同价），自动同步不写它；`DERIVED_FROM_RATIOS` 价格保留 `PriceKind=RATIO_ONLY`、`Source=uterroute-ratio-reference`、`RatioBasis.Formula="reference_only: usd_per_1m = model_ratio * 2"`，**不写入 PurchasePricing**。审计层经 P0-3 修复后，此类模型即使自动生成售价也不再报 FULLY_MATCHED。
 
-**残余风险（未改，需决策）**：`uterRouteChannelOfficialPricing()` 约 1361–1370 行仍会在倍率/历史快照价格成功生成内部售价后清除 `NeedsReview`，使这类模型进入自动计费（现有测试 `TestUterRouteRatioDerivedPriceIsAutoConfigured` 明确保护此行为）。这**不是**把倍率价标成"已验证采购成本"（采购成本字段始终未验证），但确实让倍率推算价成为可售卖价格。是否将倍率来源模型一律锁定为 NEEDS_REVIEW、禁止自动计费，属于产品定价策略决策，本次**未擅自推翻**已受测试保护的行为，作为剩余风险列出（见 F）。
+**残余风险（首轮记录，已在最新复审关闭）**：首轮发现 `uterRouteChannelOfficialPricing()` 会在倍率/历史快照价格成功生成内部售价后清除 `NeedsReview`，使这类模型进入自动计费。该行为在最新 HEAD 复审中已推翻：倍率/历史参考价默认 `NEEDS_REVIEW` 且不生成 `InternalPricing`，原因码 `REFERENCE_PRICE_BILLING_NOT_AUTHORIZED` 落盘，详见 H 节 P0-01。
 
 ---
 
@@ -94,20 +97,90 @@
 
 ## F. 剩余问题（不隐藏）
 
-1. **真实上游逐模型验证 BLOCKED**（P0，环境/授权）：需要只读、已授权的 Uter Route 测试 Key 与隔离测试库；当前 live 测试会写生产快照。15 节要求的 10 类模型真实拉取与计费验证未完成。
-2. **一致性审计未逐维比较金额/规则**（P0，部分完成）：`GetChannelUpstreamParity` 仍只拉模型名列表并补缺失模型，`BuildUpstreamParityReportWithCatalog` 未把上游完整价格/折扣/表达式与 Uter 数据逐维比对。真实价格对账目前由 `upstream_reconciliation` / invoice 模块承担，两者尚未整合为单一审计视图。用户要求的 13 个审计维度、13 种状态中的 `PRICE_MISMATCH`、`RULE_MISMATCH`、`DISCOUNT_MISMATCH`（除新增常量外）、`IDENTITY_MISMATCH`、`STALE` 等真实比对逻辑仍不完整。
-3. **倍率来源模型自动计费策略**（P0，产品决策）：见 B 节残余风险；未擅自推翻受测试保护的行为。
-4. **规范列出但未补齐的测试**：用户第十四节 40+ 个测试用例中，本次新增/升级 9 项；其余多数已有既有测试覆盖，但 `TestScopedPricingEmptyChannelCannotFallbackGlobal`、`TestChannelPriceSnapshotSurvivesPriceChange`、`TestSyncFailureKeepsPreviousValidPrice`、`TestConcurrentSyncIsSerialized` 等未逐项确认命名存在，完整覆盖矩阵未逐条核验。
-5. **金额精度全面排查**（P1）：`model.Money` 已在主要价格引擎落地，但 float64 系数在 billing_expr 内部仍存在（`scaleBillingExprByFactor` 用 float64 计算系数，经 `roundRatioValue` 限精度）。全仓库 float64 金额残留未逐项清点。
+1. **真实上游逐模型验证 BLOCKED**（P0，环境/授权，仍未关闭）：需要只读、已授权的 Uter Route 测试 Key 与隔离测试库。新增只读测试在未授权时明确 `SKIP/BLOCKED`，不写快照、不伪造 PASS；`production_pass=FALSE`。
+2. **一致性审计逐维金额/规则比较**（P0，已在最新 HEAD 关闭）：首轮记录为部分完成；最新实现已比较 official/channel/purchase/sale 各维度、币种、单位、折扣组/倍率、表达式 hash、身份与时间，详见 H 节 P0-04。
+3. **倍率来源模型自动计费策略**（P0，已在最新 HEAD 关闭）：首轮记录为待决策；最新实现默认 NEEDS_REVIEW、无 `InternalPricing`、不自动计费，详见 H 节 P0-01。
+4. **规范列出但未补齐的测试**（P1，仍未逐条核验）：用户第十四节 40+ 个测试用例中，两轮累计新增/升级多项；但 `TestScopedPricingEmptyChannelCannotFallbackGlobal`、`TestChannelPriceSnapshotSurvivesPriceChange`、`TestSyncFailureKeepsPreviousValidPrice`、`TestConcurrentSyncIsSerialized` 等仍未逐项确认命名存在，完整覆盖矩阵未逐条核验。
+5. **金额精度全面排查**（P1，部分关闭）：自动加价已改为 `decimal.RequireFromString("1.10")` + `Money.MulDecimal()`，无 float64 金额往返；billing_expr 字符串系数仍受表达式引擎限制使用 float64 计算并经 `roundRatioValue()` 限精度，全仓库 float64 金额残留未逐项清点。
 6. **生产数据迁移/Dry Run**（P1）：本次无 schema 变更故未做；未对生产库做任何写入。
-7. **`controller/channel_draft_test.go` 中的 `TestCreateChannelDraftMultiKeyModeIsPersisted`、`TestBuildChannelListQueryIncludesDraftChannels`** —— 由并发会话写入，非本次审计改动，已排除在本次修改清单之外。
+7. **并发会话文件**（非本轮改动）：`controller/channel_draft_test.go`、`controller/channel_upstream_update.go`、`router/channel-router.go`、`controller/channel_uterapi_preview.go`、`service/uterapi_price_preview.go`、多份 i18n 与 channel 前端文件均由并发会话写入，已排除在本轮改动与提交范围之外。
+8. **前端全量测试/lint 未清零**（非本轮价格代码）：`pnpm test` 全量 3287 项中 1 项失败，位于并发会话修改的 `channel-configuration.test.tsx`（`Uter.api fetch-prices step shows the selected group official and channel prices`，重复匹配 `/Claude Standard/`）；`pnpm lint` 仍报 28 warnings / 222 errors，本轮修改的 `lobe-icon.tsx`、`api.ts` 未出现在错误列表中。定价模块定向测试 309/309 通过。
 
 ---
 
 ## G. 最终状态
 
-**NOT_PRODUCTION_READY**
+**NOT_PRODUCTION_READY**（截至最新 HEAD `d5c9796068c9704276d3d542f398a00c5a9ce85a`）
 
-理由：存在未解决的 P0 项——真实上游数据验证 BLOCKED（第 15 节）、一致性审计逐维比价未完整实现（第 7 节）、倍率来源自动计费策略待决策（五个重点验收第 1 项）。虽然本次修复了 7 项确凿缺陷且全量测试（含 race）通过，但按用户验收标准，"真实上游数据验证完成"与"审计能证明真实价格一致"两项均不满足，不得宣布生产验收通过。
+理由（最新复审后）：代码层的三个历史 P0（倍率来源自动计费、审计 Billable 与运行时不一致、一致性审计未逐维比较）已关闭，自动加价 Decimal 精度与折扣组/身份隔离也已修复；完整 Go build/test/race/diff 校验链全部 exit 0。但按用户验收标准仍不能宣布生产通过：
 
-整改代码已全部留在工作区未提交，供逐项 diff 复核；并发会话文件未被触碰。
+1. 真实 Uter Route 上游逐模型验证仍为 `BLOCKED/OBSERVED_ONLY`，未授权 Key 与隔离库，只读测试明确 `production_pass=FALSE`；
+2. 前端全量测试仍有 1 项并发会话写入的 Uter.api 预览用例失败，前端 lint 仍有大量既有错误；
+3. 用户第十四节完整测试覆盖矩阵尚未逐条核验。
+
+首轮 7 项缺陷与最新复审 5 项 P0/P1 整改代码均留在工作区未提交，供逐项 diff 复核；并发会话文件未被触碰。
+
+---
+
+## H. 最新 HEAD 生产验收复审（用户第四轮指令）
+
+### H.1 复审基线与方法
+
+用户指定从 `829bfa9` 起审，并明确“若 HEAD 更新则用最新 main”。实际复审与报告写成时 HEAD 为 `d5c9796068c9704276d3d542f398a00c5a9ce85a`。本轮**未继承**首轮结论：重新检查七项历史修复是否仍有效，重新打开三个未关闭 P0，新增四项风险检查，并在修复后执行完整 Go 与前端校验。
+
+### H.2 未关闭 P0 与新增风险关闭结果
+
+| 编号 | 状态 | 根因与修复 | 关键证据 |
+| --- | --- | --- | --- |
+| P0-01 Ratio 来源自动计费 | **CLOSED** | `service/upstream_uterroute.go` 对 `DERIVED_FROM_RATIOS`、`HISTORICAL_SNAPSHOT` 保留展示用 tiers，但设置 `NeedsReview=true`、追加 `REFERENCE_PRICE_BILLING_NOT_AUTHORIZED`、返回空 `internalPricing`，不再自动计费；采购成本 `Verified` 不被倍率参考价提升。 | `TestUterRouteRatioDerivedPriceStaysReviewOnly`、`TestUterRouteHistoricalSnapshotStaysReviewOnly`、`TestUterRouteExpressionKeepsAllTiersAndParksRatioReference`；`controller/provider_sync_matrix_test.go` 断言 `PricingStatus=NeedsReview` 且 `ResolveChannelBillingPricing` 不可计费。 |
+| P0-02 审计 Billable 与运行时不一致 | **CLOSED** | `model.ChannelPricingBillableReason()` 成为审计页与 Relay 运行时共享 row-level gate；过期检查仅适用于自动同步价，operator/batch/approved 人工价不因上游快照旧而失效；Relay 身份错误追加稳定原因码。 | `model/channel_model_pricing_test.go:TestChannelPricingBillableReasonGate`（含人工价不过期 case）、`TestSelectChannelPricingRowIdentityIsolation`、`relay/helper/price_test.go`。 |
+| P0-03 自动加价 Decimal 精度 | **CLOSED** | 自动加价改为 `decimal.RequireFromString("1.10")` 与 `Money.MulDecimal()`，避免 `Float64()` 往返；表达式层新增科学计数法拒绝、`fixed()`/token/duration 逐项缩放与 `scaledAny` fail-closed。 | `TestDefaultSaleMarkupExactDecimalPrecision`、`TestDefaultSaleMarkupAppliedOnceInProductionPaths`、`TestScaleBillingExprByFactorCoverageMatrix`。 |
+| P0-04 上游价格逐维一致性审计 | **CLOSED** | `service/channel_pricing_audit.go` 新增 `UpstreamParityDimension`，逐维比较 official/expected channel/channel/purchase/expected sale/sale USD，并记录币种、单位、折扣组、折扣倍率、表达式 hash、身份与时间；`web/src/features/channels/api.ts` 同步类型。 | `TestParityAuditComparesEveryPriceDimension`、`TestParityAuditDetectsUnitAndTierShapeMismatch`、`TestParityAuditDoesNotOverrideExplicitOperatorSalePrice`、`TestPricingAuditRespectsExplicitPricingMode`。 |
+| P0-05 折扣组回退与身份隔离 | **CLOSED** | `GroupGroupRatio` 已出现多组不同倍率时返回 `ambiguous=true`，禁止 `GroupRatio` 扁平表回退掩盖歧义；价格身份四元组缺一即阻断，多候选 fail-closed。 | `UterRouteDiscountForModel` flat fallback 不得覆盖歧义断言、`TestSelectChannelPricingRowIdentityIsolation`、`TestModelPriceHelperUsesRequestRegionIdentity`（`identity_missing` 原因码可见）。 |
+| 历史七项修复回归复审 | **仍有效** | 混合表达式逐项缩放、折扣组歧义阻断、倍率价非已验证采购成本、审计定价模式一致性、价格身份冲突 fail-closed、渠道折扣报价不含 markup、relay 测试类型适配均未发现回归。 | 完整 Go 全量测试与 race 均 exit 0；定向 `service`/`controller` UterRoute 测试均通过。 |
+
+### H.3 真实上游验证（仍 BLOCKED，未伪造 PASS）
+
+新增 `service/upstream_uterroute_readonly_live_test.go`（build tag `uterroute_live_readonly`）：
+
+* 未设置 `UTER_ROUTE_LIVE_AUTHORIZED=1` 与 `UTER_ROUTE_LIVE_BASE_URL` 时直接 `SKIP/BLOCKED`；
+* 不打开 DB、不写 snapshot、不 upsert pricing；
+* 即使授权执行，也只输出 `REPORT status=OBSERVED_ONLY database_comparison=NOT_PERFORMED production_pass=FALSE`；
+* 实测命令退出码 0，但测试结果为 `SKIP`，原因是 `BLOCKED: set UTER_ROUTE_LIVE_AUTHORIZED=1 only with operator authorization`。
+
+**结论**：真实 Uter Route 上游逐模型验证与数据库逐维对账仍未执行；`production_pass=FALSE`，不得写成 live PASS。
+
+### H.4 前端与构建阻塞处理
+
+* `web/pnpm-workspace.yaml` 增加 `allowBuilds.chromedriver=false`，使 `pnpm install --ignore-scripts` 不被 `ERR_PNPM_IGNORED_BUILDS` 阻断。
+* `web/src/lib/lobe-icon.tsx` 修复 `@lobehub/icons@5.23.1` 兼容：静态 toc 改为 `import { toc } from '@lobehub/icons/es/toc'`；动态变体改为受 `webpackInclude` 约束的实际 `.mjs` 文件路径，避免包 exports 无 `./es` 目录入口导致 Rspack 构建失败，同时保留按变体懒加载。
+* `web/dist` 已生成（含 public 资源），解除 `main.go` 中 `//go:embed web/dist` 的构建阻塞。
+* 前端全量测试 3287 项中 3286 通过；唯一失败为并发会话写入的 `channel-configuration.test.tsx > Uter.api fetch-prices step shows the selected group official and channel prices`（重复匹配 `/Claude Standard/`），非本轮价格代码。
+* `pnpm lint` 仍有 28 warnings / 222 errors；本轮修改的 `lobe-icon.tsx`、`api.ts` 未出现在错误列表中，按既有阻塞记录，不擅自批量修改并发会话文件。
+
+### H.5 命令与退出码
+
+| 命令 | 退出码 | 结果摘要 |
+| --- | --- | --- |
+| `go build ./...` | 0 | `web/dist` 生成后通过 |
+| `go test ./model/... ./service/... ./relay/... ./controller/... -count=1` | 0 | 29 个包 `ok`，0 FAIL |
+| `go test ./service -run UterRoute -count=1` | 0 | 通过 |
+| `go test ./controller -run UterRoute -count=1` | 0 | 通过 |
+| `go test -race ./model ./service ./relay ./controller -count=1` | 0 | 4 个包 `ok`，0 DATA RACE |
+| `git diff --check` | 0 | 无空白错误 |
+| `pnpm typecheck` | 0 | 通过 |
+| `pnpm exec vitest run src/features/pricing` | 0 | 18 files / 309 tests 全通过 |
+| `pnpm test` | 1 | 335 files passed / 1 failed；3286/3287 tests passed |
+| `pnpm lint` | 1 | 28 warnings / 222 errors（既有） |
+| `UTER_SKIP_PUBLIC_COPY=1 pnpm exec rsbuild build && cp -R public/. dist/` | 0 | `web/dist` 生成 |
+| `go test -tags uterroute_live_readonly ./service -run TestUterRouteUpstreamReadOnlyAcceptance -count=1 -v` | 0 | `SKIP/BLOCKED`，未授权，非 live PASS |
+
+### H.6 本轮改动文件（未提交）
+
+`model/channel_model_pricing.go`、`model/channel_model_pricing_test.go`、`model/money.go`、`service/upstream_uterroute.go`、`service/upstream_uterroute_test.go`、`service/default_sale_markup.go`、`service/default_sale_markup_test.go`、`service/channel_pricing_audit.go`、`service/channel_pricing_audit_test.go`、`service/upstream_parity_test.go`、`service/bailian_provider_test.go`、`service/verify_gptimage_batch_test.go`、`service/upstream_uterroute_readonly_live_test.go`（新增）、`controller/channel_uterroute_flow_test.go`、`controller/provider_sync_matrix_test.go`、`relay/helper/price.go`、`relay/helper/price_test.go`、`web/src/features/channels/api.ts`、`web/src/lib/lobe-icon.tsx`、`web/pnpm-workspace.yaml`、`web/pnpm-lock.yaml`（安装生成）。
+
+本轮未执行 `git add`/`git commit`/`git push`；未触碰并发会话文件；未对生产库做任何写入。
+
+### H.7 最新复审结论
+
+代码层可安全修复的项目已全部闭环，Go 全链路与定价前端定向测试通过；但真实上游验证仍是环境/授权型 BLOCKED，前端全量套件与 lint 仍有非本轮失败。因此最终状态维持 **NOT_PRODUCTION_READY**，不给出 live PASS。
