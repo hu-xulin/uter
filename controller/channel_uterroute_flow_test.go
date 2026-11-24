@@ -64,14 +64,17 @@ func setupUterRouteFlowTestDB(t *testing.T) *gorm.DB {
 	return db
 }
 
-// mockUterRouteUpstream serves a pricing catalogue with one billable model and
-// one review-only model, mirroring a real Uter Route directory.
+// mockUterRouteUpstream serves a pricing catalogue with one executable-rule
+// model and one ratio-only reference, mirroring a real Uter Route directory.
+// A bare model_ratio is now review-only by design, so the billable fixture
+// must publish an executable price rule.
 const flowPricingFixture = `{
   "success": true,
   "pricing_version": "flow-v1",
   "data": [
     {
       "model_name": "billable-a", "vendor_id": 1, "quota_type": 0,
+      "billing_mode": "tiered_expr", "billing_expr": "tier(\"base\", p * 5 + c * 10)",
       "model_ratio": 2.5, "model_price": 0, "completion_ratio": 5,
       "enable_groups": ["default"],
       "supported_endpoint_types": ["openai"],

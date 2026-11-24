@@ -253,6 +253,13 @@ func TestUterRouteMultipleEnableGroupsAmbiguous(t *testing.T) {
 		_, _, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: groups}, "default")
 		require.False(t, ok, "ambiguous settlement group must require review, not be guessed")
 	}
+
+	// A flat fallback table with one clean ratio must not rescue an ambiguous
+	// group-group result: the authoritative table is unusable, so the real
+	// settlement group remains unproven.
+	snapshot.GroupRatio = map[string]float64{"claude": 0.6, "claude-aws": 0.6}
+	_, _, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: []string{"claude", "claude-aws"}}, "default")
+	require.False(t, ok, "flat fallback must not override an ambiguous group-group table")
 }
 
 func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
@@ -373,7 +380,7 @@ func TestUterRouteOfficialLineMarksHistoricalSnapshot(t *testing.T) {
 	require.Equal(t, 2.0, *line.Input)
 }
 
-func TestUterRouteRatioDerivedPriceIsAutoConfigured(t *testing.T) {
+func TestUterRouteRatioDerivedPriceStaysReviewOnly(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		GroupRatio:      map[string]float64{"openai": 0.6},
@@ -392,11 +399,11 @@ func TestUterRouteRatioDerivedPriceIsAutoConfigured(t *testing.T) {
 	require.Equal(t, "RATIO_ONLY", view.PriceKind)
 	require.NotNil(t, view.ChannelPrice)
 	require.Equal(t, 3.0, view.ChannelPrice.InputPerMillionUSD.Float64())
-	require.False(t, view.NeedsReview)
-	require.Empty(t, view.ReviewReasons)
+	require.True(t, view.NeedsReview, "ratio-derived prices must not auto-enable billing")
+	require.Contains(t, view.ReviewReasons, "DERIVED_FROM_RATIOS")
+	require.Contains(t, view.ReviewReasons, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
 	require.Equal(t, "uterroute-ratio-reference", view.Source)
-	require.NotEmpty(t, internal)
-	require.Contains(t, internal, `"input_per_million_usd":3.3`)
+	require.Empty(t, internal, "review-only rows must never carry an auto sale price")
 }
 
 func TestDiffUterRouteUpstreamDetectsBillingExpressionChange(t *testing.T) {
@@ -414,7 +421,7 @@ func TestDiffUterRouteUpstreamDetectsBillingExpressionChange(t *testing.T) {
 	require.Contains(t, changes[0].NewText, "p * 2")
 }
 
-func TestUterRouteHistoricalSnapshotIsAutoConfigured(t *testing.T) {
+func TestUterRouteHistoricalSnapshotStaysReviewOnly(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		GroupRatio:      map[string]float64{"default": 1},
@@ -431,12 +438,14 @@ func TestUterRouteHistoricalSnapshotIsAutoConfigured(t *testing.T) {
 	require.Len(t, view.Tiers, 1)
 	require.Equal(t, 2.0, view.Tiers[0].InputPerMillionUSD.Float64())
 	require.Equal(t, 1.2, view.ChannelPrice.InputPerMillionUSD.Float64())
-	require.False(t, view.NeedsReview)
+	require.True(t, view.NeedsReview, "historical prices must not auto-enable billing")
+	require.Contains(t, view.ReviewReasons, "HISTORICAL_SNAPSHOT")
+	require.Contains(t, view.ReviewReasons, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
 	require.Contains(t, view.Source, "historical")
-	require.NotEmpty(t, internal)
+	require.Empty(t, internal)
 }
 
-func TestUterRouteExpressionKeepsAllTiersAndAutoConfiguresRatio(t *testing.T) {
+func TestUterRouteExpressionKeepsAllTiersAndParksRatioReference(t *testing.T) {
 	ratio := func(v float64) *float64 { return &v }
 	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long", p * 2.5 + c * 15 + cr * 0.25)`
 	snapshot := &UpstreamSnapshot{
@@ -478,8 +487,9 @@ func TestUterRouteExpressionKeepsAllTiersAndAutoConfiguresRatio(t *testing.T) {
 	require.Contains(t, records[0].NormalizedPricing, `"tiers":[`)
 	require.Contains(t, records[0].NormalizedPricing, `"input_per_million_usd":1.25`)
 
-	require.NotEmpty(t, records[1].InternalPricing, "ratio-derived rows still need a default sale price")
-	require.NotContains(t, records[1].NormalizedPricing, `"needs_review":true`)
+	require.Empty(t, records[1].InternalPricing, "ratio-derived rows must stay review-only")
+	require.Contains(t, records[1].NormalizedPricing, `"needs_review":true`)
+	require.Contains(t, records[1].NormalizedPricing, `"REFERENCE_PRICE_BILLING_NOT_AUTHORIZED"`)
 	require.Contains(t, records[1].NormalizedPricing, `"price_kind":"RATIO_ONLY"`)
 	require.Contains(t, records[1].NormalizedPricing, `"tiers":[`)
 }
@@ -531,6 +541,67 @@ func TestUterRouteMixedFixedExpressionDiscountPreservesAllTerms(t *testing.T) {
 	require.NoError(t, baseErr)
 	require.NoError(t, gotErr)
 	require.InDelta(t, base*0.5, got, 1e-6)
+}
+
+// TestScaleBillingExprByFactorCoverageMatrix proves every coefficient shape
+// Uter Route can publish is scaled by the same factor, while thresholds and
+// request quantities are left alone. It is a semantic check: each scaled rule
+// must evaluate to base × factor for real request probes.
+func TestScaleBillingExprByFactorCoverageMatrix(t *testing.T) {
+	imageCount := 2
+	duration := 8.0
+	cases := []struct {
+		name   string
+		expr   string
+		factor float64
+		params billingexpr.TokenParams
+		input  billingexpr.RequestInput
+	}{
+		{
+			name: "fixed only", expr: `tier("image", fixed(0.04))`, factor: 0.5,
+			input: billingexpr.RequestInput{ImageCount: &imageCount},
+		},
+		{
+			name: "token coefficient with digit in identifier",
+			expr: `cc1h * 0.2 + p * 1.25`, factor: 0.6,
+			params: billingexpr.TokenParams{P: 1000, CC1h: 500},
+		},
+		{
+			name: "bare duration coefficient", expr: `duration * 0.0746268657`, factor: 1.1,
+			input: billingexpr.RequestInput{Duration: &duration},
+		},
+		{
+			name: "parenthesized duration coefficient",
+			expr: `tier("720p", (duration > 0 ? duration : 5) * 0.0895522)`, factor: 1.1,
+			input: billingexpr.RequestInput{Duration: &duration},
+		},
+		{
+			name: "per image price coefficient",
+			expr: `tier("image", image_count * 3)`, factor: 0.5,
+			input: billingexpr.RequestInput{ImageCount: &imageCount},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			scaled, ok := scaleBillingExprByFactor(tc.expr, tc.factor)
+			require.True(t, ok)
+			base, _, baseErr := billingexpr.RunExprWithRequest(tc.expr, tc.params, tc.input)
+			got, _, gotErr := billingexpr.RunExprWithRequest(scaled, tc.params, tc.input)
+			require.NoError(t, baseErr)
+			require.NoError(t, gotErr)
+			require.InDelta(t, base*tc.factor, got, 1e-8, "scaled=%s", scaled)
+		})
+	}
+
+	thresholdExpr := `len <= 100 ? tier("short", p * 1) : tier("long", fixed(0.05))`
+	thresholdScaled, ok := scaleBillingExprByFactor(thresholdExpr, 0.6)
+	require.True(t, ok)
+	require.Contains(t, thresholdScaled, "len <= 100", "thresholds are not price coefficients")
+
+	_, ok = scaleBillingExprByFactor(`len > 100 ? 1 : 0`, 0.6)
+	require.False(t, ok, "an expression with no price coefficient must fail closed")
+	_, ok = scaleBillingExprByFactor(`p * 1e-5`, 0.6)
+	require.False(t, ok, "unsupported exponent notation must fail closed")
 }
 
 func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *testing.T) {

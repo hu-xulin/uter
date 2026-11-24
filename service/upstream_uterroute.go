@@ -34,6 +34,13 @@ const upstreamHistoryLimit = 1000
 // placeholder because their real price lives in billing_expr (tiered/media).
 const uterRoutePlaceholderModelRatio = 37.5
 
+// Ratio-derived and historical catalog prices are display-only by default.
+// Billing from either source requires a separate, explicitly audited product
+// authorization; this production-readiness audit does not grant it. The reason
+// code is persisted in normalized_pricing.review_reasons so the admin audit can
+// prove why the row was parked instead of silently auto-configured.
+const uterRouteReferenceBillingNotAuthorizedReason = "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED"
+
 var uterRouteFixedPriceDiscount = regexp.MustCompile(`fixed\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)`)
 
 type UpstreamCapabilityStatus string
@@ -441,8 +448,15 @@ func UterRouteDiscountForModel(
 	// both purchase cost and margin. Return false so the caller parks the row
 	// in NEEDS_REVIEW instead of guessing. Equal ratios are unambiguous: every
 	// candidate resolves to the same price.
-	if resolve := resolveUterRouteGroupRatio(item.EnableGroups, snapshot.GroupGroupRatio[group]); resolve.ok {
-		return resolve.ratio, resolve.group, true
+	groupResolution := resolveUterRouteGroupRatio(item.EnableGroups, snapshot.GroupGroupRatio[group])
+	if groupResolution.ok {
+		return groupResolution.ratio, groupResolution.group, true
+	}
+	if groupResolution.ambiguous {
+		// The authoritative group-group table contains candidates for this
+		// model but cannot prove which one settles. A clean flat fallback is a
+		// different table and must not be used to launder that ambiguity.
+		return 0, "", false
 	}
 	if resolve := resolveUterRouteGroupRatio(item.EnableGroups, snapshot.GroupRatio); resolve.ok {
 		return resolve.ratio, resolve.group, true
@@ -451,9 +465,10 @@ func UterRouteDiscountForModel(
 }
 
 type uterRouteGroupResolution struct {
-	ratio float64
-	group string
-	ok    bool
+	ratio     float64
+	group     string
+	ok        bool
+	ambiguous bool
 }
 
 // resolveUterRouteGroupRatio resolves one ratio table deterministically.
@@ -468,15 +483,20 @@ func resolveUterRouteGroupRatio(enableGroups []string, table map[string]float64)
 	seen := make(map[string]bool, len(enableGroups))
 	for _, modelGroup := range enableGroups {
 		value, exists := table[modelGroup]
-		if !exists || !validUpstreamRatio(value) || seen[modelGroup] {
+		if !exists || seen[modelGroup] {
 			continue
 		}
 		seen[modelGroup] = true
+		if !validUpstreamRatio(value) {
+			// An enabled group present in the authoritative table with an
+			// unusable ratio makes the settlement identity unprovable.
+			return uterRouteGroupResolution{ambiguous: true}
+		}
 		if ratio == 0 {
 			ratio = value
 		} else if !ratiosEqual(value, ratio) {
 			// Different settlement ratios cannot be resolved from the catalog.
-			return uterRouteGroupResolution{}
+			return uterRouteGroupResolution{ambiguous: true}
 		}
 		groups = append(groups, modelGroup)
 	}
@@ -1302,6 +1322,10 @@ func uterRouteChannelOfficialPricing(
 			view.ReviewReasons = append(view.ReviewReasons, "EXPRESSION_DISCOUNT_UNVERIFIED")
 			return view, ""
 		}
+		if isUterRouteReferencePriceStatus(item.PriceStatus) {
+			markUterRouteReferencePriceReview(&view, item.PriceStatus)
+			return view, ""
+		}
 		return view, internalPricing
 	}
 	if line == nil || line.Input == nil {
@@ -1368,29 +1392,29 @@ func uterRouteChannelOfficialPricing(
 		internalPricing, priced = uterRouteChannelExpressionPricing(
 			item.BillingExpr, group, modelGroup, discount,
 		)
-		if priced {
+		if priced && !isUterRouteReferencePriceStatus(item.PriceStatus) {
 			// The complete, executable rule carries every tier, so the
 			// expression itself is the validated price contract.
 			view.NeedsReview = false
 			view.ReviewReasons = nil
-		} else {
+		} else if !priced {
 			view.NeedsReview = true
 			view.ReviewReasons = append(view.ReviewReasons, "EXPRESSION_DISCOUNT_UNVERIFIED")
+		}
+		if isUterRouteReferencePriceStatus(item.PriceStatus) {
+			markUterRouteReferencePriceReview(&view, item.PriceStatus)
 		}
 	} else {
 		internalPricing, priced = uterRouteChannelInternalPricing(channelLine, group, modelGroup, discount)
 		if !priced {
 			view.NeedsReview = true
 			view.ReviewReasons = append(view.ReviewReasons, "UNSUPPORTED_CHANNEL_PRICE_SHAPE")
-		} else if item.PriceStatus == "DERIVED_FROM_RATIOS" || item.PriceStatus == "HISTORICAL_SNAPSHOT" {
-			// Uter Route supplies a concrete official_price reference for these
-			// rows even though the absolute list price is derived or historical.
-			// The reference already carries the channel discount and the default
-			// Uter markup is applied to the generated sale price, so the model can
-			// be configured instead of parking every request in manual review.
-			// PriceKind and Source keep the derivation visible.
-			view.NeedsReview = false
-			view.ReviewReasons = nil
+		}
+		if isUterRouteReferencePriceStatus(item.PriceStatus) {
+			// The upstream reference is useful for display and for an explicit
+			// operator pricing decision, but it is not a verified purchase cost
+			// and must never enable automatic billing by itself.
+			markUterRouteReferencePriceReview(&view, item.PriceStatus)
 		}
 	}
 	if view.NeedsReview {
@@ -1403,6 +1427,30 @@ func uterRouteChannelOfficialPricing(
 	view.DiscountModelGroup = modelGroup
 	view.DiscountRatio = &discount
 	return view, internalPricing
+}
+
+// isUterRouteReferencePriceStatus identifies upstream rows whose absolute
+// amount is reconstructed from ratios or copied from a historical snapshot.
+// Both are references for humans, not verified purchase costs.
+func isUterRouteReferencePriceStatus(status string) bool {
+	return status == "DERIVED_FROM_RATIOS" || status == "HISTORICAL_SNAPSHOT"
+}
+
+func markUterRouteReferencePriceReview(view *model.ChannelOfficialPricing, status string) {
+	view.NeedsReview = true
+	view.ReviewReasons = appendUterRouteReviewReason(view.ReviewReasons, status)
+	view.ReviewReasons = appendUterRouteReviewReason(
+		view.ReviewReasons, uterRouteReferenceBillingNotAuthorizedReason,
+	)
+}
+
+func appendUterRouteReviewReason(reasons []string, reason string) []string {
+	for _, existing := range reasons {
+		if existing == reason {
+			return reasons
+		}
+	}
+	return append(reasons, reason)
 }
 
 func uterRoutePriceSource(status string) string {
