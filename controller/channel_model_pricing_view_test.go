@@ -65,6 +65,62 @@ func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {
 
 func floatPtr(value float64) *float64 { return &value }
 
+// needs_review 的 Uter Route 行可能同时带有 billing_expr 解析出的权威官方价
+// 与过时的 model_ratio。渠道报价不得用过时 ratio 重新推导并遮蔽解析价——
+// 否则 claude-haiku-5-5 会显示 0.5/2.5，而非正确的 0.1/0.5。
+func TestChannelModelPricingViewNeverShadowsParsedOfficialWithStaleRatio(t *testing.T) {
+	staleRatio, completion := 0.25, 5.0
+	raw, err := common.Marshal(service.UpstreamModelRecord{
+		ProviderID: "uterroute", ModelName: "claude-haiku-5-5",
+		ModelRatio: &staleRatio, CompletionRatio: &completion,
+		OfficialPrice: &service.UpstreamPriceLine{
+			Input: floatPtr(0.1), Output: floatPtr(0.5), Unit: "per_1m_token", Currency: "USD",
+		},
+		PriceStatus: "DERIVED_FROM_EXPR", PriceBasis: service.UpstreamPriceBasisRatioOnly,
+	})
+	require.NoError(t, err)
+
+	input, output := 0.1, 0.5
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD", Source: "uterroute-expression",
+		Tiers: []model.ChannelPricingTier{{
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
+		}},
+	})
+	require.NoError(t, err)
+
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 1241, ModelName: "claude-haiku-5-5", Provider: "uterroute",
+		OfficialPricing: string(raw), NormalizedPricing: string(normalized),
+		PricingStatus: "needs_review",
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.NotEqual(t, "DERIVED_FROM_RATIOS", view.UpstreamQuote.PriceBasis,
+		"过时的 ratio 不得覆盖已解析的官方价")
+	require.InDelta(t, 0.1, view.UpstreamQuote.InputPerMillionUSD.Float64(), 1e-9)
+	require.InDelta(t, 0.5, view.UpstreamQuote.OutputPerMillionUSD.Float64(), 1e-9)
+}
+
+// 完全没有已解析的官方 tier 时，仍按既有约定（model_ratio 1 = $2/1M）推导并标注来源，
+// 保证纯 ratio 渠道的展示契约不被本次修复破坏。
+func TestChannelModelPricingViewStillDerivesRatioWithoutOfficialTier(t *testing.T) {
+	ratio, completion := 2.5, 5.0
+	raw, err := common.Marshal(service.UpstreamModelRecord{
+		ProviderID: "uterroute", ModelName: "ratio-only",
+		ModelRatio: &ratio, CompletionRatio: &completion,
+	})
+	require.NoError(t, err)
+
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 7, ModelName: "ratio-only", Provider: "uterroute",
+		OfficialPricing: string(raw), NormalizedPricing: `{}`,
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.Equal(t, "DERIVED_FROM_RATIOS", view.UpstreamQuote.PriceBasis)
+	require.InDelta(t, 5.0, view.UpstreamQuote.InputPerMillionUSD.Float64(), 1e-9)
+	require.InDelta(t, 25.0, view.UpstreamQuote.OutputPerMillionUSD.Float64(), 1e-9)
+}
+
 func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 	input, output, discount := 6.0, 30.0, 0.6
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{

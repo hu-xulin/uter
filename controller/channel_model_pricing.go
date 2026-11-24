@@ -204,10 +204,10 @@ func channelModelPricingToView(row model.ChannelModelPricing) channelModelPricin
 	return view
 }
 
-// channelUpstreamQuote exposes the provider's purchase quote separately from
-// the official list price. Uter Route publishes ratios, so its quote is
-// converted with Uter's documented ratio convention; absolute providers reuse
-// the first normalized tier.
+// channelUpstreamQuote 把上游采购报价与官方标价分开暴露。
+// 已解析出的权威官方 tier（来自 normalized_pricing）始终优先；
+// 只有不存在该 tier 时，才按 Uter 既有约定用 ratio 推导 Uter Route 报价，
+// 或复用绝对供应商的第一个 tier。
 func channelUpstreamQuote(row model.ChannelModelPricing, official *model.ChannelOfficialPricing) *channelUpstreamQuoteView {
 	if official != nil {
 		switch {
@@ -239,7 +239,11 @@ func channelUpstreamQuote(row model.ChannelModelPricing, official *model.Channel
 			return quote
 		}
 	}
-	if row.Provider == "uterroute" && strings.TrimSpace(row.OfficialPricing) != "" {
+	// 仅当没有权威的已解析官方 tier 时才从 ratio 推导。
+	// needs_review 的 Uter Route 行可能同时带有过时的 model_ratio 与
+	// billing_expr 解析价，此时 ratio 不得遮蔽解析价。
+	if (official == nil || len(official.Tiers) == 0) &&
+		row.Provider == "uterroute" && strings.TrimSpace(row.OfficialPricing) != "" {
 		var record service.UpstreamModelRecord
 		if err := common.UnmarshalJsonStr(row.OfficialPricing, &record); err == nil {
 			quote := &channelUpstreamQuoteView{
