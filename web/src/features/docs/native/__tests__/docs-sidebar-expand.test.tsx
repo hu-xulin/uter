@@ -22,25 +22,41 @@ import {
   createRoute,
   createRouter,
   RouterProvider,
+  useRouterState,
 } from '@tanstack/react-router'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import type { DocsLocaleCode } from '@/lib/docs-link'
+
 import { NativeDocsShell } from '../docs-shell'
 
 const FEATURES_PAGE = 'guide/wiki/basic-concepts/features-introduction'
+
+/**
+ * Follow the URL so a click's selection state is observable: the shell
+ * reads the current splat from router state instead of a fixed pagePath.
+ */
+function ShellFromRoute() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const rest = pathname.replace(/^\/docs\//, '').replace(/\/+$/, '')
+  const slash = rest.indexOf('/')
+  const locale = (slash === -1 ? rest : rest.slice(0, slash)) as DocsLocaleCode
+  const pagePath = slash === -1 ? '' : rest.slice(slash + 1)
+  return (
+    <NativeDocsShell locale={locale} pagePath={pagePath} toc={[]}>
+      <div>content</div>
+    </NativeDocsShell>
+  )
+}
 
 async function renderShell() {
   const root = createRootRoute()
   const docs = createRoute({
     getParentRoute: () => root,
     path: '/docs/$',
-    component: () => (
-      <NativeDocsShell locale='zh' pagePath={FEATURES_PAGE} toc={[]}>
-        <div>content</div>
-      </NativeDocsShell>
-    ),
+    component: ShellFromRoute,
   })
   const router = createRouter({
     routeTree: root.addChildren([docs]),
@@ -53,41 +69,65 @@ async function renderShell() {
   return router
 }
 
-describe('docs sidebar user-guide folder', () => {
-  it('starts collapsed away from its own pages', async () => {
+const SECTIONS = [
+  { label: '用户指南', pagePath: 'guide/wiki/user-guide' },
+  { label: 'API 参考', pagePath: 'api' },
+  { label: 'AI 应用', pagePath: 'apps' },
+] as const
+
+describe('docs sidebar section navigation', () => {
+  it('renders each section title as a link to its landing page', async () => {
     await renderShell()
-    const title = screen.getByRole('button', { name: '用户指南' })
-    expect(title).toBeVisible()
-    expect(title).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
+    for (const section of SECTIONS) {
+      const link = screen.getByRole('link', { name: section.label })
+      expect(link).toHaveAttribute('href', `/docs/zh/${section.pagePath}`)
+      expect(link).not.toHaveAttribute('aria-current')
+    }
   })
 
-  it('toggles every chapter when the section title is clicked', async () => {
+  it.each(SECTIONS)(
+    'clicking $label navigates to its landing page and marks it current',
+    async ({ label, pagePath }) => {
+      const router = await renderShell()
+      await userEvent.click(screen.getByRole('link', { name: label }))
+      expect(router.state.location.pathname).toBe(`/docs/zh/${pagePath}`)
+      expect(screen.getByRole('link', { name: label })).toHaveAttribute(
+        'aria-current',
+        'page'
+      )
+    }
+  )
+
+  it('auto-expands the landing section when navigation lands on it', async () => {
     await renderShell()
-    const title = screen.getByRole('button', { name: '用户指南' })
-    expect(title).toHaveAttribute('aria-expanded', 'false')
-
-    await userEvent.click(title)
-
+    await userEvent.click(screen.getByRole('link', { name: '用户指南' }))
     expect(await screen.findByRole('link', { name: '登录' })).toBeVisible()
     expect(screen.getByRole('link', { name: '排行' })).toBeVisible()
-    expect(title).toHaveAttribute('aria-expanded', 'true')
+  })
+})
 
-    await userEvent.click(title)
-
+describe('docs sidebar user-guide folder disclosure', () => {
+  it('starts collapsed away from its own pages', async () => {
+    await renderShell()
+    const arrow = screen.getByRole('button', { name: 'Expand 用户指南' })
+    expect(arrow).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
-    expect(title).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('expands every chapter when the disclosure arrow is clicked', async () => {
+  it('toggles every chapter when the disclosure arrow is clicked', async () => {
     await renderShell()
     const arrow = screen.getByRole('button', { name: 'Expand 用户指南' })
     expect(arrow).toHaveAttribute('aria-expanded', 'false')
 
     await userEvent.click(arrow)
 
-    expect(arrow).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('link', { name: '登录' })).toBeVisible()
+    expect(await screen.findByRole('link', { name: '登录' })).toBeVisible()
     expect(screen.getByRole('link', { name: '排行' })).toBeVisible()
+    expect(arrow).toHaveAttribute('aria-expanded', 'true')
+
+    await userEvent.click(arrow)
+
+    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
+    expect(arrow).toHaveAttribute('aria-expanded', 'false')
   })
 })

@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -59,6 +59,13 @@ function TreeItem({
   const isActive = splat === activeSplat
   const indent = { paddingLeft: `${8 + depth * 12}px` }
 
+  // When navigation lands on this section's own landing page (or a page
+  // inside its subtree), open it — SPA transitions keep the component
+  // mounted, so the useState initialiser alone would leave it collapsed.
+  useEffect(() => {
+    if (isActive && hasChildren) setOpen(true)
+  }, [isActive, hasChildren])
+
   if (!hasChildren) {
     return (
       <Link
@@ -85,18 +92,18 @@ function TreeItem({
         }`}
         style={indent}
       >
-        <button
-          type='button'
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-          className={`flex min-w-0 flex-1 items-center gap-1 bg-transparent text-left text-sm ${
+        <Link
+          to='/docs/$'
+          params={{ _splat: splat }}
+          aria-current={isActive ? 'page' : undefined}
+          className={`flex min-w-0 flex-1 items-center gap-1 text-left text-sm no-underline ${
             isActive
               ? 'text-sidebar-active-foreground font-medium'
               : 'text-fg-secondary hover:text-fg-primary'
           }`}
         >
           <span className='min-w-0 truncate'>{node.title}</span>
-        </button>
+        </Link>
         <button
           type='button'
           aria-expanded={open}
