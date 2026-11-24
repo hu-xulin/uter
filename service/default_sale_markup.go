@@ -20,8 +20,11 @@ package service
 
 import (
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/shopspring/decimal"
 
 	"github.com/uter-ai/uter/model"
 )
@@ -29,6 +32,16 @@ import (
 // DefaultUterSaleMarkup is the default Uter sale price relative to the
 // upstream channel quote when the operator has not configured a rule.
 const DefaultUterSaleMarkup = 1.10
+
+// defaultUterSaleMarkupDecimal is the exact decimal form of the markup. Using
+// a string literal (not decimal.NewFromFloat) preserves the intended 1.10 and
+// avoids float64 round-trips when scaling Money amounts.
+var defaultUterSaleMarkupDecimal = decimal.RequireFromString("1.10")
+
+// The coefficient regexes below intentionally accept only plain decimals.
+// Reject exponent notation before they can match the mantissa (e.g. the "1"
+// in "1e-5") and leave a partially scaled expression behind.
+var uterRouteScientificNotation = regexp.MustCompile(`[0-9]+(?:\.[0-9]+)?[eE][+-]?[0-9]+`)
 
 // scaleBillingExprByFactor multiplies every price coefficient in an upstream
 // billing expression by factor, preserving the complete tier structure.
@@ -49,7 +62,11 @@ func scaleBillingExprByFactor(expr string, factor float64) (string, bool) {
 	if raw == "" || factor <= 0 || math.IsNaN(factor) || math.IsInf(factor, 0) {
 		return "", false
 	}
+	if uterRouteScientificNotation.MatchString(raw) {
+		return "", false
+	}
 	scaled := raw
+	scaledAny := false
 	if len(uterRouteFixedPriceDiscount.FindAllString(raw, -1)) > 0 {
 		scaled = uterRouteFixedPriceDiscount.ReplaceAllStringFunc(scaled, func(term string) string {
 			match := uterRouteFixedPriceDiscount.FindStringSubmatch(term)
@@ -57,22 +74,47 @@ func scaleBillingExprByFactor(expr string, factor float64) (string, bool) {
 			if err != nil {
 				return term
 			}
+			scaledAny = true
 			return "fixed(" + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64) + ")"
 		})
 	}
-	// Scale per-unit token/duration coefficients in place. image_count is a
-	// request quantity, not a price coefficient, so it is never scaled.
+	// Duration prices are written as `(…duration…) * <usd_per_second>` or
+	// bare `duration * <usd_per_second>`. They have no identifier directly in
+	// front of `*`, so the unit-term regex below cannot see them. Scaling this
+	// branch first also prevents the unit pass from scaling bare `duration`
+	// twice; a plain `(expr) * factor` wrap is still forbidden because the
+	// billing engine rejects ordinary multipliers around fixed() charges.
+	scaled = uterRouteExprDurationTerm.ReplaceAllStringFunc(scaled, func(term string) string {
+		match := uterRouteExprDurationTerm.FindStringSubmatch(term)
+		value, err := strconv.ParseFloat(match[2], 64)
+		if err != nil {
+			return term
+		}
+		scaledAny = true
+		scaledValue := strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
+		if match[1] == "" {
+			return "duration * " + scaledValue
+		}
+		return "(" + match[1] + ") * " + scaledValue
+	})
+	// Scale per-unit token coefficients in place. A bare request quantity such
+	// as `tier(...) * image_count` has no numeric coefficient and is left
+	// untouched; `image_count * 5` is a per-image price and must be scaled.
 	scaled = uterRouteExprUnitTermScaled.ReplaceAllStringFunc(scaled, func(term string) string {
 		match := uterRouteExprUnitTermScaled.FindStringSubmatch(term)
-		if match[1] == "image_count" {
+		if match[1] == "duration" {
 			return term
 		}
 		value, err := strconv.ParseFloat(match[2], 64)
 		if err != nil {
 			return term
 		}
+		scaledAny = true
 		return match[1] + " * " + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
 	})
+	if !scaledAny {
+		return "", false
+	}
 	normalized := NormalizeUpstreamExpression(scaled)
 	if !normalized.Executable {
 		return "", false
@@ -98,8 +140,7 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 		&pricing.PerCallUSD, &pricing.PerSecondUSD, &pricing.PerMinuteUSD,
 	} {
 		if *value != nil {
-			scaled := **value
-			next := model.MoneyFromFloat(scaled.Float64() * DefaultUterSaleMarkup)
+			next := (**value).MulDecimal(defaultUterSaleMarkupDecimal)
 			*value = &next
 		}
 	}
@@ -115,7 +156,7 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 			&tier.MultiInputOutputUSDPerMillion, &tier.ThinkingMultiInputOutputUSDPerMillion,
 		} {
 			if *value != nil {
-				next := model.MoneyFromFloat((**value).Float64() * DefaultUterSaleMarkup)
+				next := (**value).MulDecimal(defaultUterSaleMarkupDecimal)
 				*value = &next
 			}
 		}
