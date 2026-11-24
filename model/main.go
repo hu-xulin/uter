@@ -438,6 +438,11 @@ func migrateDB() error {
 	if err := MigrateSchemaUp(DB); err != nil {
 		return fmt.Errorf("versioned schema migration failed: %w", err)
 	}
+	// Backfill explicit price ownership before the review gate and before any
+	// sync can run against historical rows. Source labels stay as audit data.
+	if err := PrepareChannelModelPricingOwner(DB); err != nil {
+		return fmt.Errorf("failed to backfill channel pricing owner: %w", err)
+	}
 	// Enforce the price-review hard gate on every startup: a historical
 	// automatic sale price attached to a review-only record must never stay
 	// billable after a deploy.

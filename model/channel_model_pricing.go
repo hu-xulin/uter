@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/shopspring/decimal"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/pkg/billingexpr"
+	"github.com/uter-ai/uter/relaykit/dto"
 	"gorm.io/gorm"
 )
 
@@ -23,6 +24,15 @@ const (
 	ChannelPricingStatusOfficialOnly = "official_only"
 	ChannelPricingStatusConfigured   = "configured"
 	ChannelPricingStatusNeedsReview  = "needs_review"
+)
+
+// PricingOwner records who owns a sale price. Unlike the legacy Source string,
+// these four values are the authoritative answer to "may a sync overwrite it".
+const (
+	ChannelPricingOwnerAuto     = "AUTO"
+	ChannelPricingOwnerOperator = "OPERATOR"
+	ChannelPricingOwnerBatch    = "BATCH"
+	ChannelPricingOwnerApproved = "APPROVED"
 )
 
 // Upstream model lifecycle. Lifecycle is independent from the price status:
@@ -68,10 +78,12 @@ type ChannelModelPricing struct {
 	// can distinguish verified cost from an estimate.
 	PurchasePricing string `gorm:"type:text"`
 	PricingSource   string `gorm:"size:64"`
-	PricingStatus   string `gorm:"size:32;index"`
-	PricingVersion  string `gorm:"size:64"`
-	FetchedAt       int64
-	UpdatedAt       int64
+	// PricingOwner 是价格所有权；空值表示尚未打标签的历史行，由 Source 兜底判定。
+	PricingOwner   string `gorm:"size:16;index"`
+	PricingStatus  string `gorm:"size:32;index"`
+	PricingVersion string `gorm:"size:64"`
+	FetchedAt      int64
+	UpdatedAt      int64
 	// LifecycleStatus is the upstream catalog state. Empty is treated as
 	// ACTIVE for rows created before lifecycle tracking existed.
 	LifecycleStatus    string `gorm:"size:32;index"`
@@ -86,18 +98,22 @@ func (ChannelModelPricing) TableName() string { return "channel_model_pricing" }
 // ChannelPricingTier is one official price band. Amounts are USD per unit so
 // comparisons never depend on the source currency or unit.
 type ChannelPricingRawComponent struct {
-	Type             string  `json:"type"`
-	Name             string  `json:"name,omitempty"`
-	RawAmount        float64 `json:"raw_amount"`
-	RawCurrency      string  `json:"raw_currency"`
-	RawUnit          string  `json:"raw_unit"`
-	NormalizedUSD    float64 `json:"normalized_usd"`
-	FXRate           float64 `json:"fx_rate,omitempty"`
-	FXSource         string  `json:"fx_source,omitempty"`
-	FXTimestamp      int64   `json:"fx_timestamp,omitempty"`
-	CurrencyInferred bool    `json:"currency_inferred"`
-	PriceSource      string  `json:"price_source"`
-	EffectiveAt      int64   `json:"effective_at,omitempty"`
+	Type        string `json:"type"`
+	Name        string `json:"name,omitempty"`
+	RawAmount   Money  `json:"raw_amount"`
+	RawCurrency string `json:"raw_currency"`
+	RawUnit     string `json:"raw_unit"`
+	// SourceCurrency 是上游原始币种；NormalizedCurrency 是换算后金额的币种。
+	// RawCurrency 保留旧字段名以便历史记录继续可读。
+	SourceCurrency     string  `json:"source_currency,omitempty"`
+	NormalizedCurrency string  `json:"normalized_currency,omitempty"`
+	NormalizedUSD      Money   `json:"normalized_usd"`
+	FXRate             float64 `json:"fx_rate,omitempty"`
+	FXSource           string  `json:"fx_source,omitempty"`
+	FXTimestamp        int64   `json:"fx_timestamp,omitempty"`
+	CurrencyInferred   bool    `json:"currency_inferred"`
+	PriceSource        string  `json:"price_source"`
+	EffectiveAt        int64   `json:"effective_at,omitempty"`
 }
 
 type ChannelPricingTier struct {
@@ -105,21 +121,21 @@ type ChannelPricingTier struct {
 	TimeBand                              string                       `json:"time_band,omitempty"`
 	MinInputTokens                        int64                        `json:"min_input_tokens,omitempty"`
 	MaxInputTokens                        int64                        `json:"max_input_tokens,omitempty"`
-	InputPerMillionUSD                    *float64                     `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD                   *float64                     `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD                    *float64                     `json:"cache_per_million_usd,omitempty"`
-	CreateCachePerMillionUSD              *float64                     `json:"create_cache_per_million_usd,omitempty"`
-	ImageInputPerMillionUSD               *float64                     `json:"image_input_per_million_usd,omitempty"`
-	ThinkingInputPerMillionUSD            *float64                     `json:"thinking_input_per_million_usd,omitempty"`
-	ThinkingOutputPerMillionUSD           *float64                     `json:"thinking_output_per_million_usd,omitempty"`
-	ThinkingCachePerMillionUSD            *float64                     `json:"thinking_cache_per_million_usd,omitempty"`
-	ThinkingCreateCachePerMillionUSD      *float64                     `json:"thinking_create_cache_per_million_usd,omitempty"`
-	ThinkingImageInputPerMillionUSD       *float64                     `json:"thinking_image_input_per_million_usd,omitempty"`
-	MultiInputOutputPerMillionUSD         *float64                     `json:"multi_input_output_per_million_usd,omitempty"`
-	ThinkingMultiInputOutputPerMillionUSD *float64                     `json:"thinking_multi_input_output_per_million_usd,omitempty"`
-	AudioInputPerMillionUSD               *float64                     `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputPerMillionUSD              *float64                     `json:"audio_output_per_million_usd,omitempty"`
-	PerUnitUSD                            *float64                     `json:"per_unit_usd,omitempty"`
+	InputPerMillionUSD                    *Money                       `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD                   *Money                       `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD                    *Money                       `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD              *Money                       `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputPerMillionUSD               *Money                       `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputPerMillionUSD            *Money                       `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputPerMillionUSD           *Money                       `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCachePerMillionUSD            *Money                       `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCachePerMillionUSD      *Money                       `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputPerMillionUSD       *Money                       `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputPerMillionUSD         *Money                       `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputPerMillionUSD *Money                       `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD               *Money                       `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD              *Money                       `json:"audio_output_per_million_usd,omitempty"`
+	PerUnitUSD                            *Money                       `json:"per_unit_usd,omitempty"`
 	Unit                                  string                       `json:"unit"`
 	RawPriceTypes                         []string                     `json:"raw_price_types,omitempty"`
 	RawComponents                         []ChannelPricingRawComponent `json:"raw_components,omitempty"`
@@ -129,10 +145,10 @@ type ChannelPricingTier struct {
 // publishes for the same model, stored so both prices stay visible without
 // forcing a second billing dimension.
 type ChannelPricingComponent struct {
-	Name string  `json:"name,omitempty"`
-	Type string  `json:"type,omitempty"`
-	Unit string  `json:"unit"`
-	USD  float64 `json:"usd"`
+	Name string `json:"name,omitempty"`
+	Type string `json:"type,omitempty"`
+	Unit string `json:"unit"`
+	USD  Money  `json:"usd"`
 }
 
 // ChannelRatioBasis documents a ratio-to-absolute conversion. The basis is the
@@ -141,22 +157,29 @@ type ChannelPricingComponent struct {
 type ChannelRatioBasis struct {
 	RawRatio           float64 `json:"raw_ratio"`
 	RawCompletionRatio float64 `json:"raw_completion_ratio,omitempty"`
-	BasisUSDPerMillion float64 `json:"basis_usd_per_million"`
+	BasisUSDPerMillion Money   `json:"basis_usd_per_million"`
 	Formula            string  `json:"formula"`
 	FormulaVersion     string  `json:"formula_version"`
-	ResultInputUSD     float64 `json:"result_input_usd_per_million"`
-	ResultOutputUSD    float64 `json:"result_output_usd_per_million,omitempty"`
+	ResultInputUSD     Money   `json:"result_input_usd_per_million"`
+	ResultOutputUSD    Money   `json:"result_output_usd_per_million,omitempty"`
 }
 
 // ChannelOfficialPricing is the normalized official view for one channel
 // model. The untouched source payload is kept in ChannelModelPricing.
 type ChannelOfficialPricing struct {
-	Currency    string               `json:"currency"`
-	FXRateToUSD float64              `json:"fx_rate_to_usd,omitempty"`
-	FXSource    string               `json:"fx_source,omitempty"`
-	FXTimestamp int64                `json:"fx_timestamp,omitempty"`
-	Unit        string               `json:"unit"`
-	Tiers       []ChannelPricingTier `json:"tiers"`
+	// Currency 保留为原始币种以兼容历史记录；金额的标准化币种必须以
+	// NormalizedCurrency 为准，不得从 Currency 推断。
+	Currency string `json:"currency"`
+	// SourceCurrency 是上游返回的原始币种；空值表示上游未提供且无法确认。
+	SourceCurrency string `json:"source_currency,omitempty"`
+	// NormalizedCurrency 是 NormalizedUSD / Tier USD 金额的币种，通常为 USD。
+	NormalizedCurrency string               `json:"normalized_currency,omitempty"`
+	CurrencyInferred   bool                 `json:"currency_inferred,omitempty"`
+	FXRateToUSD        float64              `json:"fx_rate_to_usd,omitempty"`
+	FXSource           string               `json:"fx_source,omitempty"`
+	FXTimestamp        int64                `json:"fx_timestamp,omitempty"`
+	Unit               string               `json:"unit"`
+	Tiers              []ChannelPricingTier `json:"tiers"`
 	// PriceKind classifies where the amounts came from. A ratio converted with
 	// an assumed basis is not an official absolute price and must not be
 	// presented as one.
@@ -196,60 +219,60 @@ type ChannelOfficialPricing struct {
 // context-length bands on input tokens; the billing expression selects the band
 // at request time so tiered pricing is executable instead of display-only.
 type ChannelInternalPricingTier struct {
-	RangeName                string   `json:"range_name"`
-	TimeBand                 string   `json:"time_band,omitempty"`
-	MinInputTokens           int64    `json:"min_input_tokens,omitempty"`
-	MaxInputTokens           int64    `json:"max_input_tokens,omitempty"`
-	InputUSDPerMillion       *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSDPerMillion      *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSDPerMillion       *float64 `json:"cache_per_million_usd,omitempty"`
-	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
-	AudioInputUSDPerMillion  *float64 `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputUSDPerMillion *float64 `json:"audio_output_per_million_usd,omitempty"`
+	RangeName                string `json:"range_name"`
+	TimeBand                 string `json:"time_band,omitempty"`
+	MinInputTokens           int64  `json:"min_input_tokens,omitempty"`
+	MaxInputTokens           int64  `json:"max_input_tokens,omitempty"`
+	InputUSDPerMillion       *Money `json:"input_per_million_usd,omitempty"`
+	OutputUSDPerMillion      *Money `json:"output_per_million_usd,omitempty"`
+	CacheUSDPerMillion       *Money `json:"cache_per_million_usd,omitempty"`
+	CreateCacheUSDPerMillion *Money `json:"create_cache_per_million_usd,omitempty"`
+	AudioInputUSDPerMillion  *Money `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSDPerMillion *Money `json:"audio_output_per_million_usd,omitempty"`
 	// Modality and reasoning dimensions bill through the same expression
 	// engine as the official tiers. Null means the model has no separate
 	// price for that dimension; it is never defaulted to the text price.
-	ImageInputUSDPerMillion               *float64 `json:"image_input_per_million_usd,omitempty"`
-	ThinkingInputUSDPerMillion            *float64 `json:"thinking_input_per_million_usd,omitempty"`
-	ThinkingOutputUSDPerMillion           *float64 `json:"thinking_output_per_million_usd,omitempty"`
-	ThinkingCacheUSDPerMillion            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
-	ThinkingCreateCacheUSDPerMillion      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
-	ThinkingImageInputUSDPerMillion       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
-	MultiInputOutputUSDPerMillion         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
-	ThinkingMultiInputOutputUSDPerMillion *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
-	PerUnitUSD                            *float64 `json:"per_unit_usd,omitempty"`
-	Unit                                  string   `json:"unit"`
+	ImageInputUSDPerMillion               *Money `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputUSDPerMillion            *Money `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputUSDPerMillion           *Money `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCacheUSDPerMillion            *Money `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCacheUSDPerMillion      *Money `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputUSDPerMillion       *Money `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputUSDPerMillion         *Money `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputUSDPerMillion *Money `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	PerUnitUSD                            *Money `json:"per_unit_usd,omitempty"`
+	Unit                                  string `json:"unit"`
 }
 
 type ChannelInternalPricing struct {
-	Mode                string   `json:"mode"`
-	InputUSDPerMillion  *float64 `json:"input_per_million_usd,omitempty"`
-	OutputUSDPerMillion *float64 `json:"output_per_million_usd,omitempty"`
-	CacheUSDPerMillion  *float64 `json:"cache_per_million_usd,omitempty"`
+	Mode                string `json:"mode"`
+	InputUSDPerMillion  *Money `json:"input_per_million_usd,omitempty"`
+	OutputUSDPerMillion *Money `json:"output_per_million_usd,omitempty"`
+	CacheUSDPerMillion  *Money `json:"cache_per_million_usd,omitempty"`
 	// Audio absolute prices for token models. AudioRatio and
 	// AudioCompletionRatio are derived from them when set, so billing keeps
 	// using the ratio fields while the operator edits absolute prices.
-	AudioInputUSDPerMillion  *float64 `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputUSDPerMillion *float64 `json:"audio_output_per_million_usd,omitempty"`
+	AudioInputUSDPerMillion  *Money   `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputUSDPerMillion *Money   `json:"audio_output_per_million_usd,omitempty"`
 	AudioRatio               *float64 `json:"audio_ratio,omitempty"`
 	AudioCompletionRatio     *float64 `json:"audio_completion_ratio,omitempty"`
 	// CreateCacheUSDPerMillion is the cache-write price. When omitted the
 	// global create-cache ratio remains in force.
-	CreateCacheUSDPerMillion *float64 `json:"create_cache_per_million_usd,omitempty"`
+	CreateCacheUSDPerMillion *Money `json:"create_cache_per_million_usd,omitempty"`
 	// Separate modality/reasoning sale prices. When any is set, the normalized
 	// billing form is a per-token expression so image, thinking and multimodal
 	// usage cannot be charged at the text price.
-	ImageInputUSDPerMillion               *float64 `json:"image_input_per_million_usd,omitempty"`
-	ThinkingInputUSDPerMillion            *float64 `json:"thinking_input_per_million_usd,omitempty"`
-	ThinkingOutputUSDPerMillion           *float64 `json:"thinking_output_per_million_usd,omitempty"`
-	ThinkingCacheUSDPerMillion            *float64 `json:"thinking_cache_per_million_usd,omitempty"`
-	ThinkingCreateCacheUSDPerMillion      *float64 `json:"thinking_create_cache_per_million_usd,omitempty"`
-	ThinkingImageInputUSDPerMillion       *float64 `json:"thinking_image_input_per_million_usd,omitempty"`
-	MultiInputOutputUSDPerMillion         *float64 `json:"multi_input_output_per_million_usd,omitempty"`
-	ThinkingMultiInputOutputUSDPerMillion *float64 `json:"thinking_multi_input_output_per_million_usd,omitempty"`
-	PerCallUSD                            *float64 `json:"per_call_usd,omitempty"`
-	PerSecondUSD                          *float64 `json:"per_second_usd,omitempty"`
-	PerMinuteUSD                          *float64 `json:"per_minute_usd,omitempty"`
+	ImageInputUSDPerMillion               *Money `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputUSDPerMillion            *Money `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputUSDPerMillion           *Money `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCacheUSDPerMillion            *Money `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCacheUSDPerMillion      *Money `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputUSDPerMillion       *Money `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputUSDPerMillion         *Money `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputUSDPerMillion *Money `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	PerCallUSD                            *Money `json:"per_call_usd,omitempty"`
+	PerSecondUSD                          *Money `json:"per_second_usd,omitempty"`
+	PerMinuteUSD                          *Money `json:"per_minute_usd,omitempty"`
 	// Tiers holds per-range sale prices for tiered_table mode. The normalized
 	// billing form is generated from them as a billing expression.
 	Tiers       []ChannelInternalPricingTier `json:"tiers,omitempty"`
@@ -292,7 +315,7 @@ func ParseChannelPurchaseCost(raw string) *ChannelPurchaseCost {
 
 // PurchaseCostPrimaryUSD returns the contract cost on the primary sale
 // dimension, used for the consume-log snapshot and the preview comparison.
-func PurchaseCostPrimaryUSD(raw string) *float64 {
+func PurchaseCostPrimaryUSD(raw string) *Money {
 	cost := ParseChannelPurchaseCost(raw)
 	if cost == nil {
 		return nil
@@ -319,7 +342,7 @@ func validatePurchaseCost(pricing *ChannelInternalPricing) error {
 	if pricing == nil {
 		return errors.New("purchase pricing is required")
 	}
-	for _, value := range []*float64{
+	for _, value := range []*Money{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
 		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
 		pricing.AudioInputUSDPerMillion, pricing.AudioOutputUSDPerMillion,
@@ -343,19 +366,19 @@ func validatePurchaseCost(pricing *ChannelInternalPricing) error {
 	}
 	switch pricing.Mode {
 	case ChannelPricingModePerMillionTokens:
-		if pricing.InputUSDPerMillion == nil || *pricing.InputUSDPerMillion <= 0 {
+		if !moneyPositive(pricing.InputUSDPerMillion) {
 			return errors.New("token contract cost requires a positive input price")
 		}
 	case ChannelPricingModePerCall:
-		if pricing.PerCallUSD == nil || *pricing.PerCallUSD <= 0 {
+		if !moneyPositive(pricing.PerCallUSD) {
 			return errors.New("per-call contract cost is required")
 		}
 	case ChannelPricingModePerSecond:
-		if pricing.PerSecondUSD == nil || *pricing.PerSecondUSD <= 0 {
+		if !moneyPositive(pricing.PerSecondUSD) {
 			return errors.New("per-second contract cost is required")
 		}
 	case ChannelPricingModePerMinute:
-		if pricing.PerMinuteUSD == nil || *pricing.PerMinuteUSD <= 0 {
+		if !moneyPositive(pricing.PerMinuteUSD) {
 			return errors.New("per-minute contract cost is required")
 		}
 	case ChannelPricingModeTieredTable:
@@ -536,10 +559,12 @@ func channelPurchasePrimaryUSD(raw string) *float64 {
 		return nil
 	}
 	if quote.InputPerMillionUSD != nil {
-		return quote.InputPerMillionUSD
+		value := quote.InputPerMillionUSD.Float64()
+		return &value
 	}
 	if quote.PerUnitUSD != nil {
-		return quote.PerUnitUSD
+		value := quote.PerUnitUSD.Float64()
+		return &value
 	}
 	return nil
 }
@@ -599,14 +624,18 @@ func channelPricingVersion(row ChannelModelPricing) string {
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }
 
-func validPricePointer(value *float64) error {
+func validPricePointer(value *Money) error {
 	if value == nil {
 		return nil
 	}
-	if math.IsNaN(*value) || math.IsInf(*value, 0) || *value < 0 {
+	if value.Decimal().IsNegative() {
 		return errors.New("price must be finite and non-negative")
 	}
 	return nil
+}
+
+func moneyPositive(value *Money) bool {
+	return value != nil && value.Decimal().IsPositive()
 }
 
 // NormalizeChannelInternalPricing validates an operator-saved flat price and
@@ -615,7 +644,7 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	if pricing == nil {
 		return nil, errors.New("internal pricing is required")
 	}
-	for _, value := range []*float64{
+	for _, value := range []*Money{
 		pricing.InputUSDPerMillion, pricing.OutputUSDPerMillion,
 		pricing.CacheUSDPerMillion, pricing.CreateCacheUSDPerMillion,
 		pricing.AudioInputUSDPerMillion, pricing.AudioOutputUSDPerMillion,
@@ -631,37 +660,43 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	}
 	switch pricing.Mode {
 	case ChannelPricingModePerMillionTokens:
-		if pricing.InputUSDPerMillion == nil || *pricing.InputUSDPerMillion <= 0 {
+		if !moneyPositive(pricing.InputUSDPerMillion) {
 			return nil, errors.New("input price per 1M tokens is required")
 		}
 		if pricing.OutputUSDPerMillion == nil {
 			return nil, errors.New("output price per 1M tokens is required")
 		}
-		input := *pricing.InputUSDPerMillion
+		inputDecimal := pricing.InputUSDPerMillion.Decimal()
+		ratioToInput := func(value *Money) float64 {
+			if value == nil {
+				return 0
+			}
+			return value.Decimal().Div(inputDecimal).InexactFloat64()
+		}
 		result := &ChannelBillingPricing{
 			Mode: ChannelPricingModePerMillionTokens,
 			// USD/1M = ratio * (1_000_000 / QuotaPerUnit) = ratio * 2.
-			ModelRatio: input / 2,
+			ModelRatio: inputDecimal.Div(decimal.NewFromInt(2)).InexactFloat64(),
 		}
-		completion := *pricing.OutputUSDPerMillion / input
+		completion := ratioToInput(pricing.OutputUSDPerMillion)
 		result.CompletionRatio = &completion
 		if pricing.CacheUSDPerMillion != nil {
-			cache := *pricing.CacheUSDPerMillion / input
+			cache := ratioToInput(pricing.CacheUSDPerMillion)
 			result.CacheRatio = &cache
 		}
 		if pricing.CreateCacheUSDPerMillion != nil {
-			createCache := *pricing.CreateCacheUSDPerMillion / input
+			createCache := ratioToInput(pricing.CreateCacheUSDPerMillion)
 			result.CreateCacheRatio = &createCache
 		}
-		if pricing.AudioInputUSDPerMillion != nil && *pricing.AudioInputUSDPerMillion > 0 {
-			ratio := *pricing.AudioInputUSDPerMillion / input
+		if moneyPositive(pricing.AudioInputUSDPerMillion) {
+			ratio := ratioToInput(pricing.AudioInputUSDPerMillion)
 			result.AudioRatio = &ratio
 		} else {
 			result.AudioRatio = pricing.AudioRatio
 		}
-		if pricing.AudioOutputUSDPerMillion != nil && *pricing.AudioOutputUSDPerMillion > 0 &&
-			pricing.OutputUSDPerMillion != nil && *pricing.OutputUSDPerMillion > 0 {
-			ratio := *pricing.AudioOutputUSDPerMillion / *pricing.OutputUSDPerMillion
+		if moneyPositive(pricing.AudioOutputUSDPerMillion) && moneyPositive(pricing.OutputUSDPerMillion) {
+			ratio := pricing.AudioOutputUSDPerMillion.Decimal().
+				Div(pricing.OutputUSDPerMillion.Decimal()).InexactFloat64()
 			result.AudioCompletionRatio = &ratio
 		} else {
 			result.AudioCompletionRatio = pricing.AudioCompletionRatio
@@ -686,10 +721,10 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 		}
 		return result, nil
 	case ChannelPricingModePerCall:
-		if pricing.PerCallUSD == nil || *pricing.PerCallUSD < 0 {
+		if pricing.PerCallUSD == nil || pricing.PerCallUSD.Decimal().IsNegative() {
 			return nil, errors.New("per-call price is required")
 		}
-		return &ChannelBillingPricing{Mode: ChannelPricingModePerCall, UsePrice: true, ModelPrice: *pricing.PerCallUSD}, nil
+		return &ChannelBillingPricing{Mode: ChannelPricingModePerCall, UsePrice: true, ModelPrice: pricing.PerCallUSD.Float64()}, nil
 	case ChannelPricingModeTieredExpr:
 		if strings.TrimSpace(pricing.BillingExpr) == "" {
 			return nil, errors.New("tiered billing expression is required")
@@ -702,10 +737,10 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 		// Per-second prices bill through the task usage expression. A billing
 		// form is still returned so the price can be stored; token/per-call
 		// paths must reject UsePerSecond instead of treating it as free.
-		if pricing.PerSecondUSD == nil || *pricing.PerSecondUSD <= 0 {
+		if !moneyPositive(pricing.PerSecondUSD) {
 			return nil, errors.New("per-second price is required")
 		}
-		return &ChannelBillingPricing{Mode: ChannelPricingModePerSecond, UsePerSecond: true, PerSecondPrice: *pricing.PerSecondUSD}, nil
+		return &ChannelBillingPricing{Mode: ChannelPricingModePerSecond, UsePerSecond: true, PerSecondPrice: pricing.PerSecondUSD.Float64()}, nil
 	case ChannelPricingModeTieredTable:
 		expr, err := buildInternalTierExpression(pricing.Tiers)
 		if err != nil {
@@ -715,11 +750,11 @@ func NormalizeChannelInternalPricing(pricing *ChannelInternalPricing) (*ChannelB
 	case ChannelPricingModePerMinute:
 		// Seconds are the task usage unit. A per-minute quote is normalized to
 		// its per-second equivalent so the same duration billing path applies.
-		if pricing.PerMinuteUSD == nil || *pricing.PerMinuteUSD <= 0 {
+		if !moneyPositive(pricing.PerMinuteUSD) {
 			return nil, errors.New("per-minute price is required")
 		}
 		return &ChannelBillingPricing{
-			Mode: ChannelPricingModePerMinute, UsePerSecond: true, PerSecondPrice: *pricing.PerMinuteUSD / 60,
+			Mode: ChannelPricingModePerMinute, UsePerSecond: true, PerSecondPrice: pricing.PerMinuteUSD.Decimal().Div(decimal.NewFromInt(60)).InexactFloat64(),
 		}, nil
 	default:
 		return nil, errors.New("unsupported internal pricing mode")
@@ -759,42 +794,41 @@ func buildFlatInternalExpression(tier ChannelInternalPricingTier) (string, error
 // engine variables are p (text input), img (image input), c (output), cr
 // (cache read), cc (cache write), ai/ao (audio), rt (reasoning tokens).
 func tierTokenExpressionTerms(tier ChannelInternalPricingTier) []string {
-	if tier.InputUSDPerMillion == nil || *tier.InputUSDPerMillion <= 0 {
+	if !moneyPositive(tier.InputUSDPerMillion) {
 		return nil
 	}
 	input := *tier.InputUSDPerMillion
 	terms := []string{}
-	if tier.ThinkingInputUSDPerMillion != nil && *tier.ThinkingInputUSDPerMillion > 0 &&
-		*tier.ThinkingInputUSDPerMillion != input {
+	if moneyPositive(tier.ThinkingInputUSDPerMillion) &&
+		!tier.ThinkingInputUSDPerMillion.Decimal().Equal(input.Decimal()) {
 		terms = append(terms, fmt.Sprintf("p * (rt > 0 ? %s : %s)",
 			formatInternalPrice(*tier.ThinkingInputUSDPerMillion), formatInternalPrice(input)))
 	} else {
 		terms = append(terms, "p * "+formatInternalPrice(input))
 	}
-	if tier.ImageInputUSDPerMillion != nil && *tier.ImageInputUSDPerMillion > 0 {
+	if moneyPositive(tier.ImageInputUSDPerMillion) {
 		image := *tier.ImageInputUSDPerMillion
-		if tier.ThinkingImageInputUSDPerMillion != nil && *tier.ThinkingImageInputUSDPerMillion > 0 &&
-			*tier.ThinkingImageInputUSDPerMillion != image {
+		if moneyPositive(tier.ThinkingImageInputUSDPerMillion) &&
+			!tier.ThinkingImageInputUSDPerMillion.Decimal().Equal(image.Decimal()) {
 			terms = append(terms, fmt.Sprintf("img * (rt > 0 ? %s : %s)",
 				formatInternalPrice(*tier.ThinkingImageInputUSDPerMillion), formatInternalPrice(image)))
 		} else {
 			terms = append(terms, "img * "+formatInternalPrice(image))
 		}
 	}
-	if tier.OutputUSDPerMillion != nil && *tier.OutputUSDPerMillion > 0 {
+	if moneyPositive(tier.OutputUSDPerMillion) {
 		output := *tier.OutputUSDPerMillion
 		normalOutput := formatInternalPrice(output)
-		if tier.MultiInputOutputUSDPerMillion != nil && *tier.MultiInputOutputUSDPerMillion > 0 &&
-			*tier.MultiInputOutputUSDPerMillion != output {
+		if moneyPositive(tier.MultiInputOutputUSDPerMillion) &&
+			!tier.MultiInputOutputUSDPerMillion.Decimal().Equal(output.Decimal()) {
 			normalOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
 				formatInternalPrice(*tier.MultiInputOutputUSDPerMillion), normalOutput)
 		}
-		if tier.ThinkingOutputUSDPerMillion != nil && *tier.ThinkingOutputUSDPerMillion > 0 &&
-			*tier.ThinkingOutputUSDPerMillion != output {
+		if moneyPositive(tier.ThinkingOutputUSDPerMillion) &&
+			!tier.ThinkingOutputUSDPerMillion.Decimal().Equal(output.Decimal()) {
 			thinkingOutput := formatInternalPrice(*tier.ThinkingOutputUSDPerMillion)
-			if tier.ThinkingMultiInputOutputUSDPerMillion != nil &&
-				*tier.ThinkingMultiInputOutputUSDPerMillion > 0 &&
-				*tier.ThinkingMultiInputOutputUSDPerMillion != *tier.ThinkingOutputUSDPerMillion {
+			if moneyPositive(tier.ThinkingMultiInputOutputUSDPerMillion) &&
+				!tier.ThinkingMultiInputOutputUSDPerMillion.Decimal().Equal(tier.ThinkingOutputUSDPerMillion.Decimal()) {
 				thinkingOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
 					formatInternalPrice(*tier.ThinkingMultiInputOutputUSDPerMillion), thinkingOutput)
 			}
@@ -803,30 +837,30 @@ func tierTokenExpressionTerms(tier ChannelInternalPricingTier) []string {
 			terms = append(terms, "c * "+normalOutput)
 		}
 	}
-	if tier.CacheUSDPerMillion != nil && *tier.CacheUSDPerMillion > 0 {
+	if moneyPositive(tier.CacheUSDPerMillion) {
 		cache := *tier.CacheUSDPerMillion
-		if tier.ThinkingCacheUSDPerMillion != nil && *tier.ThinkingCacheUSDPerMillion > 0 &&
-			*tier.ThinkingCacheUSDPerMillion != cache {
+		if moneyPositive(tier.ThinkingCacheUSDPerMillion) &&
+			!tier.ThinkingCacheUSDPerMillion.Decimal().Equal(cache.Decimal()) {
 			terms = append(terms, fmt.Sprintf("cr * (rt > 0 ? %s : %s)",
 				formatInternalPrice(*tier.ThinkingCacheUSDPerMillion), formatInternalPrice(cache)))
 		} else {
 			terms = append(terms, "cr * "+formatInternalPrice(cache))
 		}
 	}
-	if tier.CreateCacheUSDPerMillion != nil && *tier.CreateCacheUSDPerMillion > 0 {
+	if moneyPositive(tier.CreateCacheUSDPerMillion) {
 		createCache := *tier.CreateCacheUSDPerMillion
-		if tier.ThinkingCreateCacheUSDPerMillion != nil && *tier.ThinkingCreateCacheUSDPerMillion > 0 &&
-			*tier.ThinkingCreateCacheUSDPerMillion != createCache {
+		if moneyPositive(tier.ThinkingCreateCacheUSDPerMillion) &&
+			!tier.ThinkingCreateCacheUSDPerMillion.Decimal().Equal(createCache.Decimal()) {
 			terms = append(terms, fmt.Sprintf("cc * (rt > 0 ? %s : %s)",
 				formatInternalPrice(*tier.ThinkingCreateCacheUSDPerMillion), formatInternalPrice(createCache)))
 		} else {
 			terms = append(terms, "cc * "+formatInternalPrice(createCache))
 		}
 	}
-	if tier.AudioInputUSDPerMillion != nil && *tier.AudioInputUSDPerMillion > 0 {
+	if moneyPositive(tier.AudioInputUSDPerMillion) {
 		terms = append(terms, "ai * "+formatInternalPrice(*tier.AudioInputUSDPerMillion))
 	}
-	if tier.AudioOutputUSDPerMillion != nil && *tier.AudioOutputUSDPerMillion > 0 {
+	if moneyPositive(tier.AudioOutputUSDPerMillion) {
 		terms = append(terms, "ao * "+formatInternalPrice(*tier.AudioOutputUSDPerMillion))
 	}
 	return terms
@@ -854,26 +888,26 @@ func buildInternalTierExpression(tiers []ChannelInternalPricingTier) (string, er
 		if tier.Unit != "" && tier.Unit != ChannelPricingModePerMillionTokens && tier.Unit != "per_1m_tokens" {
 			return "", fmt.Errorf("tier %q unit %q is not executable", tier.RangeName, tier.Unit)
 		}
-		if tier.InputUSDPerMillion == nil || *tier.InputUSDPerMillion <= 0 {
+		if !moneyPositive(tier.InputUSDPerMillion) {
 			return "", fmt.Errorf("tier %q requires a positive input price", tier.RangeName)
 		}
-		if tier.OutputUSDPerMillion != nil && *tier.OutputUSDPerMillion < 0 {
+		if tier.OutputUSDPerMillion != nil && tier.OutputUSDPerMillion.Decimal().IsNegative() {
 			return "", fmt.Errorf("tier %q output price must be non-negative", tier.RangeName)
 		}
-		if tier.CacheUSDPerMillion != nil && *tier.CacheUSDPerMillion < 0 {
+		if tier.CacheUSDPerMillion != nil && tier.CacheUSDPerMillion.Decimal().IsNegative() {
 			return "", fmt.Errorf("tier %q cache price must be non-negative", tier.RangeName)
 		}
-		if tier.CreateCacheUSDPerMillion != nil && *tier.CreateCacheUSDPerMillion < 0 {
+		if tier.CreateCacheUSDPerMillion != nil && tier.CreateCacheUSDPerMillion.Decimal().IsNegative() {
 			return "", fmt.Errorf("tier %q cache write price must be non-negative", tier.RangeName)
 		}
-		for _, value := range []*float64{
+		for _, value := range []*Money{
 			tier.ImageInputUSDPerMillion, tier.ThinkingInputUSDPerMillion,
 			tier.ThinkingOutputUSDPerMillion, tier.ThinkingCacheUSDPerMillion,
 			tier.ThinkingCreateCacheUSDPerMillion, tier.ThinkingImageInputUSDPerMillion,
 			tier.MultiInputOutputUSDPerMillion, tier.ThinkingMultiInputOutputUSDPerMillion,
 			tier.AudioInputUSDPerMillion, tier.AudioOutputUSDPerMillion,
 		} {
-			if value != nil && *value < 0 {
+			if value != nil && value.Decimal().IsNegative() {
 				return "", fmt.Errorf("tier %q has a negative dimension price", tier.RangeName)
 			}
 		}
@@ -934,8 +968,8 @@ func buildInternalTierExpression(tiers []ChannelInternalPricingTier) (string, er
 	return expr, nil
 }
 
-func formatInternalPrice(value float64) string {
-	return strconv.FormatFloat(value, 'f', -1, 64)
+func formatInternalPrice(value Money) string {
+	return value.String()
 }
 
 // IsAutoDerivedPricingSource reports whether a sale price was written by an
@@ -986,6 +1020,48 @@ func internalPricingReplaceable(raw string) bool {
 	return autoDerivedInternalSource(pricing.Source)
 }
 
+// PricingOwnerForSource maps the historical Source label onto the explicit
+// ownership contract. Unknown sources are treated as operator-entered so a
+// sync can never guess that a price is replaceable.
+func PricingOwnerForSource(source string) string {
+	source = strings.ToLower(strings.TrimSpace(source))
+	switch {
+	case source == "":
+		return ""
+	case IsAutoDerivedPricingSource(source):
+		return ChannelPricingOwnerAuto
+	case source == "review-approved":
+		return ChannelPricingOwnerApproved
+	case source == "batch":
+		return ChannelPricingOwnerBatch
+	default:
+		return ChannelPricingOwnerOperator
+	}
+}
+
+// pricingReplaceableByOwner is the single authority for sync overwrite rules.
+// Legacy rows without an owner fall back to their Source label.
+func pricingReplaceableByOwner(owner, raw string) bool {
+	bySource := internalPricingReplaceable(raw)
+	if strings.TrimSpace(owner) == "" {
+		return bySource
+	}
+	// An explicit non-AUTO owner is authoritative. An AUTO owner still needs
+	// the stored source to look automatic: a raw/import write can leave a stale
+	// owner behind, and that must never make an operator price replaceable.
+	return owner == ChannelPricingOwnerAuto && bySource
+}
+
+// IsAutoDerivedPricingRowFor is the owner-aware variant used when changing a
+// row's provider identity; manual, batch and approved rows are never removed.
+func IsAutoDerivedPricingRowFor(owner, source, internalPricing string) bool {
+	bySource := IsAutoDerivedPricingRow(source, internalPricing)
+	if strings.TrimSpace(owner) == "" {
+		return bySource
+	}
+	return owner == ChannelPricingOwnerAuto && bySource
+}
+
 // IsAutoDerivedPricingRow reports whether a whole pricing row was produced by an
 // upstream sync, judged by the record source or the sale-price source. Used when
 // a channel has to drop rows written under a provider identity it no longer
@@ -1009,7 +1085,7 @@ func DeleteAutoDerivedPricingForOtherProvider(channelID int, keepProvider string
 	}
 	ids := make([]int64, 0, len(rows))
 	for _, row := range rows {
-		if !IsAutoDerivedPricingRow(row.PricingSource, row.InternalPricing) {
+		if !IsAutoDerivedPricingRowFor(row.PricingOwner, row.PricingSource, row.InternalPricing) {
 			kept++
 			continue
 		}
@@ -1063,6 +1139,17 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 				).First(&existing).Error
 			}
 			if errors.Is(err, gorm.ErrRecordNotFound) {
+				// A channel has one upstream, so a row with a stale provider
+				// label is the same price identity. Adopt it and rewrite the
+				// provider instead of leaving two rows that make every billing
+				// request ambiguous. The stored sale price is never replaced
+				// here unless its own source is auto-derived.
+				err = tx.Where(
+					"channel_id = ? AND region = ? AND deployment_id = ? AND model_name = ?",
+					record.ChannelId, record.Region, record.DeploymentId, record.ModelName,
+				).First(&existing).Error
+			}
+			if errors.Is(err, gorm.ErrRecordNotFound) {
 				row := ChannelModelPricing{
 					ChannelId:          record.ChannelId,
 					Provider:           record.Provider,
@@ -1075,6 +1162,7 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 					NormalizedPricing:  record.NormalizedPricing,
 					InternalPricing:    record.InternalPricing,
 					PricingSource:      record.Source,
+					PricingOwner:       PricingOwnerForSource(internalPricingSource(record.InternalPricing)),
 					PricingStatus:      ChannelPricingStatusOfficialOnly,
 					FetchedAt:          record.FetchedAt,
 					UpdatedAt:          now,
@@ -1114,24 +1202,27 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 			existing.FetchedAt = record.FetchedAt
 			existing.UpdatedAt = now
 			reviewOnly := officialPricingNeedsReview(record.NormalizedPricing)
-			incomingAuto := record.InternalPricing != "" &&
-				autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
-			if record.InternalPricing != "" && internalPricingReplaceable(existing.InternalPricing) &&
-				(!reviewOnly || !incomingAuto) {
+			incomingOwner := PricingOwnerForSource(internalPricingSource(record.InternalPricing))
+			incomingAuto := record.InternalPricing != "" && incomingOwner == ChannelPricingOwnerAuto
+			replaceable := pricingReplaceableByOwner(existing.PricingOwner, existing.InternalPricing)
+			if record.InternalPricing != "" && replaceable && (!reviewOnly || !incomingAuto) {
 				existing.InternalPricing = record.InternalPricing
+				existing.PricingOwner = incomingOwner
 				existing.PricingStatus = ChannelPricingStatusConfigured
 			}
 			// Official catalog syncs no longer derive a sale price. A row whose
 			// previous internal price was auto-derived by the same provider
 			// returns to official_only instead of silently staying billable.
-			if record.InternalPricing == "" && autoDerivedInternalSource(internalPricingSource(existing.InternalPricing)) {
+			if record.InternalPricing == "" && replaceable {
 				existing.InternalPricing = ""
+				existing.PricingOwner = ""
 				existing.PricingStatus = ChannelPricingStatusOfficialOnly
 			}
-			if reviewOnly && autoDerivedInternalSource(internalPricingSource(existing.InternalPricing)) {
+			if reviewOnly && pricingReplaceableByOwner(existing.PricingOwner, existing.InternalPricing) {
 				// A stale automatic sale price cannot survive a review flag.
-				// Operator and batch prices are explicit and stay billable.
+				// Operator, batch and approved prices are explicit and stay.
 				existing.InternalPricing = ""
+				existing.PricingOwner = ""
 				existing.PricingStatus = ChannelPricingStatusNeedsReview
 			} else if reviewOnly && existing.InternalPricing == "" {
 				existing.PricingStatus = ChannelPricingStatusNeedsReview
@@ -1175,10 +1266,12 @@ func ClearAutoDerivedChannelPricing(channelId int, sourcePrefix string) (int, er
 	cleared := 0
 	for i := range rows {
 		row := &rows[i]
-		if !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+		if !pricingReplaceableByOwner(row.PricingOwner, row.InternalPricing) ||
+			!strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
 			continue
 		}
 		row.InternalPricing = ""
+		row.PricingOwner = ""
 		row.PricingStatus = ChannelPricingStatusOfficialOnly
 		row.UpdatedAt = time.Now().Unix()
 		row.PricingVersion = channelPricingVersion(*row)
@@ -1226,6 +1319,7 @@ func SetChannelInternalPricingFor(identity ChannelPricingIdentity, pricing Chann
 		return fmt.Errorf("channel pricing record not found: %w", gorm.ErrRecordNotFound)
 	}
 	row.InternalPricing = string(encoded)
+	row.PricingOwner = PricingOwnerForSource(pricing.Source)
 	row.PricingStatus = ChannelPricingStatusConfigured
 	reactivateManualLifecycle(row, pricing)
 	row.UpdatedAt = pricing.UpdatedAt
@@ -1284,6 +1378,7 @@ func SetChannelInternalPricingWithAudit(
 			return ErrChannelPricingVersionConflict
 		}
 		row.InternalPricing = string(encoded)
+		row.PricingOwner = PricingOwnerForSource(pricing.Source)
 		row.PricingStatus = ChannelPricingStatusConfigured
 		reactivateManualLifecycle(row, pricing)
 		row.UpdatedAt = pricing.UpdatedAt
@@ -1353,6 +1448,7 @@ func SetChannelInternalPricingIfVersionFor(
 			return ErrChannelPricingVersionConflict
 		}
 		row.InternalPricing = string(encoded)
+		row.PricingOwner = PricingOwnerForSource(pricing.Source)
 		row.PricingStatus = ChannelPricingStatusConfigured
 		row.UpdatedAt = pricing.UpdatedAt
 		row.PricingVersion = channelPricingVersion(*row)
@@ -1436,15 +1532,18 @@ func ClearAutoDerivedInternalForModels(channelId int, provider string, modelName
 	cleared := 0
 	for i := range rows {
 		row := &rows[i]
-		if !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+		if !pricingReplaceableByOwner(row.PricingOwner, row.InternalPricing) ||
+			!strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
 			continue
 		}
 		row.InternalPricing = ""
+		row.PricingOwner = ""
 		row.PricingStatus = ChannelPricingStatusOfficialOnly
 		row.UpdatedAt = time.Now().Unix()
 		row.PricingVersion = channelPricingVersion(*row)
 		if err := DB.Model(row).Updates(map[string]any{
 			"internal_pricing": "",
+			"pricing_owner":    "",
 			"pricing_status":   row.PricingStatus,
 			"pricing_version":  row.PricingVersion,
 			"updated_at":       row.UpdatedAt,
@@ -1476,15 +1575,17 @@ func EnforcePricingReviewGate() (cleared int, err error) {
 		if !officialPricingNeedsReview(row.NormalizedPricing) {
 			continue
 		}
-		if !autoDerivedInternalSource(internalPricingSource(row.InternalPricing)) {
+		if !pricingReplaceableByOwner(row.PricingOwner, row.InternalPricing) {
 			continue
 		}
 		row.InternalPricing = ""
+		row.PricingOwner = ""
 		row.PricingStatus = ChannelPricingStatusNeedsReview
 		row.UpdatedAt = time.Now().Unix()
 		row.PricingVersion = channelPricingVersion(*row)
 		if err := DB.Model(row).Updates(map[string]any{
 			"internal_pricing": "",
+			"pricing_owner":    "",
 			"pricing_status":   row.PricingStatus,
 			"pricing_version":  row.PricingVersion,
 			"updated_at":       row.UpdatedAt,
@@ -1518,15 +1619,18 @@ func ClearAutoDerivedInternalExcept(channelId int, provider string, keepModels [
 	cleared := 0
 	for i := range rows {
 		row := &rows[i]
-		if keep[row.ModelName] || !strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
+		if keep[row.ModelName] || !pricingReplaceableByOwner(row.PricingOwner, row.InternalPricing) ||
+			!strings.HasPrefix(internalPricingSource(row.InternalPricing), sourcePrefix) {
 			continue
 		}
 		row.InternalPricing = ""
+		row.PricingOwner = ""
 		row.PricingStatus = ChannelPricingStatusOfficialOnly
 		row.UpdatedAt = time.Now().Unix()
 		row.PricingVersion = channelPricingVersion(*row)
 		if err := DB.Model(row).Updates(map[string]any{
 			"internal_pricing": "",
+			"pricing_owner":    "",
 			"pricing_status":   row.PricingStatus,
 			"pricing_version":  row.PricingVersion,
 			"updated_at":       row.UpdatedAt,
@@ -1668,7 +1772,8 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 			pricing.PurchaseUSD = channelPurchasePrimaryUSD(row.NormalizedPricing)
 			if cost := ParseChannelPurchaseCost(row.PurchasePricing); cost != nil {
 				if primary := PurchaseCostPrimaryUSD(row.PurchasePricing); primary != nil {
-					pricing.PurchaseUSD = primary
+					primaryFloat := primary.Float64()
+					pricing.PurchaseUSD = &primaryFloat
 				}
 				pricing.PurchaseVerified = cost.Verified
 				pricing.PurchaseSource = cost.Source
@@ -1788,13 +1893,17 @@ func manualPricingRetained(row ChannelModelPricing) bool {
 	if row.PricingStatus != ChannelPricingStatusConfigured || strings.TrimSpace(row.InternalPricing) == "" {
 		return false
 	}
-	source := internalPricingSource(row.InternalPricing)
-	switch {
-	case source == "", source == "manual", source == "batch", source == "review-approved":
-		return true
-	default:
-		return false
+	owner := strings.TrimSpace(row.PricingOwner)
+	if owner == "" {
+		source := internalPricingSource(row.InternalPricing)
+		switch source {
+		case "", "manual", "batch", "review-approved":
+			return true
+		default:
+			return false
+		}
 	}
+	return owner != ChannelPricingOwnerAuto
 }
 
 func channelLifecycleBillable(lifecycle string) bool {
@@ -1875,8 +1984,8 @@ func ResolveChannelUsageDiscountFor(identity ChannelPricingIdentity) float64 {
 	}
 	official := view.Tiers[0]
 	channel := *view.ChannelPrice
-	if official.Unit != channel.Unit || official.PerUnitUSD == nil ||
-		channel.PerUnitUSD == nil || *official.PerUnitUSD <= 0 {
+	if official.Unit != channel.Unit || !moneyPositive(official.PerUnitUSD) ||
+		!moneyPositive(channel.PerUnitUSD) {
 		return 1
 	}
 	switch official.Unit {
@@ -1884,7 +1993,7 @@ func ResolveChannelUsageDiscountFor(identity ChannelPricingIdentity) float64 {
 	default:
 		return 1
 	}
-	ratio := *channel.PerUnitUSD / *official.PerUnitUSD
+	ratio := channel.PerUnitUSD.Decimal().Div(official.PerUnitUSD.Decimal()).InexactFloat64()
 	if math.IsNaN(ratio) || math.IsInf(ratio, 0) || ratio <= 0 || ratio > 100 {
 		common.SysError(fmt.Sprintf(
 			"ignored invalid channel usage discount %.4f for channel %d model %s",
@@ -1953,6 +2062,22 @@ func ChannelUsesScopedPricing(channelId int) bool {
 		has: has, expiresAt: time.Now().Add(channelPricingCacheTTL),
 	})
 	return has
+}
+
+// ChannelScopedPricingRequired is the authoritative pricing-mode gate. An
+// explicit mode on the channel always wins: PENDING blocks every charge while
+// prices are being configured, ACTIVE requires a billable row on this channel,
+// and GLOBAL_LEGACY deliberately keeps the pre-isolation behaviour. Only an
+// untagged legacy channel falls back to the row-presence heuristic.
+func ChannelScopedPricingRequired(channelId int, mode string) bool {
+	switch strings.ToUpper(strings.TrimSpace(mode)) {
+	case dto.ChannelPricingModeScopedPending, dto.ChannelPricingModeScopedActive:
+		return true
+	case dto.ChannelPricingModeGlobalLegacy:
+		return false
+	default:
+		return ChannelUsesScopedPricing(channelId)
+	}
 }
 
 // InvalidateChannelPricingPresence clears the scoped-pricing presence cache so

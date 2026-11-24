@@ -368,6 +368,16 @@ func bailianCatalogChanges(previous, next *BailianCatalog, channelModels []strin
 	return changes
 }
 
+// moneyFloatPtr converts a stored Money pointer into a float64 snapshot for
+// change detection only. Billing never reads this value.
+func moneyFloatPtr(value *model.Money) *float64 {
+	if value == nil {
+		return nil
+	}
+	f := value.Float64()
+	return &f
+}
+
 func bailianNormalizedPrices(catalog *BailianCatalog, channelModels []string) map[string]map[string]*float64 {
 	out := make(map[string]map[string]*float64)
 	for _, record := range BailianPricingRecords(catalog, channelModels) {
@@ -387,7 +397,9 @@ func bailianNormalizedPrices(catalog *BailianCatalog, channelModels []string) ma
 		}
 		tier := tiers[0]
 		out[record.ModelName] = map[string]*float64{
-			"input": tier.InputPerMillionUSD, "output": tier.OutputPerMillionUSD, "per_call": tier.PerUnitUSD,
+			"input": moneyFloatPtr(tier.InputPerMillionUSD),
+			"output": moneyFloatPtr(tier.OutputPerMillionUSD),
+			"per_call": moneyFloatPtr(tier.PerUnitUSD),
 		}
 	}
 	return out

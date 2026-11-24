@@ -34,7 +34,7 @@ func parityRow(t *testing.T, name string, view model.ChannelOfficialPricing, fet
 	normalized, err := common.Marshal(view)
 	require.NoError(t, err)
 	internal, err := common.Marshal(model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: auditFloatPtr(3),
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(3)),
 	})
 	require.NoError(t, err)
 	return model.ChannelModelPricing{
@@ -51,15 +51,15 @@ func TestBuildUpstreamParityReportSeparatesOfficialAndChannelPrices(t *testing.T
 	rows := []model.ChannelModelPricing{
 		parityRow(t, "official-only", model.ChannelOfficialPricing{
 			PriceKind: "OFFICIAL_ABSOLUTE",
-			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 		}, now.Unix()),
 		parityRow(t, "channel-quote", model.ChannelOfficialPricing{
 			PriceKind:         "CHANNEL_QUOTE",
-			ChannelPriceTiers: []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+			ChannelPriceTiers: []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 		}, now.Unix()),
 		parityRow(t, "ratio-estimate", model.ChannelOfficialPricing{
 			PriceKind: "RATIO_ONLY",
-			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 		}, now.Unix()),
 	}
 
@@ -87,11 +87,11 @@ func TestBuildUpstreamParityReportUses48HourFreshness(t *testing.T) {
 	input := auditFloatPtr(3)
 	fresh := parityRow(t, "fresh", model.ChannelOfficialPricing{
 		PriceKind: "OFFICIAL_ABSOLUTE",
-		Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+		Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 	}, now.Add(-47*time.Hour).Unix())
 	stale := parityRow(t, "stale", model.ChannelOfficialPricing{
 		PriceKind: "OFFICIAL_ABSOLUTE",
-		Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+		Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 	}, now.Add(-49*time.Hour).Unix())
 
 	report := BuildUpstreamParityReport(7, "apiko", []model.ChannelModelPricing{fresh, stale}, now)
@@ -111,7 +111,7 @@ func TestBuildUpstreamParityReportWithCatalogFindsMissingModels(t *testing.T) {
 	rows := []model.ChannelModelPricing{
 		parityRow(t, "existing", model.ChannelOfficialPricing{
 			PriceKind: "OFFICIAL_ABSOLUTE",
-			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: input, Unit: "per_1m_token"}},
+			Tiers:     []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(input), Unit: "per_1m_token"}},
 		}, now.Unix()),
 	}
 

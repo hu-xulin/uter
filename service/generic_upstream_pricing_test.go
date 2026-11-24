@@ -71,13 +71,13 @@ func TestGenericChannelPricingRecordsPreserveShapes(t *testing.T) {
 
 	token := byName["token-a"]
 	require.Len(t, token.Tiers, 1)
-	require.Equal(t, 5.0, *token.Tiers[0].InputPerMillionUSD)
-	require.Equal(t, 25.0, *token.Tiers[0].OutputPerMillionUSD)
-	require.Equal(t, 0.5, *token.Tiers[0].CachePerMillionUSD)
+	require.Equal(t, 5.0, token.Tiers[0].InputPerMillionUSD.Float64())
+	require.Equal(t, 25.0, token.Tiers[0].OutputPerMillionUSD.Float64())
+	require.Equal(t, 0.5, token.Tiers[0].CachePerMillionUSD.Float64())
 
 	call := byName["call-a"]
 	require.Equal(t, "per_call", call.Unit)
-	require.Equal(t, 0.04, *call.Tiers[0].PerUnitUSD)
+	require.Equal(t, 0.04, call.Tiers[0].PerUnitUSD.Float64())
 
 	tiered := byName["tiered-a"]
 	require.True(t, tiered.NeedsReview)
@@ -109,14 +109,14 @@ func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
 	require.Equal(t, "CHANNEL_RATIO", ratio.PriceKind)
 	require.NotNil(t, ratio.RatioBasis)
 	require.Equal(t, 2.5, ratio.RatioBasis.RawRatio)
-	require.Equal(t, 2.0, ratio.RatioBasis.BasisUSDPerMillion)
-	require.Equal(t, 5.0, ratio.RatioBasis.ResultInputUSD)
-	require.Equal(t, 20.0, ratio.RatioBasis.ResultOutputUSD)
+	require.Equal(t, 2.0, ratio.RatioBasis.BasisUSDPerMillion.Float64())
+	require.Equal(t, 5.0, ratio.RatioBasis.ResultInputUSD.Float64())
+	require.Equal(t, 20.0, ratio.RatioBasis.ResultOutputUSD.Float64())
 
 	official := byName["official-ratio"]
 	require.Equal(t, "OFFICIAL_RATIO", official.PriceKind)
 	require.NotNil(t, official.RatioBasis)
-	require.Equal(t, 3.0, official.RatioBasis.ResultInputUSD)
+	require.Equal(t, 3.0, official.RatioBasis.ResultInputUSD.Float64())
 
 	unknown := byName["official-token-price"]
 	require.Equal(t, "UNKNOWN", unknown.PriceKind)
@@ -126,7 +126,7 @@ func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
 
 	call := byName["official-call"]
 	require.Equal(t, "OFFICIAL_ABSOLUTE", call.PriceKind)
-	require.Equal(t, 0.08, *call.Tiers[0].PerUnitUSD)
+	require.Equal(t, 0.08, call.Tiers[0].PerUnitUSD.Float64())
 }
 
 func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
@@ -154,6 +154,24 @@ func TestGenericPricingPreservesExecutableUpstreamExpression(t *testing.T) {
 	require.Empty(t, view.Tiers)
 	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
 	require.Contains(t, records[0].InternalPricing, `"source":"newapi-expression"`)
+}
+
+// 通用转换器不得固定写死供应商身份；专用适配器必须传入自己的 Provider ID。
+func TestGenericPricingProviderIdentityComesFromCaller(t *testing.T) {
+	entry := GenericPricingEntry{
+		ModelName: "identity-model", BillingMode: "tiered_expr", BillingExpr: "p",
+	}
+	defaultRecords := GenericChannelPricingRecords(
+		83, []string{"identity-model"}, []GenericPricingEntry{entry}, time.Unix(1000, 0),
+	)
+	require.Len(t, defaultRecords, 1)
+	assert.Equal(t, "newapi-compatible", defaultRecords[0].Provider)
+
+	uterapiRecords := GenericChannelPricingRecords(
+		84, []string{"identity-model"}, []GenericPricingEntry{entry}, time.Unix(1000, 0), "uterapi",
+	)
+	require.Len(t, uterapiRecords, 1)
+	assert.Equal(t, "uterapi", uterapiRecords[0].Provider)
 }
 
 func TestGenericPricingBlocksUnsupportedExpression(t *testing.T) {
@@ -223,7 +241,7 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, costs, 1)
 	// 1000 tokens * $2/1M * 3.5 = $0.007
-	assert.InDelta(t, 0.007, costs[0].AmountUSD, 1e-9)
+	assert.InDelta(t, 0.007, costs[0].AmountUSD.Float64(), 1e-9)
 	assert.Equal(t, "purchase_unverified", costs[0].Issue)
 	summary, err := model.SummarizeBillingFinancials("req-group-cost", "", "m-a")
 	require.NoError(t, err)
@@ -309,8 +327,8 @@ func TestGenericRatioUsesUpstreamQuotaPerUnit(t *testing.T) {
 		require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
 		require.False(t, view.NeedsReview)
 		require.Len(t, view.Tiers, 1)
-		assert.InDelta(t, tc.want, *view.Tiers[0].InputPerMillionUSD, 1e-9)
-		assert.InDelta(t, tc.quota, 1000000/view.RatioBasis.BasisUSDPerMillion, 1e-6)
+		assert.InDelta(t, tc.want, view.Tiers[0].InputPerMillionUSD.Float64(), 1e-9)
+		assert.InDelta(t, tc.quota, 1000000/view.RatioBasis.BasisUSDPerMillion.Float64(), 1e-6)
 	}
 }
 

@@ -27,6 +27,7 @@ func SyncUterRouteUpstream(c *gin.Context) {
 	_ = c.ShouldBindJSON(&req)
 
 	var channelModels []string
+	var modelMapping string
 	discountGroup := service.UterRouteDiscountGroupDefault
 	if req.ChannelID > 0 {
 		channel, err := model.GetChannelById(req.ChannelID, true)
@@ -63,6 +64,7 @@ func SyncUterRouteUpstream(c *gin.Context) {
 		}
 		defer release()
 		channelModels = channel.GetModels()
+		modelMapping = channel.GetModelMapping()
 		discountGroup = service.GetUterRouteDiscountGroup(req.ChannelID)
 		if strings.TrimSpace(req.DiscountGroup) != "" {
 			discountGroup = strings.TrimSpace(req.DiscountGroup)
@@ -95,7 +97,9 @@ func SyncUterRouteUpstream(c *gin.Context) {
 	}
 	channelPricingWritten := 0
 	if req.ChannelID > 0 {
-		records, err := service.UterRouteChannelPricingRecords(snapshot, req.ChannelID, channelModels, discountGroup)
+		records, err := service.UterRouteChannelPricingRecordsWithMapping(
+			snapshot, req.ChannelID, channelModels, discountGroup, modelMapping,
+		)
 		if err != nil {
 			common.ApiErrorMsg(c, err.Error())
 			return

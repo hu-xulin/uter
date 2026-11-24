@@ -13,11 +13,11 @@ func TestBuildUpstreamParityReportClassifiesRows(t *testing.T) {
 	now := time.Unix(2_000_000, 0)
 	price := 2.0
 	channelTier, _ := common.Marshal(model.ChannelOfficialPricing{
-		ChannelPriceTiers: []model.ChannelPricingTier{{Unit: "per_1m_token", InputPerMillionUSD: &price}},
+		ChannelPriceTiers: []model.ChannelPricingTier{{Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&price)}},
 		Source:            "bailian-channel",
 	})
 	configured, _ := common.Marshal(model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &price, OutputUSDPerMillion: &price,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&price), OutputUSDPerMillion: model.MoneyFromFloatPtr(&price),
 	})
 	unsupported, _ := common.Marshal(model.ChannelOfficialPricing{
 		ExpressionStatus: UpstreamExpressionUnsupported, BillingExpr: "not valid (", Source: "newapi",

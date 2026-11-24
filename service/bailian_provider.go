@@ -106,21 +106,23 @@ func BailianRegionOf(baseURL string) BailianRegion {
 // BailianReferencePrice is the normalized, reference-only view of one official
 // price item. It never feeds ModelRatio or ModelPrice.
 type BailianReferencePrice struct {
-	Provider         string        `json:"provider"`
-	Model            string        `json:"model"`
-	Region           BailianRegion `json:"region,omitempty"`
-	Currency         string        `json:"currency"`
-	CurrencyInferred bool          `json:"currency_inferred"`
-	PriceType        string        `json:"price_type"`
-	PriceName        string        `json:"price_name,omitempty"`
-	Price            string        `json:"price"`
-	PriceValue       float64       `json:"price_value"`
-	Unit             string        `json:"unit"`
-	RawUnit          string        `json:"raw_unit"`
-	RangeName        string        `json:"range_name"`
-	TimeBand         string        `json:"time_band,omitempty"`
-	Source           string        `json:"source"`
-	FetchedAt        time.Time     `json:"fetched_at"`
+	Provider           string        `json:"provider"`
+	Model              string        `json:"model"`
+	Region             BailianRegion `json:"region,omitempty"`
+	Currency           string        `json:"currency"`
+	SourceCurrency     string        `json:"source_currency,omitempty"`
+	NormalizedCurrency string        `json:"normalized_currency,omitempty"`
+	CurrencyInferred   bool          `json:"currency_inferred"`
+	PriceType          string        `json:"price_type"`
+	PriceName          string        `json:"price_name,omitempty"`
+	Price              string        `json:"price"`
+	PriceValue         float64       `json:"price_value"`
+	Unit               string        `json:"unit"`
+	RawUnit            string        `json:"raw_unit"`
+	RangeName          string        `json:"range_name"`
+	TimeBand           string        `json:"time_band,omitempty"`
+	Source             string        `json:"source"`
+	FetchedAt          time.Time     `json:"fetched_at"`
 }
 
 // NormalizeBailianPrices flattens the official nested ranges into one stable
@@ -140,21 +142,27 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 				if !ok {
 					unit = strings.TrimSpace(price.PriceUnit)
 				}
+				normalizedCurrency := ""
+				if currency != "" {
+					normalizedCurrency = "USD"
+				}
 				normalized := BailianReferencePrice{
-					Provider:         item.InferenceProvider,
-					Model:            item.Model,
-					Region:           catalog.Region,
-					Currency:         currency,
-					CurrencyInferred: inferred,
-					PriceType:        price.Type,
-					PriceName:        price.PriceName,
-					Price:            price.Price,
-					Unit:             unit,
-					RawUnit:          price.PriceUnit,
-					RangeName:        priceRange.RangeName,
-					TimeBand:         price.TimeBand,
-					Source:           bailianCatalogSource,
-					FetchedAt:        catalog.FetchedAt,
+					Provider:           item.InferenceProvider,
+					Model:              item.Model,
+					Region:             catalog.Region,
+					Currency:           currency,
+					SourceCurrency:     currency,
+					NormalizedCurrency: normalizedCurrency,
+					CurrencyInferred:   inferred,
+					PriceType:          price.Type,
+					PriceName:          price.PriceName,
+					Price:              price.Price,
+					Unit:               unit,
+					RawUnit:            price.PriceUnit,
+					RangeName:          priceRange.RangeName,
+					TimeBand:           price.TimeBand,
+					Source:             bailianCatalogSource,
+					FetchedAt:          catalog.FetchedAt,
 				}
 				if parseErr == nil {
 					normalized.PriceValue = value
@@ -561,7 +569,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 		// catalog quoted "每千tokens"; the unit label keeps the raw unit, so
 		// both labels must be accepted here.
 		case "per_1m_token", "per_1m_tokens", "per_1k_token", "per_1k_tokens":
-			if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
+			if tier.InputPerMillionUSD == nil || !tier.InputPerMillionUSD.Decimal().IsPositive() {
 				return ""
 			}
 			internal.Mode = model.ChannelPricingModePerMillionTokens
@@ -574,35 +582,35 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 				}
 				// Audio synthesis, embeddings and image models have no output
 				// token dimension; zero here is N/A, not a missing price.
-				zero := 0.0
+				zero := model.MoneyFromFloat(0)
 				internal.OutputUSDPerMillion = &zero
 			} else {
 				internal.OutputUSDPerMillion = tier.OutputPerMillionUSD
 			}
 			internal.CacheUSDPerMillion = tier.CachePerMillionUSD
-			if tier.CreateCachePerMillionUSD != nil && *tier.CreateCachePerMillionUSD > 0 {
+			if tier.CreateCachePerMillionUSD != nil && tier.CreateCachePerMillionUSD.Decimal().IsPositive() {
 				internal.CreateCacheUSDPerMillion = tier.CreateCachePerMillionUSD
 			}
-			if tier.AudioInputPerMillionUSD != nil && *tier.AudioInputPerMillionUSD > 0 {
+			if tier.AudioInputPerMillionUSD != nil && tier.AudioInputPerMillionUSD.Decimal().IsPositive() {
 				internal.AudioInputUSDPerMillion = tier.AudioInputPerMillionUSD
 			}
-			if tier.AudioOutputPerMillionUSD != nil && *tier.AudioOutputPerMillionUSD > 0 {
+			if tier.AudioOutputPerMillionUSD != nil && tier.AudioOutputPerMillionUSD.Decimal().IsPositive() {
 				internal.AudioOutputUSDPerMillion = tier.AudioOutputPerMillionUSD
 			}
 		case "per_image", "per_call":
-			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {
+			if tier.PerUnitUSD == nil || !tier.PerUnitUSD.Decimal().IsPositive() {
 				return ""
 			}
 			internal.Mode = model.ChannelPricingModePerCall
 			internal.PerCallUSD = tier.PerUnitUSD
 		case "per_second":
-			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {
+			if tier.PerUnitUSD == nil || !tier.PerUnitUSD.Decimal().IsPositive() {
 				return ""
 			}
 			internal.Mode = model.ChannelPricingModePerSecond
 			internal.PerSecondUSD = tier.PerUnitUSD
 		case "per_minute":
-			if tier.PerUnitUSD == nil || *tier.PerUnitUSD <= 0 {
+			if tier.PerUnitUSD == nil || !tier.PerUnitUSD.Decimal().IsPositive() {
 				return ""
 			}
 			internal.Mode = model.ChannelPricingModePerMinute
@@ -639,7 +647,7 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 // to the official per-image prices. Qwen-Image3 reports output_image_type and
 // input_image_count; Z-Image reports prompt_extend.
 func bailianImageTaskExpression(components []model.ChannelPricingComponent) string {
-	prices := make(map[string]float64, len(components))
+	prices := make(map[string]model.Money, len(components))
 	for _, component := range components {
 		prices[strings.ToLower(component.Type)] = component.USD
 	}
@@ -738,42 +746,41 @@ func bailianBandExpression(tiers []model.ChannelPricingTier, band string) string
 		if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
 			return ""
 		}
-		if tier.InputPerMillionUSD == nil || *tier.InputPerMillionUSD <= 0 {
+		if !exprMoneyPositive(tier.InputPerMillionUSD) {
 			return ""
 		}
 		input := *tier.InputPerMillionUSD
 		terms := []string{}
-		if tier.ThinkingInputPerMillionUSD != nil && *tier.ThinkingInputPerMillionUSD > 0 &&
-			*tier.ThinkingInputPerMillionUSD != input {
+		if exprMoneyPositive(tier.ThinkingInputPerMillionUSD) &&
+			!exprMoneyEqual(*tier.ThinkingInputPerMillionUSD, input) {
 			terms = append(terms, fmt.Sprintf("p * (rt > 0 ? %s : %s)",
 				formatExprNumber(*tier.ThinkingInputPerMillionUSD), formatExprNumber(input)))
 		} else {
 			terms = append(terms, fmt.Sprintf("p * %s", formatExprNumber(input)))
 		}
-		if tier.ImageInputPerMillionUSD != nil && *tier.ImageInputPerMillionUSD > 0 {
+		if exprMoneyPositive(tier.ImageInputPerMillionUSD) {
 			image := *tier.ImageInputPerMillionUSD
-			if tier.ThinkingImageInputPerMillionUSD != nil && *tier.ThinkingImageInputPerMillionUSD > 0 &&
-				*tier.ThinkingImageInputPerMillionUSD != image {
+			if exprMoneyPositive(tier.ThinkingImageInputPerMillionUSD) &&
+				!exprMoneyEqual(*tier.ThinkingImageInputPerMillionUSD, image) {
 				terms = append(terms, fmt.Sprintf("img * (rt > 0 ? %s : %s)",
 					formatExprNumber(*tier.ThinkingImageInputPerMillionUSD), formatExprNumber(image)))
 			} else {
 				terms = append(terms, fmt.Sprintf("img * %s", formatExprNumber(image)))
 			}
 		}
-		if tier.OutputPerMillionUSD != nil && *tier.OutputPerMillionUSD > 0 {
+		if exprMoneyPositive(tier.OutputPerMillionUSD) {
 			output := *tier.OutputPerMillionUSD
 			normalOutput := formatExprNumber(output)
-			if tier.MultiInputOutputPerMillionUSD != nil && *tier.MultiInputOutputPerMillionUSD > 0 &&
-				*tier.MultiInputOutputPerMillionUSD != output {
+			if exprMoneyPositive(tier.MultiInputOutputPerMillionUSD) &&
+				!exprMoneyEqual(*tier.MultiInputOutputPerMillionUSD, output) {
 				normalOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
 					formatExprNumber(*tier.MultiInputOutputPerMillionUSD), normalOutput)
 			}
-			if tier.ThinkingOutputPerMillionUSD != nil && *tier.ThinkingOutputPerMillionUSD > 0 &&
-				*tier.ThinkingOutputPerMillionUSD != output {
+			if exprMoneyPositive(tier.ThinkingOutputPerMillionUSD) &&
+				!exprMoneyEqual(*tier.ThinkingOutputPerMillionUSD, output) {
 				thinkingOutput := formatExprNumber(*tier.ThinkingOutputPerMillionUSD)
-				if tier.ThinkingMultiInputOutputPerMillionUSD != nil &&
-					*tier.ThinkingMultiInputOutputPerMillionUSD > 0 &&
-					*tier.ThinkingMultiInputOutputPerMillionUSD != *tier.ThinkingOutputPerMillionUSD {
+				if exprMoneyPositive(tier.ThinkingMultiInputOutputPerMillionUSD) &&
+					!exprMoneyEqual(*tier.ThinkingMultiInputOutputPerMillionUSD, *tier.ThinkingOutputPerMillionUSD) {
 					thinkingOutput = fmt.Sprintf("(img > 0 ? %s : %s)",
 						formatExprNumber(*tier.ThinkingMultiInputOutputPerMillionUSD), thinkingOutput)
 				}
@@ -782,30 +789,30 @@ func bailianBandExpression(tiers []model.ChannelPricingTier, band string) string
 				terms = append(terms, fmt.Sprintf("c * %s", normalOutput))
 			}
 		}
-		if tier.CachePerMillionUSD != nil && *tier.CachePerMillionUSD > 0 {
+		if exprMoneyPositive(tier.CachePerMillionUSD) {
 			cache := *tier.CachePerMillionUSD
-			if tier.ThinkingCachePerMillionUSD != nil && *tier.ThinkingCachePerMillionUSD > 0 &&
-				*tier.ThinkingCachePerMillionUSD != cache {
+			if exprMoneyPositive(tier.ThinkingCachePerMillionUSD) &&
+				!exprMoneyEqual(*tier.ThinkingCachePerMillionUSD, cache) {
 				terms = append(terms, fmt.Sprintf("cr * (rt > 0 ? %s : %s)",
 					formatExprNumber(*tier.ThinkingCachePerMillionUSD), formatExprNumber(cache)))
 			} else {
 				terms = append(terms, fmt.Sprintf("cr * %s", formatExprNumber(cache)))
 			}
 		}
-		if tier.CreateCachePerMillionUSD != nil && *tier.CreateCachePerMillionUSD > 0 {
+		if exprMoneyPositive(tier.CreateCachePerMillionUSD) {
 			createCache := *tier.CreateCachePerMillionUSD
-			if tier.ThinkingCreateCachePerMillionUSD != nil && *tier.ThinkingCreateCachePerMillionUSD > 0 &&
-				*tier.ThinkingCreateCachePerMillionUSD != createCache {
+			if exprMoneyPositive(tier.ThinkingCreateCachePerMillionUSD) &&
+				!exprMoneyEqual(*tier.ThinkingCreateCachePerMillionUSD, createCache) {
 				terms = append(terms, fmt.Sprintf("cc * (rt > 0 ? %s : %s)",
 					formatExprNumber(*tier.ThinkingCreateCachePerMillionUSD), formatExprNumber(createCache)))
 			} else {
 				terms = append(terms, fmt.Sprintf("cc * %s", formatExprNumber(createCache)))
 			}
 		}
-		if tier.AudioInputPerMillionUSD != nil && *tier.AudioInputPerMillionUSD > 0 {
+		if exprMoneyPositive(tier.AudioInputPerMillionUSD) {
 			terms = append(terms, fmt.Sprintf("ai * %s", formatExprNumber(*tier.AudioInputPerMillionUSD)))
 		}
-		if tier.AudioOutputPerMillionUSD != nil && *tier.AudioOutputPerMillionUSD > 0 {
+		if exprMoneyPositive(tier.AudioOutputPerMillionUSD) {
 			terms = append(terms, fmt.Sprintf("ao * %s", formatExprNumber(*tier.AudioOutputPerMillionUSD)))
 		}
 		name := tier.RangeName
@@ -829,8 +836,24 @@ func bailianBandExpression(tiers []model.ChannelPricingTier, band string) string
 	return expr
 }
 
-func formatExprNumber(value float64) string {
-	return strconv.FormatFloat(value, 'f', -1, 64)
+// formatExprNumber emits an exact decimal literal for the billing expression
+// engine. It deliberately avoids float64 so a price parsed from the catalog is
+// not rounded by a float round-trip before it enters the expression.
+func formatExprNumber(value model.Money) string {
+	d := value.Decimal()
+	places := int32(0)
+	if d.Exponent() < 0 {
+		places = -d.Exponent()
+	}
+	return d.StringFixed(places)
+}
+
+func exprMoneyPositive(value *model.Money) bool {
+	return value != nil && value.Decimal().IsPositive()
+}
+
+func exprMoneyEqual(value model.Money, other model.Money) bool {
+	return value.Decimal().Equal(other.Decimal())
 }
 
 func firstNonEmpty(values ...string) string {
@@ -848,18 +871,35 @@ func firstNonEmpty(values ...string) string {
 // official tier list stays empty. Multiple ranges/time bands remain separate
 // and are flagged for review; they are never averaged into one number.
 func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float64, fetchedAt int64) model.ChannelOfficialPricing {
-	result := model.ChannelOfficialPricing{
-		Currency:  "USD",
-		Unit:      "per_1m_token",
-		PriceKind: "CHANNEL_QUOTE",
-		Source:    bailianCatalogSource,
-		FetchedAt: fetchedAt,
+	// 百炼目录没有币种字段：这里只能按地域推断，必须把「推断」事实写进
+	// 价格记录，并把原始币种与标准化金额币种分开保存。
+	sourceCurrency, currencyInferred := bailianCurrencyForRegion(region)
+	normalizedCurrency := ""
+	if sourceCurrency != "" {
+		normalizedCurrency = "USD"
 	}
-	if region == BailianRegionBeijing || region == BailianRegionHongKong {
-		result.Currency = "CNY"
+	result := model.ChannelOfficialPricing{
+		Currency:           sourceCurrency,
+		SourceCurrency:     sourceCurrency,
+		NormalizedCurrency: normalizedCurrency,
+		CurrencyInferred:   currencyInferred,
+		Unit:               "per_1m_token",
+		PriceKind:          "CHANNEL_QUOTE",
+		Source:             bailianCatalogSource,
+		FetchedAt:          fetchedAt,
+	}
+	if sourceCurrency == "CNY" {
 		result.FXRateToUSD = rate
 		result.FXSource = "system:USDExchangeRate"
 		result.FXTimestamp = fetchedAt
+		if rate <= 0 {
+			result.NeedsReview = true
+			result.ReviewReasons = append(result.ReviewReasons, "CNY quote has no valid USD exchange rate")
+		}
+	}
+	if sourceCurrency == "" {
+		result.NeedsReview = true
+		result.ReviewReasons = append(result.ReviewReasons, "source currency cannot be confirmed")
 	}
 	tiers := make(map[string]*model.ChannelPricingTier)
 	order := make([]string, 0, len(item.Prices))
@@ -878,7 +918,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	}
 
 	toUSD := func(value float64, unit string) float64 {
-		if result.Currency == "CNY" && rate > 0 {
+		if result.SourceCurrency == "CNY" && rate > 0 {
 			value /= rate
 		}
 		if unit == "per_1k_tokens" {
@@ -886,28 +926,28 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		}
 		return value
 	}
-	setTokenPrice := func(target **float64, usd float64, label string) {
+	setTokenPrice := func(target **model.Money, usd float64, label string) {
 		if *target == nil {
-			value := usd
+			value := model.MoneyFromFloat(usd)
 			*target = &value
 			return
 		}
-		if **target != usd {
+		if !(*target).Decimal().Equal(model.MoneyFromFloat(usd).Decimal()) {
 			result.ReviewReasons = append(result.ReviewReasons, "multiple "+label+" prices")
 		}
 	}
 	addPerUnitPrice := func(tier *model.ChannelPricingTier, unit string, usd float64, price BailianPrice, priceType string) {
 		if tier.PerUnitUSD == nil {
-			value := usd
+			value := model.MoneyFromFloat(usd)
 			tier.PerUnitUSD = &value
 			tier.Unit = unit
 			result.Unit = unit
 			componentByTier[tier] = model.ChannelPricingComponent{
-				Name: price.PriceName, Type: priceType, Unit: unit, USD: usd,
+				Name: price.PriceName, Type: priceType, Unit: unit, USD: model.MoneyFromFloat(usd),
 			}
 			return
 		}
-		if *tier.PerUnitUSD != usd {
+		if tier.PerUnitUSD.Float64() != usd {
 			result.ReviewReasons = append(result.ReviewReasons, "multiple per-unit prices")
 		}
 	}
@@ -944,9 +984,10 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			priceType := strings.ToLower(strings.TrimSpace(price.Type))
 			tier.RawComponents = append(tier.RawComponents, model.ChannelPricingRawComponent{
 				Type: priceType, Name: price.PriceName,
-				RawAmount: value, RawCurrency: result.Currency, RawUnit: price.PriceUnit,
-				NormalizedUSD: usd, FXRate: result.FXRateToUSD, FXSource: result.FXSource,
-				FXTimestamp: result.FXTimestamp, CurrencyInferred: true,
+				RawAmount: model.MoneyFromFloat(value), RawCurrency: sourceCurrency, RawUnit: price.PriceUnit,
+				SourceCurrency: sourceCurrency, NormalizedCurrency: normalizedCurrency,
+				NormalizedUSD: model.MoneyFromFloat(usd), FXRate: result.FXRateToUSD, FXSource: result.FXSource,
+				FXTimestamp: result.FXTimestamp, CurrencyInferred: currencyInferred,
 				PriceSource: bailianCatalogSource, EffectiveAt: fetchedAt,
 			})
 			// Batch endpoints publish their own discounted price. They are a
@@ -1039,14 +1080,14 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				// Qwen-Image3's task plugin reports output_image_type and
 				// input_image_count, so the tiered per-image prices are exact.
 				result.ComponentPrices = append(result.ComponentPrices, model.ChannelPricingComponent{
-					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: usd,
+					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: model.MoneyFromFloat(usd),
 				})
 				result.Unit = "per_image"
 			case priceType == "image_standard" || priceType == "image_thinking":
 				// Z-Image's plugin reports prompt_extend, which selects between
 				// the standard and thinking per-image price.
 				result.ComponentPrices = append(result.ComponentPrices, model.ChannelPricingComponent{
-					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: usd,
+					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: model.MoneyFromFloat(usd),
 				})
 				result.Unit = "per_image"
 			case normalizedUnit == "per_image" || normalizedUnit == "per_second" ||

@@ -50,5 +50,9 @@ groups is never one price.
 ## Precision status
 
 Quota conversion is centralized in `common/quota_math.go` with int32 saturation
-and audited clamps. A full migration of financial amounts to decimal is still
-open; float64 must not be used for unbounded financial accumulation.
+and audited clamps. Billing ledger, cost-breakdown and snapshot purchase amount
+fields now use `model.Money`, a decimal-backed type that stores as an exact
+decimal string and serializes as a JSON number; monetary arithmetic uses
+`shopspring/decimal` end to end in those paths. TopUp, Subscription, channel
+pricing JSON amount fields and expression-engine inputs remain float64, so the
+application-wide migration is still open.

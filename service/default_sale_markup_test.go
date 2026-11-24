@@ -31,11 +31,11 @@ import (
 func TestDefaultSaleMarkupScalesFlatPrice(t *testing.T) {
 	input := 2.0
 	pricing := model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&input),
 	}
 	require.True(t, applyDefaultSaleMarkup(&pricing))
 	require.NotNil(t, pricing.InputUSDPerMillion)
-	assert.InDelta(t, 2.2, *pricing.InputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 2.2, pricing.InputUSDPerMillion.Float64(), 1e-9)
 }
 
 func TestDefaultSaleMarkupScalesExpressionResult(t *testing.T) {

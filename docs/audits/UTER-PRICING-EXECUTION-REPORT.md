@@ -274,3 +274,199 @@ No production data was deleted or rewritten.
 
 The code defects in this batch are implemented and covered by tests. The full
 release gate is not met. Use `PARTIALLY_VERIFIED`, not `FULLY_OPERATIONAL`.
+
+---
+
+## 本轮整改：2026-11-24（HEAD `8c1e9139c`）
+
+状态：**PARTIALLY_VERIFIED**。本轮只处理审计输入中明确要求最优先的 P0-1、P0-2、P0-4、P0-5；上文历史证据不代表当前 HEAD。
+
+### 实际修改文件
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `relaykit/dto/channel_settings.go` | 新增 `PricingMode` 字段与三个模式常量 |
+| `model/channel_model_pricing.go` | 新增 `ChannelScopedPricingRequired`，显式模式优先于行数推断 |
+| `relay/helper/price.go` | Token / 按次计费入口改走新门禁 |
+| `relay/relay_task.go` | 任务计费入口改走新门禁 |
+| `controller/channel_draft.go` | 草稿创建设 PENDING；发布改为“选中模型 − 已配置价格”差集校验；通过后设 ACTIVE |
+| `controller/channel_uterapi.go` | 创建即禁用并显式写回 `status=0`；按 `enable_groups` 授权模型；验证通过才启用 |
+| `service/uterapi_catalog.go` | 新增 `AuthorizedUterAPIModels` |
+| 对应的 4 个 `_test.go` | 新增/强化回归测试 |
+
+用户原有未提交改动 `M VERSION` 保持不变；本轮未执行 `git add`、未提交。执行期间还检测到并发会话对 `service/channel_batch_pricing.go` 与 `service/channel_batch_pricing_integration_test.go` 的修改（批量折扣加表达式规则），这些改动不是本轮产生，未纳入本轮变更清单；`make test` 后又单独复核 `GOWORK=off go test ./service -count=1`，退出码 0。
+
+### 命令与退出码（均为本轮实际执行）
+
+| 命令 | 退出码 | 结果 |
+| --- | --- | --- |
+| `GOWORK=off go build ./...` | 0 | 通过 |
+| `GOWORK=off go test ./model/ ./controller/ ./service/ -count=1` | 0 | model 13.5s、controller 88.3s、service 15.9s 全通过 |
+| `GOWORK=off make test` | 0 | 全量门禁通过（含 relaykit / tokenkit 子模块） |
+| `GOWORK=off go test ./model -run TestPricingChannelViewsShareOnePriceContract -count=1` | 0 | 通过 |
+| `GOWORK=off go test ./controller -run 'TestResolveOfficialPrices\|TestMergeOfficialPriceSources\|TestNormalizePricingSource\|TestOverlayChannelOfficialPrices' -count=1` | 0 | 通过 |
+| `cd web && bun run test -- src/features/pricing` | 0 | 18 文件 / 309 测试通过（项目正式脚本 vitest + jsdom） |
+| `cd web && bun run typecheck` | 0 | 通过 |
+| `cd web && bun test -- src/features/pricing` | 1 | 39 失败：裸 `bun test` 无 jsdom，`document is not defined`；与本轮改动无关 |
+
+### 行为变化
+
+1. Uter.api 创建接口返回 `status:0`、`pricing_verified:false`；验证通过后返回 `status:1`、`pricing_verified:true`。仅读 `created` 的调用方兼容。
+2. 上游未发布 `enable_groups` 时，Uter.api 不再自动加入任何模型（fail-closed）。
+3. 多 Key 槽位取各 Key 模型目录交集，不再取并集。
+4. 草稿向导发布的渠道均为 `CHANNEL_SCOPED_ACTIVE`；未打标签的旧渠道行为不变。
+
+### 未完成
+
+百炼币种/单位、十进制精度、Provider 身份标签、Apiko 清理、真实上游验证、数据库历史迁移与对账系统均未实施；详见 `UTER-PRICING-FINAL-ACCEPTANCE.md`。
+
+## 续做批次：P0-3 与 P1-2（同日 18:45+）
+
+### 修改文件
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `model/channel_model_pricing.go` | 价格对象与原始分量新增 `source_currency` / `normalized_currency` / `currency_inferred`；Upsert 可按渠道+模型接管旧 Provider 行 |
+| `service/bailian_provider.go` | 百炼价格同时记录原始/标准化币种、汇率来源与推断标记；未知币种或无汇率进入 `needs_review` |
+| `service/generic_upstream_pricing.go` | 三个转换函数新增可选 Provider ID 参数，默认 `newapi-compatible` |
+| `service/uterapi_catalog.go` | Uter.api 价格行写 `uterapi`，不再写通用 Provider |
+| `model/channel_model_pricing_test.go`、`service/bailian_provider_test.go`、`service/generic_upstream_pricing_test.go` | 新增币种溯源、待审核与 Provider 身份回归测试 |
+
+### 命令与退出码
+
+| 命令 | 退出码 |
+| --- | --- |
+| `GOWORK=off go build ./...` | 0 |
+| `GOWORK=off go test ./service -run 'TestBailianCurrencyProvenanceIsExplicit\|TestBailianUnconfirmedCurrencyNeedsReview\|TestGenericPricingProviderIdentityComesFromCaller\|TestBailianPriceNormalization' -count=1` | 0 |
+| `GOWORK=off go test ./model -run 'TestUpsertAdoptsStaleGenericProviderIdentity\|TestUpsertAdoptsLegacyBailianModelProviderIdentity' -count=1` | 0 |
+| `GOWORK=off go test ./model/ ./controller/ ./service/ -count=1` | 0 |
+| `GOWORK=off make test` | 0 |
+
+### 行为变化与边界
+
+- 百炼北京/香港 CNY、海外 USD 仍由地域推断（上游没有币种字段），但现在显式标记 `currency_inferred=true`；币种无法确认或 CNY 无有效汇率时进入 `needs_review`，不会自动发布。
+- Uter.api 历史 `newapi-compatible` 价格行在下次同步时被就地改为 `uterapi`，不会新增重复身份；人工价格保留。
+- 仍未完成：单位/阶梯/多模态专项验证、十进制精度、Apiko 清理、真实上游与数据库迁移。
+
+## 续做批次：P0-6 价格所有权（同日 19:00+）
+
+### 修改文件
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `model/channel_model_pricing.go` | 新增 `PricingOwner`（AUTO / OPERATOR / BATCH / APPROVED）落库字段；`PricingOwnerForSource`、`pricingReplaceableByOwner`、`IsAutoDerivedPricingRowFor` 成为统一覆盖判定；写入/清空路径维护 owner |
+| `model/channel_model_pricing_test.go` | 新增所有权映射、人工价保护、过期 AUTO owner 保护、自动价刷新与已审核价保留测试 |
+
+### 规则与边界
+
+- 显式 `OPERATOR` / `BATCH` / `APPROVED` 价格永不被引擎同步覆盖；旧行无 owner 时继续按 `source` 判断，保持兼容。
+- 显式 `AUTO` owner 还要求存储 price source 仍表现为自动来源，防止原始 SQL 改价后留下过期 owner，把人工价误判为可覆盖。
+- Provider 身份清理、review gate、批量规则同样改用 owner-aware 判定；清空价格时同步清空 owner。
+- `source` 字段继续保留为审计信息，不作为唯一真相源。
+
+### 命令与退出码
+
+| 命令 | 退出码 | 结果 |
+| --- | --- | --- |
+| `GOWORK=off go build ./...` | 0 | 通过 |
+| `GOWORK=off go test ./model -run 'TestPricingOwner\|TestStaleAutoOwner' -count=1` | 0 | 通过 |
+| `GOWORK=off go test ./controller -run 'TestUterRouteEditFlow_StepByStep\|TestPublishChannelDraftEnablesAbilitiesForPricingVisibility' -count=1` | 0 | 通过 |
+| `GOWORK=off go test ./model/ ./controller/ ./service/ -count=1` | 0 | 首轮曾因并发会话临时存在的 `TestZZTemporaryVisibilityPreviewOnCopiedDB` 失败；该测试随后从工作区消失且定向复跑显示 `no tests to run`，完整复跑退出码 0 |
+| `GOWORK=off make test` | 0 | 全量门禁通过（含 relaykit / tokenkit 子模块） |
+| `cd web && bun run test -- src/features/pricing` | 0 | 18 文件 / 309 测试通过 |
+| `cd web && bun run typecheck` | 0 | 通过 |
+| `git diff --check` | 0 | 无空白错误 |
+
+P0-6 已代码修复并通过本轮全量回归；仍未完成：十进制精度、Apiko 清理、真实上游验证、数据库历史迁移与计费对账。
+
+## 续做批次：P1-1 财务金额 decimal 计算（同日 19:30+）
+
+### 修改文件
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `service/billing_financials.go` | 额度折 USD、采购成本逐维度金额、无合同估算、表达式成本换算与总成本累加改用 decimal，写回时再转 float64 |
+| `model/billing_ledger.go` | `SummarizeBillingFinancials` 用 decimal 累加 Sale / Refund / Cost 并计算毛利，NaN/Inf 归零 |
+| `service/billing_snapshot_test.go` | 新增 0.1+0.2 汇总精度与百万 token 单价乘算精度回归 |
+
+### 命令与退出码
+
+| 命令 | 退出码 | 结果 |
+| --- | --- | --- |
+| `GOWORK=off go build ./...` | 0 | 通过 |
+| `GOWORK=off go test ./service -run 'TestBillingFinancial\|TestBillingFinancialSummaryUsesDecimalAccumulation\|TestBillingFinancialsCostUsesDecimalForTokenPrices' -count=1` | 0 | 新增与既有财务测试通过 |
+| `GOWORK=off go test ./model/ ./controller/ ./service/ -count=1` | 0 | model 13.6s、controller 81.5s、service 14.3s 全通过 |
+| `GOWORK=off make test` | 0 | 全量门禁通过（含 relaykit / tokenkit 子模块） |
+| `git diff --check` | 0 | 无空白错误 |
+
+### 边界与状态
+
+本次是**计算层 decimal 迁移**，不是数据库/API 全量 decimal 迁移：`BillingCostBreakdown`、`BillingFinancialLedger` 的 float64 列、渠道价格 JSON 字段、表达式引擎输入仍保持原状，以免触发生产库迁移和接口契约变更。状态为 **PARTIALLY_BUILT**，不得报 P1-1 完全关闭。
+
+## 续做批次：Apiko 历史数据清理（同日 19:50+）
+
+### 备份与审计
+
+- 备份文件：`/tmp/one-api.db.bak-apiko-20261124-194856`（SQLite backup API 在线备份，包含 WAL 内容）。
+- 全库只读扫描 55 张表后确认：`channel_model_pricing` 中已无 Apiko 价格行；残留仅存在于供应商同步状态与运营配置。
+- 审计日志中的 14 条 Apiko 操作历史属于审计证据，不属于供应商配置或价格数据，按保留历史原则未删除。
+
+### 已删除记录
+
+| 表 | rowid | 值 |
+| --- | ---: | --- |
+| `channel_sync_states` | 21 | `provider='apiko'` |
+| `options` | 294 | `key='ApikoCatalogSnapshot:33'` |
+| `options` | 296 | `key='ApikoUpstreamSyncState'` |
+
+### 验证结果
+
+- `channel_model_pricing` / `channel_sync_states` / `options` / `channels` 的 Apiko 命中均为 0。
+- `audit_logs` 保留 14 条历史操作记录，符合审计不可篡改要求。
+- 运行时 Go 代码仅保留 `apiko-` 历史来源分类器，用于识别旧行；未发现供应商适配器、路由或配置项代码。
+
+## 续做批次：历史迁移与孤儿价格清理（同日 20:10+）
+
+### 代码与迁移
+
+- `model/channel_model_pricing_migration.go`：新增 `PrepareChannelModelPricingOwner`，幂等添加/回填 `pricing_owner` 与索引；不可识别来源默认 `OPERATOR`，防止同步覆盖人工价。
+- `model/main.go`：在 AutoMigrate / 版本化 schema 迁移后、review gate 前执行 owner 回填。
+- `model/channel_model_pricing_test.go`：新增 `TestPrepareChannelModelPricingOwnerBackfillsHistory`。
+
+### 本地库执行结果
+
+- 备份：`/tmp/one-api.db.bak-migration-20261124-201209`。
+- owner 回填 962 行，全部 `AUTO`（`uterroute-official` 828、`bailian-channel` 134）。
+- 删除 715 条孤儿活动价格行，涉及已删除渠道 62 / 1235 / 63 / 64 / 65 / 1233 / 1234 / 1237。
+- 复核：剩余活动价格 247 行，孤儿 0、空 owner 0、重复身份 0、owner 索引 1。
+- 保留：`channel_pricing_history` 8,063 条、账单快照 26 条、账本 11 条、同步状态 24 条孤儿记录，作为历史/审计证据不参与活动计费。
+
+### 验证
+
+- `GOWORK=off go test ./model -run 'TestPrepareChannelModelPricingOwnerBackfillsHistory|TestPricingOwner' -count=1` → 0。
+- 生产库未连接、未改写；未做生产回滚演练，不报生产就绪。
+
+## 续做批次：decimal 结构化金额类型（同日 20:20+）
+
+### 修改文件
+
+| 文件 | 修改内容 |
+| --- | --- |
+| `model/money.go` | 新增 `model.Money`：decimal-backed 金额类型，SQL 存 decimal 字符串、JSON 输出为数字，NaN/Inf 归零 |
+| `model/billing_ledger.go` | `UnitPriceUSD` / `AmountUSD` / `OriginalAmount` 及财务汇总字段改为 Money |
+| `model/billing_price_snapshot.go` | `PurchaseUSD` 改为 `*Money`，新增 `*float64 → *Money` 转换助手 |
+| `service/billing_financials.go` / `billing_snapshot.go` / `upstream_billing_samples.go` / `upstream_invoice.go` | 写入/累加/对账路径改用 Money 与 decimal |
+| 相关 `_test.go` | 断言改为 Money 的精确字符串或 Float64 视图 |
+
+### 验证
+
+| 命令 | 退出码 |
+| --- | --- |
+| `GOWORK=off go build ./...` | 0 |
+| `GOWORK=off go test ./model/ ./controller/ ./service/ -count=1` | 0 |
+| `GOWORK=off make test` | 0 |
+| `git diff --check` | 0 |
+
+### 边界
+
+计费账本、成本明细与账单快照的 PurchaseUSD 已完成 Money 结构化；TopUp、Subscription、渠道定价 JSON 金额字段和表达式引擎输入仍为 float64。状态为 **PARTIALLY_BUILT**，不得报告为全局 decimal 迁移完成。

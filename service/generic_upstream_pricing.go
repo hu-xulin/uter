@@ -255,8 +255,9 @@ func GenericChannelPricingRecords(
 	channelModels []string,
 	entries []GenericPricingEntry,
 	now time.Time,
+	providerID ...string,
 ) []model.ChannelOfficialPricingRecord {
-	return genericChannelPricingRecords(channelID, channelModels, entries, now, 0, true)
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, 0, true, resolveGenericProviderID(providerID))
 }
 
 // GenericOfficialPricingRecords builds sync rows: official data and the channel
@@ -267,8 +268,9 @@ func GenericOfficialPricingRecords(
 	entries []GenericPricingEntry,
 	now time.Time,
 	quotaPerUnit float64,
+	providerID ...string,
 ) []model.ChannelOfficialPricingRecord {
-	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, false)
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, false, resolveGenericProviderID(providerID))
 }
 
 // GenericChannelPricingRecordsWithQuota also applies a document-level
@@ -280,8 +282,20 @@ func GenericChannelPricingRecordsWithQuota(
 	entries []GenericPricingEntry,
 	now time.Time,
 	quotaPerUnit float64,
+	providerID ...string,
 ) []model.ChannelOfficialPricingRecord {
-	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, true)
+	return genericChannelPricingRecords(channelID, channelModels, entries, now, quotaPerUnit, true, resolveGenericProviderID(providerID))
+}
+
+// resolveGenericProviderID keeps the historical default for true generic New
+// API channels while letting a dedicated adapter declare its real provider ID.
+func resolveGenericProviderID(ids []string) string {
+	if len(ids) > 0 {
+		if provider := strings.TrimSpace(ids[0]); provider != "" {
+			return provider
+		}
+	}
+	return "newapi-compatible"
 }
 
 func genericChannelPricingRecords(
@@ -291,6 +305,7 @@ func genericChannelPricingRecords(
 	now time.Time,
 	quotaPerUnit float64,
 	deriveSalePrice bool,
+	providerID string,
 ) []model.ChannelOfficialPricingRecord {
 	wanted := make(map[string]bool, len(channelModels))
 	for _, name := range channelModels {
@@ -321,7 +336,7 @@ func genericChannelPricingRecords(
 		_ = needsReview
 		_ = reasons
 		records = append(records, model.ChannelOfficialPricingRecord{
-			ChannelId: channelID, Provider: "newapi-compatible",
+			ChannelId: channelID, Provider: providerID,
 			ModelName: name, Currency: official.Currency,
 			OfficialPricing: string(raw), NormalizedPricing: string(normalized),
 			InternalPricing: genericExpressionInternalPricing(entry, now.Unix()),
@@ -341,18 +356,18 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 	if units, ok := uterRouteOfficialUnitPrices(expr); ok {
 		tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 		input := units.Input * factor
-		tier.InputPerMillionUSD = &input
+		tier.InputPerMillionUSD = model.MoneyFromFloatPtr(&input)
 		if units.OutputPresent {
 			output := units.Output * factor
-			tier.OutputPerMillionUSD = &output
+			tier.OutputPerMillionUSD = model.MoneyFromFloatPtr(&output)
 		}
 		if units.CachePresent {
 			cache := units.Cache * factor
-			tier.CachePerMillionUSD = &cache
+			tier.CachePerMillionUSD = model.MoneyFromFloatPtr(&cache)
 		}
 		if units.CreateCachePresent {
 			createCache := units.CreateCache * factor
-			tier.CreateCachePerMillionUSD = &createCache
+			tier.CreateCachePerMillionUSD = model.MoneyFromFloatPtr(&createCache)
 		}
 		official.ChannelPrice = &tier
 		return
@@ -360,7 +375,7 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 	if units, ok := uterRouteDurationUnitPrices(expr); ok {
 		perSecond := units.Input * factor
 		official.ChannelPrice = &model.ChannelPricingTier{
-			RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
+			RangeName: "channel", Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(&perSecond),
 		}
 	}
 }
@@ -420,7 +435,7 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPer
 		view.Unit = "per_call"
 		tier := model.ChannelPricingTier{RangeName: "base", Unit: "per_call"}
 		if price > 0 {
-			tier.PerUnitUSD = &price
+			tier.PerUnitUSD = model.MoneyFromFloatPtr(&price)
 		}
 		view.Tiers = []model.ChannelPricingTier{tier}
 		return view, price <= 0, nil
@@ -474,30 +489,30 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPer
 	basisUSDPerMillion := 1_000_000 / quotaPerUnit
 	input := ratio * basisUSDPerMillion
 	tier := model.ChannelPricingTier{
-		RangeName: "base", Unit: "per_1m_token", InputPerMillionUSD: &input,
+		RangeName: "base", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input),
 	}
 	basis := &model.ChannelRatioBasis{
 		RawRatio:           ratio,
 		RawCompletionRatio: entry.CompletionRatio,
-		BasisUSDPerMillion: basisUSDPerMillion,
+		BasisUSDPerMillion: model.MoneyFromFloat(basisUSDPerMillion),
 		Formula:            "usd_per_1m = ratio * 1000000 / quota_per_unit",
 		FormulaVersion:     "newapi-quota-v1",
-		ResultInputUSD:     input,
+		ResultInputUSD:     model.MoneyFromFloat(input),
 	}
 	view.PriceKind = kind
 	view.RatioBasis = basis
 	if entry.CompletionRatio > 0 {
 		output := input * entry.CompletionRatio
-		tier.OutputPerMillionUSD = &output
-		basis.ResultOutputUSD = output
+		tier.OutputPerMillionUSD = model.MoneyFromFloatPtr(&output)
+		basis.ResultOutputUSD = model.MoneyFromFloat(output)
 	}
 	if entry.CacheRatio > 0 {
 		cache := input * entry.CacheRatio
-		tier.CachePerMillionUSD = &cache
+		tier.CachePerMillionUSD = model.MoneyFromFloatPtr(&cache)
 	}
 	if entry.CreateCacheRatio > 0 {
 		cacheWrite := input * entry.CreateCacheRatio
-		tier.CreateCachePerMillionUSD = &cacheWrite
+		tier.CreateCachePerMillionUSD = model.MoneyFromFloatPtr(&cacheWrite)
 	}
 	view.Unit = "per_1m_token"
 	view.Tiers = []model.ChannelPricingTier{tier}
@@ -575,8 +590,9 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 				common.SysError(common.LogText("uterroute auto model add failed: channel_id=%d, error=%v", channel.Id, addErr))
 			}
 		}
-		records, err := UterRouteChannelPricingRecords(
+		records, err := UterRouteChannelPricingRecordsWithMapping(
 			snapshot, channel.Id, channel.GetModels(), GetUterRouteDiscountGroup(channel.Id),
+			channel.GetModelMapping(),
 		)
 		if err != nil {
 			return 0, models, err
@@ -664,26 +680,26 @@ func genericPrimaryPriceUSD(view model.ChannelOfficialPricing) (float64, bool) {
 	if len(view.ChannelPriceTiers) > 0 {
 		tier := view.ChannelPriceTiers[0]
 		if tier.InputPerMillionUSD != nil {
-			return *tier.InputPerMillionUSD, true
+			return tier.InputPerMillionUSD.Float64(), true
 		}
 		if tier.PerUnitUSD != nil {
-			return *tier.PerUnitUSD, true
+			return tier.PerUnitUSD.Float64(), true
 		}
 	}
 	if view.ChannelPrice != nil {
 		if view.ChannelPrice.InputPerMillionUSD != nil {
-			return *view.ChannelPrice.InputPerMillionUSD, true
+			return view.ChannelPrice.InputPerMillionUSD.Float64(), true
 		}
 		if view.ChannelPrice.PerUnitUSD != nil {
-			return *view.ChannelPrice.PerUnitUSD, true
+			return view.ChannelPrice.PerUnitUSD.Float64(), true
 		}
 	}
 	if len(view.Tiers) > 0 {
 		if view.Tiers[0].InputPerMillionUSD != nil {
-			return *view.Tiers[0].InputPerMillionUSD, true
+			return view.Tiers[0].InputPerMillionUSD.Float64(), true
 		}
 		if view.Tiers[0].PerUnitUSD != nil {
-			return *view.Tiers[0].PerUnitUSD, true
+			return view.Tiers[0].PerUnitUSD.Float64(), true
 		}
 	}
 	return 0, false

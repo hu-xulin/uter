@@ -58,10 +58,10 @@ func TestPricingChannelViewsShareOnePriceContract(t *testing.T) {
 	}).Error)
 	encodedToken, err := common.Marshal(ChannelInternalPricing{
 		Mode:                     ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:       float64Ptr(2),
-		OutputUSDPerMillion:      float64Ptr(8),
-		CacheUSDPerMillion:       float64Ptr(0.2),
-		CreateCacheUSDPerMillion: float64Ptr(0.5),
+		InputUSDPerMillion:       MoneyFromFloatPtr(float64Ptr(2)),
+		OutputUSDPerMillion:      MoneyFromFloatPtr(float64Ptr(8)),
+		CacheUSDPerMillion:       MoneyFromFloatPtr(float64Ptr(0.2)),
+		CreateCacheUSDPerMillion: MoneyFromFloatPtr(float64Ptr(0.5)),
 	})
 	require.NoError(t, err)
 	require.NoError(t, DB.Create(&ChannelModelPricing{

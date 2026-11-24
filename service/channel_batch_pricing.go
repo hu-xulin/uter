@@ -239,6 +239,30 @@ func batchExpressionFactor(mode string, value float64) (float64, bool) {
 	}
 }
 
+// batchDiscountPlusExpressionFactor converts an executable channel expression
+// into the discount-plus sale expression. The channel branch of
+// resolveBatchBasePrice has already scaled the official rule by the upstream
+// discount ratio, so adding `value` points of the official rule means scaling
+// the channel rule by (discount + value) / discount. Both the rule and the
+// ratio must come from the same normalized row; without a ratio there is no
+// way to express the addition as one coefficient scale without guessing.
+func batchDiscountPlusExpressionFactor(row model.ChannelModelPricing, value float64) (float64, bool) {
+	var official model.ChannelOfficialPricing
+	if strings.TrimSpace(row.NormalizedPricing) == "" ||
+		common.UnmarshalJsonStr(row.NormalizedPricing, &official) != nil {
+		return 0, false
+	}
+	if official.DiscountRatio == nil || *official.DiscountRatio <= 0 ||
+		math.IsNaN(*official.DiscountRatio) || math.IsInf(*official.DiscountRatio, 0) {
+		return 0, false
+	}
+	factor := (*official.DiscountRatio + value) / *official.DiscountRatio
+	if factor < 0 || math.IsNaN(factor) || math.IsInf(factor, 0) {
+		return 0, false
+	}
+	return factor, true
+}
+
 // dimensionValue returns the amount this base carries for one rule dimension.
 func (b batchBasePrice) dimensionValue(dimension string) *float64 {
 	switch dimension {
@@ -508,10 +532,15 @@ func ApplyChannelBatchPricingWithOptions(
 		// rules change the total, not the coefficients, so they are refused.
 		if base.mode == model.ChannelPricingModeTieredExpr && strings.TrimSpace(base.expr) != "" {
 			factor, factorOK := batchExpressionFactor(mode, value)
+			factorReason := "additive and fixed rules cannot be applied to a billing expression; edit the expression directly"
+			if mode == BatchPricingModeDiscountPlus {
+				factor, factorOK = batchDiscountPlusExpressionFactor(row, value)
+				factorReason = "discount plus needs a channel discount ratio on the executable billing expression"
+			}
 			if !factorOK {
 				result.Skipped = append(result.Skipped, BatchPricingSkipped{
 					ModelName: row.ModelName,
-					Reason:    "additive and fixed rules cannot be applied to a billing expression; edit the expression directly",
+					Reason:    factorReason,
 				})
 				continue
 			}
@@ -571,7 +600,7 @@ func ApplyChannelBatchPricingWithOptions(
 		var officialBase batchBasePrice
 		if mode == BatchPricingModeDiscountPlus {
 			var officialReason string
-			officialBase, officialReason = resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+			officialBase, officialReason = resolveBatchDiscountPlusOfficialBase(row)
 			if officialReason != "" {
 				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: officialReason})
 				continue
@@ -608,6 +637,13 @@ func ApplyChannelBatchPricingWithOptions(
 			if mode == BatchPricingModeDiscountPlus {
 				official := officialBase.dimensionValue(dimension)
 				if official == nil || *official <= 0 {
+					// A dimension priced at zero on both sides stays zero:
+					// there are no official points to add. A non-zero channel
+					// price without an official reference still goes to review
+					// instead of silently keeping an unadjusted amount.
+					if *raw == 0 {
+						return raw, true
+					}
 					ruleFailure = "discount plus needs the official price for dimension " + dimension
 					return nil, false
 				}
@@ -627,35 +663,35 @@ func ApplyChannelBatchPricingWithOptions(
 		}
 		if next, ok := apply(base.inputUSD, "input"); ok && next != nil {
 			item.InputUSD = next
-			internal.InputUSDPerMillion = next
+			internal.InputUSDPerMillion = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.outputUSD, "output"); ok && next != nil {
 			item.OutputUSD = next
-			internal.OutputUSDPerMillion = next
+			internal.OutputUSDPerMillion = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.cacheUSD, "cache_read"); ok && next != nil {
 			item.CacheUSD = next
-			internal.CacheUSDPerMillion = next
+			internal.CacheUSDPerMillion = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.cacheWriteUSD, "cache_write"); ok && next != nil {
 			item.CacheWriteUSD = next
-			internal.CreateCacheUSDPerMillion = next
+			internal.CreateCacheUSDPerMillion = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.audioInputUSD, "audio_input"); ok && next != nil {
 			item.AudioInputUSD = next
-			internal.AudioInputUSDPerMillion = next
+			internal.AudioInputUSDPerMillion = model.MoneyFromFloatPtr(next)
 			internal.AudioRatio = nil
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
@@ -663,19 +699,19 @@ func ApplyChannelBatchPricingWithOptions(
 		}
 		if next, ok := apply(base.audioOutputUSD, "audio_output"); ok && next != nil {
 			item.AudioOutputUSD = next
-			internal.AudioOutputUSDPerMillion = next
+			internal.AudioOutputUSDPerMillion = model.MoneyFromFloatPtr(next)
 			internal.AudioCompletionRatio = nil
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
-		applyDimension := func(raw *float64, dimension string, internalTarget, itemTarget **float64) bool {
+		applyDimension := func(raw *float64, dimension string, internalTarget **model.Money, itemTarget **float64) bool {
 			next, ok := apply(raw, dimension)
 			if !ok {
 				result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 				return false
 			}
-			*internalTarget = next
+			*internalTarget = model.MoneyFromFloatPtr(next)
 			*itemTarget = next
 			return true
 		}
@@ -691,21 +727,21 @@ func ApplyChannelBatchPricingWithOptions(
 		}
 		if next, ok := apply(base.perCallUSD, "per_call"); ok && next != nil {
 			item.PerCallUSD = next
-			internal.PerCallUSD = next
+			internal.PerCallUSD = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.perSecondUSD, "per_second"); ok && next != nil {
 			item.PerSecondUSD = next
-			internal.PerSecondUSD = next
+			internal.PerSecondUSD = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
 		}
 		if next, ok := apply(base.perMinuteUSD, "per_minute"); ok && next != nil {
 			item.PerMinuteUSD = next
-			internal.PerMinuteUSD = next
+			internal.PerMinuteUSD = model.MoneyFromFloatPtr(next)
 		} else if !ok {
 			result.Skipped = append(result.Skipped, BatchPricingSkipped{ModelName: row.ModelName, Reason: ruleFailure})
 			continue
@@ -751,85 +787,102 @@ func ApplyChannelBatchPricingWithOptions(
 					failed = true
 					break
 				}
-				nextTier.InputUSDPerMillion = input
+				nextTier.InputUSDPerMillion = model.MoneyFromFloatPtr(input)
 				output, ok := applyTier(tier.outputUSD, "output")
 				if !ok {
 					failed = true
 					break
 				}
-				nextTier.OutputUSDPerMillion = output
+				nextTier.OutputUSDPerMillion = model.MoneyFromFloatPtr(output)
 				cache, ok := applyTier(tier.cacheUSD, "cache_read")
 				if !ok {
 					failed = true
 					break
 				}
-				nextTier.CacheUSDPerMillion = cache
+				nextTier.CacheUSDPerMillion = model.MoneyFromFloatPtr(cache)
 				cacheWrite, ok := applyTier(tier.cacheWriteUSD, "cache_write")
 				if !ok {
 					failed = true
 					break
 				}
-				nextTier.CreateCacheUSDPerMillion = cacheWrite
+				nextTier.CreateCacheUSDPerMillion = model.MoneyFromFloatPtr(cacheWrite)
 				audioInput, ok := applyTier(tier.audioInputUSD, "audio_input")
 				if !ok {
 					failed = true
 					break
 				}
-				nextTier.AudioInputUSDPerMillion = audioInput
+				nextTier.AudioInputUSDPerMillion = model.MoneyFromFloatPtr(audioInput)
 				audioOutput, ok := applyTier(tier.audioOutputUSD, "audio_output")
 				if !ok {
 					failed = true
 					break
 				}
-				nextTier.AudioOutputUSDPerMillion = audioOutput
+				nextTier.AudioOutputUSDPerMillion = model.MoneyFromFloatPtr(audioOutput)
 				var okDim bool
-				if nextTier.ImageInputUSDPerMillion, okDim = applyTier(tier.imageInputUSD, "image_input"); !okDim {
+				var tierMoney *float64
+				if tierMoney, okDim = applyTier(tier.imageInputUSD, "image_input"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ImageInputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingInputUSDPerMillion, okDim = applyTier(tier.thinkingInputUSD, "thinking_input"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingInputUSD, "thinking_input"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingInputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingOutputUSDPerMillion, okDim = applyTier(tier.thinkingOutputUSD, "thinking_output"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingOutputUSD, "thinking_output"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingOutputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingCacheUSDPerMillion, okDim = applyTier(tier.thinkingCacheUSD, "thinking_cache"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingCacheUSD, "thinking_cache"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingCacheUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingCreateCacheUSDPerMillion, okDim = applyTier(tier.thinkingCreateCacheUSD, "thinking_create_cache"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingCreateCacheUSD, "thinking_create_cache"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingCreateCacheUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingImageInputUSDPerMillion, okDim = applyTier(tier.thinkingImageInputUSD, "thinking_image_input"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingImageInputUSD, "thinking_image_input"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingImageInputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.MultiInputOutputUSDPerMillion, okDim = applyTier(tier.multiInputOutputUSD, "multi_input_output"); !okDim {
+				if tierMoney, okDim = applyTier(tier.multiInputOutputUSD, "multi_input_output"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.MultiInputOutputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
-				if nextTier.ThinkingMultiInputOutputUSDPerMillion, okDim = applyTier(tier.thinkingMultiInputOutputUSD, "thinking_multi_input_output"); !okDim {
+				if tierMoney, okDim = applyTier(tier.thinkingMultiInputOutputUSD, "thinking_multi_input_output"); !okDim {
 					failed = true
 					break
+				} else {
+					nextTier.ThinkingMultiInputOutputUSDPerMillion = model.MoneyFromFloatPtr(tierMoney)
 				}
 				saleTiers = append(saleTiers, nextTier)
 				previewTiers = append(previewTiers, BatchPricingTier{
 					RangeName: nextTier.RangeName, TimeBand: nextTier.TimeBand,
 					MinInputTokens: nextTier.MinInputTokens, MaxInputTokens: nextTier.MaxInputTokens,
-					InputUSD: nextTier.InputUSDPerMillion, OutputUSD: nextTier.OutputUSDPerMillion,
-					AudioInputUSD: nextTier.AudioInputUSDPerMillion, AudioOutputUSD: nextTier.AudioOutputUSDPerMillion,
-					CacheUSD: nextTier.CacheUSDPerMillion, CacheWriteUSD: nextTier.CreateCacheUSDPerMillion,
-					ImageInputUSD:               nextTier.ImageInputUSDPerMillion,
-					ThinkingInputUSD:            nextTier.ThinkingInputUSDPerMillion,
-					ThinkingOutputUSD:           nextTier.ThinkingOutputUSDPerMillion,
-					ThinkingCacheUSD:            nextTier.ThinkingCacheUSDPerMillion,
-					ThinkingCreateCacheUSD:      nextTier.ThinkingCreateCacheUSDPerMillion,
-					ThinkingImageInputUSD:       nextTier.ThinkingImageInputUSDPerMillion,
-					MultiInputOutputUSD:         nextTier.MultiInputOutputUSDPerMillion,
-					ThinkingMultiInputOutputUSD: nextTier.ThinkingMultiInputOutputUSDPerMillion,
+					InputUSD: moneyFloatPtr(nextTier.InputUSDPerMillion), OutputUSD: moneyFloatPtr(nextTier.OutputUSDPerMillion),
+					AudioInputUSD: moneyFloatPtr(nextTier.AudioInputUSDPerMillion), AudioOutputUSD: moneyFloatPtr(nextTier.AudioOutputUSDPerMillion),
+					CacheUSD: moneyFloatPtr(nextTier.CacheUSDPerMillion), CacheWriteUSD: moneyFloatPtr(nextTier.CreateCacheUSDPerMillion),
+					ImageInputUSD:               moneyFloatPtr(nextTier.ImageInputUSDPerMillion),
+					ThinkingInputUSD:            moneyFloatPtr(nextTier.ThinkingInputUSDPerMillion),
+					ThinkingOutputUSD:           moneyFloatPtr(nextTier.ThinkingOutputUSDPerMillion),
+					ThinkingCacheUSD:            moneyFloatPtr(nextTier.ThinkingCacheUSDPerMillion),
+					ThinkingCreateCacheUSD:      moneyFloatPtr(nextTier.ThinkingCreateCacheUSDPerMillion),
+					ThinkingImageInputUSD:       moneyFloatPtr(nextTier.ThinkingImageInputUSDPerMillion),
+					MultiInputOutputUSD:         moneyFloatPtr(nextTier.MultiInputOutputUSDPerMillion),
+					ThinkingMultiInputOutputUSD: moneyFloatPtr(nextTier.ThinkingMultiInputOutputUSDPerMillion),
 					Unit:                        "per_1m_token",
 				})
 			}
@@ -998,17 +1051,17 @@ func batchBaseFromContractCost(pricing model.ChannelInternalPricing) (batchBaseP
 			tiers = append(tiers, batchBaseTier{
 				name: tier.RangeName, timeBand: tier.TimeBand,
 				minInput: tier.MinInputTokens, maxInput: tier.MaxInputTokens,
-				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
-				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
-				audioInputUSD: tier.AudioInputUSDPerMillion, audioOutputUSD: tier.AudioOutputUSDPerMillion,
-				imageInputUSD:               tier.ImageInputUSDPerMillion,
-				thinkingInputUSD:            tier.ThinkingInputUSDPerMillion,
-				thinkingOutputUSD:           tier.ThinkingOutputUSDPerMillion,
-				thinkingCacheUSD:            tier.ThinkingCacheUSDPerMillion,
-				thinkingCreateCacheUSD:      tier.ThinkingCreateCacheUSDPerMillion,
-				thinkingImageInputUSD:       tier.ThinkingImageInputUSDPerMillion,
-				multiInputOutputUSD:         tier.MultiInputOutputUSDPerMillion,
-				thinkingMultiInputOutputUSD: tier.ThinkingMultiInputOutputUSDPerMillion,
+				inputUSD: moneyFloatPtr(tier.InputUSDPerMillion), outputUSD: moneyFloatPtr(tier.OutputUSDPerMillion),
+				cacheUSD: moneyFloatPtr(tier.CacheUSDPerMillion), cacheWriteUSD: moneyFloatPtr(tier.CreateCacheUSDPerMillion),
+				audioInputUSD: moneyFloatPtr(tier.AudioInputUSDPerMillion), audioOutputUSD: moneyFloatPtr(tier.AudioOutputUSDPerMillion),
+				imageInputUSD:               moneyFloatPtr(tier.ImageInputUSDPerMillion),
+				thinkingInputUSD:            moneyFloatPtr(tier.ThinkingInputUSDPerMillion),
+				thinkingOutputUSD:           moneyFloatPtr(tier.ThinkingOutputUSDPerMillion),
+				thinkingCacheUSD:            moneyFloatPtr(tier.ThinkingCacheUSDPerMillion),
+				thinkingCreateCacheUSD:      moneyFloatPtr(tier.ThinkingCreateCacheUSDPerMillion),
+				thinkingImageInputUSD:       moneyFloatPtr(tier.ThinkingImageInputUSDPerMillion),
+				multiInputOutputUSD:         moneyFloatPtr(tier.MultiInputOutputUSDPerMillion),
+				thinkingMultiInputOutputUSD: moneyFloatPtr(tier.ThinkingMultiInputOutputUSDPerMillion),
 				unit:                        tier.Unit,
 			})
 		}
@@ -1016,29 +1069,29 @@ func batchBaseFromContractCost(pricing model.ChannelInternalPricing) (batchBaseP
 	}
 	switch pricing.Mode {
 	case model.ChannelPricingModePerMillionTokens:
-		if pricing.InputUSDPerMillion == nil || *pricing.InputUSDPerMillion <= 0 {
+		if pricing.InputUSDPerMillion == nil || !pricing.InputUSDPerMillion.Decimal().IsPositive() {
 			return batchBasePrice{}, "contract cost has no token input price"
 		}
 		return batchBasePrice{
 			mode:     model.ChannelPricingModePerMillionTokens,
-			inputUSD: pricing.InputUSDPerMillion, outputUSD: pricing.OutputUSDPerMillion,
-			cacheUSD: pricing.CacheUSDPerMillion, cacheWriteUSD: pricing.CreateCacheUSDPerMillion,
-			audioInputUSD: pricing.AudioInputUSDPerMillion, audioOutputUSD: pricing.AudioOutputUSDPerMillion,
-			imageInputUSD:               pricing.ImageInputUSDPerMillion,
-			thinkingInputUSD:            pricing.ThinkingInputUSDPerMillion,
-			thinkingOutputUSD:           pricing.ThinkingOutputUSDPerMillion,
-			thinkingCacheUSD:            pricing.ThinkingCacheUSDPerMillion,
-			thinkingCreateCacheUSD:      pricing.ThinkingCreateCacheUSDPerMillion,
-			thinkingImageInputUSD:       pricing.ThinkingImageInputUSDPerMillion,
-			multiInputOutputUSD:         pricing.MultiInputOutputUSDPerMillion,
-			thinkingMultiInputOutputUSD: pricing.ThinkingMultiInputOutputUSDPerMillion,
+			inputUSD: moneyFloatPtr(pricing.InputUSDPerMillion), outputUSD: moneyFloatPtr(pricing.OutputUSDPerMillion),
+			cacheUSD: moneyFloatPtr(pricing.CacheUSDPerMillion), cacheWriteUSD: moneyFloatPtr(pricing.CreateCacheUSDPerMillion),
+			audioInputUSD: moneyFloatPtr(pricing.AudioInputUSDPerMillion), audioOutputUSD: moneyFloatPtr(pricing.AudioOutputUSDPerMillion),
+			imageInputUSD:               moneyFloatPtr(pricing.ImageInputUSDPerMillion),
+			thinkingInputUSD:            moneyFloatPtr(pricing.ThinkingInputUSDPerMillion),
+			thinkingOutputUSD:           moneyFloatPtr(pricing.ThinkingOutputUSDPerMillion),
+			thinkingCacheUSD:            moneyFloatPtr(pricing.ThinkingCacheUSDPerMillion),
+			thinkingCreateCacheUSD:      moneyFloatPtr(pricing.ThinkingCreateCacheUSDPerMillion),
+			thinkingImageInputUSD:       moneyFloatPtr(pricing.ThinkingImageInputUSDPerMillion),
+			multiInputOutputUSD:         moneyFloatPtr(pricing.MultiInputOutputUSDPerMillion),
+			thinkingMultiInputOutputUSD: moneyFloatPtr(pricing.ThinkingMultiInputOutputUSDPerMillion),
 		}, ""
 	case model.ChannelPricingModePerCall:
-		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: pricing.PerCallUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: moneyFloatPtr(pricing.PerCallUSD)}, ""
 	case model.ChannelPricingModePerSecond:
-		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: pricing.PerSecondUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: moneyFloatPtr(pricing.PerSecondUSD)}, ""
 	case model.ChannelPricingModePerMinute:
-		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: pricing.PerMinuteUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: moneyFloatPtr(pricing.PerMinuteUSD)}, ""
 	}
 	return batchBasePrice{}, "unsupported contract cost mode"
 }
@@ -1065,17 +1118,17 @@ func resolveBatchPurchaseDimensions(row model.ChannelModelPricing) batchBasePric
 			tiers = append(tiers, batchBaseTier{
 				name: item.RangeName, timeBand: item.TimeBand,
 				minInput: item.MinInputTokens, maxInput: item.MaxInputTokens,
-				inputUSD: item.InputPerMillionUSD, outputUSD: item.OutputPerMillionUSD,
-				cacheUSD: item.CachePerMillionUSD, cacheWriteUSD: item.CreateCachePerMillionUSD,
-				audioInputUSD: item.AudioInputPerMillionUSD, audioOutputUSD: item.AudioOutputPerMillionUSD,
-				imageInputUSD:               item.ImageInputPerMillionUSD,
-				thinkingInputUSD:            item.ThinkingInputPerMillionUSD,
-				thinkingOutputUSD:           item.ThinkingOutputPerMillionUSD,
-				thinkingCacheUSD:            item.ThinkingCachePerMillionUSD,
-				thinkingCreateCacheUSD:      item.ThinkingCreateCachePerMillionUSD,
-				thinkingImageInputUSD:       item.ThinkingImageInputPerMillionUSD,
-				multiInputOutputUSD:         item.MultiInputOutputPerMillionUSD,
-				thinkingMultiInputOutputUSD: item.ThinkingMultiInputOutputPerMillionUSD,
+				inputUSD: moneyFloatPtr(item.InputPerMillionUSD), outputUSD: moneyFloatPtr(item.OutputPerMillionUSD),
+				cacheUSD: moneyFloatPtr(item.CachePerMillionUSD), cacheWriteUSD: moneyFloatPtr(item.CreateCachePerMillionUSD),
+				audioInputUSD: moneyFloatPtr(item.AudioInputPerMillionUSD), audioOutputUSD: moneyFloatPtr(item.AudioOutputPerMillionUSD),
+				imageInputUSD:               moneyFloatPtr(item.ImageInputPerMillionUSD),
+				thinkingInputUSD:            moneyFloatPtr(item.ThinkingInputPerMillionUSD),
+				thinkingOutputUSD:           moneyFloatPtr(item.ThinkingOutputPerMillionUSD),
+				thinkingCacheUSD:            moneyFloatPtr(item.ThinkingCachePerMillionUSD),
+				thinkingCreateCacheUSD:      moneyFloatPtr(item.ThinkingCreateCachePerMillionUSD),
+				thinkingImageInputUSD:       moneyFloatPtr(item.ThinkingImageInputPerMillionUSD),
+				multiInputOutputUSD:         moneyFloatPtr(item.MultiInputOutputPerMillionUSD),
+				thinkingMultiInputOutputUSD: moneyFloatPtr(item.ThinkingMultiInputOutputPerMillionUSD),
 				unit:                        item.Unit,
 			})
 		}
@@ -1346,43 +1399,84 @@ func resolveBatchBasePrice(row model.ChannelModelPricing, basis string) (batchBa
 	return batchBasePrice{}, "no absolute official price and no usable upstream ratio"
 }
 
+// resolveBatchDiscountPlusOfficialBase resolves the official half of a
+// discount-plus rule from the same normalized row as the channel price.
+// UterRoute stores absolute reference tiers for ratio-derived and historical
+// prices together with a channel discount; the pricing page already shows
+// those tiers as the model's official reference, so discount plus must use the
+// same amounts instead of skipping the model. Rows from other providers keep
+// the strict official-only guard: a bare quote or estimated ratio is not a
+// vendor list price and must stay in review.
+func resolveBatchDiscountPlusOfficialBase(row model.ChannelModelPricing) (batchBasePrice, string) {
+	base, reason := resolveBatchBasePrice(row, BatchPricingBasisOfficial)
+	if reason == "" {
+		return base, ""
+	}
+	var official model.ChannelOfficialPricing
+	if strings.TrimSpace(row.NormalizedPricing) == "" ||
+		common.UnmarshalJsonStr(row.NormalizedPricing, &official) != nil {
+		return batchBasePrice{}, reason
+	}
+	if !strings.HasPrefix(strings.ToLower(strings.TrimSpace(row.PricingSource)), "uterroute-") {
+		return batchBasePrice{}, reason
+	}
+	switch official.PriceKind {
+	case "RATIO_ONLY", "HISTORICAL_SNAPSHOT", "DERIVED_FROM_RATIOS":
+	default:
+		return batchBasePrice{}, reason
+	}
+	if len(official.Tiers) == 0 {
+		return batchBasePrice{}, reason
+	}
+	if len(official.Tiers) > 1 {
+		return batchBasePrice{}, "multiple official price tiers require review"
+	}
+	if official.ChannelPrice == nil && len(official.ChannelPriceTiers) == 0 {
+		return batchBasePrice{}, "discount plus needs a channel price on this reference row"
+	}
+	if official.DiscountRatio == nil || *official.DiscountRatio <= 0 {
+		return batchBasePrice{}, "discount plus needs a channel discount ratio on this reference row"
+	}
+	return batchBaseFromTier(official.Tiers[0])
+}
+
 // batchBaseFromTier converts one normalized price tier without flattening or
 // guessing: a shape it cannot express exactly is reported for review.
 func batchBaseFromTier(tier model.ChannelPricingTier) (batchBasePrice, string) {
 	switch tier.Unit {
 	case "per_second":
-		if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
-			return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: tier.PerUnitUSD}, ""
+		if tier.PerUnitUSD != nil && tier.PerUnitUSD.Decimal().IsPositive() {
+			return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: moneyFloatPtr(tier.PerUnitUSD)}, ""
 		}
 		return batchBasePrice{}, "per-second price is missing"
 	case "per_minute":
-		if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
-			return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: tier.PerUnitUSD}, ""
+		if tier.PerUnitUSD != nil && tier.PerUnitUSD.Decimal().IsPositive() {
+			return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: moneyFloatPtr(tier.PerUnitUSD)}, ""
 		}
 		return batchBasePrice{}, "per-minute price is missing"
 	}
 	if tier.InputPerMillionUSD != nil && tier.PerUnitUSD != nil {
 		return batchBasePrice{}, "ambiguous price shape requires review"
 	}
-	if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
-		base := batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, inputUSD: tier.InputPerMillionUSD}
-		base.outputUSD = tier.OutputPerMillionUSD
-		base.cacheUSD = tier.CachePerMillionUSD
-		base.cacheWriteUSD = tier.CreateCachePerMillionUSD
-		base.audioInputUSD = tier.AudioInputPerMillionUSD
-		base.audioOutputUSD = tier.AudioOutputPerMillionUSD
-		base.imageInputUSD = tier.ImageInputPerMillionUSD
-		base.thinkingInputUSD = tier.ThinkingInputPerMillionUSD
-		base.thinkingOutputUSD = tier.ThinkingOutputPerMillionUSD
-		base.thinkingCacheUSD = tier.ThinkingCachePerMillionUSD
-		base.thinkingCreateCacheUSD = tier.ThinkingCreateCachePerMillionUSD
-		base.thinkingImageInputUSD = tier.ThinkingImageInputPerMillionUSD
-		base.multiInputOutputUSD = tier.MultiInputOutputPerMillionUSD
-		base.thinkingMultiInputOutputUSD = tier.ThinkingMultiInputOutputPerMillionUSD
+	if tier.InputPerMillionUSD != nil && tier.InputPerMillionUSD.Decimal().IsPositive() {
+		base := batchBasePrice{mode: model.ChannelPricingModePerMillionTokens, inputUSD: moneyFloatPtr(tier.InputPerMillionUSD)}
+		base.outputUSD = moneyFloatPtr(tier.OutputPerMillionUSD)
+		base.cacheUSD = moneyFloatPtr(tier.CachePerMillionUSD)
+		base.cacheWriteUSD = moneyFloatPtr(tier.CreateCachePerMillionUSD)
+		base.audioInputUSD = moneyFloatPtr(tier.AudioInputPerMillionUSD)
+		base.audioOutputUSD = moneyFloatPtr(tier.AudioOutputPerMillionUSD)
+		base.imageInputUSD = moneyFloatPtr(tier.ImageInputPerMillionUSD)
+		base.thinkingInputUSD = moneyFloatPtr(tier.ThinkingInputPerMillionUSD)
+		base.thinkingOutputUSD = moneyFloatPtr(tier.ThinkingOutputPerMillionUSD)
+		base.thinkingCacheUSD = moneyFloatPtr(tier.ThinkingCachePerMillionUSD)
+		base.thinkingCreateCacheUSD = moneyFloatPtr(tier.ThinkingCreateCachePerMillionUSD)
+		base.thinkingImageInputUSD = moneyFloatPtr(tier.ThinkingImageInputPerMillionUSD)
+		base.multiInputOutputUSD = moneyFloatPtr(tier.MultiInputOutputPerMillionUSD)
+		base.thinkingMultiInputOutputUSD = moneyFloatPtr(tier.ThinkingMultiInputOutputPerMillionUSD)
 		return base, ""
 	}
-	if tier.PerUnitUSD != nil && *tier.PerUnitUSD > 0 {
-		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: tier.PerUnitUSD}, ""
+	if tier.PerUnitUSD != nil && tier.PerUnitUSD.Decimal().IsPositive() {
+		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: moneyFloatPtr(tier.PerUnitUSD)}, ""
 	}
 	return batchBasePrice{}, "price tier has no usable amount"
 }
@@ -1404,17 +1498,17 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 			tiers = append(tiers, batchBaseTier{
 				name: tier.RangeName, timeBand: tier.TimeBand,
 				minInput: tier.MinInputTokens, maxInput: tier.MaxInputTokens,
-				inputUSD: tier.InputUSDPerMillion, outputUSD: tier.OutputUSDPerMillion,
-				cacheUSD: tier.CacheUSDPerMillion, cacheWriteUSD: tier.CreateCacheUSDPerMillion,
-				audioInputUSD: tier.AudioInputUSDPerMillion, audioOutputUSD: tier.AudioOutputUSDPerMillion,
-				imageInputUSD:               tier.ImageInputUSDPerMillion,
-				thinkingInputUSD:            tier.ThinkingInputUSDPerMillion,
-				thinkingOutputUSD:           tier.ThinkingOutputUSDPerMillion,
-				thinkingCacheUSD:            tier.ThinkingCacheUSDPerMillion,
-				thinkingCreateCacheUSD:      tier.ThinkingCreateCacheUSDPerMillion,
-				thinkingImageInputUSD:       tier.ThinkingImageInputUSDPerMillion,
-				multiInputOutputUSD:         tier.MultiInputOutputUSDPerMillion,
-				thinkingMultiInputOutputUSD: tier.ThinkingMultiInputOutputUSDPerMillion,
+				inputUSD: moneyFloatPtr(tier.InputUSDPerMillion), outputUSD: moneyFloatPtr(tier.OutputUSDPerMillion),
+				cacheUSD: moneyFloatPtr(tier.CacheUSDPerMillion), cacheWriteUSD: moneyFloatPtr(tier.CreateCacheUSDPerMillion),
+				audioInputUSD: moneyFloatPtr(tier.AudioInputUSDPerMillion), audioOutputUSD: moneyFloatPtr(tier.AudioOutputUSDPerMillion),
+				imageInputUSD:               moneyFloatPtr(tier.ImageInputUSDPerMillion),
+				thinkingInputUSD:            moneyFloatPtr(tier.ThinkingInputUSDPerMillion),
+				thinkingOutputUSD:           moneyFloatPtr(tier.ThinkingOutputUSDPerMillion),
+				thinkingCacheUSD:            moneyFloatPtr(tier.ThinkingCacheUSDPerMillion),
+				thinkingCreateCacheUSD:      moneyFloatPtr(tier.ThinkingCreateCacheUSDPerMillion),
+				thinkingImageInputUSD:       moneyFloatPtr(tier.ThinkingImageInputUSDPerMillion),
+				multiInputOutputUSD:         moneyFloatPtr(tier.MultiInputOutputUSDPerMillion),
+				thinkingMultiInputOutputUSD: moneyFloatPtr(tier.ThinkingMultiInputOutputUSDPerMillion),
 				unit:                        tier.Unit,
 			})
 		}
@@ -1422,52 +1516,52 @@ func resolveCurrentBatchBasePrice(row model.ChannelModelPricing) (batchBasePrice
 	}
 	switch internal.Mode {
 	case model.ChannelPricingModePerMillionTokens:
-		if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 {
+		if internal.InputUSDPerMillion == nil || !internal.InputUSDPerMillion.Decimal().IsPositive() {
 			return batchBasePrice{}, "current channel price has no token input price"
 		}
-		audioInput := internal.AudioInputUSDPerMillion
+		audioInput := moneyFloatPtr(internal.AudioInputUSDPerMillion)
 		if audioInput == nil && internal.AudioRatio != nil && *internal.AudioRatio > 0 &&
 			internal.InputUSDPerMillion != nil {
-			derived := *internal.AudioRatio * *internal.InputUSDPerMillion
+			derived := *internal.AudioRatio * internal.InputUSDPerMillion.Float64()
 			audioInput = &derived
 		}
-		audioOutput := internal.AudioOutputUSDPerMillion
+		audioOutput := moneyFloatPtr(internal.AudioOutputUSDPerMillion)
 		if audioOutput == nil && internal.AudioCompletionRatio != nil && *internal.AudioCompletionRatio > 0 &&
 			internal.OutputUSDPerMillion != nil {
-			derived := *internal.AudioCompletionRatio * *internal.OutputUSDPerMillion
+			derived := *internal.AudioCompletionRatio * internal.OutputUSDPerMillion.Float64()
 			audioOutput = &derived
 		}
 		return batchBasePrice{
 			mode:          model.ChannelPricingModePerMillionTokens,
-			inputUSD:      internal.InputUSDPerMillion,
-			outputUSD:     internal.OutputUSDPerMillion,
-			cacheUSD:      internal.CacheUSDPerMillion,
-			cacheWriteUSD: internal.CreateCacheUSDPerMillion,
+			inputUSD:      moneyFloatPtr(internal.InputUSDPerMillion),
+			outputUSD:     moneyFloatPtr(internal.OutputUSDPerMillion),
+			cacheUSD:      moneyFloatPtr(internal.CacheUSDPerMillion),
+			cacheWriteUSD: moneyFloatPtr(internal.CreateCacheUSDPerMillion),
 			audioInputUSD: audioInput, audioOutputUSD: audioOutput,
-			imageInputUSD:               internal.ImageInputUSDPerMillion,
-			thinkingInputUSD:            internal.ThinkingInputUSDPerMillion,
-			thinkingOutputUSD:           internal.ThinkingOutputUSDPerMillion,
-			thinkingCacheUSD:            internal.ThinkingCacheUSDPerMillion,
-			thinkingCreateCacheUSD:      internal.ThinkingCreateCacheUSDPerMillion,
-			thinkingImageInputUSD:       internal.ThinkingImageInputUSDPerMillion,
-			multiInputOutputUSD:         internal.MultiInputOutputUSDPerMillion,
-			thinkingMultiInputOutputUSD: internal.ThinkingMultiInputOutputUSDPerMillion,
+			imageInputUSD:               moneyFloatPtr(internal.ImageInputUSDPerMillion),
+			thinkingInputUSD:            moneyFloatPtr(internal.ThinkingInputUSDPerMillion),
+			thinkingOutputUSD:           moneyFloatPtr(internal.ThinkingOutputUSDPerMillion),
+			thinkingCacheUSD:            moneyFloatPtr(internal.ThinkingCacheUSDPerMillion),
+			thinkingCreateCacheUSD:      moneyFloatPtr(internal.ThinkingCreateCacheUSDPerMillion),
+			thinkingImageInputUSD:       moneyFloatPtr(internal.ThinkingImageInputUSDPerMillion),
+			multiInputOutputUSD:         moneyFloatPtr(internal.MultiInputOutputUSDPerMillion),
+			thinkingMultiInputOutputUSD: moneyFloatPtr(internal.ThinkingMultiInputOutputUSDPerMillion),
 		}, ""
 	case model.ChannelPricingModePerCall:
 		if internal.PerCallUSD == nil {
 			return batchBasePrice{}, "current channel price has no per-call price"
 		}
-		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: internal.PerCallUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerCall, perCallUSD: moneyFloatPtr(internal.PerCallUSD)}, ""
 	case model.ChannelPricingModePerSecond:
 		if internal.PerSecondUSD == nil {
 			return batchBasePrice{}, "current channel price has no per-second price"
 		}
-		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: internal.PerSecondUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerSecond, perSecondUSD: moneyFloatPtr(internal.PerSecondUSD)}, ""
 	case model.ChannelPricingModePerMinute:
 		if internal.PerMinuteUSD == nil {
 			return batchBasePrice{}, "current channel price has no per-minute price"
 		}
-		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: internal.PerMinuteUSD}, ""
+		return batchBasePrice{mode: model.ChannelPricingModePerMinute, perMinuteUSD: moneyFloatPtr(internal.PerMinuteUSD)}, ""
 	case model.ChannelPricingModeTieredExpr:
 		if strings.TrimSpace(internal.BillingExpr) == "" {
 			return batchBasePrice{}, "current channel price has no billing expression"
@@ -1512,7 +1606,7 @@ func pricingModeForUnit(unit string) string {
 // purchase price.
 func resolvePurchasePrimaryPrice(row model.ChannelModelPricing) *float64 {
 	if primary := model.PurchaseCostPrimaryUSD(row.PurchasePricing); primary != nil {
-		return primary
+		return moneyFloatPtr(primary)
 	}
 	raw := strings.TrimSpace(row.NormalizedPricing)
 	if raw == "" {
@@ -1523,15 +1617,15 @@ func resolvePurchasePrimaryPrice(row model.ChannelModelPricing) *float64 {
 		tier := *official.ChannelPrice
 		mode := pricingModeForUnit(tier.Unit)
 		if mode == model.ChannelPricingModePerMillionTokens {
-			return primaryBatchPrice(mode, tier.InputPerMillionUSD, nil, nil, nil)
+			return primaryBatchPrice(mode, moneyFloatPtr(tier.InputPerMillionUSD), nil, nil, nil)
 		}
 		if mode == model.ChannelPricingModePerSecond {
-			return primaryBatchPrice(mode, nil, nil, tier.PerUnitUSD, nil)
+			return primaryBatchPrice(mode, nil, nil, moneyFloatPtr(tier.PerUnitUSD), nil)
 		}
 		if mode == model.ChannelPricingModePerMinute {
-			return primaryBatchPrice(mode, nil, nil, nil, tier.PerUnitUSD)
+			return primaryBatchPrice(mode, nil, nil, nil, moneyFloatPtr(tier.PerUnitUSD))
 		}
-		return primaryBatchPrice(mode, nil, tier.PerUnitUSD, nil, nil)
+		return primaryBatchPrice(mode, nil, moneyFloatPtr(tier.PerUnitUSD), nil, nil)
 	}
 	var uterRoute UterRouteNormalizedPricing
 	if err := common.UnmarshalJsonStr(raw, &uterRoute); err != nil {
@@ -1556,7 +1650,7 @@ func resolveCurrentPrimaryPrice(row model.ChannelModelPricing) *float64 {
 	if err := common.UnmarshalJsonStr(raw, &internal); err != nil {
 		return nil
 	}
-	return primaryBatchPrice(internal.Mode, internal.InputUSDPerMillion, internal.PerCallUSD, internal.PerSecondUSD, internal.PerMinuteUSD)
+	return primaryBatchPrice(internal.Mode, moneyFloatPtr(internal.InputUSDPerMillion), moneyFloatPtr(internal.PerCallUSD), moneyFloatPtr(internal.PerSecondUSD), moneyFloatPtr(internal.PerMinuteUSD))
 }
 
 func annotateBatchMargin(item *BatchPricingItem) {

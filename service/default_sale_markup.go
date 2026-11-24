@@ -37,7 +37,7 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 	if pricing == nil {
 		return false
 	}
-	for _, value := range []**float64{
+	for _, value := range []**model.Money{
 		&pricing.InputUSDPerMillion, &pricing.OutputUSDPerMillion,
 		&pricing.CacheUSDPerMillion, &pricing.CreateCacheUSDPerMillion,
 		&pricing.AudioInputUSDPerMillion, &pricing.AudioOutputUSDPerMillion,
@@ -48,13 +48,14 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 		&pricing.PerCallUSD, &pricing.PerSecondUSD, &pricing.PerMinuteUSD,
 	} {
 		if *value != nil {
-			scaled := **value * DefaultUterSaleMarkup
-			*value = &scaled
+			scaled := **value
+			next := model.MoneyFromFloat(scaled.Float64() * DefaultUterSaleMarkup)
+			*value = &next
 		}
 	}
 	for i := range pricing.Tiers {
 		tier := &pricing.Tiers[i]
-		for _, value := range []**float64{
+		for _, value := range []**model.Money{
 			&tier.InputUSDPerMillion, &tier.OutputUSDPerMillion,
 			&tier.CacheUSDPerMillion, &tier.CreateCacheUSDPerMillion,
 			&tier.AudioInputUSDPerMillion, &tier.AudioOutputUSDPerMillion,
@@ -64,8 +65,8 @@ func applyDefaultSaleMarkup(pricing *model.ChannelInternalPricing) bool {
 			&tier.MultiInputOutputUSDPerMillion, &tier.ThinkingMultiInputOutputUSDPerMillion,
 		} {
 			if *value != nil {
-				scaled := **value * DefaultUterSaleMarkup
-				*value = &scaled
+				next := model.MoneyFromFloat((**value).Float64() * DefaultUterSaleMarkup)
+				*value = &next
 			}
 		}
 	}

@@ -32,8 +32,8 @@ func batchOfficialRecord(channelID int, modelName string) model.ChannelOfficialP
 		Unit:     "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
 			RangeName:           "Default",
-			InputPerMillionUSD:  &input,
-			OutputPerMillionUSD: &output,
+			InputPerMillionUSD:  model.MoneyFromFloatPtr(&input),
+			OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 			Unit:                "per_1m_token",
 		}},
 	}
@@ -122,7 +122,7 @@ func TestApplyChannelBatchPricingSupportsPerSecondAndCurrentBasis(t *testing.T) 
 		Currency: "USD",
 		Unit:     "per_second",
 		Tiers: []model.ChannelPricingTier{{
-			RangeName: "video", PerUnitUSD: &perSecond, Unit: "per_second",
+			RangeName: "video", PerUnitUSD: model.MoneyFromFloatPtr(&perSecond), Unit: "per_second",
 		}},
 	})
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
@@ -185,8 +185,8 @@ func TestApplyChannelBatchPricingTargetsSelectedDimensions(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
 	require.NotNil(t, internal.InputUSDPerMillion)
 	require.NotNil(t, internal.OutputUSDPerMillion)
-	assert.InDelta(t, 1.5, *internal.InputUSDPerMillion, 1e-9)
-	assert.InDelta(t, 6.0, *internal.OutputUSDPerMillion, 1e-9, "output must stay at the base price")
+	assert.InDelta(t, 1.5, internal.InputUSDPerMillion.Float64(), 1e-9)
+	assert.InDelta(t, 6.0, internal.OutputUSDPerMillion.Float64(), 1e-9, "output must stay at the base price")
 	assert.Contains(t, internal.Note, "base 3.0000", "the applied base must be auditable")
 
 	_, err = ApplyChannelBatchPricingWithOptions(31, BatchPricingOptions{
@@ -204,10 +204,10 @@ func TestApplyChannelBatchPricingReportsMarginAndChange(t *testing.T) {
 		Currency: "USD",
 		Unit:     "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
-			RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token",
+			RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output), Unit: "per_1m_token",
 		}},
 		ChannelPrice: &model.ChannelPricingTier{
-			RangeName: "channel", InputPerMillionUSD: &purchaseInput, OutputPerMillionUSD: &purchaseOutput, Unit: "per_1m_token",
+			RangeName: "channel", InputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseOutput), Unit: "per_1m_token",
 		},
 	})
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
@@ -216,7 +216,7 @@ func TestApplyChannelBatchPricingReportsMarginAndChange(t *testing.T) {
 	}})
 	require.NoError(t, err)
 	require.NoError(t, model.SetChannelInternalPricing(21, "gpt-margin", model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&input), OutputUSDPerMillion: model.MoneyFromFloatPtr(&output),
 		Note: "batch: seed", Source: "batch",
 	}))
 
@@ -309,7 +309,7 @@ func TestApplyChannelBatchPricingHonorsCategoryAndManualPriority(t *testing.T) {
 	// A hand-edited price outranks a later batch rule.
 	input, output := 1.25, 2.5
 	require.NoError(t, model.SetChannelInternalPricing(4, "gpt-chat", model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&input), OutputUSDPerMillion: model.MoneyFromFloatPtr(&output),
 	}))
 	_, err = ApplyChannelBatchPricingWithOptions(4, BatchPricingOptions{
 		Basis: BatchPricingBasisOfficial, Mode: BatchPricingModeDiscount, Value: 0.5,
@@ -337,7 +337,7 @@ func TestApplyChannelBatchPricingSupportsPerMinute(t *testing.T) {
 		Currency: "USD",
 		Unit:     "per_minute",
 		Tiers: []model.ChannelPricingTier{{
-			RangeName: "Default", Unit: "per_minute", PerUnitUSD: &perMinute,
+			RangeName: "Default", Unit: "per_minute", PerUnitUSD: model.MoneyFromFloatPtr(&perMinute),
 		}},
 	})
 	require.NoError(t, err)
@@ -369,8 +369,8 @@ func seedMarginRow(t *testing.T, channelID int, modelName string, purchase, sale
 		Unit:     "per_1m_token",
 		ChannelPrice: &model.ChannelPricingTier{
 			RangeName: "Default", Unit: "per_1m_token",
-			InputPerMillionUSD: &pInput, OutputPerMillionUSD: &pOutput,
-			CachePerMillionUSD: &pCache, CreateCachePerMillionUSD: &pCacheWrite,
+			InputPerMillionUSD: model.MoneyFromFloatPtr(&pInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&pOutput),
+			CachePerMillionUSD: model.MoneyFromFloatPtr(&pCache), CreateCachePerMillionUSD: model.MoneyFromFloatPtr(&pCacheWrite),
 		},
 	}
 	encoded, _ := common.Marshal(normalized)
@@ -385,8 +385,8 @@ func seedMarginRow(t *testing.T, channelID int, modelName string, purchase, sale
 		ChannelId: channelID, Provider: "test", ModelName: modelName,
 	}, model.ChannelInternalPricing{
 		Mode:               model.ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &sInput, OutputUSDPerMillion: &sOutput,
-		CacheUSDPerMillion: &sCache, CreateCacheUSDPerMillion: &sCacheWrite,
+		InputUSDPerMillion: model.MoneyFromFloatPtr(&sInput), OutputUSDPerMillion: model.MoneyFromFloatPtr(&sOutput),
+		CacheUSDPerMillion: model.MoneyFromFloatPtr(&sCache), CreateCacheUSDPerMillion: model.MoneyFromFloatPtr(&sCacheWrite),
 		Source: "manual",
 	}))
 }
@@ -506,8 +506,8 @@ func seedTieredSaleRow(t *testing.T, channelID int, modelName string, saleInput 
 		Currency: "USD",
 		Unit:     "per_1m_token",
 		ChannelPriceTiers: []model.ChannelPricingTier{
-			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputPerMillionUSD: &purchaseInput1, OutputPerMillionUSD: &purchaseOutput1},
-			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputPerMillionUSD: &purchaseInput2, OutputPerMillionUSD: &purchaseOutput2},
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseInput1), OutputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseOutput1)},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseInput2), OutputPerMillionUSD: model.MoneyFromFloatPtr(&purchaseOutput2)},
 		},
 	}
 	encoded, _ := common.Marshal(normalized)
@@ -524,8 +524,8 @@ func seedTieredSaleRow(t *testing.T, channelID int, modelName string, saleInput 
 	}, model.ChannelInternalPricing{
 		Mode: model.ChannelPricingModeTieredTable,
 		Tiers: []model.ChannelInternalPricingTier{
-			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputUSDPerMillion: &saleInput[0], OutputUSDPerMillion: &saleOutput1},
-			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputUSDPerMillion: &saleInput[1], OutputUSDPerMillion: &saleOutput2},
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, Unit: "per_1m_token", InputUSDPerMillion: model.MoneyFromFloatPtr(&saleInput[0]), OutputUSDPerMillion: model.MoneyFromFloatPtr(&saleOutput1)},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, Unit: "per_1m_token", InputUSDPerMillion: model.MoneyFromFloatPtr(&saleInput[1]), OutputUSDPerMillion: model.MoneyFromFloatPtr(&saleOutput2)},
 		},
 		Source: "manual",
 	}))
@@ -555,7 +555,7 @@ func TestBatchPricingScalesTieredSalePrices(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
 	assert.Equal(t, model.ChannelPricingModeTieredTable, internal.Mode)
 	require.Len(t, internal.Tiers, 2)
-	assert.InDelta(t, 1.32, *internal.Tiers[0].InputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 1.32, internal.Tiers[0].InputUSDPerMillion.Float64(), 1e-9)
 
 	effective := model.ResolveEffectiveChannelPricingFor(model.ChannelPricingIdentity{
 		ChannelId: 21, Provider: "test", ModelName: "tiered-model",
@@ -590,8 +590,8 @@ func seedAudioMarginRow(t *testing.T, channelID int, modelName string, saleAudio
 		Unit:     "per_1m_token",
 		ChannelPrice: &model.ChannelPricingTier{
 			RangeName: "Default", Unit: "per_1m_token",
-			InputPerMillionUSD: &pInput, OutputPerMillionUSD: &pOutput,
-			AudioInputPerMillionUSD: &pAudioIn, AudioOutputPerMillionUSD: &pAudioOut,
+			InputPerMillionUSD: model.MoneyFromFloatPtr(&pInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&pOutput),
+			AudioInputPerMillionUSD: model.MoneyFromFloatPtr(&pAudioIn), AudioOutputPerMillionUSD: model.MoneyFromFloatPtr(&pAudioOut),
 		},
 	}
 	encoded, _ := common.Marshal(normalized)
@@ -608,8 +608,8 @@ func seedAudioMarginRow(t *testing.T, channelID int, modelName string, saleAudio
 		ChannelId: channelID, Provider: "test", ModelName: modelName,
 	}, model.ChannelInternalPricing{
 		Mode:               model.ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &sInput, OutputUSDPerMillion: &sOutput,
-		AudioInputUSDPerMillion: &saleAudio, AudioOutputUSDPerMillion: &sAudioOut,
+		InputUSDPerMillion: model.MoneyFromFloatPtr(&sInput), OutputUSDPerMillion: model.MoneyFromFloatPtr(&sOutput),
+		AudioInputUSDPerMillion: model.MoneyFromFloatPtr(&saleAudio), AudioOutputUSDPerMillion: model.MoneyFromFloatPtr(&sAudioOut),
 		Source: "manual",
 	}))
 }
@@ -660,8 +660,8 @@ func TestBatchPricingScalesThinkingAndImageDimensions(t *testing.T) {
 	normalized := model.ChannelOfficialPricing{
 		Currency: "USD", Unit: "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
-			RangeName: "Default", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
-			ImageInputPerMillionUSD: &image, ThinkingOutputPerMillionUSD: &thinkingOut,
+			RangeName: "Default", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
+			ImageInputPerMillionUSD: model.MoneyFromFloatPtr(&image), ThinkingOutputPerMillionUSD: model.MoneyFromFloatPtr(&thinkingOut),
 			Unit: "per_1m_token",
 		}},
 	}
@@ -693,7 +693,7 @@ func TestBatchPricingScalesThinkingAndImageDimensions(t *testing.T) {
 	var internal model.ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
 	require.NotNil(t, internal.ThinkingOutputUSDPerMillion)
-	assert.InDelta(t, 4.5, *internal.ThinkingOutputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 4.5, internal.ThinkingOutputUSDPerMillion.Float64(), 1e-9)
 
 	effective := model.ResolveEffectiveChannelPricingFor(model.ChannelPricingIdentity{
 		ChannelId: 41, Provider: "test", ModelName: "omni-model",
@@ -707,8 +707,8 @@ func TestBatchPricingUsesContractCostAndMarksVerification(t *testing.T) {
 	input, output, quote := 2.0, 4.0, 1.5
 	normalized := model.ChannelOfficialPricing{
 		Currency: "USD", Unit: "per_1m_token",
-		Tiers:        []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token"}},
-		ChannelPrice: &model.ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: &quote, Unit: "per_1m_token"},
+		Tiers:        []model.ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output), Unit: "per_1m_token"}},
+		ChannelPrice: &model.ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: model.MoneyFromFloatPtr(&quote), Unit: "per_1m_token"},
 	}
 	encoded, _ := common.Marshal(normalized)
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
@@ -718,14 +718,14 @@ func TestBatchPricingUsesContractCostAndMarksVerification(t *testing.T) {
 	require.NoError(t, err)
 	identity := model.ChannelPricingIdentity{ChannelId: 51, Provider: "test", ModelName: "contract-model"}
 	require.NoError(t, model.SetChannelInternalPricingFor(identity, model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "manual", UpdatedAt: 2,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: model.MoneyFromFloatPtr(&output), Source: "manual", UpdatedAt: 2,
 	}))
 	contractInput, contractOutput := 1.0, 2.0
 	require.NoError(t, model.SetChannelPurchaseCostFor(identity, model.ChannelPurchaseCost{
 		Pricing: model.ChannelInternalPricing{
 			Mode:               model.ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion: &contractInput, OutputUSDPerMillion: &contractOutput,
+			InputUSDPerMillion: model.MoneyFromFloatPtr(&contractInput), OutputUSDPerMillion: model.MoneyFromFloatPtr(&contractOutput),
 		},
 		Verified: true, Source: "contract",
 	}))
@@ -749,7 +749,7 @@ func TestBatchPricingUsesContractCostAndMarksVerification(t *testing.T) {
 	require.NoError(t, model.SetChannelPurchaseCostFor(identity, model.ChannelPurchaseCost{
 		Pricing: model.ChannelInternalPricing{
 			Mode:               model.ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion: &contractInput, OutputUSDPerMillion: &contractOutput,
+			InputUSDPerMillion: model.MoneyFromFloatPtr(&contractInput), OutputUSDPerMillion: model.MoneyFromFloatPtr(&contractOutput),
 		},
 		Verified: false, Source: "draft",
 	}))
@@ -886,15 +886,15 @@ func TestBatchPricingThreeTierMarginBoundaries(t *testing.T) {
 		inputSale, outputSale := sale[i], sale[i]*4
 		officialTiers = append(officialTiers, model.ChannelPricingTier{
 			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
-			Unit: "per_1m_token", InputPerMillionUSD: &inputPurchase, OutputPerMillionUSD: &outputPurchase,
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&inputPurchase), OutputPerMillionUSD: model.MoneyFromFloatPtr(&outputPurchase),
 		})
 		saleTiers = append(saleTiers, model.ChannelInternalPricingTier{
 			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
-			Unit: "per_1m_token", InputUSDPerMillion: &inputSale, OutputUSDPerMillion: &outputSale,
+			Unit: "per_1m_token", InputUSDPerMillion: model.MoneyFromFloatPtr(&inputSale), OutputUSDPerMillion: model.MoneyFromFloatPtr(&outputSale),
 		})
 		purchaseTiers = append(purchaseTiers, model.ChannelInternalPricingTier{
 			RangeName: band.name, MinInputTokens: band.min, MaxInputTokens: band.max,
-			Unit: "per_1m_token", InputUSDPerMillion: &inputPurchase, OutputUSDPerMillion: &outputPurchase,
+			Unit: "per_1m_token", InputUSDPerMillion: model.MoneyFromFloatPtr(&inputPurchase), OutputUSDPerMillion: model.MoneyFromFloatPtr(&outputPurchase),
 		})
 	}
 	encoded, err := common.Marshal(model.ChannelOfficialPricing{Currency: "USD", Unit: "per_1m_token", ChannelPriceTiers: officialTiers})
@@ -952,7 +952,7 @@ func TestBatchPricingThreeTierMarginBoundaries(t *testing.T) {
 	var internal model.ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
 	require.Len(t, internal.Tiers, 3)
-	assert.InDelta(t, 1.5, *internal.Tiers[0].InputUSDPerMillion, 1e-9, "blocked batch must not write")
+	assert.InDelta(t, 1.5, internal.Tiers[0].InputUSDPerMillion.Float64(), 1e-9, "blocked batch must not write")
 }
 
 func TestApplyChannelBatchPricingDiscountPlusAddsOfficialPoints(t *testing.T) {
@@ -964,14 +964,14 @@ func TestApplyChannelBatchPricingDiscountPlusAddsOfficialPoints(t *testing.T) {
 		Unit:     "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
 			RangeName:           "Default",
-			InputPerMillionUSD:  &input,
-			OutputPerMillionUSD: &output,
+			InputPerMillionUSD:  model.MoneyFromFloatPtr(&input),
+			OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 			Unit:                "per_1m_token",
 		}},
 		ChannelPrice: &model.ChannelPricingTier{
 			RangeName:           "Default",
-			InputPerMillionUSD:  &channelInput,
-			OutputPerMillionUSD: &channelOutput,
+			InputPerMillionUSD:  model.MoneyFromFloatPtr(&channelInput),
+			OutputPerMillionUSD: model.MoneyFromFloatPtr(&channelOutput),
 			Unit:                "per_1m_token",
 		},
 	}
@@ -980,8 +980,8 @@ func TestApplyChannelBatchPricingDiscountPlusAddsOfficialPoints(t *testing.T) {
 		Unit:     "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
 			RangeName:           "Default",
-			InputPerMillionUSD:  &input,
-			OutputPerMillionUSD: &output,
+			InputPerMillionUSD:  model.MoneyFromFloatPtr(&input),
+			OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 			Unit:                "per_1m_token",
 		}},
 	}
@@ -1019,6 +1019,139 @@ func TestApplyChannelBatchPricingDiscountPlusAddsOfficialPoints(t *testing.T) {
 	if _, ok := model.ResolveChannelBillingPricing(7, "gpt-official-only"); ok {
 		t.Fatal("model without a channel price must stay unbillable")
 	}
+}
+
+func TestApplyChannelBatchPricingDiscountPlusScalesBillingExpression(t *testing.T) {
+	setupBatchPricingDB(t)
+	discount := 0.6
+	expr := `tier("base", p * 5 + c * 25 + cr * 0.5 + img * 8)`
+	withRatio := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "expression", PriceKind: "BILLING_EXPRESSION",
+		BillingExpr: expr, ExpressionStatus: "EXECUTABLE", DiscountRatio: &discount,
+	}
+	withoutRatio := withRatio
+	withoutRatio.DiscountRatio = nil
+	encodedWith, err := common.Marshal(withRatio)
+	require.NoError(t, err)
+	encodedWithout, err := common.Marshal(withoutRatio)
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{
+		{ChannelId: 11, Provider: "uterroute", ModelName: "expr-plus", Currency: "USD",
+			OfficialPricing: `{}`, NormalizedPricing: string(encodedWith), Source: "uterroute-official", FetchedAt: 100},
+		{ChannelId: 11, Provider: "uterroute", ModelName: "expr-no-ratio", Currency: "USD",
+			OfficialPricing: `{}`, NormalizedPricing: string(encodedWithout), Source: "uterroute-official", FetchedAt: 100},
+	})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Len(t, preview.Items, 1, "a priced expression must not be skipped just because it is not a flat amount")
+	require.Len(t, preview.Skipped, 1)
+	assert.Equal(t, "expr-no-ratio", preview.Skipped[0].ModelName)
+	assert.Contains(t, preview.Skipped[0].Reason, "channel discount ratio")
+	// Channel 0.6 + 0.1 points of the official rule = 0.7 of every coefficient.
+	assert.Contains(t, preview.Items[0].BillingExpr, "p * 3.5")
+	assert.Contains(t, preview.Items[0].BillingExpr, "c * 17.5")
+	assert.Contains(t, preview.Items[0].BillingExpr, "cr * 0.35")
+	assert.Contains(t, preview.Items[0].BillingExpr, "img * 5.6")
+
+	applied, err := ApplyChannelBatchPricingWithOptions(11, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 1, applied.Updated)
+	pricing, ok := model.ResolveChannelBillingPricing(11, "expr-plus")
+	require.True(t, ok, "the discounted expression must become billable")
+	require.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
+	assert.Contains(t, pricing.BillingExpr, "img * 5.6")
+	if _, ok := model.ResolveChannelBillingPricing(11, "expr-no-ratio"); ok {
+		t.Fatal("an expression without a channel discount ratio must not be priced by guessing")
+	}
+}
+
+func TestApplyChannelBatchPricingDiscountPlusUsesUterRouteReferenceTiers(t *testing.T) {
+	setupBatchPricingDB(t)
+	for _, kind := range []string{"RATIO_ONLY", "HISTORICAL_SNAPSHOT", "DERIVED_FROM_RATIOS"} {
+		t.Run(kind, func(t *testing.T) {
+			setupBatchPricingDB(t)
+			input, output, zero := 10.0, 20.0, 0.0
+			channelInput, channelOutput := 6.0, 12.0
+			discount := 0.6
+			normalized := model.ChannelOfficialPricing{
+				Currency: "USD", Unit: "per_1m_token", PriceKind: kind,
+				Source:        "uterroute-ratio-reference",
+				DiscountRatio: &discount,
+				Tiers: []model.ChannelPricingTier{{
+					RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&input),
+					OutputPerMillionUSD: model.MoneyFromFloatPtr(&output), CachePerMillionUSD: model.MoneyFromFloatPtr(&zero), Unit: "per_1m_token",
+				}},
+				ChannelPrice: &model.ChannelPricingTier{
+					RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&channelInput),
+					OutputPerMillionUSD: model.MoneyFromFloatPtr(&channelOutput), CachePerMillionUSD: model.MoneyFromFloatPtr(&zero), Unit: "per_1m_token",
+				},
+			}
+			encoded, err := common.Marshal(normalized)
+			require.NoError(t, err)
+			_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+				ChannelId: 12, Provider: "uterroute", ModelName: "reference-plus", Currency: "USD",
+				OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "uterroute-official", FetchedAt: 100,
+			}})
+			require.NoError(t, err)
+
+			preview, err := ApplyChannelBatchPricingWithOptions(12, BatchPricingOptions{
+				Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1, DryRun: true,
+			})
+			require.NoError(t, err)
+			require.Empty(t, preview.Skipped)
+			require.Len(t, preview.Items, 1)
+			assert.InDelta(t, 7.0, *preview.Items[0].InputUSD, 1e-9)
+			assert.InDelta(t, 14.0, *preview.Items[0].OutputUSD, 1e-9)
+			require.NotNil(t, preview.Items[0].CacheUSD, "a zero-priced dimension must stay in the stored price record")
+			assert.Zero(t, *preview.Items[0].CacheUSD)
+
+			applied, err := ApplyChannelBatchPricingWithOptions(12, BatchPricingOptions{
+				Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1,
+			})
+			require.NoError(t, err)
+			assert.Equal(t, 1, applied.Updated)
+			pricing, ok := model.ResolveChannelBillingPricing(12, "reference-plus")
+			require.True(t, ok)
+			assert.InDelta(t, 3.5, pricing.ModelRatio, 1e-9)
+		})
+	}
+}
+
+func TestApplyChannelBatchPricingDiscountPlusKeepsStrictOfficialGuard(t *testing.T) {
+	setupBatchPricingDB(t)
+	input, channelInput := 10.0, 6.0
+	discount := 0.6
+	normalized := model.ChannelOfficialPricing{
+		Currency: "USD", Unit: "per_1m_token", PriceKind: "RATIO_ONLY",
+		DiscountRatio: &discount,
+		Tiers: []model.ChannelPricingTier{{
+			RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), Unit: "per_1m_token",
+		}},
+		ChannelPrice: &model.ChannelPricingTier{
+			RangeName: "base", InputPerMillionUSD: model.MoneyFromFloatPtr(&channelInput), Unit: "per_1m_token",
+		},
+	}
+	encoded, err := common.Marshal(normalized)
+	require.NoError(t, err)
+	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
+		ChannelId: 13, Provider: "other", ModelName: "estimated-reference", Currency: "USD",
+		OfficialPricing: `{}`, NormalizedPricing: string(encoded), Source: "other", FetchedAt: 100,
+	}})
+	require.NoError(t, err)
+
+	preview, err := ApplyChannelBatchPricingWithOptions(13, BatchPricingOptions{
+		Basis: BatchPricingBasisChannel, Mode: BatchPricingModeDiscountPlus, Value: 0.1, DryRun: true,
+	})
+	require.NoError(t, err)
+	require.Empty(t, preview.Items)
+	require.Len(t, preview.Skipped, 1)
+	assert.Contains(t, preview.Skipped[0].Reason, "official basis unavailable")
 }
 
 func TestApplyChannelBatchPricingDiscountPlusRejectsCurrentBasisAndTierRules(t *testing.T) {

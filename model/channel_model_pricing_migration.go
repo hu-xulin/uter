@@ -76,3 +76,58 @@ func channelPricingIdentityKeeper(rows []ChannelModelPricing) ChannelModelPricin
 	}
 	return rows[0]
 }
+
+// PrepareChannelModelPricingOwner backfills the explicit ownership column for
+// historical rows. Source labels remain audit data; the resulting owner is the
+// single authority used by sync, review and provider-identity cleanup. Rows with
+// no recognizable automatic source default to OPERATOR so a migration can never
+// make an operator-entered price replaceable.
+func PrepareChannelModelPricingOwner(db *gorm.DB) error {
+	if db == nil || !db.Migrator().HasTable(&ChannelModelPricing{}) {
+		return nil
+	}
+	if !db.Migrator().HasColumn(&ChannelModelPricing{}, "pricing_owner") {
+		if err := db.Migrator().AddColumn(&ChannelModelPricing{}, "PricingOwner"); err != nil {
+			return fmt.Errorf("add pricing_owner column: %w", err)
+		}
+	}
+	type ownerSource struct {
+		Id              int64
+		PricingSource   string
+		InternalPricing string
+	}
+	var rows []ownerSource
+	if err := db.Model(&ChannelModelPricing{}).
+		Where("pricing_owner IS NULL OR pricing_owner = ''").
+		Select("id, pricing_source, internal_pricing").
+		Find(&rows).Error; err != nil {
+		return err
+	}
+	updated := 0
+	for _, row := range rows {
+		owner := PricingOwnerForSource(row.PricingSource)
+		if owner == "" {
+			owner = PricingOwnerForSource(internalPricingSource(row.InternalPricing))
+		}
+		if owner == "" {
+			owner = ChannelPricingOwnerOperator
+		}
+		if err := db.Model(&ChannelModelPricing{}).Where("id = ?", row.Id).
+			UpdateColumn("pricing_owner", owner).Error; err != nil {
+			return err
+		}
+		updated++
+	}
+	const ownerIndex = "idx_channel_model_pricing_pricing_owner"
+	if !db.Migrator().HasIndex(&ChannelModelPricing{}, ownerIndex) {
+		if err := db.Exec(
+			"CREATE INDEX idx_channel_model_pricing_pricing_owner ON channel_model_pricing(pricing_owner)",
+		).Error; err != nil {
+			return fmt.Errorf("create pricing_owner index: %w", err)
+		}
+	}
+	if updated > 0 {
+		common.SysLog(fmt.Sprintf("channel pricing owner migration backfilled %d rows", updated))
+	}
+	return nil
+}

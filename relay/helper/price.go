@@ -55,6 +55,16 @@ func channelPriceIdentityError(c *gin.Context, channelId int, modelName, reason 
 	}))
 }
 
+// relayChannelPricingMode reads the explicit pricing contract attached to the
+// selected channel. A missing ChannelMeta keeps the legacy fallback so old
+// channels are not locked out before the distributor attaches its metadata.
+func relayChannelPricingMode(info *relaycommon.RelayInfo) string {
+	if info == nil || info.ChannelMeta == nil {
+		return ""
+	}
+	return info.ChannelMeta.ChannelOtherSettings.PricingMode
+}
+
 // channelPricingIdentity resolves the request identity without assuming the
 // RelayInfo has a ChannelMeta yet (the distributor may not have attached one on
 // the pre-consume path).
@@ -188,7 +198,7 @@ func ModelPriceHelper(c *gin.Context, info *relaycommon.RelayInfo, promptTokens 
 			}
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
-		if model.ChannelUsesScopedPricing(channelId) {
+		if model.ChannelScopedPricingRequired(channelId, relayChannelPricingMode(info)) {
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {
@@ -411,7 +421,7 @@ func ModelPriceHelperPerCall(c *gin.Context, info *relaycommon.RelayInfo) (hostt
 			}
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
-		if model.ChannelUsesScopedPricing(channelId) {
+		if model.ChannelScopedPricingRequired(channelId, relayChannelPricingMode(info)) {
 			return hosttypes.PriceData{}, channelPriceNotConfiguredError(c, channelId, billingModelName)
 		}
 		if info != nil && info.ChannelMeta != nil && pricing_engine.UsesUpstream(info.ChannelSetting.PricingEngine) {

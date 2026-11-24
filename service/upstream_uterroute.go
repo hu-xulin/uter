@@ -75,6 +75,18 @@ type UpstreamProviderCapabilities struct {
 	DeploymentPricing UpstreamProviderCapability `json:"deployment_pricing"`
 }
 
+
+// floatMoneyPtr converts an upstream float64 price into the exact Money
+// pointer used by stored pricing. Nil stays nil (meaning "no published price").
+func floatMoneyPtr(value *float64) *model.Money {
+	if value == nil {
+		return nil
+	}
+	m := model.MoneyFromFloat(*value)
+	return &m
+}
+
+
 func capability(status UpstreamCapabilityStatus, detail string) UpstreamProviderCapability {
 	return UpstreamProviderCapability{Status: status, Detail: detail}
 }
@@ -500,19 +512,19 @@ func uterRouteChannelInternalPricing(
 	switch {
 	case line.PerSecond:
 		pricing.Mode = model.ChannelPricingModePerSecond
-		pricing.PerSecondUSD = line.Input
+		pricing.PerSecondUSD = floatMoneyPtr(line.Input)
 	case line.PerCall:
 		pricing.Mode = model.ChannelPricingModePerCall
-		pricing.PerCallUSD = line.Input
+		pricing.PerCallUSD = floatMoneyPtr(line.Input)
 	case line.PerImage:
 		pricing.Mode = model.ChannelPricingModePerCall
-		pricing.PerCallUSD = line.Input
+		pricing.PerCallUSD = floatMoneyPtr(line.Input)
 	default:
 		pricing.Mode = model.ChannelPricingModePerMillionTokens
-		pricing.InputUSDPerMillion = line.Input
-		pricing.OutputUSDPerMillion = line.Output
-		pricing.CacheUSDPerMillion = line.CacheRead
-		pricing.CreateCacheUSDPerMillion = line.CacheWrite
+		pricing.InputUSDPerMillion = floatMoneyPtr(line.Input)
+		pricing.OutputUSDPerMillion = floatMoneyPtr(line.Output)
+		pricing.CacheUSDPerMillion = floatMoneyPtr(line.CacheRead)
+		pricing.CreateCacheUSDPerMillion = floatMoneyPtr(line.CacheWrite)
 	}
 	if !applyDefaultSaleMarkup(&pricing) {
 		return "", false
@@ -1010,48 +1022,116 @@ func UterRouteChannelPricingRecords(
 	channelModels []string,
 	billingGroup string,
 ) ([]model.ChannelOfficialPricingRecord, error) {
+	return UterRouteChannelPricingRecordsWithMapping(
+		snapshot, channelID, channelModels, billingGroup, "",
+	)
+}
+
+// UterRouteChannelPricingRecordsWithMapping is the mapping-aware form. After a
+// (batch) redirect the channel's model list holds request names while the
+// upstream catalogue holds raw model names. Matching the two directly drops
+// every redirected model from the pricing table, so the billing readiness panel
+// reports them as "(missing)" even though the upstream publishes a price.
+//
+// Resolve each requested name through model_mapping first, look the catalogue
+// up by the resolved upstream name, and key the stored row by the request name
+// the channel actually serves — that is the name callers bill against.
+func UterRouteChannelPricingRecordsWithMapping(
+	snapshot *UpstreamSnapshot,
+	channelID int,
+	channelModels []string,
+	billingGroup string,
+	modelMapping string,
+) ([]model.ChannelOfficialPricingRecord, error) {
 	if snapshot == nil || channelID <= 0 {
 		return nil, errors.New("uterroute snapshot and channel id are required")
 	}
-	wanted := make(map[string]bool, len(channelModels))
+
+	var mapping map[string]string
+	if strings.TrimSpace(modelMapping) != "" {
+		if err := common.UnmarshalJsonStr(modelMapping, &mapping); err != nil {
+			// A malformed mapping must not suppress prices for the rest of the
+			// channel; fall back to direct name matching, as the relay does.
+			mapping = nil
+		}
+	}
+
+	// raw upstream name -> request names this channel exposes for it.
+	requestNamesByUpstream := make(map[string][]string, len(channelModels))
+	seenRequest := make(map[string]bool, len(channelModels))
 	for _, name := range channelModels {
 		name = strings.TrimSpace(name)
-		if name != "" {
-			wanted[name] = true
-		}
-	}
-	records := make([]model.ChannelOfficialPricingRecord, 0, len(snapshot.Models))
-	for _, item := range snapshot.Models {
-		if len(wanted) > 0 && !wanted[item.ModelName] {
+		if name == "" || seenRequest[name] {
 			continue
 		}
-		officialView, internalPricing := uterRouteChannelOfficialPricing(
-			snapshot, item, snapshot.FetchedAt.Unix(), billingGroup,
-		)
-		if officialView.NeedsReview {
-			internalPricing = ""
+		seenRequest[name] = true
+		upstream, cyclic := followUterRouteModelMapping(mapping, name)
+		if cyclic || upstream == "" {
+			upstream = name
 		}
-		officialRaw, err := common.Marshal(item)
-		if err != nil {
-			return nil, err
+		requestNamesByUpstream[upstream] = append(requestNamesByUpstream[upstream], name)
+	}
+
+	records := make([]model.ChannelOfficialPricingRecord, 0, len(snapshot.Models))
+	for _, item := range snapshot.Models {
+		servedNames := requestNamesByUpstream[item.ModelName]
+		if len(channelModels) > 0 && len(servedNames) == 0 {
+			continue
 		}
-		normalizedRaw, err := common.Marshal(officialView)
-		if err != nil {
-			return nil, err
+		if len(servedNames) == 0 {
+			servedNames = []string{item.ModelName}
 		}
-		records = append(records, model.ChannelOfficialPricingRecord{
-			ChannelId:         channelID,
-			Provider:          "uterroute",
-			ModelName:         item.ModelName,
-			Currency:          "USD",
-			OfficialPricing:   string(officialRaw),
-			NormalizedPricing: string(normalizedRaw),
-			InternalPricing:   internalPricing,
-			Source:            "uterroute-official",
-			FetchedAt:         snapshot.FetchedAt.Unix(),
-		})
+		for _, servedName := range servedNames {
+			officialView, internalPricing := uterRouteChannelOfficialPricing(
+				snapshot, item, snapshot.FetchedAt.Unix(), billingGroup,
+			)
+			if officialView.NeedsReview {
+				internalPricing = ""
+			}
+			officialRaw, err := common.Marshal(item)
+			if err != nil {
+				return nil, err
+			}
+			normalizedRaw, err := common.Marshal(officialView)
+			if err != nil {
+				return nil, err
+			}
+			records = append(records, model.ChannelOfficialPricingRecord{
+				ChannelId:         channelID,
+				Provider:          "uterroute",
+				ModelName:         servedName,
+				Currency:          "USD",
+				OfficialPricing:   string(officialRaw),
+				NormalizedPricing: string(normalizedRaw),
+				InternalPricing:   internalPricing,
+				Source:            "uterroute-official",
+				FetchedAt:         snapshot.FetchedAt.Unix(),
+			})
+		}
 	}
 	return records, nil
+}
+
+// followUterRouteModelMapping mirrors the relay's model_mapping walk: visited
+// set cycle detection, self-map stops at the current hop, a non-self cycle is
+// reported so the caller can fall back to the request name.
+func followUterRouteModelMapping(mapping map[string]string, start string) (string, bool) {
+	current := start
+	visited := map[string]bool{current: true}
+	for {
+		mapped, exists := mapping[current]
+		if !exists || mapped == "" {
+			return current, false
+		}
+		if visited[mapped] {
+			if mapped == current {
+				return current, false
+			}
+			return "", true
+		}
+		visited[mapped] = true
+		current = mapped
+	}
 }
 
 // uterRoutePricingTier converts one absolute price line into the stored tier
@@ -1060,16 +1140,16 @@ func uterRoutePricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 	tier := model.ChannelPricingTier{RangeName: "base", Unit: line.Unit}
 	switch line.Unit {
 	case "per_second":
-		tier.PerUnitUSD = line.Input
+		tier.PerUnitUSD = floatMoneyPtr(line.Input)
 		tier.Unit = "per_second"
 	case "per_call":
-		tier.PerUnitUSD = line.Input
+		tier.PerUnitUSD = floatMoneyPtr(line.Input)
 		tier.Unit = "per_call"
 	default:
-		tier.InputPerMillionUSD = line.Input
-		tier.OutputPerMillionUSD = line.Output
-		tier.CachePerMillionUSD = line.CacheRead
-		tier.CreateCachePerMillionUSD = line.CacheWrite
+		tier.InputPerMillionUSD = floatMoneyPtr(line.Input)
+		tier.OutputPerMillionUSD = floatMoneyPtr(line.Output)
+		tier.CachePerMillionUSD = floatMoneyPtr(line.CacheRead)
+		tier.CreateCachePerMillionUSD = floatMoneyPtr(line.CacheWrite)
 		tier.Unit = "per_1m_token"
 	}
 	return tier
@@ -1099,7 +1179,7 @@ func uterRouteChannelOfficialPricing(
 			view.RatioBasis = &model.ChannelRatioBasis{
 				RawRatio:           *item.ModelRatio,
 				RawCompletionRatio: uterRouteRatioValue(item.CompletionRatio),
-				BasisUSDPerMillion: 2,
+				BasisUSDPerMillion: model.MoneyFromFloat(2),
 				Formula:            "reference_only: usd_per_1m = model_ratio * 2",
 				FormulaVersion:     "uterroute-ratio-v1",
 			}
@@ -1149,45 +1229,45 @@ func uterRouteChannelOfficialPricing(
 			// store the group-discounted tier separately as the channel price.
 			officialTier := model.ChannelPricingTier{RangeName: "base", Unit: "per_1m_token"}
 			officialInput := units.Input
-			officialTier.InputPerMillionUSD = &officialInput
+			officialTier.InputPerMillionUSD = floatMoneyPtr(&officialInput)
 			if units.OutputPresent {
 				officialOutput := units.Output
-				officialTier.OutputPerMillionUSD = &officialOutput
+				officialTier.OutputPerMillionUSD = floatMoneyPtr(&officialOutput)
 			}
 			if units.CachePresent {
 				officialCache := units.Cache
-				officialTier.CachePerMillionUSD = &officialCache
+				officialTier.CachePerMillionUSD = floatMoneyPtr(&officialCache)
 			}
 			if units.CreateCachePresent {
 				officialCreateCache := units.CreateCache
-				officialTier.CreateCachePerMillionUSD = &officialCreateCache
+				officialTier.CreateCachePerMillionUSD = floatMoneyPtr(&officialCreateCache)
 			}
 			view.Tiers = []model.ChannelPricingTier{officialTier}
 
 			tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 			input := units.Input * discount
-			tier.InputPerMillionUSD = &input
+			tier.InputPerMillionUSD = floatMoneyPtr(&input)
 			if units.OutputPresent {
 				output := units.Output * discount
-				tier.OutputPerMillionUSD = &output
+				tier.OutputPerMillionUSD = floatMoneyPtr(&output)
 			}
 			if units.CachePresent {
 				cache := units.Cache * discount
-				tier.CachePerMillionUSD = &cache
+				tier.CachePerMillionUSD = floatMoneyPtr(&cache)
 			}
 			if units.CreateCachePresent {
 				createCache := units.CreateCache * discount
-				tier.CreateCachePerMillionUSD = &createCache
+				tier.CreateCachePerMillionUSD = floatMoneyPtr(&createCache)
 			}
 			view.ChannelPrice = &tier
 		} else if units, ok := uterRouteDurationUnitPrices(normalized.Raw); ok {
 			officialPerSecond := units.Input
 			view.Tiers = []model.ChannelPricingTier{{
-				RangeName: "base", Unit: "per_second", PerUnitUSD: &officialPerSecond,
+				RangeName: "base", Unit: "per_second", PerUnitUSD: floatMoneyPtr(&officialPerSecond),
 			}}
 			perSecond := units.Input * discount
 			view.ChannelPrice = &model.ChannelPricingTier{
-				RangeName: "channel", Unit: "per_second", PerUnitUSD: &perSecond,
+				RangeName: "channel", Unit: "per_second", PerUnitUSD: floatMoneyPtr(&perSecond),
 			}
 		}
 		internalPricing, priced := uterRouteChannelExpressionPricing(

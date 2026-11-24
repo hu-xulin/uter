@@ -14,6 +14,59 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestPrepareChannelModelPricingOwnerBackfillsHistory(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.Exec(`
+		CREATE TABLE channel_model_pricing (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			channel_id INTEGER,
+			provider TEXT,
+			model_name TEXT,
+			region TEXT,
+			deployment_id TEXT,
+			pricing_source TEXT,
+			internal_pricing TEXT,
+			pricing_status TEXT,
+			pricing_version TEXT,
+			normalized_pricing TEXT
+		)`).Error)
+	require.NoError(t, db.Exec(`
+		INSERT INTO channel_model_pricing (id, pricing_source, internal_pricing) VALUES
+		(1, 'uterroute-official', ''),
+		(2, '', '{"source":"batch"}'),
+		(3, 'operator-manual', ''),
+		(4, 'review-approved', '')`).Error)
+
+	require.NoError(t, PrepareChannelModelPricingOwner(db))
+	require.True(t, db.Migrator().HasColumn(&ChannelModelPricing{}, "pricing_owner"))
+	require.True(t, db.Migrator().HasIndex(&ChannelModelPricing{}, "idx_channel_model_pricing_pricing_owner"))
+
+	got := map[int64]string{}
+	rows, err := db.Raw("SELECT id, pricing_owner FROM channel_model_pricing").Rows()
+	require.NoError(t, err)
+	defer rows.Close()
+	for rows.Next() {
+		var id int64
+		var owner string
+		require.NoError(t, rows.Scan(&id, &owner))
+		got[id] = owner
+	}
+	assert.Equal(t, map[int64]string{
+		1: ChannelPricingOwnerAuto,
+		2: ChannelPricingOwnerBatch,
+		3: ChannelPricingOwnerOperator,
+		4: ChannelPricingOwnerApproved,
+	}, got)
+
+	require.NoError(t, db.Exec("UPDATE channel_model_pricing SET pricing_owner = ? WHERE id = ?",
+		ChannelPricingOwnerOperator, 1).Error)
+	require.NoError(t, PrepareChannelModelPricingOwner(db))
+	var preserved string
+	require.NoError(t, db.Raw("SELECT pricing_owner FROM channel_model_pricing WHERE id = 1").Scan(&preserved).Error)
+	assert.Equal(t, ChannelPricingOwnerOperator, preserved)
+}
+
 func setupChannelModelPricingDB(t *testing.T) *gorm.DB {
 	t.Helper()
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
@@ -35,8 +88,8 @@ func officialRecord(channelID int, modelName, source string) ChannelOfficialPric
 		Unit:     "per_1m_token",
 		Tiers: []ChannelPricingTier{{
 			RangeName:           "Default",
-			InputPerMillionUSD:  floatPtr(3),
-			OutputPerMillionUSD: floatPtr(6),
+			InputPerMillionUSD:  MoneyFromFloatPtr(floatPtr(3)),
+			OutputPerMillionUSD: MoneyFromFloatPtr(floatPtr(6)),
 			Unit:                "per_1m_token",
 		}},
 		Source: source,
@@ -83,9 +136,9 @@ func TestChannelPricingIsolatedPerChannel(t *testing.T) {
 
 	require.NoError(t, SetChannelInternalPricing(1, "qwen-plus", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(2),
-		OutputUSDPerMillion: floatPtr(8),
-		CacheUSDPerMillion:  floatPtr(0.5),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(2)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(8)),
+		CacheUSDPerMillion:  MoneyFromFloatPtr(floatPtr(0.5)),
 	}))
 	firstPricing, ok := ResolveChannelBillingPricing(1, "qwen-plus")
 	require.True(t, ok)
@@ -112,16 +165,16 @@ func TestChannelInternalPricingRejectsInvalidValues(t *testing.T) {
 	for name, pricing := range map[string]ChannelInternalPricing{
 		"missing input": {
 			Mode:                ChannelPricingModePerMillionTokens,
-			OutputUSDPerMillion: floatPtr(2),
+			OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 		},
 		"missing output": {
 			Mode:               ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion: floatPtr(2),
+			InputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 		},
 		"negative price": {
 			Mode:                ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion:  floatPtr(-1),
-			OutputUSDPerMillion: floatPtr(2),
+			InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(-1)),
+			OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 		},
 		"unknown mode":           {Mode: "tiered"},
 		"per-call without price": {Mode: ChannelPricingModePerCall},
@@ -141,7 +194,7 @@ func TestChannelPerCallPricingAndCachedInvalidation(t *testing.T) {
 
 	require.NoError(t, SetChannelInternalPricing(7, "image-model", ChannelInternalPricing{
 		Mode:       ChannelPricingModePerCall,
-		PerCallUSD: floatPtr(0.04),
+		PerCallUSD: MoneyFromFloatPtr(floatPtr(0.04)),
 	}))
 	pricing, ok := ResolveChannelBillingPricing(7, "image-model")
 	require.True(t, ok)
@@ -151,7 +204,7 @@ func TestChannelPerCallPricingAndCachedInvalidation(t *testing.T) {
 	// A save invalidates the cached value immediately.
 	require.NoError(t, SetChannelInternalPricing(7, "image-model", ChannelInternalPricing{
 		Mode:       ChannelPricingModePerCall,
-		PerCallUSD: floatPtr(0.02),
+		PerCallUSD: MoneyFromFloatPtr(floatPtr(0.02)),
 	}))
 	pricing, ok = ResolveChannelBillingPricing(7, "image-model")
 	require.True(t, ok)
@@ -186,8 +239,8 @@ func TestResolveEffectiveChannelPricingIsSingleDecisionPoint(t *testing.T) {
 	// Configured row: billable, and every accessor agrees with the unified result.
 	require.NoError(t, SetChannelInternalPricing(42, "official-only-model", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(2),
-		OutputUSDPerMillion: floatPtr(8),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(2)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(8)),
 	}))
 	configured := ResolveEffectiveChannelPricing(42, "official-only-model")
 	require.True(t, configured.Billable)
@@ -211,8 +264,8 @@ func TestUpsertOfficialPricingPreservesInternalPrice(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, SetChannelInternalPricing(3, "qwen-plus", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(1),
-		OutputUSDPerMillion: floatPtr(2),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(1)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 	}))
 
 	updated := officialRecord(3, "qwen-plus", "bailian-official")
@@ -268,7 +321,7 @@ func TestPrepareChannelModelPricingIdentityMergesLegacyDuplicates(t *testing.T) 
 		require.NoError(t, db.Migrator().DropIndex(&ChannelModelPricing{}, "idx_channel_model_pricing_identity"))
 	}
 	internal, _ := common.Marshal(ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: floatPtr(2), UpdatedAt: 10,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)), UpdatedAt: 10,
 	})
 	older := ChannelModelPricing{
 		ChannelId: 1, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
@@ -340,7 +393,7 @@ func TestGetChannelModelPricingPrefersConfiguredIdentity(t *testing.T) {
 		PricingStatus: ChannelPricingStatusOfficialOnly, FetchedAt: 200, UpdatedAt: 200,
 	}
 	internal, _ := common.Marshal(ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: floatPtr(2), UpdatedAt: 10,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)), UpdatedAt: 10,
 	})
 	configured := ChannelModelPricing{
 		ChannelId: 1, Provider: "aliyun-bailian", Region: "ap-southeast-1", ModelName: "qwen-plus",
@@ -358,10 +411,10 @@ func TestGetChannelModelPricingPrefersConfiguredIdentity(t *testing.T) {
 func TestNormalizeChannelInternalPricingCacheWrite(t *testing.T) {
 	pricing := &ChannelInternalPricing{
 		Mode:                     ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:       floatPtr(2),
-		OutputUSDPerMillion:      floatPtr(4),
-		CacheUSDPerMillion:       floatPtr(1),
-		CreateCacheUSDPerMillion: floatPtr(2.5),
+		InputUSDPerMillion:       MoneyFromFloatPtr(floatPtr(2)),
+		OutputUSDPerMillion:      MoneyFromFloatPtr(floatPtr(4)),
+		CacheUSDPerMillion:       MoneyFromFloatPtr(floatPtr(1)),
+		CreateCacheUSDPerMillion: MoneyFromFloatPtr(floatPtr(2.5)),
 	}
 	normalized, err := NormalizeChannelInternalPricing(pricing)
 	require.NoError(t, err)
@@ -376,8 +429,8 @@ func TestUpsertDerivedPricingPreservesManualOperatorPrice(t *testing.T) {
 	derived := func(input float64) string {
 		encoded, err := common.Marshal(ChannelInternalPricing{
 			Mode:                ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion:  floatPtr(input),
-			OutputUSDPerMillion: floatPtr(input * 5),
+			InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(input)),
+			OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(input * 5)),
 			Source:              "uterroute-discount",
 		})
 		require.NoError(t, err)
@@ -404,8 +457,8 @@ func TestUpsertDerivedPricingPreservesManualOperatorPrice(t *testing.T) {
 	// An operator-saved price is never overwritten by a sync.
 	require.NoError(t, SetChannelInternalPricing(7, "gpt-a", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(9),
-		OutputUSDPerMillion: floatPtr(45),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(9)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(45)),
 	}))
 	record.InternalPricing = derived(1)
 	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
@@ -425,12 +478,12 @@ func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
 		Tiers: []ChannelPricingTier{{
 			RangeName:  "base",
 			Unit:       "per_second",
-			PerUnitUSD: &official,
+			PerUnitUSD: MoneyFromFloatPtr(&official),
 		}},
 		ChannelPrice: &ChannelPricingTier{
 			RangeName:  "base",
 			Unit:       "per_second",
-			PerUnitUSD: &channel,
+			PerUnitUSD: MoneyFromFloatPtr(&channel),
 		},
 		Source: "uterroute-official",
 	}
@@ -450,7 +503,7 @@ func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
 	seconds := 0.06
 	internal, err := common.Marshal(ChannelInternalPricing{
 		Mode:         ChannelPricingModePerSecond,
-		PerSecondUSD: &seconds,
+		PerSecondUSD: MoneyFromFloatPtr(&seconds),
 		Source:       "uterroute-discount",
 	})
 	require.NoError(t, err)
@@ -470,7 +523,7 @@ func TestResolveChannelUsageDiscountUsesChannelPrice(t *testing.T) {
 func TestNormalizeChannelInternalPricingPerSecond(t *testing.T) {
 	price := 0.08
 	normalized, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
-		Mode: ChannelPricingModePerSecond, PerSecondUSD: &price,
+		Mode: ChannelPricingModePerSecond, PerSecondUSD: MoneyFromFloatPtr(&price),
 	})
 	require.NoError(t, err)
 	require.True(t, normalized.UsePerSecond)
@@ -482,8 +535,8 @@ func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
 	internal := func(input, output float64) string {
 		encoded, err := common.Marshal(ChannelInternalPricing{
 			Mode:                ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion:  floatPtr(input),
-			OutputUSDPerMillion: floatPtr(output),
+			InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(input)),
+			OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(output)),
 			Source:              "uterroute-discount",
 		})
 		require.NoError(t, err)
@@ -509,7 +562,7 @@ func TestLoadChannelInternalPricesPrefersLowestConfiguredChannel(t *testing.T) {
 func TestNormalizeChannelInternalPricingPerMinuteConvertsToSeconds(t *testing.T) {
 	price := 6.0
 	normalized, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
-		Mode: ChannelPricingModePerMinute, PerMinuteUSD: &price,
+		Mode: ChannelPricingModePerMinute, PerMinuteUSD: MoneyFromFloatPtr(&price),
 	})
 	require.NoError(t, err)
 	require.True(t, normalized.UsePerSecond)
@@ -519,7 +572,7 @@ func TestNormalizeChannelInternalPricingPerMinuteConvertsToSeconds(t *testing.T)
 func TestNormalizeChannelInternalPricingRejectsNonPositivePerMinute(t *testing.T) {
 	zero := 0.0
 	_, err := NormalizeChannelInternalPricing(&ChannelInternalPricing{
-		Mode: ChannelPricingModePerMinute, PerMinuteUSD: &zero,
+		Mode: ChannelPricingModePerMinute, PerMinuteUSD: MoneyFromFloatPtr(&zero),
 	})
 	require.ErrorContains(t, err, "per-minute price is required")
 }
@@ -548,8 +601,8 @@ func TestOfficialSyncClearsOnlyAutoDerivedInternalPrice(t *testing.T) {
 	// An operator price (source empty) is preserved across the same sync.
 	require.NoError(t, SetChannelInternalPricing(51, "qwen-auto", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(1),
-		OutputUSDPerMillion: floatPtr(2),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(1)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 	}))
 	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
 	require.NoError(t, err)
@@ -563,8 +616,8 @@ func TestClearAutoDerivedChannelPricingPreservesOperatorAndOtherChannels(t *test
 	setupChannelModelPricingDB(t)
 	derived, _ := common.Marshal(ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(3),
-		OutputUSDPerMillion: floatPtr(6),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(3)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(6)),
 		Source:              "bailian-official",
 	})
 	autoA := officialRecord(61, "auto-a", "bailian-official")
@@ -577,8 +630,8 @@ func TestClearAutoDerivedChannelPricingPreservesOperatorAndOtherChannels(t *test
 	require.NoError(t, err)
 	require.NoError(t, SetChannelInternalPricing(61, "auto-a", ChannelInternalPricing{
 		Mode:                ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion:  floatPtr(1),
-		OutputUSDPerMillion: floatPtr(2),
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(1)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(2)),
 	}))
 
 	cleared, err := ClearAutoDerivedChannelPricing(61, "bailian-")
@@ -662,7 +715,7 @@ func TestResolveEffectiveChannelPricingUsesFullIdentity(t *testing.T) {
 		require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
 			ChannelId: 1, Provider: "aliyun-bailian", Region: parts[0], DeploymentId: parts[1], ModelName: "qwen-max",
 		}, ChannelInternalPricing{
-			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: input(price), OutputUSDPerMillion: &out,
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(input(price)), OutputUSDPerMillion: MoneyFromFloatPtr(&out),
 		}))
 	}
 	for key, price := range prices {
@@ -700,7 +753,7 @@ func TestResolveIdentityAcceptsSingleBailianInferenceProviderRow(t *testing.T) {
 	input, output := 2.0, 4.0
 	require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
 		ChannelId: 1, Provider: "alibaba-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
-	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output}))
+	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output)}))
 
 	effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
 		ChannelId: 1, Provider: "alibaba-bailian", Region: "cn-beijing", ModelName: "qwen-plus",
@@ -744,7 +797,7 @@ func TestResolveChannelPricingIdentityConcurrentIsolation(t *testing.T) {
 		require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
 			ChannelId: 1, Provider: "aliyun-bailian", Region: item.region, DeploymentId: item.deployment, ModelName: "qwen-max",
 		}, ChannelInternalPricing{
-			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: input(item.price), OutputUSDPerMillion: &out,
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(input(item.price)), OutputUSDPerMillion: MoneyFromFloatPtr(&out),
 		}))
 	}
 
@@ -794,9 +847,9 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 		FXRateToUSD: 7.3,
 		Unit:        "per_1m_token",
 		ChannelPrice: &ChannelPricingTier{
-			RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &purchase,
+			RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: MoneyFromFloatPtr(&purchase),
 		},
-		Tiers: []ChannelPricingTier{{RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &purchase}},
+		Tiers: []ChannelPricingTier{{RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: MoneyFromFloatPtr(&purchase)}},
 	})
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
 		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
@@ -807,7 +860,7 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 	input, output := 1.0, 2.0
 	require.NoError(t, SetChannelInternalPricingFor(ChannelPricingIdentity{
 		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
-	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output}))
+	}, ChannelInternalPricing{Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output)}))
 
 	effective := ResolveEffectiveChannelPricingFor(ChannelPricingIdentity{
 		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
@@ -825,8 +878,8 @@ func TestNormalizeTieredTablePricingBuildsExecutableExpression(t *testing.T) {
 	pricing := ChannelInternalPricing{
 		Mode: ChannelPricingModeTieredTable,
 		Tiers: []ChannelInternalPricingTier{
-			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, InputUSDPerMillion: &input1, OutputUSDPerMillion: &output1, Unit: ChannelPricingModePerMillionTokens},
-			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, InputUSDPerMillion: &input2, OutputUSDPerMillion: &output2, Unit: ChannelPricingModePerMillionTokens},
+			{RangeName: "0-32k", MaxInputTokens: 32 * 1024, InputUSDPerMillion: MoneyFromFloatPtr(&input1), OutputUSDPerMillion: MoneyFromFloatPtr(&output1), Unit: ChannelPricingModePerMillionTokens},
+			{RangeName: "32k-128k", MinInputTokens: 32 * 1024, MaxInputTokens: 128 * 1024, InputUSDPerMillion: MoneyFromFloatPtr(&input2), OutputUSDPerMillion: MoneyFromFloatPtr(&output2), Unit: ChannelPricingModePerMillionTokens},
 		},
 	}
 	billing, err := NormalizeChannelInternalPricing(&pricing)
@@ -851,7 +904,7 @@ func TestNormalizeTieredTablePricingBuildsExecutableExpression(t *testing.T) {
 	nonToken := pricing
 	nonToken.Tiers = append([]ChannelInternalPricingTier(nil), pricing.Tiers...)
 	nonToken.Tiers[1].Unit = ChannelPricingModePerSecond
-	nonToken.Tiers[1].PerUnitUSD = &input1
+	nonToken.Tiers[1].PerUnitUSD = MoneyFromFloatPtr(&input1)
 	_, err = NormalizeChannelInternalPricing(&nonToken)
 	require.ErrorContains(t, err, "not executable")
 }
@@ -862,10 +915,10 @@ func TestNormalizeModalityPricesBuildExpression(t *testing.T) {
 	thinkingCache, multiOutput, cache := 0.5, 5.0, 1.0
 	pricing := ChannelInternalPricing{
 		Mode:               ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &input, OutputUSDPerMillion: &output, CacheUSDPerMillion: &cache,
-		ImageInputUSDPerMillion: &image, ThinkingInputUSDPerMillion: &thinkingInput,
-		ThinkingOutputUSDPerMillion: &thinkingOutput, ThinkingCacheUSDPerMillion: &thinkingCache,
-		MultiInputOutputUSDPerMillion: &multiOutput,
+		InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output), CacheUSDPerMillion: MoneyFromFloatPtr(&cache),
+		ImageInputUSDPerMillion: MoneyFromFloatPtr(&image), ThinkingInputUSDPerMillion: MoneyFromFloatPtr(&thinkingInput),
+		ThinkingOutputUSDPerMillion: MoneyFromFloatPtr(&thinkingOutput), ThinkingCacheUSDPerMillion: MoneyFromFloatPtr(&thinkingCache),
+		MultiInputOutputUSDPerMillion: MoneyFromFloatPtr(&multiOutput),
 	}
 	billing, err := NormalizeChannelInternalPricing(&pricing)
 	require.NoError(t, err)
@@ -879,8 +932,8 @@ func TestNormalizeModalityPricesBuildExpression(t *testing.T) {
 	tierPricing := ChannelInternalPricing{
 		Mode: ChannelPricingModeTieredTable,
 		Tiers: []ChannelInternalPricingTier{{
-			RangeName: "base", InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
-			ImageInputUSDPerMillion: &image, ThinkingOutputUSDPerMillion: &thinkingOutput,
+			RangeName: "base", InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
+			ImageInputUSDPerMillion: MoneyFromFloatPtr(&image), ThinkingOutputUSDPerMillion: MoneyFromFloatPtr(&thinkingOutput),
 			Unit: ChannelPricingModePerMillionTokens,
 		}},
 	}
@@ -896,8 +949,8 @@ func TestNormalizeAudioAbsolutePricesDeriveRatios(t *testing.T) {
 	stale := 0.1
 	pricing := ChannelInternalPricing{
 		Mode:               ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
-		AudioInputUSDPerMillion: &audioInput, AudioOutputUSDPerMillion: &audioOutput,
+		InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
+		AudioInputUSDPerMillion: MoneyFromFloatPtr(&audioInput), AudioOutputUSDPerMillion: MoneyFromFloatPtr(&audioOutput),
 		AudioRatio: &stale,
 	}
 	billing, err := NormalizeChannelInternalPricing(&pricing)
@@ -920,7 +973,7 @@ func TestSetChannelInternalPricingWithAuditIsAtomic(t *testing.T) {
 	old := input
 	newPrice := 2.0
 	require.NoError(t, SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &old, OutputUSDPerMillion: &output,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&old), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 	}, "", ChannelPricingHistory{Source: "manual"}))
 	var history []ChannelPricingHistory
 	require.NoError(t, db.Where("channel_id = ?", 5).Find(&history).Error)
@@ -928,7 +981,7 @@ func TestSetChannelInternalPricingWithAuditIsAtomic(t *testing.T) {
 
 	require.NoError(t, db.Migrator().DropTable(&ChannelPricingHistory{}))
 	err = SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &newPrice, OutputUSDPerMillion: &output,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&newPrice), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 	}, "", ChannelPricingHistory{Source: "manual"})
 	require.Error(t, err, "a failed history write must fail the price change")
 
@@ -937,7 +990,7 @@ func TestSetChannelInternalPricingWithAuditIsAtomic(t *testing.T) {
 	var stored ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &stored))
 	require.NotNil(t, stored.InputUSDPerMillion)
-	assert.InDelta(t, 1.0, *stored.InputUSDPerMillion, 1e-9, "price must roll back with the history failure")
+	assert.InDelta(t, 1.0, stored.InputUSDPerMillion.Float64(), 1e-9, "price must roll back with the history failure")
 }
 
 func TestSetChannelInternalPricingWithAuditRejectsStaleVersion(t *testing.T) {
@@ -950,10 +1003,10 @@ func TestSetChannelInternalPricingWithAuditRejectsStaleVersion(t *testing.T) {
 	require.NoError(t, err)
 	identity := ChannelPricingIdentity{ChannelId: 6, Provider: "test", ModelName: "versioned-model"}
 	require.NoError(t, SetChannelInternalPricingFor(identity, ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 	}))
 	err = SetChannelInternalPricingWithAudit(identity, ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &output, OutputUSDPerMillion: &input,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&output), OutputUSDPerMillion: MoneyFromFloatPtr(&input),
 	}, "stale-version", ChannelPricingHistory{Source: "manual"})
 	require.ErrorIs(t, err, ErrChannelPricingVersionConflict)
 	var history []ChannelPricingHistory
@@ -971,7 +1024,7 @@ func TestLoadChannelInternalPricesKeepsPerChannelAndReviewEntries(t *testing.T) 
 			Unit:     "per_1m_token",
 			Tiers: []ChannelPricingTier{{
 				RangeName: "Default", Unit: "per_1m_token",
-				InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+				InputPerMillionUSD: MoneyFromFloatPtr(&input), OutputPerMillionUSD: MoneyFromFloatPtr(&output),
 			}},
 		})
 		require.NoError(t, err)
@@ -980,7 +1033,7 @@ func TestLoadChannelInternalPricesKeepsPerChannelAndReviewEntries(t *testing.T) 
 	internal := func(input, output float64) string {
 		encoded, err := common.Marshal(ChannelInternalPricing{
 			Mode:               ChannelPricingModePerMillionTokens,
-			InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+			InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 			Source: "bailian-official",
 		})
 		require.NoError(t, err)
@@ -1026,13 +1079,13 @@ func TestLoadChannelInternalPricesAbsolutePriceWinsOverExpressionRow(t *testing.
 		Unit:     "per_1m_token",
 		Tiers: []ChannelPricingTier{{
 			RangeName: "Default", Unit: "per_1m_token",
-			InputPerMillionUSD: &officialInput, OutputPerMillionUSD: &officialOutput,
+			InputPerMillionUSD: MoneyFromFloatPtr(&officialInput), OutputPerMillionUSD: MoneyFromFloatPtr(&officialOutput),
 		}},
 	})
 	require.NoError(t, err)
 	absolute, err := common.Marshal(ChannelInternalPricing{
 		Mode:               ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &input, OutputUSDPerMillion: &output,
+		InputUSDPerMillion: MoneyFromFloatPtr(&input), OutputUSDPerMillion: MoneyFromFloatPtr(&output),
 		Source: "batch",
 	})
 	require.NoError(t, err)
@@ -1106,13 +1159,32 @@ func TestUpsertAdoptsLegacyBailianModelProviderIdentity(t *testing.T) {
 	require.Equal(t, "qwen", rows[0].ModelProvider)
 }
 
+func TestUpsertAdoptsStaleGenericProviderIdentity(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 96, Provider: "newapi-compatible", ModelName: "claude-a", Currency: "USD",
+		NormalizedPricing: `{"currency":"USD","channel_price_tiers":[]}`, Source: "newapi:/api/pricing",
+	}})
+	require.NoError(t, err)
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
+		ChannelId: 96, Provider: "uterapi", ModelName: "claude-a", Currency: "USD",
+		NormalizedPricing: `{"currency":"USD","channel_price_tiers":[]}`, Source: "newapi:/api/pricing",
+	}})
+	require.NoError(t, err)
+
+	rows, err := ListChannelModelPricing(96)
+	require.NoError(t, err)
+	require.Len(t, rows, 1, "a stale provider label must be rewritten, not duplicated")
+	assert.Equal(t, "uterapi", rows[0].Provider)
+}
+
 func TestPurchaseCostIsSeparateFromQuoteAndFeedsSnapshot(t *testing.T) {
 	db := setupChannelModelPricingDB(t)
 	input, output, quote := 2.0, 4.0, 1.2
 	normalized := ChannelOfficialPricing{
 		Currency: "USD", Unit: "per_1m_token",
-		Tiers:        []ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: &input, OutputPerMillionUSD: &output, Unit: "per_1m_token"}},
-		ChannelPrice: &ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: &quote, Unit: "per_1m_token"},
+		Tiers:        []ChannelPricingTier{{RangeName: "base", InputPerMillionUSD: MoneyFromFloatPtr(&input), OutputPerMillionUSD: MoneyFromFloatPtr(&output), Unit: "per_1m_token"}},
+		ChannelPrice: &ChannelPricingTier{RangeName: "quote", InputPerMillionUSD: MoneyFromFloatPtr(&quote), Unit: "per_1m_token"},
 	}
 	encoded, err := common.Marshal(normalized)
 	require.NoError(t, err)
@@ -1124,8 +1196,8 @@ func TestPurchaseCostIsSeparateFromQuoteAndFeedsSnapshot(t *testing.T) {
 
 	identity := ChannelPricingIdentity{ChannelId: 7, Provider: "test", ModelName: "costed"}
 	require.NoError(t, SetChannelInternalPricingFor(identity, ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "manual", UpdatedAt: 2,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: MoneyFromFloatPtr(&output), Source: "manual", UpdatedAt: 2,
 	}))
 
 	effective := ResolveEffectiveChannelPricingFor(identity)
@@ -1137,8 +1209,8 @@ func TestPurchaseCostIsSeparateFromQuoteAndFeedsSnapshot(t *testing.T) {
 	contractInput, contractOutput := 0.8, 1.6
 	require.NoError(t, SetChannelPurchaseCostFor(identity, ChannelPurchaseCost{
 		Pricing: ChannelInternalPricing{
-			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &contractInput,
-			OutputUSDPerMillion: &contractOutput,
+			Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&contractInput),
+			OutputUSDPerMillion: MoneyFromFloatPtr(&contractOutput),
 		},
 		Verified: true, Source: "contract-2026",
 	}))
@@ -1192,8 +1264,8 @@ func TestUpsertReviewRecordNeverBecomesBillable(t *testing.T) {
 	db := setupChannelModelPricingDB(t)
 	input, output := 2.0, 4.0
 	internal, err := common.Marshal(ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "uterroute-discount", UpdatedAt: 1,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: MoneyFromFloatPtr(&output), Source: "uterroute-discount", UpdatedAt: 1,
 	})
 	require.NoError(t, err)
 	normalized := `{"currency":"USD","unit":"expression","needs_review":true,"review_reasons":["HISTORICAL_SNAPSHOT"]}`
@@ -1215,12 +1287,12 @@ func TestReviewGateKeepsBatchPriceAndClearsAutoPrice(t *testing.T) {
 	db := setupChannelModelPricingDB(t)
 	input, output := 2.0, 4.0
 	batchPricing, _ := common.Marshal(ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "batch", UpdatedAt: 1,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: MoneyFromFloatPtr(&output), Source: "batch", UpdatedAt: 1,
 	})
 	autoPricing, _ := common.Marshal(ChannelInternalPricing{
-		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "bailian-channel", UpdatedAt: 1,
+		Mode: ChannelPricingModePerMillionTokens, InputUSDPerMillion: MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: MoneyFromFloatPtr(&output), Source: "bailian-channel", UpdatedAt: 1,
 	})
 	normalized := `{"currency":"USD","unit":"per_1m_token","needs_review":true,"review_reasons":["multiple cache read prices"]}`
 	for name, internal := range map[string]string{"batch-row": string(batchPricing), "auto-row": string(autoPricing)} {
@@ -1269,6 +1341,23 @@ func TestChannelUsesScopedPricing(t *testing.T) {
 	assert.False(t, ChannelUsesScopedPricing(78))
 }
 
+// 显式定价模式必须压过“价格表是否有行”的旧推断。
+func TestChannelScopedPricingRequiredHonoursExplicitMode(t *testing.T) {
+	db := setupChannelModelPricingDB(t)
+	require.NoError(t, db.Create(&ChannelModelPricing{
+		ChannelId: 79, Provider: "uterroute", ModelName: "m-a",
+	}).Error)
+	InvalidateChannelPricingPresence(79)
+	InvalidateChannelPricingPresence(80)
+
+	assert.True(t, ChannelScopedPricingRequired(80, "CHANNEL_SCOPED_PENDING"))
+	assert.True(t, ChannelScopedPricingRequired(79, "CHANNEL_SCOPED_ACTIVE"))
+	assert.False(t, ChannelScopedPricingRequired(79, "GLOBAL_LEGACY"))
+	// 未打标签的旧渠道保持历史行为。
+	assert.True(t, ChannelScopedPricingRequired(79, ""))
+	assert.False(t, ChannelScopedPricingRequired(80, ""))
+}
+
 func TestListOrphanChannelPricing(t *testing.T) {
 	db := setupChannelModelPricingDB(t)
 	require.NoError(t, db.AutoMigrate(&Channel{}))
@@ -1287,4 +1376,87 @@ func TestListOrphanChannelPricing(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 2)
 	assert.Equal(t, 99, rows[0].ChannelId)
+}
+
+func TestPricingOwnerMapping(t *testing.T) {
+	assert.Equal(t, ChannelPricingOwnerAuto, PricingOwnerForSource("newapi-expression"))
+	assert.Equal(t, ChannelPricingOwnerAuto, PricingOwnerForSource("bailian-channel"))
+	assert.Equal(t, ChannelPricingOwnerApproved, PricingOwnerForSource("review-approved"))
+	assert.Equal(t, ChannelPricingOwnerBatch, PricingOwnerForSource("batch"))
+	assert.Equal(t, ChannelPricingOwnerOperator, PricingOwnerForSource("manual"))
+	assert.Empty(t, PricingOwnerForSource(""))
+}
+
+// 人工价格必须靠显式所有权阻止自动同步覆盖，而不是继续猜测 Source 字符串。
+func TestPricingOwnerProtectsOperatorPriceFromSync(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	record := officialRecord(97, "owner-protected", "newapi-expression")
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":1,"output_per_million_usd":2,"source":"manual"}`
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+
+	row, err := GetChannelModelPricing(97, "owner-protected")
+	require.NoError(t, err)
+	assert.Equal(t, ChannelPricingOwnerOperator, row.PricingOwner)
+
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":9,"output_per_million_usd":9,"source":"newapi-expression"}`
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(97, "owner-protected")
+	require.NoError(t, err)
+	assert.Contains(t, row.InternalPricing, `"input_per_million_usd":1`)
+	assert.Equal(t, ChannelPricingOwnerOperator, row.PricingOwner)
+}
+
+// AUTO 价格可以被后续同步刷新；APPROVED 价格即使官方记录被标记待审核也不清除。
+// 原始 SQL 改价可能留下过期 owner；此时必须以价格自身的 Source 为准，
+// 不能把人工价格当作自动价格覆盖。
+func TestStaleAutoOwnerDoesNotOverwriteManualPrice(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	record := officialRecord(100, "stale-owner", "newapi-expression")
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":1,"source":"newapi-expression"}`
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	require.NoError(t, DB.Model(&ChannelModelPricing{}).
+		Where("channel_id = ? AND model_name = ?", 100, "stale-owner").
+		Update("internal_pricing", `{"mode":"per_1m_token","input_per_million_usd":9,"source":"manual"}`).Error)
+
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":2,"source":"newapi-expression"}`
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err := GetChannelModelPricing(100, "stale-owner")
+	require.NoError(t, err)
+	assert.Contains(t, row.InternalPricing, `"input_per_million_usd":9`)
+}
+
+func TestPricingOwnerRefreshesAutoAndKeepsApproved(t *testing.T) {
+	setupChannelModelPricingDB(t)
+	record := officialRecord(98, "owner-auto", "newapi-expression")
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":1,"source":"newapi-expression"}`
+	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err := GetChannelModelPricing(98, "owner-auto")
+	require.NoError(t, err)
+	assert.Equal(t, ChannelPricingOwnerAuto, row.PricingOwner)
+
+	record.InternalPricing = `{"mode":"per_1m_token","input_per_million_usd":2,"source":"newapi-expression"}`
+	_, err = UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{record})
+	require.NoError(t, err)
+	row, err = GetChannelModelPricing(98, "owner-auto")
+	require.NoError(t, err)
+	assert.Contains(t, row.InternalPricing, `"input_per_million_usd":2`)
+
+	approved := `{"mode":"per_1m_token","input_per_million_usd":3,"source":"review-approved"}`
+	require.NoError(t, DB.Create(&ChannelModelPricing{
+		ChannelId: 99, Provider: "newapi-compatible", ModelName: "owner-approved",
+		NormalizedPricing: `{"currency":"USD","needs_review":true}`,
+		InternalPricing:   approved, PricingOwner: ChannelPricingOwnerApproved,
+		PricingStatus: ChannelPricingStatusConfigured,
+	}).Error)
+	cleared, err := EnforcePricingReviewGate()
+	require.NoError(t, err)
+	assert.Zero(t, cleared)
+	row, err = GetChannelModelPricing(99, "owner-approved")
+	require.NoError(t, err)
+	assert.Equal(t, approved, row.InternalPricing)
 }

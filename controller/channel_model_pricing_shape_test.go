@@ -38,7 +38,7 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 		{
 			name: "token",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{{
-				Unit: "per_1m_token", InputPerMillionUSD: shapePrice(2),
+				Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(shapePrice(2)),
 			}}},
 			shape:     "per_1m_token",
 			supported: true,
@@ -46,7 +46,7 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 		{
 			name: "per call",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{{
-				Unit: "per_call", PerUnitUSD: shapePrice(0.04),
+				Unit: "per_call", PerUnitUSD: model.MoneyFromFloatPtr(shapePrice(0.04)),
 			}}},
 			shape:     "per_call",
 			supported: true,
@@ -54,8 +54,8 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 		{
 			name: "multi tier",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{
-				{Unit: "per_1m_token", InputPerMillionUSD: shapePrice(1)},
-				{Unit: "per_1m_token", InputPerMillionUSD: shapePrice(2)},
+				{Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(shapePrice(1))},
+				{Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(shapePrice(2))},
 			}},
 			shape:     "multi_tier",
 			supported: false,
@@ -63,7 +63,7 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 		{
 			name: "per image",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{{
-				Unit: "per_image", PerUnitUSD: shapePrice(0.04),
+				Unit: "per_image", PerUnitUSD: model.MoneyFromFloatPtr(shapePrice(0.04)),
 			}}},
 			shape:     "per_image",
 			supported: true,
@@ -71,7 +71,7 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 		{
 			name: "per second",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{{
-				Unit: "per_second", PerUnitUSD: shapePrice(0.08),
+				Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(shapePrice(0.08)),
 			}}},
 			shape:     "per_second",
 			supported: false,

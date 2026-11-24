@@ -208,8 +208,8 @@ func TestUterRouteChannelPricingRecordsDeriveChannelPriceFromDiscount(t *testing
 	require.NoError(t, common.UnmarshalJsonStr(record.InternalPricing, &internal))
 	require.NotNil(t, internal.InputUSDPerMillion)
 	require.NotNil(t, internal.OutputUSDPerMillion)
-	assert.InDelta(t, 3*DefaultUterSaleMarkup, *internal.InputUSDPerMillion, 1e-9)
-	assert.InDelta(t, 15*DefaultUterSaleMarkup, *internal.OutputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 3*DefaultUterSaleMarkup, internal.InputUSDPerMillion.Float64(), 1e-9)
+	assert.InDelta(t, 15*DefaultUterSaleMarkup, internal.OutputUSDPerMillion.Float64(), 1e-9)
 	require.Contains(t, record.InternalPricing, `"source":"uterroute-discount"`)
 
 	// A model without an upstream discount group never guesses a channel price.
@@ -329,10 +329,10 @@ func TestUterRouteRatioDerivedPriceIsAutoConfigured(t *testing.T) {
 	}
 	view, internal := uterRouteChannelOfficialPricing(snapshot, item, 100, "default")
 	require.Len(t, view.Tiers, 1, "the upstream ratio reference must stay visible")
-	require.Equal(t, 5.0, *view.Tiers[0].InputPerMillionUSD)
+	require.Equal(t, 5.0, view.Tiers[0].InputPerMillionUSD.Float64())
 	require.Equal(t, "RATIO_ONLY", view.PriceKind)
 	require.NotNil(t, view.ChannelPrice)
-	require.Equal(t, 3.0, *view.ChannelPrice.InputPerMillionUSD)
+	require.Equal(t, 3.0, view.ChannelPrice.InputPerMillionUSD.Float64())
 	require.False(t, view.NeedsReview)
 	require.Empty(t, view.ReviewReasons)
 	require.Equal(t, "uterroute-ratio-reference", view.Source)
@@ -370,8 +370,8 @@ func TestUterRouteHistoricalSnapshotIsAutoConfigured(t *testing.T) {
 	}
 	view, internal := uterRouteChannelOfficialPricing(snapshot, item, 100, "default")
 	require.Len(t, view.Tiers, 1)
-	require.Equal(t, 2.0, *view.Tiers[0].InputPerMillionUSD)
-	require.Equal(t, 1.2, *view.ChannelPrice.InputPerMillionUSD)
+	require.Equal(t, 2.0, view.Tiers[0].InputPerMillionUSD.Float64())
+	require.Equal(t, 1.2, view.ChannelPrice.InputPerMillionUSD.Float64())
 	require.False(t, view.NeedsReview)
 	require.Contains(t, view.Source, "historical")
 	require.NotEmpty(t, internal)
@@ -435,8 +435,8 @@ func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *te
 	var view model.ChannelOfficialPricing
 	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &view))
 	require.NotNil(t, view.ChannelPrice)
-	assert.InDelta(t, 6, *view.ChannelPrice.InputPerMillionUSD, 1e-9)
-	assert.InDelta(t, 30, *view.ChannelPrice.OutputPerMillionUSD, 1e-9)
+	assert.InDelta(t, 6, view.ChannelPrice.InputPerMillionUSD.Float64(), 1e-9)
+	assert.InDelta(t, 30, view.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-9)
 	require.Contains(t, records[0].InternalPricing, ") * 1.1")
 }
 
@@ -466,4 +466,77 @@ func TestFetchUterRouteUpstreamExcludesModelsWithoutVendor(t *testing.T) {
 	require.Len(t, snapshot.Models, 1)
 	require.Equal(t, "visible-a", snapshot.Models[0].ModelName)
 	require.Equal(t, []string{"hidden-a"}, snapshot.ExcludedModels)
+}
+
+// Regression: after a batch redirect the channel model list holds request
+// names, while the upstream catalogue holds raw names. Pricing rows must be
+// keyed by the request name the channel actually serves, otherwise the billing
+// readiness panel reports every redirected model as "(missing)".
+func TestUterRouteChannelPricingRecordsAppliesModelMapping(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "uterroute",
+		PriceBasis: UpstreamPriceBasisRatioOnly,
+		GroupRatio: map[string]float64{"default": 1},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName: "gpt-upstream", ModelRatio: ratio(2.5), PriceStatus: "OFFICIAL_API",
+				OfficialPrice: &UpstreamPriceLine{
+					Input: ratio(5), Output: ratio(25), Currency: "USD", Unit: "per_1m_token",
+				},
+			},
+			{
+				ModelName: "plain-model", ModelRatio: ratio(1), PriceStatus: "OFFICIAL_API",
+				OfficialPrice: &UpstreamPriceLine{Input: ratio(2), Output: ratio(4), Currency: "USD", Unit: "per_1m_token"},
+			},
+		},
+	}
+	mapping := `{"gpt-alias": "gpt-upstream"}`
+
+	records, err := UterRouteChannelPricingRecordsWithMapping(
+		snapshot, 42, []string{"gpt-alias", "plain-model"}, "default", mapping,
+	)
+	require.NoError(t, err)
+	require.Len(t, records, 2, "每个渠道请求名都必须有价格行，否则计费就绪度会误报 (missing)")
+
+	byName := map[string]model.ChannelOfficialPricingRecord{}
+	for _, record := range records {
+		byName[record.ModelName] = record
+	}
+	alias, ok := byName["gpt-alias"]
+	require.True(t, ok, "重定向后的请求名应当拿到上游模型的价格行")
+	require.Equal(t, 42, alias.ChannelId)
+	require.Contains(t, alias.NormalizedPricing, `"input_per_million_usd":5`)
+	require.Contains(t, alias.NormalizedPricing, `"output_per_million_usd":25`)
+	require.NotContains(t, byName, "gpt-upstream", "原始上游名不应再作为独立价格行暴露给渠道")
+
+	plain, ok := byName["plain-model"]
+	require.True(t, ok, "没有映射的模型必须保持原名匹配")
+	require.Contains(t, plain.NormalizedPricing, `"input_per_million_usd":2`)
+}
+
+func TestUterRouteChannelPricingRecordsMappingChainAndCycle(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "uterroute",
+		PriceBasis: UpstreamPriceBasisRatioOnly,
+		GroupRatio: map[string]float64{"default": 1},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName: "final-upstream", ModelRatio: ratio(1), PriceStatus: "OFFICIAL_API",
+				OfficialPrice: &UpstreamPriceLine{Input: ratio(7), Output: ratio(9), Currency: "USD", Unit: "per_1m_token"},
+			},
+		},
+	}
+	// A -> B -> final follows the same chain as the relay's mapping walk.
+	// A cycle must not mint a bogus price row.
+	mapping := `{"alias-a": "alias-b", "alias-b": "final-upstream", "loop-a": "loop-b", "loop-b": "loop-a"}`
+
+	records, err := UterRouteChannelPricingRecordsWithMapping(
+		snapshot, 7, []string{"alias-a", "loop-a"}, "default", mapping,
+	)
+	require.NoError(t, err)
+	require.Len(t, records, 1)
+	require.Equal(t, "alias-a", records[0].ModelName)
+	require.Contains(t, records[0].NormalizedPricing, `"input_per_million_usd":7`)
 }

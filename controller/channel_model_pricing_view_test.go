@@ -24,9 +24,9 @@ func TestChannelModelPricingViewExposesUterRouteQuote(t *testing.T) {
 	})
 	require.NotNil(t, view.UpstreamQuote)
 	require.Equal(t, "DERIVED_FROM_RATIOS", view.UpstreamQuote.PriceBasis)
-	require.Equal(t, 5.0, *view.UpstreamQuote.InputPerMillionUSD)
-	require.Equal(t, 25.0, *view.UpstreamQuote.OutputPerMillionUSD)
-	require.Equal(t, 0.5, *view.UpstreamQuote.CachePerMillionUSD)
+	require.Equal(t, 5.0, view.UpstreamQuote.InputPerMillionUSD.Float64())
+	require.Equal(t, 25.0, view.UpstreamQuote.OutputPerMillionUSD.Float64())
+	require.Equal(t, 0.5, view.UpstreamQuote.CachePerMillionUSD.Float64())
 }
 
 func TestChannelModelPricingViewFlagsStaleUpstreamPrice(t *testing.T) {
@@ -48,7 +48,7 @@ func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD",
 		ChannelPriceTiers: []model.ChannelPricingTier{{
-			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 		}},
 	})
 	require.NoError(t, err)
@@ -59,8 +59,8 @@ func TestChannelModelPricingViewExposesAbsoluteProviderQuote(t *testing.T) {
 	})
 	require.NotNil(t, view.UpstreamQuote)
 	require.Equal(t, "CHANNEL_CATALOG", view.UpstreamQuote.PriceBasis)
-	require.Equal(t, 2.0, *view.UpstreamQuote.InputPerMillionUSD)
-	require.Equal(t, 4.0, *view.UpstreamQuote.OutputPerMillionUSD)
+	require.Equal(t, 2.0, view.UpstreamQuote.InputPerMillionUSD.Float64())
+	require.Equal(t, 4.0, view.UpstreamQuote.OutputPerMillionUSD.Float64())
 }
 
 func floatPtr(value float64) *float64 { return &value }
@@ -70,10 +70,10 @@ func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD",
 		Tiers: []model.ChannelPricingTier{{
-			Unit: "per_1m_token", InputPerMillionUSD: floatPtr(10), OutputPerMillionUSD: floatPtr(50),
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(floatPtr(10)), OutputPerMillionUSD: model.MoneyFromFloatPtr(floatPtr(50)),
 		}},
 		ChannelPrice: &model.ChannelPricingTier{
-			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 		},
 		DiscountRatio: &discount,
 		Source:        "uterroute-official",
@@ -86,8 +86,8 @@ func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 	})
 	require.NotNil(t, view.UpstreamQuote)
 	require.Equal(t, "CHANNEL_DISCOUNT", view.UpstreamQuote.PriceBasis)
-	require.Equal(t, 6.0, *view.UpstreamQuote.InputPerMillionUSD)
-	require.Equal(t, 30.0, *view.UpstreamQuote.OutputPerMillionUSD)
+	require.Equal(t, 6.0, view.UpstreamQuote.InputPerMillionUSD.Float64())
+	require.Equal(t, 30.0, view.UpstreamQuote.OutputPerMillionUSD.Float64())
 	require.Equal(t, 0.6, *view.UpstreamQuote.DiscountRatio)
 }
 
@@ -97,8 +97,8 @@ func TestChannelModelPricingViewExposesEveryUpstreamQuoteTier(t *testing.T) {
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD",
 		ChannelPriceTiers: []model.ChannelPricingTier{
-			{RangeName: "0-32K", Unit: "per_1m_token", InputPerMillionUSD: &lowInput, OutputPerMillionUSD: &lowOutput},
-			{RangeName: "32K-128K", Unit: "per_1m_token", InputPerMillionUSD: &highInput, OutputPerMillionUSD: &highOutput},
+			{RangeName: "0-32K", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&lowInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&lowOutput)},
+			{RangeName: "32K-128K", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&highInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&highOutput)},
 		},
 	})
 	require.NoError(t, err)
@@ -110,7 +110,7 @@ func TestChannelModelPricingViewExposesEveryUpstreamQuoteTier(t *testing.T) {
 	require.Len(t, view.UpstreamQuote.Tiers, 2)
 	require.Equal(t, "0-32K", view.UpstreamQuote.Tiers[0].RangeName)
 	require.Equal(t, "32K-128K", view.UpstreamQuote.Tiers[1].RangeName)
-	require.Equal(t, 2.0, *view.UpstreamQuote.Tiers[1].InputPerMillionUSD)
+	require.Equal(t, 2.0, view.UpstreamQuote.Tiers[1].InputPerMillionUSD.Float64())
 }
 
 func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
@@ -119,11 +119,11 @@ func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD",
 		ChannelPriceTiers: []model.ChannelPricingTier{
-			{RangeName: "image", Unit: "per_image", PerUnitUSD: &perImage},
+			{RangeName: "image", Unit: "per_image", PerUnitUSD: model.MoneyFromFloatPtr(&perImage)},
 			{
 				RangeName: "text", Unit: "per_1m_token",
-				InputPerMillionUSD: &input, ImageInputPerMillionUSD: &image,
-				ThinkingOutputPerMillionUSD: &thinkingOut, ThinkingCachePerMillionUSD: &thinkingCache,
+				InputPerMillionUSD: model.MoneyFromFloatPtr(&input), ImageInputPerMillionUSD: model.MoneyFromFloatPtr(&image),
+				ThinkingOutputPerMillionUSD: model.MoneyFromFloatPtr(&thinkingOut), ThinkingCachePerMillionUSD: model.MoneyFromFloatPtr(&thinkingCache),
 			},
 		},
 	})
@@ -137,12 +137,12 @@ func TestChannelModelPricingViewKeepsMediaAndThinkingQuoteFields(t *testing.T) {
 	imageTier := view.UpstreamQuote.Tiers[0]
 	require.Equal(t, "per_image", imageTier.Unit)
 	require.NotNil(t, imageTier.PerUnitUSD)
-	require.InDelta(t, 0.04, *imageTier.PerUnitUSD, 1e-9)
+	require.InDelta(t, 0.04, imageTier.PerUnitUSD.Float64(), 1e-9)
 	textTier := view.UpstreamQuote.Tiers[1]
 	require.NotNil(t, textTier.ImageInputPerMillionUSD)
-	require.InDelta(t, 3.0, *textTier.ImageInputPerMillionUSD, 1e-9)
+	require.InDelta(t, 3.0, textTier.ImageInputPerMillionUSD.Float64(), 1e-9)
 	require.NotNil(t, textTier.ThinkingOutputPerMillionUSD)
-	require.InDelta(t, 4.0, *textTier.ThinkingOutputPerMillionUSD, 1e-9)
+	require.InDelta(t, 4.0, textTier.ThinkingOutputPerMillionUSD.Float64(), 1e-9)
 	require.NotNil(t, textTier.ThinkingCachePerMillionUSD)
-	require.InDelta(t, 0.5, *textTier.ThinkingCachePerMillionUSD, 1e-9)
+	require.InDelta(t, 0.5, textTier.ThinkingCachePerMillionUSD.Float64(), 1e-9)
 }

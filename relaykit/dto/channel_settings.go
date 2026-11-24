@@ -195,7 +195,22 @@ type ChannelOtherSettings struct {
 	// create wizard. Drafts are hidden from the channel list and are published
 	// (status=1, draft=false) by the final save step.
 	Draft bool `json:"draft,omitempty"`
+	// PricingMode is the explicit channel pricing contract. It replaces the old
+	// "does the price table have rows" inference:
+	//   CHANNEL_SCOPED_PENDING - never bill, prices not verified yet
+	//   CHANNEL_SCOPED_ACTIVE  - bill only from this channel's published rows
+	//   GLOBAL_LEGACY          - legacy channel explicitly allowed to use the
+	//                            global price path
+	// An empty value means "legacy channel not yet tagged"; it keeps the
+	// historical row-presence behaviour so existing channels keep working.
+	PricingMode string `json:"pricing_mode,omitempty"`
 }
+
+const (
+	ChannelPricingModeGlobalLegacy  = "GLOBAL_LEGACY"
+	ChannelPricingModeScopedPending = "CHANNEL_SCOPED_PENDING"
+	ChannelPricingModeScopedActive  = "CHANNEL_SCOPED_ACTIVE"
+)
 
 func (s *ChannelOtherSettings) IsOpenRouterEnterprise() bool {
 	if s == nil || s.OpenRouterEnterprise == nil {

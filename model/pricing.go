@@ -378,19 +378,18 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 		}
 		switch internal.Mode {
 		case ChannelPricingModePerMillionTokens:
-			if internal.InputUSDPerMillion == nil || *internal.InputUSDPerMillion <= 0 ||
-				internal.OutputUSDPerMillion == nil {
+			if !moneyPositive(internal.InputUSDPerMillion) || internal.OutputUSDPerMillion == nil {
 				continue
 			}
 			candidate.quotaType = 0
-			candidate.inputUSD = *internal.InputUSDPerMillion
+			candidate.inputUSD = internal.InputUSDPerMillion.Float64()
 			candidate.modelRatio = candidate.inputUSD / 2
-			candidate.completionRatio = *internal.OutputUSDPerMillion / candidate.inputUSD
-			if internal.CacheUSDPerMillion != nil && candidate.inputUSD > 0 {
-				candidate.cacheRatio = *internal.CacheUSDPerMillion / candidate.inputUSD
+			candidate.completionRatio = internal.OutputUSDPerMillion.Float64() / candidate.inputUSD
+			if moneyPositive(internal.CacheUSDPerMillion) && candidate.inputUSD > 0 {
+				candidate.cacheRatio = internal.CacheUSDPerMillion.Float64() / candidate.inputUSD
 			}
-			if internal.CreateCacheUSDPerMillion != nil && candidate.inputUSD > 0 {
-				candidate.createCacheRatio = *internal.CreateCacheUSDPerMillion / candidate.inputUSD
+			if moneyPositive(internal.CreateCacheUSDPerMillion) && candidate.inputUSD > 0 {
+				candidate.createCacheRatio = internal.CreateCacheUSDPerMillion.Float64() / candidate.inputUSD
 			}
 			if internal.AudioRatio != nil {
 				candidate.audioRatio = *internal.AudioRatio
@@ -399,19 +398,19 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 				candidate.audioCompletion = *internal.AudioCompletionRatio
 			}
 		case ChannelPricingModePerCall:
-			if internal.PerCallUSD == nil || *internal.PerCallUSD < 0 {
+			if internal.PerCallUSD == nil || internal.PerCallUSD.Decimal().IsNegative() {
 				continue
 			}
 			candidate.quotaType = 1
-			candidate.modelPrice = *internal.PerCallUSD
-			candidate.inputUSD = *internal.PerCallUSD
+			candidate.modelPrice = internal.PerCallUSD.Float64()
+			candidate.inputUSD = candidate.modelPrice
 		case ChannelPricingModePerSecond:
-			if internal.PerSecondUSD == nil || *internal.PerSecondUSD <= 0 {
+			if !moneyPositive(internal.PerSecondUSD) {
 				continue
 			}
 			candidate.quotaType = 2
-			candidate.perSecondUSD = *internal.PerSecondUSD
-			candidate.inputUSD = *internal.PerSecondUSD
+			candidate.perSecondUSD = internal.PerSecondUSD.Float64()
+			candidate.inputUSD = candidate.perSecondUSD
 		case ChannelPricingModeTieredExpr:
 			if strings.TrimSpace(internal.BillingExpr) == "" {
 				continue
@@ -420,12 +419,12 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 			candidate.billingExpr = internal.BillingExpr
 			candidate.inputUSD = 1
 		case ChannelPricingModePerMinute:
-			if internal.PerMinuteUSD == nil || *internal.PerMinuteUSD <= 0 {
+			if !moneyPositive(internal.PerMinuteUSD) {
 				continue
 			}
 			candidate.quotaType = 3
-			candidate.perMinuteUSD = *internal.PerMinuteUSD
-			candidate.inputUSD = *internal.PerMinuteUSD
+			candidate.perMinuteUSD = internal.PerMinuteUSD.Float64()
+			candidate.inputUSD = candidate.perMinuteUSD
 		default:
 			// Per-second media prices are billed through usage expressions and
 			// have no single card price.
@@ -499,24 +498,24 @@ func channelPriceDisplayView(name string, price channelInternalPrice) PricingCha
 		switch price.officialUnit {
 		case "per_call", "per_image", "per_minute":
 			if tier.PerUnitUSD != nil {
-				entry.OfficialModelPrice = *tier.PerUnitUSD
+				entry.OfficialModelPrice = tier.PerUnitUSD.Float64()
 			}
 		case "per_second":
 			if tier.PerUnitUSD != nil {
-				entry.OfficialPerSecondUSD = *tier.PerUnitUSD
+				entry.OfficialPerSecondUSD = tier.PerUnitUSD.Float64()
 			}
 		default:
-			if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
-				input := *tier.InputPerMillionUSD
+			if moneyPositive(tier.InputPerMillionUSD) {
+				input := tier.InputPerMillionUSD.Float64()
 				entry.OfficialModelRatio = input / 2
 				if tier.OutputPerMillionUSD != nil {
-					entry.OfficialCompletionRatio = *tier.OutputPerMillionUSD / input
+					entry.OfficialCompletionRatio = tier.OutputPerMillionUSD.Float64() / input
 				}
 				if tier.CachePerMillionUSD != nil {
-					entry.OfficialCacheRatio = *tier.CachePerMillionUSD / input
+					entry.OfficialCacheRatio = tier.CachePerMillionUSD.Float64() / input
 				}
 				if tier.CreateCachePerMillionUSD != nil {
-					entry.OfficialCreateCacheRatio = *tier.CreateCachePerMillionUSD / input
+					entry.OfficialCreateCacheRatio = tier.CreateCachePerMillionUSD.Float64() / input
 				}
 			}
 		}

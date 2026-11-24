@@ -18,8 +18,8 @@ func TestBailianTierExpressionPreservesContextTiers(t *testing.T) {
 	high := 4.0
 	highOut := 16.0
 	tiers := []model.ChannelPricingTier{
-		{RangeName: "0-32K", MinInputTokens: 0, MaxInputTokens: 32000, Unit: "per_1m_token", InputPerMillionUSD: &low, OutputPerMillionUSD: &lowOut},
-		{RangeName: "32K-128K", MinInputTokens: 32001, MaxInputTokens: 128000, Unit: "per_1m_token", InputPerMillionUSD: &high, OutputPerMillionUSD: &highOut},
+		{RangeName: "0-32K", MinInputTokens: 0, MaxInputTokens: 32000, Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&low), OutputPerMillionUSD: model.MoneyFromFloatPtr(&lowOut)},
+		{RangeName: "32K-128K", MinInputTokens: 32001, MaxInputTokens: 128000, Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&high), OutputPerMillionUSD: model.MoneyFromFloatPtr(&highOut)},
 	}
 	expr := bailianTierExpression(tiers)
 	require.NotEmpty(t, expr)
@@ -50,8 +50,8 @@ func TestBailianInternalPricingSkipsMultimodalShapes(t *testing.T) {
 func TestBailianTierExpressionRejectsUnsupportedTimeBands(t *testing.T) {
 	input := 1.0
 	tiers := []model.ChannelPricingTier{
-		{RangeName: "Default", TimeBand: "峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
-		{RangeName: "Default", TimeBand: "非峰时", Unit: "per_1m_token", InputPerMillionUSD: &input},
+		{RangeName: "Default", TimeBand: "峰时", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input)},
+		{RangeName: "Default", TimeBand: "非峰时", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input)},
 	}
 	require.Empty(t, bailianTierExpression(tiers))
 }
@@ -60,8 +60,8 @@ func TestBailianTierExpressionEvaluatesPeakAndOffpeak(t *testing.T) {
 	peakInput, peakOutput := 2.0, 8.0
 	offInput, offOutput := 1.0, 4.0
 	tiers := []model.ChannelPricingTier{
-		{RangeName: "Default", TimeBand: "peak", Unit: "per_1m_token", InputPerMillionUSD: &peakInput, OutputPerMillionUSD: &peakOutput},
-		{RangeName: "Default", TimeBand: "offpeak", Unit: "per_1m_token", InputPerMillionUSD: &offInput, OutputPerMillionUSD: &offOutput},
+		{RangeName: "Default", TimeBand: "peak", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&peakInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&peakOutput)},
+		{RangeName: "Default", TimeBand: "offpeak", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&offInput), OutputPerMillionUSD: model.MoneyFromFloatPtr(&offOutput)},
 	}
 	expr := bailianTierExpression(tiers)
 	require.NotEmpty(t, expr)
@@ -91,8 +91,8 @@ func TestBailianTierExpressionIncludesCacheCreation(t *testing.T) {
 	cache := 0.4
 	createCache := 2.5
 	tiers := []model.ChannelPricingTier{{
-		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &input,
-		OutputPerMillionUSD: &output, CachePerMillionUSD: &cache, CreateCachePerMillionUSD: &createCache,
+		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input),
+		OutputPerMillionUSD: model.MoneyFromFloatPtr(&output), CachePerMillionUSD: model.MoneyFromFloatPtr(&cache), CreateCachePerMillionUSD: model.MoneyFromFloatPtr(&createCache),
 	}}
 	expr := bailianTierExpression(tiers)
 	require.NotEmpty(t, expr)
@@ -146,10 +146,10 @@ func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
 		ChannelPriceTiers: []model.ChannelPricingTier{{
 			RangeName:                "Default",
 			Unit:                     "per_1m_token",
-			InputPerMillionUSD:       &input,
-			OutputPerMillionUSD:      &output,
-			AudioInputPerMillionUSD:  &audioIn,
-			AudioOutputPerMillionUSD: &audioOut,
+			InputPerMillionUSD:       model.MoneyFromFloatPtr(&input),
+			OutputPerMillionUSD:      model.MoneyFromFloatPtr(&output),
+			AudioInputPerMillionUSD:  model.MoneyFromFloatPtr(&audioIn),
+			AudioOutputPerMillionUSD: model.MoneyFromFloatPtr(&audioOut),
 		}},
 	}
 	encoded := bailianInternalPricing(view)
@@ -159,8 +159,8 @@ func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
 	require.Equal(t, model.ChannelPricingModePerMillionTokens, internal.Mode)
 	require.NotNil(t, internal.AudioInputUSDPerMillion)
 	require.NotNil(t, internal.AudioOutputUSDPerMillion)
-	assert.InDelta(t, 16, *internal.AudioInputUSDPerMillion, 1e-9)
-	assert.InDelta(t, 32, *internal.AudioOutputUSDPerMillion, 1e-9)
+	assert.InDelta(t, 16, internal.AudioInputUSDPerMillion.Float64(), 1e-9)
+	assert.InDelta(t, 32, internal.AudioOutputUSDPerMillion.Float64(), 1e-9)
 	billing, err := model.NormalizeChannelInternalPricing(&internal)
 	require.NoError(t, err)
 	require.NotNil(t, billing.AudioRatio)
@@ -172,7 +172,7 @@ func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
 	secondView := model.ChannelOfficialPricing{
 		Currency: "USD",
 		ChannelPriceTiers: []model.ChannelPricingTier{{
-			RangeName: "Default", Unit: "per_second", PerUnitUSD: &perSecond,
+			RangeName: "Default", Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(&perSecond),
 		}},
 	}
 	secondEncoded := bailianInternalPricing(secondView)
@@ -181,14 +181,14 @@ func TestBailianInternalPricingKeepsAudioAndPerSecondDimensions(t *testing.T) {
 	require.NoError(t, common.UnmarshalJsonStr(secondEncoded, &secondInternal))
 	require.Equal(t, model.ChannelPricingModePerSecond, secondInternal.Mode)
 	require.NotNil(t, secondInternal.PerSecondUSD)
-	assert.InDelta(t, perSecond, *secondInternal.PerSecondUSD, 1e-9)
+	assert.InDelta(t, perSecond, secondInternal.PerSecondUSD.Float64(), 1e-9)
 }
 
 func TestBailianThinkingExpressionUsesReasoningTokens(t *testing.T) {
 	input, output, thinkingOutput := 2.0, 2.0, 8.0
 	tiers := []model.ChannelPricingTier{{
-		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: &input,
-		OutputPerMillionUSD: &output, ThinkingOutputPerMillionUSD: &thinkingOutput,
+		RangeName: "Default", Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input),
+		OutputPerMillionUSD: model.MoneyFromFloatPtr(&output), ThinkingOutputPerMillionUSD: model.MoneyFromFloatPtr(&thinkingOutput),
 	}}
 	expr := bailianTierExpression(tiers)
 	require.NotEmpty(t, expr)
@@ -209,10 +209,10 @@ func TestBailianThinkingExpressionUsesReasoningTokens(t *testing.T) {
 
 func TestBailianImageTaskExpressionsUsePluginFacts(t *testing.T) {
 	qima := bailianImageTaskExpression([]model.ChannelPricingComponent{
-		{Type: "qima_output_1k", Unit: "per_image", USD: 0.02},
-		{Type: "qima_output_2k", Unit: "per_image", USD: 0.18},
-		{Type: "qima_input_1k", Unit: "per_image", USD: 0.01},
-		{Type: "qima_input_2k", Unit: "per_image", USD: 0.05},
+		{Type: "qima_output_1k", Unit: "per_image", USD: model.MoneyFromFloat(0.02)},
+		{Type: "qima_output_2k", Unit: "per_image", USD: model.MoneyFromFloat(0.18)},
+		{Type: "qima_input_1k", Unit: "per_image", USD: model.MoneyFromFloat(0.01)},
+		{Type: "qima_input_2k", Unit: "per_image", USD: model.MoneyFromFloat(0.05)},
 	})
 	require.NotEmpty(t, qima)
 	cost, _, err := billingexpr.RunExprWithRequest(qima, billingexpr.TokenParams{}, billingexpr.RequestInput{
@@ -224,8 +224,8 @@ func TestBailianImageTaskExpressionsUsePluginFacts(t *testing.T) {
 	require.InDelta(t, 2*0.18+0.05, cost, 1e-9)
 
 	zimage := bailianImageTaskExpression([]model.ChannelPricingComponent{
-		{Type: "image_standard", Unit: "per_image", USD: 0.1},
-		{Type: "image_thinking", Unit: "per_image", USD: 0.2},
+		{Type: "image_standard", Unit: "per_image", USD: model.MoneyFromFloat(0.1)},
+		{Type: "image_thinking", Unit: "per_image", USD: model.MoneyFromFloat(0.2)},
 	})
 	require.NotEmpty(t, zimage)
 	cost, _, err = billingexpr.RunExprWithRequest(zimage, billingexpr.TokenParams{}, billingexpr.RequestInput{
