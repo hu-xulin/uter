@@ -7,6 +7,7 @@ import (
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/common"
 	"gorm.io/gorm"
 )
 
@@ -113,4 +114,56 @@ func TestCascadeTableListCoversAllProductionChannelRefs(t *testing.T) {
 	assert.Len(t, channelCascadeExtraColumns, 2)
 	assert.Equal(t, "midjourneys", channelCascadeExtraColumns[0].table)
 	assert.Equal(t, "billing_channel_id", channelCascadeExtraColumns[1].column)
+}
+
+// 回归测试：以渠道 ID 为键的 JSON 配置项（Uter Route 折扣组映射）不是 channel_id 列里的行，
+// 表级联循环无法覆盖。删除渠道 1240 曾残留 "1240":"default" 孤儿键。
+// 清理必须只移除已删除的 ID，其余渠道的组值保持原样，并与删除事务原子一致。
+func TestDeleteChannelCascadeCleansChannelKeyedOptions(t *testing.T) {
+	db := setupChannelCascadeTest(t)
+	require.NoError(t, db.AutoMigrate(&Option{}))
+
+	const seed = `{"22":"vip","99":"default","1232":"default","67":"svip"}`
+	require.NoError(t, db.Create(&Option{Key: UterRouteDiscountGroupOptionKey, Value: seed}).Error)
+
+	// 删除目标 99；存续渠道 22/1232/67 的折扣组必须保留。
+	require.NoError(t, db.Transaction(func(tx *gorm.DB) error {
+		return deleteChannelCascadeRows(tx, []int{99, 0})
+	}))
+
+	var row Option
+	require.NoError(t, db.Where("key = ?", UterRouteDiscountGroupOptionKey).First(&row).Error)
+	var got map[string]string
+	require.NoError(t, common.UnmarshalJsonStr(row.Value, &got))
+	assert.Equal(t, map[string]string{"22": "vip", "1232": "default", "67": "svip"}, got,
+		"只应移除已删除渠道的键，其余渠道的组值保持原样")
+	assert.NotContains(t, got, "99")
+}
+
+func TestDeleteChannelCascadeKeepsOptionsWhenNoKeyMatches(t *testing.T) {
+	db := setupChannelCascadeTest(t)
+	require.NoError(t, db.AutoMigrate(&Option{}))
+
+	const seed = `{"22":"vip","67":"svip"}`
+	require.NoError(t, db.Create(&Option{Key: UterRouteDiscountGroupOptionKey, Value: seed}).Error)
+
+	// 删除一个没有折扣组键的渠道时不应改写配置（无多余写入、无同步触发）。
+	require.NoError(t, db.Transaction(func(tx *gorm.DB) error {
+		return deleteChannelCascadeRows(tx, []int{99})
+	}))
+	var row Option
+	require.NoError(t, db.Where("key = ?", UterRouteDiscountGroupOptionKey).First(&row).Error)
+	assert.Equal(t, seed, row.Value)
+}
+
+func TestDeleteChannelCascadeToleratesMalformedOption(t *testing.T) {
+	db := setupChannelCascadeTest(t)
+	require.NoError(t, db.AutoMigrate(&Option{}))
+
+	require.NoError(t, db.Create(&Option{Key: UterRouteDiscountGroupOptionKey, Value: `not-json`}).Error)
+	// 配置内容损坏时绝不能让合法的渠道删除回滚。
+	require.NoError(t, db.Transaction(func(tx *gorm.DB) error {
+		return deleteChannelCascadeRows(tx, []int{99})
+	}))
+	assert.Equal(t, 0, countRows(t, db, "SELECT count(*) FROM channel_model_pricing WHERE channel_id=99"))
 }

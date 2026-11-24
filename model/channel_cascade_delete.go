@@ -1,10 +1,20 @@
 package model
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"gorm.io/gorm"
+
+	"github.com/uter-ai/uter/common"
 )
+
+// UterRouteDiscountGroupOptionKey 是按渠道 ID 为键保存 Uter Route 折扣组的配置项名称。
+// 常量放在 model 层，使渠道级联删除能在同一事务内原子清理已删渠道的键；
+// service 层通过别名引用，保证该名称只有一个定义来源。
+const UterRouteDiscountGroupOptionKey = "UterRouteChannelDiscountGroups"
 
 // channelCascadeTables enumerates every table that stores a logical foreign
 // reference to channels.id. Deleting a channel MUST clear these rows in the
@@ -89,6 +99,70 @@ func deleteChannelCascadeRows(tx *gorm.DB, ids []int) error {
 		}
 		if err := tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE %s IN (?)", extra.table, extra.column), valid).Error; err != nil {
 			return fmt.Errorf("cascade delete %s.%s: %w", extra.table, extra.column, err)
+		}
+	}
+	// 以渠道 ID 为键的 JSON 配置项不是 channel_id 列里的行，上面的表循环无法覆盖。
+	// 必须在同一事务内清理，避免留下孤儿键（例如已删除的渠道 1240 在折扣组映射里残留 "1240":"default"）。
+	if err := cleanupChannelKeyedOptions(tx, valid); err != nil {
+		return err
+	}
+	return nil
+}
+
+// cleanupChannelKeyedOptions 从以渠道 ID 为键的 JSON 配置项中移除所有已删除的渠道 ID。
+// 只改动实际存在的键，其余渠道的设置值保持不变。写入走调用方的事务，
+// 因此与渠道删除一起原子提交或回滚。
+func cleanupChannelKeyedOptions(tx *gorm.DB, ids []int) error {
+	if tx == nil || len(ids) == 0 {
+		return nil
+	}
+	// 隔离的内存测试库可能没有迁移 options 表，跳过即可。
+	if !tx.Migrator().HasTable(&Option{}) {
+		return nil
+	}
+	var row Option
+	err := tx.Where("key = ?", UterRouteDiscountGroupOptionKey).First(&row).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read option %s: %w", UterRouteDiscountGroupOptionKey, err)
+	}
+	raw := strings.TrimSpace(row.Value)
+	if raw == "" {
+		return nil
+	}
+	groups := map[string]string{}
+	if err := common.UnmarshalJsonStr(raw, &groups); err != nil {
+		// 配置内容损坏时绝不能让一次合法的渠道删除回滚；孤儿键无害，审计会报告它。
+		common.SysError(common.LogText("cleanup %s: malformed JSON, skipped: %v", UterRouteDiscountGroupOptionKey, err))
+		return nil
+	}
+	changed := false
+	for _, id := range ids {
+		key := strconv.Itoa(id)
+		if _, ok := groups[key]; ok {
+			delete(groups, key)
+			changed = true
+		}
+	}
+	if !changed {
+		return nil
+	}
+	encoded, err := common.Marshal(groups)
+	if err != nil {
+		return fmt.Errorf("encode option %s: %w", UterRouteDiscountGroupOptionKey, err)
+	}
+	if err := tx.Model(&Option{}).Where("key = ?", UterRouteDiscountGroupOptionKey).
+		Update("value", string(encoded)).Error; err != nil {
+		return fmt.Errorf("update option %s: %w", UterRouteDiscountGroupOptionKey, err)
+	}
+	// 刷新各节点的内存配置（GetUterRouteDiscountGroup 从内存读取）。同步任务与本事务
+	// 一起提交，因此回滚不会导致重新加载到一个从未落库的值。
+	// 隔离测试库可能没有迁移 system_tasks 表；生产环境始终有。
+	if tx.Migrator().HasTable(&SystemTask{}) {
+		if err := bumpSyncTopic(tx, SyncTopicOptions); err != nil {
+			return fmt.Errorf("bump options sync topic: %w", err)
 		}
 	}
 	return nil

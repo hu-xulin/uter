@@ -361,9 +361,11 @@ func LoadUterRouteUpstreamOfficialReference() map[string]map[string]float64 {
 // channel has not selected its Uter Route account group.
 const UterRouteDiscountGroupDefault = "default"
 
-// UterRouteDiscountGroupOptionKey stores the selected upstream billing group
-// per channel ({"<channel id>": "<group>"}). It only affects that channel.
-const UterRouteDiscountGroupOptionKey = "UterRouteChannelDiscountGroups"
+// UterRouteDiscountGroupOptionKey 保存每个渠道选定的上游计费组
+// （{"<渠道 id>": "<组>"}），只影响该渠道。
+// 字面值归 model 所有，便于渠道级联删除原子清理已删渠道的键；
+// 此处以别名引用，保证单一定义来源。
+const UterRouteDiscountGroupOptionKey = model.UterRouteDiscountGroupOptionKey
 
 // UterRouteDiscountGroups lists the billing groups the provider publishes.
 func UterRouteDiscountGroups(snapshot *UpstreamSnapshot) []string {
