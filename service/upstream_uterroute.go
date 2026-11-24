@@ -1199,6 +1199,64 @@ func uterRoutePricingTier(line *UpstreamPriceLine) model.ChannelPricingTier {
 	return tier
 }
 
+// uterRouteOfficialTierFromUnits builds the undiscounted official reference
+// tier from unit prices resolved out of an upstream expression. This is the
+// single construction point shared by the normal path and the review-only
+// fallback, so the two can never drift into different official prices again.
+// Per-second models keep the dedicated per_second field (raw USD/second) and
+// never write a token ratio.
+func uterRouteOfficialTierFromUnits(units uterRouteUnitPrices, perSecond bool) model.ChannelPricingTier {
+	if perSecond {
+		return model.ChannelPricingTier{
+			RangeName: "base", Unit: "per_second", PerUnitUSD: floatMoneyPtr(&units.Input),
+		}
+	}
+	tier := model.ChannelPricingTier{RangeName: "base", Unit: "per_1m_token"}
+	tier.InputPerMillionUSD = floatMoneyPtr(&units.Input)
+	if units.OutputPresent {
+		tier.OutputPerMillionUSD = floatMoneyPtr(&units.Output)
+	}
+	if units.CachePresent {
+		tier.CachePerMillionUSD = floatMoneyPtr(&units.Cache)
+	}
+	if units.CreateCachePresent {
+		tier.CreateCachePerMillionUSD = floatMoneyPtr(&units.CreateCache)
+	}
+	return tier
+}
+
+// ensureUterRouteOfficialTiers restores the official reference tier on any
+// review-only early-return path. The official price is the upstream-published
+// absolute catalogue price: it is independent of whether this channel's
+// discount group can be resolved, and independent of whether automatic billing
+// is authorised. Parking a row in NEEDS_REVIEW must stop automatic charging,
+// NOT hide the official price from operators — otherwise the channel wizard's
+// "Official price" column wrongly reads "Not available" even though the
+// snapshot carries a complete official price. This defer covers every return
+// path, including branches added in the future.
+func ensureUterRouteOfficialTiers(view *model.ChannelOfficialPricing, item UpstreamModelRecord) {
+	if len(view.Tiers) > 0 {
+		return
+	}
+	if raw := strings.TrimSpace(item.BillingExpr); raw != "" && item.PriceStatus != "HISTORICAL_SNAPSHOT" {
+		normalized := NormalizeUpstreamExpression(raw)
+		if units, ok := uterRouteOfficialUnitPrices(normalized.Raw); ok {
+			view.Tiers = []model.ChannelPricingTier{uterRouteOfficialTierFromUnits(units, false)}
+			view.Unit = "per_1m_token"
+			return
+		}
+		if units, ok := uterRouteDurationUnitPrices(normalized.Raw); ok {
+			view.Tiers = []model.ChannelPricingTier{uterRouteOfficialTierFromUnits(units, true)}
+			view.Unit = "per_second"
+			return
+		}
+	}
+	if line := item.OfficialPrice; line != nil && line.Input != nil {
+		view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
+		view.Unit = line.Unit
+	}
+}
+
 // uterRouteChannelOfficialPricing converts the upstream price line into the
 // channel pricing table's normalized view. Derived prices stay reviewable so an
 // operator can audit the ratio-to-price conversion before billing.
@@ -1207,13 +1265,15 @@ func uterRouteChannelOfficialPricing(
 	item UpstreamModelRecord,
 	fetchedAt int64,
 	billingGroup string,
-) (model.ChannelOfficialPricing, string) {
-	view := model.ChannelOfficialPricing{
+) (view model.ChannelOfficialPricing, result string) {
+	view = model.ChannelOfficialPricing{
 		Currency:  "USD",
 		Unit:      "unknown",
 		Source:    uterRoutePriceSource(item.PriceStatus),
 		FetchedAt: fetchedAt,
 	}
+	// Never let a review-only return hide a published official price.
+	defer ensureUterRouteOfficialTiers(&view, item)
 	switch item.PriceStatus {
 	case "BILLING_EXPR", "DERIVED_FROM_EXPR":
 		view.PriceKind = "BILLING_EXPRESSION"
@@ -1271,22 +1331,7 @@ func uterRouteChannelOfficialPricing(
 			// The expression coefficients are the upstream official unit
 			// prices. Keep the undiscounted tier as the official reference and
 			// store the group-discounted tier separately as the channel price.
-			officialTier := model.ChannelPricingTier{RangeName: "base", Unit: "per_1m_token"}
-			officialInput := units.Input
-			officialTier.InputPerMillionUSD = floatMoneyPtr(&officialInput)
-			if units.OutputPresent {
-				officialOutput := units.Output
-				officialTier.OutputPerMillionUSD = floatMoneyPtr(&officialOutput)
-			}
-			if units.CachePresent {
-				officialCache := units.Cache
-				officialTier.CachePerMillionUSD = floatMoneyPtr(&officialCache)
-			}
-			if units.CreateCachePresent {
-				officialCreateCache := units.CreateCache
-				officialTier.CreateCachePerMillionUSD = floatMoneyPtr(&officialCreateCache)
-			}
-			view.Tiers = []model.ChannelPricingTier{officialTier}
+			view.Tiers = []model.ChannelPricingTier{uterRouteOfficialTierFromUnits(units, false)}
 
 			tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
 			input := units.Input * discount
@@ -1305,10 +1350,7 @@ func uterRouteChannelOfficialPricing(
 			}
 			view.ChannelPrice = &tier
 		} else if units, ok := uterRouteDurationUnitPrices(normalized.Raw); ok {
-			officialPerSecond := units.Input
-			view.Tiers = []model.ChannelPricingTier{{
-				RangeName: "base", Unit: "per_second", PerUnitUSD: floatMoneyPtr(&officialPerSecond),
-			}}
+			view.Tiers = []model.ChannelPricingTier{uterRouteOfficialTierFromUnits(units, true)}
 			perSecond := units.Input * discount
 			view.ChannelPrice = &model.ChannelPricingTier{
 				RangeName: "channel", Unit: "per_second", PerUnitUSD: floatMoneyPtr(&perSecond),

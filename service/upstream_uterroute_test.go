@@ -732,3 +732,74 @@ func TestUterRouteChannelPricingRecordsMappingChainAndCycle(t *testing.T) {
 	require.Equal(t, "alias-a", records[0].ModelName)
 	require.Contains(t, records[0].NormalizedPricing, `"input_per_million_usd":7`)
 }
+
+// Regression: an upstream tiered model whose enable_groups are absent from the
+// channel's discount tables resolves to NO_UPSTREAM_DISCOUNT. The row must stay
+// review-only (no auto-billing) BUT the upstream-published official price MUST
+// remain visible in normalized_pricing.tiers — otherwise the channel wizard's
+// "Official price" column wrongly shows "Not available" even though the
+// snapshot carries a complete official_price. This repeatedly regressed because
+// the NO_UPSTREAM_DISCOUNT early return skipped tier construction entirely.
+func TestUterRouteNoDiscountStillKeepsOfficialTierVisible(t *testing.T) {
+	ratio := func(v float64) *float64 { return &v }
+	// Exact shape from the reported claude-fable-5 catalogue row: a tiered
+	// expression with real official coefficients and enable_groups that the
+	// selected billing group's table does not contain.
+	expr := `tier("base", p * 10 + c * 50 + cr * 1 + cc * 12.5)`
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "uterroute", PriceBasis: UpstreamPriceBasisRatioOnly,
+		// "vip" group table exists but does not contain the claude groups.
+		GroupGroupRatio: map[string]map[string]float64{"vip": {"openai": 0.6}},
+		GroupRatio:      map[string]float64{"openai": 0.9},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName: "claude-fable-5",
+				// Groups absent from every discount table -> NO_UPSTREAM_DISCOUNT.
+				EnableGroups: []string{"claude", "claude-aws", "claude_or"},
+				PriceStatus:  "DERIVED_FROM_EXPR",
+				BillingExpr:  expr,
+				OfficialPrice: &UpstreamPriceLine{
+					Input: ratio(10), Output: ratio(50), CacheRead: ratio(1),
+					CacheWrite: ratio(12.5), Currency: "USD", Unit: "per_1m_token",
+				},
+			},
+		},
+	}
+
+	records, err := UterRouteChannelPricingRecords(snapshot, 1240, []string{"claude-fable-5"}, "vip")
+	require.NoError(t, err)
+	require.Len(t, records, 1)
+	rec := records[0]
+
+	// fail-closed still holds: no discount group -> no auto-billing price.
+	require.Empty(t, rec.InternalPricing, "NO_UPSTREAM_DISCOUNT must never auto-enable billing")
+	require.Contains(t, rec.NormalizedPricing, `"NO_UPSTREAM_DISCOUNT"`)
+	require.Contains(t, rec.NormalizedPricing, `"needs_review":true`)
+
+	// The published official price must stay visible for operators.
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(rec.NormalizedPricing, &view))
+	require.Len(t, view.Tiers, 1, "official tier must survive the NO_UPSTREAM_DISCOUNT return")
+	require.NotNil(t, view.Tiers[0].InputPerMillionUSD)
+	require.InDelta(t, 10, view.Tiers[0].InputPerMillionUSD.Float64(), 1e-9)
+	require.NotNil(t, view.Tiers[0].OutputPerMillionUSD)
+	require.InDelta(t, 50, view.Tiers[0].OutputPerMillionUSD.Float64(), 1e-9)
+	require.Equal(t, "per_1m_token", view.Tiers[0].Unit)
+	// Tier prices are the UNDISCOUNTED official catalogue prices, never scaled.
+	require.Nil(t, view.ChannelPrice, "no discount group means no channel price to show")
+
+	// Byte-identical construction with the normal path: the shared helper must
+	// yield the same tier a resolvable-discount model would get for its official
+	// reference (only the channel price differs).
+	resolvable := snapshot
+	resolvable.GroupGroupRatio = map[string]map[string]float64{"vip": {"claude": 0.5}}
+	normal, err := UterRouteChannelPricingRecords(resolvable, 1240, []string{"claude-fable-5"}, "vip")
+	require.NoError(t, err)
+	require.Len(t, normal, 1)
+	var normalView model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(normal[0].NormalizedPricing, &normalView))
+	require.Len(t, normalView.Tiers, 1)
+	require.Equal(t, normalView.Tiers[0], view.Tiers[0],
+		"official tier must be identical whether or not a discount resolves")
+	require.NotNil(t, normalView.ChannelPrice, "resolvable group still produces a channel price")
+}
