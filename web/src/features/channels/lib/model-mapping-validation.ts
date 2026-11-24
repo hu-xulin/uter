@@ -40,6 +40,26 @@ export function formatModelsArray(models: string[]): string {
 }
 
 /**
+ * 合并上游模型到渠道列表时，跳过已被重定向的上游原名。
+ *
+ * 批量重定向把上游原名（映射的 target）改写为请求别名（映射的 source）。
+ * 若之后再「全选上游模型」把原名追加回来，同一个模型会以原名和别名各占
+ * 一格，模型数翻倍（例如 82 变 164），定价就绪面板因此把别名误报为
+ * 「尚无定价」。被重定向的原名已经由别名代表，不应再进入列表。
+ */
+export function mergeUpstreamModelsWithRedirects(
+  currentModels: string[],
+  upstreamModels: string[],
+  modelMapping: string
+): string[] {
+  const redirectedTargets = new Set(extractRedirectModels(modelMapping))
+  const additions = upstreamModels.filter(
+    (model) => !redirectedTargets.has(model.trim())
+  )
+  return [...new Set([...currentModels, ...additions])]
+}
+
+/**
  * Normalize model name
  */
 export function normalizeModelName(model: string): string {

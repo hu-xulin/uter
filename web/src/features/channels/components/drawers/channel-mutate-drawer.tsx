@@ -199,6 +199,7 @@ import {
   getKeyPromptForType,
   parseModelsString,
   formatModelsArray,
+  mergeUpstreamModelsWithRedirects,
   normalizeModelName,
   sortUterapiGroupSlots,
   mergeModelMappingPairs,
@@ -1995,13 +1996,20 @@ export function ChannelMutateDrawer({
   // Select every model returned by upstream discovery without dropping
   // manually added or previously saved models.
   const handleSelectAllUpstreamModels = useCallback(() => {
-    const models = [
-      ...new Set(upstreamModelList.map(normalizeModelName).filter(Boolean)),
-    ]
-    if (!models.length) return
-    const count = updateModels(models, true)
+    // 已被批量重定向的上游原名由请求别名代表，不能再追加回列表，
+    // 否则同一模型会以原名和别名各占一格，把 82 个模型翻倍成 164。
+    const models = mergeUpstreamModelsWithRedirects(
+      parseModelsString(form.getValues('models') || ''),
+      upstreamModelList.map(normalizeModelName).filter(Boolean),
+      form.getValues('model_mapping') || ''
+    )
+    const additions = models.filter(
+      (model) => !currentModelsArray.includes(model)
+    )
+    if (!additions.length) return
+    const count = updateModels(additions, true)
     toast.success(t('Selected {{count}} upstream model(s)', { count }))
-  }, [upstreamModelList, updateModels, t])
+  }, [upstreamModelList, updateModels, t, form, currentModelsArray])
 
   // Handle adding prefill group models
   const handleAddPrefillGroup = useCallback(
