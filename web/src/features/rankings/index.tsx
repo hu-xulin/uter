@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next'
 import { PublicLayout } from '@/components/layout'
 import { PageTransition } from '@/components/page-transition'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Heading } from '@/design-system'
 
 import {
   MarketShareSection,
@@ -119,11 +118,11 @@ function RankingsError(props: { message: string }) {
   const { t } = useTranslation()
   return (
     <div className='bg-card rounded-lg border border-dashed px-6 py-12 text-center'>
-      {/* 错误态标题用卡片标题档（18/600），与其他空/错误态保持一致。 */}
-      <Heading variant='card-title' level={2}>
+      {/* 错误态与空状态同一套层级：标题/描述同为 14px，靠字重区分。 */}
+      <p className='text-foreground font-medium'>
         {t('Unable to load rankings')}
-      </Heading>
-      <p className='text-muted-foreground mx-auto mt-2 max-w-md text-sm'>
+      </p>
+      <p className='text-muted-foreground mx-auto mt-2 max-w-md text-sm font-normal'>
         {props.message}
       </p>
     </div>

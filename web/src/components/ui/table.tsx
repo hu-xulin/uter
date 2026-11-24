@@ -40,12 +40,13 @@ function Table({
     <table
       data-slot='table'
       className={cn(
-        // 表格走「密集数据档」（规范 v1.2）：单元格 13/400/20（text-dense）、
-        // 表头 12/500/18（text-xs + font-medium）。普通说明文字不要跟着降，
-        // 14px 仍是正文档。⚠️ `text-dense` 是自定义 token，twMerge 不认它
-        // 属于字号组 —— 不要与 `text-sm` 同时写在同一个类串里。
-        'w-full caption-bottom text-dense tabular-nums [font-family:var(--font-body)] [&_td]:text-dense [&_th]:text-xs [&_th]:font-medium [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
-        '[&_[data-table-text=secondary]]:text-xs [&_[data-table-text=secondary]]:font-normal',
+        // 全站表格统一 UDS 8.0.0 body 档 text-sm(14px)：表格本体、单元格、
+        // 表头及二级文本都用 14px，仅靠字重区分（表头 font-medium）。旧版
+        // 密集档 text-dense(13px)/表头 text-xs(12px) 已停用。
+        // ⚠️ `text-dense` 是自定义 token，twMerge 不认它属于字号组 ——
+        // 不要与 `text-sm` 同时写在同一个类串里。
+        'w-full caption-bottom text-sm tabular-nums [font-family:var(--font-body)] [&_td]:text-sm [&_th]:text-sm [&_th]:font-medium [&_:is(th,td)_*]:[font-size:inherit] [&_:is(th,td)_*]:[font-weight:inherit]',
+        '[&_[data-table-text=secondary]]:text-sm [&_[data-table-text=secondary]]:font-normal',
         className
       )}
       {...props}
@@ -143,7 +144,7 @@ function TableCaption({
   return (
     <caption
       data-slot='table-caption'
-      className={cn('text-muted-foreground mt-4 text-xs', className)}
+      className={cn('text-muted-foreground mt-4 text-sm', className)}
       {...props}
     />
   )

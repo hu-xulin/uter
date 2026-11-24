@@ -24,9 +24,9 @@ export const staticDataTableClassNames = {
   compactHeaderRow: 'hover:bg-transparent',
   mutedHeaderRow:
     '[background-color:var(--table-header)] hover:[background-color:var(--table-header-hover)]',
-  compactHeaderCell: 'text-muted-foreground py-2 text-xs font-medium uppercase',
+  compactHeaderCell: 'text-muted-foreground py-2 text-sm font-medium uppercase',
   compactHeaderCellRight:
-    'text-muted-foreground py-2 text-right text-xs font-medium uppercase',
+    'text-muted-foreground py-2 text-right text-sm font-medium uppercase',
   compactCell: 'py-2.5',
   compactTopCell: 'py-2.5 align-top',
   compactTopNumericCell: 'py-2.5 text-right align-top font-mono text-mono',

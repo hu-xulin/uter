@@ -81,7 +81,12 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot='empty-title'
-      className={cn('text-lg! font-semibold', className)}
+      // 空状态标题与描述同为 14px（text-sm），靠字重区分层级：标题 medium、
+      // 描述 normal。与设置引导步骤行（StartStepItem）同一套契约。
+      // ⚠️ 字号和字重都要带 `!`：空状态常嵌在表格 <td> 内，<Table> 的
+      // `[&_:is(th,td)_*]:[font-size:inherit]` 与 `[font-weight:inherit]` 两条
+      // 通吃选择器会抹平字号与字重，普通类会被覆盖（实测标题曾掉回 400）。
+      className={cn('text-sm! font-medium!', className)}
       {...props}
     />
   )
@@ -92,7 +97,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
     <div
       data-slot='empty-description'
       className={cn(
-        'text-muted-foreground [&>a:hover]:text-fg-link text-sm!',
+        'text-muted-foreground [&>a:hover]:text-fg-link text-sm! font-normal!',
         className
       )}
       {...props}
