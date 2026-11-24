@@ -20,6 +20,7 @@ import { useQuery } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 
 import { getChannelModelPricing } from '../api'
@@ -31,6 +32,11 @@ import type {
 
 type FetchedPricePreviewProps = {
   channelId: number
+  setupState?: 'idle' | 'creating' | 'failed'
+  setupError?: string | null
+  fetchState?: 'idle' | 'running' | 'done' | 'failed'
+  onRetrySetup?: () => void
+  onRetryFetch?: () => void
 }
 
 function formatUsd(value: number | undefined): string {
@@ -90,22 +96,67 @@ function quoteLabel(
 
 /**
  * Read-only view of the official and channel prices a catalog sync wrote for
- * this channel. Used by the creation wizard's "fetch prices" step so the
- * operator sees the real values before configuring sale prices.
+ * this channel. Used by the creation wizard's "fetch prices" step; draft and
+ * fetch progress are handled inline so the operator never triggers them.
  */
 export function FetchedPricePreview(props: FetchedPricePreviewProps) {
   const { t } = useTranslation()
+  const ready = props.channelId > 0
   const query = useQuery({
     queryKey: ['channel-model-pricing', props.channelId],
     queryFn: () => getChannelModelPricing(props.channelId),
-    enabled: props.channelId > 0,
+    enabled: ready,
     retry: false,
     meta: { errorToast: false },
   })
   const items: ChannelModelPricingRecord[] = query.data?.data?.items ?? []
 
   let body: ReactNode
-  if (query.isLoading) {
+  if (props.setupState === 'failed') {
+    body = (
+      <div className='space-y-2 rounded-lg border border-dashed p-4 text-sm'>
+        <p className='text-destructive'>
+          {props.setupError || t('Failed to prepare the draft channel')}
+        </p>
+        {props.onRetrySetup ? (
+          <Button
+            type='button'
+            size='sm'
+            variant='outline'
+            onClick={props.onRetrySetup}
+          >
+            {t('Retry')}
+          </Button>
+        ) : null}
+      </div>
+    )
+  } else if (!ready) {
+    body = (
+      <p className='text-muted-foreground text-sm'>
+        {t('Preparing the draft channel...')}
+      </p>
+    )
+  } else if (props.fetchState === 'running') {
+    body = <p className='text-muted-foreground text-sm'>{t('Syncing...')}</p>
+  } else if (props.fetchState === 'failed') {
+    body = (
+      <div className='space-y-2 rounded-lg border border-dashed p-4 text-sm'>
+        <p className='text-destructive'>
+          {t('Failed to fetch prices from the catalog')}
+        </p>
+        {props.onRetryFetch ? (
+          <Button
+            type='button'
+            size='sm'
+            variant='outline'
+            onClick={props.onRetryFetch}
+          >
+            {t('Retry')}
+          </Button>
+        ) : null}
+      </div>
+    )
+  } else if (query.isLoading) {
     body = <p className='text-muted-foreground text-sm'>{t('Loading...')}</p>
   } else if (items.length === 0) {
     body = (

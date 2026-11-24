@@ -47,6 +47,7 @@ import {
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
   CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER_ROUTE,
   type ChannelProviderPresentation,
 } from '../../constants'
 import {
@@ -75,12 +76,14 @@ type ChannelProviderPickerProps = {
 function providerLogoChannelType(target: ChannelProviderTarget): number {
   if (target.kind === 'builtin') return target.type
   if (target.kind === 'uterapi') return CHANNEL_TYPE_ADVANCED_CUSTOM
+  if (target.kind === 'uterroute') return CHANNEL_TYPE_UTER_ROUTE
   return CHANNEL_TYPE_TASK_PLUGIN
 }
 
 function providerChannelType(target: ChannelProviderTarget): number | null {
   if (target.kind === 'builtin') return target.type
   if (target.kind === 'uterapi') return CHANNEL_TYPE_NEW_API
+  if (target.kind === 'uterroute') return CHANNEL_TYPE_UTER_ROUTE
   return null
 }
 
@@ -91,7 +94,7 @@ function providerOptionAriaLabel(
   const target = option.target
   const channelType = providerChannelType(target)
   if (channelType !== null) {
-    return `${option.label} ${translate('Built-in')} #${channelType}`
+    return `${option.label} ${translate('Type')} #${channelType}`
   }
   if (target.kind === 'plugin') {
     return `${option.label} ${translate('Plugin')} ${target.key}`
@@ -173,6 +176,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         // Uter.api has a dedicated card with its group/key setup; the plain
         // built-in entry would duplicate it during creation.
         if (props.isCreating && option.value === CHANNEL_TYPE_NEW_API) continue
+        if (props.isCreating && option.value === CHANNEL_TYPE_UTER_ROUTE) {
+          continue
+        }
         if (replacedTypes.has(option.value)) continue
         const isCustom = option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
         const isGateway =
@@ -226,6 +232,15 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
           'Uter.api gateway: pick one group per channel and paste its key'
         ),
         searchText: `uterapi claude gpt ${t('Uter.api gateway: pick one group per channel and paste its key')}`,
+      })
+      entries.push({
+        id: 'uterroute',
+        label: 'Uter Route',
+        target: { kind: 'uterroute' },
+        description: t(
+          'Uter Route gateway: connect with one key and the configured endpoint'
+        ),
+        searchText: `uterroute route ${t('Uter Route gateway: connect with one key and the configured endpoint')}`,
       })
     }
     return entries.filter((entry) =>
@@ -446,7 +461,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                       )}
                       {providerChannelType(option.target) !== null && (
                         <span className='text-muted-foreground ml-auto shrink-0 text-xs tabular-nums'>
-                          #{providerChannelType(option.target)}
+                          {`${t('Type')} #${providerChannelType(option.target)}`}
                         </span>
                       )}
                       {option.plugin && (

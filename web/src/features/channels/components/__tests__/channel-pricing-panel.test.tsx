@@ -283,3 +283,80 @@ test('creation pricing step keeps only configuration controls', async () => {
     expect(screen.queryByText(hidden)).not.toBeInTheDocument()
   }
 })
+
+test('batch pricing preview keeps every table header sticky in the scroll container', async () => {
+  vi.spyOn(api, 'post').mockResolvedValue({
+    data: {
+      success: true,
+      data: {
+        basis: 'official',
+        mode: 'multiply',
+        value: 0.6,
+        dry_run: true,
+        updated: 1,
+        items: [
+          {
+            model_name: 'claude-fable-5',
+            mode: 'per_1m_token',
+            version: 'v1',
+            input_per_million_usd: 6,
+            output_per_million_usd: 30,
+            cache_per_million_usd: 0.6,
+            create_cache_per_million_usd: 8.25,
+          },
+        ],
+        skipped: [
+          { model_name: 'wan3.0-video', reason: 'multiple price tiers' },
+        ],
+      },
+    },
+  })
+
+  renderPanel({ configureOnly: true })
+  const previewButton = await screen.findByRole('button', { name: 'Preview' })
+  await waitFor(() => expect(previewButton).toBeEnabled())
+  await previewButton.click()
+
+  const headers = await screen.findAllByRole('columnheader')
+  expect(headers).toHaveLength(6)
+  for (const header of headers) {
+    expect(header).toHaveClass('sticky', 'top-0', 'bg-muted')
+  }
+})
+
+test('batch pricing preview shows the scaled expression for expression-priced models', async () => {
+  vi.spyOn(api, 'post').mockResolvedValue({
+    data: {
+      success: true,
+      data: {
+        basis: 'channel',
+        mode: 'markup',
+        value: 0.1,
+        dry_run: true,
+        updated: 1,
+        items: [
+          {
+            model_name: 'gpt-image-2',
+            mode: 'tiered_expr',
+            version: 'v1',
+            billing_expr:
+              'tier("base", p * 4.125 + c * 0 + cr * 1.03125 + img * 6.6 + img_o * 24.75)',
+          },
+        ],
+        skipped: [],
+      },
+    },
+  })
+
+  renderPanel({ configureOnly: true })
+  const previewButton = await screen.findByRole('button', { name: 'Preview' })
+  await waitFor(() => expect(previewButton).toBeEnabled())
+  await previewButton.click()
+
+  expect(await screen.findByText('gpt-image-2')).toBeVisible()
+  expect(
+    screen.getByText(/img_o \* 24\.75/)
+  ).toBeVisible()
+  expect(screen.getByText('Expression')).toBeVisible()
+  expect(screen.queryByText(/skipped/i)).not.toBeInTheDocument()
+})

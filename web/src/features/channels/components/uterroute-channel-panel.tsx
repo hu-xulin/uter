@@ -36,6 +36,7 @@ import {
 import { handleServerError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 
+import { invalidatePricingQueries } from '../lib/channel-actions'
 import {
   getUterRouteEndpoint,
   getUterRouteUpstreamSnapshot,
@@ -61,7 +62,6 @@ type UterRouteChannelPanelProps = {
 export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [creatingDraft, setCreatingDraft] = useState(false)
   const [pickedDiscountGroup, setPickedDiscountGroup] = useState('')
   const endpointQuery = useQuery({
     queryKey: ['uterroute-endpoint'],
@@ -76,6 +76,14 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
     retry: false,
     meta: { errorToast: false },
   })
+  const prepareDraft = useMutation({
+    mutationFn: async () => {
+      if (!props.onCreateDraft) return null
+      return props.onCreateDraft()
+    },
+    onError: (error) =>
+      handleServerError(error, t('Failed to prepare the draft channel')),
+  })
   const snapshot = snapshotQuery.data
   const summary = snapshot?.synced ? snapshot.summary : null
   const discountGroups =
@@ -88,8 +96,12 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
     'default'
 
   const sync = useMutation({
-    mutationFn: () =>
-      syncUterRouteUpstream(props.channelId ?? 0, props.baseUrl, discountGroup),
+    mutationFn: (groupOverride?: string) =>
+      syncUterRouteUpstream(
+        props.channelId ?? 0,
+        props.baseUrl,
+        groupOverride ?? discountGroup
+      ),
     onSuccess: (result) => {
       const written =
         typeof result === 'object' &&
@@ -111,6 +123,7 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
       void queryClient.invalidateQueries({
         queryKey: ['channel-model-pricing', props.channelId],
       })
+      invalidatePricingQueries(queryClient)
     },
     onError: (error) =>
       handleServerError(error, t('Failed to sync Uter Route catalog')),
@@ -161,7 +174,11 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
         <Select
           value={discountGroup}
           onValueChange={(value) => {
-            if (value) setPickedDiscountGroup(value)
+            if (!value) return
+            setPickedDiscountGroup(value)
+            // A saved channel can re-price immediately; a draft without an id
+            // waits for the create flow's own sync.
+            if (props.channelId != null) sync.mutate(value)
           }}
           disabled={sync.isPending || props.channelId == null}
         >
@@ -200,7 +217,7 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
             type='button'
             size='sm'
             variant='outline'
-            onClick={() => sync.mutate()}
+            onClick={() => sync.mutate(discountGroup)}
             disabled={sync.isPending || props.channelId == null}
           >
             <RefreshCw
@@ -209,28 +226,7 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
             {t('Sync Uter Route catalog')}
           </Button>
           <Badge variant={syncStatusVariant}>{syncStatusLabel}</Badge>
-          {props.channelId == null && props.onCreateDraft ? (
-            <Button
-              type='button'
-              size='sm'
-              variant='outline'
-              disabled={creatingDraft}
-              onClick={async () => {
-                setCreatingDraft(true)
-                try {
-                  await props.onCreateDraft?.()
-                } catch (error) {
-                  handleServerError(error, t('Failed to create draft channel'))
-                } finally {
-                  setCreatingDraft(false)
-                }
-              }}
-            >
-              {creatingDraft
-                ? t('Creating...')
-                : t('Generate draft channel ID')}
-            </Button>
-          ) : null}
+
           {snapshot?.synced && summary ? (
             <span className='text-muted-foreground text-sm'>
               {t('{{models}} models · {{groups}} groups', {
@@ -260,11 +256,22 @@ export function UterRouteChannelPanel(props: UterRouteChannelPanelProps) {
         )}
 
         {props.channelId == null ? (
-          <p className='text-muted-foreground text-sm'>
-            {t(
-              'Generate a draft channel ID before syncing so prices are written into this channel.'
-            )}
-          </p>
+          <div className='space-y-2'>
+            <p className='text-muted-foreground text-sm'>
+              {t('A draft channel is created automatically to fetch prices.')}
+            </p>
+            {props.onCreateDraft ? (
+              <Button
+                type='button'
+                size='sm'
+                variant='outline'
+                onClick={() => prepareDraft.mutate()}
+                disabled={prepareDraft.isPending}
+              >
+                {t('Prepare draft channel')}
+              </Button>
+            ) : null}
+          </div>
         ) : null}
         <p className='text-muted-foreground text-sm'>
           {t(

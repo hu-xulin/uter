@@ -87,7 +87,20 @@ export function ChannelPricingScheduleSection(
   useEffect(() => {
     const saved = scheduleQuery.data?.schedule
     if (!saved) return
-    const loaded = { ...defaultSchedule, ...saved }
+    // A channel that never saved a cadence is read back as a zero-value
+    // struct (basis/mode "", value 0). Treat the whole object as unset so
+    // those fields cannot overwrite the valid defaults and make enabling
+    // the schedule fail server-side validation. For partially filled legacy
+    // data, keep explicit values while dropping empty ones.
+    const unset =
+      !String(saved.basis ?? '').trim() && !String(saved.mode ?? '').trim()
+    const loaded = { ...defaultSchedule }
+    if (!unset) {
+      for (const [key, value] of Object.entries(saved)) {
+        if (value === '' || value === null || value === undefined) continue
+        Object.assign(loaded, { [key]: value })
+      }
+    }
     setSchedule(loaded)
     setOfficialInterval(String(loaded.official_sync_interval_minutes))
     setChannelInterval(String(loaded.channel_sync_interval_minutes))

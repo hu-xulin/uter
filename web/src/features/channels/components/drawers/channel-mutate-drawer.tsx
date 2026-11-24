@@ -132,18 +132,24 @@ import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/stores/auth-store'
 
 import {
+  applyBailianCatalog,
   createChannelDraft,
   createUterAPIChannels,
+  fetchModels,
   getAllModels,
   getChannel,
   getChannelDefaultBaseURLs,
+  getChannelModelPricing,
   getChannelUpstreamReconciliation,
   getGroups,
   getPrefillGroups,
   getTaskPluginOptions,
   getUterRouteEndpoint,
+  syncUterRouteUpstream,
+  refreshBailianCatalog,
   refreshCodexCredential,
   syncChannelUpstreamPrices,
+  updateChannel,
 } from '../../api'
 import {
   ADD_MODE_OPTIONS,
@@ -151,6 +157,7 @@ import {
   CHANNEL_STATUS_LABELS,
   CHANNEL_TYPES,
   CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER_ROUTE,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -197,6 +204,7 @@ import {
   validateModelMappingJson,
 } from '../../lib'
 import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
+import { fetchModelsWithCurrentAddress } from '../../lib/channel-address-refresh'
 import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
@@ -210,6 +218,7 @@ import {
   supportsNewAPIUpstream,
 } from '../../lib/channel-plugin-extensions'
 import { getChannelTypeConfig } from '../../lib/channel-type-config'
+import { summarizeSelectedPricingReadiness } from '../../lib/pricing-readiness'
 import {
   collectInvalidStatusCodeEntries,
   collectNewDisallowedStatusCodeRedirects,
@@ -252,6 +261,7 @@ import {
   type ModelMappingDraftRequest,
 } from '../model-mapping-editor'
 import { ModelRedirectPanel } from '../model-redirect-panel'
+import { PricingReadinessSummary } from '../pricing-readiness-summary'
 import { ResponsesWebSocketSetting } from '../responses-websocket-setting'
 import { UpstreamModelSelection } from '../upstream-model-selection'
 import { UterRouteChannelPanel } from '../uterroute-channel-panel'
@@ -543,11 +553,31 @@ export function ChannelMutateDrawer({
   }
   const channelId = currentRow?.id ?? null
   const [draftChannelId, setDraftChannelId] = useState<number | null>(null)
+  const draftChannelIdRef = useRef<number | null>(null)
+  const draftPromiseRef = useRef<Promise<number> | null>(null)
+  // Draft creation is part of the normal flow, so its progress and failure are
+  // surfaced inline instead of asking the operator to trigger it.
+  const [draftSetupState, setDraftSetupState] = useState<
+    'idle' | 'creating' | 'failed'
+  >('idle')
+  const [draftSetupError, setDraftSetupError] = useState<string | null>(null)
+  const autoDraftRef = useRef(false)
+  const [autoPriceState, setAutoPriceState] = useState<
+    'idle' | 'running' | 'done' | 'failed'
+  >('idle')
+  const autoPriceChannelRef = useRef<number | null>(null)
   const effectiveChannelId = channelId ?? draftChannelId
   const sensitiveLocked = isEditing && !canEditSensitive
   useEffect(() => {
     if (open && !isEditing) {
       setDraftChannelId(null)
+      draftChannelIdRef.current = null
+      draftPromiseRef.current = null
+      setDraftSetupState('idle')
+      setDraftSetupError(null)
+      autoDraftRef.current = false
+      setAutoPriceState('idle')
+      autoPriceChannelRef.current = null
       setAutoProvision({
         models: 'idle',
         prices: 'idle',
@@ -568,6 +598,10 @@ export function ChannelMutateDrawer({
   const [configurationSection, setConfigurationSection] =
     useState<ChannelConfigurationSection>('connection')
   const [showDraftPricing, setShowDraftPricing] = useState(false)
+  const [pricingSubmitBlocked, setPricingSubmitBlocked] = useState(false)
+  useEffect(() => {
+    if (open) setPricingSubmitBlocked(false)
+  }, [open])
   const [autoProvision, setAutoProvision] = useState<AutoProvisionState>({
     models: 'idle',
     prices: 'idle',
@@ -704,6 +738,7 @@ export function ChannelMutateDrawer({
   const currentTaskExtendPluginKeys = formValues.task_extend_plugin_keys
   const currentKey = formValues.key
   const isUterApiTarget = providerTarget?.kind === 'uterapi'
+  const isUterRouteTarget = providerTarget?.kind === 'uterroute'
   const isBailianProvider = currentType === 17
   const uterRouteEndpointQuery = useQuery({
     queryKey: ['uterroute-endpoint'],
@@ -713,8 +748,10 @@ export function ChannelMutateDrawer({
     meta: { errorToast: false },
   })
   const isUterRouteProvider =
-    isAdvancedCustomLikeChannelType(currentType) &&
-    isUterRouteBaseUrl(currentBaseUrl, uterRouteEndpointQuery.data?.host)
+    isUterRouteTarget ||
+    currentType === CHANNEL_TYPE_UTER_ROUTE ||
+    (isAdvancedCustomLikeChannelType(currentType) &&
+      isUterRouteBaseUrl(currentBaseUrl, uterRouteEndpointQuery.data?.host))
   // Providers whose catalog and prices can be read automatically run the whole
   // pipeline during creation; only credentials still need the operator.
   const canAutoProvision =
@@ -725,19 +762,46 @@ export function ChannelMutateDrawer({
     !isUterRouteProvider
 
   // Validation still speaks the editing section names; map them onto the six
-  // creation steps so a focused field is never hidden in an unreachable tab.
-  const resolveCreateSection = useCallback(
+  // shared creation steps so a focused field is never hidden in an unreachable tab.
+  const resolveStepSection = useCallback(
     (
       section: ChannelConfigurationSection,
       field?: string
     ): ChannelConfigurationSection => {
-      if (isEditing) return section
       if (field?.startsWith('upstream_model_update')) return 'auto_update'
       if (section === 'connection' || section === 'models') return section
       if (section === 'pricing') return 'pricing_config'
+      if (
+        section === 'pricing_fetch' ||
+        section === 'pricing_config' ||
+        section === 'auto_update' ||
+        section === 'other'
+      ) {
+        return section
+      }
       return 'other'
     },
-    [isEditing]
+    []
+  )
+  // Routing and request settings now live inside collapsibles on the shared
+  // last step, so jump actions must expand the block that holds the fix.
+  const [expandedAdvancedBlocks, setExpandedAdvancedBlocks] = useState<
+    Partial<Record<'routing' | 'request', boolean>>
+  >({})
+  const openAdvancedBlock = useCallback((block: 'routing' | 'request') => {
+    setConfigurationSection('other')
+    setExpandedAdvancedBlocks((previous) =>
+      previous[block] ? previous : { ...previous, [block]: true }
+    )
+  }, [])
+  const onAdvancedBlockChange = useCallback(
+    (block: 'routing' | 'request', expanded: boolean) => {
+      setExpandedAdvancedBlocks((previous) => ({
+        ...previous,
+        [block]: expanded,
+      }))
+    },
+    []
   )
   const currentModels = formValues.models
   const currentModelMapping = formValues.model_mapping
@@ -901,6 +965,24 @@ export function ChannelMutateDrawer({
     [currentModels]
   )
 
+  // Shares the panel's cache key so the readiness summary and the inline
+  // pre-submit check see the same rows the operator just edited.
+  const pricingReadinessQuery = useQuery({
+    queryKey: ['channel-model-pricing', effectiveChannelId],
+    queryFn: () => getChannelModelPricing(effectiveChannelId ?? 0),
+    enabled: open && effectiveChannelId != null,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const pricingRows = useMemo(
+    () => pricingReadinessQuery.data?.data?.items ?? [],
+    [pricingReadinessQuery.data]
+  )
+  const pricingReadiness = useMemo(
+    () => summarizeSelectedPricingReadiness(pricingRows, currentModelsArray),
+    [pricingRows, currentModelsArray]
+  )
+
   const currentTypeLabel = useMemo(
     () =>
       CHANNEL_TYPE_OPTIONS.find((option) => option.value === currentType)
@@ -974,7 +1056,14 @@ export function ChannelMutateDrawer({
         target.key === providerTarget.key
       const sameUterAPIProvider =
         target.kind === 'uterapi' && providerTarget?.kind === 'uterapi'
-      if (sameBuiltinProvider || samePluginProvider || sameUterAPIProvider) {
+      const sameUterRouteProvider =
+        target.kind === 'uterroute' && providerTarget?.kind === 'uterroute'
+      if (
+        sameBuiltinProvider ||
+        samePluginProvider ||
+        sameUterAPIProvider ||
+        sameUterRouteProvider
+      ) {
         setChoosingProvider(false)
         return
       }
@@ -991,6 +1080,37 @@ export function ChannelMutateDrawer({
         form.setValue('key', '')
         setUterapiGroupName('')
         setUterapiKeysText('')
+        setProviderTarget(target)
+        setChoosingProvider(false)
+        setShowDraftPricing(false)
+        return
+      }
+      if (target.kind === 'uterroute') {
+        if (isEditing) return
+        form.setValue('type', CHANNEL_TYPE_UTER_ROUTE, { shouldDirty: true })
+        form.setValue('name', 'Uter Route')
+        form.setValue('branding_display_name', 'Uter Route')
+        form.setValue('models', '')
+        form.setValue('key', '')
+        const endpoint = uterRouteEndpointQuery.data
+        if (endpoint?.base_url) {
+          form.setValue('base_url', endpoint.base_url, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        } else {
+          form.setValue('base_url', '')
+          void getUterRouteEndpoint()
+            .then((data) => {
+              if (data.base_url) {
+                form.setValue('base_url', data.base_url, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+            })
+            .catch(() => undefined)
+        }
         setProviderTarget(target)
         setChoosingProvider(false)
         setShowDraftPricing(false)
@@ -1026,7 +1146,7 @@ export function ChannelMutateDrawer({
             shouldValidate: true,
           })
         }
-      } else {
+      } else if (target.kind === 'builtin') {
         if (
           !Number.isSafeInteger(target.type) ||
           target.type <= 0 ||
@@ -1054,6 +1174,7 @@ export function ChannelMutateDrawer({
       form,
       t,
       taskPluginOptionsQuery.data,
+      uterRouteEndpointQuery.data,
     ]
   )
   // The plugin author proposes the destination host once a default is
@@ -1386,25 +1507,48 @@ export function ChannelMutateDrawer({
     [currentModelsArray, form]
   )
 
-  const createDraftChannel = useCallback(async () => {
-    const values = form.getValues()
-    const response = await createChannelDraft({
-      name: values.name,
-      type: values.type,
-      base_url: values.base_url,
-      key: values.key,
-      models: Array.isArray(values.models)
-        ? values.models.join(',')
-        : values.models,
-      group: Array.isArray(values.group)
-        ? values.group.join(',')
-        : values.group,
-    })
-    if (!response.success || !response.data?.id) {
-      throw new Error(response.message || 'Failed to create draft channel')
-    }
-    setDraftChannelId(response.data.id)
-    return response.data.id
+  // The draft channel is an internal prerequisite for pricing. Creating it (or
+  // refreshing the fields it was created with) is idempotent so every entry point
+  // can call it freely without producing duplicate drafts or stale credentials.
+  const createDraftChannel = useCallback(() => {
+    if (draftPromiseRef.current) return draftPromiseRef.current
+    const run = (async (): Promise<number> => {
+      const values = form.getValues()
+      const payload = {
+        name: values.name,
+        type: values.type,
+        base_url: values.base_url,
+        key: values.key,
+        models: Array.isArray(values.models)
+          ? values.models.join(',')
+          : values.models,
+        group: Array.isArray(values.group)
+          ? values.group.join(',')
+          : values.group,
+      }
+      const existing = draftChannelIdRef.current
+      if (existing) {
+        const updated = await updateChannel(existing, payload)
+        if (updated.success === false) {
+          throw new Error(updated.message || 'Failed to update draft channel')
+        }
+        return existing
+      }
+      const response = await createChannelDraft(payload)
+      if (!response.success || !response.data?.id) {
+        throw new Error(response.message || 'Failed to create draft channel')
+      }
+      draftChannelIdRef.current = response.data.id
+      setDraftChannelId(response.data.id)
+      return response.data.id
+    })()
+    draftPromiseRef.current = run
+    void run
+      .catch(() => undefined)
+      .finally(() => {
+        if (draftPromiseRef.current === run) draftPromiseRef.current = null
+      })
+    return run
   }, [form])
 
   // Ordinary edits use the saved channel. Advanced Custom retains its existing
@@ -1496,6 +1640,53 @@ export function ChannelMutateDrawer({
     await fetchDiscoveredModels()
   }, [isEditing, canDiscoverModels, form, t, fetchDiscoveredModels])
 
+  // Editing a Uter Route channel used to keep reading the saved Base URL, so a
+  // changed gateway address never refreshed the model list. Offer an explicit
+  // refresh that sends the form's current address with the saved channel id
+  // (the server reuses the stored credential).
+  const normalizeAddress = (value: string) =>
+    String(value || '')
+      .trim()
+      .replace(/\/+$/, '')
+  const savedBaseUrl = isEditing ? currentRow?.base_url || '' : ''
+  const baseUrlChanged =
+    isEditing &&
+    isUterRouteProvider &&
+    normalizeAddress(currentBaseUrl || '') !== normalizeAddress(savedBaseUrl)
+  const [isRefreshingAddress, setIsRefreshingAddress] = useState(false)
+  const refreshModelsFromNewAddress = useCallback(async () => {
+    if (!channelId) return
+    setIsRefreshingAddress(true)
+    try {
+      const models = await fetchModelsWithCurrentAddress(
+        async (data) => fetchModels(data),
+        {
+          channelId,
+          baseUrl: currentBaseUrl || '',
+          type: currentType,
+          advancedCustom: currentAdvancedCustom,
+          headerOverride: currentHeaderOverride,
+          proxy: currentProxy,
+        }
+      )
+      updateModels(models)
+      toast.success(t('Models refreshed from the new address'))
+    } catch (error) {
+      handleServerError(error, t('Failed to refresh models from the new address'))
+    } finally {
+      setIsRefreshingAddress(false)
+    }
+  }, [
+    channelId,
+    currentBaseUrl,
+    currentType,
+    currentAdvancedCustom,
+    currentHeaderOverride,
+    currentProxy,
+    updateModels,
+    t,
+  ])
+
   // Creating a channel runs the upstream pipeline automatically: discover the
   // catalogue, create the disabled draft, sync and verify prices. Only the
   // credentials stay manual. Tests drive each step explicitly.
@@ -1524,7 +1715,7 @@ export function ChannelMutateDrawer({
     if (!autoProvisionRuntime || !canAutoProvision) return
     if (configurationSection !== 'models') return
     if (discovery.status !== 'success' || discovery.models.length === 0) return
-    if (effectiveChannelId || autoProvisionChannelRef.current !== null) return
+    if (autoProvisionChannelRef.current !== null) return
     autoProvisionChannelRef.current = -1
     const discovered = discovery.models
     const run = async () => {
@@ -1582,6 +1773,155 @@ export function ChannelMutateDrawer({
     updateModels,
     queryClient,
     t,
+  ])
+
+  // A draft channel is only an internal prerequisite for fetching prices. Every
+  // flow creates it automatically when credentials are present, so the operator
+  // never has to understand or trigger this step.
+  const requiresDraftForPricing =
+    !isEditing &&
+    !isUterApiTarget &&
+    (isBailianProvider || canAutoProvision || isUterRouteProvider)
+  const prepareDraftChannel = useCallback(() => {
+    setDraftSetupState('creating')
+    setDraftSetupError(null)
+    createDraftChannel()
+      .then(() => {
+        // Close the one-shot latch only after success so a failure can be
+        // retried when credentials or the selected section change.
+        autoDraftRef.current = true
+        setDraftSetupState('idle')
+      })
+      .catch((error) => {
+        autoDraftRef.current = false
+        setDraftSetupState('failed')
+        setDraftSetupError(
+          getServerErrorMessage(error, t('Failed to prepare the draft channel'))
+        )
+      })
+  }, [createDraftChannel, t])
+
+  useEffect(() => {
+    if (!autoProvisionRuntime || !requiresDraftForPricing) return
+    if (effectiveChannelId || autoDraftRef.current) return
+    if (
+      configurationSection !== 'models' &&
+      configurationSection !== 'pricing_fetch' &&
+      configurationSection !== 'pricing_config'
+    ) {
+      return
+    }
+    if (!currentKey.trim()) return
+    if (isBailianProvider && !currentBaseUrl?.trim()) return
+    prepareDraftChannel()
+  }, [
+    autoProvisionRuntime,
+    requiresDraftForPricing,
+    effectiveChannelId,
+    configurationSection,
+    currentKey,
+    currentBaseUrl,
+    isBailianProvider,
+    prepareDraftChannel,
+  ])
+
+  const runBailianAutoFetch = useCallback(
+    async (id: number) => {
+      setAutoPriceState('running')
+      try {
+        const refreshed = await refreshBailianCatalog(id)
+        if (refreshed && refreshed.success === false) {
+          throw new Error(
+            refreshed.message || t('Failed to sync channel catalog')
+          )
+        }
+        const applied = await applyBailianCatalog(id)
+        if (applied && applied.success === false) {
+          throw new Error(
+            applied.message || t('Failed to apply catalog metadata')
+          )
+        }
+        setAutoPriceState('done')
+      } catch {
+        setAutoPriceState('failed')
+      } finally {
+        void queryClient.invalidateQueries({
+          queryKey: ['channel-model-pricing', id],
+        })
+        void queryClient.invalidateQueries({
+          queryKey: ['bailian-sync-status'],
+        })
+      }
+    },
+    [queryClient, t]
+  )
+
+  const runUterRouteAutoFetch = useCallback(
+    async (id: number) => {
+      setAutoPriceState('running')
+      try {
+        await syncUterRouteUpstream(id, currentBaseUrl || undefined)
+        setAutoPriceState('done')
+      } catch {
+        setAutoPriceState('failed')
+      } finally {
+        void queryClient.invalidateQueries({
+          queryKey: ['channel-model-pricing', id],
+        })
+        void queryClient.invalidateQueries({
+          queryKey: ['uterroute-upstream-snapshot', id],
+        })
+      }
+    },
+    [currentBaseUrl, queryClient]
+  )
+
+  // Uter Route publishes machine-readable ratios and discount groups. Read the
+  // catalog once a draft exists so the pricing step is never empty.
+  useEffect(() => {
+    if (!autoProvisionRuntime || isEditing || !isUterRouteProvider) return
+    if (effectiveChannelId == null) return
+    if (autoPriceChannelRef.current === effectiveChannelId) return
+    autoPriceChannelRef.current = effectiveChannelId
+    void (async () => {
+      try {
+        await createDraftChannel()
+      } catch {
+        // The inline setup error already explains a failed draft refresh.
+      }
+      await runUterRouteAutoFetch(effectiveChannelId)
+    })()
+  }, [
+    autoProvisionRuntime,
+    isEditing,
+    isUterRouteProvider,
+    effectiveChannelId,
+    runUterRouteAutoFetch,
+    createDraftChannel,
+  ])
+
+  // Bailian prices come from the official catalog; read it automatically once a
+  // draft exists in the creation flow so the fetch step is never empty.
+  useEffect(() => {
+    if (!autoProvisionRuntime || isEditing || !isBailianProvider) return
+    if (effectiveChannelId == null) return
+    if (autoPriceChannelRef.current === effectiveChannelId) return
+    autoPriceChannelRef.current = effectiveChannelId
+    void (async () => {
+      try {
+        await createDraftChannel()
+      } catch {
+        // The inline setup error already explains a failed draft refresh.
+      }
+      await runBailianAutoFetch(effectiveChannelId)
+    })()
+  }, [
+    autoProvisionRuntime,
+    isEditing,
+    isBailianProvider,
+    effectiveChannelId,
+    runBailianAutoFetch,
+    createDraftChannel,
   ])
 
   // Handle model operations
@@ -1709,13 +2049,13 @@ export function ChannelMutateDrawer({
   )
 
   // Open a mapping row for a model the user picked elsewhere and hand focus to
-  // the editor on the routing tab. Drafts are saved once both names are set.
+  // the editor in the routing block. Drafts are saved once both names are set.
   const requestMappingDraft = useCallback(
     (from: string, to: string) => {
-      setConfigurationSection(resolveCreateSection('routing'))
+      openAdvancedBlock('routing')
       raiseMappingDraft(from, to)
     },
-    [raiseMappingDraft, resolveCreateSection]
+    [raiseMappingDraft, openAdvancedBlock]
   )
 
   // Keep the model list in step with mappings edited from the redirect panel:
@@ -2023,7 +2363,7 @@ export function ChannelMutateDrawer({
             }
           )
           form.setError('status_code_mapping', { type: 'manual', message })
-          setConfigurationSection(resolveCreateSection('request'))
+          openAdvancedBlock('request')
           setPendingErrorFocus('status_code_mapping')
           toast.error(message)
           return
@@ -2052,7 +2392,7 @@ export function ChannelMutateDrawer({
             type: 'manual',
             message: t(validation.error || 'Invalid model mapping'),
           })
-          setConfigurationSection(resolveCreateSection('routing'))
+          openAdvancedBlock('routing')
           setPendingErrorFocus('model_mapping')
           handleServerError(
             validation,
@@ -2096,6 +2436,24 @@ export function ChannelMutateDrawer({
         }
       }
 
+      // Preflight the server's publish guard in place: a selected model with a
+      // non-billable pricing row would be rejected by PublishChannelDraft.
+      // Show the blocking models on the pricing step instead of only surfacing
+      // a toast after the save failed. Missing rows are informational — the
+      // server does not block on them.
+      setPricingSubmitBlocked(false)
+      if (effectiveChannelId != null && pricingReadinessQuery.data) {
+        const readiness = summarizeSelectedPricingReadiness(
+          pricingRows,
+          parseModelsString(data.models || '')
+        )
+        if (readiness.blocking.length > 0) {
+          setPricingSubmitBlocked(true)
+          setConfigurationSection('pricing_config')
+          return
+        }
+      }
+
       try {
         await channelMutation.mutateAsync(data)
       } catch {
@@ -2113,9 +2471,12 @@ export function ChannelMutateDrawer({
       confirmStatusCodeRisk,
       channelMutation,
       handleSuccess,
+      effectiveChannelId,
+      pricingReadinessQuery.data,
+      pricingRows,
       uterapiGroupName,
       uterapiKeysText,
-      resolveCreateSection,
+      openAdvancedBlock,
       t,
     ]
   )
@@ -2124,14 +2485,19 @@ export function ChannelMutateDrawer({
     (errors) => {
       const field = Object.keys(errors)[0]
       if (field) {
-        setConfigurationSection(
-          resolveCreateSection(getChannelConfigurationSection(field), field)
+        const section = resolveStepSection(
+          getChannelConfigurationSection(field),
+          field
         )
+        setConfigurationSection(section)
+        if (section === 'other') {
+          setExpandedAdvancedBlocks({ routing: true, request: true })
+        }
         setPendingErrorFocus(field)
       }
       toast.error(t('Please fix the highlighted fields before saving'))
     },
-    [t, resolveCreateSection]
+    [t, resolveStepSection]
   )
 
   useEffect(() => {
@@ -3744,6 +4110,36 @@ export function ChannelMutateDrawer({
                   )}
                 </p>
               </div>
+              {baseUrlChanged ? (
+                <div className='border-warning/40 bg-warning-soft flex flex-wrap items-center justify-between gap-3 rounded-lg border p-3'>
+                  <div className='space-y-1'>
+                    <p className='font-medium'>
+                      {t('Gateway address changed')}
+                    </p>
+                    <p className='text-muted-foreground text-sm'>
+                      {t(
+                        'Models and prices still come from the saved address. Refresh with the new address before saving, then sync prices.'
+                      )}
+                    </p>
+                  </div>
+                  <Button
+                    type='button'
+                    size='sm'
+                    variant='outline'
+                    onClick={() => void refreshModelsFromNewAddress()}
+                    disabled={isRefreshingAddress}
+                  >
+                    <RefreshCw
+                      className={cn(
+                        'size-4',
+                        isRefreshingAddress && 'animate-spin'
+                      )}
+                      aria-hidden='true'
+                    />
+                    {t('Refresh models from new address')}
+                  </Button>
+                </div>
+              ) : null}
               {isBailianProvider && (
                 <BailianChannelPanel
                   channelId={effectiveChannelId}
@@ -3866,9 +4262,7 @@ export function ChannelMutateDrawer({
                       variant='link'
                       size='inline'
                       className='text-sm'
-                      onClick={() =>
-                        setConfigurationSection(resolveCreateSection('routing'))
-                      }
+                      onClick={() => openAdvancedBlock('routing')}
                     >
                       {mappingCount > 0
                         ? t('Edit mapping')
@@ -3941,11 +4335,7 @@ export function ChannelMutateDrawer({
                             type='button'
                             variant='ghost'
                             size='sm'
-                            onClick={() =>
-                              setConfigurationSection(
-                                resolveCreateSection('routing')
-                              )
-                            }
+                            onClick={() => openAdvancedBlock('routing')}
                           >
                             {t('View mapping')}
                           </Button>
@@ -4875,7 +5265,7 @@ export function ChannelMutateDrawer({
 
             {/* General base_url for other types */}
             {![3, 8, 22, 36, 45].includes(currentType) &&
-              !(isUterApiTarget && !isEditing) && (
+              !((isUterApiTarget || isUterRouteTarget) && !isEditing) && (
                 <FormField
                   control={form.control}
                   name='base_url'
@@ -5104,9 +5494,19 @@ export function ChannelMutateDrawer({
                       aria-label={t('API keys')}
                       rows={3}
                       value={uterapiKeysText}
-                      onChange={(event) =>
-                        setUterapiKeysText(event.target.value)
-                      }
+                      onChange={(event) => {
+                        const value = event.target.value
+                        setUterapiKeysText(value)
+                        // The Uter.api flow submits from uterapiKeysText, not
+                        // the form field. Mirror the first key so upstream
+                        // model fetch and connection validation, which read
+                        // form.key, see the real credential instead of
+                        // flagging a missing key.
+                        form.setValue('key', splitKeyLines(value)[0] ?? '', {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        })
+                      }}
                       placeholder={t('One key per line')}
                     />
                   </div>
@@ -5419,16 +5819,39 @@ export function ChannelMutateDrawer({
   )
 
   let pricingFetchBase: ReactNode
-  if (isUterApiTarget && !isEditing) {
+  if (isUterApiTarget) {
     pricingFetchBase = (
       <div className='space-y-2 rounded-lg border p-4'>
         <p className='font-medium'>
-          {t('Models and prices are fetched on create')}
+          {isEditing
+            ? t('Prices are fetched from the Uter API catalog')
+            : t('Models and prices are fetched on create')}
         </p>
         <p className='text-muted-foreground text-sm'>
-          {t(
-            'Each filled key group fetches its own models and upstream prices when the channel is created; price checks and billing rules are verified in the same step.'
-          )}
+          {isEditing
+            ? t(
+                'This channel exposes machine-readable upstream prices. Fetch the catalog and compare official and channel prices here.'
+              )
+            : t(
+                'Each filled key group fetches its own models and upstream prices when the channel is created; price checks and billing rules are verified in the same step.'
+              )}
+        </p>
+      </div>
+    )
+  } else if (isUterRouteProvider) {
+    pricingFetchBase = (
+      <div className='space-y-2 rounded-lg border p-4'>
+        <p className='font-medium'>
+          {t('Prices are fetched from the Uter Route catalog')}
+        </p>
+        <p className='text-muted-foreground text-sm'>
+          {isEditing
+            ? t(
+                'Sync the upstream catalog here; official ratios, channel discounts and derived sale prices appear below.'
+              )
+            : t(
+                'Generate a draft channel and sync the upstream catalog in the model step; official ratios, channel discounts and derived sale prices appear here.'
+              )}
         </p>
       </div>
     )
@@ -5461,11 +5884,40 @@ export function ChannelMutateDrawer({
       </div>
     )
   }
+  const retryPriceFetch = () => {
+    if (!effectiveChannelId) return undefined
+    if (isBailianProvider) {
+      return () => {
+        autoPriceChannelRef.current = null
+        void runBailianAutoFetch(effectiveChannelId)
+      }
+    }
+    if (isUterRouteProvider) {
+      return () => {
+        autoPriceChannelRef.current = null
+        void runUterRouteAutoFetch(effectiveChannelId)
+      }
+    }
+    return undefined
+  }
+
   const pricingFetchSection = (
     <div className='space-y-4'>
       {pricingFetchBase}
-      {effectiveChannelId ? (
-        <FetchedPricePreview channelId={effectiveChannelId} />
+      {requiresDraftForPricing || effectiveChannelId ? (
+        <FetchedPricePreview
+          channelId={effectiveChannelId ?? 0}
+          setupState={draftSetupState}
+          setupError={draftSetupError}
+          fetchState={
+            isBailianProvider || isUterRouteProvider ? autoPriceState : 'idle'
+          }
+          onRetrySetup={() => {
+            autoDraftRef.current = false
+            prepareDraftChannel()
+          }}
+          onRetryFetch={retryPriceFetch()}
+        />
       ) : null}
     </div>
   )
@@ -5571,7 +6023,7 @@ export function ChannelMutateDrawer({
   const uterapiKeyCount = splitKeyLines(uterapiKeysText).length
 
   const visibleReviewRows =
-    !isEditing && isUterApiTarget
+    !isEditing && (isUterApiTarget || isUterRouteTarget)
       ? reviewRows.filter((row) => row.label !== t('Base URL'))
       : reviewRows
 
@@ -5581,7 +6033,9 @@ export function ChannelMutateDrawer({
         <div>
           <p className='font-medium'>{t('Review')}</p>
           <p className='text-muted-foreground text-sm'>
-            {t('Review the configuration before creating the channel.')}
+            {isEditing
+              ? t('Review the configuration before saving the channel.')
+              : t('Review the configuration before creating the channel.')}
           </p>
         </div>
         {!isEditing && isUterApiTarget ? null : (
@@ -5589,9 +6043,7 @@ export function ChannelMutateDrawer({
             type='button'
             variant='outline'
             size='sm'
-            onClick={() =>
-              setConfigurationSection(isEditing ? 'pricing' : 'models')
-            }
+            onClick={() => setConfigurationSection('pricing_config')}
           >
             {t('Open pricing')}
           </Button>
@@ -5652,13 +6104,18 @@ export function ChannelMutateDrawer({
   let pricingSection: ReactNode
   if (effectiveChannelId || showDraftPricing) {
     pricingSection = (
-      <ChannelPricingPanel
-        channelId={effectiveChannelId}
-        baseUrl={form.watch('base_url') ?? ''}
-        onCreateDraft={isEditing ? undefined : createDraftChannel}
-        showSchedule={isEditing}
-        configureOnly={!isEditing}
-      />
+      <div className='space-y-3'>
+        <PricingReadinessSummary
+          readiness={pricingReadiness}
+          blocked={pricingSubmitBlocked}
+        />
+        <ChannelPricingPanel
+          channelId={effectiveChannelId}
+          baseUrl={form.watch('base_url') ?? ''}
+          onCreateDraft={isEditing ? undefined : createDraftChannel}
+          configureOnly
+        />
+      </div>
     )
   } else if (canAutoProvision) {
     pricingSection = (
@@ -5716,9 +6173,11 @@ export function ChannelMutateDrawer({
         section={configurationSection}
         onSectionChange={setConfigurationSection}
         statuses={configuration.sections}
+        expandedAdvancedSections={expandedAdvancedBlocks}
+        onExpandedAdvancedSectionChange={onAdvancedBlockChange}
         mode={isEditing ? 'edit' : 'create'}
         badges={{
-          routing: {
+          other: {
             count: mappingCount,
             label: t('{{count}} model mapping(s)', { count: mappingCount }),
           },
@@ -5734,15 +6193,13 @@ export function ChannelMutateDrawer({
         pricingFetch={pricingFetchSection}
         autoUpdate={autoUpdateSection}
         quickOptions={
-          viewportWide && isEditing ? null : (
-            <ChannelQuickOptions
-              channelType={currentType}
-              sensitiveLocked={sensitiveLocked}
-              disabled={isSubmitting}
-              hideModelUpdateCheck={!isEditing}
-              confirmEnablePassthrough={confirmEnablePassthrough}
-            />
-          )
+          <ChannelQuickOptions
+            channelType={currentType}
+            sensitiveLocked={sensitiveLocked}
+            disabled={isSubmitting}
+            hideModelUpdateCheck={!isEditing}
+            confirmEnablePassthrough={confirmEnablePassthrough}
+          />
         }
         routing={
           <>
@@ -5851,7 +6308,6 @@ export function ChannelMutateDrawer({
                 {tlsInsecureSkipVerifyFields}
               </fieldset>
             </div>
-            {isEditing ? upstreamModelDetectionFields : null}
             {notesFields}
           </>
         }
@@ -5991,26 +6447,6 @@ export function ChannelMutateDrawer({
                     {description}
                   </SheetDescription>
                 </div>
-                {viewportWide &&
-                  isEditing &&
-                  !showProviderPicker &&
-                  !channelError &&
-                  !isChannelDetailLoading && (
-                    <div className='flex flex-col gap-1.5 border-t pt-2'>
-                      <span className='text-muted-foreground text-xs font-medium'>
-                        {t('Quick options')}
-                      </span>
-                      <ChannelQuickOptions
-                        form={form}
-                        layout='inline'
-                        channelType={currentType}
-                        sensitiveLocked={sensitiveLocked}
-                        disabled={isSubmitting}
-                        className='justify-start'
-                        confirmEnablePassthrough={confirmEnablePassthrough}
-                      />
-                    </div>
-                  )}
               </div>
             </div>
           </SheetHeader>

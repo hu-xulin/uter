@@ -91,9 +91,7 @@ test('creation hides legacy Zhipu from categories and numeric search while GLM r
   const search = screen.getByRole('combobox')
   await user.type(search, 'zhi')
   expect(screen.getAllByRole('option')).toHaveLength(1)
-  await user.click(
-    screen.getByRole('option', { name: 'Zhipu GLM Built-in #26' })
-  )
+  await user.click(screen.getByRole('option', { name: 'Zhipu GLM Type #26' }))
   expect(select).toHaveBeenCalledWith({ kind: 'builtin', type: 26 })
   await user.clear(search)
   await user.type(search, '16')
@@ -119,7 +117,7 @@ test('editing an existing legacy Zhipu channel retains its selectable provider',
     />
   )
   await user.type(screen.getByRole('combobox'), '16')
-  const legacy = screen.getByRole('option', { name: 'Zhipu Built-in #16' })
+  const legacy = screen.getByRole('option', { name: 'Zhipu Type #16' })
   expect(legacy).toHaveAttribute('aria-current', 'true')
   await user.click(legacy)
   expect(select).toHaveBeenCalledWith({ kind: 'builtin', type: 16 })
@@ -149,10 +147,10 @@ test('Zhipu GLM uses the renamed Chinese label and remains searchable after chan
   )
   await user.type(screen.getByRole('combobox'), 'GLM')
   expect(
-    screen.getByRole('option', { name: 'Zhipu GLM Built-in #26' })
+    screen.getByRole('option', { name: 'Zhipu GLM Type #26' })
   ).toBeVisible()
   await act(() => language.changeLanguage('zh'))
-  expect(screen.getByRole('option', { name: '智谱GLM 内置 #26' })).toBeVisible()
+  expect(screen.getByRole('option', { name: '智谱GLM 类型 #26' })).toBeVisible()
 })
 
 test('plugin extensions keep built-in and independent plugin choices distinct in every category', async () => {
@@ -171,7 +169,7 @@ test('plugin extensions keep built-in and independent plugin choices distinct in
       onSelect={select}
     />
   )
-  const builtin = screen.getByRole('option', { name: 'OpenAI Built-in #1' })
+  const builtin = screen.getByRole('option', { name: 'OpenAI Type #1' })
   expect(builtin).toHaveClass('min-h-24', 'md:min-h-32')
   expect(builtin).toHaveAttribute('aria-current', 'true')
   const extension = within(builtin).getByLabelText('Plugin extensions')
@@ -188,20 +186,18 @@ test('plugin extensions keep built-in and independent plugin choices distinct in
     screen.getByRole('option', { name: 'Sora Video Plugin sora' })
   ).toBeVisible()
   expect(
-    screen.queryByRole('option', { name: 'Sora Built-in #55' })
+    screen.queryByRole('option', { name: 'Sora Type #55' })
   ).not.toBeInTheDocument()
   await user.click(builtin)
   expect(select).toHaveBeenLastCalledWith({ kind: 'builtin', type: 1 })
   await user.click(screen.getByRole('tab', { name: 'Built-in' }))
-  expect(
-    screen.getByRole('option', { name: 'OpenAI Built-in #1' })
-  ).toBeVisible()
+  expect(screen.getByRole('option', { name: 'OpenAI Type #1' })).toBeVisible()
   expect(
     screen.queryByRole('option', { name: 'Sora Video Plugin sora' })
   ).not.toBeInTheDocument()
   await user.click(screen.getByRole('tab', { name: 'Plugins' }))
   expect(
-    screen.queryByRole('option', { name: 'OpenAI Built-in #1' })
+    screen.queryByRole('option', { name: 'OpenAI Type #1' })
   ).not.toBeInTheDocument()
   await user.click(
     screen.getByRole('option', { name: 'Sora Video Plugin sora' })
@@ -227,9 +223,7 @@ test.each(['Sora Video', 'sora'])(
     )
     await user.type(screen.getByRole('combobox'), searchText)
     expect(screen.getAllByRole('option')).toHaveLength(2)
-    expect(
-      screen.getByRole('option', { name: 'OpenAI Built-in #1' })
-    ).toBeVisible()
+    expect(screen.getByRole('option', { name: 'OpenAI Type #1' })).toBeVisible()
     expect(
       screen.getByRole('option', { name: 'Sora Video Plugin sora' })
     ).toBeVisible()
@@ -269,9 +263,7 @@ test.each([
         onSelect={vi.fn()}
       />
     )
-    expect(
-      screen.getByRole('option', { name: 'OpenAI Built-in #1' })
-    ).toBeVisible()
+    expect(screen.getByRole('option', { name: 'OpenAI Type #1' })).toBeVisible()
     expect(screen.queryByLabelText('Plugin extensions')).not.toBeInTheDocument()
   }
 )
@@ -290,11 +282,11 @@ test('extension associations follow declared types and exclude legacy task-only 
       onSelect={vi.fn()}
     />
   )
-  const gemini = screen.getByRole('option', { name: 'Gemini Built-in #24' })
+  const gemini = screen.getByRole('option', { name: 'Gemini Type #24' })
   expect(within(gemini).getByLabelText('Plugin extensions')).toBeVisible()
   for (const name of [
-    'OpenAI Built-in #1',
-    'Sora Built-in #55',
+    'OpenAI Type #1',
+    'Sora Type #55',
     'OpenAI Plugin sora',
   ]) {
     expect(
@@ -327,7 +319,7 @@ test('creation replaces migrated built-ins with their plugins in both all and bu
     ).toBeVisible()
     expect(
       screen.queryByRole('option', {
-        name: `${provider.label} Built-in #${provider.type}`,
+        name: `${provider.label} Type #${provider.type}`,
       })
     ).not.toBeInTheDocument()
   }
@@ -335,7 +327,7 @@ test('creation replaces migrated built-ins with their plugins in both all and bu
   for (const provider of migratedProviders) {
     expect(
       screen.queryByRole('option', {
-        name: `${provider.label} Built-in #${provider.type}`,
+        name: `${provider.label} Type #${provider.type}`,
       })
     ).not.toBeInTheDocument()
   }
@@ -366,11 +358,11 @@ test.each([
     for (const provider of migratedProviders) {
       expect(
         screen.getByRole('option', {
-          name: `${provider.label} Built-in #${provider.type}`,
+          name: `${provider.label} Type #${provider.type}`,
         })
       ).toBeVisible()
     }
-    await user.click(screen.getByRole('option', { name: 'Sora Built-in #55' }))
+    await user.click(screen.getByRole('option', { name: 'Sora Type #55' }))
     expect(select).toHaveBeenCalledWith({ kind: 'builtin', type: 55 })
   }
 )
@@ -397,13 +389,13 @@ test('creation retains complementary built-ins and does not replace a legacy typ
     />
   )
   for (const name of [
-    'OpenAI Built-in #1',
-    'Gemini Built-in #24',
-    'Vertex AI Built-in #41',
-    'Ali Built-in #17',
-    'MiniMax Built-in #35',
-    'VolcEngine Built-in #45',
-    'Kling Built-in #50',
+    'OpenAI Type #1',
+    'Gemini Type #24',
+    'Vertex AI Type #41',
+    'Ali Type #17',
+    'MiniMax Type #35',
+    'VolcEngine Type #45',
+    'Kling Type #50',
     'Kling Plugin unrelated-kling',
   ]) {
     expect(screen.getByRole('option', { name })).toBeVisible()
@@ -481,7 +473,7 @@ test.each(migratedProviders)(
     ).toBeVisible()
     expect(
       screen.queryByRole('option', {
-        name: `${provider.label} Built-in #${provider.type}`,
+        name: `${provider.label} Type #${provider.type}`,
       })
     ).not.toBeInTheDocument()
     await user.click(screen.getByRole('tab', { name: 'Custom' }))
@@ -514,26 +506,24 @@ test.each([true, false])(
     for (const category of ['All', 'Built-in', 'Gateways']) {
       await user.click(screen.getByRole('tab', { name: category }))
       expect(
-        screen.getByRole('option', { name: 'Uter Built-in #60' })
+        screen.getByRole('option', { name: 'Uter Type #60' })
       ).toBeVisible()
       expect(
-        screen.getByRole('option', { name: 'Sub2API Built-in #59' })
+        screen.getByRole('option', { name: 'Sub2API Type #59' })
       ).toBeVisible()
     }
     expect(screen.getAllByRole('option')).toHaveLength(2)
-    await user.click(screen.getByRole('option', { name: 'Uter Built-in #60' }))
+    await user.click(screen.getByRole('option', { name: 'Uter Type #60' }))
     expect(select).toHaveBeenLastCalledWith({ kind: 'builtin', type: 60 })
     const search = screen.getByRole('combobox')
     await user.type(search, 'Sub2API')
     expect(screen.getAllByRole('option')).toHaveLength(1)
-    await user.click(
-      screen.getByRole('option', { name: 'Sub2API Built-in #59' })
-    )
+    await user.click(screen.getByRole('option', { name: 'Sub2API Type #59' }))
     expect(select).toHaveBeenLastCalledWith({ kind: 'builtin', type: 59 })
     await user.click(screen.getByRole('tab', { name: 'Built-in' }))
     expect(search).toHaveValue('Sub2API')
     expect(
-      screen.getByRole('option', { name: 'Sub2API Built-in #59' })
+      screen.getByRole('option', { name: 'Sub2API Type #59' })
     ).toBeVisible()
     await user.click(screen.getByRole('tab', { name: 'Gateways' }))
     await user.clear(search)
@@ -563,18 +553,16 @@ test('custom providers have their own tab and keep the search when switching cat
   // type 8 is gone.
   expect(within(panel).getAllByRole('option')).toHaveLength(1)
   expect(
-    within(panel).getByRole('option', { name: 'Advanced Custom Built-in #58' })
+    within(panel).getByRole('option', { name: 'Advanced Custom Type #58' })
   ).toBeVisible()
   expect(
     within(panel).queryByRole('option', { name: /Plugin/ })
   ).not.toBeInTheDocument()
 
   await user.click(within(tabs).getByRole('tab', { name: 'Built-in' }))
+  expect(screen.getByRole('option', { name: 'OpenAI Type #1' })).toBeVisible()
   expect(
-    screen.getByRole('option', { name: 'OpenAI Built-in #1' })
-  ).toBeVisible()
-  expect(
-    screen.queryByRole('option', { name: 'Advanced Custom Built-in #58' })
+    screen.queryByRole('option', { name: 'Advanced Custom Type #58' })
   ).not.toBeInTheDocument()
   await user.type(screen.getByRole('combobox'), '58')
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
@@ -582,7 +570,7 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(screen.getByRole('combobox')).toHaveValue('58')
   expect(screen.getAllByRole('option')).toHaveLength(1)
   expect(
-    screen.getByRole('option', { name: 'Advanced Custom Built-in #58' })
+    screen.getByRole('option', { name: 'Advanced Custom Type #58' })
   ).toBeVisible()
 })
 
@@ -650,7 +638,7 @@ test('removing plugin binding permission returns an active plugin tab to all pro
     screen.queryByRole('option', { name: /Plugin/ })
   ).not.toBeInTheDocument()
   expect(
-    screen.getByRole('option', { name: 'Advanced Custom Built-in #58' })
+    screen.getByRole('option', { name: 'Advanced Custom Type #58' })
   ).toBeVisible()
 })
 
@@ -679,7 +667,7 @@ test('every built-in provider has a description and Anthropic includes compatibl
     expect(option).toHaveAccessibleDescription()
   }
   const anthropic = screen.getByRole('option', {
-    name: 'Anthropic Built-in #14',
+    name: 'Anthropic Type #14',
   })
   expect(anthropic).toHaveAccessibleDescription(
     'Connect to the Anthropic API or compatible services'
@@ -707,7 +695,7 @@ test('flexible integration badge preserves provider selection and exposes the fu
   }
   const view = render(<ChannelProviderPicker {...props} />)
   const advanced = screen.getByRole('option', {
-    name: 'Advanced Custom Built-in #58',
+    name: 'Advanced Custom Type #58',
   })
   const details =
     "Uter's flexible channel lets you configure upstream addresses and authentication per endpoint, choose native forwarding or supported protocol conversions, and configure model listing and balance queries independently"
@@ -792,7 +780,7 @@ test('built-in and plugin providers with the same name remain distinct and plugi
   )
   expect(screen.getAllByRole('option', { name: /^OpenAI / })).toHaveLength(2)
   expect(
-    screen.getByRole('option', { name: 'OpenAI Built-in #1' })
+    screen.getByRole('option', { name: 'OpenAI Type #1' })
   ).toHaveAttribute('aria-current', 'true')
   expect(
     screen.getByRole('option', { name: 'OpenAI Plugin provider-video' })
@@ -853,12 +841,10 @@ test('creation shows distinct numbers for Uter and Uter.api', async () => {
 
   const search = screen.getByRole('combobox')
   await user.type(search, 'Uter')
-  expect(
-    screen.getByRole('option', { name: 'Uter Built-in #60' })
-  ).toBeVisible()
+  expect(screen.getByRole('option', { name: 'Uter Type #60' })).toBeVisible()
   const uterApi = screen.getByRole('option', { name: /Uter\.api/ })
-  expect(within(uterApi).getByText('#64')).toBeVisible()
-  expect(within(uterApi).queryByText('#60')).not.toBeInTheDocument()
+  expect(within(uterApi).getByText('Type #64')).toBeVisible()
+  expect(within(uterApi).queryByText('Type #60')).not.toBeInTheDocument()
 })
 
 test('an empty plugin filter reports that no plugins can be bound', async () => {
@@ -877,4 +863,27 @@ test('an empty plugin filter reports that no plugins can be bound', async () => 
   await user.click(screen.getByRole('tab', { name: 'Plugins' }))
   expect(screen.getByText('No plugins available for binding')).toBeVisible()
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
+})
+
+test('the Uter Route gateway card renders the Uter logo, not the plugin puzzle fallback', async () => {
+  const user = userEvent.setup()
+  render(
+    <ChannelProviderPicker
+      isCreating
+      plugins={[]}
+      canBindPlugin
+      loading={false}
+      failed={false}
+      disabled={false}
+      onRetry={vi.fn()}
+      onSelect={vi.fn()}
+    />
+  )
+
+  await user.type(screen.getByRole('combobox'), 'Uter Route')
+  const route = await screen.findByRole('option', {
+    name: 'Uter Route Type #65',
+  })
+  expect(route.querySelector('svg.lucide-puzzle')).toBeNull()
+  expect(route.querySelector('svg[viewBox="0 0 200 200"]')).not.toBeNull()
 })

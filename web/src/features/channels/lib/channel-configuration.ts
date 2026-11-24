@@ -32,6 +32,7 @@ export type ChannelProviderTarget =
   | { kind: 'builtin'; type: number }
   | { kind: 'plugin'; key: string }
   | { kind: 'uterapi' }
+  | { kind: 'uterroute' }
 
 export type ChannelConfigurationSection =
   | 'connection'
@@ -53,17 +54,17 @@ export type ChannelConfigurationStatus =
 
 const CONFIGURATION_BLOCKS = {
   modelList: { section: 'models', fields: ['models'] },
-  modelMapping: { section: 'routing', fields: ['model_mapping'] },
+  modelMapping: { section: 'other', fields: ['model_mapping'] },
   routingStrategy: {
-    section: 'routing',
+    section: 'other',
     fields: ['priority', 'weight', 'test_model', 'auto_ban'],
   },
   overrideRules: {
-    section: 'request',
+    section: 'other',
     fields: ['status_code_mapping', 'param_override', 'header_override'],
   },
   requestProcessing: {
-    section: 'request',
+    section: 'other',
     fields: [
       'force_format',
       'thinking_to_content',
@@ -75,7 +76,7 @@ const CONFIGURATION_BLOCKS = {
     ],
   },
   fieldPassthrough: {
-    section: 'request',
+    section: 'other',
     fields: [
       'allow_service_tier',
       'disable_store',
@@ -87,7 +88,7 @@ const CONFIGURATION_BLOCKS = {
     ],
   },
   extraSettings: {
-    section: 'review',
+    section: 'other',
     fields: [
       'proxy',
       'http_protocol',
@@ -97,14 +98,14 @@ const CONFIGURATION_BLOCKS = {
     ],
   },
   upstreamModelDetection: {
-    section: 'models',
+    section: 'auto_update',
     fields: [
       'upstream_model_update_check_enabled',
       'upstream_model_update_auto_sync_enabled',
       'upstream_model_update_ignored_models',
     ],
   },
-  internalNotes: { section: 'review', fields: ['tag', 'remark'] },
+  internalNotes: { section: 'other', fields: ['tag', 'remark'] },
 } as const satisfies Record<
   string,
   {

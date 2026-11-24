@@ -57,6 +57,7 @@ import {
   type ChannelBatchPricingResult,
   type UpstreamInvoiceImportResult,
 } from '../api'
+import { invalidatePricingQueries } from '../lib/channel-actions'
 import { PRICING_MODES } from '../lib/pricing-schedule'
 import { isUterRouteBaseUrl } from '../lib/uterroute'
 import { ChannelModelPricingSection } from './channel-model-pricing-section'
@@ -96,6 +97,7 @@ const BILLING_UNIT_LABELS: Record<string, string> = {
   per_call: 'Per call',
   per_second: 'Per second',
   per_minute: 'Per minute',
+  tiered_expr: 'Expression',
 }
 
 const PRICE_DIMENSIONS = [
@@ -548,6 +550,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       void queryClient.invalidateQueries({
         queryKey: ['uterroute-upstream-snapshot'],
       })
+      invalidatePricingQueries(queryClient)
     },
     onError: (error) =>
       handleServerError(error, t('Failed to sync upstream catalog')),
@@ -1245,20 +1248,24 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
             {preview.items.length > 0 ? (
               <div className='max-h-72 overflow-auto rounded border'>
                 <table className='w-full text-left text-xs'>
-                  <thead className='bg-muted/40 sticky top-0'>
+                  <thead>
                     <tr>
-                      <th className='px-2 py-1 font-medium'>{t('Model')}</th>
-                      <th className='px-2 py-1 font-medium'>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
+                        {t('Model')}
+                      </th>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
                         {t('Billing unit')}
                       </th>
-                      <th className='px-2 py-1 font-medium'>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
                         {t('New sale price')}
                       </th>
-                      <th className='px-2 py-1 font-medium'>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
                         {t('Purchase price')}
                       </th>
-                      <th className='px-2 py-1 font-medium'>{t('Change')}</th>
-                      <th className='px-2 py-1 font-medium'>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
+                        {t('Change')}
+                      </th>
+                      <th className='bg-muted sticky top-0 z-10 px-2 py-1 font-medium'>
                         {t('Gross margin')}
                       </th>
                     </tr>
@@ -1330,6 +1337,10 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                       if (item.per_minute_usd != null) {
                         parts.push(`${t('Per minute')} $${item.per_minute_usd}`)
                       }
+                      const salePriceText =
+                        parts.length > 0
+                          ? parts.join(' · ')
+                          : item.billing_expr || '—'
                       return (
                         <tr
                           key={`${item.model_name}|${item.provider ?? ''}|${item.region ?? ''}|${item.deployment_id ?? ''}`}
@@ -1354,7 +1365,7 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
                           <td className='px-2 py-1'>
                             {billingUnitLabel(item.mode)}
                           </td>
-                          <td className='px-2 py-1'>{parts.join(' · ')}</td>
+                          <td className='px-2 py-1'>{salePriceText}</td>
                           <td className='px-2 py-1'>
                             {item.purchase_usd != null
                               ? `$${item.purchase_usd}`

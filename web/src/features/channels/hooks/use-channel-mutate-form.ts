@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -32,6 +32,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { createChannel, publishChannelDraft, updateChannel } from '../api'
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
 import {
+  invalidatePricingQueries,
   transformFormDataToCreatePayload,
   transformFormDataToUpdatePayload,
   type ChannelFormValues,
@@ -60,6 +61,7 @@ const SENSITIVE_UPDATE_FIELDS = [
 
 export function useChannelMutateForm(props: UseChannelMutateFormParams) {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const currentUser = useAuthStore((s) => s.auth.user)
   const canEditSensitive = hasPermission(
     currentUser,
@@ -136,6 +138,7 @@ export function useChannelMutateForm(props: UseChannelMutateFormParams) {
     },
     onSuccess: (messageKey) => {
       toast.success(t(messageKey))
+      invalidatePricingQueries(queryClient)
       props.onSuccess()
     },
     onError: (error: unknown) => {

@@ -91,6 +91,45 @@ test('fetched price preview shows official and channel prices per model', async 
   expect(screen.getByText('$1.5000 / $3.0000')).toBeVisible()
 })
 
+test('fetched price preview surfaces draft and fetch failures with retry', async () => {
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: { success: true, data: { channel_id: 7, items: [] } },
+  })
+  const onRetrySetup = vi.fn()
+  const onRetryFetch = vi.fn()
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  const view = render(
+    <QueryClientProvider client={client}>
+      <FetchedPricePreview
+        channelId={0}
+        setupState='failed'
+        setupError='draft failed'
+        onRetrySetup={onRetrySetup}
+      />
+    </QueryClientProvider>
+  )
+  expect(screen.getByText('draft failed')).toBeVisible()
+  screen.getByRole('button', { name: 'Retry' }).click()
+  expect(onRetrySetup).toHaveBeenCalledTimes(1)
+
+  view.rerender(
+    <QueryClientProvider client={client}>
+      <FetchedPricePreview
+        channelId={7}
+        fetchState='failed'
+        onRetryFetch={onRetryFetch}
+      />
+    </QueryClientProvider>
+  )
+  expect(
+    screen.getByText('Failed to fetch prices from the catalog')
+  ).toBeVisible()
+  screen.getByRole('button', { name: 'Retry' }).click()
+  expect(onRetryFetch).toHaveBeenCalledTimes(1)
+})
+
 test('fetched price preview shows a sync hint when the catalog is empty', async () => {
   vi.spyOn(api, 'get').mockResolvedValue({
     data: { success: true, data: { channel_id: 7, items: [] } },

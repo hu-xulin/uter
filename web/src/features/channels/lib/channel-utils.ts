@@ -59,6 +59,7 @@ export function getChannelTypeIcon(type: number): string {
     59: 'Sub2API', // Sub2API
     60: 'Uter', // Uter.ai relay
     64: 'Uter', // Uter.api gateway
+    65: 'Uter', // Uter Route white-labelled gateway
     3: 'Azure', // Azure
 
     // Anthropic

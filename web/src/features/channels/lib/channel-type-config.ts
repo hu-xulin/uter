@@ -190,6 +190,16 @@ export const CHANNEL_TYPE_CONFIGS: Record<number, ChannelTypeConfig> = {
       models: 'Models',
     },
   },
+  65: {
+    id: 65,
+    name: CHANNEL_TYPES[65],
+    icon: 'Uter',
+    hints: {
+      baseUrl: 'Base URL is required for this channel type',
+      key: 'Enter API key for this channel',
+      models: 'Models',
+    },
+  },
 }
 
 /**

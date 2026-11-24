@@ -84,7 +84,10 @@ export function getChannelPluginExtensions(
   extendPluginKeys: readonly string[] = []
 ): TaskPluginOption[] {
   if (!supportsChannelPluginExtensions(channelType)) return []
-  if (channelType === CHANNEL_TYPE_UTER || channelType === CHANNEL_TYPE_UTER_API) {
+  if (
+    channelType === CHANNEL_TYPE_UTER ||
+    channelType === CHANNEL_TYPE_UTER_API
+  ) {
     return plugins.filter((plugin) => extendPluginKeys.includes(plugin.key))
   }
   return plugins.filter((plugin) => plugin.channelTypes?.includes(channelType))

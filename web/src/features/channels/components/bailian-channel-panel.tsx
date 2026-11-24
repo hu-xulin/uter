@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { RefreshCw, Sparkles } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -86,7 +86,6 @@ type BailianChannelPanelProps = {
 export function BailianChannelPanel(props: BailianChannelPanelProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [creatingDraft, setCreatingDraft] = useState(false)
   const parsed = useMemo(
     () => parseWorkspaceBase(props.baseUrl),
     [props.baseUrl]
@@ -243,37 +242,10 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
               {t('Apply catalog metadata')}
             </Button>
             <Badge variant={bailianSyncVariant}>{bailianSyncLabel}</Badge>
-            {props.channelId == null && props.onCreateDraft ? (
-              <Button
-                type='button'
-                size='sm'
-                variant='outline'
-                disabled={creatingDraft}
-                onClick={async () => {
-                  setCreatingDraft(true)
-                  try {
-                    await props.onCreateDraft?.()
-                  } catch (error) {
-                    handleServerError(
-                      error,
-                      t('Failed to create draft channel')
-                    )
-                  } finally {
-                    setCreatingDraft(false)
-                  }
-                }}
-              >
-                {creatingDraft
-                  ? t('Creating...')
-                  : t('Generate draft channel ID')}
-              </Button>
-            ) : null}
           </div>
           {props.channelId == null ? (
             <p className='text-muted-foreground text-sm'>
-              {t(
-                'Generate a draft channel ID before syncing so prices are written into this channel.'
-              )}
+              {t('A draft channel is created automatically to fetch prices.')}
             </p>
           ) : null}
           <div className='text-muted-foreground grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-3'>

@@ -1087,6 +1087,7 @@ export type ChannelBatchPricingItem = {
   per_call_usd?: number
   per_second_usd?: number
   per_minute_usd?: number
+  billing_expr?: string
   version?: string
   purchase_usd?: number
   previous_usd?: number
@@ -1157,7 +1158,7 @@ export async function batchChannelModelPricing(
 
 export type ChannelPricingSchedule = {
   enabled: boolean
-  basis: 'official' | 'channel'
+  basis: 'official' | 'channel' | 'current'
   mode: string
   value: number
   apply_on_sync: boolean

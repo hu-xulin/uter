@@ -113,7 +113,7 @@ function ChannelCardComponent({
             <div className='min-w-0 overflow-hidden text-sm'>
               {!isTagRow && (
                 <div className={labelClass}>
-                  #{sensitiveVisible ? row.original.id : SENSITIVE_MASK}
+                  {`ID ${sensitiveVisible ? String(row.original.id).padStart(3, '0') : SENSITIVE_MASK}`}
                 </div>
               )}
               {nameCell}

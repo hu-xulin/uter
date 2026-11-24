@@ -182,6 +182,7 @@ export function ChannelModelPricingSection(
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<ChannelModelPricingRecord | null>(null)
   const [draft, setDraft] = useState<EditDraft | null>(null)
+  const [reviewOnly, setReviewOnly] = useState(false)
 
   const listQuery = useQuery({
     queryKey: ['channel-model-pricing', props.channelId],
@@ -204,18 +205,46 @@ export function ChannelModelPricingSection(
     [listQuery.data]
   )
   const summary = useMemo(() => {
+    // Count models, not rows: a mis-synced channel can hold several provider
+    // rows per model, and the header must still read "83 models".
+    // needs_review outranks configured so a duplicate configured row can
+    // never hide a model that still awaits manual confirmation.
+    const rank = (status: string) => {
+      if (status === 'needs_review') return 2
+      if (status === 'configured') return 1
+      return 0
+    }
+    const byModel = new Map<string, string>()
+    for (const item of items) {
+      const previous = byModel.get(item.model_name)
+      if (
+        previous === undefined ||
+        rank(item.pricing_status) > rank(previous)
+      ) {
+        byModel.set(item.model_name, item.pricing_status)
+      }
+    }
     let configured = 0
     let review = 0
-    for (const item of items) {
-      if (item.pricing_status === 'configured') configured++
-      if (item.pricing_status === 'needs_review') review++
+    for (const status of byModel.values()) {
+      if (status === 'configured') configured++
+      else if (status === 'needs_review') review++
     }
     return {
+      total: byModel.size,
       configured,
       review,
-      officialOnly: items.length - configured - review,
+      officialOnly: byModel.size - configured - review,
     }
   }, [items])
+
+  const visibleItems = useMemo(
+    () =>
+      reviewOnly
+        ? items.filter((item) => item.pricing_status === 'needs_review')
+        : items,
+    [items, reviewOnly]
+  )
 
   const save = useMutation({
     mutationFn: async () => {
@@ -497,9 +526,14 @@ export function ChannelModelPricingSection(
         </p>
       )
     }
+    if (visibleItems.length === 0) {
+      return (
+        <p className='text-muted-foreground text-sm'>{t('No models available')}</p>
+      )
+    }
     return (
       <div className='max-h-80 overflow-y-auto rounded-md border'>
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const raw = rawPriceComponent(item)
           return (
             <div
@@ -798,7 +832,7 @@ export function ChannelModelPricingSection(
             {t(
               '{{total}} models · {{configured}} configured · {{review}} review',
               {
-                total: items.length,
+                total: summary.total,
                 configured: summary.configured,
                 review: summary.review,
               }
@@ -806,6 +840,20 @@ export function ChannelModelPricingSection(
             {' · '}
             {t('Channel #{{id}}', { id: props.channelId })}
           </span>
+          {summary.review > 0 && (
+            <Button
+              type='button'
+              size='sm'
+              variant={reviewOnly ? 'secondary' : 'outline'}
+              aria-pressed={reviewOnly}
+              title={t(
+                'Click to show only the models that await manual confirmation'
+              )}
+              onClick={() => setReviewOnly((value) => !value)}
+            >
+              {t('Needs review')} · {summary.review}
+            </Button>
+          )}
           {summary.officialOnly > 0 && (
             <Button
               type='button'

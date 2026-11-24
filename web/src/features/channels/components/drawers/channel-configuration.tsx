@@ -56,9 +56,18 @@ type ChannelConfigurationProps = {
     Record<ChannelConfigurationSection, { count: number; label: string }>
   >
   /**
-   * Creation always runs the same six steps: connect, fetch models, fetch
-   * prices, configure prices, automatic updates, other settings. Editing keeps
-   * the granular configuration pages.
+   * Expansion of the two collapsible blocks on the last step. Jump actions from
+   * other steps expand the block that holds the fix so its editor is reachable.
+   */
+  expandedAdvancedSections?: Partial<Record<'routing' | 'request', boolean>>
+  onExpandedAdvancedSectionChange?: (
+    section: 'routing' | 'request',
+    expanded: boolean
+  ) => void
+  /**
+   * Both creation and editing run the same six steps: connect, fetch models,
+   * fetch prices, configure prices, automatic updates, other settings. The mode
+   * only changes the final action label.
    */
   mode?: 'create' | 'edit'
   connection: ReactNode
@@ -130,26 +139,14 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
     })
   }, [props.section])
   const isCreate = props.mode === 'create'
-  let sections: ConfigurationStep[]
-  if (!isCreate) {
-    sections = [
-      { id: 'connection', label: t('Connection') },
-      { id: 'models', label: t('Models') },
-      { id: 'pricing', label: t('Pricing') },
-      { id: 'routing', label: t('Routing & Mapping') },
-      { id: 'request', label: t('Request & Response') },
-      { id: 'review', label: t('Review') },
-    ]
-  } else {
-    sections = [
-      { id: 'connection', label: t('Connect channel') },
-      { id: 'models', label: t('Fetch models') },
-      { id: 'pricing_fetch', label: t('Fetch prices') },
-      { id: 'pricing_config', label: t('Configure prices') },
-      { id: 'auto_update', label: t('Automatic updates') },
-      { id: 'other', label: t('Other settings') },
-    ]
-  }
+  const sections: ConfigurationStep[] = [
+    { id: 'connection', label: t('Connect channel') },
+    { id: 'models', label: t('Fetch models') },
+    { id: 'pricing_fetch', label: t('Fetch prices') },
+    { id: 'pricing_config', label: t('Configure prices') },
+    { id: 'auto_update', label: t('Automatic updates') },
+    { id: 'other', label: t('Other settings') },
+  ]
   const currentIndex = Math.max(
     0,
     sections.findIndex((section) => section.id === props.section)
@@ -231,10 +228,7 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
             {props.connection}
           </div>
           {process.env.NODE_ENV === 'test' && props.section !== 'models' ? (
-            <div className='flex min-w-0 flex-col gap-5'>
-              {props.models}
-              {isCreate ? null : props.quickOptions}
-            </div>
+            <div className='flex min-w-0 flex-col gap-5'>{props.models}</div>
           ) : null}
         </div>
       </TabsContent>
@@ -243,12 +237,7 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
         keepMounted
         className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
       >
-        {(props.section === 'models' || visited.has('models')) && (
-          <>
-            {props.models}
-            {!isCreate ? props.quickOptions : null}
-          </>
-        )}
+        {(props.section === 'models' || visited.has('models')) && props.models}
       </TabsContent>
       <TabsContent
         value='pricing_fetch'
@@ -280,10 +269,16 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
         keepMounted
         className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
       >
-        {isCreate && (props.section === 'other' || visited.has('other')) && (
+        {(props.section === 'other' || visited.has('other')) && (
           <div className='space-y-5'>
             {props.review}
-            <Collapsible className='rounded-lg border'>
+            <Collapsible
+              open={props.expandedAdvancedSections?.routing ?? false}
+              onOpenChange={(open) =>
+                props.onExpandedAdvancedSectionChange?.('routing', open)
+              }
+              className='rounded-lg border'
+            >
               <CollapsibleTrigger
                 aria-label={t('Routing & Mapping')}
                 className='hover:bg-muted/40 flex w-full items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm font-medium'
@@ -295,7 +290,13 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
                 {props.routing}
               </CollapsibleContent>
             </Collapsible>
-            <Collapsible className='rounded-lg border'>
+            <Collapsible
+              open={props.expandedAdvancedSections?.request ?? false}
+              onOpenChange={(open) =>
+                props.onExpandedAdvancedSectionChange?.('request', open)
+              }
+              className='rounded-lg border'
+            >
               <CollapsibleTrigger
                 aria-label={t('Request & Response')}
                 className='hover:bg-muted/40 flex w-full items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm font-medium'
@@ -310,50 +311,6 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
             {props.quickOptions}
             {props.other}
           </div>
-        )}
-      </TabsContent>
-      <TabsContent
-        value='pricing'
-        keepMounted
-        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
-      >
-        {(props.section === 'pricing' || visited.has('pricing')) &&
-          props.pricing}
-      </TabsContent>
-      <TabsContent
-        value='routing'
-        keepMounted
-        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
-      >
-        {(props.section === 'routing' || visited.has('routing')) &&
-          props.routing}
-      </TabsContent>
-      <TabsContent
-        value='request'
-        keepMounted
-        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
-      >
-        {(props.section === 'request' || visited.has('request')) &&
-          props.request}
-      </TabsContent>
-      <TabsContent
-        value='review'
-        keepMounted
-        className='-m-1 min-h-0 space-y-5 overflow-y-auto overscroll-contain p-1'
-      >
-        {!isCreate && (props.section === 'review' || visited.has('review')) && (
-          <>
-            {props.review}
-            <Collapsible className='rounded-lg border'>
-              <CollapsibleTrigger className='hover:bg-muted/40 flex w-full items-center justify-between gap-2 rounded-lg px-4 py-3 text-sm font-medium'>
-                <span>{t('Advanced settings')}</span>
-                <ChevronDown className='size-4' aria-hidden='true' />
-              </CollapsibleTrigger>
-              <CollapsibleContent className='space-y-5 border-t p-4'>
-                {props.other}
-              </CollapsibleContent>
-            </Collapsible>
-          </>
         )}
       </TabsContent>
       <div className='flex shrink-0 items-center justify-between gap-2 border-t pt-3'>
@@ -403,7 +360,7 @@ export function ChannelConfiguration(props: ChannelConfigurationProps) {
         ) : (
           <span className='text-success inline-flex items-center gap-1.5 text-sm font-medium'>
             <Check className='size-4' aria-hidden='true' />
-            {t('Ready to create')}
+            {isCreate ? t('Ready to create') : t('Ready to save')}
           </span>
         )}
       </div>

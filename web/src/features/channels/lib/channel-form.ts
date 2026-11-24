@@ -21,6 +21,7 @@ import { z } from 'zod'
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   CHANNEL_TYPE_NEW_API,
+  CHANNEL_TYPE_UTER_ROUTE,
   CHANNEL_TYPE_UTER,
   CHANNEL_TYPE_OLLAMA,
   CHANNEL_TYPE_TASK_PLUGIN,
@@ -316,6 +317,7 @@ export const channelFormSchema = z
         36,
         45,
         CHANNEL_TYPE_NEW_API,
+        CHANNEL_TYPE_UTER_ROUTE,
         CHANNEL_TYPE_UTER,
         CHANNEL_TYPE_TASK_PLUGIN,
         CHANNEL_TYPE_VLLM,
