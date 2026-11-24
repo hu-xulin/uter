@@ -72,6 +72,8 @@ export type PricingChannelPrice = {
   completion_ratio?: number
   model_price?: number
   per_second_usd?: number
+  per_minute_usd?: number
+  billing_mode?: string
   billing_expr?: string
   cache_ratio?: number
   create_cache_ratio?: number
@@ -81,6 +83,7 @@ export type PricingChannelPrice = {
   official_model_ratio?: number
   official_completion_ratio?: number
   official_cache_ratio?: number
+  official_create_cache_ratio?: number
   official_model_price?: number
   official_per_second_usd?: number
   quota_type: number

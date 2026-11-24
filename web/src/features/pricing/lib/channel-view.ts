@@ -44,13 +44,12 @@ export function applyChannelView(
       return model
     }
     const merged = applyChannelPrice(model, channelPrice)
-    if (channelPrice.quota_type !== 4) {
-      const entry = officialEntry(channelPrice)
-      // A channel row without official fields must not wipe the catalogue's
-      // official price; it only replaces the reference when it has one.
-      if (Object.keys(entry).length > 0) {
-        official[model.model_name] = entry
-      }
+    // The official basis belongs to the same channel row as the sale price.
+    // Skipping this for tiered expressions made the card compare a discounted
+    // channel expression against an unrelated public catalogue price.
+    const entry = officialEntry(channelPrice)
+    if (Object.keys(entry).length > 0) {
+      official[model.model_name] = entry
     }
     return merged
   })
@@ -63,32 +62,43 @@ function applyChannelPrice(
 ): PricingModel {
   const merged = { ...model }
   if (merged.channel_prices) delete merged.channel_prices
+  if (price.status) merged.channel_pricing_status = price.status
+
+  // official_only / needs_review rows carry no billable price. Keep the
+  // catalogue price untouched and only surface the review status/basis.
   if (price.quota_type < 0) {
-    merged.channel_pricing_status = price.status ?? 'needs_review'
-    if (price.official_model_ratio) {
-      merged.model_ratio = price.official_model_ratio
-      merged.completion_ratio = price.official_completion_ratio ?? 1
-      merged.quota_type = 0
-    } else if (price.official_model_price) {
-      merged.model_price = price.official_model_price
-      merged.quota_type = 1
-    }
     return merged
   }
-  if (price.quota_type === 4) {
-    merged.quota_type = 4
-    merged.billing_mode = 'tiered_expr'
-    merged.billing_expr = price.billing_expr ?? ''
+
+  // A configured tiered expression is the channel's billable price. It must
+  // win over any global expression and stay in the token bucket so the plaza's
+  // token/request facets keep working.
+  if (price.billing_expr) {
+    merged.quota_type = 0
+    merged.billing_mode = price.billing_mode || 'tiered_expr'
+    merged.billing_expr = price.billing_expr
     merged.model_ratio = 0
     merged.model_price = 0
+    merged.completion_ratio = 0
     merged.channel_internal_per_second_usd = undefined
     return merged
   }
+
   if (price.quota_type === 2) {
     merged.quota_type = 2
     merged.channel_internal_per_second_usd = price.per_second_usd
     merged.model_ratio = 0
     merged.model_price = 0
+    merged.billing_expr = ''
+    merged.billing_mode = ''
+    return merged
+  }
+  if (price.quota_type === 3) {
+    merged.quota_type = 3
+    merged.model_ratio = 0
+    merged.model_price = 0
+    merged.billing_expr = ''
+    merged.billing_mode = ''
     return merged
   }
   if (price.quota_type === 1) {
@@ -97,6 +107,8 @@ function applyChannelPrice(
     merged.model_ratio = 0
     merged.completion_ratio = 0
     merged.channel_internal_per_second_usd = undefined
+    merged.billing_expr = ''
+    merged.billing_mode = ''
     return merged
   }
   merged.quota_type = 0
@@ -120,6 +132,7 @@ function officialEntry(price: PricingChannelPrice): Record<string, number> {
           model_ratio: price.official_model_ratio,
           completion_ratio: price.official_completion_ratio ?? 0,
           cache_ratio: price.official_cache_ratio ?? 0,
+          create_cache_ratio: price.official_create_cache_ratio ?? 0,
         }
       : {}),
     ...(price.official_model_price

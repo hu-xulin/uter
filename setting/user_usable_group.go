@@ -10,9 +10,12 @@ import (
 
 // The default descriptions are English source keys that the web console
 // translates; descriptions an administrator saves are shown as written.
+// "default" is the one true default group. VIP0 is a regular VIP tier kept for
+// backwards compatibility (its ratio stays 1) and is deliberately NOT labelled
+// "Default group" — only "default" carries that meaning.
 var userUsableGroups = map[string]string{
 	"default": "Default group",
-	"VIP0":    "Default group",
+	"VIP0":    "VIP0",
 }
 var userUsableGroupsMutex sync.RWMutex
 

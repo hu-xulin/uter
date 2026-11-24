@@ -210,15 +210,27 @@ func TestOverlayChannelOfficialPricesUsesChannelBasis(t *testing.T) {
 			ChannelOfficialCompletionRatio: 5,
 			ChannelOfficialCacheRatio:      0.1,
 		},
+		{
+			ModelName:                       "gpt-6-astra",
+			ChannelPriceName:                "优特精选",
+			ChannelPricingTiered:            true,
+			ChannelOfficialModelRatio:       5,
+			ChannelOfficialCompletionRatio:  5,
+			ChannelOfficialCacheRatio:       0.1,
+			ChannelOfficialCreateCacheRatio: 1.25,
+		},
 		{ModelName: "global-only"},
 	}
 	official := map[string]map[string]float64{
 		"claude-fable-5": {"model_ratio": 1.5, "completion_ratio": 6},
+		"gpt-6-astra":    {"model_ratio": 1.5, "completion_ratio": 6},
 		"global-only":    {"model_ratio": 2},
 	}
 	merged := overlayChannelOfficialPrices(pricing, official)
 	require.Equal(t, 5.0, merged["claude-fable-5"]["model_ratio"])
 	require.Equal(t, 5.0, merged["claude-fable-5"]["completion_ratio"])
 	require.Equal(t, 0.1, merged["claude-fable-5"]["cache_ratio"])
+	require.Equal(t, 5.0, merged["gpt-6-astra"]["model_ratio"], "tiered channel price must use the channel official basis")
+	require.Equal(t, 1.25, merged["gpt-6-astra"]["create_cache_ratio"])
 	require.Equal(t, 2.0, merged["global-only"]["model_ratio"])
 }

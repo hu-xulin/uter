@@ -84,7 +84,7 @@ function PayableAmountValue({
 
   return (
     <div className='flex items-baseline gap-2'>
-      <span className='text-2xl font-semibold'>
+      <span className='text-2xl font-semibold tabular-nums'>
         {formatPaymentAmount(paymentAmount, paymentType)}
       </span>
       {hasDiscount && (
@@ -133,7 +133,7 @@ export function PaymentConfirmDialog({
             <span className='text-muted-foreground text-sm'>
               {t('Topup Amount')}
             </span>
-            <span className='text-lg font-semibold'>
+            <span className='text-lg font-semibold tabular-nums'>
               {formatLocalCurrencyAmount(topupAmount * usdExchangeRate, {
                 digitsLarge: 2,
                 digitsSmall: 2,
@@ -159,7 +159,7 @@ export function PaymentConfirmDialog({
             <div className='bg-muted/50 rounded-lg p-3'>
               <div className='flex items-center justify-between text-sm'>
                 <span className='text-muted-foreground'>{t('You save')}</span>
-                <span className='text-success font-semibold'>
+                <span className='text-success font-semibold tabular-nums'>
                   {formatPaymentAmount(discountAmount, paymentMethod?.type)}
                 </span>
               </div>

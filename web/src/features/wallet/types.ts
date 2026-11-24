@@ -258,30 +258,6 @@ export interface AffiliateTransferRequest {
 }
 
 /**
- * User wallet data
- */
-export interface UserWalletData {
-  /** User ID */
-  id: number
-  /** Username */
-  username: string
-  /** Current quota balance */
-  quota: number
-  /** Total used quota */
-  used_quota: number
-  /** Total request count */
-  request_count: number
-  /** Affiliate quota (pending rewards) */
-  aff_quota: number
-  /** Total affiliate quota earned (historical) */
-  aff_history_quota: number
-  /** Number of successful affiliate invites */
-  aff_count: number
-  /** User group */
-  group: string
-}
-
-/**
  * Topup record status
  */
 export type TopupStatus = 'success' | 'pending' | 'expired'

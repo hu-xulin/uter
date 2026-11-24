@@ -19,6 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { describe, expect, test } from 'vitest'
 
 import {
+  CHANNEL_TYPE_NEW_API,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
   CHANNEL_TYPE_UTER,
@@ -42,6 +43,15 @@ describe('channel type numbering', () => {
 
     expect(labels.get(CHANNEL_TYPE_UTER)).toBe('Uter')
     expect(labels.get(CHANNEL_TYPE_UTER_API)).toBe('Uter.api')
+  })
+
+  test('CHANNEL_TYPE_NEW_API stays an intentional alias of CHANNEL_TYPE_UTER_API', () => {
+    // New API-compatible relay uses its own type number (64) and exposes a
+    // legacy alias name consumed by the mutate drawer / provider picker.
+    // This alias is deliberate dead-code-analysis noise, not a duplicate to
+    // remove: @alias keeps Knip quiet without weakening the strict config.
+    expect(CHANNEL_TYPE_NEW_API).toBe(CHANNEL_TYPE_UTER_API)
+    expect(CHANNEL_TYPE_NEW_API).toBe(64)
   })
 })
 

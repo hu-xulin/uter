@@ -765,6 +765,32 @@ func hasEnabledMultiKey(keys []string, statusList map[int]int) bool {
 	return false
 }
 
+// healAbilityStatusDrift repairs the case where a channel's status column is
+// already at the target but its abilities still carry the old enabled flag
+// (draft import, async model add, or an id reused after a delete). The pricing
+// page and channel selection both read abilities.enabled, so leaving the drift
+// makes an "enabled" channel invisible. Returns true when a repair was made.
+func healAbilityStatusDrift(channelId int, status int) bool {
+	want := status == common.ChannelStatusEnabled
+	var drifts int64
+	if err := DB.Model(&Ability{}).
+		Where("channel_id = ? AND enabled = ?", channelId, !want).
+		Count(&drifts).Error; err != nil {
+		common.SysLog(common.LogText("check ability drift failed: channel_id=%d, error=%v", channelId, err))
+		return false
+	}
+	if drifts == 0 {
+		return false
+	}
+	if err := UpdateAbilityStatus(channelId, want); err != nil {
+		common.SysLog(common.LogText("heal ability drift failed: channel_id=%d, error=%v", channelId, err))
+		return false
+	}
+	BumpSyncTopic(SyncTopicChannels)
+	common.SysLog(common.LogText("healed %d drifted abilities: channel_id=%d enabled=%v", drifts, channelId, want))
+	return true
+}
+
 func UpdateChannelStatus(channelId int, usingKey string, status int, reason string) bool {
 	if common.MemoryCacheEnabled {
 		channelStatusLock.Lock()
@@ -789,6 +815,9 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 				return false
 			}
 			if !channelCache.ChannelInfo.IsMultiKey && channelCache.Status == status {
+				// Status already matches: still heal any ability drift before
+				// returning, otherwise an admin pressing "Enable" is a no-op.
+				healAbilityStatusDrift(channelId, status)
 				return false
 			}
 		}
@@ -825,6 +854,10 @@ func UpdateChannelStatus(channelId int, usingKey string, status int, reason stri
 			status == common.ChannelStatusManuallyDisabled && reason != ChannelStatusReasonAllKeysDisabled &&
 			channel.GetOtherInfo()["status_reason"] == ChannelStatusReasonAllKeysDisabled
 		if channel.Status == status && !overridesKeyExhaustion {
+			// The status column already matches, but abilities may be stale
+			// from a draft import or a reused channel id. Heal them so the
+			// channel becomes visible to pricing/selection again.
+			healAbilityStatusDrift(channelId, status)
 			return false
 		}
 

@@ -255,7 +255,11 @@ export async function createUterAPIChannels(payload: {
 
 export type UterAPIPricingGroup = { key: string; name: string; ratio: number }
 
-/** Billing groups published by the uterapi pricing document. */
+/**
+ * Billing groups published by the uterapi pricing document.
+ * @public Kept as the typed client surface for the live
+ * `GET /api/channel/uterapi/groups` backend endpoint; not yet wired into a UI.
+ */
 export async function getUterAPIPricingGroups(): Promise<{
   success: boolean
   data?: { groups: UterAPIPricingGroup[] }

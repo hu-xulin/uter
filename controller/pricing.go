@@ -223,7 +223,7 @@ func overlayChannelOfficialPrices(
 	official map[string]map[string]float64,
 ) map[string]map[string]float64 {
 	for _, item := range pricing {
-		if item.ChannelPriceName == "" || item.ChannelPricingTiered {
+		if item.ChannelPriceName == "" {
 			continue
 		}
 		entry := map[string]float64{}

@@ -255,7 +255,7 @@ export function CnPayWebDialog({
         <div className='flex flex-col items-center gap-4 py-4'>
           <div className='flex w-full items-center justify-between text-sm'>
             <span className='text-muted-foreground'>{t('Topup Amount')}</span>
-            <span className='font-semibold'>
+            <span className='font-semibold tabular-nums'>
               {formatLocalCurrencyAmount(topupAmount, {
                 digitsLarge: 2,
                 digitsSmall: 2,
@@ -265,7 +265,7 @@ export function CnPayWebDialog({
           </div>
           <div className='flex w-full items-center justify-between text-sm'>
             <span className='text-muted-foreground'>{t('You Pay')}</span>
-            <span className='font-semibold'>
+            <span className='font-semibold tabular-nums'>
               {/* 官方直连（支付宝/微信）的下单金额恒为人民币：后端
                   getPayMoney = amount × Price（Price 是每美元额度的人民币价），
                   原样提交给网关。此处必须强制 ¥，跟随 quotaDisplayType 会在

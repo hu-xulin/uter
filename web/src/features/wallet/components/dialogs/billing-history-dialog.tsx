@@ -208,7 +208,7 @@ export function BillingHistoryDialog({
                   <Label className='text-muted-foreground text-sm'>
                     {t('Amount')}
                   </Label>
-                  <div className='text-sm font-semibold'>
+                  <div className='text-sm font-semibold tabular-nums'>
                     {formatCurrencyFromUSD(record.amount, {
                       digitsLarge: 2,
                       digitsSmall: 2,
@@ -220,7 +220,7 @@ export function BillingHistoryDialog({
                   <Label className='text-muted-foreground text-sm'>
                     {t('Payment')}
                   </Label>
-                  <div className='text-destructive text-sm font-semibold'>
+                  <div className='text-destructive text-sm font-semibold tabular-nums'>
                     {formatNumber(record.money)}
                   </div>
                 </div>

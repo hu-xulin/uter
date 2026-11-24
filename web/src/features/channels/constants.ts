@@ -31,6 +31,11 @@ export const CHANNEL_TYPE_UTER = 60
 // it never shares an identifier with Uter.ai (type 60).
 export const CHANNEL_TYPE_UTER_API = 64
 export const CHANNEL_TYPE_UTER_ROUTE = 65
+
+/**
+ * Legacy name for the New API-compatible relay channel type (64).
+ * @alias CHANNEL_TYPE_UTER_API
+ */
 export const CHANNEL_TYPE_NEW_API = CHANNEL_TYPE_UTER_API
 export const NEW_API_COMPATIBLE_CHANNEL_TYPES: ReadonlySet<number> = new Set([
   CHANNEL_TYPE_UTER,

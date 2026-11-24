@@ -76,27 +76,43 @@ describe('applyChannelView', () => {
     })
   })
 
-  it('keeps a channel tiered expression instead of a flat ratio', () => {
+  it('keeps a channel tiered expression and its own official basis', () => {
     const expr =
       'len <= 131072 ? tier("short", p * 1 + c * 2) : tier("long", p * 3)'
     const input = [
       model({
+        billing_expr: 'global expression',
+        billing_mode: 'tiered_expr',
         channel_prices: {
           阿里百炼: {
             name: '阿里百炼',
-            quota_type: 4,
+            quota_type: 0,
+            billing_mode: 'tiered_expr',
             billing_expr: expr,
             official_model_ratio: 1,
+            official_completion_ratio: 2,
+            official_cache_ratio: 0.1,
+            official_create_cache_ratio: 0.5,
           },
         },
       }),
     ]
-    const result = applyChannelView(input, '阿里百炼', {}, ALL)
+    const result = applyChannelView(
+      input,
+      '阿里百炼',
+      { 'text-model': { model_ratio: 9, completion_ratio: 18 } },
+      ALL
+    )
     expect(result.models[0].billing_expr).toBe(expr)
-    expect(result.models[0].quota_type).toBe(4)
+    expect(result.models[0].quota_type).toBe(0)
     expect(result.models[0].billing_mode).toBe('tiered_expr')
     expect(result.models[0].model_ratio).toBe(0)
-    expect(result.officialPrices['text-model']).toBeUndefined()
+    expect(result.officialPrices['text-model']).toEqual({
+      model_ratio: 1,
+      completion_ratio: 2,
+      cache_ratio: 0.1,
+      create_cache_ratio: 0.5,
+    })
   })
 
   it('shows a per-second channel price and its official basis', () => {

@@ -99,23 +99,26 @@ type Pricing struct {
 // plaza uses the selected channel's entry when a channel filter is active, so
 // the same model can show a different price per channel.
 type PricingChannelPrice struct {
-	Name                    string  `json:"name"`
-	ModelRatio              float64 `json:"model_ratio,omitempty"`
-	CompletionRatio         float64 `json:"completion_ratio,omitempty"`
-	ModelPrice              float64 `json:"model_price,omitempty"`
-	PerSecondUSD            float64 `json:"per_second_usd,omitempty"`
-	OfficialModelRatio      float64 `json:"official_model_ratio,omitempty"`
-	OfficialCompletionRatio float64 `json:"official_completion_ratio,omitempty"`
-	OfficialCacheRatio      float64 `json:"official_cache_ratio,omitempty"`
-	OfficialModelPrice      float64 `json:"official_model_price,omitempty"`
-	OfficialPerSecondUSD    float64 `json:"official_per_second_usd,omitempty"`
-	BillingExpr             string  `json:"billing_expr,omitempty"`
-	CacheRatio              float64 `json:"cache_ratio,omitempty"`
-	CreateCacheRatio        float64 `json:"create_cache_ratio,omitempty"`
-	AudioRatio              float64 `json:"audio_ratio,omitempty"`
-	AudioCompletionRatio    float64 `json:"audio_completion_ratio,omitempty"`
-	Status                  string  `json:"status,omitempty"`
-	QuotaType               int     `json:"quota_type"`
+	Name                     string  `json:"name"`
+	ModelRatio               float64 `json:"model_ratio,omitempty"`
+	CompletionRatio          float64 `json:"completion_ratio,omitempty"`
+	ModelPrice               float64 `json:"model_price,omitempty"`
+	PerSecondUSD             float64 `json:"per_second_usd,omitempty"`
+	PerMinuteUSD             float64 `json:"per_minute_usd,omitempty"`
+	OfficialModelRatio       float64 `json:"official_model_ratio,omitempty"`
+	OfficialCompletionRatio  float64 `json:"official_completion_ratio,omitempty"`
+	OfficialCacheRatio       float64 `json:"official_cache_ratio,omitempty"`
+	OfficialCreateCacheRatio float64 `json:"official_create_cache_ratio,omitempty"`
+	OfficialModelPrice       float64 `json:"official_model_price,omitempty"`
+	OfficialPerSecondUSD     float64 `json:"official_per_second_usd,omitempty"`
+	BillingMode              string  `json:"billing_mode,omitempty"`
+	BillingExpr              string  `json:"billing_expr,omitempty"`
+	CacheRatio               float64 `json:"cache_ratio,omitempty"`
+	CreateCacheRatio         float64 `json:"create_cache_ratio,omitempty"`
+	AudioRatio               float64 `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio     float64 `json:"audio_completion_ratio,omitempty"`
+	Status                   string  `json:"status,omitempty"`
+	QuotaType                int     `json:"quota_type"`
 }
 
 type PricingVendor struct {
@@ -456,6 +459,148 @@ func channelPricePreferred(candidate, previous channelInternalPrice) bool {
 	return candidate.inputUSD < previous.inputUSD
 }
 
+// channelPriceDisplayView is the single display contract for one configured
+// channel price. Both the top-level "all channels" card and the channel-filtered
+// card are built from this function, so they can never disagree about the
+// expression, official basis, cache/audio ratios or review status.
+//
+// A tiered expression stays QuotaType 0 on the wire (the plaza's token bucket)
+// and carries BillingMode/BillingExpr explicitly. The raw internal mode 4 is an
+// implementation detail and must not leak into the display contract.
+func channelPriceDisplayView(name string, price channelInternalPrice) PricingChannelPrice {
+	entry := PricingChannelPrice{Name: name, Status: price.status}
+	switch price.quotaType {
+	case 0:
+		entry.QuotaType = 0
+		entry.ModelRatio = price.modelRatio
+		entry.CompletionRatio = price.completionRatio
+		entry.CacheRatio = price.cacheRatio
+		entry.CreateCacheRatio = price.createCacheRatio
+		entry.AudioRatio = price.audioRatio
+		entry.AudioCompletionRatio = price.audioCompletion
+	case 1:
+		entry.QuotaType = 1
+		entry.ModelPrice = price.modelPrice
+	case 2:
+		entry.QuotaType = 2
+		entry.PerSecondUSD = price.perSecondUSD
+	case 3:
+		entry.QuotaType = 3
+		entry.PerMinuteUSD = price.perMinuteUSD
+	case 4:
+		entry.QuotaType = 0
+		entry.BillingMode = billing_setting.BillingModeTieredExpr
+		entry.BillingExpr = price.billingExpr
+	default:
+		// official_only / needs_review rows carry no billable price.
+		entry.QuotaType = -1
+	}
+	if tier := price.officialTier; tier != nil {
+		switch price.officialUnit {
+		case "per_call", "per_image", "per_minute":
+			if tier.PerUnitUSD != nil {
+				entry.OfficialModelPrice = *tier.PerUnitUSD
+			}
+		case "per_second":
+			if tier.PerUnitUSD != nil {
+				entry.OfficialPerSecondUSD = *tier.PerUnitUSD
+			}
+		default:
+			if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
+				input := *tier.InputPerMillionUSD
+				entry.OfficialModelRatio = input / 2
+				if tier.OutputPerMillionUSD != nil {
+					entry.OfficialCompletionRatio = *tier.OutputPerMillionUSD / input
+				}
+				if tier.CachePerMillionUSD != nil {
+					entry.OfficialCacheRatio = *tier.CachePerMillionUSD / input
+				}
+				if tier.CreateCachePerMillionUSD != nil {
+					entry.OfficialCreateCacheRatio = *tier.CreateCachePerMillionUSD / input
+				}
+			}
+		}
+	}
+	return entry
+}
+
+// applyChannelPriceDisplay writes one canonical channel price into the
+// top-level Pricing view. It returns true only when the row is billable; global
+// ratio/billing-expression settings must not override a billable channel price.
+func applyChannelPriceDisplay(pricing *Pricing, entry PricingChannelPrice) bool {
+	pricing.ChannelPriceName = entry.Name
+	pricing.ChannelPricingStatus = entry.Status
+	pricing.ChannelPricingTiered = entry.BillingMode == billing_setting.BillingModeTieredExpr
+	pricing.ChannelOfficialModelRatio = entry.OfficialModelRatio
+	pricing.ChannelOfficialCompletionRatio = entry.OfficialCompletionRatio
+	pricing.ChannelOfficialCacheRatio = entry.OfficialCacheRatio
+	pricing.ChannelOfficialCreateCacheRatio = entry.OfficialCreateCacheRatio
+	pricing.ChannelOfficialModelPrice = entry.OfficialModelPrice
+	pricing.ChannelOfficialPerSecondUSD = entry.OfficialPerSecondUSD
+
+	if entry.QuotaType < 0 {
+		return false
+	}
+	if entry.BillingMode == billing_setting.BillingModeTieredExpr {
+		pricing.BillingMode = entry.BillingMode
+		pricing.BillingExpr = entry.BillingExpr
+		pricing.QuotaType = 0
+		pricing.ModelRatio = 0
+		pricing.CompletionRatio = 0
+		pricing.ModelPrice = 0
+		pricing.ChannelInternalPerSecondUSD = 0
+		pricing.ChannelInternalPerMinuteUSD = 0
+		return true
+	}
+	switch entry.QuotaType {
+	case 0:
+		pricing.QuotaType = 0
+		pricing.ModelRatio = entry.ModelRatio
+		pricing.CompletionRatio = entry.CompletionRatio
+		pricing.ModelPrice = 0
+		if entry.CacheRatio > 0 {
+			cacheRatio := entry.CacheRatio
+			pricing.CacheRatio = &cacheRatio
+		}
+		if entry.CreateCacheRatio > 0 {
+			createCacheRatio := entry.CreateCacheRatio
+			pricing.CreateCacheRatio = &createCacheRatio
+		}
+		if entry.AudioRatio > 0 {
+			audioRatio := entry.AudioRatio
+			pricing.AudioRatio = &audioRatio
+		}
+		if entry.AudioCompletionRatio > 0 {
+			audioCompletionRatio := entry.AudioCompletionRatio
+			pricing.AudioCompletionRatio = &audioCompletionRatio
+		}
+		pricing.BillingMode = ""
+		pricing.BillingExpr = ""
+	case 1:
+		pricing.QuotaType = 1
+		pricing.ModelPrice = entry.ModelPrice
+		pricing.ModelRatio = 0
+		pricing.CompletionRatio = 0
+		pricing.BillingMode = ""
+		pricing.BillingExpr = ""
+	case 2:
+		pricing.QuotaType = 2
+		pricing.ChannelInternalPerSecondUSD = entry.PerSecondUSD
+		pricing.ModelRatio = 0
+		pricing.ModelPrice = 0
+		pricing.BillingMode = ""
+		pricing.BillingExpr = ""
+	case 3:
+		pricing.QuotaType = 3
+		pricing.ChannelInternalPerMinuteUSD = entry.PerMinuteUSD
+		pricing.ModelRatio = 0
+		pricing.ModelPrice = 0
+		pricing.BillingMode = ""
+		pricing.BillingExpr = ""
+	}
+	return true
+}
+
 // canonicalModelTag classifies a model into the catalog's six model
 // categories. The catalog shows one primary category per model so the tag
 // filter stays stable instead of exposing arbitrary provider tags.
@@ -738,101 +883,14 @@ func updatePricing() {
 		if imageRatio, ok := ratio_setting.GetImageRatio(model); ok {
 			pricing.ImageRatio = &imageRatio
 		}
+		channelPriceApplied := false
 		if channelPrice, ok := channelPrices[model]; ok {
-			pricing.ChannelPriceName = channelPrice.channelName
-			if tier := channelPrice.officialTier; tier != nil {
-				switch channelPrice.officialUnit {
-				case "per_call", "per_image", "per_minute":
-					if tier.PerUnitUSD != nil {
-						pricing.ChannelOfficialModelPrice = *tier.PerUnitUSD
-					}
-				case "per_second":
-					if tier.PerUnitUSD != nil {
-						pricing.ChannelOfficialPerSecondUSD = *tier.PerUnitUSD
-					}
-				default:
-					if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
-						input := *tier.InputPerMillionUSD
-						pricing.ChannelOfficialModelRatio = input / 2
-						if tier.OutputPerMillionUSD != nil {
-							pricing.ChannelOfficialCompletionRatio = *tier.OutputPerMillionUSD / input
-						}
-						if tier.CachePerMillionUSD != nil {
-							pricing.ChannelOfficialCacheRatio = *tier.CachePerMillionUSD / input
-						}
-					}
-				}
-			}
-			switch channelPrice.quotaType {
-			case 4:
-				pricing.ChannelPricingTiered = true
-				pricing.BillingMode = billing_setting.BillingModeTieredExpr
-				pricing.BillingExpr = channelPrice.billingExpr
-				pricing.ModelRatio = 0
-				pricing.ModelPrice = 0
-				pricing.CompletionRatio = 0
-				pricing.QuotaType = 0
-			case 2:
-				pricing.ChannelInternalPerSecondUSD = channelPrice.perSecondUSD
-			case 3:
-				pricing.ChannelInternalPerMinuteUSD = channelPrice.perMinuteUSD
-			case 1:
-				pricing.ModelPrice = channelPrice.modelPrice
-				pricing.ModelRatio = 0
-				pricing.CompletionRatio = 0
-				pricing.QuotaType = 1
-			default:
-				pricing.ModelRatio = channelPrice.modelRatio
-				pricing.CompletionRatio = channelPrice.completionRatio
-				pricing.ModelPrice = 0
-				pricing.QuotaType = 0
-			}
+			channelPriceApplied = applyChannelPriceDisplay(&pricing, channelPriceDisplayView(channelPrice.channelName, channelPrice))
 		}
 		if perChannel := channelPricesByChannel[model]; len(perChannel) > 0 {
 			entries := make(map[string]PricingChannelPrice, len(perChannel))
 			for name, candidate := range perChannel {
-				// The per-channel view must carry the same pricing contract as
-				// the top-level view above. Expression and review rows have no
-				// flat ratio: dropping billing_expr/status here made the plaza
-				// render an empty price whenever a channel filter was active.
-				entry := PricingChannelPrice{
-					Name:                 name,
-					ModelRatio:           candidate.modelRatio,
-					CompletionRatio:      candidate.completionRatio,
-					ModelPrice:           candidate.modelPrice,
-					PerSecondUSD:         candidate.perSecondUSD,
-					QuotaType:            candidate.quotaType,
-					BillingExpr:          candidate.billingExpr,
-					CacheRatio:           candidate.cacheRatio,
-					CreateCacheRatio:     candidate.createCacheRatio,
-					AudioRatio:           candidate.audioRatio,
-					AudioCompletionRatio: candidate.audioCompletion,
-					Status:               candidate.status,
-				}
-				if tier := candidate.officialTier; tier != nil {
-					switch candidate.officialUnit {
-					case "per_call", "per_image", "per_minute":
-						if tier.PerUnitUSD != nil {
-							entry.OfficialModelPrice = *tier.PerUnitUSD
-						}
-					case "per_second":
-						if tier.PerUnitUSD != nil {
-							entry.OfficialPerSecondUSD = *tier.PerUnitUSD
-						}
-					default:
-						if tier.InputPerMillionUSD != nil && *tier.InputPerMillionUSD > 0 {
-							input := *tier.InputPerMillionUSD
-							entry.OfficialModelRatio = input / 2
-							if tier.OutputPerMillionUSD != nil {
-								entry.OfficialCompletionRatio = *tier.OutputPerMillionUSD / input
-							}
-							if tier.CachePerMillionUSD != nil {
-								entry.OfficialCacheRatio = *tier.CachePerMillionUSD / input
-							}
-						}
-					}
-				}
-				entries[name] = entry
+				entries[name] = channelPriceDisplayView(name, candidate)
 			}
 			pricing.ChannelPrices = entries
 		}
@@ -854,25 +912,20 @@ func updatePricing() {
 				pricing.AudioCompletionRatio = &audioCompletion
 			}
 		}
-		if billingMode := billing_setting.GetBillingMode(model); billingMode == "tiered_expr" {
-			if expr, ok := billing_setting.GetBillingExpr(model); ok && strings.TrimSpace(expr) != "" {
-				pricing.BillingMode = billingMode
-				pricing.BillingExpr = expr
-			}
-		} else if target, resolved := ResolveTaskModelAlias(pluginGeneration, model); resolved && target.Declared != "" {
-			if tailMode := billing_setting.GetBillingMode(target.Declared); tailMode == "tiered_expr" {
-				if expr, ok := billing_setting.GetBillingExpr(target.Declared); ok && strings.TrimSpace(expr) != "" {
-					pricing.BillingMode = tailMode
+		if !channelPriceApplied {
+			if billingMode := billing_setting.GetBillingMode(model); billingMode == "tiered_expr" {
+				if expr, ok := billing_setting.GetBillingExpr(model); ok && strings.TrimSpace(expr) != "" {
+					pricing.BillingMode = billingMode
 					pricing.BillingExpr = expr
 				}
+			} else if target, resolved := ResolveTaskModelAlias(pluginGeneration, model); resolved && target.Declared != "" {
+				if tailMode := billing_setting.GetBillingMode(target.Declared); tailMode == "tiered_expr" {
+					if expr, ok := billing_setting.GetBillingExpr(target.Declared); ok && strings.TrimSpace(expr) != "" {
+						pricing.BillingMode = tailMode
+						pricing.BillingExpr = expr
+					}
+				}
 			}
-		}
-		if channelPrice, ok := channelPrices[model]; ok && channelPrice.quotaType == 0 && channelPrice.billingExpr == "" {
-			// A flat token price configured for the channel is what the relay
-			// actually charges, so the plaza must not keep rendering the global
-			// tiered expression (which would ignore the channel discount).
-			pricing.BillingMode = ""
-			pricing.BillingExpr = ""
 		}
 		usageModel := model
 		plugin, ok := pluginGeneration.GetByModel(model)
@@ -895,7 +948,7 @@ func updatePricing() {
 				break
 			}
 		}
-		if hasProviderOverride || (len(providers) >= 2 && pricing.BillingMode == billing_setting.BillingModeTieredExpr) {
+		if !channelPriceApplied && (hasProviderOverride || (len(providers) >= 2 && pricing.BillingMode == billing_setting.BillingModeTieredExpr)) {
 			for _, provider := range providers {
 				schema, examples := provider.Meta.UsageForModel(model)
 				if schema == nil {
