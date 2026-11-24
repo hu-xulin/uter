@@ -77,6 +77,29 @@ summary:hover{background:var(--soft)}
 <div class="note" style="margin-top:10px"><b>回归：</b>新增 5 组源码守卫测试至 <code>uds8-decision-fixes.test.ts</code>（14/14 通过）；<code>typecheck</code>、<code>lint:design:strict</code>、<code>design:tokens:check</code>、改动文件 oxlint 均通过。第 9/10 组在用户二次裁决后确认保持原样，审计板原推荐方案 C1/D1 即为该结论。</div>
 </div>
 
+<h2>✅ 本次校对决定执行结果（2026-11-24 17:21 决定 · 17:26 核实）</h2>
+<div class="card" style="border-left:4px solid var(--ok)">
+<div style="font-weight:600;margin-bottom:8px">用户 10 项决定逐条落实 · 以当前源码为准确认</div>
+<table>
+<thead><tr><th>#</th><th>校对项</th><th>你的决定</th><th>当前源码核实（17:26）</th><th>动作</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><code>plan-A-15px</code></td><td>A1 保持现状</td><td>6 处 15px 已全部为 16px，全仓 <code>text-md</code> 引用 = 0</td><td><span class="badge b-ok">确认保持</span></td></tr>
+<tr><td>2</td><td><code>plan-B-13x22</code></td><td><b>B1 保留 22px</b></td><td>/keys 表格 15 元素仍为 13px/22px（<code>min-w-0 truncate</code> 等），未被改动</td><td><span class="badge b-ok">保留原样·不改</span></td></tr>
+<tr><td>3</td><td><code>plan-C-16x26</code></td><td>C1 标注误报、代码不改</td><td><code>text-long</code> 16px/26px 即规范派生档配套值</td><td><span class="badge b-ok">误报·不改</span></td></tr>
+<tr><td>4</td><td><code>plan-D-36x54</code></td><td>D1 保留、标注误报</td><td>hero 多行标题 <code>--ds-line-display-multiline:1.5</code>，有测试锁定</td><td><span class="badge b-ok">误报·不改</span></td></tr>
+<tr><td>5</td><td>15px /docs Model Testing</td><td>C 改代码 16px <code>text-base</code></td><td><code>page-nav.tsx:58</code> = <code>text-base text-fg-primary truncate font-medium</code>（16/24）</td><td><span class="badge b-ok">已符合</span></td></tr>
+<tr><td>6</td><td>15px /about Artificial intelligence…</td><td>C 改代码 16px <code>text-base</code></td><td rowspan="4">4 处卡片摘要走共享常量 <code>CONTENT_CARD_TEASER_CLASS = 'text-base text-fg-secondary mt-2'</code>（16/24），<code>content-card.tsx:35</code></td><td rowspan="4"><span class="badge b-ok">已符合</span></td></tr>
+<tr><td>7</td><td>15px /about AI is evolving…</td><td>C 改代码 16px <code>text-base</code></td></tr>
+<tr><td>8</td><td>15px /about The story of…</td><td>C 改代码 16px <code>text-base</code></td></tr>
+<tr><td>9</td><td>15px /about AI is redefining…</td><td>C 改代码 16px <code>text-base</code></td></tr>
+<tr><td>10</td><td>15px /about Who We Are</td><td>C 改代码 16px <code>text-base</code></td><td><code>page-nav.tsx:58</code> 同第 5 项（翻页导航标题，16/24）</td><td><span class="badge b-ok">已符合</span></td></tr>
+</tbody>
+</table>
+<div class="note" style="margin-top:10px"><b>结论：</b>10 项决定全部已在源码中落实——1~4 为保持/误报确认（无需改动），5~10 的 6 处 15px 均已为 <code>text-base</code> 16px（由两处共享常量 <code>content-card.tsx:35</code> 与 <code>page-nav.tsx:58</code> 统一覆盖）。全仓 <code>text-md</code>（15px 派生档）引用为 0，彻底回退无残留。<br>
+<b>与上方 17:03 旧记录的关系：</b>旧记录第 #7 项把 <code>group-badge.tsx</code> 倍率徽标容器从 <code>text-sm</code>(14/22) 改为 <code>text-dense</code>(13/20)——那是<b>不同元素</b>（徽标容器，非本决定的 /keys 表格单元格），且不在本次 10 项决定内，本次<b>不触碰、不回滚</b>。本次 plan-B 的「保留 22px」针对的是 /keys 表格 15 元素，它们当前仍是 13px/22px，符合 B1。<br>
+<b>回归守卫：</b>现有 <code>uds8-decision-fixes.test.ts</code> ④⑤ 已锁定「6 处 15px→text-base」「全仓无 text-md」，本次复核 14/14 通过；无需新增重复测试。</div>
+</div>
+
 <h2>⓪ 修改方案总览（供决策）</h2>
 <div class="fp">
   <b>⚠️ 触碰报告前必读 · 审计快照已部分过时：</b>本报告扫描于 <b>08:42:53</b>；核对当前源码（17:11）发现两处关键变化，决策时请以「当前状态」为准：<br>

@@ -46,6 +46,14 @@ const aboutViewer = readFileSync(
   join(ROOT, 'src/features/about/about-viewer.tsx'),
   'utf8'
 )
+const proseClasses = readFileSync(
+  join(ROOT, 'src/features/docs/native/prose-classes.ts'),
+  'utf8'
+)
+const markdown = readFileSync(
+  join(ROOT, 'src/components/ui/markdown.tsx'),
+  'utf8'
+)
 
 function tokenValue(name: string): string | undefined {
   return new RegExp(`--text-${name}:\\s*([^;]+);`) .exec(typography)?.[1]?.trim()
@@ -78,6 +86,35 @@ describe('UDS 8.0.0 字号校对决定锁定（6 处 15px → 16px）', () => {
       ['about-viewer.tsx', aboutViewer],
     ] as const) {
       expect(src, `${name} 不得含 text-md 15px`).not.toMatch(/\btext-md\b/)
+    }
+  })
+})
+
+/**
+ * 连续阅读正文统一走 body-long：16/26。text-base 保持 16/24，只能用于
+ * 行标题 / 设置字段 / 指标数值；正文段和列表项不得借它压行高。
+ */
+describe('连续正文只用 body-long（text-long 16/26）', () => {
+  it('token 真源：long 行高 26px 大于 base 的 24px', () => {
+    expect(tokenValue('long')).toBe('1rem')
+    expect(tokenValue('base')).toBe('1rem')
+    expect(typography).toMatch(/--text-long--line-height:\s*1\.625rem/)
+    expect(typography).toMatch(/--text-base--line-height:\s*1\.5rem/)
+  })
+
+  it('原生文档与 Markdown 正文、列表项锁定 text-long，不回退 text-base', () => {
+    for (const [name, src] of [
+      ['prose-classes.ts', proseClasses],
+      ['markdown.tsx', markdown],
+    ] as const) {
+      expect(src, `${name} 的正文容器必须是 text-long`).toMatch(
+        /text-long text-fg-secondary|max-w-\[72ch\] text-long/
+      )
+      expect(src, `${name} 的 <p> 必须是 text-long`).toMatch(/\[&_p\]:text-long/)
+      expect(src, `${name} 的 <li> 必须是 text-long`).toMatch(/\[&_li\]:text-long/)
+      expect(src, `${name} 不得把 <p>/<li> 压回 text-base`).not.toMatch(
+        /\[&_(?:p|li)\]:text-base/
+      )
     }
   })
 })
