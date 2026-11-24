@@ -237,6 +237,7 @@ import {
 import { isUterRouteBaseUrl } from '../../lib/uterroute'
 import type { Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
+import { ChannelConsoleCredentialsSection } from '../channel-console-credentials-section'
 import { ChannelBrandingEditor } from '../channel-branding-editor'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelPricingPanel } from '../channel-pricing-panel'
@@ -359,6 +360,9 @@ const SENSITIVE_FORM_FIELDS = [
   'upstream_model_update_check_enabled',
   'upstream_model_update_auto_sync_enabled',
   'upstream_model_update_ignored_models',
+  'console_login_url',
+  'console_username',
+  'console_password',
 ] satisfies (keyof ChannelFormValues)[]
 
 const baseChannelFormResolver = zodResolver(channelFormSchema)
@@ -4691,6 +4695,15 @@ export function ChannelMutateDrawer({
             </AlertDescription>
           </Alert>
         )}
+
+        {/* Secondary console-login cross-check source. API Key + Base URL stay
+            the primary source; this is optional and shown for every type. */}
+        <ChannelConsoleCredentialsSection
+          form={form}
+          channelId={effectiveChannelId}
+          sensitiveLocked={sensitiveLocked}
+          primaryModels={upstreamModelList}
+        />
 
         <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
           <fieldset

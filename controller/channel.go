@@ -70,6 +70,8 @@ func parseStatusFilter(statusParam string) int {
 
 func clearChannelInfo(channel *model.Channel) {
 	channel.BalanceDetail = channel.GetBalanceDetail()
+	// Never echo console-login secrets (password / encrypted envelope) to clients.
+	redactUpstreamConsole(channel)
 	if channel.ChannelInfo.IsMultiKey {
 		channel.ChannelInfo.MultiKeyDisabledReason = nil
 		channel.ChannelInfo.MultiKeyDisabledTime = nil
@@ -838,6 +840,11 @@ func AddChannel(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	// Encrypt the optional console-login password before any persistence.
+	if err := normalizeUpstreamConsoleOnSave(addChannelRequest.Channel, nil); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	if err := checkPluginChannelKeys(c, addChannelRequest.Channel, addChannelRequest.Channel.Key, ""); err != nil {
 		common.ApiError(c, err)
 		return
@@ -1383,6 +1390,15 @@ func UpdateChannel(c *gin.Context) {
 			}
 		case "replace":
 			// 覆盖模式：直接使用新密钥（默认行为，不需要特殊处理）
+		}
+	}
+	// Encrypt the console password only when this request actually carries
+	// settings; otherwise the zero-valued OtherSettings is ignored by GORM and
+	// the stored credentials stay untouched.
+	if settingsProvided {
+		if err := normalizeUpstreamConsoleOnSave(&channel.Channel, originChannel); err != nil {
+			common.ApiError(c, err)
+			return
 		}
 	}
 	err = channel.Update()

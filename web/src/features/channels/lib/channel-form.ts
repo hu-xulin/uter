@@ -309,6 +309,12 @@ export const channelFormSchema = z
     upstream_model_update_check_enabled: z.boolean().optional(),
     upstream_model_update_auto_sync_enabled: z.boolean().optional(),
     upstream_model_update_ignored_models: z.string().optional(),
+    // Secondary console-login credentials for cross-checking upstream model
+    // and price data. The primary source is still base_url + key. Password is
+    // transient: sent once on save, encrypted server-side, never returned.
+    console_login_url: z.string().optional(),
+    console_username: z.string().optional(),
+    console_password: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (
@@ -510,6 +516,9 @@ export const CHANNEL_FORM_DEFAULT_VALUES: ChannelFormValues = {
   upstream_model_update_ignored_models: '',
   advanced_custom: '',
   plugin_config: '',
+  console_login_url: '',
+  console_username: '',
+  console_password: '',
 }
 
 // ============================================================================
@@ -597,6 +606,8 @@ export function transformChannelToFormDefaults(
   let brandingDisplayName = ''
   let brandingLogo = ''
   let brandingLogoDark = ''
+  let consoleLoginUrl = ''
+  let consoleUsername = ''
 
   if (channel.settings) {
     try {
@@ -637,6 +648,15 @@ export function transformChannelToFormDefaults(
       }
       if (parsed.plugin_config) {
         pluginConfig = JSON.stringify(parsed.plugin_config, null, 2)
+      }
+      // Console login credentials are a secondary cross-check source. The
+      // password is never returned by the backend, so the form starts empty.
+      const console = parsed.upstream_console as
+        | { login_url?: string; username?: string }
+        | undefined
+      if (console && typeof console === 'object') {
+        consoleLoginUrl = console.login_url || ''
+        consoleUsername = console.username || ''
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -697,6 +717,9 @@ export function transformChannelToFormDefaults(
     upstream_model_update_ignored_models: upstreamModelUpdateIgnoredModels,
     advanced_custom: advancedCustom,
     plugin_config: pluginConfig,
+    console_login_url: consoleLoginUrl,
+    console_username: consoleUsername,
+    console_password: '',
   }
 }
 
@@ -925,6 +948,23 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
     }
   } else if ('branding' in settingsObj) {
     delete settingsObj.branding
+  }
+
+  // Secondary console-login credentials. Present only when both a login URL
+  // and username are configured. A blank password means "keep the stored one"
+  // on edit; a new password is sent once and encrypted server-side.
+  const consoleLoginUrl = formData.console_login_url?.trim() || ''
+  const consoleUsername = formData.console_username?.trim() || ''
+  const consolePassword = formData.console_password || ''
+  if (consoleLoginUrl && consoleUsername) {
+    const console: Record<string, string> = {
+      login_url: consoleLoginUrl,
+      username: consoleUsername,
+    }
+    if (consolePassword) console.password = consolePassword
+    settingsObj.upstream_console = console
+  } else {
+    delete settingsObj.upstream_console
   }
 
   return JSON.stringify(settingsObj)

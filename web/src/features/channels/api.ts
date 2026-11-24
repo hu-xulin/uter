@@ -1451,6 +1451,36 @@ export type ChannelUpstreamPriceSync = {
   models_added: number
 }
 
+// Secondary console-login discovery. Result is a READ-ONLY cross-check source;
+// the primary API Key + base_url path remains the source of truth, and is used
+// unchanged when status is not "success".
+export type UpstreamConsolePrice = {
+  model: string
+  input_price?: number
+  output_price?: number
+  currency?: string
+  raw?: unknown
+}
+
+export type UpstreamConsoleCatalog = {
+  status: 'success' | 'not_configured' | 'login_failed'
+  login_succeeded: boolean
+  fallback_primary: boolean
+  models: string[]
+  prices: UpstreamConsolePrice[]
+  warnings?: string[]
+}
+
+export async function fetchChannelUpstreamConsoleCatalog(
+  channelId: number
+): Promise<UpstreamConsoleCatalog> {
+  const res = await api.get(
+    `/api/channel/${channelId}/upstream_console/catalog`,
+    channelActionConfig()
+  )
+  return requireServerSuccess(res.data).data as UpstreamConsoleCatalog
+}
+
 export async function syncChannelUpstreamPrices(
   channelId: number
 ): Promise<ChannelUpstreamPriceSync> {

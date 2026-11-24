@@ -12,6 +12,25 @@ import (
 	"github.com/uter-ai/uter/relaykit/types"
 )
 
+// UpstreamConsoleCredentials holds the optional web-console login used to
+// CROSS-CHECK upstream model and price data against the primary API Key path.
+// Password is a transient INPUT field (plaintext from the save request) and is
+// never persisted; the controller encrypts it into PasswordEncrypted before
+// the channel is written and clears it afterwards. PasswordEncrypted is an
+// encrypted envelope produced by common.EncryptSecret, never a plain secret.
+type UpstreamConsoleCredentials struct {
+	LoginURL          string `json:"login_url,omitempty"`
+	Username          string `json:"username,omitempty"`
+	Password          string `json:"password,omitempty"`
+	PasswordEncrypted string `json:"password_encrypted,omitempty"`
+}
+
+// HasLogin reports whether a usable console login was configured.
+func (c *UpstreamConsoleCredentials) HasLogin() bool {
+	return c != nil && strings.TrimSpace(c.LoginURL) != "" &&
+		strings.TrimSpace(c.Username) != "" && strings.TrimSpace(c.PasswordEncrypted) != ""
+}
+
 type ChannelSettings struct {
 	// RequestPlugins lists the request plugin instances the channel binds.
 	RequestPlugins    []string `json:"request_plugins,omitempty"`
@@ -188,6 +207,13 @@ type ChannelOtherSettings struct {
 	// rejection. Empty follows the default allow policy. Accepted values:
 	// "", "allow", "safe", "strict".
 	ToolLossPolicy string `json:"tool_loss_policy,omitempty"`
+	// UpstreamConsole carries the optional web-console login credentials used
+	// as a SECONDARY, cross-check source for upstream model and price discovery.
+	// The primary source stays the API Key + base_url path. Login URL and
+	// username are stored in plain text; the password is stored only as an
+	// encrypted envelope produced by common.EncryptSecret and is never echoed
+	// to clients (see controller.clearChannelInfo).
+	UpstreamConsole *UpstreamConsoleCredentials `json:"upstream_console,omitempty"`
 	// PluginConfig is the config a type-61 channel gives its plugin, checked
 	// against the plugin's meta.channelConfig when the channel is saved.
 	PluginConfig json.RawMessage `json:"plugin_config,omitempty"`

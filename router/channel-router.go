@@ -108,6 +108,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodGet, path: "/pricing_audit/orphans", permission: authz.ChannelRead, handler: controller.ExportOrphanChannelPricing},
 	{method: http.MethodGet, path: "/:id/pricing_audit", permission: authz.ChannelRead, handler: controller.GetChannelPricingAudit},
 	{method: http.MethodGet, path: "/:id/upstream_parity", permission: authz.ChannelRead, handler: controller.GetChannelUpstreamParity},
+	{method: http.MethodGet, path: "/:id/upstream_console/catalog", permission: authz.ChannelRead, handler: controller.FetchChannelUpstreamCatalog},
 	{method: http.MethodGet, path: "/:id/upstream_reconciliation", permission: authz.ChannelRead, handler: controller.GetChannelUpstreamReconciliation},
 	{method: http.MethodGet, path: "/:id/bailian/coverage", permission: authz.ChannelRead, handler: controller.GetBailianCatalogCoverage},
 	{method: http.MethodPost, path: "/:id/upstream_reconciliation/samples", permission: authz.ChannelOperate, handler: controller.ReconcileChannelBillingSamples},
