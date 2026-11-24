@@ -32,4 +32,4 @@ export const CONTENT_CARD_CLASS =
 
 export const CONTENT_CARD_TITLE_CLASS = 'text-xl text-fg-primary font-semibold'
 
-export const CONTENT_CARD_TEASER_CLASS = 'text-md text-fg-secondary mt-2'
+export const CONTENT_CARD_TEASER_CLASS = 'text-base text-fg-secondary mt-2'

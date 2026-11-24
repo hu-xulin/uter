@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+export { READABLE_TABLE_CLASS } from './core/table-typography'
 export { DataTablePagination } from './core/pagination'
 export { DataTableColumnHeader } from './core/column-header'
 export { BadgeCell } from './core/badge-cell'

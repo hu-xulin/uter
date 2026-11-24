@@ -47,9 +47,11 @@ import { cn } from '@/lib/utils'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = '13.75rem' // 220px（UDS 8.0.0 规范 §13.3 组件尺寸表）
+// UDS 8.0.0 §06/§12/§17：Sidebar 展开 240px（15rem）、收起 64px（4rem）。
+// 实体宽度由 --ds-layout-sidebar-width / --ds-layout-sidebar-collapsed 令牌约束。
+const SIDEBAR_WIDTH = '15rem'
 const SIDEBAR_WIDTH_MOBILE = '17rem'
-const SIDEBAR_WIDTH_ICON = '2.75rem'
+const SIDEBAR_WIDTH_ICON = '4rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 
 type SidebarContextProps = {

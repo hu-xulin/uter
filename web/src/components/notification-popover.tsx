@@ -167,8 +167,10 @@ function EmptyState({
       <EmptyHeader>
         <EmptyMedia variant='icon'>{icon}</EmptyMedia>
         {/* 空态/加载态文案是占位说明，不是标题：EmptyTitle 默认 18/600，
-            放在公告浮层里比正文还抢眼，这里降到 14px 次要色。 */}
-        <EmptyTitle className='text-muted-foreground text-sm font-normal'>
+            放在公告浮层里比正文还抢眼，这里降到 14px 次要色。
+            ⚠️ EmptyTitle 默认字号带 important（text-lg!，抵抗表格通吃选择器），
+            这里必须用 text-sm! 同组覆盖，普通 text-sm 会被 important 压住。 */}
+        <EmptyTitle className='text-muted-foreground text-sm! font-normal'>
           {title}
         </EmptyTitle>
         {description ? (

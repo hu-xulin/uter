@@ -164,7 +164,7 @@ describe('content width tokens', () => {
   const spacingCss = read('design-system/tokens/spacing.css')
 
   it('declares both content widths and keeps them off the density scale', () => {
-    expect(spacingCss).toContain('--ds-content-max: 80rem')
+    expect(spacingCss).toContain('--ds-content-max: 90rem')
     expect(spacingCss).toContain('--ds-content-max-wide: 112.5rem')
     // 宽度不跟密度档走：`sm` / `xl` 块里不得出现这两个变量。
     const smBlock = /\[data-theme-scale='sm'\]\s*\{([\s\S]*?)\}/.exec(

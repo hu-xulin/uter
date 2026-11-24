@@ -27,6 +27,7 @@ import {
   DISABLED_ROW_DESKTOP,
   DISABLED_ROW_MOBILE,
   DataTablePage,
+  READABLE_TABLE_CLASS,
   useDataTable,
 } from '@/components/data-table'
 import { StatusBadge } from '@/components/status-badge'
@@ -342,6 +343,8 @@ export function ApiKeysTable() {
       )}
       skeletonKeyPrefix='api-keys-skeleton'
       applyHeaderSize
+      // 密钥表以逐行阅读为主：统一到 body 档 14px，与使用日志/审计日志观感一致。
+      tableClassName={READABLE_TABLE_CLASS}
       // 列少且每列都能截断：让整表恒等于容器宽度，操作列不再需要右滑才能看到。
       fitContainer
       toolbarProps={{

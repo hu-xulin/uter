@@ -97,7 +97,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
         href={props.link.href}
         target='_blank'
         rel='noopener noreferrer'
-        className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
+        className='hover:text-foreground ds-motion-marketing-fast text-xs text-(--ds-color-neutral-text-tertiary) transition-colors'
       >
         {label}
       </a>
@@ -107,7 +107,7 @@ function FooterLinkItem(props: { link: FooterLink }) {
   return (
     <Link
       to={props.link.href}
-      className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
+      className='hover:text-foreground ds-motion-marketing-fast text-xs text-(--ds-color-neutral-text-tertiary) transition-colors'
     >
       {label}
     </Link>
@@ -185,7 +185,7 @@ function LegalLinks(props: { leadingSeparator?: boolean }) {
           )}
           <Link
             to={item.href}
-            className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
+            className='hover:text-foreground ds-motion-marketing-fast text-xs text-(--ds-color-neutral-text-tertiary) transition-colors'
           >
             {item.label}
           </Link>
@@ -250,7 +250,7 @@ function FilingLinks(props: { className?: string }) {
             href={item.href}
             target='_blank'
             rel='noopener noreferrer'
-            className='hover:text-foreground ds-motion-marketing-fast text-sm text-(--ds-color-neutral-text-tertiary) transition-colors'
+            className='hover:text-foreground ds-motion-marketing-fast text-xs text-(--ds-color-neutral-text-tertiary) transition-colors'
           >
             {t(item.labelKey)}
           </a>
@@ -296,7 +296,7 @@ function ProjectAttribution(props: {
     return content
   }
   return (
-    <div className='text-center text-sm text-(--ds-color-neutral-text-tertiary) sm:text-right'>
+    <div className='text-center text-xs text-(--ds-color-neutral-text-tertiary) sm:text-right'>
       {content}
     </div>
   )
@@ -380,10 +380,10 @@ export function Footer(props: FooterProps) {
         <div className='mx-auto w-full max-w-6xl px-6 py-5'>
           <div className='bg-muted/20 border-border/50 flex flex-col items-center justify-between gap-4 rounded-2xl border px-4 py-4 backdrop-blur-sm sm:flex-row sm:px-5'>
             <HtmlContent
-              className='custom-footer text-muted-foreground min-w-0 text-center text-sm sm:text-left'
+              className='custom-footer text-muted-foreground min-w-0 text-center text-xs sm:text-left'
               content={footerHtml}
             />
-            <div className='border-border/60 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-sm text-(--ds-color-neutral-text-tertiary) sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
+            <div className='border-border/60 flex w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t pt-4 text-xs text-(--ds-color-neutral-text-tertiary) sm:w-auto sm:justify-end sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5'>
               <LegalLinks />
               <ProjectAttribution
                 currentYear={currentYear}
@@ -408,9 +408,9 @@ export function Footer(props: FooterProps) {
             <div className='grid grid-cols-3 gap-8 md:gap-16'>
               {displayColumns.map((column) => (
                 <div key={column.title}>
-                  <p className='mb-3 text-sm font-medium text-(--ds-color-neutral-text-tertiary) uppercase'>
+                  <div className='mb-3 text-xs font-medium text-(--ds-color-neutral-text-tertiary) uppercase'>
                     {t(column.title)}
-                  </p>
+                  </div>
                   <ul className='space-y-2.5'>
                     {column.links.map((link) => (
                       <li key={link.text}>
@@ -436,7 +436,7 @@ export function Footer(props: FooterProps) {
             so it stays on the right in the locales that render no filing
             numbers at all. The footer's own top border is the only divider
             above it. */}
-        <div className='grid grid-cols-1 items-center gap-x-4 gap-y-2 text-sm sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'>
+        <div className='grid grid-cols-1 items-center gap-x-4 gap-y-2 text-xs sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'>
           <div className='flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:justify-start'>
             <LegalLinks />
           </div>

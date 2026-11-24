@@ -25,13 +25,7 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import {
-  cleanup,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it, vi } from 'vitest'
 
@@ -89,15 +83,13 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-it('marks only retired log types as deprecated while keeping historical filters selectable', async () => {
-  const router = await renderFilter()
+it('hides retired Manage and Login types from the filter dropdown entirely', async () => {
+  await renderFilter()
   await userEvent.click(screen.getByRole('combobox', { name: 'Type' }))
   for (const label of ['Manage', 'Login']) {
     expect(
-      within(
-        screen.getByRole('option', { name: new RegExp(`^${label}`) })
-      ).getByText('Deprecated')
-    ).toBeVisible()
+      screen.queryByRole('option', { name: new RegExp(`^${label}`) })
+    ).not.toBeInTheDocument()
   }
   for (const label of [
     'All Types',
@@ -108,23 +100,7 @@ it('marks only retired log types as deprecated while keeping historical filters 
     'Refund',
   ]) {
     expect(
-      within(screen.getByRole('option', { name: label })).queryByText(
-        'Deprecated'
-      )
-    ).not.toBeInTheDocument()
+      screen.getByRole('option', { name: label })
+    ).toBeVisible()
   }
-  await userEvent.click(screen.getByRole('option', { name: /^Manage/ }))
-  expect(screen.getByRole('combobox', { name: 'Type' })).toHaveTextContent(
-    'Deprecated'
-  )
-  await userEvent.click(screen.getByRole('button', { name: 'Search' }))
-  await waitFor(() =>
-    expect(router.state.location.search).toMatchObject({ type: ['3'], page: 1 })
-  )
-  await userEvent.click(screen.getByRole('combobox', { name: 'Type' }))
-  await userEvent.click(screen.getByRole('option', { name: /^Login/ }))
-  await userEvent.click(screen.getByRole('button', { name: 'Search' }))
-  await waitFor(() =>
-    expect(router.state.location.search).toMatchObject({ type: ['7'], page: 1 })
-  )
 })

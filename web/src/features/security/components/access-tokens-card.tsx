@@ -175,7 +175,7 @@ export function AccessTokensCard() {
           <EmptyState
             icon={KeyRound}
             className='min-h-48 border-0 p-4'
-            titleClassName='text-muted-foreground text-sm font-normal'
+            titleClassName='text-muted-foreground text-sm! font-normal'
             title={t('No access tokens')}
           />
         ) : (

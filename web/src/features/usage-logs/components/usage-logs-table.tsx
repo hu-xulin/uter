@@ -25,6 +25,7 @@ import { useTranslation } from 'react-i18next'
 import {
   DataTablePage,
   DataTableRow,
+  READABLE_TABLE_CLASS,
   useDataTable,
 } from '@/components/data-table'
 import {
@@ -243,9 +244,7 @@ export function UsageLogsTable({ logCategory }: UsageLogsTableProps) {
       )}
       skeletonKeyPrefix='usage-log-skeleton'
       applyHeaderSize
-      tableClassName={cn(
-        '[&_[data-slot=table]]:text-sm [&_[data-slot=table]_td]:text-sm [&_[data-slot=table]_td_*]:text-sm [&_[data-slot=table]_th]:text-sm [&_[data-slot=table]_th_*]:text-sm'
-      )}
+      tableClassName={READABLE_TABLE_CLASS}
       mobile={
         <UsageLogsMobileList
           table={table}

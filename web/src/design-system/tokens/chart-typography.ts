@@ -29,17 +29,17 @@ For commercial licensing, please contact support@uter.ai
  * `scripts/check-design-tokens.mjs` 的 T4 规则因此可以继续拦截裸数字，
  * 只对引用本文件的写法放行。
  *
- * ⚠️ 这里只允许出现阶梯内的档位（12 / 14 / 16 / 18 / 24 / 30 / 36）。
+ * ⚠️ 这里只允许出现阶梯内的档位（12 / 13 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 48）。
  * 需要新档位时先改 `design-system/tokens/typography.css`，再同步到这里。
  */
 
-/** caption 档 12px —— 图表轴标签、图例、数据标签的标准字号。 */
-export const CHART_FONT_SIZE = 12
+/** body 档 14px —— 图表轴标签、图例、数据标签的标准字号。 */
+export const CHART_FONT_SIZE = 14
 
 /**
- * 图表内联数值标签（柱顶数值、节点文字）用的字号。
- *
- * 历史上这里是 11px，比 caption 还小一档，在 2x 屏上已经糊成一团。
- * 规范阶梯最小就是 12px，且图表标签属于「必须能读」的信息，不是装饰，
- * 因此统一回到 caption 档。
+ * 图表文字演进：11px（低于全站下限，2x 屏糊成一团）→ 12px caption 档 →
+ * 14px body 档。数据看板在 1600×900 全屏下，12px 图表标签与同页 14px 卡片
+ * 标签并排时明显偏小、观感不一；图表标签属于「必须能读」的信息而非装饰，
+ * 因此跟随正文基准到 14px，与卡片文字同档。修改前须跑
+ * `src/design-system/__tests__/chart-typography.test.ts` 守卫。
  */

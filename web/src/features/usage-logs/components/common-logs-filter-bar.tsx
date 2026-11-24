@@ -23,7 +23,6 @@ import { Eye, EyeOff } from 'lucide-react'
 import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import {
@@ -323,14 +322,10 @@ export function CommonLogsFilterBar<TData>(
       LOG_TYPE_FILTERS.map((type) => ({
         value: type.value,
         label: t(type.label),
-        deprecated: type.deprecated,
       })),
     [t]
   )
   const selectedLogType = logTypeItems.find((type) => type.value === logType)
-  const deprecatedTypeDescription = t(
-    'Only used to find historical logs. New records are available in Audit Logs.'
-  )
 
   const statsBar = <CommonLogsStats />
   const sensitiveToggle = (
@@ -422,23 +417,11 @@ export function CommonLogsFilterBar<TData>(
           // 与同一行的 Input / Combobox 同高（`--ds-control-height-md`）。
           // 此前是 sm 档（36px），比输入框矮 4px。
           aria-label={t('Type')}
-          aria-description={
-            selectedLogType?.deprecated ? deprecatedTypeDescription : undefined
-          }
         >
           <SelectValue className='min-w-0'>
             <span className='truncate'>
               {selectedLogType?.label ?? t('All Types')}
             </span>
-            {selectedLogType?.deprecated && (
-              <Badge
-                variant='secondary'
-                className='h-4 px-1.5 text-xs font-normal'
-                title={deprecatedTypeDescription}
-              >
-                {t('Deprecated')}
-              </Badge>
-            )}
           </SelectValue>
         </SelectTrigger>
         <SelectContent
@@ -451,20 +434,8 @@ export function CommonLogsFilterBar<TData>(
                 key={type.value}
                 value={type.value}
                 className='[&_[data-slot=select-item-text]]:items-center'
-                aria-description={
-                  type.deprecated ? deprecatedTypeDescription : undefined
-                }
               >
                 {t(type.label)}
-                {type.deprecated && (
-                  <Badge
-                    variant='secondary'
-                    className='h-4 px-1.5 text-xs font-normal'
-                    title={deprecatedTypeDescription}
-                  >
-                    {t('Deprecated')}
-                  </Badge>
-                )}
               </SelectItem>
             ))}
           </SelectGroup>

@@ -21,7 +21,11 @@ import { isAxiosError } from 'axios'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DataTablePage, useDataTable } from '@/components/data-table'
+import {
+  DataTablePage,
+  READABLE_TABLE_CLASS,
+  useDataTable,
+} from '@/components/data-table'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { requireServerSuccess } from '@/lib/server-error-message'
@@ -136,7 +140,7 @@ export function AuditLogViewer(props: {
         className='h-auto min-h-0 flex-1'
         applyHeaderSize
         getColumnClassName={() => 'py-2'}
-        tableClassName='[&_[data-slot=table]]:text-sm [&_[data-slot=table]_td]:text-sm [&_[data-slot=table]_td_*]:text-sm [&_[data-slot=table]_th]:text-sm [&_[data-slot=table]_th_*]:text-sm'
+        tableClassName={READABLE_TABLE_CLASS}
         toolbar={
           <div className='shrink-0 space-y-2'>
             <AuditLogFilterBar

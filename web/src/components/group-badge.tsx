@@ -122,7 +122,7 @@ export function GroupBadge(props: GroupBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex max-w-full min-w-0 items-center gap-2 text-sm',
+        'inline-flex max-w-full min-w-0 items-center gap-2 text-dense',
         containerClassName
       )}
     >

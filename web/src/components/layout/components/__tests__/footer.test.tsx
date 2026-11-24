@@ -294,3 +294,25 @@ it('colours the whole legal row with the neutral tertiary text token', async () 
   expect(brand?.className).not.toContain('font-medium')
   expect(brand?.className).not.toContain('font-semibold')
 })
+
+// The whole footer is 13px small print: links, filing numbers and the
+// copyright line previously sat on the 14px body step while the user-facing
+// request was uniformly smaller footer text. Guard the token, not a raw px
+// value, so the typography ladder stays the single source of truth.
+it('renders every footer text at the 13px caption step', async () => {
+  const footer = await renderFooter('zhCN')
+
+  expect(footer.querySelectorAll('.text-sm')).toHaveLength(0)
+
+  const legalLink = within(footer).getByText('User Agreement')
+  expect(legalLink.className).toContain('text-xs')
+
+  const filingLink = within(footer).getByText('ICP Filing Number')
+  expect(filingLink.className).toContain('text-xs')
+
+  const brand = footer.querySelector('a[href="https://uter.ai"]') as HTMLElement
+  expect(brand.closest('.text-xs')).not.toBeNull()
+
+  const row = legalLink.parentElement?.parentElement as HTMLElement
+  expect(row.className).toContain('text-xs')
+})
