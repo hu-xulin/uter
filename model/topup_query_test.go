@@ -19,14 +19,14 @@ func TestTopUpReadPathsAfterTransactionRemoval(t *testing.T) {
 	now := common.GetTimestamp()
 	for i, trade := range []string{"ORDER-A", "ORDER-B", "ORDER-C"} {
 		require.NoError(t, DB.Create(&TopUp{
-			UserId: 7, Amount: float64(100 * (i + 1)), Money: float64(i + 1),
+			UserId: 7, Amount: MoneyFromFloat(float64(100 * (i + 1))), Money: MoneyFromFloat(float64(i + 1)),
 			TradeNo: trade, PaymentMethod: PaymentMethodStripe,
 			CreateTime: now, Status: common.TopUpStatusPending,
 		}).Error)
 	}
 	// 窗口外的一条：用户侧列表按时间窗口过滤，必须被排除。
 	require.NoError(t, DB.Create(&TopUp{
-		UserId: 7, Amount: 999, Money: 9.99, TradeNo: "ORDER-OLD",
+		UserId: 7, Amount: MoneyFromFloat(999), Money: MoneyFromFloat(9.99), TradeNo: "ORDER-OLD",
 		PaymentMethod: PaymentMethodStripe,
 		CreateTime:    now - topUpQueryWindowSeconds - 1, Status: common.TopUpStatusSuccess,
 	}).Error)

@@ -105,7 +105,7 @@ func TestPreConsumeSpendsParkedSubscriptionRefund(t *testing.T) {
 	now := GetDBTimestamp()
 	plan := &SubscriptionPlan{
 		Id: 9402, Title: "Carry",
-		PriceAmount: 1, DurationUnit: SubscriptionDurationMonth, DurationValue: 1,
+		PriceAmount: MoneyFromFloat(1), DurationUnit: SubscriptionDurationMonth, DurationValue: 1,
 		TotalAmount: 100, QuotaResetPeriod: SubscriptionResetNever,
 	}
 	seedSubscriptionResetPlan(t, plan)
@@ -138,7 +138,7 @@ func TestParkedRefundCountsTowardsSpendableBalance(t *testing.T) {
 	now := GetDBTimestamp()
 	plan := &SubscriptionPlan{
 		Id: 9403, Title: "CarryTight",
-		PriceAmount: 1, DurationUnit: SubscriptionDurationMonth, DurationValue: 1,
+		PriceAmount: MoneyFromFloat(1), DurationUnit: SubscriptionDurationMonth, DurationValue: 1,
 		TotalAmount: 100, QuotaResetPeriod: SubscriptionResetNever,
 	}
 	seedSubscriptionResetPlan(t, plan)

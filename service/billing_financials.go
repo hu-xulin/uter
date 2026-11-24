@@ -20,6 +20,7 @@ package service
 
 import (
 	"encoding/json"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -27,6 +28,8 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
+
+	"github.com/shopspring/decimal"
 )
 
 // 采购成本维度单位。token 类维度按百万 token 计价，其余按单个计量单位计价。
@@ -38,24 +41,33 @@ const (
 	purchaseUnitMinute        = "minute"
 )
 
+// financialDecimal converts a float64 quota conversion constant into decimal.
+// Monetary values are carried as model.Money after the exact-type migration.
+func financialDecimal(value float64) decimal.Decimal {
+	if math.IsNaN(value) || math.IsInf(value, 0) {
+		return decimal.Zero
+	}
+	return decimal.NewFromFloat(value)
+}
+
 // purchasePriceBook is the purchase contract reduced to one price per metered
 // dimension: either the selected tier or the contract's scalar values.
 type purchasePriceBook struct {
 	tier                         string
-	input, output                *float64
-	cacheRead, cacheWrite        *float64
-	audioInput, audioOutput      *float64
-	imageInput, thinkingIn       *float64
-	thinkingOut                  *float64
-	perImage, perSecond, perCall *float64
-	perMinute                    *float64
+	input, output                *model.Money
+	cacheRead, cacheWrite        *model.Money
+	audioInput, audioOutput      *model.Money
+	imageInput, thinkingIn       *model.Money
+	thinkingOut                  *model.Money
+	perImage, perSecond, perCall *model.Money
+	perMinute                    *model.Money
 }
 
 type purchaseCostDimension struct {
 	name     string
 	quantity float64
 	unit     string
-	price    *float64
+	price    *model.Money
 }
 
 // usageQuantity reads the first matching key as a finite non-negative number.
@@ -225,16 +237,16 @@ func buildPurchaseCostRows(contract string, usage map[string]any) ([]model.Billi
 			Verified:  cost.Verified,
 		}
 		switch {
-		case dimension.price == nil || *dimension.price <= 0:
+		case dimension.price == nil || !dimension.price.Decimal().IsPositive():
 			row.Issue = "purchase_missing"
 			verified = false
 		default:
 			row.UnitPriceUSD = *dimension.price
+			amount := financialDecimal(dimension.quantity).Mul(dimension.price.Decimal())
 			if dimension.unit == purchaseUnitMillionTokens {
-				row.AmountUSD = dimension.quantity / 1_000_000 * *dimension.price
-			} else {
-				row.AmountUSD = dimension.quantity * *dimension.price
+				amount = amount.Div(decimal.NewFromInt(1_000_000))
 			}
+			row.AmountUSD = model.MoneyFromDecimal(amount)
 		}
 		if !cost.Verified && row.Issue == "" {
 			row.Issue = "purchase_unverified"
@@ -269,11 +281,11 @@ func recordRequestFinancials(snapshot *model.BillingPriceSnapshot, usageJSON str
 	if quotaPerUnit <= 0 {
 		quotaPerUnit = common.QuotaPerUnit
 	}
-	quotaToUSD := func(quota int64) float64 {
-		if quota <= 0 || quotaPerUnit <= 0 {
-			return 0
+	quotaToUSD := func(quota int64) model.Money {
+		if quota <= 0 || quotaPerUnit <= 0 || math.IsNaN(quotaPerUnit) || math.IsInf(quotaPerUnit, 0) {
+			return model.MoneyFromDecimal(decimal.Zero)
 		}
-		return float64(quota) / quotaPerUnit
+		return model.MoneyFromDecimal(decimal.NewFromInt(quota).Div(financialDecimal(quotaPerUnit)))
 	}
 	baseEntry := func(entryType string) model.BillingFinancialLedger {
 		return model.BillingFinancialLedger{
@@ -297,7 +309,7 @@ func recordRequestFinancials(snapshot *model.BillingPriceSnapshot, usageJSON str
 	if refundQuota > 0 {
 		entry := baseEntry(model.BillingLedgerEntryRefund)
 		entry.Quota = refundQuota
-		entry.AmountUSD = -quotaToUSD(refundQuota)
+		entry.AmountUSD = model.MoneyFromDecimal(quotaToUSD(refundQuota).Decimal().Neg())
 		entry.Status = model.BillingLedgerStatusRecorded
 		if err := model.SaveBillingLedgerEntry(entry); err != nil {
 			common.SysError(common.LogText("billing financials: refund entry failed (request=%s task=%s): %s", snapshot.RequestId, snapshot.TaskId, err.Error()))
@@ -305,13 +317,16 @@ func recordRequestFinancials(snapshot *model.BillingPriceSnapshot, usageJSON str
 	}
 
 	rows, verified := buildPurchaseCostRows(snapshot.PurchaseContract, usage)
-	if len(rows) == 0 && snapshot.PurchaseUSD != nil && *snapshot.PurchaseUSD > 0 {
+	if len(rows) == 0 && snapshot.PurchaseUSD != nil && !snapshot.PurchaseUSD.IsZero() {
 		// 没有合同成本时只能按上游公布的主维度报价估算，且永远不算已验证。
 		if inputTokens := usageQuantity(usage, "prompt_tokens", "input_tokens"); inputTokens > 0 {
+			amount := financialDecimal(inputTokens).
+				Div(decimal.NewFromInt(1_000_000)).
+				Mul(snapshot.PurchaseUSD.Decimal())
 			rows = append(rows, model.BillingCostBreakdown{
 				Dimension: "input", Quantity: inputTokens, Unit: purchaseUnitMillionTokens,
 				UnitPriceUSD: *snapshot.PurchaseUSD,
-				AmountUSD:    inputTokens / 1_000_000 * *snapshot.PurchaseUSD,
+				AmountUSD:    model.MoneyFromDecimal(amount),
 				Currency:     "USD", FXRate: 1,
 				Source: snapshot.PurchaseSource, Verified: false, Issue: "purchase_unverified",
 			})
@@ -331,12 +346,12 @@ func recordRequestFinancials(snapshot *model.BillingPriceSnapshot, usageJSON str
 		common.SysError(common.LogText("billing financials: cost breakdown failed (request=%s task=%s): %s", snapshot.RequestId, snapshot.TaskId, err.Error()))
 		return
 	}
-	totalCost := 0.0
+	totalCost := decimal.Zero
 	for _, row := range rows {
-		totalCost += row.AmountUSD
+		totalCost = totalCost.Add(row.AmountUSD.Decimal())
 	}
 	entry := baseEntry(model.BillingLedgerEntryPurchaseCost)
-	entry.AmountUSD = totalCost
+	entry.AmountUSD = model.MoneyFromDecimal(totalCost)
 	entry.Status = model.BillingLedgerStatusPendingPurchase
 	if verified {
 		entry.Status = model.BillingLedgerStatusVerified
@@ -365,7 +380,7 @@ func expressionPurchaseCostRow(cost *model.ChannelPurchaseCost, usage map[string
 		row.Issue = "purchase_expression_failed"
 		return row
 	}
-	row.AmountUSD = raw / 1_000_000
+	row.AmountUSD = model.MoneyFromDecimal(financialDecimal(raw).Div(decimal.NewFromInt(1_000_000)))
 	row.Tier = trace.MatchedTier
 	if !cost.Verified {
 		row.Issue = "purchase_unverified"

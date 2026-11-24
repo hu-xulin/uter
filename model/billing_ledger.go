@@ -21,6 +21,7 @@ package model
 import (
 	"time"
 
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm/clause"
 )
 
@@ -57,8 +58,8 @@ type BillingCostBreakdown struct {
 
 	Quantity     float64
 	Unit         string `gorm:"size:32"`
-	UnitPriceUSD float64
-	AmountUSD    float64
+	UnitPriceUSD Money  `gorm:"type:decimal(20,8)"`
+	AmountUSD    Money  `gorm:"type:decimal(20,8)"`
 	Currency     string `gorm:"size:16"`
 	FXRate       float64
 
@@ -91,10 +92,10 @@ type BillingFinancialLedger struct {
 	// Quota records the platform quota movement behind this entry (sale and
 	// refund only). It is an audit trail, not the money amount.
 	Quota     int64
-	AmountUSD float64
+	AmountUSD Money `gorm:"type:decimal(20,8)"`
 	// OriginalAmount/Currency/FXRate keep the supplier's own currency so a
 	// non-USD invoice is never silently treated as USD.
-	OriginalAmount float64
+	OriginalAmount Money  `gorm:"type:decimal(20,8)"`
 	Currency       string `gorm:"size:16"`
 	FXRate         float64
 	Status         string `gorm:"size:32"`
@@ -150,12 +151,12 @@ func ListBillingLedgerEntries(requestId, taskId, modelName string) ([]BillingFin
 // not money, so sale revenue and cost are expressed in USD; the cost may still
 // be unverified, in which case the profit is reported as pending.
 type BillingFinancialSummary struct {
-	SaleUSD          float64
-	RefundUSD        float64
-	CostUSD          float64
-	GrossProfitUSD   float64
-	CostVerified     bool
-	GrossProfitState string
+	SaleUSD          Money  `json:"sale_usd"`
+	RefundUSD        Money  `json:"refund_usd"`
+	CostUSD          Money  `json:"cost_usd"`
+	GrossProfitUSD   Money  `json:"gross_profit_usd"`
+	CostVerified     bool   `json:"cost_verified"`
+	GrossProfitState string `json:"gross_profit_state"`
 }
 
 // SummarizeBillingFinancials derives profit from ledger entries. It never
@@ -168,21 +169,27 @@ func SummarizeBillingFinancials(requestId, taskId, modelName string) (BillingFin
 	}
 	costEntries := 0
 	verifiedCosts := 0
+	sale := decimal.Zero
+	refund := decimal.Zero
+	cost := decimal.Zero
 	for _, entry := range entries {
 		switch entry.EntryType {
 		case BillingLedgerEntrySale:
-			summary.SaleUSD += entry.AmountUSD
+			sale = sale.Add(entry.AmountUSD.Decimal())
 		case BillingLedgerEntryRefund:
-			summary.RefundUSD += -entry.AmountUSD
+			refund = refund.Add(entry.AmountUSD.Decimal().Neg())
 		case BillingLedgerEntryPurchaseCost:
 			costEntries++
-			summary.CostUSD += entry.AmountUSD
+			cost = cost.Add(entry.AmountUSD.Decimal())
 			if entry.Status == BillingLedgerStatusVerified {
 				verifiedCosts++
 			}
 		}
 	}
-	summary.GrossProfitUSD = summary.SaleUSD - summary.RefundUSD - summary.CostUSD
+	summary.SaleUSD = MoneyFromDecimal(sale)
+	summary.RefundUSD = MoneyFromDecimal(refund)
+	summary.CostUSD = MoneyFromDecimal(cost)
+	summary.GrossProfitUSD = MoneyFromDecimal(sale.Sub(refund).Sub(cost))
 	summary.CostVerified = costEntries > 0 && verifiedCosts == costEntries
 	if summary.CostVerified {
 		summary.GrossProfitState = BillingLedgerStatusVerified

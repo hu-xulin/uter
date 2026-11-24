@@ -9,6 +9,8 @@ import (
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/pkg/billingexpr"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -172,10 +174,11 @@ func reconcileSampleByRequestId(channel *model.Channel, sample UpstreamBillingSa
 		result.Reason = "purchase cost snapshot is missing for this request"
 		return result
 	}
-	cost := 0.0
+	costDecimal := decimal.Zero
 	for _, row := range rows {
-		cost += row.AmountUSD
+		costDecimal = costDecimal.Add(row.AmountUSD.Decimal())
 	}
+	cost, _ := costDecimal.Float64()
 	result.UterCostUSD = cost
 	result.DifferenceUSD = cost - sample.UpstreamCostUSD
 	if sample.UpstreamCostUSD > 0 {
@@ -266,15 +269,16 @@ func sampleUterCostUSD(pricing model.ChannelInternalPricing, sample UpstreamBill
 		if pricing.InputUSDPerMillion == nil || pricing.OutputUSDPerMillion == nil {
 			return 0, errors.New("token price is incomplete")
 		}
-		cost := sample.InputTokens / 1_000_000 * *pricing.InputUSDPerMillion
-		cost += sample.OutputTokens / 1_000_000 * *pricing.OutputUSDPerMillion
+		oneMillion := decimal.NewFromInt(1_000_000)
+		cost := decimal.NewFromFloat(sample.InputTokens).Div(oneMillion).Mul(pricing.InputUSDPerMillion.Decimal())
+		cost = cost.Add(decimal.NewFromFloat(sample.OutputTokens).Div(oneMillion).Mul(pricing.OutputUSDPerMillion.Decimal()))
 		if pricing.CacheUSDPerMillion != nil {
-			cost += sample.CacheReadTokens / 1_000_000 * *pricing.CacheUSDPerMillion
+			cost = cost.Add(decimal.NewFromFloat(sample.CacheReadTokens).Div(oneMillion).Mul(pricing.CacheUSDPerMillion.Decimal()))
 		}
 		if pricing.CreateCacheUSDPerMillion != nil {
-			cost += sample.CacheCreationTokens / 1_000_000 * *pricing.CreateCacheUSDPerMillion
+			cost = cost.Add(decimal.NewFromFloat(sample.CacheCreationTokens).Div(oneMillion).Mul(pricing.CreateCacheUSDPerMillion.Decimal()))
 		}
-		return cost, nil
+		return cost.InexactFloat64(), nil
 	case model.ChannelPricingModePerCall:
 		if pricing.PerCallUSD == nil {
 			return 0, errors.New("per-call price is missing")
@@ -283,17 +287,17 @@ func sampleUterCostUSD(pricing model.ChannelInternalPricing, sample UpstreamBill
 		if sample.ImageCount == 0 {
 			count = 1
 		}
-		return *pricing.PerCallUSD * count, nil
+		return pricing.PerCallUSD.Decimal().Mul(decimal.NewFromFloat(count)).InexactFloat64(), nil
 	case model.ChannelPricingModePerSecond:
 		if pricing.PerSecondUSD == nil || sample.DurationSeconds <= 0 {
 			return 0, errors.New("per-second price or duration is missing")
 		}
-		return *pricing.PerSecondUSD * sample.DurationSeconds, nil
+		return pricing.PerSecondUSD.Decimal().Mul(decimal.NewFromFloat(sample.DurationSeconds)).InexactFloat64(), nil
 	case model.ChannelPricingModePerMinute:
 		if pricing.PerMinuteUSD == nil || sample.DurationSeconds <= 0 {
 			return 0, errors.New("per-minute price or duration is missing")
 		}
-		return *pricing.PerMinuteUSD * sample.DurationSeconds / 60, nil
+		return pricing.PerMinuteUSD.Decimal().Mul(decimal.NewFromFloat(sample.DurationSeconds)).Div(decimal.NewFromInt(60)).InexactFloat64(), nil
 	case model.ChannelPricingModeTieredExpr, model.ChannelPricingModeTieredTable:
 		expression := pricing.BillingExpr
 		if strings.TrimSpace(expression) == "" {

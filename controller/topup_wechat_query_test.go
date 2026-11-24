@@ -112,8 +112,8 @@ func wechatQueryOrder(t *testing.T, db *gorm.DB, userId int, tradeNo string, quo
 	t.Helper()
 	order := &model.TopUp{
 		UserId:           userId,
-		Amount:           quotaAmount,
-		Money:            money,
+		Amount:           model.MoneyFromFloat(quotaAmount),
+		Money:            model.MoneyFromFloat(money),
 		TradeNo:          tradeNo,
 		PaymentMethod:    model.PaymentMethodWechatPay,
 		PaymentProvider:  model.PaymentProviderWechatPay,
@@ -178,7 +178,7 @@ func TestQueryWechatOrderCreditsPaidOrder(t *testing.T) {
 	var reloaded model.User
 	require.NoError(t, db.First(&reloaded, user.Id).Error)
 	expectedQuota, err := common.WalletQuotaFromDecimalStrict(
-		decimal.NewFromFloat(order.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+		order.Amount.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 	)
 	require.NoError(t, err)
 	assert.Equal(t, expectedQuota, reloaded.Quota)

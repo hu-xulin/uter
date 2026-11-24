@@ -121,8 +121,8 @@ func createMatrixTestOrder(t *testing.T, userId int, tradeNo string, provider st
 	t.Helper()
 	order := &TopUp{
 		UserId:          userId,
-		Amount:          2,
-		Money:           10,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10),
 		TradeNo:         tradeNo,
 		PaymentMethod:   "test",
 		PaymentProvider: provider,

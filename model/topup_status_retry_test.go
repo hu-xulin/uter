@@ -109,8 +109,8 @@ func TestUpdatePendingTopUpStatusUsesConditionalUpdate(t *testing.T) {
 
 	order := TopUp{
 		UserId:          901,
-		Amount:          2,
-		Money:           10.0,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10.0),
 		TradeNo:         "cas-pending-order",
 		PaymentMethod:   "alipay",
 		PaymentProvider: PaymentProviderStripe,
@@ -139,7 +139,7 @@ func TestUpdatePendingTopUpStatusUsesConditionalUpdate(t *testing.T) {
 	if stored.Status != common.TopUpStatusExpired {
 		t.Fatalf("status = %q, want %q", stored.Status, common.TopUpStatusExpired)
 	}
-	if stored.PaymentMethod != "alipay" || stored.Amount != 2 || stored.Money != 10.0 ||
+	if stored.PaymentMethod != "alipay" || stored.Amount.String() != "2" || stored.Money.String() != "10" ||
 		stored.PaymentProvider != PaymentProviderStripe {
 		t.Fatalf("sibling columns were overwritten by a whole-struct save: %+v", stored)
 	}
@@ -152,8 +152,8 @@ func TestUpdatePendingTopUpStatusKeepsProviderGuard(t *testing.T) {
 
 	order := TopUp{
 		UserId:          902,
-		Amount:          1,
-		Money:           5.0,
+		Amount:          MoneyFromFloat(1),
+		Money:           MoneyFromFloat(5.0),
 		TradeNo:         "cas-provider-guard",
 		PaymentMethod:   "alipay",
 		PaymentProvider: PaymentProviderCreem,

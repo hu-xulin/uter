@@ -142,7 +142,7 @@ func recordBillingPriceSnapshot(info *relaycommon.RelayInfo, taskID string, othe
 		PurchaseContract:      purchaseContract,
 		PurchaseContractHash:  purchaseContractHash,
 		PriceSource:           priceSource,
-		PurchaseUSD:           info.ChannelPricingPurchaseUSD,
+		PurchaseUSD:           model.MoneyFromFloatPtr(info.ChannelPricingPurchaseUSD),
 		PurchaseVerified:      info.ChannelPricingPurchaseVerified,
 		PurchaseSource:        info.ChannelPricingPurchaseSource,
 		GroupRatio:            info.PriceData.GroupRatioInfo.GroupRatio,

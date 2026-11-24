@@ -42,7 +42,7 @@ func SubscriptionRequestCreemPay(c *gin.Context) {
 		common.ApiErrorT(c, "CreemProductId is not configured for this plan")
 		return
 	}
-	if plan.PriceAmount <= 0 {
+	if !plan.PriceAmount.Decimal().IsPositive() {
 		common.ApiErrorT(c, "Plan amount is too low")
 		return
 	}

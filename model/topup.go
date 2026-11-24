@@ -15,13 +15,13 @@ import (
 )
 
 type TopUp struct {
-	Id              int     `json:"id"`
-	UserId          int     `json:"user_id" gorm:"index"`
-	Amount          float64 `json:"amount"`
-	Money           float64 `json:"money"`
-	TradeNo         string  `json:"trade_no" gorm:"unique;type:varchar(255);index"`
-	PaymentMethod   string  `json:"payment_method" gorm:"type:varchar(50)"`
-	PaymentProvider string  `json:"payment_provider" gorm:"type:varchar(50);default:''"`
+	Id              int    `json:"id"`
+	UserId          int    `json:"user_id" gorm:"index"`
+	Amount          Money  `json:"amount" gorm:"type:decimal(20,6)"`
+	Money           Money  `json:"money" gorm:"type:decimal(20,6)"`
+	TradeNo         string `json:"trade_no" gorm:"unique;type:varchar(255);index"`
+	PaymentMethod   string `json:"payment_method" gorm:"type:varchar(50)"`
+	PaymentProvider string `json:"payment_provider" gorm:"type:varchar(50);default:''"`
 	// ProviderAmount/Currency store the payment provider's checkout pricing snapshot,
 	// independently from the local quota-calculation Money field.
 	ProviderAmount   int64  `json:"-" gorm:"not null;default:0"`
@@ -355,7 +355,7 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 		}
 		var quotaErr error
 		quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
-			decimal.NewFromFloat(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+			topUp.Amount.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if quotaErr != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
@@ -384,8 +384,8 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, "epay topup")
 
-	common.SysLog(fmt.Sprintf("易支付充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money))
-	RecordTopupLog(topUp.UserId, common.NewMessage("Online top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.LogQuota(quotaToAdd), "amount": fmt.Sprintf("%f", topUp.Money)}), callerIp, topUp.PaymentMethod, PaymentProviderEpay)
+	common.SysLog(fmt.Sprintf("易支付充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money.Float64()))
+	RecordTopupLog(topUp.UserId, common.NewMessage("Online top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.LogQuota(quotaToAdd), "amount": fmt.Sprintf("%f", topUp.Money.Float64())}), callerIp, topUp.PaymentMethod, PaymentProviderEpay)
 	return false, nil
 }
 
@@ -433,7 +433,7 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 		}
 		var quotaErr error
 		quotaToAdd, quotaErr = common.WalletQuotaFromDecimalStrict(
-			decimal.NewFromFloat(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+			topUp.Amount.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if quotaErr != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
@@ -462,8 +462,8 @@ func rechargeOfficial(tradeNo string, provider string, actualMethod string, call
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, provider+" topup")
 
-	common.SysLog(fmt.Sprintf("%s 充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", provider, topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money))
-	RecordTopupLog(topUp.UserId, common.NewMessage("Online top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.LogQuota(quotaToAdd), "amount": fmt.Sprintf("%f", topUp.Money)}), callerIp, topUp.PaymentMethod, provider)
+	common.SysLog(fmt.Sprintf("%s 充值成功 trade_no=%s user_id=%d quota_to_add=%d money=%.2f", provider, topUp.TradeNo, topUp.UserId, quotaToAdd, topUp.Money.Float64()))
+	RecordTopupLog(topUp.UserId, common.NewMessage("Online top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"quota": logger.LogQuota(quotaToAdd), "amount": fmt.Sprintf("%f", topUp.Money.Float64())}), callerIp, topUp.PaymentMethod, provider)
 	return false, nil
 }
 
@@ -510,7 +510,7 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 		}
 
 		quota, err = common.WalletQuotaFromDecimalStrict(
-			decimal.NewFromFloat(topUp.Money).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+			topUp.Money.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if err != nil || quota <= 0 {
 			return ErrInvalidTopUpQuota
@@ -736,7 +736,7 @@ func RechargeCreem(referenceId string, _ string, _ string, callerIp string) (err
 		}
 
 		// Creem 直接使用 Amount 作为充值额度（整数）
-		quota, err = common.WalletQuotaFromDecimalStrict(decimal.NewFromFloat(topUp.Amount))
+		quota, err = common.WalletQuotaFromDecimalStrict(topUp.Amount.Decimal())
 		if err != nil || quota <= 0 {
 			return ErrInvalidTopUpQuota
 		}
@@ -767,7 +767,7 @@ func RechargeCreem(referenceId string, _ string, _ string, callerIp string) (err
 	}
 	syncCreditUserQuotaCache(topUp.UserId, quota, "creem topup")
 
-	RecordTopupLog(topUp.UserId, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Creem", "quota": quota, "amount": fmt.Sprintf("%.2f", topUp.Money)}), callerIp, topUp.PaymentMethod, PaymentMethodCreem)
+	RecordTopupLog(topUp.UserId, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Creem", "quota": quota, "amount": fmt.Sprintf("%.2f", topUp.Money.Float64())}), callerIp, topUp.PaymentMethod, PaymentMethodCreem)
 
 	return nil
 }
@@ -806,7 +806,7 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 		}
 
 		quotaToAdd, err = common.WalletQuotaFromDecimalStrict(
-			decimal.NewFromFloat(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+			topUp.Amount.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if err != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
@@ -837,7 +837,7 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, "waffo topup")
 
 	if quotaToAdd > 0 {
-		RecordTopupLog(topUp.UserId, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Waffo", "quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%.2f", topUp.Money)}), callerIp, topUp.PaymentMethod, PaymentMethodWaffo)
+		RecordTopupLog(topUp.UserId, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Waffo", "quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%.2f", topUp.Money.Float64())}), callerIp, topUp.PaymentMethod, PaymentMethodWaffo)
 	}
 
 	return nil
@@ -877,7 +877,7 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 		}
 
 		quotaToAdd, err = common.WalletQuotaFromDecimalStrict(
-			decimal.NewFromFloat(topUp.Amount).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
+			topUp.Amount.Decimal().Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 		)
 		if err != nil || quotaToAdd <= 0 {
 			return ErrInvalidTopUpQuota
@@ -908,7 +908,7 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 	syncCreditUserQuotaCache(topUp.UserId, quotaToAdd, "waffo pancake topup")
 
 	if quotaToAdd > 0 {
-		RecordLog(topUp.UserId, LogTypeTopup, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Waffo Pancake", "quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%.2f", topUp.Money)}))
+		RecordLog(topUp.UserId, LogTypeTopup, common.NewMessage("{{provider}} top-up succeeded, amount added: {{quota}}, payment amount: {{amount}}", map[string]any{"provider": "Waffo Pancake", "quota": logger.FormatQuota(quotaToAdd), "amount": fmt.Sprintf("%.2f", topUp.Money.Float64())}))
 	}
 
 	return nil

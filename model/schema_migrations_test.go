@@ -54,7 +54,7 @@ func TestSchemaMigrationUpgradeAppliesV1(t *testing.T) {
 	// Legal business data that must survive the table rebuild.
 	user := User{Username: "schema-up-user", Password: "EXAMPLE", AffCode: "AFF-schema-up"}
 	require.NoError(t, db.Create(&user).Error)
-	order := TopUp{TradeNo: "SCHEMA-UP-1", UserId: user.Id, Money: 1, Amount: 1, Status: common.TopUpStatusPending}
+	order := TopUp{TradeNo: "SCHEMA-UP-1", UserId: user.Id, Money: MoneyFromFloat(1), Amount: MoneyFromFloat(1), Status: common.TopUpStatusPending}
 	require.NoError(t, db.Create(&order).Error)
 
 	require.NoError(t, MigrateSchemaUp(db))
@@ -180,7 +180,7 @@ func TestSchemaMigrationBusinessRowsSurviveUpgradeRollback(t *testing.T) {
 	db := schemaTestDB(t)
 	user := User{Username: "survive-user", Password: "EXAMPLE", AffCode: "AFF-survive", Quota: 777}
 	require.NoError(t, db.Create(&user).Error)
-	order := TopUp{TradeNo: "SURVIVE-1", UserId: user.Id, Money: 10, Amount: 10, Status: common.TopUpStatusPending}
+	order := TopUp{TradeNo: "SURVIVE-1", UserId: user.Id, Money: MoneyFromFloat(10), Amount: MoneyFromFloat(10), Status: common.TopUpStatusPending}
 	require.NoError(t, db.Create(&order).Error)
 
 	require.NoError(t, MigrateSchemaUp(db))

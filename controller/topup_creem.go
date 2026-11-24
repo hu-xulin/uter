@@ -52,11 +52,11 @@ type CreemPayRequest struct {
 }
 
 type CreemProduct struct {
-	ProductId string  `json:"productId"`
-	Name      string  `json:"name"`
-	Price     float64 `json:"price"`
-	Currency  string  `json:"currency"`
-	Quota     int64   `json:"quota"`
+	ProductId string      `json:"productId"`
+	Name      string      `json:"name"`
+	Price     model.Money `json:"price"`
+	Currency  string      `json:"currency"`
+	Quota     int64       `json:"quota"`
 }
 
 type CreemAdaptor struct {
@@ -120,7 +120,7 @@ func (*CreemAdaptor) RequestPay(c *gin.Context, req *CreemPayRequest) {
 		paymentError(c, common.NewMessage("Product does not exist"))
 		return
 	}
-	if strings.TrimSpace(selectedProduct.Currency) == "" || selectedProduct.Price <= 0 {
+	if strings.TrimSpace(selectedProduct.Currency) == "" || !selectedProduct.Price.Decimal().IsPositive() {
 		paymentError(c, common.NewMessage("Product price/currency configuration is invalid"))
 		return
 	}
@@ -147,8 +147,8 @@ func (*CreemAdaptor) RequestPay(c *gin.Context, req *CreemPayRequest) {
 	// 先创建订单记录，使用产品配置的金额和充值额度
 	topUp := &model.TopUp{
 		UserId:           id,
-		Amount:           float64(selectedProduct.Quota), // 充值额度
-		Money:            selectedProduct.Price,          // 支付金额
+		Amount:           model.MoneyFromFloat(float64(selectedProduct.Quota)), // 充值额度
+		Money:            selectedProduct.Price,                                // 支付金额
 		TradeNo:          referenceId,
 		PaymentMethod:    model.PaymentMethodCreem,
 		PaymentProvider:  model.PaymentProviderCreem,
@@ -173,7 +173,7 @@ func (*CreemAdaptor) RequestPay(c *gin.Context, req *CreemPayRequest) {
 		return
 	}
 
-	logger.LogInfo(c.Request.Context(), common.LogText("Creem top-up order created user_id=%d trade_no=%s product_id=%s product_name=%q quota=%d money=%.2f", id, referenceId, selectedProduct.ProductId, selectedProduct.Name, selectedProduct.Quota, selectedProduct.Price))
+	logger.LogInfo(c.Request.Context(), common.LogText("Creem top-up order created user_id=%d trade_no=%s product_id=%s product_name=%q quota=%d money=%.2f", id, referenceId, selectedProduct.ProductId, selectedProduct.Name, selectedProduct.Quota, selectedProduct.Price.Float64()))
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",

@@ -131,8 +131,8 @@ func callbackTestUserAndOrder(t *testing.T, db *gorm.DB, tradeNo string, provide
 	require.NoError(t, db.Create(user).Error)
 	order := &model.TopUp{
 		UserId:          user.Id,
-		Amount:          2,
-		Money:           10,
+		Amount:          model.MoneyFromFloat(2),
+		Money:           model.MoneyFromFloat(10),
 		TradeNo:         tradeNo,
 		PaymentMethod:   "test",
 		PaymentProvider: provider,

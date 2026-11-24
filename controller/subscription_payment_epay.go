@@ -42,7 +42,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 		common.ApiErrorT(c, "Subscription plan is not enabled")
 		return
 	}
-	if plan.PriceAmount < 0.01 {
+	if plan.PriceAmount.Float64() < 0.01 {
 		common.ApiErrorT(c, "Plan amount is too low")
 		return
 	}
@@ -103,7 +103,7 @@ func SubscriptionRequestEpay(c *gin.Context) {
 		Type:           req.PaymentMethod,
 		ServiceTradeNo: tradeNo,
 		Name:           fmt.Sprintf("SUB:%s", plan.Title),
-		Money:          strconv.FormatFloat(plan.PriceAmount, 'f', 2, 64),
+		Money:          strconv.FormatFloat(plan.PriceAmount.Float64(), 'f', 2, 64),
 		Device:         epay.PC,
 		NotifyUrl:      notifyUrl,
 		ReturnUrl:      returnUrl,

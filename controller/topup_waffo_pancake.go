@@ -92,8 +92,8 @@ func normalizeWaffoPancakeTopUpAmount(amount float64) float64 {
 	return normalized
 }
 
-func formatWaffoPancakeAmount(payMoney float64) string {
-	return decimal.NewFromFloat(payMoney).StringFixed(2)
+func formatWaffoPancakeAmount(payMoney model.Money) string {
+	return payMoney.Decimal().StringFixed(2)
 }
 
 // Waffo Pancake sessions have always been created in USD. Empty snapshots are
@@ -391,8 +391,8 @@ func RequestWaffoPancakePay(c *gin.Context) {
 	tradeNo := fmt.Sprintf("WAFFO_PANCAKE-%d-%d-%s", id, time.Now().UnixMilli(), randstr.String(6))
 	topUp := &model.TopUp{
 		UserId:           id,
-		Amount:           normalizeWaffoPancakeTopUpAmount(req.Amount),
-		Money:            payMoney,
+		Amount:           model.MoneyFromFloat(normalizeWaffoPancakeTopUpAmount(req.Amount)),
+		Money:            model.MoneyFromFloat(payMoney),
 		TradeNo:          tradeNo,
 		PaymentMethod:    model.PaymentMethodWaffoPancake,
 		PaymentProvider:  model.PaymentProviderWaffoPancake,
@@ -411,7 +411,7 @@ func RequestWaffoPancakePay(c *gin.Context) {
 		ProductID:     setting.WaffoPancakeProductID,
 		BuyerIdentity: getWaffoPancakeBuyerIdentity(user),
 		PriceSnapshot: &service.WaffoPancakePriceSnapshot{
-			Amount:      formatWaffoPancakeAmount(payMoney),
+			Amount:      formatWaffoPancakeAmount(model.MoneyFromFloat(payMoney)),
 			TaxCategory: "saas",
 		},
 		BuyerEmail:              getWaffoPancakeBuyerEmail(user),

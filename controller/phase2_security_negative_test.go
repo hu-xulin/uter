@@ -131,8 +131,8 @@ func secNegEpayOrder(t *testing.T, db *gorm.DB, user *model.User, tradeNo string
 	t.Helper()
 	order := &model.TopUp{
 		UserId:          user.Id,
-		Amount:          2,
-		Money:           10,
+		Amount:          model.MoneyFromFloat(2),
+		Money:           model.MoneyFromFloat(10),
 		TradeNo:         tradeNo,
 		PaymentMethod:   "alipay",
 		PaymentProvider: model.PaymentProviderEpay,

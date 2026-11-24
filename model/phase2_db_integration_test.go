@@ -152,8 +152,8 @@ func phase2CreateOrder(t *testing.T, db *gorm.DB, tradeNo string, userID, quotaD
 	order := TopUp{
 		TradeNo:          tradeNo,
 		UserId:           userID,
-		Money:            float64(quotaDelta),
-		Amount:           float64(quotaDelta),
+		Money:            MoneyFromFloat(float64(quotaDelta)),
+		Amount:           MoneyFromFloat(float64(quotaDelta)),
 		PaymentMethod:    "EXAMPLE-METHOD",
 		PaymentProvider:  "EXAMPLE-PROVIDER",
 		Status:           common.TopUpStatusPending,
@@ -411,7 +411,7 @@ func TestPhase2DBIntegration(t *testing.T) {
 		user := phase2User("unique-user", 0)
 		require.NoError(t, db.Create(&user).Error)
 		first := phase2CreateOrder(t, db, "EXAMPLE-TRADE-NO-0001", user.Id, 10, 0, "")
-		duplicate := TopUp{TradeNo: first.TradeNo, UserId: user.Id, Money: 10, Amount: 10, PaymentMethod: "EXAMPLE-METHOD"}
+		duplicate := TopUp{TradeNo: first.TradeNo, UserId: user.Id, Money: MoneyFromFloat(10), Amount: MoneyFromFloat(10), PaymentMethod: "EXAMPLE-METHOD"}
 		err := db.Create(&duplicate).Error
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "UNIQUE constraint failed")
@@ -833,8 +833,8 @@ func phase2CreateOrderOrError(t *testing.T, db *gorm.DB, tradeNo string, userID,
 	order := TopUp{
 		TradeNo:         tradeNo,
 		UserId:          userID,
-		Money:           float64(quotaDelta),
-		Amount:          float64(quotaDelta),
+		Money:           MoneyFromFloat(float64(quotaDelta)),
+		Amount:          MoneyFromFloat(float64(quotaDelta)),
 		PaymentMethod:   "EXAMPLE-METHOD",
 		PaymentProvider: "EXAMPLE-PROVIDER",
 		Status:          common.TopUpStatusPending,

@@ -208,10 +208,10 @@ func TestIsolatedDBDuplicateTradeNoIsRejected(t *testing.T) {
 	db, _ := isolatedBusinessDB(t)
 	defer func() { closeIsolatedSQLite(t, db) }()
 
-	first := TopUp{TradeNo: "ISOLATED-ORDER-001", Money: 10, Amount: 10, PaymentMethod: "test"}
+	first := TopUp{TradeNo: "ISOLATED-ORDER-001", Money: MoneyFromFloat(10), Amount: MoneyFromFloat(10), PaymentMethod: "test"}
 	require.NoError(t, db.Create(&first).Error)
 
-	duplicate := TopUp{TradeNo: first.TradeNo, Money: 10, Amount: 10, PaymentMethod: "test"}
+	duplicate := TopUp{TradeNo: first.TradeNo, Money: MoneyFromFloat(10), Amount: MoneyFromFloat(10), PaymentMethod: "test"}
 	err := db.Create(&duplicate).Error
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "UNIQUE constraint failed")

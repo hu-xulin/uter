@@ -11,6 +11,8 @@ import (
 	"github.com/uter-ai/uter/setting/operation_setting"
 	"github.com/uter-ai/uter/setting/ratio_setting"
 	"gorm.io/gorm"
+
+	"github.com/shopspring/decimal"
 )
 
 // ---- Shared types ----
@@ -183,11 +185,11 @@ func AdminCreateSubscriptionPlan(c *gin.Context) {
 		common.ApiErrorT(c, "Subscription plan title cannot be empty")
 		return
 	}
-	if req.Plan.PriceAmount < 0 {
+	if req.Plan.PriceAmount.Decimal().IsNegative() {
 		common.ApiErrorT(c, "Price cannot be negative")
 		return
 	}
-	if req.Plan.PriceAmount > 9999 {
+	if req.Plan.PriceAmount.Decimal().GreaterThan(decimal.NewFromInt(9999)) {
 		common.ApiErrorT(c, "Price cannot exceed 9999")
 		return
 	}
@@ -268,11 +270,11 @@ func AdminUpdateSubscriptionPlan(c *gin.Context) {
 		common.ApiErrorT(c, "Subscription plan title cannot be empty")
 		return
 	}
-	if req.Plan.PriceAmount < 0 {
+	if req.Plan.PriceAmount.Decimal().IsNegative() {
 		common.ApiErrorT(c, "Price cannot be negative")
 		return
 	}
-	if req.Plan.PriceAmount > 9999 {
+	if req.Plan.PriceAmount.Decimal().GreaterThan(decimal.NewFromInt(9999)) {
 		common.ApiErrorT(c, "Price cannot exceed 9999")
 		return
 	}

@@ -32,8 +32,8 @@ func TestImportUpstreamBillingInvoicePersistsReconciliation(t *testing.T) {
 	}})
 	require.NoError(t, err)
 	require.NoError(t, model.SetChannelInternalPricingFor(identity, model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &input,
-		OutputUSDPerMillion: &output, Source: "manual", UpdatedAt: 2,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&input),
+		OutputUSDPerMillion: model.MoneyFromFloatPtr(&output), Source: "manual", UpdatedAt: 2,
 	}))
 
 	result, err := ImportUpstreamBillingInvoice(&channel, UpstreamInvoiceImportRequest{
@@ -97,8 +97,8 @@ func TestImportUpstreamBillingInvoiceConvertsNonUSDWithFX(t *testing.T) {
 	var entries []model.BillingFinancialLedger
 	require.NoError(t, db.Where("entry_type = ?", model.BillingLedgerEntrySupplierInvoice).Find(&entries).Error)
 	require.Len(t, entries, 1)
-	assert.InDelta(t, 0.014, entries[0].OriginalAmount, 1e-9)
-	assert.InDelta(t, 0.014*7.2, entries[0].AmountUSD, 1e-9)
+	assert.InDelta(t, 0.014, entries[0].OriginalAmount.Float64(), 1e-9)
+	assert.InDelta(t, 0.014*7.2, entries[0].AmountUSD.Float64(), 1e-9)
 	assert.Equal(t, "CNY", entries[0].Currency)
 	assert.Equal(t, model.BillingLedgerStatusRecorded, entries[0].Status)
 }
@@ -156,9 +156,9 @@ func TestReconcileUpstreamBillingMatchesRequestSnapshotCost(t *testing.T) {
 		UsageBreakdown: `{"prompt_tokens":1000,"completion_tokens":500,"cache_read_tokens":200}`,
 	}))
 	require.NoError(t, model.SaveBillingCostBreakdowns([]model.BillingCostBreakdown{
-		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "input", Quantity: 800, AmountUSD: 0.0008},
-		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "output", Quantity: 500, AmountUSD: 0.001},
-		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "cache_read", Quantity: 200, AmountUSD: 0.00002},
+		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "input", Quantity: 800, AmountUSD: model.MoneyFromFloat(0.0008)},
+		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "output", Quantity: 500, AmountUSD: model.MoneyFromFloat(0.001)},
+		{RequestId: "req-line-1", ModelName: "gpt-a", ChannelId: channel.Id, Dimension: "cache_read", Quantity: 200, AmountUSD: model.MoneyFromFloat(0.00002)},
 	}))
 
 	report, err := ReconcileUpstreamBillingSamples(&channel, []UpstreamBillingSample{{
@@ -184,7 +184,7 @@ func TestReconcileUpstreamBillingMatchesRequestSnapshotCost(t *testing.T) {
 		UsageBreakdown: `{"prompt_tokens":1000,"completion_tokens":500}`,
 	}))
 	require.NoError(t, model.SaveBillingCostBreakdowns([]model.BillingCostBreakdown{
-		{RequestId: "req-line-2", ModelName: "gpt-b", Dimension: "input", Quantity: 1000, AmountUSD: 0.001},
+		{RequestId: "req-line-2", ModelName: "gpt-b", Dimension: "input", Quantity: 1000, AmountUSD: model.MoneyFromFloat(0.001)},
 	}))
 	report, err = ReconcileUpstreamBillingSamples(&channel, []UpstreamBillingSample{{
 		ModelName: "gpt-b", RequestId: "req-line-2", InputTokens: 9999, UpstreamCostUSD: 0.001,

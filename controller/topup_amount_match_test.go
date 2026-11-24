@@ -7,6 +7,7 @@ import (
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
+	"github.com/uter-ai/uter/model"
 )
 
 // TestPaidAmountMatchesOrder 锁死「实付金额必须与本地订单应付金额一致」这一
@@ -34,7 +35,7 @@ func TestPaidAmountMatchesOrder(t *testing.T) {
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			paid, err := decimal.NewFromString(testCase.paid)
-			got := err == nil && paidAmountMatchesOrder(paid, testCase.expected)
+			got := err == nil && paidAmountMatchesOrder(paid, model.MoneyFromFloat(testCase.expected))
 			assert.Equal(t, testCase.want, got)
 		})
 	}
@@ -74,7 +75,7 @@ func TestCreemOrderAmountsCoverOrder(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			covered, overprice := creemOrderAmountsCoverOrder(tc.subtotal, tc.amountDue, tc.amountPaid, tc.expected, tc.currency)
+			covered, overprice := creemOrderAmountsCoverOrder(tc.subtotal, tc.amountDue, tc.amountPaid, model.MoneyFromFloat(tc.expected), tc.currency)
 			assert.Equal(t, tc.wantCovered, covered, "covered")
 			assert.Equal(t, tc.wantOverprice, overprice, "subtotal over local snapshot")
 		})
@@ -101,7 +102,7 @@ func TestExpectedMinorUnits(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, ok := expectedMinorUnits(tc.amount, tc.currency)
+			got, ok := expectedMinorUnits(model.MoneyFromFloat(tc.amount), tc.currency)
 			assert.Equal(t, tc.wantOK, ok)
 			if tc.wantOK {
 				assert.Equal(t, tc.expected, got)
@@ -126,7 +127,7 @@ func TestProviderPaidAmountMatchesOrder(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.want, providerPaidAmountMatchesOrder(tc.paid, tc.expected))
+			assert.Equal(t, tc.want, providerPaidAmountMatchesOrder(tc.paid, model.MoneyFromFloat(tc.expected)))
 		})
 	}
 }
@@ -293,7 +294,7 @@ func TestStripeSubscriptionPriceMatchesLocalOrder(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.want, stripeSubscriptionPriceMatchesLocalOrder(tc.providerAmount, tc.providerCurrency, tc.expectedMoney, tc.expectedCurrency))
+			assert.Equal(t, tc.want, stripeSubscriptionPriceMatchesLocalOrder(tc.providerAmount, tc.providerCurrency, model.MoneyFromFloat(tc.expectedMoney), tc.expectedCurrency))
 		})
 	}
 }

@@ -15,7 +15,7 @@ func TestReconcileUpstreamBillingSamplesComparesConfiguredPrice(t *testing.T) {
 	input, output := 2.0, 4.0
 	pricing, err := common.Marshal(model.ChannelInternalPricing{
 		Mode:               model.ChannelPricingModePerMillionTokens,
-		InputUSDPerMillion: &input, OutputUSDPerMillion: &output, Source: "manual",
+		InputUSDPerMillion: model.MoneyFromFloatPtr(&input), OutputUSDPerMillion: model.MoneyFromFloatPtr(&output), Source: "manual",
 	})
 	require.NoError(t, err)
 	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{

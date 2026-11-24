@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
@@ -31,7 +32,7 @@ func TestRoundPayMoneyToCentKeepsEveryConsumerInAgreement(t *testing.T) {
 		// 消费者 2：订单标题
 		titleAmount := decimal.NewFromFloat(rounded).Round(2).StringFixed(2)
 		// 消费者 3：回调比对
-		matches := providerPaidAmountMatchesOrder(wireAmount, rounded)
+		matches := providerPaidAmountMatchesOrder(wireAmount, model.MoneyFromFloat(rounded))
 
 		assert.Equal(t, wireAmount, titleAmount,
 			"order title and gateway amount must agree for %v", raw)

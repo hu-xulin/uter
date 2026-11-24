@@ -99,11 +99,11 @@ var zeroDecimalCurrencies = map[string]bool{
 	"IDR": true, "JPY": true, "KRW": true, "VND": true,
 }
 
-func formatWaffoAmount(amount float64, currency string) string {
+func formatWaffoAmount(amount model.Money, currency string) string {
 	if zeroDecimalCurrencies[currency] {
-		return fmt.Sprintf("%.0f", amount)
+		return amount.Decimal().StringFixed(0)
 	}
-	return fmt.Sprintf("%.2f", amount)
+	return amount.Decimal().StringFixed(2)
 }
 
 // waffoPaidAmountMatchesOrder deliberately rejects missing or malformed amounts.
@@ -279,8 +279,8 @@ func RequestWaffoPay(c *gin.Context) {
 	// 创建本地订单
 	topUp := &model.TopUp{
 		UserId:           id,
-		Amount:           amount,
-		Money:            payMoney,
+		Amount:           model.MoneyFromFloat(amount),
+		Money:            model.MoneyFromFloat(payMoney),
 		TradeNo:          merchantOrderId,
 		PaymentMethod:    model.PaymentMethodWaffo,
 		PaymentProvider:  model.PaymentProviderWaffo,
@@ -318,7 +318,7 @@ func RequestWaffoPay(c *gin.Context) {
 	createParams := &order.CreateOrderParams{
 		PaymentRequestID: paymentRequestId,
 		MerchantOrderID:  merchantOrderId,
-		OrderAmount:      formatWaffoAmount(payMoney, currency),
+		OrderAmount:      formatWaffoAmount(model.MoneyFromFloat(payMoney), currency),
 		OrderCurrency:    currency,
 		OrderDescription: goodsInfo.GoodsName,
 		OrderRequestedAt: time.Now().UTC().Format("2006-01-02T15:04:05.000Z"),

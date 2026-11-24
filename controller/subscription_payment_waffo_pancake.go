@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/shopspring/decimal"
 	"github.com/thanhpk/randstr"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/logger"
@@ -43,7 +42,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		common.ApiErrorT(c, "WaffoPancakeProductId is not configured for this plan")
 		return
 	}
-	if plan.PriceAmount <= 0 {
+	if plan.PriceAmount.Float64() <= 0 {
 		common.ApiErrorT(c, "Plan amount is too low")
 		return
 	}
@@ -108,7 +107,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		ProductID:     plan.WaffoPancakeProductId,
 		BuyerIdentity: service.WaffoPancakeBuyerIdentityFromUserID(user.Id),
 		PriceSnapshot: &service.WaffoPancakePriceSnapshot{
-			Amount:      decimal.NewFromFloat(plan.PriceAmount).StringFixed(2),
+			Amount:      plan.PriceAmount.Decimal().StringFixed(2),
 			TaxCategory: "saas",
 		},
 		BuyerEmail:              getWaffoPancakeBuyerEmail(user),
@@ -122,7 +121,7 @@ func SubscriptionRequestWaffoPancakePay(c *gin.Context) {
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), common.LogText("Waffo Pancake subscription order created user_id=%d plan_id=%d trade_no=%s session_id=%s money=%.2f", userId, plan.Id, tradeNo, session.SessionID, plan.PriceAmount))
+	logger.LogInfo(c.Request.Context(), common.LogText("Waffo Pancake subscription order created user_id=%d plan_id=%d trade_no=%s session_id=%s money=%.2f", userId, plan.Id, tradeNo, session.SessionID, plan.PriceAmount.Float64()))
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",

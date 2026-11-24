@@ -30,8 +30,8 @@ func createOfficialTestOrder(t *testing.T, userId int, tradeNo string, provider 
 	t.Helper()
 	order := TopUp{
 		UserId:          userId,
-		Amount:          amount,
-		Money:           money,
+		Amount:          MoneyFromFloat(amount),
+		Money:           MoneyFromFloat(money),
 		TradeNo:         tradeNo,
 		PaymentMethod:   method,
 		PaymentProvider: provider,

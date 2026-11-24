@@ -213,8 +213,8 @@ func RequestAlipayWeb(c *gin.Context) {
 
 	topUp := &model.TopUp{
 		UserId:           id,
-		Amount:           alipayAmountForStorage(req.Amount),
-		Money:            payMoney,
+		Amount:           model.MoneyFromFloat(alipayAmountForStorage(req.Amount)),
+		Money:            model.MoneyFromFloat(payMoney),
 		TradeNo:          tradeNo,
 		PaymentMethod:    model.PaymentMethodAlipay,
 		PaymentProvider:  model.PaymentProviderAlipay,
@@ -386,7 +386,7 @@ func applyAlipayQueryResult(ctx context.Context, topUp *model.TopUp, result *ser
 // 基准是下单时落库的 ProviderAmount（分）快照；存量订单（快照为空）才回退到
 // 由 Money（元）换算。两侧都折算成「分」这个整数口径再比，避免 6.88 与
 // 6.880000000000001 之类的浮点差异把合法回调判成不匹配。
-func alipayPaidAmountMatchesOrder(paid decimal.Decimal, providerAmount int64, money float64) bool {
+func alipayPaidAmountMatchesOrder(paid decimal.Decimal, providerAmount int64, money model.Money) bool {
 	if paid.LessThanOrEqual(decimal.Zero) {
 		return false
 	}

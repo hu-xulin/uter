@@ -471,10 +471,10 @@ func TestPhase2BusinessFunctions(t *testing.T) {
 		require.Greater(t, fkRelations, 0, "top_ups must declare a real FK")
 
 		user := bfUser(t, db, "bf-fk-user", 100)
-		legal := TopUp{TradeNo: "BF-LEGAL-ORDER", UserId: user.Id, Amount: 10, Money: 10,
+		legal := TopUp{TradeNo: "BF-LEGAL-ORDER", UserId: user.Id, Amount: MoneyFromFloat(10), Money: MoneyFromFloat(10),
 			PaymentMethod: "EXAMPLE", Status: common.TopUpStatusPending, CreateTime: common.GetTimestamp()}
 		require.NoError(t, db.Create(&legal).Error)
-		orphan := TopUp{TradeNo: "BF-ORPHAN-ORDER", UserId: 99999999, Amount: 10, Money: 10,
+		orphan := TopUp{TradeNo: "BF-ORPHAN-ORDER", UserId: 99999999, Amount: MoneyFromFloat(10), Money: MoneyFromFloat(10),
 			PaymentMethod: "EXAMPLE", Status: common.TopUpStatusPending, CreateTime: common.GetTimestamp()}
 		require.Error(t, db.Create(&orphan).Error, "orphan child must be rejected by the FK")
 		var orphanCount int64

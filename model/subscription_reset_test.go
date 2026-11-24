@@ -33,7 +33,7 @@ func TestAdminResetUserSubscriptionsByPlanResetsAllActiveMatchesAndAdvancesTime(
 	plan := &SubscriptionPlan{
 		Id:               9101,
 		Title:            "Pro",
-		PriceAmount:      10,
+		PriceAmount:      MoneyFromFloat(10),
 		DurationUnit:     SubscriptionDurationMonth,
 		DurationValue:    1,
 		TotalAmount:      1000,
@@ -42,7 +42,7 @@ func TestAdminResetUserSubscriptionsByPlanResetsAllActiveMatchesAndAdvancesTime(
 	otherPlan := &SubscriptionPlan{
 		Id:               9102,
 		Title:            "Basic",
-		PriceAmount:      1,
+		PriceAmount:      MoneyFromFloat(1),
 		DurationUnit:     SubscriptionDurationMonth,
 		DurationValue:    1,
 		TotalAmount:      100,
@@ -93,7 +93,7 @@ func TestAdminResetUserSubscriptionsByPlanKeepsResetTimes(t *testing.T) {
 	plan := &SubscriptionPlan{
 		Id:               9301,
 		Title:            "Team",
-		PriceAmount:      20,
+		PriceAmount:      MoneyFromFloat(20),
 		DurationUnit:     SubscriptionDurationMonth,
 		DurationValue:    1,
 		TotalAmount:      2000,
@@ -122,7 +122,7 @@ func TestAdminResetUserSubscriptionsByPlanNoActiveMatchReturnsError(t *testing.T
 	plan := &SubscriptionPlan{
 		Id:            9401,
 		Title:         "Expired",
-		PriceAmount:   10,
+		PriceAmount:   MoneyFromFloat(10),
 		DurationUnit:  SubscriptionDurationMonth,
 		DurationValue: 1,
 		TotalAmount:   1000,
@@ -144,7 +144,7 @@ func TestAdminResetPlanSubscriptionsResetsAllActiveUsers(t *testing.T) {
 	plan := &SubscriptionPlan{
 		Id:               9501,
 		Title:            "Business",
-		PriceAmount:      30,
+		PriceAmount:      MoneyFromFloat(30),
 		DurationUnit:     SubscriptionDurationMonth,
 		DurationValue:    1,
 		TotalAmount:      3000,
@@ -183,7 +183,7 @@ func TestAdminResetPlanSubscriptionsNoMatchSucceeds(t *testing.T) {
 	plan := &SubscriptionPlan{
 		Id:            9601,
 		Title:         "Empty",
-		PriceAmount:   10,
+		PriceAmount:   MoneyFromFloat(10),
 		DurationUnit:  SubscriptionDurationMonth,
 		DurationValue: 1,
 		TotalAmount:   1000,

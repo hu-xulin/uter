@@ -89,7 +89,7 @@ type BillingPriceSnapshot struct {
 	PurchaseContract     string `gorm:"type:text"`
 	PurchaseContractHash string `gorm:"size:64"`
 	PriceSource          string `gorm:"size:128"`
-	PurchaseUSD          *float64
+	PurchaseUSD          *Money `gorm:"type:decimal(20,8)"`
 	PurchaseVerified     bool
 	PurchaseSource       string `gorm:"size:128"`
 	GroupRatio           float64

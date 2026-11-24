@@ -26,15 +26,15 @@ func TestFailPendingSubscriptionOrder(t *testing.T) {
 	})
 
 	pending := SubscriptionOrder{
-		UserId: 1, PlanId: 1, Money: 10, TradeNo: "pending-stripe",
+		UserId: 1, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "pending-stripe",
 		PaymentProvider: PaymentProviderStripe, Status: common.TopUpStatusPending,
 	}
 	success := SubscriptionOrder{
-		UserId: 2, PlanId: 1, Money: 10, TradeNo: "success-stripe",
+		UserId: 2, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "success-stripe",
 		PaymentProvider: PaymentProviderStripe, Status: common.TopUpStatusSuccess,
 	}
 	otherProvider := SubscriptionOrder{
-		UserId: 3, PlanId: 1, Money: 10, TradeNo: "pending-other",
+		UserId: 3, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "pending-other",
 		PaymentProvider: PaymentProviderCreem, Status: common.TopUpStatusPending,
 	}
 	require.NoError(t, db.Create(&pending).Error)
@@ -109,7 +109,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 		t.Run(tc.name, func(t *testing.T) {
 			tradeNo := fmt.Sprintf("subscription-link-%d", i)
 			order := &SubscriptionOrder{
-				UserId: 7, PlanId: 1, Money: 10, TradeNo: tradeNo,
+				UserId: 7, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: tradeNo,
 				PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
 				ProviderAmount: 1000, ProviderCurrency: "CNY",
 				Status: common.TopUpStatusPending,
@@ -119,7 +119,7 @@ func TestUpsertSubscriptionTopUpRejectsConflictingPaymentIdentity(t *testing.T) 
 				money = 10
 			}
 			topup := &TopUp{
-				UserId: tc.userID, Money: money, TradeNo: tradeNo,
+				UserId: tc.userID, Money: MoneyFromFloat(money), TradeNo: tradeNo,
 				PaymentProvider: tc.provider, PaymentMethod: "alipay",
 				ProviderAmount: tc.providerAmount, ProviderCurrency: tc.providerCurrency,
 				Status: tc.status,
@@ -153,12 +153,12 @@ func TestUpsertSubscriptionTopUpBackfillsLegacyProvider(t *testing.T) {
 	})
 
 	order := &SubscriptionOrder{
-		UserId: 7, PlanId: 1, Money: 10, TradeNo: "subscription-link-legacy",
+		UserId: 7, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "subscription-link-legacy",
 		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
 		Status: common.TopUpStatusPending,
 	}
 	topup := &TopUp{
-		UserId: 7, Money: 10, TradeNo: order.TradeNo,
+		UserId: 7, Money: MoneyFromFloat(10), TradeNo: order.TradeNo,
 		PaymentMethod: "alipay", Status: common.TopUpStatusPending,
 	}
 	require.NoError(t, db.Create(order).Error)
@@ -186,12 +186,12 @@ func TestUpsertSubscriptionTopUpPersistsActualPaymentMethod(t *testing.T) {
 	})
 
 	order := &SubscriptionOrder{
-		UserId: 7, PlanId: 1, Money: 10, TradeNo: "subscription-link-method",
+		UserId: 7, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "subscription-link-method",
 		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
 		Status: common.TopUpStatusPending,
 	}
 	topup := &TopUp{
-		UserId: 7, Money: 10, TradeNo: order.TradeNo,
+		UserId: 7, Money: MoneyFromFloat(10), TradeNo: order.TradeNo,
 		PaymentProvider: PaymentProviderEpay, PaymentMethod: "alipay",
 		Status: common.TopUpStatusPending,
 	}
@@ -218,8 +218,8 @@ func TestExpireSubscriptionOrderTransitionsLinkedTopUp(t *testing.T) {
 		_ = sqlDB.Close()
 	})
 
-	order := SubscriptionOrder{UserId: 44, PlanId: 1, Money: 10, TradeNo: "expire-linked-topup", PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
-	topup := TopUp{UserId: 44, TradeNo: order.TradeNo, Money: 10, PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
+	order := SubscriptionOrder{UserId: 44, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "expire-linked-topup", PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
+	topup := TopUp{UserId: 44, TradeNo: order.TradeNo, Money: MoneyFromFloat(10), PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending}
 	require.NoError(t, db.Create(&order).Error)
 	require.NoError(t, db.Create(&topup).Error)
 
@@ -246,8 +246,8 @@ func TestSubscriptionFailurePreservesInconsistentSuccessfulTopUp(t *testing.T) {
 		_ = sqlDB.Close()
 	})
 
-	order := SubscriptionOrder{UserId: 45, PlanId: 1, Money: 10, TradeNo: "failed-linked-success-topup", PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
-	topup := TopUp{UserId: 45, TradeNo: order.TradeNo, Money: 10, PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusSuccess}
+	order := SubscriptionOrder{UserId: 45, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: "failed-linked-success-topup", PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
+	topup := TopUp{UserId: 45, TradeNo: order.TradeNo, Money: MoneyFromFloat(10), PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusSuccess}
 	require.NoError(t, db.Create(&order).Error)
 	require.NoError(t, db.Create(&topup).Error)
 
@@ -275,7 +275,7 @@ func TestCompleteSubscriptionOrderReplayRepairsMissingTopUp(t *testing.T) {
 	})
 
 	order := SubscriptionOrder{
-		UserId: 71, PlanId: 1, Money: 12.5, TradeNo: "subscription-replay-repair",
+		UserId: 71, PlanId: 1, Money: MoneyFromFloat(12.5), TradeNo: "subscription-replay-repair",
 		PaymentProvider: PaymentProviderAlipay, PaymentMethod: "alipay",
 		ProviderAmount: 1250, ProviderCurrency: "CNY",
 		Status: common.TopUpStatusSuccess, CompleteTime: common.GetTimestamp(),
@@ -306,12 +306,12 @@ func TestCompleteSubscriptionOrderReplayRejectsConflictingTopUp(t *testing.T) {
 	})
 
 	order := SubscriptionOrder{
-		UserId: 71, PlanId: 1, Money: 12.5, TradeNo: "subscription-replay-conflict",
+		UserId: 71, PlanId: 1, Money: MoneyFromFloat(12.5), TradeNo: "subscription-replay-conflict",
 		PaymentProvider: PaymentProviderAlipay, PaymentMethod: "alipay",
 		Status: common.TopUpStatusSuccess, CompleteTime: common.GetTimestamp(),
 	}
 	topup := TopUp{
-		UserId: 72, Money: 12.5, TradeNo: order.TradeNo,
+		UserId: 72, Money: MoneyFromFloat(12.5), TradeNo: order.TradeNo,
 		PaymentProvider: PaymentProviderAlipay, Status: common.TopUpStatusPending,
 	}
 	require.NoError(t, db.Create(&order).Error)
@@ -349,7 +349,7 @@ func TestSubscriptionTerminalTransitionRejectsConflictingLinkedTopUp(t *testing.
 			})
 
 			tradeNo := fmt.Sprintf("subscription-terminal-identity-%d", i)
-			order := SubscriptionOrder{UserId: 91, PlanId: 1, Money: 10, TradeNo: tradeNo, PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
+			order := SubscriptionOrder{UserId: 91, PlanId: 1, Money: MoneyFromFloat(10), TradeNo: tradeNo, PaymentProvider: PaymentProviderEpay, Status: common.TopUpStatusPending}
 			topup := TopUp{UserId: tc.topupUser, TradeNo: tradeNo, PaymentProvider: tc.provider, Status: common.TopUpStatusPending}
 			require.NoError(t, db.Create(&order).Error)
 			require.NoError(t, db.Create(&topup).Error)

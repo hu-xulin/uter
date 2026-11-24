@@ -22,6 +22,7 @@ import (
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
+	"github.com/uter-ai/uter/model"
 )
 
 // TestProviderExpectedMinorUnitsPrefersSnapshot 锁死「回调比对基准是下单快照」。
@@ -46,7 +47,7 @@ func TestProviderExpectedMinorUnitsPrefersSnapshot(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			assert.Equal(t, tc.want, providerExpectedMinorUnits(tc.providerAmount, tc.money))
+			assert.Equal(t, tc.want, providerExpectedMinorUnits(tc.providerAmount, model.MoneyFromFloat(tc.money)))
 		})
 	}
 }
@@ -75,7 +76,7 @@ func TestAlipayPaidAmountMatchesOrder(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			paid, err := decimal.NewFromString(tc.paid)
 			assert.NoError(t, err)
-			assert.Equal(t, tc.want, alipayPaidAmountMatchesOrder(paid, tc.providerAmount, tc.money))
+			assert.Equal(t, tc.want, alipayPaidAmountMatchesOrder(paid, tc.providerAmount, model.MoneyFromFloat(tc.money)))
 		})
 	}
 }

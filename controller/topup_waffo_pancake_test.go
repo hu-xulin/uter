@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/service"
@@ -32,7 +33,7 @@ func TestFormatWaffoPancakeAmount_UsesDisplayPriceString(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			require.Equal(t, tc.expected, formatWaffoPancakeAmount(tc.amount))
+			require.Equal(t, tc.expected, formatWaffoPancakeAmount(model.MoneyFromFloat(tc.amount)))
 		})
 	}
 }

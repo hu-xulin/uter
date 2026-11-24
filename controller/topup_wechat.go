@@ -152,8 +152,8 @@ func RequestWechatPayWeb(c *gin.Context) {
 	// the callback compares against exactly what was sent.
 	topUp := &model.TopUp{
 		UserId:           id,
-		Amount:           wechatAmountForStorage(req.Amount),
-		Money:            payMoney,
+		Amount:           model.MoneyFromFloat(wechatAmountForStorage(req.Amount)),
+		Money:            model.MoneyFromFloat(payMoney),
 		TradeNo:          tradeNo,
 		PaymentMethod:    model.PaymentMethodWechatPay,
 		PaymentProvider:  model.PaymentProviderWechatPay,

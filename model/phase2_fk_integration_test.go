@@ -145,11 +145,11 @@ func TestPhase2FKFailedInsertDoesNotPoisonTransaction(t *testing.T) {
 	require.NoError(t, db.Create(&user).Error)
 
 	err := db.Transaction(func(tx *gorm.DB) error {
-		legal := TopUp{TradeNo: "FK-POISON-LEGAL", UserId: user.Id, Money: 1, Amount: 1, Status: common.TopUpStatusPending}
+		legal := TopUp{TradeNo: "FK-POISON-LEGAL", UserId: user.Id, Money: MoneyFromFloat(1), Amount: MoneyFromFloat(1), Status: common.TopUpStatusPending}
 		if e := tx.Create(&legal).Error; e != nil {
 			return e
 		}
-		orphan := TopUp{TradeNo: "FK-POISON-ORPHAN", UserId: 99999999, Money: 1, Amount: 1, Status: common.TopUpStatusPending}
+		orphan := TopUp{TradeNo: "FK-POISON-ORPHAN", UserId: 99999999, Money: MoneyFromFloat(1), Amount: MoneyFromFloat(1), Status: common.TopUpStatusPending}
 		return tx.Create(&orphan).Error // FK violation -> whole tx rolls back
 	})
 	require.Error(t, err)
@@ -251,7 +251,7 @@ func TestPhase2FKBusinessWritePathProtected(t *testing.T) {
 
 	// The direct order-write path must also be protected by the FK.
 	err = db.Create(&TopUp{
-		TradeNo: "FK-BIZPATH-ORPHAN", UserId: 99999999, Money: 1, Amount: 1,
+		TradeNo: "FK-BIZPATH-ORPHAN", UserId: 99999999, Money: MoneyFromFloat(1), Amount: MoneyFromFloat(1),
 		Status: common.TopUpStatusPending,
 	}).Error
 	require.Error(t, err, "business write path must be protected by the FK")

@@ -58,7 +58,7 @@ func TestRecordBillingPriceSnapshotCapturesIdentityAndVersion(t *testing.T) {
 	assert.NotEmpty(t, got.PriceContractHash)
 	assert.Equal(t, "operator", got.PriceSource)
 	require.NotNil(t, got.PurchaseUSD)
-	assert.InDelta(t, 0.9, *got.PurchaseUSD, 1e-9)
+	assert.InDelta(t, 0.9, got.PurchaseUSD.Float64(), 1e-9)
 	assert.True(t, got.PurchaseVerified)
 	assert.Contains(t, got.PurchaseContract, `"input_per_million_usd":0.9`)
 	assert.NotEmpty(t, got.PurchaseContractHash)
@@ -307,12 +307,12 @@ func TestBillingFinancialsBookCostByDimension(t *testing.T) {
 	}
 	// prompt(1M) 扣掉 cache 读写后按纯 input 计价。
 	assert.InDelta(t, 850_000, byDimension["input"].Quantity, 1e-6)
-	assert.InDelta(t, 0.85, byDimension["input"].AmountUSD, 1e-9)
-	assert.InDelta(t, 1.0, byDimension["output"].AmountUSD, 1e-9)
-	assert.InDelta(t, 0.01, byDimension["cache_read"].AmountUSD, 1e-9)
-	assert.InDelta(t, 0.0625, byDimension["cache_write"].AmountUSD, 1e-9)
-	assert.InDelta(t, 0.03, byDimension["audio_input"].AmountUSD, 1e-9)
-	assert.InDelta(t, 0.03, byDimension["audio_output"].AmountUSD, 1e-9)
+	assert.InDelta(t, 0.85, byDimension["input"].AmountUSD.Float64(), 1e-9)
+	assert.InDelta(t, 1.0, byDimension["output"].AmountUSD.Float64(), 1e-9)
+	assert.InDelta(t, 0.01, byDimension["cache_read"].AmountUSD.Float64(), 1e-9)
+	assert.InDelta(t, 0.0625, byDimension["cache_write"].AmountUSD.Float64(), 1e-9)
+	assert.InDelta(t, 0.03, byDimension["audio_input"].AmountUSD.Float64(), 1e-9)
+	assert.InDelta(t, 0.03, byDimension["audio_output"].AmountUSD.Float64(), 1e-9)
 	for _, row := range rows {
 		assert.True(t, row.Verified, row.Dimension)
 		assert.Empty(t, row.Issue, row.Dimension)
@@ -321,10 +321,10 @@ func TestBillingFinancialsBookCostByDimension(t *testing.T) {
 	summary, err := model.SummarizeBillingFinancials("req-fin-1", "", "gpt-a")
 	require.NoError(t, err)
 	// 1,000,000 quota = $2.00 sale; cost 1.9825.
-	assert.InDelta(t, 2.0, summary.SaleUSD, 1e-9)
+	assert.InDelta(t, 2.0, summary.SaleUSD.Float64(), 1e-9)
 	assert.Zero(t, summary.RefundUSD)
-	assert.InDelta(t, 1.9825, summary.CostUSD, 1e-9)
-	assert.InDelta(t, 0.0175, summary.GrossProfitUSD, 1e-9)
+	assert.InDelta(t, 1.9825, summary.CostUSD.Float64(), 1e-9)
+	assert.InDelta(t, 0.0175, summary.GrossProfitUSD.Float64(), 1e-9)
 	assert.True(t, summary.CostVerified)
 	assert.Equal(t, model.BillingLedgerStatusVerified, summary.GrossProfitState)
 
@@ -338,8 +338,8 @@ func TestBillingFinancialsBookCostByDimension(t *testing.T) {
 	recordRequestFinancials(snapshot, "", 0, 1_000_000)
 	summary, err = model.SummarizeBillingFinancials("req-fin-1", "", "gpt-a")
 	require.NoError(t, err)
-	assert.InDelta(t, 2.0, summary.RefundUSD, 1e-9)
-	assert.InDelta(t, -1.9825, summary.GrossProfitUSD, 1e-9)
+	assert.InDelta(t, 2.0, summary.RefundUSD.Float64(), 1e-9)
+	assert.InDelta(t, -1.9825, summary.GrossProfitUSD.Float64(), 1e-9)
 }
 
 func TestBillingFinancialsFlagMissingPurchaseDimension(t *testing.T) {
@@ -363,7 +363,7 @@ func TestBillingFinancialsFlagMissingPurchaseDimension(t *testing.T) {
 		if row.Dimension == "output" {
 			assert.False(t, row.Verified)
 			assert.Equal(t, "purchase_missing", row.Issue)
-			assert.Zero(t, row.AmountUSD)
+			assert.True(t, row.AmountUSD.IsZero())
 		}
 	}
 
@@ -412,8 +412,8 @@ func TestTaskRatioModeSnapshotIsAuditable(t *testing.T) {
 
 	summary, err := model.SummarizeBillingFinancials("req-ratio-plain", "task-ratio-plain", "gpt-plain")
 	require.NoError(t, err)
-	assert.InDelta(t, 1500.0/500_000, summary.SaleUSD, 1e-9)
-	assert.InDelta(t, 500.0/500_000, summary.RefundUSD, 1e-9)
+	assert.InDelta(t, 1500.0/500_000, summary.SaleUSD.Float64(), 1e-9)
+	assert.InDelta(t, 500.0/500_000, summary.RefundUSD.Float64(), 1e-9)
 	assert.Zero(t, summary.CostUSD)
 	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
 
@@ -442,7 +442,7 @@ func TestBillingFinancialsPriceExpressionPurchaseContract(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
 	assert.Equal(t, "expression", rows[0].Dimension)
-	assert.InDelta(t, 0.00182, rows[0].AmountUSD, 1e-9)
+	assert.InDelta(t, 0.00182, rows[0].AmountUSD.Float64(), 1e-9)
 	assert.True(t, rows[0].Verified)
 	summary, err := model.SummarizeBillingFinancials("req-cost-expr", "", "gpt-a")
 	require.NoError(t, err)
@@ -456,7 +456,7 @@ func TestBillingFinancialsPriceExpressionPurchaseContract(t *testing.T) {
 	rows, err = model.ListBillingCostBreakdowns("req-cost-img", "", "img-a")
 	require.NoError(t, err)
 	require.Len(t, rows, 1)
-	assert.InDelta(t, 0.15, rows[0].AmountUSD, 1e-9)
+	assert.InDelta(t, 0.15, rows[0].AmountUSD.Float64(), 1e-9)
 
 	unverified := &model.BillingPriceSnapshot{
 		RequestId: "req-cost-unverified", ModelName: "gpt-b",
@@ -471,4 +471,66 @@ func TestBillingFinancialsPriceExpressionPurchaseContract(t *testing.T) {
 	require.NoError(t, err)
 	assert.False(t, summary.CostVerified)
 	assert.Equal(t, model.BillingLedgerStatusPendingPurchase, summary.GrossProfitState)
+}
+
+func TestBillingFinancialSummaryUsesDecimalAccumulation(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.BillingCostBreakdown{}, &model.BillingFinancialLedger{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+
+	entries := []model.BillingFinancialLedger{
+		{EntryKey: "sale-a|req-decimal-sum|gpt-dec|", EntryType: model.BillingLedgerEntrySale,
+			RequestId: "req-decimal-sum", ModelName: "gpt-dec", AmountUSD: model.MoneyFromFloat(0.1)},
+		{EntryKey: "sale-b|req-decimal-sum|gpt-dec|", EntryType: model.BillingLedgerEntrySale,
+			RequestId: "req-decimal-sum", ModelName: "gpt-dec", AmountUSD: model.MoneyFromFloat(0.2)},
+		{EntryKey: "refund-a|req-decimal-sum|gpt-dec|", EntryType: model.BillingLedgerEntryRefund,
+			RequestId: "req-decimal-sum", ModelName: "gpt-dec", AmountUSD: model.MoneyFromFloat(-0.05)},
+		{EntryKey: "cost-a|req-decimal-sum|gpt-dec|", EntryType: model.BillingLedgerEntryPurchaseCost,
+			RequestId: "req-decimal-sum", ModelName: "gpt-dec", AmountUSD: model.MoneyFromFloat(0.07),
+			Status: model.BillingLedgerStatusVerified},
+	}
+	for _, entry := range entries {
+		require.NoError(t, model.SaveBillingLedgerEntry(entry))
+	}
+
+	summary, err := model.SummarizeBillingFinancials("req-decimal-sum", "", "gpt-dec")
+	require.NoError(t, err)
+	assert.Equal(t, "0.3", summary.SaleUSD.String())
+	assert.Equal(t, "0.05", summary.RefundUSD.String())
+	assert.Equal(t, "0.07", summary.CostUSD.String())
+	assert.Equal(t, "0.18", summary.GrossProfitUSD.String())
+}
+
+func TestBillingFinancialsCostUsesDecimalForTokenPrices(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+
+	snapshot := &model.BillingPriceSnapshot{
+		RequestId: "req-decimal-cost", ModelName: "gpt-dec-cost",
+		PurchaseContract: `{"pricing":{"mode":"per_1m_token","input_per_million_usd":0.1,"output_per_million_usd":0.2},"verified":true,"source":"contract"}`,
+	}
+	recordRequestFinancials(snapshot,
+		`{"prompt_tokens":1000000,"completion_tokens":1000000}`, 0, 0)
+
+	rows, err := model.ListBillingCostBreakdowns("req-decimal-cost", "", "gpt-dec-cost")
+	require.NoError(t, err)
+	require.Len(t, rows, 2)
+	byDimension := map[string]model.BillingCostBreakdown{}
+	for _, row := range rows {
+		byDimension[row.Dimension] = row
+	}
+	assert.Equal(t, 0.1, byDimension["input"].AmountUSD.Float64())
+	assert.Equal(t, 0.2, byDimension["output"].AmountUSD.Float64())
+
+	summary, err := model.SummarizeBillingFinancials("req-decimal-cost", "", "gpt-dec-cost")
+	require.NoError(t, err)
+	assert.Equal(t, "0.3", summary.CostUSD.String())
+	assert.Equal(t, "-0.3", summary.GrossProfitUSD.String())
 }

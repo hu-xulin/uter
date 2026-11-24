@@ -44,7 +44,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 		common.ApiErrorT(c, "StripePriceId is not configured for this plan")
 		return
 	}
-	if plan.PriceAmount <= 0 {
+	if plan.PriceAmount.Float64() <= 0 {
 		common.ApiErrorT(c, "Plan amount is too low")
 		return
 	}
@@ -142,7 +142,7 @@ func SubscriptionRequestStripePay(c *gin.Context) {
 
 // stripeSubscriptionPriceMatchesLocalOrder prevents a misconfigured Stripe Price ID
 // from silently charging a different amount or currency than the plan shown to users.
-func stripeSubscriptionPriceMatchesLocalOrder(providerAmount int64, providerCurrency string, expectedMoney float64, expectedCurrency string) bool {
+func stripeSubscriptionPriceMatchesLocalOrder(providerAmount int64, providerCurrency string, expectedMoney model.Money, expectedCurrency string) bool {
 	providerCurrency = strings.TrimSpace(providerCurrency)
 	expectedCurrency = strings.TrimSpace(expectedCurrency)
 	if providerCurrency == "" || expectedCurrency == "" ||

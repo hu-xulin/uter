@@ -34,8 +34,8 @@ func TestMarkFailedRecordsReasonOnPendingOrder(t *testing.T) {
 
 	pending := TopUp{
 		UserId:          1,
-		Amount:          2,
-		Money:           10,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10),
 		TradeNo:         "F07-PENDING",
 		PaymentProvider: PaymentProviderEpay,
 		Status:          common.TopUpStatusPending,
@@ -58,8 +58,8 @@ func TestMarkFailedDoesNotDowngradeCompletedOrder(t *testing.T) {
 
 	done := TopUp{
 		UserId:          1,
-		Amount:          2,
-		Money:           10,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10),
 		TradeNo:         "F07-DONE",
 		PaymentProvider: PaymentProviderEpay,
 		Status:          common.TopUpStatusSuccess,
@@ -81,8 +81,8 @@ func TestMarkFailedTruncatesOverlongReason(t *testing.T) {
 
 	pending := TopUp{
 		UserId:          1,
-		Amount:          2,
-		Money:           10,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10),
 		TradeNo:         "F07-LONG",
 		PaymentProvider: PaymentProviderEpay,
 		Status:          common.TopUpStatusPending,

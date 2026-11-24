@@ -27,7 +27,7 @@ func insertSubscriptionPlanForPaymentGuardTest(t *testing.T, id int) *Subscripti
 	plan := &SubscriptionPlan{
 		Id:            id,
 		Title:         "Guard Plan",
-		PriceAmount:   9.99,
+		PriceAmount:   MoneyFromFloat(9.99),
 		Currency:      "USD",
 		DurationUnit:  SubscriptionDurationMonth,
 		DurationValue: 1,
@@ -43,7 +43,7 @@ func insertSubscriptionOrderForPaymentGuardTest(t *testing.T, tradeNo string, us
 	order := &SubscriptionOrder{
 		UserId:          userID,
 		PlanId:          planID,
-		Money:           9.99,
+		Money:           MoneyFromFloat(9.99),
 		TradeNo:         tradeNo,
 		PaymentMethod:   paymentProvider,
 		PaymentProvider: paymentProvider,
@@ -57,8 +57,8 @@ func insertTopUpForPaymentGuardTest(t *testing.T, tradeNo string, userID int, pa
 	t.Helper()
 	topUp := &TopUp{
 		UserId:          userID,
-		Amount:          2,
-		Money:           9.99,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(9.99),
 		TradeNo:         tradeNo,
 		PaymentMethod:   paymentProvider,
 		PaymentProvider: paymentProvider,
@@ -179,8 +179,8 @@ func createEpayTestOrder(t *testing.T, userId int, tradeNo string, provider stri
 	t.Helper()
 	topUp := TopUp{
 		UserId:          userId,
-		Amount:          2,
-		Money:           10.0,
+		Amount:          MoneyFromFloat(2),
+		Money:           MoneyFromFloat(10.0),
 		TradeNo:         tradeNo,
 		PaymentMethod:   "alipay",
 		PaymentProvider: provider,

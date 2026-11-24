@@ -153,8 +153,8 @@ func ImportUpstreamBillingInvoice(channel *model.Channel, req UpstreamInvoiceImp
 		EntryKey:       fmt.Sprintf("supplier_invoice|%d", invoice.Id),
 		EntryType:      model.BillingLedgerEntrySupplierInvoice,
 		ChannelId:      channel.Id,
-		OriginalAmount: originalTotal, Currency: currency, FXRate: fxRate,
-		AmountUSD: totalUpstream,
+		OriginalAmount: model.MoneyFromFloat(originalTotal), Currency: currency, FXRate: fxRate,
+		AmountUSD: model.MoneyFromFloat(totalUpstream),
 		Status:    model.BillingLedgerStatusRecorded,
 		Source:    invoice.Source, Reference: fmt.Sprintf("%d", invoice.Id),
 	}); err != nil {

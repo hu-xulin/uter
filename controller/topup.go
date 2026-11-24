@@ -495,8 +495,8 @@ func RequestEpay(c *gin.Context) {
 	}
 	topUp := &model.TopUp{
 		UserId:          id,
-		Amount:          amount,
-		Money:           payMoney,
+		Amount:          model.MoneyFromFloat(amount),
+		Money:           model.MoneyFromFloat(payMoney),
 		TradeNo:         tradeNo,
 		PaymentMethod:   req.PaymentMethod,
 		PaymentProvider: model.PaymentProviderEpay,
@@ -586,11 +586,11 @@ func UnlockOrder(tradeNo string) {
 //
 // 单位：paid 与 expectedMoney 都以「元」为单位；期望值先 round 到分位，
 // 容忍网关侧字符串格式（"10.00" vs "10.0"）差异。
-func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney float64) bool {
+func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney model.Money) bool {
 	if paid.LessThanOrEqual(decimal.Zero) {
 		return false
 	}
-	return paid.Equal(decimal.NewFromFloat(expectedMoney).Round(2))
+	return paid.Equal(expectedMoney.Decimal().Round(2))
 }
 
 // providerExpectedMinorUnits 解析回调必须匹配的「网关口径金额快照」。
@@ -599,15 +599,15 @@ func paidAmountMatchesOrder(paid decimal.Decimal, expectedMoney float64) bool {
 // 只有存量订单（快照为空）才回退到由 Money（元）换算。两条链路（支付宝 /
 // 微信支付）共用同一解析，避免一边用快照、一边用 Money 二次换算而在
 // getPayMoney 的取整规则变化时分叉。
-func providerExpectedMinorUnits(providerAmount int64, money float64) int64 {
+func providerExpectedMinorUnits(providerAmount int64, money model.Money) int64 {
 	if providerAmount > 0 {
 		return providerAmount
 	}
-	return decimal.NewFromFloat(money).Mul(decimal.NewFromInt(100)).Round(0).IntPart()
+	return money.Decimal().Mul(decimal.NewFromInt(100)).Round(0).IntPart()
 }
 
 // providerPaidAmountMatchesOrder validates a gateway amount expressed in major currency units.
-func providerPaidAmountMatchesOrder(paid string, expectedMoney float64) bool {
+func providerPaidAmountMatchesOrder(paid string, expectedMoney model.Money) bool {
 	amount, err := decimal.NewFromString(strings.TrimSpace(paid))
 	return err == nil && paidAmountMatchesOrder(amount, expectedMoney)
 }
@@ -648,8 +648,8 @@ func currencyMinorUnitExponent(currency string) (int, bool) {
 
 // expectedMinorUnits converts a local major-unit order amount into the
 // provider's minor units without silently rounding an unsupported precision.
-func expectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
-	if expectedMoney <= 0 || math.IsNaN(expectedMoney) || math.IsInf(expectedMoney, 0) {
+func expectedMinorUnits(expectedMoney model.Money, currency string) (int64, bool) {
+	if expectedMoney.IsZero() || expectedMoney.Decimal().IsNegative() {
 		return 0, false
 	}
 	exponent, ok := currencyMinorUnitExponent(currency)
@@ -660,7 +660,7 @@ func expectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
 	for range exponent {
 		scale *= 10
 	}
-	expected := decimal.NewFromFloat(expectedMoney).Mul(decimal.NewFromInt(scale))
+	expected := expectedMoney.Decimal().Mul(decimal.NewFromInt(scale))
 	if !expected.Equal(expected.Truncate(0)) {
 		return 0, false
 	}
@@ -677,7 +677,7 @@ func expectedMinorUnits(expectedMoney float64, currency string) (int64, bool) {
 // Creem's merchant-catalog price may be newer than the local price snapshot;
 // a lower subtotal is never allowed, since tax-inclusive amount_paid could
 // otherwise mask a product-price shortfall.
-func creemOrderAmountsCoverOrder(subtotalMinorUnits, amountDueMinorUnits, amountPaidMinorUnits int64, expectedMoney float64, currency string) (covered bool, subtotalOverpaid bool) {
+func creemOrderAmountsCoverOrder(subtotalMinorUnits, amountDueMinorUnits, amountPaidMinorUnits int64, expectedMoney model.Money, currency string) (covered bool, subtotalOverpaid bool) {
 	expectedAmount, ok := expectedMinorUnits(expectedMoney, currency)
 	if !ok || subtotalMinorUnits <= 0 || amountDueMinorUnits <= 0 ||
 		amountPaidMinorUnits < amountDueMinorUnits || amountPaidMinorUnits < expectedAmount {

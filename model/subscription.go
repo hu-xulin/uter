@@ -149,9 +149,9 @@ type SubscriptionPlan struct {
 	Title    string `json:"title" gorm:"type:varchar(128);not null"`
 	Subtitle string `json:"subtitle" gorm:"type:varchar(255);default:''"`
 
-	// Display money amount (follow existing code style: float64 for money)
-	PriceAmount float64 `json:"price_amount" gorm:"type:decimal(10,6);not null;default:0"`
-	Currency    string  `json:"currency" gorm:"type:varchar(8);not null;default:'USD'"`
+	// Display money amount as an exact decimal value.
+	PriceAmount Money  `json:"price_amount" gorm:"type:decimal(20,6);not null;default:0"`
+	Currency    string `json:"currency" gorm:"type:varchar(8);not null;default:'USD'"`
 
 	DurationUnit  string `json:"duration_unit" gorm:"type:varchar(16);not null;default:'month'"`
 	DurationValue int    `json:"duration_value" gorm:"type:int;not null;default:1"`
@@ -218,10 +218,10 @@ func (p *SubscriptionPlan) NormalizeDefaults() {
 
 // Subscription order (payment -> webhook -> create UserSubscription)
 type SubscriptionOrder struct {
-	Id     int     `json:"id"`
-	UserId int     `json:"user_id" gorm:"index"`
-	PlanId int     `json:"plan_id" gorm:"index"`
-	Money  float64 `json:"money"`
+	Id     int   `json:"id"`
+	UserId int   `json:"user_id" gorm:"index"`
+	PlanId int   `json:"plan_id" gorm:"index"`
+	Money  Money `json:"money" gorm:"type:decimal(20,6)"`
 
 	TradeNo         string `json:"trade_no" gorm:"unique;type:varchar(255);index"`
 	PaymentMethod   string `json:"payment_method" gorm:"type:varchar(50)"`
@@ -602,7 +602,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 	}
 	var logUserId int
 	var logPlanTitle string
-	var logMoney float64
+	var logMoney Money
 	var logPaymentMethod string
 	var upgradeGroup string
 	err := DB.Transaction(func(tx *gorm.DB) error {
@@ -675,7 +675,7 @@ func CompleteSubscriptionOrder(tradeNo string, providerPayload string, expectedP
 	if logUserId > 0 {
 		RecordLog(logUserId, LogTypeTopup, common.NewMessage("Subscription purchased, plan: {{plan}}, payment amount: {{amount}}, payment method: {{method}}", map[string]any{
 			"plan":   logPlanTitle,
-			"amount": fmt.Sprintf("%.2f", logMoney),
+			"amount": fmt.Sprintf("%.2f", logMoney.Float64()),
 			"method": logPaymentMethod,
 		}))
 	}
@@ -696,7 +696,7 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaym
 			}
 			topup = TopUp{
 				UserId:           order.UserId,
-				Amount:           0,
+				Amount:           MoneyFromDecimal(decimal.Zero),
 				Money:            order.Money,
 				TradeNo:          order.TradeNo,
 				PaymentMethod:    paymentMethod,
@@ -717,8 +717,8 @@ func upsertSubscriptionTopUpTx(tx *gorm.DB, order *SubscriptionOrder, actualPaym
 	if topup.UserId != order.UserId {
 		return fmt.Errorf("%w: subscription/top-up user mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
 	}
-	if topup.Money > 0 && order.Money > 0 &&
-		!decimal.NewFromFloat(topup.Money).Round(2).Equal(decimal.NewFromFloat(order.Money).Round(2)) {
+	if !topup.Money.IsZero() && !order.Money.IsZero() &&
+		!topup.Money.Decimal().Round(2).Equal(order.Money.Decimal().Round(2)) {
 		return fmt.Errorf("%w: subscription/top-up local amount mismatch for trade %s", ErrPaymentMethodMismatch, order.TradeNo)
 	}
 	if topup.PaymentProvider != "" && order.PaymentProvider != "" && topup.PaymentProvider != order.PaymentProvider {
@@ -893,14 +893,14 @@ func AdminBindSubscription(userId int, planId int, sourceNote string) (*common.M
 	return nil, nil
 }
 
-func calcSubscriptionBalanceQuota(priceAmount float64) (int, error) {
-	if priceAmount <= 0 {
+func calcSubscriptionBalanceQuota(priceAmount Money) (int, error) {
+	if priceAmount.IsZero() || priceAmount.Decimal().IsNegative() {
 		return 0, nil
 	}
 	if common.QuotaPerUnit <= 0 {
 		return 0, common.NewMessage("Quota unit is misconfigured")
 	}
-	quota := decimal.NewFromFloat(priceAmount).
+	quota := priceAmount.Decimal().
 		Mul(decimal.NewFromFloat(common.QuotaPerUnit)).
 		Ceil()
 	return common.WalletQuotaFromDecimalStrict(quota)
@@ -913,7 +913,7 @@ func PurchaseSubscriptionWithBalance(userId int, planId int) error {
 	}
 
 	var logPlanTitle string
-	var logMoney float64
+	var logMoney Money
 	var chargedQuota int
 	var upgradeGroup string
 	err := DB.Transaction(func(tx *gorm.DB) error {
@@ -924,7 +924,7 @@ func PurchaseSubscriptionWithBalance(userId int, planId int) error {
 		if !plan.Enabled {
 			return common.NewMessage("Subscription plan is not enabled")
 		}
-		if plan.PriceAmount < 0 {
+		if plan.PriceAmount.Decimal().IsNegative() {
 			return common.NewMessage("Price cannot be negative")
 		}
 		if plan.AllowBalancePay != nil && !*plan.AllowBalancePay {
@@ -995,7 +995,7 @@ func PurchaseSubscriptionWithBalance(userId int, planId int) error {
 	}
 	RecordLog(userId, LogTypeTopup, common.NewMessage("Subscription purchased with balance, plan: {{plan}}, payment amount: {{amount}}, quota deducted: {{quota}}", map[string]any{
 		"plan":   logPlanTitle,
-		"amount": fmt.Sprintf("%.2f", logMoney),
+		"amount": fmt.Sprintf("%.2f", logMoney.Float64()),
 		"quota":  chargedQuota,
 	}))
 	return nil
