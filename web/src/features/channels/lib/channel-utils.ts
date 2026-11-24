@@ -564,3 +564,32 @@ export function deduplicateKeys(keysText: string): {
 export function getKeyPromptForType(type: number): string {
   return TYPE_TO_KEY_PROMPT[type] || 'Enter API key for this channel'
 }
+
+/**
+ * Sort Uter.api billing groups by model family so every variant of the same
+ * model stays together. The family is the text before `·`; labels without the
+ * separator are treated as a family of their own.
+ */
+export function sortUterapiGroupSlots<T extends { label: string }>(
+  slots: readonly T[]
+): T[] {
+  const collator = new Intl.Collator('en', {
+    sensitivity: 'base',
+    numeric: true,
+  })
+  const familyOf = (label: string) => {
+    const separatorIndex = label.indexOf('·')
+    const family =
+      separatorIndex === -1 ? label : label.slice(0, separatorIndex)
+    return family.trim()
+  }
+
+  return [...slots].sort((left, right) => {
+    const familyOrder = collator.compare(
+      familyOf(left.label),
+      familyOf(right.label)
+    )
+    if (familyOrder !== 0) return familyOrder
+    return collator.compare(left.label, right.label)
+  })
+}

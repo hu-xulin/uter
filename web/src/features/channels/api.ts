@@ -30,6 +30,7 @@ import type {
   ChannelBalanceResponse,
   ChannelInternalPricingView,
   ChannelModelPricingListResponse,
+  ChannelModelPricingRecord,
   ChannelModelPricingUpdateResponse,
   ChannelOpsResponse,
   ChannelTestResponse,
@@ -265,6 +266,28 @@ export async function getUterAPIPricingGroups(): Promise<{
   data?: { groups: UterAPIPricingGroup[] }
 }> {
   const res = await api.get('/api/channel/uterapi/groups')
+  return res.data
+}
+
+export type UterAPIPricePreview = {
+  group: string
+  group_name: string
+  ratio: number
+  currency: string
+  fetched_at: number
+  items: ChannelModelPricingRecord[]
+}
+
+/**
+ * Read-only official and channel prices for a Uter.api billing group, derived
+ * from the public catalogue before a channel exists. Nothing is written.
+ */
+export async function getUterAPIPricePreview(
+  group: string
+): Promise<{ success: boolean; data?: UterAPIPricePreview }> {
+  const res = await api.get('/api/channel/uterapi/price-preview', {
+    params: { group },
+  })
   return res.data
 }
 
@@ -1439,12 +1462,33 @@ export async function syncChannelUpstreamPrices(
   return requireServerSuccess(res.data).data as ChannelUpstreamPriceSync
 }
 
+export type UpstreamParityDimension = {
+  name: string
+  official_usd?: string
+  expected_channel_usd?: string
+  channel_usd?: string
+  purchase_usd?: string
+  expected_sale_usd?: string
+  sale_usd?: string
+  mismatch?: boolean
+  reason?: string
+}
+
 export type UpstreamParityModel = {
   model_name: string
+  provider?: string
+  region?: string
+  deployment_id?: string
   status: string
   lifecycle_status?: string
   pricing_status: string
+  pricing_source?: string
   price_kind?: string
+  currency?: string
+  unit?: string
+  discount_group?: string
+  discount_ratio?: number
+  fetched_at?: number
   has_official: boolean
   has_official_estimate?: boolean
   has_channel_price: boolean
@@ -1452,7 +1496,9 @@ export type UpstreamParityModel = {
   has_purchase_cost?: boolean
   purchase_verified?: boolean
   expression_status?: string
+  expression_hash?: string
   stale: boolean
+  dimensions?: UpstreamParityDimension[]
   reasons?: string[]
 }
 

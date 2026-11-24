@@ -200,6 +200,7 @@ import {
   parseModelsString,
   formatModelsArray,
   normalizeModelName,
+  sortUterapiGroupSlots,
   mergeModelMappingPairs,
   type ModelMappingPair,
   extractRedirectModels,
@@ -256,6 +257,7 @@ import {
 } from '../dialogs/passthrough-warning-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
 import { FetchedPricePreview } from '../fetched-price-preview'
+import { UterApiPricePreview } from '../uterapi-price-preview'
 import {
   ModelMappingBatchDialog,
   type ModelMappingBatchResult,
@@ -754,11 +756,13 @@ export function ChannelMutateDrawer({
   })
   const uterapiGroupSlots = useMemo(
     () =>
-      (uterapiGroupsQuery.data ?? []).map((group) => ({
-        name: `Uter.api-${group.key}`,
-        label: group.name || group.key,
-        group: group.key,
-      })),
+      sortUterapiGroupSlots(
+        (uterapiGroupsQuery.data ?? []).map((group) => ({
+          name: `Uter.api-${group.key}`,
+          label: group.name || group.key,
+          group: group.key,
+        }))
+      ),
     [uterapiGroupsQuery.data]
   )
   const isUterRouteTarget = providerTarget?.kind === 'uterroute'
@@ -5940,9 +5944,15 @@ export function ChannelMutateDrawer({
     return undefined
   }
 
+  const selectedUterapiGroupKey =
+    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ?? ''
+
   const pricingFetchSection = (
     <div className='space-y-4'>
       {pricingFetchBase}
+      {isUterApiTarget && !isEditing ? (
+        <UterApiPricePreview group={selectedUterapiGroupKey} enabled={open} />
+      ) : null}
       {requiresDraftForPricing || effectiveChannelId ? (
         <FetchedPricePreview
           channelId={effectiveChannelId ?? 0}

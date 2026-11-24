@@ -159,7 +159,62 @@ beforeEach(() => {
       user: { id: 1, username: 'root', role: ROLE.SUPER_ADMIN },
     },
   })
-  vi.spyOn(api, 'get').mockImplementation(async (url) => {
+  vi.spyOn(api, 'get').mockImplementation(async (url, config) => {
+    if (url === '/api/channel/uterapi/price-preview') {
+      const group = (config?.params as { group?: string } | undefined)?.group ?? ''
+      return {
+        data: {
+          success: true,
+          data: {
+            group,
+            group_name: 'Claude Standard',
+            ratio: 2.5,
+            currency: 'USD',
+            fetched_at: 1,
+            items: [
+              {
+                channel_id: 0,
+                model_name: 'claude-preview',
+                provider: 'uterapi',
+                region: '',
+                deployment_id: '',
+                currency: 'USD',
+                pricing_source: 'newapi:/api/pricing',
+                pricing_status: 'official_only',
+                pricing_version: '',
+                price_supported: true,
+                fetched_at: 1,
+                updated_at: 1,
+                stale: false,
+                fetched_age_hours: 0,
+                official: {
+                  currency: 'USD',
+                  unit: 'per_1m_token',
+                  tiers: [
+                    {
+                      range_name: 'base',
+                      unit: 'per_1m_token',
+                      input_per_million_usd: 10,
+                      output_per_million_usd: 50,
+                    },
+                  ],
+                  source: 'newapi:/api/pricing',
+                  fetched_at: 1,
+                },
+                upstream_quote: {
+                  price_basis: 'CHANNEL_DISCOUNT',
+                  currency: 'USD',
+                  unit: 'per_1m_token',
+                  input_per_million_usd: 25,
+                  output_per_million_usd: 125,
+                  source: 'uterroute-discount',
+                },
+              },
+            ],
+          },
+        },
+      }
+    }
     if (url === '/api/channel/42') {
       return { data: { success: true, data: editingChannel } }
     }
@@ -1844,6 +1899,30 @@ test('Uter.api create uses six steps and creates one chosen group at a time', as
   expect(screen.getByText('No group chosen')).toBeVisible()
   expect(screen.getByText('No key yet')).toBeVisible()
   expect(screen.queryByText('Key groups')).toBeNull()
+})
+
+test('Uter.api fetch-prices step shows the selected group official and channel prices', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness />)
+  await user.click(
+    await screen.findByRole('option', { name: /Uter\.api.*#64/i })
+  )
+
+  // No group yet: the step asks the operator to pick one.
+  await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
+  expect(
+    screen.getByText('Choose a billing group to preview its prices.')
+  ).toBeVisible()
+
+  // Pick the group in the connection step; the preview then shows both columns.
+  await user.click(screen.getByRole('tab', { name: /Connect channel/ }))
+  await user.click(screen.getByRole('combobox', { name: 'Group' }))
+  await user.click(await screen.findByRole('option', { name: 'Claude Standard' }))
+  await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
+  expect(await screen.findByText('claude-preview')).toBeVisible()
+  expect(screen.getByText('$10.0000 / $50.0000')).toBeVisible()
+  expect(screen.getByText('$25.0000 / $125.0000')).toBeVisible()
+  expect(screen.getByText(/Claude Standard/)).toBeVisible()
 })
 
 test('Uter.api connection picks one group and one key box', async () => {

@@ -415,6 +415,14 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		}
 		return normalizeModelNames(plugin.Meta.Models), nil
 	}
+	// Uter.api is a managed gateway: its catalogue comes from the configured
+	// upstream endpoint, never from a base URL typed into the drawer. The
+	// create flow and the "Sync model information" button must resolve models
+	// through the same key-scoped /v1/models endpoint, so this branch has to
+	// run before the generic empty-baseURL guard below.
+	if channel.Type == constant.ChannelTypeUterAPI {
+		return fetchUterAPIModelIDs(channel)
+	}
 	// The public control-plane catalogue is the full model list; the
 	// key-scoped /v1/models only exposes the subset enabled for one key.
 	baseURL := constant.GetChannelBaseURL(channel.Type)
@@ -457,14 +465,6 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 			return nil, err
 		}
 		return normalizeModelNames(models), nil
-	}
-
-	// Uter.api is a managed gateway: its catalogue comes from the configured
-	// upstream endpoint, never from a base URL typed into the drawer. The
-	// create flow and the "Sync model information" button must resolve models
-	// through the same key-scoped /v1/models endpoint.
-	if channel.Type == constant.ChannelTypeUterAPI {
-		return fetchUterAPIModelIDs(channel)
 	}
 
 	// Uter Route hides vendor-less entries on its own pricing page while the

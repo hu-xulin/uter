@@ -77,6 +77,7 @@ var channelPermissionRoutes = []permissionRoute{
 	{method: http.MethodPost, path: "/", permission: authz.ChannelSensitiveWrite, handler: controller.AddChannel},
 	{method: http.MethodPost, path: "/uterapi", permission: authz.ChannelSensitiveWrite, handler: controller.CreateUterAPIChannels},
 	{method: http.MethodGet, path: "/uterapi/groups", permission: authz.ChannelRead, handler: controller.GetUterAPIPricingGroups},
+	{method: http.MethodGet, path: "/uterapi/price-preview", permission: authz.ChannelRead, handler: controller.GetUterAPIPricePreview},
 	{method: http.MethodPut, path: "/", permission: authz.ChannelWrite, handler: controller.UpdateChannel},
 	{method: http.MethodPost, path: "/status/batch", permission: authz.ChannelOperate, handler: controller.BatchUpdateChannelStatus},
 	{method: http.MethodPost, path: "/:id/status", permission: authz.ChannelOperate, handler: controller.UpdateChannelStatus},

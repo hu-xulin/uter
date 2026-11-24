@@ -95,6 +95,41 @@ function quoteLabel(
 }
 
 /**
+ * Shared table body for both the saved-channel price preview and the
+ * pre-creation catalogue preview. One formatter keeps the two views identical.
+ */
+export function PricePreviewTable({
+  items,
+}: {
+  items: ChannelModelPricingRecord[]
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className='max-h-80 overflow-y-auto rounded-md border text-sm'>
+      <div className='bg-muted/40 grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 font-medium'>
+        <span>{t('Model')}</span>
+        <span>{t('Official price')}</span>
+        <span>{t('Channel price')}</span>
+      </div>
+      {items.map((item) => (
+        <div
+          key={item.model_name}
+          className='grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 last:border-b-0'
+        >
+          <span className='font-mono break-words'>{item.model_name}</span>
+          <span className='tabular-nums'>
+            {officialLabel(item.official?.tiers?.[0], t)}
+          </span>
+          <span className='tabular-nums'>
+            {quoteLabel(item.upstream_quote, t)}
+          </span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
  * Read-only view of the official and channel prices a catalog sync wrote for
  * this channel. Used by the creation wizard's "fetch prices" step; draft and
  * fetch progress are handled inline so the operator never triggers them.
@@ -165,29 +200,7 @@ export function FetchedPricePreview(props: FetchedPricePreviewProps) {
       </p>
     )
   } else {
-    body = (
-      <div className='max-h-80 overflow-y-auto rounded-md border text-sm'>
-        <div className='bg-muted/40 grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 font-medium'>
-          <span>{t('Model')}</span>
-          <span>{t('Official price')}</span>
-          <span>{t('Channel price')}</span>
-        </div>
-        {items.map((item) => (
-          <div
-            key={item.model_name}
-            className='grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 last:border-b-0'
-          >
-            <span className='font-mono break-words'>{item.model_name}</span>
-            <span className='tabular-nums'>
-              {officialLabel(item.official?.tiers?.[0], t)}
-            </span>
-            <span className='tabular-nums'>
-              {quoteLabel(item.upstream_quote, t)}
-            </span>
-          </div>
-        ))}
-      </div>
-    )
+    body = <PricePreviewTable items={items} />
   }
 
   return (

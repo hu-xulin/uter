@@ -702,3 +702,37 @@ func TestFetchUterAPIModelsIgnoresStaleFormBaseURL(t *testing.T) {
 	require.Equal(t, []string{"claude-sonnet", "gpt-5"}, models)
 	require.Equal(t, "/v1/models", <-requests)
 }
+
+func TestFetchModelsUterAPIUsesConfiguredUpstreamWhenFormBaseURLIsEmpty(t *testing.T) {
+	requests := make(chan string, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests <- r.URL.Path
+		require.Equal(t, "Bearer sk-uter", r.Header.Get("Authorization"))
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":[{"id":"claude-sonnet"},{"id":"gpt-5"}]}`))
+	}))
+	t.Cleanup(server.Close)
+
+	previous := uterapiBaseURLForTest
+	uterapiBaseURLForTest = server.URL
+	t.Cleanup(func() { uterapiBaseURLForTest = previous })
+
+	emptyBase := ""
+	body, err := common.Marshal(fetchModelsRequest{
+		BaseURL: &emptyBase,
+		Type:    constant.ChannelTypeUterAPI,
+		Key:     "sk-uter",
+	})
+	require.NoError(t, err)
+
+	recorder := httptest.NewRecorder()
+	ctx, _ := gin.CreateTestContext(recorder)
+	ctx.Request = httptest.NewRequest(http.MethodPost, "/api/channel/fetch_models", bytes.NewReader(body))
+	ctx.Request.Header.Set("Content-Type", "application/json")
+
+	FetchModels(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	require.JSONEq(t, `{"success":true,"message":"","data":["claude-sonnet","gpt-5"]}`, recorder.Body.String())
+	require.Equal(t, "/v1/models", <-requests)
+}
