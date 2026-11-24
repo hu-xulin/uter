@@ -40,10 +40,20 @@ function Input({
   mono?: boolean
 }) {
   const useMono = mono ?? type === 'url'
+  // 无可见 label 且未显式提供可访问名称时，placeholder 是最接近的中文名称。
+  // 由组件统一兜底，避免各业务页重复补 aria-label；调用方显式传入的值仍优先。
+  const derivedAriaLabel =
+    props['aria-label'] ??
+    (props['aria-labelledby']
+      ? undefined
+      : typeof props.placeholder === 'string'
+        ? props.placeholder
+        : undefined)
   return (
     <InputPrimitive
       type={type}
       data-slot='input'
+      aria-label={derivedAriaLabel}
       data-mono={useMono || undefined}
       className={cn(
         // 内边距按规范 2.1 Input：12×10px（px-3 py-2.5）。此前 px-2.5（10px）

@@ -33,6 +33,13 @@
       "reason": "本版只覆盖 zh-CN / en LTR",
       "review_condition": "新增 RTL locale 时",
       "status": "OPEN"
+    },
+    {
+      "id": "EX-005",
+      "scope": "UDS 8.0 全页面 computed-style 审计中经人工确认的组合例外集合",
+      "reason": "逐项执行记录见 docs/design-system/audit/comprehensive/decision-execution.json；数值近似但语义不适用的最近令牌不机械替换，按各组的文档建议登记。",
+      "review_condition": "对应组件或 token 语义发生变更、或新的真实页面差异组无法归入既有记录时",
+      "status": "ALLOWED"
     }
   ],
   "registered_gradient_files": [

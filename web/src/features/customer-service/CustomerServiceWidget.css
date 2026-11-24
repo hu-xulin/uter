@@ -43,6 +43,9 @@ body:has([data-slot='dialog-content'][data-open]) .cs-panel {
   place-items: center;
   background: var(--primary);
   border: none;
+  /* UDS 8.0 按钮标准：按钮字重不得低于 medium；本组件是独立挂载的客服入口，
+     不经过 shadcn Button 基类，因此在这里补齐同一档位。 */
+  font-weight: var(--ds-weight-medium);
   cursor: pointer;
   box-shadow: var(--ds-elevation-overlay);
   transition:

@@ -32,10 +32,18 @@ function Textarea({
    */
   mono?: boolean
 }) {
+  const derivedAriaLabel =
+    props['aria-label'] ??
+    (props['aria-labelledby']
+      ? undefined
+      : typeof props.placeholder === 'string'
+        ? props.placeholder
+        : undefined)
   return (
     <textarea
       data-slot='textarea'
       data-mono={mono || undefined}
+      aria-label={derivedAriaLabel}
       className={cn(
         // 内边距沿用 Input 的 12×10px（px-3 py-2.5）；最小高度按规范
         // 「最小约 3 行」= 3×20 + 2×10 + 2×1 ≈ 72px（min-h-18）。
