@@ -93,15 +93,21 @@ describe('dialog viewport layout', () => {
         handleConfirm={onConfirm}
       />
     )
-    expect(
-      screen.getByRole('alertdialog', { name: 'Confirm changes' })
-    ).toHaveClass(
+    const dialog = screen.getByRole('alertdialog', {
+      name: 'Confirm changes',
+    })
+    expect(dialog).toHaveClass(
       'top-[var(--dialog-viewport-center,50dvh)]',
       'max-h-[var(--dialog-available-height,calc(100dvh-2rem))]',
       'overflow-y-auto',
       'overscroll-contain',
-      'min-h-[var(--ds-dialog-confirm-min-height)]'
+      'min-h-[var(--ds-dialog-confirm-min-height)]',
+      'flex',
+      'flex-col'
     )
+    expect(
+      dialog.querySelector('[data-slot="alert-dialog-footer"]')
+    ).toHaveClass('mt-auto')
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(onConfirm).toHaveBeenCalledOnce()
   })

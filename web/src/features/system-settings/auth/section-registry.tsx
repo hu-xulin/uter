@@ -32,6 +32,7 @@ const AUTH_SECTIONS = [
       <BasicAuthSection
         defaultValues={{
           PasswordLoginEnabled: settings.PasswordLoginEnabled,
+          TwoFAEnabled: settings.TwoFAEnabled,
           PasswordRegisterEnabled: settings.PasswordRegisterEnabled,
           EmailCodeLoginEnabled: settings.EmailCodeLoginEnabled,
           EmailVerificationEnabled: settings.EmailVerificationEnabled,

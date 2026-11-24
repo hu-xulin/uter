@@ -46,6 +46,7 @@ import { useUpdateOption } from '../hooks/use-update-option'
 
 const basicAuthSchema = z.object({
   PasswordLoginEnabled: z.boolean(),
+  TwoFAEnabled: z.boolean(),
   PasswordRegisterEnabled: z.boolean(),
   EmailCodeLoginEnabled: z.boolean(),
   EmailVerificationEnabled: z.boolean(),
@@ -124,6 +125,31 @@ export function BasicAuthSection({ defaultValues }: BasicAuthSectionProps) {
                   <FormLabel>{t('Password Login')}</FormLabel>
                   <FormDescription>
                     {t('Allow users to log in with password')}
+                  </FormDescription>
+                </SettingsSwitchContent>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </SettingsSwitchItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='TwoFAEnabled'
+            render={({ field }) => (
+              <SettingsSwitchItem>
+                <SettingsSwitchContent>
+                  <FormLabel>
+                    {t('Two-factor authentication enrollment')}
+                  </FormLabel>
+                  <FormDescription>
+                    {t(
+                      'Allow users to enable two-factor authentication in Security & Access. Existing bindings keep working when this is off.'
+                    )}
                   </FormDescription>
                 </SettingsSwitchContent>
                 <FormControl>

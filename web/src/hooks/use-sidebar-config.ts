@@ -28,7 +28,7 @@ type SidebarSectionConfig = {
   [key: string]: boolean
 }
 
-type SidebarModulesAdminConfig = Record<string, SidebarSectionConfig>
+export type SidebarModulesAdminConfig = Record<string, SidebarSectionConfig>
 
 // User-layer config is shape-identical to admin, but may be null
 // to signal "no narrowing" (empty/invalid/legacy users).
@@ -132,13 +132,17 @@ const URL_TO_CONFIG_MAP: Record<string, { section: string; module: string }> = {
 }
 
 /**
- * Parse backend SidebarModulesAdmin configuration
+ * Parse the backend SidebarModulesAdmin value. The status payload may carry an
+ * already-decoded object (tests, cached snapshots) or the raw JSON string.
+ * Empty or invalid values fall back to "everything enabled".
  */
-function parseSidebarConfig(
-  value: string | null | undefined
+export function parseSidebarModulesAdminConfig(
+  value: unknown
 ): SidebarModulesAdminConfig {
-  // If empty string, null, or undefined, use default config
-  if (!value || value.trim() === '') {
+  if (value && typeof value === 'object') {
+    return mergeWithDefaultSidebarModules(value as SidebarModulesAdminConfig)
+  }
+  if (typeof value !== 'string' || value.trim() === '') {
     return DEFAULT_SIDEBAR_MODULES
   }
 
@@ -290,10 +294,7 @@ export function useSidebarConfig(navGroups: NavGroup[]): NavGroup[] {
   const { auth } = useAuthStore()
 
   const adminConfig = useMemo(
-    () =>
-      parseSidebarConfig(
-        status?.SidebarModulesAdmin as string | null | undefined
-      ),
+    () => parseSidebarModulesAdminConfig(status?.SidebarModulesAdmin),
     [status?.SidebarModulesAdmin]
   )
 
@@ -342,8 +343,8 @@ export function useIsSidebarModuleVisible(url: string): boolean {
   const { status } = useStatus()
   const { auth } = useAuthStore()
 
-  const adminConfig = parseSidebarConfig(
-    status?.SidebarModulesAdmin as string | null | undefined
+  const adminConfig = parseSidebarModulesAdminConfig(
+    status?.SidebarModulesAdmin
   )
   const userConfig =
     auth?.user?.permissions?.sidebar_settings === false

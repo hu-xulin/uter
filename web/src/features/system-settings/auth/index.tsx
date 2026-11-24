@@ -26,6 +26,7 @@ import {
 
 const defaultAuthSettings: AuthSettings = {
   PasswordLoginEnabled: true,
+  TwoFAEnabled: true,
   PasswordRegisterEnabled: true,
   EmailCodeLoginEnabled: false,
   EmailVerificationEnabled: false,

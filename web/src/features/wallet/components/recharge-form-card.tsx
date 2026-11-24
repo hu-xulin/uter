@@ -24,7 +24,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { DiscountBadge } from '@/components/ui/discount-badge'
-import { Input } from '@/components/ui/input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TitledCard } from '@/components/ui/titled-card'
@@ -393,18 +397,23 @@ export function RechargeFormCard({
                   {t('Custom Amount')}
                 </Label>
                 <div className='grid grid-cols-[minmax(0,1fr)_minmax(110px,0.55fr)] gap-2 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center'>
-                  <Input
-                    id='topup-amount'
-                    type='number'
-                    value={localAmount}
-                    onChange={(e) => handleAmountChange(e.target.value)}
-                    min={minTopup}
-                    /* 与后台「最低充值」同口径（最多两位小数）。不写 step 时
-                       type=number 默认 step=1，输入 0.01 会进入 :invalid 状态，
-                       浏览器的原生校验与上下箭头步进都按整数走。 */
-                    step='0.01'
-                    placeholder={t('Minimum {{amount}}', { amount: minTopup })}
-                  />
+                  <InputGroup>
+                    <InputGroupAddon>$</InputGroupAddon>
+                    <InputGroupInput
+                      id='topup-amount'
+                      type='number'
+                      value={localAmount}
+                      onChange={(e) => handleAmountChange(e.target.value)}
+                      min={minTopup}
+                      /* 与后台「最低充值」同口径（最多两位小数）。不写 step 时
+                         type=number 默认 step=1，输入 0.01 会进入 :invalid 状态，
+                         浏览器的原生校验与上下箭头步进都按整数走。 */
+                      step='0.01'
+                      placeholder={t('Minimum {{amount}}', {
+                        amount: minTopup,
+                      })}
+                    />
+                  </InputGroup>
                   {/* 与同一行的输入框同高（--ds-control-height-md）：此前是
                       min-h-9（36px），比左侧 40px 的输入框矮一截。 */}
                   <div className='bg-muted/30 flex h-(--ds-control-height-md) items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>

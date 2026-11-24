@@ -111,7 +111,10 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-async function renderPage(path = '/security') {
+async function renderPage(
+  path = '/security',
+  statusOverrides: Record<string, unknown> = {}
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -129,6 +132,7 @@ async function renderPage(path = '/security') {
         scopes: 'openid',
       },
     ],
+    ...statusOverrides,
   })
   const root = createRootRoute()
   const security = createRoute({
@@ -155,7 +159,7 @@ async function renderPage(path = '/security') {
 }
 
 describe('security page migration', () => {
-  it('places account management on the left and verification and privacy on the right', async () => {
+  it('stacks every security section from top to bottom in the required order', async () => {
     await renderPage()
     const login = await screen.findByRole('region', {
       name: 'Login & Authentication',
@@ -166,29 +170,22 @@ describe('security page migration', () => {
         .map((region) => within(region).getAllByRole('heading')[0].textContent)
     ).toEqual([
       'Login & Authentication',
-      'Sessions & Access',
-      'Account Actions',
+      'Security verification',
       'Privacy',
+      'Account Actions',
+      'Sessions & Access',
     ])
     expect(
       within(login).getByRole('button', { name: 'Change Password' })
     ).toBeVisible()
     expect(within(login).getByText('Account Bindings')).toBeVisible()
-    const verification = screen.getByRole('complementary', {
+    const verification = screen.getByRole('region', {
       name: 'Security verification',
     })
     expect(await within(verification).findByText('Passkey Login')).toBeVisible()
     expect(
       await within(verification).findByText('Two-Factor Authentication')
     ).toBeVisible()
-    expect(
-      within(verification).getByRole('switch', { name: 'Record IP Address' })
-    ).toBeVisible()
-    expect(verification).toHaveClass('xl:sticky', 'xl:top-0')
-    expect(verification.parentElement).toHaveClass(
-      'grid',
-      'xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.46fr)]'
-    )
     const access = screen.getByRole('region', { name: 'Sessions & Access' })
     expect(within(access).getByText('Access tokens')).toBeVisible()
     expect(
@@ -305,5 +302,49 @@ describe('security page migration', () => {
     })
     expect(languageTitle).toHaveClass('text-base', 'font-medium')
     expect(languageTitle.className).not.toContain('font-semibold')
+  })
+})
+
+describe('security feature gates', () => {
+  it('hides passkey and two-factor cards when administrators disable both', async () => {
+    await renderPage('/security', {
+      passkey_login: false,
+      twofa_enabled: false,
+    })
+
+    expect(
+      await screen.findByRole('region', { name: 'Login & Authentication' })
+    ).toBeVisible()
+    expect(
+      screen.queryByRole('region', { name: 'Security verification' })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Passkey Login')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Two-Factor Authentication')
+    ).not.toBeInTheDocument()
+  })
+
+  it('hides password actions when the administrator disables password login', async () => {
+    await renderPage('/security', { password_login_enabled: false })
+
+    expect(await screen.findByText('Account Bindings')).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: 'Change Password' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Set Password' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('keeps only the factor that administrators still allow', async () => {
+    await renderPage('/security', { passkey_login: false, twofa_enabled: true })
+
+    const verification = await screen.findByRole('region', {
+      name: 'Security verification',
+    })
+    expect(screen.queryByText('Passkey Login')).not.toBeInTheDocument()
+    expect(
+      await within(verification).findByText('Two-Factor Authentication')
+    ).toBeVisible()
   })
 })

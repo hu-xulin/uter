@@ -48,6 +48,7 @@ export interface SystemStatus {
     telegram_oauth_configured?: boolean
     telegram_bot_name?: string
     passkey_login?: boolean
+    twofa_enabled?: boolean
     wechat_web_login?: boolean
     wechat_web_app_id?: string
     wechat_web_callback_domain?: string
@@ -93,6 +94,7 @@ export interface SystemStatus {
   telegram_oauth_configured?: boolean
   telegram_bot_name?: string
   passkey_login?: boolean
+  twofa_enabled?: boolean
   wechat_web_login?: boolean
   wechat_web_app_id?: string
   wechat_web_callback_domain?: string

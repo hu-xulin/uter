@@ -33,7 +33,7 @@ vi.mock('@/features/auth/api', () => ({
 afterEach(() => vi.clearAllMocks())
 
 describe('SignOutDialog layout', () => {
-  it('uses the natural footer spacing instead of the tall confirm-dialog minimum', async () => {
+  it('keeps the confirm minimum height and anchors the footer at the bottom', async () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
@@ -45,8 +45,11 @@ describe('SignOutDialog layout', () => {
     )
 
     const dialog = await screen.findByRole('alertdialog')
-    expect(dialog).toHaveClass('min-h-0')
-    expect(dialog.className).not.toContain('ds-dialog-confirm-min-height')
+    expect(dialog).toHaveClass('flex', 'flex-col')
+    expect(dialog).toHaveClass('min-h-[var(--ds-dialog-confirm-min-height)]')
+
+    const footer = dialog.querySelector('[data-slot="alert-dialog-footer"]')
+    expect(footer).toHaveClass('mt-auto')
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeVisible()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeVisible()
   })

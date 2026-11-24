@@ -553,7 +553,9 @@ function renderDesktop<TData>(
       splitHeader={fixedHeight}
       tableContainerClassName={fixedHeight ? 'h-full min-h-0' : undefined}
       tableHeaderClassName={cn(
-        fixedHeight && '[background-color:var(--table-header)]',
+        // The shared header is always `sticky top-0`; without an opaque
+        // background the scrolled rows show through the header text.
+        '[background-color:var(--table-header)]',
         props.tableHeaderClassName
       )}
       getColumnClassName={props.getColumnClassName}

@@ -63,7 +63,10 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   return (
     <AlertDialog {...actions}>
       <AlertDialogContent
-        className={cn('min-h-[var(--ds-dialog-confirm-min-height)]', className)}
+        className={cn(
+          'flex min-h-[var(--ds-dialog-confirm-min-height)] flex-col',
+          className
+        )}
       >
         <AlertDialogHeader className='text-start'>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -72,7 +75,7 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         {children}
-        <AlertDialogFooter>
+        <AlertDialogFooter className='mt-auto'>
           <AlertDialogCancel disabled={isLoading}>
             {cancelBtnText ?? t('Cancel')}
           </AlertDialogCancel>

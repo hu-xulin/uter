@@ -81,7 +81,7 @@ export function LegalConsent({
       />
       <Label
         htmlFor='legal-consent'
-        className='text-muted-foreground relative items-start gap-1 text-left text-xs font-normal after:absolute after:-inset-x-3 after:-inset-y-2 after:content-[""]'
+        className='text-muted-foreground relative items-start gap-1 text-left text-xs font-normal after:pointer-events-none after:absolute after:-inset-x-3 after:-inset-y-2 after:content-[""]'
       >
         <span>
           {t('I have read and agree to the')}{' '}
@@ -90,7 +90,12 @@ export function LegalConsent({
               to='/user-agreement'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-fg-link font-medium'
+              className='text-fg-link pointer-events-auto relative z-10 font-medium'
+              onClick={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                window.open('/user-agreement', '_blank', 'noopener,noreferrer')
+              }}
             >
               {t('User Agreement')}
             </Link>
@@ -101,7 +106,12 @@ export function LegalConsent({
               to='/privacy-policy'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-fg-link font-medium'
+              className='text-fg-link pointer-events-auto relative z-10 font-medium'
+              onClick={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                window.open('/privacy-policy', '_blank', 'noopener,noreferrer')
+              }}
             >
               {t('Privacy Policy')}
             </Link>

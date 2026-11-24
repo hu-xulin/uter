@@ -32,6 +32,8 @@ import {
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Switch } from '@/components/ui/switch'
 import { Heading } from '@/design-system'
+import { parseSidebarModulesAdminConfig } from '@/hooks/use-sidebar-config'
+import { useStatus } from '@/hooks/use-status'
 import { api } from '@/lib/api'
 import { handleServerError } from '@/lib/handle-server-error'
 import { useAuthStore } from '@/stores/auth-store'
@@ -56,6 +58,7 @@ export function SidebarModulesCard() {
   const [config, setConfig] = useState<SidebarModulesConfig>({})
   const currentUser = useAuthStore((s) => s.auth.user)
   const setUser = useAuthStore((s) => s.auth.setUser)
+  const { status } = useStatus()
 
   const sectionDefs: SectionDef[] = [
     {
@@ -213,6 +216,26 @@ export function SidebarModulesCard() {
     toast.success(t('Reset to default configuration'))
   }
 
+  // Administrators own the outer gate: a section or module they disabled must
+  // not appear in the user's personal sidebar settings at all.
+  const adminConfig = parseSidebarModulesAdminConfig(
+    status?.SidebarModulesAdmin
+  )
+  const visibleSections = sectionDefs
+    .map((section) => {
+      const adminSection = adminConfig[section.key]
+      if (!adminSection?.enabled) return null
+      const modules = section.modules.filter(
+        (mod) => adminSection[mod.key] === true
+      )
+      return modules.length > 0 ? { ...section, modules } : null
+    })
+    .filter((section): section is SectionDef => section !== null)
+
+  if (visibleSections.length === 0) {
+    return null
+  }
+
   return (
     <Card data-card-hover='false' className='gap-0 overflow-hidden py-0'>
       <CardHeader className='border-b p-3 !pb-3 sm:p-5 sm:!pb-5'>
@@ -229,7 +252,7 @@ export function SidebarModulesCard() {
         </div>
       </CardHeader>
       <CardContent className='space-y-4 p-3 sm:space-y-5 sm:p-5'>
-        {sectionDefs.map((section) => {
+        {visibleSections.map((section) => {
           const sectionEnabled = config[section.key]?.enabled !== false
           return (
             <div
