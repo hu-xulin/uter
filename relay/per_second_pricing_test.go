@@ -50,7 +50,7 @@ func TestPerSecondTaskCostUsesDurationFacts(t *testing.T) {
 func TestPerMinutePriceBillsByDurationSeconds(t *testing.T) {
 	quoted := 1.2
 	billing, err := model.NormalizeChannelInternalPricing(&model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMinute, PerMinuteUSD: &quoted,
+		Mode: model.ChannelPricingModePerMinute, PerMinuteUSD: model.MoneyFromFloatPtr(&quoted),
 	})
 	require.NoError(t, err)
 	require.True(t, billing.UsePerSecond)

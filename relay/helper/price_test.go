@@ -993,7 +993,7 @@ func TestModelPriceHelperUsesChannelIsolatedPricing(t *testing.T) {
 	assert.NotEqual(t, info.ChannelPricingVersion, other.ChannelPricingVersion)
 }
 
-func floatPtr(value float64) *float64 { return &value }
+func floatPtr(value float64) *model.Money { return model.MoneyFromFloatPtr(&value) }
 
 func isChannelPricingError(err error) bool {
 	text := err.Error()
@@ -1142,7 +1142,7 @@ func TestModelPriceHelperUsesRequestRegionIdentity(t *testing.T) {
 		require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
 			ChannelId: 7, Provider: "alibaba-bailian", Region: item.region, ModelName: "regional-model",
 		}, model.ChannelInternalPricing{
-			Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &item.input, OutputUSDPerMillion: &output,
+			Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&item.input), OutputUSDPerMillion: model.MoneyFromFloatPtr(&output),
 		}))
 	}
 
@@ -1224,7 +1224,7 @@ func TestModelPriceHelperSelectsDeploymentPricingIdentity(t *testing.T) {
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
 		Currency: "USD", Unit: "per_1m_token",
 		Tiers: []model.ChannelPricingTier{{
-			Unit: "per_1m_token", InputPerMillionUSD: &input, OutputPerMillionUSD: &output,
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input), OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
 		}},
 	})
 	require.NoError(t, err)
@@ -1238,7 +1238,7 @@ func TestModelPriceHelperSelectsDeploymentPricingIdentity(t *testing.T) {
 	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{
 		ChannelId: 21, Provider: "uter", DeploymentId: "dep-b", ModelName: "m",
 	}, model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: &three, OutputUSDPerMillion: &four,
+		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(&three), OutputUSDPerMillion: model.MoneyFromFloatPtr(&four),
 	}))
 
 	ctx, _ := gin.CreateTestContext(httptest.NewRecorder())
