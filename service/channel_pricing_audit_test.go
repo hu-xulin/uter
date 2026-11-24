@@ -35,7 +35,9 @@ func parityRow(t *testing.T, name string, view model.ChannelOfficialPricing, fet
 	normalized, err := common.Marshal(view)
 	require.NoError(t, err)
 	internal, err := common.Marshal(model.ChannelInternalPricing{
-		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(3)),
+		Mode:               model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(3.3)),
+		Source:             "bailian-official",
 	})
 	require.NoError(t, err)
 	// A row can only be FULLY_MATCHED when its purchase cost is verified.
@@ -50,8 +52,8 @@ func parityRow(t *testing.T, name string, view model.ChannelOfficialPricing, fet
 	require.NoError(t, err)
 	return model.ChannelModelPricing{
 		ChannelId: 7, ModelName: name, PricingStatus: model.ChannelPricingStatusConfigured,
-		NormalizedPricing: string(normalized), InternalPricing: string(internal),
-		PurchasePricing: string(purchase), FetchedAt: fetchedAt,
+		PricingSource: "bailian-official", NormalizedPricing: string(normalized),
+		InternalPricing: string(internal), PurchasePricing: string(purchase), FetchedAt: fetchedAt,
 	}
 }
 
@@ -62,8 +64,16 @@ func auditFloatPtr(value float64) *float64 { return &value }
 // authority from row presence, so a CHANNEL_SCOPED_PENDING/ACTIVE channel was
 // shown as "global" while the runtime blocked every charge on it.
 func TestPricingAuditRespectsExplicitPricingMode(t *testing.T) {
+	validInternal, err := common.Marshal(model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  model.MoneyFromFloatPtr(auditFloatPtr(2)),
+		OutputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(4)),
+	})
+	require.NoError(t, err)
 	configured := []model.ChannelModelPricing{{
 		ModelName: "m1", PricingStatus: model.ChannelPricingStatusConfigured,
+		InternalPricing: string(validInternal),
+		LifecycleStatus: model.ChannelModelLifecycleActive,
 	}}
 
 	pending := BuildChannelPricingAudit(80, "pending", dto.ChannelPricingModeScopedPending, configured)
