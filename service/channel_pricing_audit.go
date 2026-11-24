@@ -26,6 +26,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 // ChannelPricingAudit reports which price source actually wins for one channel.
@@ -58,9 +59,16 @@ type ChannelPricingAuditConflict struct {
 // BuildChannelPricingAudit reports the resolved source for every stored row.
 // Rows that exist but are not configured are blocking: they never silently fall
 // back to a global price.
+//
+// The authority MUST be derived from the same explicit pricing mode the billing
+// path uses (ChannelScopedPricingRequired). Deriving it from row presence alone
+// made the audit page show "global" for a channel that the runtime had already
+// blocked under CHANNEL_SCOPED_PENDING/ACTIVE — operators were shown a source
+// that could never actually be charged.
 func BuildChannelPricingAudit(
 	channelID int,
 	channelName string,
+	pricingMode string,
 	rows []model.ChannelModelPricing,
 ) ChannelPricingAudit {
 	audit := ChannelPricingAudit{
@@ -70,19 +78,34 @@ func BuildChannelPricingAudit(
 		Conflicts:   []ChannelPricingAuditConflict{},
 		Authority:   "global",
 	}
+	scopedRequired := model.ChannelScopedPricingRequired(channelID, pricingMode)
+	normalizedMode := strings.ToUpper(strings.TrimSpace(pricingMode))
+	pending := normalizedMode == dto.ChannelPricingModeScopedPending
+	if scopedRequired || len(rows) > 0 {
+		audit.Authority = "channel_model_pricing"
+	}
+	if normalizedMode == dto.ChannelPricingModeGlobalLegacy {
+		audit.Authority = "global"
+	}
 	if len(rows) == 0 {
+		if scopedRequired {
+			audit.Warnings = append(audit.Warnings,
+				"channel-scoped pricing is required but no channel price rows exist; billing is blocked")
+		}
 		return audit
 	}
-	audit.Authority = "channel_model_pricing"
 	blocked := 0
 	for _, row := range rows {
+		// PENDING blocks every charge while prices are being configured, so no
+		// row — even a configured one — may be reported billable.
+		billable := row.PricingStatus == model.ChannelPricingStatusConfigured && !pending
 		item := ChannelPricingAuditModel{
 			ModelName:     row.ModelName,
 			ChannelStatus: row.PricingStatus,
 			BillingSource: "channel_model_pricing",
-			Billable:      row.PricingStatus == model.ChannelPricingStatusConfigured,
+			Billable:      billable,
 		}
-		if !item.Billable {
+		if !billable {
 			blocked++
 		}
 		audit.Models = append(audit.Models, item)
@@ -108,7 +131,7 @@ func AuditChannelPricing(channelID int) (*ChannelPricingAudit, error) {
 	if err != nil {
 		return nil, err
 	}
-	audit := BuildChannelPricingAudit(channelID, channel.Name, rows)
+	audit := BuildChannelPricingAudit(channelID, channel.Name, channel.GetOtherSettings().PricingMode, rows)
 	return &audit, nil
 }
 
@@ -129,7 +152,7 @@ func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 			if err != nil {
 				return nil, err
 			}
-			audits = append(audits, BuildChannelPricingAudit(channel.Id, channel.Name, rows))
+			audits = append(audits, BuildChannelPricingAudit(channel.Id, channel.Name, channel.GetOtherSettings().PricingMode, rows))
 		}
 		if len(channels) < pageSize {
 			break
@@ -140,15 +163,18 @@ func AuditAllChannelPricing() ([]ChannelPricingAudit, error) {
 }
 
 const (
-	UpstreamParityFullyMatched  = "FULLY_MATCHED"
-	UpstreamParityModelMismatch = "MODEL_MISMATCH"
-	UpstreamParityModelMissing  = "MODEL_MISSING"
-	UpstreamParityPriceMismatch = "PRICE_MISMATCH"
-	UpstreamParityRuleMismatch  = "RULE_MISMATCH"
-	UpstreamParityUnsupported   = "UNSUPPORTED"
-	UpstreamParityStale         = "STALE"
-	UpstreamParitySyncFailed    = "SYNC_FAILED"
-	UpstreamParityManualReview  = "MANUAL_REVIEW"
+	UpstreamParityFullyMatched       = "FULLY_MATCHED"
+	UpstreamParityModelMismatch      = "MODEL_MISMATCH"
+	UpstreamParityModelMissing       = "MODEL_MISSING"
+	UpstreamParityPriceMismatch      = "PRICE_MISMATCH"
+	UpstreamParityRuleMismatch       = "RULE_MISMATCH"
+	UpstreamParityDiscountMismatch   = "DISCOUNT_MISMATCH"
+	UpstreamParityIdentityMismatch   = "IDENTITY_MISMATCH"
+	UpstreamParityPurchaseUnverified = "PURCHASE_UNVERIFIED"
+	UpstreamParityUnsupported        = "UNSUPPORTED"
+	UpstreamParityStale              = "STALE"
+	UpstreamParitySyncFailed         = "SYNC_FAILED"
+	UpstreamParityManualReview       = "MANUAL_REVIEW"
 )
 
 // upstreamParityStaleAfter matches the channel-pricing screen's freshness
@@ -249,6 +275,14 @@ func BuildUpstreamParityReport(channelID int, channelName string, rows []model.C
 			// must not make the model look fully reconciled.
 			item.Status = UpstreamParityPriceMismatch
 		}
+		if item.Status == "" && item.HasInternalPrice && !item.PurchaseVerified {
+			// A configured sale price built on a ratio-derived estimate (or any
+			// row without an operator-confirmed contract cost) must never be
+			// reported as fully matched. The purchase cost is unverified, so
+			// margin figures derived from it would be fabricated. Keep the
+			// discrepancy visible instead of hiding it in the success counts.
+			item.Status = UpstreamParityPurchaseUnverified
+		}
 		if item.Status == "" && row.InternalPricing != "" {
 			var internal model.ChannelInternalPricing
 			if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err == nil &&
@@ -335,6 +369,12 @@ func parityReason(item UpstreamParityModel) string {
 		return "price shape or source needs operator review"
 	case UpstreamParityRuleMismatch:
 		return "internal billing expression is not executable"
+	case UpstreamParityPurchaseUnverified:
+		return "sale price is configured but the purchase cost is not operator-verified; margin is unavailable"
+	case UpstreamParityDiscountMismatch:
+		return "channel discount differs from the upstream group ratio"
+	case UpstreamParityIdentityMismatch:
+		return "pricing identity does not match the upstream model identity"
 	case UpstreamParityStale:
 		return "upstream price is older than the freshness window"
 	default:

@@ -27,6 +27,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/relaykit/dto"
 )
 
 func parityRow(t *testing.T, name string, view model.ChannelOfficialPricing, fetchedAt int64) model.ChannelModelPricing {
@@ -37,13 +38,52 @@ func parityRow(t *testing.T, name string, view model.ChannelOfficialPricing, fet
 		Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(3)),
 	})
 	require.NoError(t, err)
+	// A row can only be FULLY_MATCHED when its purchase cost is verified.
+	// Fixtures representing a correctly reconciled model therefore carry an
+	// operator-confirmed contract cost; unverified scenarios build rows by hand.
+	purchase, err := common.Marshal(model.ChannelPurchaseCost{
+		Pricing: model.ChannelInternalPricing{
+			Mode: model.ChannelPricingModePerMillionTokens, InputUSDPerMillion: model.MoneyFromFloatPtr(auditFloatPtr(2)),
+		},
+		Verified: true, Source: "contract",
+	})
+	require.NoError(t, err)
 	return model.ChannelModelPricing{
 		ChannelId: 7, ModelName: name, PricingStatus: model.ChannelPricingStatusConfigured,
-		NormalizedPricing: string(normalized), InternalPricing: string(internal), FetchedAt: fetchedAt,
+		NormalizedPricing: string(normalized), InternalPricing: string(internal),
+		PurchasePricing: string(purchase), FetchedAt: fetchedAt,
 	}
 }
 
 func auditFloatPtr(value float64) *float64 { return &value }
+
+// TestPricingAuditRespectsExplicitPricingMode proves the audit page reports the
+// same pricing authority the billing path enforces. Previously it inferred
+// authority from row presence, so a CHANNEL_SCOPED_PENDING/ACTIVE channel was
+// shown as "global" while the runtime blocked every charge on it.
+func TestPricingAuditRespectsExplicitPricingMode(t *testing.T) {
+	configured := []model.ChannelModelPricing{{
+		ModelName: "m1", PricingStatus: model.ChannelPricingStatusConfigured,
+	}}
+
+	pending := BuildChannelPricingAudit(80, "pending", dto.ChannelPricingModeScopedPending, configured)
+	assert.Equal(t, "channel_model_pricing", pending.Authority)
+	require.Len(t, pending.Models, 1)
+	assert.False(t, pending.Models[0].Billable, "PENDING must block every charge")
+
+	active := BuildChannelPricingAudit(79, "active", dto.ChannelPricingModeScopedActive, configured)
+	assert.Equal(t, "channel_model_pricing", active.Authority)
+	assert.True(t, active.Models[0].Billable)
+
+	legacy := BuildChannelPricingAudit(79, "legacy", dto.ChannelPricingModeGlobalLegacy, configured)
+	assert.Equal(t, "global", legacy.Authority, "GLOBAL_LEGACY keeps pre-isolation behaviour")
+
+	// Scoped channel with no rows must be visible as blocked, never as global.
+	empty := BuildChannelPricingAudit(81, "empty-scoped", dto.ChannelPricingModeScopedActive, nil)
+	assert.Equal(t, "channel_model_pricing", empty.Authority)
+	assert.NotEmpty(t, empty.Warnings)
+	assert.Empty(t, empty.Models)
+}
 
 func TestBuildUpstreamParityReportSeparatesOfficialAndChannelPrices(t *testing.T) {
 	now := time.Unix(10_000_000, 0)
