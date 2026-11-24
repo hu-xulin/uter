@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261124074424-bbe714ca",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:44:24.925Z",
+  "started_at": "2026-11-24T07:44:24.925Z",
+  "finished_at": "2026-11-24T07:44:24.925Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.requirement_traceability",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.requirement_traceability\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.requirement_traceability 实检: feature_ids=PASS(product-model.json features=56 唯一ID=56; feature-registry.yaml feature_id 行=56; 格式 UTER-XXX-NNN); requirement_coverage=PASS(requirement-registry.yaml requirement_id 行=124; product-model mappings=124; 带 acceptance_ids 行=124); acceptance_criteria=PASS(规范 11 sections/验收条件=true; AC- 唯一ID=373; 覆盖报告存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12138 个 | 真实读取 docs/product/registry 业务产物(56 features / 124 requirements / 124 mappings), 非只读规范文字",
+  "content_hash": "80d8c69142e13daaaf14be303fe11e3d9a6ba9ca04290a0dd81972de1ede3ab2"
+}

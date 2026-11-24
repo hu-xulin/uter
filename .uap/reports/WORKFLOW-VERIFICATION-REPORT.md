@@ -1,6 +1,6 @@
 # Workflow Verification Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:57.625Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-24T07:46:08.852Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 7 个注册工作流

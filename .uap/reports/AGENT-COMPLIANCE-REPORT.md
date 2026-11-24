@@ -1,6 +1,6 @@
 # Agent Compliance Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:57.624Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-24T07:46:08.851Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 11 个 Agent

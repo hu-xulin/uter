@@ -1,10 +1,10 @@
 # 真实业务代码自动修复验证报告
 
-- **Execution ID**：`UAP-RREPAIR-1794983900856-ce0bf4`
+- **Execution ID**：`UAP-RREPAIR-1795505097139-76a1c7`
 - **Task ID**：`UAP-NEG-WIP`
 - **Workflow**：`uap-defect-repair` / `uap-final-verification`（本引擎为真实代码分支）
-- **Git HEAD**：`4e79c44f17206d5ec98d3eb597cabf679c2079fd`
-- **开始 / 结束**：2026-11-18T06:38:20.857Z → 2026-11-18T06:38:20.935Z
+- **Git HEAD**：`33def7a5a7585779965e85e5854596c4ca7f79e0`
+- **开始 / 结束**：2026-11-24T07:24:57.139Z → 2026-11-24T07:24:57.190Z
 - **最终结论**：**BLOCKED**（attempts=0/3，失败升级=NO）
 - **修复对象**：`common/request_path.go`
 - **修复前 SHA256**：`null`
@@ -41,8 +41,8 @@
 
 | 命令 | 阶段 | 退出码 | 耗时(ms) |
 |---|---|---:|---:|
-| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 28 |
-| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 45 |
+| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 20 |
+| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 28 |
 
 ## 证据
 

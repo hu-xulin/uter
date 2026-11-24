@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "generated_at": "2026-11-16T10:13:28.497Z",
+  "generated_at": "2026-11-24T07:46:03.310Z",
   "defects": [
     {
       "id": "UAP-DEFECT-0001",
@@ -139,6 +139,29 @@
       "evidence_refs": [],
       "resolution": "root cause no longer reproduces: delivery.deployment_integrity PASS on the fresh validation run",
       "closed_at": "2026-11-16T05:58:30.129Z"
+    },
+    {
+      "id": "UAP-DEFECT-0007",
+      "dedupe_key": "validator_development.dependency_integrity|",
+      "title": "development.dependency_integrity: FAIL",
+      "severity": "P1",
+      "domain": "quality",
+      "root_cause": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=FAIL(Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部={\"issues\":[{\"file\":\"src/features/wallet/components/wallet-stats-card.tsx\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[{\"name\":\"src/features/wallet/components/wallet-stats-card.tsx\"}],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/api.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[{\"name\":\"getUterAPIPricingGroups\",\"line\":259,\"col\":23,\"pos\":7433}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/wallet/types.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[{\"name\":\"UserWalletData\",\"line\":263,\"col\":18,\"pos\":7118}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/constants.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[[{\"name\":\"CHANNEL_TYPE_UTER_API\",\"line\":32,\"col\":14,\"pos\":1337},{\"name\":\"CHANNEL_TYPE_NEW_API\",\"line\":34,\"col\":14,\"pos\":1419}]],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12070 个 | 真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖",
+      "affected_files": [],
+      "affected_features": [
+        "UAP validation"
+      ],
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "executor_id": "core.autonomous_execution",
+      "validator_id": "development.dependency_integrity",
+      "repair_strategy": "requires source-level change; evaluate safely before applying",
+      "repair_attempts": 0,
+      "status": "VERIFIED",
+      "evidence_refs": [],
+      "resolution": "root cause no longer reproduces: development.dependency_integrity PASS on the fresh validation run",
+      "closed_at": "2026-11-24T07:46:03.310Z"
     }
   ],
   "registry_snapshot": {

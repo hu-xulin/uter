@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T15:06:05.838Z",
+  "generated_at": "2026-11-24T07:45:49.951Z",
   "target": "http://localhost:3000",
   "blocked": false,
   "browser": "playwright chromium (headless, real render)",
@@ -40,7 +40,7 @@
             "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
             "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -57,7 +57,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/sign-up",
@@ -90,7 +90,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -107,7 +107,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -140,7 +140,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -157,7 +157,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -190,7 +190,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [190x40] eff=[190x40]",
             "button.group/button.inline-flex \"登录\" [294x40] eff=[294x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -207,7 +207,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -237,7 +237,7 @@
             "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
             "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -254,7 +254,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -287,7 +287,7 @@
             "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
             "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -304,7 +304,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/sign-up",
@@ -337,7 +337,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -354,7 +354,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -387,7 +387,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -404,7 +404,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -437,7 +437,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [175x40] eff=[175x40]",
             "button.group/button.inline-flex \"登录\" [279x40] eff=[279x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -454,7 +454,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -484,7 +484,7 @@
             "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
             "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -501,7 +501,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -534,7 +534,7 @@
             "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
             "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -551,7 +551,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/sign-up",
@@ -584,7 +584,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -601,7 +601,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -634,7 +634,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -651,7 +651,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -684,7 +684,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [230x40] eff=[230x40]",
             "button.group/button.inline-flex \"登录\" [334x40] eff=[334x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -701,7 +701,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -731,7 +731,7 @@
             "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
             "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -748,7 +748,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -781,7 +781,7 @@
             "a.group/button.inline-flex \"查看定价\" [98x40] eff=[98x40]",
             "a.group/button.shrink-0 \"文档\" [94x40] eff=[94x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -798,7 +798,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/sign-up",
@@ -831,7 +831,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -848,7 +848,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -881,7 +881,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -898,7 +898,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -931,7 +931,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -948,7 +948,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -978,7 +978,7 @@
             "button#base-ui-_r_f_.group/button.inline-flex \"切换主题\" [40x40] eff=[40x40]",
             "button.group/button.inline-flex \"切换导航菜单\" [40x40] eff=[40x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -995,7 +995,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": {
         "tapped": "/",
@@ -1028,7 +1028,7 @@
             "a.min-w-0.truncate \"排行\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"文档\" [52x38] eff=[52x38]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -1045,7 +1045,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": null,
       "console_errors": [],
@@ -1073,7 +1073,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -1090,7 +1090,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": null,
       "console_errors": [],
@@ -1118,7 +1118,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -1135,7 +1135,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": null,
       "console_errors": [],
@@ -1163,7 +1163,7 @@
             "input#email-code-login-code.border-input.hover:border-border-strong [312x40] eff=[312x40]",
             "button.group/button.inline-flex \"登录\" [416x40] eff=[416x40]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 0,
@@ -1180,7 +1180,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": null,
       "console_errors": [],
@@ -1208,7 +1208,7 @@
             "a.min-w-0.truncate \"排行\" [52x38] eff=[52x38]",
             "a.min-w-0.truncate \"文档\" [52x38] eff=[52x38]"
           ],
-          "standard": "design-system §15.3 推荐 44x44px（非强制）"
+          "standard": "UDS 8.0.0 13-ACCESSIBILITY-STANDARD.md: 44x44px target metric"
         },
         "below_wcag_min_24": {
           "count": 3,
@@ -1229,7 +1229,7 @@
       "small_fonts": {
         "count": 0,
         "samples": [],
-        "standard": "design-system §1.2: min 12px"
+        "standard": "UDS 8.0.0 04-TYPOGRAPHY-STANDARD.md: min 12px"
       },
       "tap": null,
       "console_errors": [],

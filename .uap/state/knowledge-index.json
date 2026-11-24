@@ -1,11 +1,12 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-12T11:02:38.020Z",
+  "generated_at": "2026-11-24T07:24:02.754Z",
+  "generated_for_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
   "executor_ids": [
     "evolution.knowledge",
     "evolution.continuous"
   ],
-  "document_count": 56,
+  "document_count": 45,
   "documents": [
     {
       "id": "KN-b4d2da0632",
@@ -28,9 +29,9 @@
         ".uap/runtime/policy-engine/index.mjs",
         "docs/ai-specs"
       ],
-      "updated_at": "2026-11-12T10:36:05.169Z",
-      "hash": "54b0c39d72d706e14667823d36f817018720d17578f05bd33073f13898a3640d",
-      "size": 2666,
+      "updated_at": "2026-11-17T02:11:40.450Z",
+      "hash": "a4c30052e35760d253acb0af0b7bfecbfb2ab2ab2198f39155cc54929f5b25c5",
+      "size": 3268,
       "title": "UAP 1.0 — Uter Autonomous Engineering Platform",
       "section_hints": [
         "1. 分层",
@@ -38,7 +39,8 @@
         "3. 三个必须分开的验收结论",
         "4. 安全边界",
         "5. 独立性",
-        "6. 状态口径"
+        "6. 当前设计系统与历史证据边界",
+        "7. 状态口径"
       ]
     },
     {
@@ -62,11 +64,12 @@
         ".uap/agents/UAP-03-003-AGENT-COLLABORATION.md",
         ".uap/agents/UAP-03-004-AGENT-RECOVERY.md"
       ],
-      "updated_at": "2026-11-12T10:55:33.445Z",
-      "hash": "e47004b22a805feee36d3ad8751c5122190e865f287f0275ace4cc56dc672eb3",
-      "size": 12396,
+      "updated_at": "2026-11-16T12:12:15.817Z",
+      "hash": "b99aca322816fc21dbc5be93ae51ccdfc58a056e5dbb82eaa7b2a927318fe2c5",
+      "size": 14807,
       "title": "UAP 1.0 — 规范索引",
       "section_hints": [
+        "统一最终状态（与 FINAL-STATUS.json、uap status 同源）",
         "统一章节要求",
         "按域索引",
         "机器配置",
@@ -94,9 +97,9 @@
         ".uap/runtime/recovery-engine/index.mjs",
         ".uap/runtime/_lib/paths.mjs"
       ],
-      "updated_at": "2026-11-12T10:55:32.950Z",
-      "hash": "a1cf5254dd06670ab54ef2f2cf292dfb4cc3ff65617ee8894c4dbf9be8e9e555",
-      "size": 9633,
+      "updated_at": "2026-11-17T02:11:40.451Z",
+      "hash": "6961b562d81d35342195bbc943ad9df82e7158d8173dd5c5cbc4b7fab3caee55",
+      "size": 9999,
       "title": "UAP-03-001 — Agent 架构规范",
       "section_hints": [
         "规范目标",
@@ -226,10 +229,10 @@
         "tokenkit/tokenkit/",
         "docs/adr/README.md",
         "docs/adr/0001-uter-design-system-single-source-of-truth.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         "relaykit/go.mod",
         "AGENTS.md",
-        "docs/design-system/showcase-3.0.html",
+        "docs/design-system/SHOWCASE-8.0.0.html",
         "web/src/design-system/",
         "web/src/components/ui/",
         "scripts/verify-all.sh",
@@ -238,9 +241,9 @@
         "web/src/features/",
         "web/src/lib/"
       ],
-      "updated_at": "2026-11-12T10:55:32.948Z",
-      "hash": "13a50d0750a2153ea3a6bef02f358ff37b14b94b52b8ce1d3add39658e9a73c8",
-      "size": 9321,
+      "updated_at": "2026-11-17T02:11:40.451Z",
+      "hash": "e1ba143c5f1fed3e2c25e16432ca28bf158725860e241471f6cb9d8a5490a392",
+      "size": 9697,
       "title": "UAP-02-001 — 系统架构规范",
       "section_hints": [
         "规范目标",
@@ -298,8 +301,8 @@
         "docs/adr/0001-uter-design-system-single-source-of-truth.md",
         "relaykit/go.mod",
         "web/package.json",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
-        "docs/design-system/showcase-3.0.html",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "docs/design-system/SHOWCASE-8.0.0.html",
         "web/src/design-system/",
         "scripts/check-design-tokens.mjs",
         "tokenkit/tokenkit/",
@@ -310,9 +313,9 @@
         "scripts/quality/gitleaks-allowlist.test.sh",
         "web/AGENTS.md"
       ],
-      "updated_at": "2026-11-12T10:55:32.949Z",
-      "hash": "7666e6417a086f50fcd17dae23dbae237f28527d1ce30778cc04ed199fec2d5d",
-      "size": 9326,
+      "updated_at": "2026-11-17T02:11:40.452Z",
+      "hash": "bc277b1bdc9e0ccd4779d8b16b373022904d686b5b79a02ac623c971ba7712cc",
+      "size": 9726,
       "title": "UAP-02-003 — 技术决策规范",
       "section_hints": [
         "规范目标",
@@ -336,7 +339,7 @@
         ".uap/validators/",
         "AGENTS.md",
         "web/AGENTS.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         "web/src/",
         ".uap/config/specification-registry.yaml",
         ".uap/runtime/_lib/contract.mjs",
@@ -346,9 +349,9 @@
         ".uap/config/validator-registry.yaml",
         ".uap/config/agent-registry.yaml"
       ],
-      "updated_at": "2026-11-12T10:55:32.944Z",
-      "hash": "c9d2b9bc8086a525353497ec9f1beadc8be97c1fa64c8d953b8951a3192f7ce8",
-      "size": 9748,
+      "updated_at": "2026-11-17T02:11:40.452Z",
+      "hash": "1b8681179fbfef9e7983b8f2c696a7569c742be73e9eb1cffdd8fa6548877aa6",
+      "size": 10122,
       "title": "UAP-00-001 — UAP 核心架构规范",
       "section_hints": [
         "规范目标",
@@ -454,9 +457,9 @@
         ".uap/config/workflow-registry.yaml",
         "scripts/verify-all.sh"
       ],
-      "updated_at": "2026-11-12T10:55:32.946Z",
-      "hash": "ad564c90c838746cb9ee3d501894eea8b32ecc1a4dc6d33050f8014cf0fc5d28",
-      "size": 9385,
+      "updated_at": "2026-11-17T02:11:40.452Z",
+      "hash": "989cee2bd9a71004bc00418f4c798aba7c3d6fba8b2ec13558cf806570070a03",
+      "size": 9751,
       "title": "UAP-00-004 — 证据与状态管理规范",
       "section_hints": [
         "规范目标",
@@ -480,19 +483,19 @@
         "web/src/design-system/tokens/",
         "web/src/i18n/locales/",
         "web/e2e/visual/",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         "web/AGENTS.md",
         "AGENTS.md",
-        "docs/design-system/showcase-3.0.html",
+        "docs/design-system/SHOWCASE-8.0.0.html",
         "web/src/styles/theme.css",
         "web/src/design-system/tokens/brand-colors.ts",
         "web/scripts/check-design-tokens.mjs",
         "web/src/styles/theme-presets.css",
         "web/src/design-system/source/"
       ],
-      "updated_at": "2026-11-12T10:55:32.957Z",
-      "hash": "96eeb6757460f71e69b526e53febe8f79221b352c175bdc92dd15e42e7d070b1",
-      "size": 13420,
+      "updated_at": "2026-11-17T02:11:40.453Z",
+      "hash": "03a80922e56db0cea4462b00e7b78496ea4c0f3eeb6ddbcbbd52b940e6f47e3e",
+      "size": 13859,
       "title": "UAP-07-001 — Web 工程规范",
       "section_hints": [
         "规范目标",
@@ -515,20 +518,20 @@
         "web/e2e/visual/",
         "web/src/i18n/locales/",
         "web/src/",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         "web/AGENTS.md",
         "AGENTS.md",
         "web/src/design-system/tokens/typography.css",
         "web/src/styles/theme.css",
         "web/src/features/usage-logs/components/common-log-mobile-card.tsx",
         "web/scripts/visual-regression.mjs",
-        "docs/design-system/showcase-3.0.html",
-        "web/e2e/visual/lib/service-gate.ts",
-        "web/src/features/wallet/lib/payment-redirect.ts"
+        "docs/design-system/SHOWCASE-8.0.0.html",
+        "web/src/features/wallet/lib/payment-redirect.ts",
+        "web/src/features/wallet/lib/alipay-return.ts"
       ],
-      "updated_at": "2026-11-12T10:55:32.958Z",
-      "hash": "fff821b3e5d079e3aa18332ebc843aef3731639ab05db89f81311048927d17a0",
-      "size": 13081,
+      "updated_at": "2026-11-17T02:11:40.454Z",
+      "hash": "8a65fd576c4d2a86fb4c462c1c428cac8bca0eb426d325966d073e02596f7da0",
+      "size": 13433,
       "title": "UAP-07-002 — H5 工程规范",
       "section_hints": [
         "规范目标",
@@ -550,7 +553,7 @@
         "web/src/lib/",
         "web/src/routes/",
         "web/e2e/visual/",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         "web/scripts/check-design-tokens.mjs",
         "web/src/",
         "web/src/components/ui/",
@@ -562,9 +565,9 @@
         "web/AGENTS.md",
         "AGENTS.md"
       ],
-      "updated_at": "2026-11-12T10:55:32.958Z",
-      "hash": "bb34f2b8003f70faa64337f67f5b2560b2a6d39f784c3902e0517b1e2a04cd08",
-      "size": 13676,
+      "updated_at": "2026-11-17T02:11:40.455Z",
+      "hash": "481993d3378e25ce0aa3823664e535934c0cfab6df632f797f42d269a0b6acae",
+      "size": 14271,
       "title": "UAP-07-003 — 跨平台一致性规范",
       "section_hints": [
         "规范目标",
@@ -706,9 +709,9 @@
         "scripts/quality/uter-quality.sh",
         ".uap/runtime/_lib/util.mjs"
       ],
-      "updated_at": "2026-11-12T10:55:32.952Z",
-      "hash": "59b2db4dafa13c4b9eea7a474ce235c1e280c549487c1e1a4655726dcd061ebf",
-      "size": 9829,
+      "updated_at": "2026-11-17T02:11:40.455Z",
+      "hash": "67c3c80cfe32cf642079664c149315443830785d1df5d51ae44d617971a93791",
+      "size": 10195,
       "title": "UAP-04-001 — 编码规范",
       "section_hints": [
         "规范目标",
@@ -800,23 +803,23 @@
       "sources": [
         "AGENTS.md",
         "web/AGENTS.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
-        "docs/design-system/showcase-3.0.html",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "docs/design-system/SHOWCASE-8.0.0.html",
         ".uap/config/",
         ".uap/tools/spec-baseline.md",
         ".uap/state/BASELINE.json",
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "docs/adr/0001-uter-design-system-single-source-of-truth.md",
+        "docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md",
         ".uap/config/specification-registry.yaml",
         ".uap/engines/",
         "web/src/features/wallet/lib/payment.ts",
-        "web/scripts/check-design-tokens.mjs",
-        "web/scripts/generate-design-tokens.mjs",
-        "web/src/design-system/tokens/generated/brand.css",
-        ".uap/runtime/_lib/yaml.mjs",
-        ".uap/runtime/_lib/util.mjs"
+        ".uap/tools/generate-baseline-report.mjs",
+        "web/scripts/check-design-tokens.mjs"
       ],
-      "updated_at": "2026-11-12T10:55:32.961Z",
-      "hash": "2c3e3b13e9be2ed5e6c1cc060cd11eaf7004dfd3561542d9d4d503f5449a7b33",
-      "size": 14559,
+      "updated_at": "2026-11-21T03:15:31.896Z",
+      "hash": "8c671d35796275b759c4c4ca23ea97002d44aed68daec6b75278a2be895ae2f6",
+      "size": 15571,
       "title": "UAP-09-001 — 知识管理规范",
       "section_hints": [
         "规范目标",
@@ -843,16 +846,16 @@
         ".uap/reports/EVIDENCE-INDEX.md",
         "AGENTS.md",
         "web/AGENTS.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         ".uap/tools/spec-baseline.md",
         "scripts/coverage-gate.sh",
         ".uap/config/",
         ".uap/runtime/agent-runtime/index.mjs",
         ".uap/engines/knowledge/index.mjs"
       ],
-      "updated_at": "2026-11-12T10:55:32.961Z",
-      "hash": "85329fd3e6a1f806d9b2460109c4c022b19e004bcfa5e28c61f00bd28cd8320d",
-      "size": 17127,
+      "updated_at": "2026-11-17T02:11:40.456Z",
+      "hash": "641f670a20bd425eebb6f24b5ac44d3427f7c683b104332e88a00d928780afd7",
+      "size": 17493,
       "title": "UAP-09-002 — 持续进化规范",
       "section_hints": [
         "规范目标",
@@ -918,13 +921,13 @@
         "docs/product/registry/feature-mapping.yaml",
         "docs/product/registry/change-registry.yaml",
         "docs/product/PRODUCT-SYNC-STANDARD.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
-        "docs/design-system/showcase-3.0.html",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "docs/design-system/SHOWCASE-8.0.0.html",
         "web/src/components/ui/"
       ],
-      "updated_at": "2026-11-12T10:55:32.947Z",
-      "hash": "9ec7150e4bc86837ab4ae898e537b637009c52fdbab4c1ffba7488cce4d57f0a",
-      "size": 9032,
+      "updated_at": "2026-11-17T02:11:40.457Z",
+      "hash": "280706c189597ceee74c6d43390efc7d94d997d96d64e83368cae321d8993748",
+      "size": 9402,
       "title": "UAP-01-002 — PRD 与原型双向同步规范",
       "section_hints": [
         "规范目标",
@@ -994,9 +997,9 @@
         "scripts/coverage-gate.sh",
         "web/package.json"
       ],
-      "updated_at": "2026-11-12T10:57:45.996Z",
-      "hash": "ccd67436a40ab448605756290036c283bfa375cd00f789df7f2950f8718dfd48",
-      "size": 11820,
+      "updated_at": "2026-11-17T02:11:40.457Z",
+      "hash": "78798af449b640f72291ebf183dfdaf58f4f1007c53bc4fa2e9db24040ae4f41",
+      "size": 12186,
       "title": "UAP-05-001 — 质量工程总规范",
       "section_hints": [
         "规范目标",
@@ -1118,394 +1121,6 @@
       ]
     },
     {
-      "id": "KN-e1d0799d33",
-      "path": ".uap/reports/AGENT-COMPLIANCE-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/runtime/agent-runtime/index.mjs",
-        ".uap/engines/product/index.mjs",
-        ".uap/engines/architecture/index.mjs",
-        ".uap/engines/development/index.mjs",
-        ".uap/engines/code-review/index.mjs",
-        ".uap/engines/testing/index.mjs",
-        ".uap/engines/auto-repair/index.mjs",
-        ".uap/engines/security/index.mjs",
-        ".uap/engines/cross-platform/index.mjs",
-        ".uap/engines/delivery/index.mjs",
-        ".uap/engines/knowledge/index.mjs"
-      ],
-      "updated_at": "2026-11-12T10:50:56.539Z",
-      "hash": "0ca471e88935c505129c8316c11c36d8e2fe0a0d37173b1057cf88b4b3625d6b",
-      "size": 2374,
-      "title": "Agent Compliance Report",
-      "section_hints": [
-        "11 个 Agent",
-        "策略引擎健康",
-        "拒绝决策审计"
-      ]
-    },
-    {
-      "id": "KN-4a11ef59d6",
-      "path": ".uap/reports/AUTO-REPAIR-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.635Z",
-      "hash": "43eb2ad63cbb697a26a4e03adf0c98d0557e9f3fe504e5789e2289127cef5b2d",
-      "size": 470,
-      "title": "Auto Repair Report",
-      "section_hints": [
-        "修复尝试",
-        "独立复验",
-        "策略边界",
-        "剩余阻断"
-      ]
-    },
-    {
-      "id": "KN-82c6c663fd",
-      "path": ".uap/reports/BLOCKED-ITEMS.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/engines/cross-platform/index.mjs",
-        ".uap/validators/cross-platform/index.mjs",
-        ".uap/engines/delivery/index.mjs",
-        ".uap/validators/delivery/index.mjs",
-        ".uap/engines/knowledge/index.mjs",
-        ".uap/validators/evolution/index.mjs",
-        ".uap/core/UAP-00-001-CORE-ARCHITECTURE.md",
-        ".uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md",
-        ".uap/core/UAP-00-003-SECURITY-BOUNDARY.md",
-        ".uap/core/UAP-00-004-EVIDENCE-AND-STATE.md",
-        ".uap/product/UAP-01-001-PRODUCT-REQUIREMENTS.md",
-        ".uap/product/UAP-01-002-PRD-PROTOTYPE-SYNC.md"
-      ],
-      "updated_at": "2026-11-12T10:50:56.641Z",
-      "hash": "1de6029bfd31d577f475e08ca1e96c3a3af0f9df8c124f8ccd12646d203ca92c",
-      "size": 11889,
-      "title": "Blocked Items",
-      "section_hints": [
-        "汇总",
-        "明细",
-        "生产授权事项"
-      ]
-    },
-    {
-      "id": "KN-a79e94a3cd",
-      "path": ".uap/reports/CROSS-PLATFORM-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        "web/src/design-system",
-        "web/src/features/wallet",
-        "docs/design-system",
-        "web/AGENTS.md"
-      ],
-      "updated_at": "2026-11-12T10:50:56.635Z",
-      "hash": "41e712f5a6a41cd040b45497a0ea7f9a30d659f1739a6032bca73ffc92183b71",
-      "size": 484,
-      "title": "Cross-Platform Report",
-      "section_hints": [
-        "平台目录探测",
-        "设计系统约束",
-        "结论"
-      ]
-    },
-    {
-      "id": "KN-578ab2dc7a",
-      "path": ".uap/reports/EVIDENCE-INDEX.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.640Z",
-      "hash": "c1cf03f5657a8465572765e0701b8779135ef9f03d813f20e329770830c5fa5d",
-      "size": 3940,
-      "title": "Evidence Index",
-      "section_hints": [
-        "汇总",
-        "逐条索引",
-        "证据契约"
-      ]
-    },
-    {
-      "id": "KN-21b0a67faf",
-      "path": ".uap/reports/EXECUTOR-COVERAGE-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/runtime/orchestrator/index.mjs",
-        ".uap/runtime/task-engine/index.mjs",
-        ".uap/runtime/evidence-engine/index.mjs",
-        ".uap/engines/product/index.mjs",
-        ".uap/engines/architecture/index.mjs",
-        ".uap/runtime/agent-runtime/index.mjs",
-        ".uap/runtime/recovery-engine/index.mjs",
-        ".uap/engines/development/index.mjs",
-        ".uap/engines/code-review/index.mjs",
-        ".uap/engines/testing/index.mjs",
-        ".uap/engines/auto-repair/index.mjs",
-        ".uap/runtime/policy-engine/index.mjs"
-      ],
-      "updated_at": "2026-11-12T10:50:56.518Z",
-      "hash": "c941d48c0c9aebb51ca3f5e483511516e0240d024ea96dc06f3a487e42a5df7f",
-      "size": 3835,
-      "title": "Executor Coverage Report",
-      "section_hints": [
-        "逐项映射（真实动态 import）",
-        "汇总"
-      ]
-    },
-    {
-      "id": "KN-3fb4a1f75e",
-      "path": ".uap/reports/FINANCIAL-INTEGRITY-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.635Z",
-      "hash": "4989e9bcd213f61fbff2ceadc1303677c279593920722deb0382bb3294f68c9c",
-      "size": 300,
-      "title": "Financial Integrity Report",
-      "section_hints": [
-        "红线声明",
-        "逐场景结果",
-        "汇总",
-        "资金数据保护"
-      ]
-    },
-    {
-      "id": "KN-cfd0ffa76f",
-      "path": ".uap/reports/H5-ENGINEERING-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.597Z",
-      "hash": "05ad8bc51d762e0e38a9b5fd562d82f6c4db7932ccf5a52d15b8d8209e5611bc",
-      "size": 364,
-      "title": "H5 Engineering Report",
-      "section_hints": [
-        "H5 独立构建探测",
-        "结论",
-        "真实数据"
-      ]
-    },
-    {
-      "id": "KN-33f8eb1279",
-      "path": ".uap/reports/IMPLEMENTATION-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.515Z",
-      "hash": "3709fe9d66ac51263c21dedbcc68f6967b942462289e6859ef034de22b64d1cd",
-      "size": 4060,
-      "title": "UAP 1.0 Implementation Report",
-      "section_hints": [
-        "结论（三项独立验收，不可互相替代）",
-        "注册表完整性",
-        "阶段执行实况",
-        "安全边界",
-        "未解决项"
-      ]
-    },
-    {
-      "id": "KN-6bdc4f91a4",
-      "path": ".uap/reports/QUALITY-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        "scripts/verify-all.sh"
-      ],
-      "updated_at": "2026-11-12T10:50:56.564Z",
-      "hash": "fef29b776088ce52ff42e946122d5fea6f68cbc0829c7330d49cb800222eb9ed",
-      "size": 333,
-      "title": "Quality Report",
-      "section_hints": [
-        "质量门禁",
-        "构建结果",
-        "验证器结果",
-        "不得降低门禁"
-      ]
-    },
-    {
-      "id": "KN-1348658fee",
-      "path": ".uap/reports/RUNTIME-TEST-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.540Z",
-      "hash": "38fb8701950b5b1ac788167c9be70c2bbed9c927f37d6f7dac5339c22ffb93bd",
-      "size": 642,
-      "title": "Runtime Test Report",
-      "section_hints": [
-        "10 个核心组件健康",
-        "UAP 自身测试",
-        "测试文件清单",
-        "中断恢复"
-      ]
-    },
-    {
-      "id": "KN-b25d20d8a2",
-      "path": ".uap/reports/SECURITY-AUDIT-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/validators/security/index.mjs"
-      ],
-      "updated_at": "2026-11-12T10:50:56.564Z",
-      "hash": "425b150217de871d355bf0f69a3ec8ce975ebe03ed5b1b5caf72a4d055f7c82a",
-      "size": 1128,
-      "title": "Security Audit Report",
-      "section_hints": [
-        "权限策略",
-        "必须拒绝的权限组",
-        "密钥形态字面量扫描",
-        "拒绝决策审计",
-        "生产授权边界"
-      ]
-    },
-    {
-      "id": "KN-e7c9367d26",
-      "path": ".uap/reports/SPECIFICATION-COMPLIANCE-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.516Z",
-      "hash": "e880f64831f90b1ec46deaa08dceb97f28f6632ac63830c47702e19d25bb40bc",
-      "size": 4561,
-      "title": "Specification Compliance Report",
-      "section_hints": [
-        "逐份规范（真实文件探测）",
-        "汇总"
-      ]
-    },
-    {
-      "id": "KN-fc99fe8e58",
-      "path": ".uap/reports/SPECIFICATION-REGISTRY-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/engines/cross-platform/index.mjs",
-        ".uap/validators/cross-platform/index.mjs",
-        ".uap/engines/delivery/index.mjs",
-        ".uap/validators/delivery/index.mjs",
-        ".uap/engines/knowledge/index.mjs",
-        ".uap/validators/evolution/index.mjs"
-      ],
-      "updated_at": "2026-11-12T10:50:56.517Z",
-      "hash": "912c65ae5366c82f1a35b462b8ac01e381ca9a851ebfe81b2da7259a1c2b3c64",
-      "size": 8050,
-      "title": "Specification Registry Report",
-      "section_hints": [
-        "6 份机器配置",
-        "37 项完整性检查",
-        "阻断发现",
-        "结论"
-      ]
-    },
-    {
-      "id": "KN-08fb256541",
-      "path": ".uap/reports/VALIDATOR-COVERAGE-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        ".uap/validators/core/index.mjs",
-        ".uap/validators/security/index.mjs",
-        ".uap/validators/product/index.mjs",
-        ".uap/validators/architecture/index.mjs",
-        ".uap/validators/agents/index.mjs",
-        ".uap/validators/development/index.mjs",
-        ".uap/validators/quality/index.mjs",
-        ".uap/validators/cross-platform/index.mjs",
-        ".uap/validators/delivery/index.mjs",
-        ".uap/validators/evolution/index.mjs"
-      ],
-      "updated_at": "2026-11-12T10:50:56.518Z",
-      "hash": "a2cfecdb9d0587281dbb7a59957b75bca62d7c2ad4430fb7f6020540bde10b1a",
-      "size": 4114,
-      "title": "Validator Coverage Report",
-      "section_hints": [
-        "逐项验证器",
-        "汇总"
-      ]
-    },
-    {
-      "id": "KN-8adda9f88a",
-      "path": ".uap/reports/WEB-ENGINEERING-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/",
-        "web/package.json",
-        "web/src"
-      ],
-      "updated_at": "2026-11-12T10:50:56.596Z",
-      "hash": "59319479e348194cd90f021c4447f4dc36a423ce1a94892b4d0ebd95dcba99e6",
-      "size": 875,
-      "title": "Web Engineering Report",
-      "section_hints": [
-        "技术栈探测",
-        "真实命令结果",
-        "前端文件统计"
-      ]
-    },
-    {
-      "id": "KN-83f4489e7c",
-      "path": ".uap/reports/WORKFLOW-VERIFICATION-REPORT.md",
-      "scope": "uap-spec",
-      "sources": [
-        ".uap/state/",
-        ".uap/reports/",
-        ".uap/evidence/"
-      ],
-      "updated_at": "2026-11-12T10:50:56.539Z",
-      "hash": "ed63d569356df7c4f8ed3fa95c23c7e5f9ddb730a5032ed6ba6b6ecec7492ab2",
-      "size": 875,
-      "title": "Workflow Verification Report",
-      "section_hints": [
-        "7 个注册工作流",
-        "端到端运行记录",
-        "汇总"
-      ]
-    },
-    {
       "id": "KN-1882ce940f",
       "path": ".uap/security/UAP-06-001-APPLICATION-SECURITY.md",
       "scope": "uap-spec",
@@ -1520,15 +1135,15 @@
         ".uap/config/validator-registry.yaml",
         ".uap/state/BASELINE.json",
         "docs/ai-specs/",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
         ".uap/engines/security/index.mjs",
         ".uap/config/workflow-registry.yaml",
         ".uap/runtime/_lib/yaml.mjs",
         ".uap/runtime/_lib/contract.mjs"
       ],
-      "updated_at": "2026-11-12T10:55:32.956Z",
-      "hash": "c27609135c907ad15bf7b91635fdf193990bf32147e1544ce1f2cd5665e3ecf4",
-      "size": 13549,
+      "updated_at": "2026-11-17T02:11:40.459Z",
+      "hash": "525c8f6b24959c761590b255af760ef2180da1a4125f0acc37101e31d3266181",
+      "size": 13959,
       "title": "UAP-06-001 — 应用安全规范",
       "section_hints": [
         "规范目标",
@@ -1677,19 +1292,19 @@
         ".uap/config/permission-policy.yaml",
         "AGENTS.md",
         "web/AGENTS.md",
-        "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
+        "docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md",
         "scripts/verify-all.sh",
         "web/src/i18n/",
         "web/src/i18n/locales/",
-        "docs/ai-specs/",
-        "scripts/quality/uter-p09-p10-boundary-check.rb",
-        "tokenkit/tokenkit",
-        "tokenkit/tokenkit/",
-        "tokenkit/..."
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "docs/design-system/35-DESIGN-GOVERNANCE-STANDARD.md",
+        ".uap/SPECIFICATION-INDEX.md"
       ],
-      "updated_at": "2026-11-12T10:48:37.645Z",
-      "hash": "60c522e6a97529bba1956f644739113b21b5d2a1380f198a714b723202c85661",
-      "size": 38806,
+      "updated_at": "2026-11-17T02:11:40.463Z",
+      "hash": "5398b27b11d12145379ba1578dba7a8b361a512a30e6aa2fee6862e99f9fab96",
+      "size": 40608,
       "title": "UAP Agent Entry Point",
       "section_hints": [
         "1. Governance Authority",
@@ -1718,9 +1333,9 @@
         "web/AGENTS.md",
         "scripts/verify-all.sh"
       ],
-      "updated_at": "2026-11-12T10:48:49.346Z",
-      "hash": "057ae37b9fe63ef27415b46116a248c4835c7e8f46414e84635f997b0d4df698",
-      "size": 3750,
+      "updated_at": "2026-11-16T00:45:03.069Z",
+      "hash": "ac079edc27ce14db7c2c5f27db1fe368655e6b97322bff250926f3a481960c92",
+      "size": 3973,
       "title": "UAP Claude Code Entry Point",
       "section_hints": [
         "Governance",
@@ -1734,40 +1349,197 @@
       ]
     },
     {
-      "id": "KN-f59276c080",
-      "path": "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md",
+      "id": "KN-5767cabc35",
+      "path": "docs/adr/README.md",
+      "scope": "documentation",
+      "sources": [],
+      "updated_at": "2026-11-17T02:11:40.464Z",
+      "hash": "421f0f93d8de7c7d530a8e26c44e02606a3c474aed58936ff453c6c0bf5fc97f",
+      "size": 839,
+      "title": "Architecture Decision Records（ADR）",
+      "section_hints": [
+        "状态定义",
+        "决策索引",
+        "维护规则"
+      ]
+    },
+    {
+      "id": "KN-feeefc9a18",
+      "path": "docs/adr/0001-uter-design-system-single-source-of-truth.md",
+      "scope": "documentation",
+      "sources": [
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "docs/design-system/registry/build.mjs",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "AGENTS.md",
+        "scripts/verify-all.sh",
+        "web/scripts/check-design-system-8.0.0.mjs"
+      ],
+      "updated_at": "2026-11-16T12:50:31.105Z",
+      "hash": "42b7a79c7a157ab58947a1703a67995a6ae588ddc716ca79d5c0c72dcb3c4941",
+      "size": 1747,
+      "title": "ADR-0001：UDS 8.0.0 作为唯一设计系统事实来源",
+      "section_hints": [
+        "背景",
+        "决策",
+        "决策依据",
+        "后果",
+        "实施与验证"
+      ]
+    },
+    {
+      "id": "KN-3ec586964f",
+      "path": "docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md",
+      "scope": "documentation",
+      "sources": [
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
+        "web/src/styles/theme.css",
+        "web/src/design-system/tokens/typography.css"
+      ],
+      "updated_at": "2026-11-17T02:11:40.464Z",
+      "hash": "bdecfa9a463e31e0a02f939fcabdc27a799c09407de62d60555a49ef760c5d2e",
+      "size": 1644,
+      "title": "ADR-0002：在获准迁移并完成验证前保留 UDS 3.0 runtime compatibility boundary",
+      "section_hints": [
+        "背景",
+        "决策",
+        "适用范围",
+        "可核验实现锚点",
+        "后果"
+      ]
+    },
+    {
+      "id": "KN-d2bab9de76",
+      "path": "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
       "scope": "design-system",
       "sources": [
-        "scripts/check-design-tokens.mjs",
-        "scripts/generate-design-showcase.mjs"
+        "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-11T09:15:10.157Z",
-      "hash": "4cc45ca71df68f839607e8bf5bc4a343b5a100602175683fc7945d7ef1b2c5cf",
-      "size": 37033,
-      "title": "UTER Design System 3.0",
+      "updated_at": "2026-11-23T08:34:47.476Z",
+      "hash": "b874dd8b98d9e1fc2dfc593247ed0b3c29769f4fd576cb6c4c8278414e864679",
+      "size": 5251,
+      "title": "UTER DESIGN SYSTEM 8.0.0 · 00 Design System Overview",
       "section_hints": [
-        "官方设计系统 · 唯一设计实施标准",
-        "0.1 唯一标准",
-        "0.2 核心设计原则",
-        "0.3 执行权限与禁止事项",
-        "1.1 字体家族",
-        "1.2 字号 Token",
-        "1.3 语义字号角色",
-        "1.4 字重"
+        "1. Overview",
+        "2. Rules",
+        "3. Tokens",
+        "4. Visual Preview",
+        "5. Interactive Preview",
+        "6. Usage",
+        "7. Do",
+        "8. Don't"
       ]
+    },
+    {
+      "id": "KN-7e45543800",
+      "path": "docs/design-system/TOKEN-MANIFEST.json",
+      "scope": "design-system",
+      "sources": [
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "web/src/design-system/tokens/uds-semantic-bridge.css",
+        "web/src/styles/index.css",
+        "web/src",
+        "web/src/styles/theme.css",
+        "docs/design-system/registry/showcase-extensions.mjs",
+        "docs/design-system/registry/render-showcase.mjs",
+        "web/src/design-system/foundations/typography.css",
+        "web/src/design-system/tokens/brand-colors.ts",
+        "web/src/components/ai-elements/code-block.tsx"
+      ],
+      "updated_at": "2026-11-23T08:34:47.267Z",
+      "hash": "c491547268715b18ae08aa59706ce38f71d9cc2786e774d718cfcbb1b814176e",
+      "size": 317799,
+      "title": null,
+      "section_hints": []
+    },
+    {
+      "id": "KN-76ffd115e4",
+      "path": "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
+      "scope": "design-system",
+      "sources": [
+        "docs/design-system/registry/build.mjs",
+        "web/scripts/check-design-system-8.0.0.mjs",
+        "web/src",
+        "docs/design-system",
+        "docs/adr",
+        "docs/product",
+        "web/scripts",
+        "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
+        "docs/design-system/audit/uds8-final-scan.json",
+        "docs/design-system/audit/uds8-final-acceptance.json",
+        "docs/design-system/audit/uds8-legacy-reference-report.json",
+        "scripts/verify-all.sh",
+        "web/e2e/visual/__screenshots__"
+      ],
+      "updated_at": "2026-11-16T13:35:40.069Z",
+      "hash": "8b2ba9d69ee0db2e4d45c738096d4b03325e61a980b70276000ed094e959a4cc",
+      "size": 3486,
+      "title": "UDS 8.0.0 最终实施与验收报告",
+      "section_hints": [
+        "1. 执行前 HEAD SHA",
+        "2. 执行后 HEAD SHA",
+        "3. 远端 main SHA",
+        "4. 工作区状态",
+        "5. 全仓文件统计",
+        "6. 规范完整性",
+        "7. Token 统计",
+        "8. 组件统计"
+      ]
+    },
+    {
+      "id": "KN-7f173aefd2",
+      "path": "docs/design-system/SHOWCASE-8.0.0.html",
+      "scope": "design-system",
+      "sources": [
+        "web/src",
+        "web/src/routes/",
+        "web/public/",
+        "docs/design-system/registry/showcase-extensions.mjs",
+        "web/src/design-system/tokens/brand-colors.ts",
+        "web/src/styles/theme.css",
+        "docs/design-system/registry/render-showcase.mjs",
+        "web/src/design-system/tokens/uds-semantic-bridge.css",
+        "web/visual-regression/uds8/",
+        "web/src/components/ai-elements/code-block.tsx",
+        "web/src/design-system/foundations/typography.css",
+        "web/src/styles/index.css",
+        "web/src/components/json-code-editor.tsx",
+        "web/src/components/json-editor.tsx",
+        "web/src/components/ui/markdown.tsx"
+      ],
+      "updated_at": "2026-11-23T08:34:48.613Z",
+      "hash": "10e0fa54ac097b096d14bc08f5ed4bafe93f93fb2f01e83ea6c6add0d215a429",
+      "size": 914163,
+      "title": null,
+      "section_hints": []
     }
   ],
+  "historical_document_count": 64,
+  "historical_roots_excluded": [
+    ".uap/reports/",
+    ".uap/evidence/",
+    ".uap/state/"
+  ],
+  "historical_policy": "reports, evidence and state snapshots remain immutable historical records and are not active knowledge sources",
   "sources_scanned": [
-    ".uap/**/*.md",
+    ".uap/**/*.md (excluding reports/evidence/state)",
     "AGENTS.md",
     "CLAUDE.md",
-    "docs/design-system/UTER-DESIGN-SYSTEM-3.0.md"
+    "docs/adr/README.md",
+    "docs/adr/0001-uter-design-system-single-source-of-truth.md",
+    "docs/adr/0002-preserve-uds-3-runtime-compatibility-boundary.md",
+    "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+    "docs/design-system/TOKEN-MANIFEST.json",
+    "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
+    "docs/design-system/SHOWCASE-8.0.0.html"
   ],
   "retired_runtime_dependency_scan": {
-    "scanned_file_count": 419,
+    "scanned_file_count": 197,
     "runtime_dependency_count": 0,
     "runtime_dependencies": [],
-    "retirement_notes_ignored": 28,
+    "retirement_notes_ignored": 14,
     "ignored_note_samples": [
       {
         "file": ".uap/README.md",
@@ -1776,7 +1548,7 @@
       },
       {
         "file": ".uap/SPECIFICATION-INDEX.md",
-        "line": 147,
+        "line": 165,
         "snippet": "| `independence.no_retired_governance_refs` | PASS | AES/UAES references in configs = 0 |"
       },
       {
@@ -1786,40 +1558,64 @@
       },
       {
         "file": ".uap/engines/knowledge/index.mjs",
-        "line": 19,
+        "line": 20,
         "snippet": "const RETIRED = ['AES', 'UAES', 'docs/ai-specs', 'uaes/standards'];"
       },
       {
         "file": ".uap/engines/knowledge/index.mjs",
-        "line": 95,
+        "line": 160,
         "snippet": "const hasRetired = RETIRED.some((k) => line.includes(k)) || /\\b(?:AES|UAES)\\b/.test(line);"
       },
       {
-        "file": ".uap/evidence/UAP-EV-20261112105638-a173bc77.json",
-        "line": 22,
-        "snippet": "\"summary\": \"development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析="
-      },
-      {
         "file": ".uap/quality/UAP-05-001-QUALITY-ENGINEERING.md",
-        "line": 43,
+        "line": 45,
         "snippet": "- 环境与工具链基线：`.uap/state/BASELINE.json` 记录 Go `go1.27.4`、Node `v22.22.2`、Bun `1.4.2`、Python `3.13.12` 与 9 个 CI workflow，其 "
       },
       {
-        "file": ".uap/reports/IMPLEMENTATION-REPORT.md",
-        "line": 59,
-        "snippet": "| independence.no_retired_governance_refs | PASS | AES/UAES references in configs = 0 |"
+        "file": ".uap/runtime/_lib/config.mjs",
+        "line": 246,
+        "snippet": "// 10. Zero runtime dependency on retired AES/UAES governance."
       },
       {
-        "file": ".uap/reports/SPECIFICATION-REGISTRY-REPORT.md",
-        "line": 58,
-        "snippet": "| independence.no_retired_governance_refs | PASS | AES/UAES references in configs = 0 |"
+        "file": ".uap/runtime/_lib/config.mjs",
+        "line": 248,
+        "snippet": "const retiredRefs = (configText.match(/\\b(?:AES|UAES|uaes|docs\\/ai-specs|uaes\\/standards)\\b/g) || []);"
       },
       {
-        "file": ".uap/reports/VALIDATION-RESULTS.json",
-        "line": 1626,
-        "snippet": "\"summary\": \"development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析="
+        "file": ".uap/runtime/_lib/config.mjs",
+        "line": 250,
+        "snippet": "`AES/UAES references in configs = ${retiredRefs.length}`);"
+      },
+      {
+        "file": ".uap/security/UAP-06-001-APPLICATION-SECURITY.md",
+        "line": 48,
+        "snippet": "- 环境基线：`.uap/state/BASELINE.json` 记录 9 个 CI workflow 与工具链（Go `go1.27.4` / Node `v22.22.2` / Bun `1.4.2`）；`docs/ai-specs/"
       }
     ],
     "policy": "spec prose saying \"retired\" is not a dependency; only command/import/path references count"
+  },
+  "legacy_design_system_path_scan": {
+    "scanned_file_count": 251,
+    "active_reference_count": 0,
+    "active_references": [],
+    "historical_tool_references": [
+      {
+        "file": ".uap/tools/generate-baseline-report.mjs",
+        "line": 152,
+        "classification": "HISTORICAL_ONLY",
+        "reason": "regenerates the immutable 2026-11-13 baseline audit; the embedded path is captured pre-migration working-tree evidence, never current design-system authority"
+      }
+    ],
+    "historical_tool_allowlist": [
+      ".uap/tools/generate-baseline-report.mjs"
+    ],
+    "historical_baseline_reference": {
+      "file": ".uap/state/BASELINE.json",
+      "field": "pre_existing_governance.design_system",
+      "baseline_id": "UAP-BASELINE-2026-11-12T10-19-06Z",
+      "captured_at": "2026-11-12T10:19:06Z",
+      "classification": "HISTORICAL_ONLY_NOT_CURRENT_AUTHORITY"
+    },
+    "policy": "active UAP/docs sources must not reference the retired 3.0 design-system file; the immutable 2026-11-12 baseline reference is retained as historical evidence only"
   }
 }

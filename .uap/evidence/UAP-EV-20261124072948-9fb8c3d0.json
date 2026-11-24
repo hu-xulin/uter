@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261124072948-9fb8c3d0",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:29:48.772Z",
+  "started_at": "2026-11-24T07:29:48.772Z",
+  "finished_at": "2026-11-24T07:29:48.772Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124072608-511650df",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124072608-511650df",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.application_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.application_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.application_integrity 实检: vulnerability_scan=PASS(node 子进程上下文感知扫描 46 个 UAP .mjs: 真实危险调用=0 处(eval/new Function/execSync/child_process.exec 及经 exec 原语执行的破坏性 shell 片段); 良性命中(注释/检测正则/非执行字符串, 已逐条留痕)=3 处; 扫描器自检(危险 fixture 必须命中+良性 fixture 必须零命中)=true; exit_code=0; 未运行外部 CVE 库(离线), 不声称无 CVE); authz=PASS(service/authz/*.go=13 个; router/ 存在=true; AGENTS.md 含 OWASP/Authentication Security=true); secret_scan=PASS(子进程复跑 redact(): token/secret 均被 REDACTED=true; exit_code=0; BASELINE 保护 .env/*.db=true; policy secret_export=deny) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12070 个 | 真实运行 redact() 与 .mjs 危险模式扫描两个子进程; authz 基于真实 service/authz 代码与 AGENTS.md OWASP 约束; 全程只读/模拟",
+  "content_hash": "79058baa29c663d1406b7607c41af97f3a1e5b01c1aae67a585e63f311732954"
+}

@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261124072947-74895b80",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:29:47.291Z",
+  "started_at": "2026-11-24T07:29:47.291Z",
+  "finished_at": "2026-11-24T07:29:47.291Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124072608-511650df",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124072608-511650df",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.dependency_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.dependency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.unused_dependencies",
+      "message": "unused_dependencies: Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部={\"issues\":[{\"file\":\"src/features/wallet/components/wallet-stats-card.tsx\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[{\"name\":\"src/features/wallet/components/wallet-stats-card.tsx\"}],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/api.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[{\"name\":\"getUterAPIPricingGroups\",\"line\":259,\"col\":23,\"pos\":7433}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/wallet/types.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[{\"name\":\"UserWalletData\",\"line\":263,\"col\":18,\"pos\":7118}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/constants.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[[{\"name\":\"CHANNEL_TYPE_UTER_API\",\"line\":32,\"col\":14,\"pos\":1337},{\"name\":\"CHANNEL_TYPE_NEW_API\",\"line\":34,\"col\":14,\"pos\":1419}]],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true"
+    }
+  ],
+  "summary": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=FAIL(Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部={\"issues\":[{\"file\":\"src/features/wallet/components/wallet-stats-card.tsx\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[{\"name\":\"src/features/wallet/components/wallet-stats-card.tsx\"}],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/api.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[{\"name\":\"getUterAPIPricingGroups\",\"line\":259,\"col\":23,\"pos\":7433}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/wallet/types.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[{\"name\":\"UserWalletData\",\"line\":263,\"col\":18,\"pos\":7118}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/channels/constants.ts\",\"binaries\":[],\"catalog\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[[{\"name\":\"CHANNEL_TYPE_UTER_API\",\"line\":32,\"col\":14,\"pos\":1337},{\"name\":\"CHANNEL_TYPE_NEW_API\",\"line\":34,\"col\":14,\"pos\":1419}]],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12070 个 | 真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖",
+  "content_hash": "0fa1a53d90ce16a10be38c0c8f012895b85b2145d2b2d4a6c8c459c20742cee4"
+}

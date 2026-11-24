@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261124074426-945a77cd",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:44:26.780Z",
+  "started_at": "2026-11-24T07:44:26.780Z",
+  "finished_at": "2026-11-24T07:44:26.780Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.recovery_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.recovery_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.recovery_integrity 实检: state_persistence=PASS(BASELINE.json 含 workspace/git/toolchain=true; .uap/state 目录存在=true); interruption_recovery=PASS(recovery-engine 导出 导出 component,health,execute 齐全; WAITING_RECOVERY 可迁移=[QUEUED,FAILED,BLOCKED,CANCELLED] (含 QUEUED/FAILED=true)); idempotency=PASS(子进程复验终态(SUCCEEDED/CANCELLED 无后继)=true 无自环=true; exit_code=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12138 个 | 真实读取 BASELINE.json + 动态 import recovery-engine 导出 + node 子进程复验状态机幂等/终态; 不调用有写副作用的 recovery health()",
+  "content_hash": "4dc1e623701c0c324475bd7fdaccf7ffca153433ab30fd68a1ca3b1dbeaac4e3"
+}

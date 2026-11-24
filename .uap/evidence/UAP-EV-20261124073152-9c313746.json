@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261124073152-9c313746",
+  "kind": "cli_command",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:31:52.301Z",
+  "started_at": "2026-11-24T07:31:52.115Z",
+  "finished_at": "2026-11-24T07:31:52.301Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124073152-24d4391a",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "c1e3df1db8886c037b5cfc62816e88fd6b1800f6b5abcaa052af10c601f53ef1",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124073152-24d4391a",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "c1e3df1db8886c037b5cfc62816e88fd6b1800f6b5abcaa052af10c601f53ef1",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap release check",
+  "exit_code": 1,
+  "duration_ms": 186,
+  "inputs": "{\"argv\":[\"release\",\"check\"],\"cwd\":\"/Users/lincolnhu/uter\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "command_not_passed",
+      "message": "release check BLOCKED: 3 gates not satisfied (full_validation_all_pass, no_open_critical_defects, final_status_claims_success)"
+    }
+  ],
+  "summary": "release check BLOCKED: 3 gates not satisfied (full_validation_all_pass, no_open_critical_defects, final_status_claims_success)",
+  "content_hash": "1120c1f921532ce5e6642aea2d41ef05910d853c9d3ab469c665beb3a0e71426"
+}

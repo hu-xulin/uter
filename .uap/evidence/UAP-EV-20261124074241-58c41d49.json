@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261124074241-58c41d49",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:42:41.013Z",
+  "started_at": "2026-11-24T07:42:41.013Z",
+  "finished_at": "2026-11-24T07:42:41.013Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124074231-c124a37e",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "20d7dc3c81723bc5f6466aa46a73a59a05201f0da261ff53eb5049b9c084e571",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.financial_integrity_validator",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.financial_integrity_validator\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.financial_integrity_validator 实检: ledger_consistency=PASS(simulated_only=true; 账本/对账字段=true; 含真实结果(数值 exit_code/布尔)=true); idempotency=PASS(幂等/重复回调字段=true; 含真实结果=true); concurrency=PASS(并发字段=true; 含真实结果=true); recovery=PASS(恢复/对账字段=true; 含真实结果=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12127 个 | simulated_only=true; 仅校验模拟数据的幂等/并发/重复回调/对账结果, 绝不声称真实生产资金验证; 未发起任何真实支付/退款",
+  "content_hash": "a5846a3899cca5b4b29513086b4f9e02c01eb7643dc61470e33db10c889b5a88"
+}

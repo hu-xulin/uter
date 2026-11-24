@@ -1,6 +1,6 @@
 # Quality Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-16T12:10:58.578Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-24T07:46:09.875Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 质量门禁
@@ -11,9 +11,9 @@
 
 | 项目 | 结果 |
 | --- | --- |
-| UAP 模块语法检查 | 182 个，失败 0 |
+| UAP 模块语法检查 | 188 个，失败 0 |
 | bun run build:check | exit 0 |
-| go build ./... | exit 0 |
+| go build ./... | exit 1 |
 | bun run typecheck | exit 0 |
 | go vet ./... | exit 0 |
 | bun run lint:design:strict | exit 0 |

@@ -1,9 +1,9 @@
 {
-  "execution_id": "UAP-RREPAIR-1794983912352-1230f4",
+  "execution_id": "UAP-RREPAIR-1795505103786-8783eb",
   "task_id": "UAP-BOUNDARY-TMP",
-  "started_at": "2026-11-18T06:38:32.352Z",
-  "finished_at": "2026-11-18T06:38:38.830Z",
-  "git_head": "4e79c44f17206d5ec98d3eb597cabf679c2079fd",
+  "started_at": "2026-11-24T07:25:03.786Z",
+  "finished_at": "2026-11-24T07:25:09.971Z",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
   "status": "BLOCKED",
   "attempts": 0,
   "max_attempts": 5,
@@ -20,28 +20,28 @@
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": "git status --short -- common/request_path.go 为空",
-      "at": "2026-11-18T06:38:32.418Z"
+      "at": "2026-11-24T07:25:03.852Z"
     },
     {
       "stage": "发现问题",
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": "common.CanonicalUpstreamPath 归一化站内 /pg/* 别名时未剥离尾斜杠，/pg/chat/completions/ 产出 /v1/chat/completions/，而下游 AdvancedCustom 路由匹配 (relaykit/dto/channel_settings.go:437) 使用 configuredPath == requestPath 精确相等比对，导致按 /v1/chat/completions 登记的渠道被误判为不支持。",
-      "at": "2026-11-18T06:38:32.422Z"
+      "at": "2026-11-24T07:25:03.854Z"
     },
     {
       "stage": "定位业务模块",
       "agent_id": "uap-development-agent",
       "status": "PASS",
       "detail": "common/request_path.go",
-      "at": "2026-11-18T06:38:32.422Z"
+      "at": "2026-11-24T07:25:03.854Z"
     },
     {
       "stage": "阻断",
       "agent_id": "uap-orchestrator",
       "status": "BLOCKED",
       "detail": "复现测试在修复前已通过，缺陷不成立或已被修复，终止以免制造假闭环",
-      "at": "2026-11-18T06:38:38.830Z"
+      "at": "2026-11-24T07:25:09.971Z"
     }
   ],
   "commands": [
@@ -53,8 +53,8 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 24,
-      "stdout": "4e79c44f17206d5ec98d3eb597cabf679c2079fd\n",
+      "duration_ms": 16,
+      "stdout": "33def7a5a7585779965e85e5854596c4ca7f79e0\n",
       "stderr": "",
       "phase": "baseline"
     },
@@ -68,7 +68,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 42,
+      "duration_ms": 49,
       "stdout": "",
       "stderr": "",
       "phase": "baseline"
@@ -84,8 +84,8 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 6407,
-      "stdout": "ok  \tgithub.com/uter-ai/uter/model\t1.936s\n",
+      "duration_ms": 6117,
+      "stdout": "ok  \tgithub.com/uter-ai/uter/model\t1.864s\n",
       "stderr": "",
       "phase": "reproduction_before"
     }
@@ -116,8 +116,8 @@
     ],
     "exit_code": 0,
     "timed_out": false,
-    "duration_ms": 6407,
-    "stdout": "ok  \tgithub.com/uter-ai/uter/model\t1.936s\n",
+    "duration_ms": 6117,
+    "stdout": "ok  \tgithub.com/uter-ai/uter/model\t1.864s\n",
     "stderr": ""
   },
   "root_cause": null,

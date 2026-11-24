@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261124072947-19c79f43",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-24T07:29:47.724Z",
+  "started_at": "2026-11-24T07:29:47.724Z",
+  "finished_at": "2026-11-24T07:29:47.724Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124072608-511650df",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124072608-511650df",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "0da03767df96cd30dc71cf5661cd54fad427aa2af76af726cc07dd9b1f2256ad",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.test_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.test_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.test_integrity 实检: test_execution=PASS(TEST-RUNS.json 29 条; 每条含 command 字符串=true; exit_code 均为数值=true); failure_propagation=PASS(非零 exit_code 记录=6 条; 被伪装为 PASS 的=0 条; 非零 exit_code 均如实保留=true); evidence=PASS(含证据引用(evidence_refs/evidence_id/evidence)的记录=29/29) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12070 个 | 逐条校验 command + 数值型 exit_code + 失败不被吞 + 证据引用",
+  "content_hash": "541c648b32ab32b20ef7e853b8434c15e49dc5fe8a22e3716f9ce841eb44effa"
+}

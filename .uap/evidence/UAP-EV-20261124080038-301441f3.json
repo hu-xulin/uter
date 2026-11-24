@@ -1,0 +1,48 @@
+{
+  "evidence_id": "UAP-EV-20261124080038-301441f3",
+  "kind": "requirement_behavior_verification",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [
+    "UAP-06-002"
+  ],
+  "requirement_ids": [
+    "UAP-06-002-REQ-004",
+    "UAP-06-002-REQ-007",
+    "UAP-06-002-REQ-002",
+    "UAP-06-002-REQ-003",
+    "UAP-06-002-REQ-006"
+  ],
+  "recorded_at": "2026-11-24T08:00:38.861Z",
+  "started_at": "2026-11-24T08:00:38.861Z",
+  "finished_at": "2026-11-24T08:00:38.861Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261124075950-88f2cace",
+    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+    "worktree_fingerprint": "91b02a358cb399bed54d1be33d48ccf99aa10f064176cd1b5ee09c42e8f12833",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261124075950-88f2cace",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "91b02a358cb399bed54d1be33d48ccf99aa10f064176cd1b5ee09c42e8f12833",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "go test ./service/paymentsandbox/ -count=1 -v -run TestDuplicateNotificationIsIdempotent|TestSignatureVerificationRejectsTampered|TestOrderQueryFourState|TestRefundStatusIdempotent|TestAmountSnapshotMismatchRejected",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"assertions\":[{\"name\":\"TestDuplicateNotificationIsIdempotent\",\"required_output\":[\"--- PASS: TestDuplicateNotificationIsIdempotent\"],\"found\":true},{\"name\":\"TestSignatureVerificationRejectsTampered\",\"required_output\":[\"--- PASS: TestSignatureVerificationRejectsTampered\"],\"found\":true},{\"name\":\"TestOrderQueryFourState\",\"required_output\":[\"--- PASS: TestOrderQueryFourState\"],\"found\":true},{\"name\":\"TestRefundStatusIdempotent\",\"required_output\":[\"--- PASS: TestRefundStatusIdempotent\"],\"found\":true},{\"name\":\"TestAmountSnapshotMismatchRejected\",\"required_output\":[\"--- PASS: TestAmountSnapshotMismatchRejected\"],\"found\":true}]}",
+  "stdout": "=== RUN   TestSignatureVerificationRejectsTampered\n=== RUN   TestSignatureVerificationRejectsTampered/changed_provider_amount\n=== RUN   TestSignatureVerificationRejectsTampered/changed_trade_no\n=== RUN   TestSignatureVerificationRejectsTampered/missing_signature\n=== RUN   TestSignatureVerificationRejectsTampered/garbage_signature\n--- PASS: TestSignatureVerificationRejectsTampered (0.07s)\n    --- PASS: TestSignatureVerificationRejectsTampered/changed_provider_amount (0.00s)\n    --- PASS: TestSignatureVerificationRejectsTampered/changed_trade_no (0.00s)\n    --- PASS: TestSignatureVerificationRejectsTampered/missing_signature (0.00s)\n    --- PASS: TestSignatureVerificationRejectsTampered/garbage_signature (0.00s)\n=== RUN   TestDuplicateNotificationIsIdempotent\n--- PASS: TestDuplicateNotificationIsIdempotent (0.20s)\n=== RUN   TestOrderQueryFourState\n--- PASS: TestOrderQueryFourState (0.13s)\n=== RUN   TestRefundStatusIdempotent\n--- PASS: TestRefundStatusIdempotent (0.19s)\n=== RUN   TestAmountSnapshotMismatchRejected\n--- PASS: TestAmountSnapshotMismatchRejected (0.09s)\nPASS\nok  \tgithub.com/uter-ai/uter/service/paymentsandbox\t2.606s\n",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "behaviour run bhv.paymentsandbox: 5/5 distinct assertions observed in real stdout",
+  "content_hash": "16206c513c43332b1ee87a7eb73260bb2f9262d7d429c5a6639ed04d4ab4b226"
+}

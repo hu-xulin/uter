@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-11-16T12:08:56.020Z",
-  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
-  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
-  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
-  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
+  "generated_at": "2026-11-24T07:34:03.478Z",
+  "execution_id": "UAP-EXEC-20261124073403-ea5fd56a",
+  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "worktree_fingerprint": "83e076a2f426ded9cfa771b89fc43d4965566216617a0ac0730db5e6c0c2e200",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "commit_sha": "33def7a5a7585779965e85e5854596c4ca7f79e0",
   "status_model": "UAP-TEST-STATUS-1.0",
   "command": "uap build (frontend build:check, go build, typecheck, go vet, design lint, artifact verification)",
   "environment": {
     "platform": "darwin",
-    "node": "v24.21.0",
+    "node": "v22.22.2",
     "go": "go1.27.x",
     "cwd": "/Users/lincolnhu/uter"
   },
-  "uap_modules_checked": 182,
+  "uap_modules_checked": 188,
   "syntax_failures": [],
   "commands": [
     {
@@ -23,27 +23,27 @@
       "label": "bun run build:check (frontend production build)",
       "exit_code": 0,
       "status": "PASS",
-      "duration_ms": 44407,
+      "duration_ms": 45093,
       "timed_out": false,
-      "stdout_tail": "       2119.8 kB    560.7 kB\ndist/static/js/async/95143.71d2a2a7a8.js                                2147.8 kB    478.0 kB\ndist/static/js/async/18496.95a0afdb1b.js                                3164.3 kB    374.1 kB\ndist/static/js/async/63898.ba92c6f918.js                                5088.1 kB    1968.2 kB\ndist/static/js/async/89197.5ee5e37965.js                                5371.6 kB    1203.9 kB\ndist/static/js/async/79926.228d6236ae.js                                6827.3 kB    2750.5 kB\n\n                                                               Total:   80615.2 kB   27109.4 kB\n\n",
-      "stderr_tail": "file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-public-routes-render.test.tsx\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\nWarning: Route file \"/Users/lincolnhu/uter/web/src/routes/__tests__/root-setup-status.test.ts\" does not export a Route. This file will not be included in the route tree.\n\nIf this file is not intended to be a route, you can exclude it using one of these options:\n  1. Rename the file to \"/Users/lincolnhu/uter/web/src/routes/__tests__/-root-setup-status.test.ts\" (prefix with \"-\")\n  2. Use 'routeFileIgnorePattern' in your config to match this file\n\nCurrent configuration:\n  routeFileIgnorePrefix: \"-\"\n  routeFileIgnorePattern: undefined\n"
+      "stdout_tail": "       2119.8 kB    560.7 kB\ndist/static/js/async/95143.71d2a2a7a8.js                                2147.8 kB    478.0 kB\ndist/static/js/async/18496.95a0afdb1b.js                                3164.3 kB    374.1 kB\ndist/static/js/async/63898.ba92c6f918.js                                5088.1 kB    1968.2 kB\ndist/static/js/async/89197.5ee5e37965.js                                5371.6 kB    1203.9 kB\ndist/static/js/async/79926.228d6236ae.js                                6827.3 kB    2750.5 kB\n\n                                                               Total:   79725.0 kB   27123.2 kB\n\n",
+      "stderr_tail": "$ node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/\n"
     },
     {
       "command": "go build ./...",
       "label": "go build ./...",
-      "exit_code": 0,
-      "status": "PASS",
-      "duration_ms": 30225,
+      "exit_code": 1,
+      "status": "FAIL",
+      "duration_ms": 8480,
       "timed_out": false,
       "stdout_tail": "",
-      "stderr_tail": ""
+      "stderr_tail": "# github.com/uter-ai/uter/model\nmodel/pricing.go:870:3: declared and not used: channelPriceApplied\n"
     },
     {
       "command": "bun run typecheck",
       "label": "bun run typecheck",
       "exit_code": 0,
       "status": "PASS",
-      "duration_ms": 8635,
+      "duration_ms": 10799,
       "timed_out": false,
       "stdout_tail": "",
       "stderr_tail": "$ tsgo -b\n"
@@ -53,7 +53,7 @@
       "label": "go vet ./...",
       "exit_code": 0,
       "status": "PASS",
-      "duration_ms": 7523,
+      "duration_ms": 39710,
       "timed_out": false,
       "stdout_tail": "",
       "stderr_tail": ""
@@ -63,9 +63,9 @@
       "label": "bun run lint:design:strict",
       "exit_code": 0,
       "status": "PASS",
-      "duration_ms": 2663,
+      "duration_ms": 2608,
       "timed_out": false,
-      "stdout_tail": "design-tokens: 通过。扫描 1276 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：631 处\n",
+      "stdout_tail": "design-tokens: 通过。扫描 1336 个文件，字号 / 行高 / 圆角 / 投影 / 颜色均符合规范。\n\n浮层投影（规范 §8 允许，不计入违规）：20 处\nToken 定义处色值（颜色的落点，不计入违规）：638 处\n",
       "stderr_tail": "$ node scripts/check-design-tokens.mjs --strict\n"
     },
     {
@@ -73,44 +73,48 @@
       "label": "artifact verification",
       "exit_code": 0,
       "status": "PASS",
-      "stdout_tail": "files=2872",
+      "stdout_tail": "files=2915",
       "duration_ms": 0
     }
   ],
   "quality_gate": null,
   "counts": {
     "total": 6,
-    "PASS": 6,
-    "FAIL": 0,
+    "PASS": 5,
+    "FAIL": 1,
     "BLOCKED": 0,
     "SKIPPED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 6,
-  "pass": 6,
-  "fail": 0,
-  "exit_code": 0,
-  "status": "PASS",
+  "pass": 5,
+  "fail": 1,
+  "exit_code": 1,
+  "status": "FAIL",
   "artifact": {
     "web_dist_exists": true,
     "web_dist_index_exists": true,
-    "web_dist_file_count": 2872,
+    "web_dist_file_count": 2915,
     "artifact_real": true,
     "frontend_built_this_run": true
   },
   "moved_artifacts": [
     {
       "artifact": "web/dist",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1794830841891"
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-web-dist-before-build-1795505536174"
+    },
+    {
+      "artifact": ".quality/.state/head-tree",
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter--quality--state-head-tree-before-build-1795505536175"
     },
     {
       "artifact": "tsgo-cache/tsconfig.app.tsbuildinfo",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-app-tsbuildinfo-before-build-1794830841892"
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-app-tsbuildinfo-before-build-1795505536175"
     },
     {
       "artifact": "tsgo-cache/tsconfig.node.tsbuildinfo",
-      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-node-tsbuildinfo-before-build-1794830841892"
+      "moved_to": "/var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uter-tsgo-cache-tsconfig-node-tsbuildinfo-before-build-1795505536175"
     }
   ]
 }
