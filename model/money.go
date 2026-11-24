@@ -32,6 +32,14 @@ func MoneyFromFloat(value float64) Money {
 	return MoneyFromDecimal(decimal.NewFromFloat(value))
 }
 
+// MulDecimal multiplies the amount by factor using exact decimal arithmetic.
+// It exists so callers such as the automatic sale-markup path never have to
+// round-trip through Float64(), which would silently drop precision on tiny
+// prices (e.g. 0.00000001) and on repeated syncs.
+func (m Money) MulDecimal(factor decimal.Decimal) Money {
+	return MoneyFromDecimal(m.Decimal().Mul(factor))
+}
+
 func MoneyFromFloatPtr(value *float64) *Money {
 	if value == nil {
 		return nil

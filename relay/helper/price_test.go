@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/uter-ai/uter/model"
@@ -1136,7 +1137,7 @@ func TestModelPriceHelperUsesRequestRegionIdentity(t *testing.T) {
 		output := item.input * 2
 		_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
 			ChannelId: 7, Provider: "alibaba-bailian", Region: item.region, ModelName: "regional-model",
-			Currency: "USD", Source: "bailian-official", FetchedAt: 100,
+			Currency: "USD", Source: "bailian-official", FetchedAt: time.Now().Unix(),
 		}})
 		require.NoError(t, err)
 		require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{

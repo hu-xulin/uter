@@ -48,11 +48,17 @@ func channelPriceNotConfiguredError(c *gin.Context, channelId int, modelName str
 // channelPriceIdentityError blocks a charge whose channel has several region
 // or deployment prices that this request cannot be matched to.
 func channelPriceIdentityError(c *gin.Context, channelId int, modelName, reason string) error {
-	return errors.New(i18n.T(c, i18n.MsgRelayChannelPriceIdentityUnmatched, map[string]any{
+	message := i18n.T(c, i18n.MsgRelayChannelPriceIdentityUnmatched, map[string]any{
 		"Channel": channelId,
 		"Model":   modelName,
 		"Reason":  reason,
-	}))
+	})
+	// The localized message explains the failure to the user; the stable code
+	// stays in the error so operators and audit logs can classify it.
+	if code := strings.TrimSpace(reason); code != "" && !strings.Contains(message, code) {
+		message += " (" + code + ")"
+	}
+	return errors.New(message)
 }
 
 // relayChannelPricingMode reads the explicit pricing contract attached to the

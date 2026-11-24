@@ -513,12 +513,13 @@ var (
 )
 
 type channelPricingCacheEntry struct {
-	pricing   *ChannelBillingPricing
-	status    string
-	lifecycle string
-	reason    string
-	exists    bool
-	expiresAt time.Time
+	pricing        *ChannelBillingPricing
+	status         string
+	lifecycle      string
+	reason         string
+	billableReason string
+	exists         bool
+	expiresAt      time.Time
 }
 
 const channelPricingCacheTTL = 30 * time.Second
@@ -1740,28 +1741,28 @@ func loadChannelPricingRows(channelId int, modelName string) ([]ChannelModelPric
 // loadChannelPricingFor resolves one identity and caches the decision. A
 // missing row and an unmatched identity are cached too, so hot billing paths
 // do not query the database repeatedly while the configuration stays broken.
-func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPricing, string, string, bool, string) {
+func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPricing, string, string, bool, string, string) {
 	identity = normalizePricingIdentity(identity)
 	if DB == nil || identity.ChannelId <= 0 || identity.ModelName == "" {
-		return nil, "", "", false, ""
+		return nil, "", "", false, "", ""
 	}
 	key := channelPricingCacheKey(identity)
 	channelPricingCacheMu.RLock()
 	if entry, ok := channelPricingCache[key]; ok && time.Now().Before(entry.expiresAt) {
 		channelPricingCacheMu.RUnlock()
-		return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason
+		return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason, entry.billableReason
 	}
 	channelPricingCacheMu.RUnlock()
 
 	rows, err := loadChannelPricingRows(identity.ChannelId, identity.ModelName)
 	if err != nil {
-		return nil, "", "", false, ""
+		return nil, "", "", false, "", ""
 	}
 	if len(rows) == 0 {
 		channelPricingCacheMu.Lock()
 		channelPricingCache[key] = channelPricingCacheEntry{expiresAt: time.Now().Add(channelPricingCacheTTL)}
 		channelPricingCacheMu.Unlock()
-		return nil, "", "", false, ""
+		return nil, "", "", false, "", ""
 	}
 	row, reason := selectChannelPricingRow(rows, identity)
 	entry := channelPricingCacheEntry{
@@ -1773,8 +1774,13 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 		channelPricingCacheMu.Lock()
 		channelPricingCache[key] = entry
 		channelPricingCacheMu.Unlock()
-		return nil, "", "", true, reason
+		return nil, "", "", true, reason, ""
 	}
+	// Compute eligibility through the same shared gate the audit page uses,
+	// from the raw row. The channel's explicit pricing mode is enforced at the
+	// call boundary (ChannelScopedPricingRequired); here the row-level gate
+	// covers status, lifecycle, parseability and freshness.
+	entry.billableReason = ChannelPricingBillableReason(*row, "", time.Now())
 	entry.status = row.PricingStatus
 	entry.lifecycle = row.LifecycleStatus
 	if row.PricingStatus == ChannelPricingStatusConfigured && row.InternalPricing != "" {
@@ -1810,7 +1816,7 @@ func loadChannelPricingFor(identity ChannelPricingIdentity) (*ChannelBillingPric
 	channelPricingCacheMu.Lock()
 	channelPricingCache[key] = entry
 	channelPricingCacheMu.Unlock()
-	return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason
+	return entry.pricing, entry.status, entry.lifecycle, entry.exists, entry.reason, entry.billableReason
 }
 
 // ApplyChannelLifecycleSnapshot marks the models visible in a complete upstream
@@ -1932,6 +1938,53 @@ func channelLifecycleBillable(lifecycle string) bool {
 	}
 }
 
+// ChannelPricingBillableReason is the shared, DB-free billing-eligibility gate.
+// It mirrors ResolveEffectiveChannelPricingFor's decision for one stored row so
+// the admin audit page and the Relay billing path cannot disagree: both call
+// this function. It returns "" only when the row would actually be charged.
+//
+// The reason codes are stable and auditable:
+//   - PENDING_MODE / GLOBAL_LEGACY_MODE: explicit channel pricing mode
+//   - STATUS_NOT_CONFIGURED: official-only / needs-review rows never bill
+//   - LIFECYCLE_NOT_BILLABLE: disabled / not-found / sync-failed models
+//   - INTERNAL_PRICING_INVALID: JSON or expression cannot be normalized
+//   - PRICE_EXPIRED: an auto-derived price's fetched_at is older than the
+//     freshness window. Operator, batch and approved prices are explicit
+//     decisions and do not expire when the upstream catalog goes stale.
+func ChannelPricingBillableReason(row ChannelModelPricing, pricingMode string, now time.Time) string {
+	switch strings.ToUpper(strings.TrimSpace(pricingMode)) {
+	case dto.ChannelPricingModeScopedPending:
+		return "PENDING_MODE"
+	case dto.ChannelPricingModeGlobalLegacy:
+		return "GLOBAL_LEGACY_MODE"
+	}
+	if row.PricingStatus != ChannelPricingStatusConfigured {
+		return "STATUS_NOT_CONFIGURED"
+	}
+	if !channelLifecycleBillable(row.LifecycleStatus) {
+		return "LIFECYCLE_NOT_BILLABLE"
+	}
+	if strings.TrimSpace(row.InternalPricing) == "" {
+		return "INTERNAL_PRICING_INVALID"
+	}
+	var internal ChannelInternalPricing
+	if err := common.UnmarshalJsonStr(row.InternalPricing, &internal); err != nil {
+		return "INTERNAL_PRICING_INVALID"
+	}
+	if _, err := NormalizeChannelInternalPricing(&internal); err != nil {
+		return "INTERNAL_PRICING_INVALID"
+	}
+	autoDerived := IsAutoDerivedPricingRowFor(row.PricingOwner, row.PricingSource, row.InternalPricing)
+	if autoDerived && row.FetchedAt > 0 && now.Sub(time.Unix(row.FetchedAt, 0)) > upstreamPricingFreshnessWindow {
+		return "PRICE_EXPIRED"
+	}
+	return ""
+}
+
+// upstreamPricingFreshnessWindow matches the parity audit's freshness window,
+// keeping "stale" semantics identical between the audit page and billing.
+const upstreamPricingFreshnessWindow = 48 * time.Hour
+
 // EffectiveChannelPricing is the single authoritative resolution of one
 // (channel, model) billing price. It collapses the two lookups that billing
 // used to perform separately (ResolveChannelBillingPricing + ChannelPricingState)
@@ -1958,13 +2011,18 @@ type EffectiveChannelPricing struct {
 // threaded in when the multimodal price schema lands (P2); today the durable
 // key is exactly (channel_id, model_name).
 func ResolveEffectiveChannelPricingFor(identity ChannelPricingIdentity) EffectiveChannelPricing {
-	pricing, status, lifecycle, exists, reason := loadChannelPricingFor(identity)
+	pricing, status, _, exists, reason, billableReason := loadChannelPricingFor(identity)
+	// Billing eligibility is decided by the same shared gate the audit page
+	// uses (ChannelPricingBillableReason), computed inside loadChannelPricingFor
+	// from the raw row. Identity ambiguity (reason) remains an additional
+	// runtime-only hard block.
+	billable := exists && reason == "" && billableReason == "" && pricing != nil
 	return EffectiveChannelPricing{
 		Pricing:  pricing,
 		Status:   status,
 		Exists:   exists,
 		Reason:   reason,
-		Billable: exists && reason == "" && status == ChannelPricingStatusConfigured && pricing != nil && channelLifecycleBillable(lifecycle),
+		Billable: billable,
 	}
 }
 

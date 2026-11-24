@@ -443,7 +443,7 @@ func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
 		ChannelId: 41, Provider: "aliyun-bailian", ModelName: "qwen-plus",
 		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
-		Source: "bailian-official", FetchedAt: 100,
+		Source: "bailian-official", FetchedAt: time.Now().Unix() - 10,
 	}})
 	require.NoError(t, err)
 
@@ -472,7 +472,7 @@ func TestSeedBailianInternalPricingIsExplicit(t *testing.T) {
 	updated := model.ChannelOfficialPricingRecord{
 		ChannelId: 41, Provider: "aliyun-bailian", ModelName: "qwen-plus",
 		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
-		Source: "bailian-official", FetchedAt: 200,
+		Source: "bailian-official", FetchedAt: time.Now().Unix(),
 	}
 	_, err = model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{updated})
 	require.NoError(t, err)
@@ -834,7 +834,7 @@ func TestSeedBailianRefreshesAutomaticPriceWithDefaultMarkup(t *testing.T) {
 	_, err := model.UpsertChannelOfficialPricing([]model.ChannelOfficialPricingRecord{{
 		ChannelId: 42, Provider: "aliyun-bailian", ModelName: "qwen-auto",
 		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
-		Source: "bailian-official", FetchedAt: 100,
+		Source: "bailian-official", FetchedAt: time.Now().Unix(),
 	}})
 	require.NoError(t, err)
 	require.NoError(t, model.SetChannelInternalPricingFor(model.ChannelPricingIdentity{

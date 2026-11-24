@@ -5,12 +5,14 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/constant"
+	"github.com/uter-ai/uter/relaykit/dto"
 	"gorm.io/gorm"
 )
 
@@ -105,7 +107,7 @@ func officialRecord(channelID int, modelName, source string) ChannelOfficialPric
 		OfficialPricing:   `{"model":"` + modelName + `"}`,
 		NormalizedPricing: official,
 		Source:            source,
-		FetchedAt:         100,
+		FetchedAt:         time.Now().Unix(),
 	}
 }
 
@@ -884,7 +886,7 @@ func TestResolveSnapshotsPurchasePrice(t *testing.T) {
 	_, err := UpsertChannelOfficialPricing([]ChannelOfficialPricingRecord{{
 		ChannelId: 3, Provider: "aliyun-bailian", Region: "cn-beijing", ModelName: "qwen-snap",
 		Currency: "USD", OfficialPricing: `{}`, NormalizedPricing: string(normalized),
-		Source: "bailian-official", FetchedAt: 100,
+		Source: "bailian-official", FetchedAt: time.Now().Unix(),
 	}})
 	require.NoError(t, err)
 	input, output := 1.0, 2.0
@@ -1489,4 +1491,116 @@ func TestPricingOwnerRefreshesAutoAndKeepsApproved(t *testing.T) {
 	row, err = GetChannelModelPricing(99, "owner-approved")
 	require.NoError(t, err)
 	assert.Equal(t, approved, row.InternalPricing)
+}
+
+// TestChannelPricingBillableReasonGate is the shared eligibility gate used by
+// BOTH the Relay billing path and the admin audit page. These cases prove the
+// gate rejects every condition that must block a charge, so the audit can never
+// claim a model is billable when the runtime would refuse it.
+func TestChannelPricingBillableReasonGate(t *testing.T) {
+	now := time.Unix(2_000_000, 0)
+	validInternal, err := common.Marshal(ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  MoneyFromFloatPtr(floatPtr(2)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(floatPtr(4)),
+	})
+	require.NoError(t, err)
+	base := ChannelModelPricing{
+		PricingStatus:   ChannelPricingStatusConfigured,
+		LifecycleStatus: ChannelModelLifecycleActive,
+		InternalPricing: string(validInternal),
+		PricingSource:   "uterroute-official",
+		FetchedAt:       now.Unix(),
+	}
+	// Fully eligible row must have no blocking reason.
+	assert.Equal(t, "", ChannelPricingBillableReason(base, "", now))
+
+	cases := []struct {
+		name   string
+		mutate func(*ChannelModelPricing)
+		mode   string
+		want   string
+	}{
+		{"pending mode", func(*ChannelModelPricing) {}, dto.ChannelPricingModeScopedPending, "PENDING_MODE"},
+		{"global legacy mode", func(*ChannelModelPricing) {}, dto.ChannelPricingModeGlobalLegacy, "GLOBAL_LEGACY_MODE"},
+		{"official only", func(r *ChannelModelPricing) { r.PricingStatus = ChannelPricingStatusOfficialOnly }, "", "STATUS_NOT_CONFIGURED"},
+		{"needs review", func(r *ChannelModelPricing) { r.PricingStatus = ChannelPricingStatusNeedsReview }, "", "STATUS_NOT_CONFIGURED"},
+		{"lifecycle disabled", func(r *ChannelModelPricing) { r.LifecycleStatus = ChannelModelLifecycleDisabled }, "", "LIFECYCLE_NOT_BILLABLE"},
+		{"lifecycle not found", func(r *ChannelModelPricing) { r.LifecycleStatus = ChannelModelLifecycleNotFound }, "", "LIFECYCLE_NOT_BILLABLE"},
+		{"lifecycle sync failed", func(r *ChannelModelPricing) { r.LifecycleStatus = ChannelModelLifecycleSyncFailed }, "", "LIFECYCLE_NOT_BILLABLE"},
+		{"missing internal", func(r *ChannelModelPricing) { r.InternalPricing = "" }, "", "INTERNAL_PRICING_INVALID"},
+		{"invalid json", func(r *ChannelModelPricing) { r.InternalPricing = "not json" }, "", "INTERNAL_PRICING_INVALID"},
+		{"invalid expression", func(r *ChannelModelPricing) {
+			r.InternalPricing = `{"mode":"tiered_expr","billing_expr":"tier(\"x\", ("}`
+		}, "", "INTERNAL_PRICING_INVALID"},
+		{"stale price", func(r *ChannelModelPricing) { r.FetchedAt = now.Add(-49 * time.Hour).Unix() }, "", "PRICE_EXPIRED"},
+		{"operator price not expired by stale fetch", func(r *ChannelModelPricing) {
+			r.FetchedAt = now.Add(-49 * time.Hour).Unix()
+			r.PricingSource = "manual"
+			r.PricingOwner = ChannelPricingOwnerOperator
+		}, "", ""},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			row := base
+			tc.mutate(&row)
+			assert.Equal(t, tc.want, ChannelPricingBillableReason(row, tc.mode, now))
+		})
+	}
+}
+
+// TestSelectChannelPricingRowIdentityIsolation proves that provider, region and
+// deployment participate in price selection and that an unresolvable identity
+// can never silently borrow another identity's price.
+func TestSelectChannelPricingRowIdentityIsolation(t *testing.T) {
+	beijing := ChannelModelPricing{Provider: "alibaba-bailian", Region: "beijing", ModelName: "qwen", InternalPricing: "beijing"}
+	singapore := ChannelModelPricing{Provider: "alibaba-bailian", Region: "singapore", ModelName: "qwen", InternalPricing: "singapore"}
+	rows := []ChannelModelPricing{beijing, singapore}
+
+	row, reason := selectChannelPricingRow(rows, ChannelPricingIdentity{
+		Provider: "alibaba-bailian", Region: "beijing", ModelName: "qwen",
+	})
+	require.NotNil(t, row)
+	assert.Empty(t, reason)
+	assert.Equal(t, "beijing", row.InternalPricing)
+
+	row, reason = selectChannelPricingRow(rows, ChannelPricingIdentity{
+		Provider: "alibaba-bailian", Region: "", ModelName: "qwen",
+	})
+	assert.Nil(t, row)
+	assert.Equal(t, ChannelPricingReasonIdentityMissing, reason,
+		"an empty request region must not pick either region's price")
+
+	// When a single row matches the requested region/deployment, the model's
+	// inference provider need not be known by the relay. Two such rows remain
+	// ambiguous and must block the charge.
+	row, reason = selectChannelPricingRow(rows, ChannelPricingIdentity{Region: "singapore", ModelName: "qwen"})
+	require.NotNil(t, row)
+	assert.Empty(t, reason)
+	assert.Equal(t, "singapore", row.InternalPricing)
+
+	ambiguous := []ChannelModelPricing{
+		{Provider: "qwen", Region: "beijing", ModelName: "shared"},
+		{Provider: "deepseek", Region: "beijing", ModelName: "shared"},
+	}
+	row, reason = selectChannelPricingRow(ambiguous, ChannelPricingIdentity{Region: "beijing", ModelName: "shared"})
+	assert.Nil(t, row)
+	assert.Equal(t, ChannelPricingReasonIdentityAmbiguous, reason)
+
+	deployments := []ChannelModelPricing{
+		{Provider: "alibaba-bailian", Region: "beijing", DeploymentId: "d1", ModelName: "qwen", InternalPricing: "d1"},
+		{Provider: "alibaba-bailian", Region: "beijing", DeploymentId: "d2", ModelName: "qwen", InternalPricing: "d2"},
+	}
+	row, reason = selectChannelPricingRow(deployments, ChannelPricingIdentity{
+		Provider: "alibaba-bailian", Region: "beijing", DeploymentId: "d2", ModelName: "qwen",
+	})
+	require.NotNil(t, row)
+	assert.Empty(t, reason)
+	assert.Equal(t, "d2", row.InternalPricing)
+
+	row, reason = selectChannelPricingRow(deployments, ChannelPricingIdentity{
+		Provider: "alibaba-bailian", Region: "beijing", ModelName: "qwen",
+	})
+	assert.Nil(t, row)
+	assert.Equal(t, ChannelPricingReasonIdentityMissing, reason)
 }

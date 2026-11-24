@@ -2,6 +2,7 @@ package service
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
@@ -37,7 +38,7 @@ func TestBatchPricingScalesTieredExpressionWithoutFlattening(t *testing.T) {
 		NormalizedPricing: string(official),
 		InternalPricing:   string(internal),
 		Source:            "newapi:/api/pricing",
-		FetchedAt:         100,
+		FetchedAt:         time.Now().Unix(),
 	}})
 	require.NoError(t, err)
 
