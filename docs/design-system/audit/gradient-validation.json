@@ -1,7 +1,7 @@
 {
   "schema": "UDS8-GRADIENT-VALIDATION/1.0",
   "design_system": "UTER DESIGN SYSTEM 8.0.0",
-  "generated_at": "2026-11-16T13:32:51.495Z",
+  "generated_at": "2026-11-24T07:32:38.718Z",
   "verdict": "PASS",
   "sampling": "linear-gradient(90deg in srgb), sRGB channel interpolation, 1001 points (0..100 step 0.1) + all gradient stops",
   "light": {

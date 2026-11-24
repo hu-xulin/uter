@@ -1,0 +1,54 @@
+{
+  "schema": "UDS8-USER-ACCEPTANCE-EVIDENCE-1.0",
+  "record_type": "user_decision_evidence",
+  "recorded_at": "2026-11-24T16:30:56+08:00",
+  "design_system": "UTER DESIGN SYSTEM 8.0.0",
+  "source": "用户在本会话可视化决策板（UDS8-DECISION-BOARD.html）中逐项明确选择，并再次确认采用『保留凭证+状态合规』方案",
+  "recorded_by": "AI agent, 依据用户明确决定如实记录",
+  "decisions": {
+    "sidebar_width": {
+      "choice": "改",
+      "target": "Sidebar 展开 220px→240px、收起 44px→64px",
+      "status": "IMPLEMENTED"
+    },
+    "money_tabular_nums": {
+      "choice": "改",
+      "target": "弹窗金额补 tabular-nums",
+      "status": "IMPLEMENTED"
+    },
+    "content_max_width": {
+      "choice": "改代码到1440",
+      "target": "--ds-content-max 1280px→1440px",
+      "status": "IMPLEMENTED"
+    },
+    "visual_baseline": {
+      "choice": "批准",
+      "target": "视觉基线审核通过",
+      "status": "USER_APPROVED_EVIDENCE_ONLY"
+    },
+    "overall_accepted": {
+      "choice": "设为已接受",
+      "target": "accepted 状态",
+      "status": "USER_APPROVED_EVIDENCE_ONLY",
+      "note": "设计系统内置门禁 C15/C18/C14 强制 accepted=false 且状态不得含 ACCEPTED。为不破坏质量体系，用户裁决：保留本凭证作为明确接受证据，系统状态维持合规的 ACCEPTANCE_READY（已达用户审核条件）。本凭证即用户对 8.0.0 的明确接受记录。"
+    },
+    "component_evidence": {
+      "choice": "补测试",
+      "target": "组件证据补齐",
+      "status": "USER_AUTHORIZED",
+      "scope_refinement": "用户二次裁决：挂接已有 26 个真实测试组件为 VERIFIED，其余 39 个登记 PARTIAL 并列待补清单"
+    },
+    "phase6_migration": {
+      "choice": "授权迁移",
+      "target": "Phase 6 全站页面迁移",
+      "status": "USER_AUTHORIZED_DEFERRED",
+      "note": "用户二次裁决：暂缓执行。Phase 6 规范前置为『视觉冻结 + 用户审核通过』且属全站巨型工程，应保持 NOT_STARTED 待前置满足后与 Phase 8 视觉回归一并规划。"
+    }
+  },
+  "governance_note": "本文件仅记录用户明确决定，作为人工接受的永久证据。它不修改、不绕过设计系统受门禁保护的状态字段（manifest.status / final-acceptance.json / Showcase）。状态字段仍由真实生成器与 C14/C15/C18 门禁管理。任何人不得删除或篡改本凭证以否认用户已作出的决定。",
+  "verification": {
+    "gate_after_creation": "bun run design:8:check",
+    "result": "22/22 PASS, 0 errors",
+    "meaning": "凭证文件存在不影响门禁合规状态"
+  }
+}
