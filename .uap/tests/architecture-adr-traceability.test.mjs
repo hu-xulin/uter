@@ -56,6 +56,13 @@ test('knowledge index refresh excludes historical artifacts and classifies the b
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const index = JSON.parse(readFileSync(path.join(root, '.uap/state/knowledge-index.json'), 'utf8'));
   assert.equal(index.generated_for_head, gitHead());
+  const retiredScan = index.retired_runtime_dependency_scan;
+  assert.ok(retiredScan.scanned_file_count > 0);
+  assert.equal(retiredScan.runtime_dependency_count, 0, JSON.stringify(retiredScan.runtime_dependencies));
+  assert.equal(retiredScan.runtime_dependency_count, retiredScan.runtime_dependencies.length);
+  assert.equal(retiredScan.runtime_dependencies.some((r) =>
+    ['.uap/reports/', '.uap/evidence/', '.uap/state/'].some((prefix) => r.file.startsWith(prefix))
+  ), false, 'historical UAP reports/evidence/state must not be classified as active runtime dependencies');
   const legacyPath = ['docs', 'design-system', 'UTER-DESIGN-SYSTEM-3.0.md'].join('/');
   assert.equal(index.legacy_design_system_path_scan.active_reference_count, 0);
   assert.equal(index.legacy_design_system_path_scan.historical_baseline_reference.classification, 'HISTORICAL_ONLY_NOT_CURRENT_AUTHORITY');

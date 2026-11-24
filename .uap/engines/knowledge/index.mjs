@@ -131,7 +131,10 @@ function scanLegacyDesignSystemReferences() {
 
 function scanRetiredDependencies() {
   const files = [
-    ...listFiles(uapPath(), { recursive: true, filter: () => true }),
+    ...listFiles(uapPath(), {
+      recursive: true,
+      filter: (abs) => !isHistoricalUapPath(relToRoot(abs)),
+    }),
     ...listFiles(rootPath('.'), {
       recursive: false,
       filter: (a) => /\.(mjs|js|sh|go|ts|rb|py|json|yml|yaml)$/.test(a) || /^(?:Makefile|Dockerfile)$/.test(path.basename(a)),
@@ -194,6 +197,9 @@ function artifactOk(file) {
   try { j = readJSON(file); } catch { return false; }
   if (!j || j.generated_for_head !== gitHead() || !Array.isArray(j.documents) || j.documents.length < 1) return false;
   if (!j.retired_runtime_dependency_scan || !j.legacy_design_system_path_scan) return false;
+  if (j.retired_runtime_dependency_scan.runtime_dependency_count !== 0) return false;
+  if (!Array.isArray(j.retired_runtime_dependency_scan.runtime_dependencies)
+    || j.retired_runtime_dependency_scan.runtime_dependencies.some((r) => isHistoricalUapPath(r.file))) return false;
   if (j.legacy_design_system_path_scan.active_reference_count !== 0) return false;
   if (!Array.isArray(j.legacy_design_system_path_scan.historical_tool_references)
     || j.legacy_design_system_path_scan.historical_tool_references.some((r) => r.classification !== 'HISTORICAL_ONLY')) return false;
@@ -239,6 +245,9 @@ export function health() {
   let dep = null;
   try { dep = scanRetiredDependencies(); } catch { dep = null; }
   checks.dependency_scan_ran = Boolean(dep && dep.scanned_file_count >= 1);
+  checks.no_retired_governance_runtime_dependencies = Boolean(
+    dep && dep.runtime_dependency_count === 0
+  );
   checks.index_schema = artifactOk(INDEX_FILE);
   const ok = Object.values(checks).every(Boolean);
   return {
@@ -265,7 +274,8 @@ export async function execute(task = {}, ctx = {}) {
 
   const sourceTotal = knowledge.documents.reduce((n, d) => n + d.sources.length, 0);
   return {
-    status: legacyUds.active_reference_count === 0 ? 'SUCCEEDED' : 'BLOCKED',
+    status: legacyUds.active_reference_count === 0 && dep.runtime_dependency_count === 0
+      ? 'SUCCEEDED' : 'BLOCKED',
     summary: `indexed ${knowledge.document_count} active knowledge documents (${sourceTotal} source refs, sha256+mtime per doc; `
       + `${knowledge.historical_document_count} historical documents excluded); `
       + `legacy active UDS path references=${legacyUds.active_reference_count}; `
