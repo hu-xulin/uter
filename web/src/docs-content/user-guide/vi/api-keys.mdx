@@ -1,52 +1,29 @@
-# Khóa API
+# API Keys
 
-Khóa API dùng để gọi các endpoint mô hình của Uter. Mở `/keys` ở thanh trái. Menu địa chỉ API phía trên chuyển và sao chép ba endpoint:
+API keys are the credentials your applications use to call Uter. Create a separate key per app so you can control and revoke access independently.
 
-- `https://api.uter.ai`: CN2 GIA, toàn cầu (mặc định).
-- `https://api.uter.cc`: tối ưu cho Trung Quốc đại lục.
-- `https://api.uter.pro`: tối ưu cho nước ngoài.
+## Key list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Danh sách khóa API" src="/user-guide/en/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Danh sách khóa API" src="/user-guide/en/api-keys/dark/01-keys-info.webp" />
+The table lists each key with its **Name**, **Status**, masked value, **Quota ($)**, **Group**, allowed **Models**, **IP Restriction**, creation time and expiry. Keys are masked after creation — copy the value when you first see it.
 
-Danh sách hiển thị tên, trạng thái, khóa đã ẩn, hạn ngạch, nhóm, giới hạn mô hình, giới hạn IP, thời gian tạo/dùng cuối và hết hạn. Lọc theo tên, khóa và trạng thái.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API keys list" src="/user-guide/en/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API keys list" src="/user-guide/en/api-keys/dark/01-keys.webp" />
 
-## Tạo khóa API
+## Create a key
 
-1. Nhấn "Tạo khóa API".
-2. Nhập tên và chọn nhóm.
-3. Đặt thời hạn: không hết hạn, 1 tháng, 1 ngày, 1 giờ hoặc tùy chỉnh.
-4. Chọn số lượng; nếu >1, tên có thêm hậu tố ngẫu nhiên.
-5. Bật "Hạn ngạch không giới hạn" hoặc đặt số lượng.
-6. Mở "Cài đặt nâng cao" để đặt giới hạn mô hình, IP…
-7. Nhấn "Lưu thay đổi".
+Press **Create API Key** to open the creation dialog. Give the key a name, set a quota limit, choose a group and optionally restrict models or source IPs, then save. The full key is shown once.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tạo khóa API" src="/user-guide/en/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tạo khóa API" src="/user-guide/en/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create API key dialog" src="/user-guide/en/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create API key dialog" src="/user-guide/en/api-keys/dark/02-create.webp" />
 
-Bảng điều khiển thông báo số khóa đã tạo và chúng xuất hiện trong danh sách.
+## API addresses
 
-## Xem, sao chép và quản lý
+**API Addresses** opens the list of endpoint URLs for each supported protocol. Copy the one that matches your client (OpenAI-compatible, Responses, Anthropic, etc.).
 
-- **Xem/sao chép**: nhấn vào khóa hoặc nút sao chép. Xem khóa đầy đủ là thao tác nhạy cảm, cần xác minh bảo mật; nếu chưa có phương thức, trang sẽ nhắc thiết lập.
-- **Menu dòng**: sao chép khóa, sao chép thông tin kết nối, mở tích hợp ứng dụng hoặc xóa.
-- **Bật/tắt**: khóa bị tắt không gọi được API nhưng vẫn giữ bản ghi.
-- **Sửa**: tên, nhóm, hạn ngạch, thời hạn và giới hạn truy cập.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API addresses dialog" src="/user-guide/en/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API addresses dialog" src="/user-guide/en/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Thao tác khóa API" src="/user-guide/en/api-keys/light/03-view-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Thao tác khóa API" src="/user-guide/en/api-keys/dark/03-view-key.webp" />
 
-## Dùng khóa
-
-Đưa khóa vào header:
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-khoa-cua-ban" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"xin chào"}]}'
-```
-
-<Callout type="info">
-  Khóa là thông tin xác thực: không đưa vào mã frontend, kho công khai hay trò chuyện. Nếu lộ, hãy tắt và xóa rồi tạo khóa mới. Trước khi xóa, xác nhận không còn dịch vụ production dùng khóa.
+<Callout type="warn">
+  Treat keys like passwords. Disable a key immediately if it leaks, then create a replacement.
 </Callout>

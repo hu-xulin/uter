@@ -1,38 +1,36 @@
-# 概覽
+# 概览
 
-登入後點選左側導覽「概覽」進入 `/dashboard/overview`。頁面彙總帳戶餘額、近 24 小時消耗、請求數、API 接入資訊、公告、常見問題與運行狀態。
+概览是登录后的首页，汇总你的余额与用量、展示 API 接入信息，并回答常见的上手问题。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁開始使用與用量" src="/user-guide/zh/dashboard/light/01-overview-get-started.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁開始使用與用量" src="/user-guide/zh/dashboard/dark/01-overview-get-started.webp" />
+## 用量概览
 
-### 快速開始
+顶部卡片展示当前余额、今日请求数与近期消耗。这些数字与计费共用同一套额度账本，因此反映真实扣费。
 
-頁面頂部提供三步引導：
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="用量概览" src="/user-guide/zh/overview/light/01-glance.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="用量概览" src="/user-guide/zh/overview/dark/01-glance.webp" />
 
-1. **建立 API 金鑰**：進入「API 金鑰」建立第一個金鑰。
-2. **新增額度**：在「錢包」儲值或使用兌換碼。
-3. **送出請求**：在「遊樂場」或自己的用戶端驗證路由。
+## API 信息
 
-右側會顯示目前選取的模型、驗證狀態與可直接複製的 `curl` 範例。點選「隱藏設定引導」可收合引導區域。
+**API 信息**卡片列出接口地址（Base URL）并提供**复制地址**按钮。将兼容 OpenAI 的客户端指向该地址，再用「API 密钥」中的密钥鉴权即可。
 
-### 用量概覽與 API 資訊
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 信息与接口地址" src="/user-guide/zh/overview/light/02-api-info.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 信息与接口地址" src="/user-guide/zh/overview/dark/02-api-info.webp" />
 
-頁面顯示近 24 小時消耗、歷史總消耗、請求數與剩餘餘額，並給出預計可用時長。下方「API 資訊」列出三個接入位址：
+## 常见问题
 
-- `https://api.uter.ai`：CN2 GIA 優化線路，全球通用。
-- `https://api.uter.cc`：國內專用優化線路。
-- `https://api.uter.pro`：海外專用優化線路。
+**常见问题**折叠面板涵盖 Uter 介绍、注册、接口地址、支持模型、计费、充值、报错码（401 / 429 / 超时）、数据安全、余额查询与技术支持。点击任一问题展开答案。
 
-每個位址都提供延遲偵測與複製按鈕，可依用戶端所在網路選擇。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="常见问题" src="/user-guide/zh/overview/light/03-faq.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="常见问题" src="/user-guide/zh/overview/dark/03-faq.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁用量與 API 資訊" src="/user-guide/zh/dashboard/light/02-overview-info-1.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁用量與 API 資訊" src="/user-guide/zh/dashboard/dark/02-overview-info-1.webp" />
+## 服务可用性
 
-### 公告、常見問題與運行時間
+**可用性**面板展示一段时间内的服务可用率。出现下降通常对应维护窗口或上游渠道故障。
 
-- **公告**：顯示平台最新通知；沒有公告時顯示空狀態。
-- **常見問答**：涵蓋接入位址、模型、計費、儲值、錯誤、資料保存、餘額查詢與取得支援等常見問題。
-- **運行時間**：接入 Uptime Kuma 後顯示分組監控狀態；未設定時顯示提示。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="服务可用性" src="/user-guide/zh/overview/light/04-uptime.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="服务可用性" src="/user-guide/zh/overview/dark/04-uptime.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="概覽頁公告與常見問題" src="/user-guide/zh/dashboard/light/03-overview-info-2.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="概覽頁公告與常見問題" src="/user-guide/zh/dashboard/dark/03-overview-info-2.webp" />
+
+<Callout type="info">
+  首次接入客户端时，可使用本页的「配置指南」。
+</Callout>

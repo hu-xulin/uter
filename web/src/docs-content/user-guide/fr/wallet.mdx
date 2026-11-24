@@ -1,42 +1,29 @@
-# Portefeuille
+# Wallet
 
-## Vue du portefeuille
+The Wallet holds your credit balance and is the entry point for top-ups and subscriptions. Every request deducts from it; when it is empty, calls fail fast with an insufficient-balance error.
 
-Portefeuille ouvre `/wallet` ; le haut affiche le solde, l'usage total et le nombre de requêtes API.
+## Add funds
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Portefeuille et recharge" src="/user-guide/en/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Portefeuille et recharge" src="/user-guide/en/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+The **Add Funds** card offers preset amounts with their payment prices, plus a custom-amount field bounded by a minimum. Choose a **Payment Method** — the list is driven by server configuration and can include Alipay, WeChat, Stripe and others. The **Amount to pay:** line converts quota into the payment currency at the live exchange rate.
 
-## Recharge
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Add funds" src="/user-guide/en/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Add funds" src="/user-guide/en/wallet/dark/01-wallet.webp" />
 
-1. Dans « Ajouter des fonds », choisissez un montant prédéfini (10 $ à 50 000 $) ou un montant libre.
-2. Vérifiez le montant à payer (CNY) à droite.
-3. Choisissez un moyen de paiement disponible (par ex. Alipay).
-4. Finalisez le paiement ; le solde apparaît en haut et dans l'historique des commandes.
+## Order history
 
-La conversion affichée sur la page fait foi.
+**Order History** lists every top-up attempt, including expired ones, with its status (*Success / Pending / Expired*) and a searchable trade number. Quote the trade number in any support request.
 
-## Historique des commandes
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Order history" src="/user-guide/en/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Order history" src="/user-guide/en/wallet/dark/02-orders.webp" />
 
-L'historique liste les recharges et paiements, avec recherche par numéro et taille de page.
+## Subscription plans
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Historique des commandes" src="/user-guide/en/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Historique des commandes" src="/user-guide/en/wallet-and-subscription/dark/03-orders.webp" />
+The **Subscription Plans** card shows each plan’s quota, validity period, quota-reset schedule and purchase limit; a *Recommended* tag marks the admin’s pick. **Subscribe Now** starts the payment flow, and subscribed plans appear with an upgrade option where applicable.
 
-## Code de remboursement
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Subscription plans" src="/user-guide/en/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Subscription plans" src="/user-guide/en/wallet/dark/03-plans.webp" />
 
-Saisissez un code dans « Vous avez un code ? » et cliquez sur « Échanger ». Le quota est ajouté au solde. Les codes proviennent des administrateurs ou d'opérations ; vérifiez la source.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Code de remboursement" src="/user-guide/en/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Code de remboursement" src="/user-guide/en/wallet-and-subscription/dark/02-redeem-code.webp" />
-
-## Programme de parrainage
-
-Le bas de la page présente le parrainage : les inscriptions via votre lien comptent comme invitations. Le panneau affiche récompenses en attente, gains totaux et nombre d'invitations, avec copie du lien.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Programme de parrainage" src="/user-guide/en/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Programme de parrainage" src="/user-guide/en/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  Les liens et règles de parrainage sont configurés par la plateforme ; les récompenses restent en attente jusqu'à confirmation. Ne confondez pas un lien de parrainage avec une clé API.
+  Use a real payment method for live top-ups; the demo figures shown here are for illustration only.
 </Callout>

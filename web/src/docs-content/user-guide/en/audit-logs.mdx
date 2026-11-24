@@ -1,10 +1,29 @@
 # Audit Logs
 
-Audit Logs opens `/usage-logs/audit` and records sign-in, security and access events.
+Audit logs capture security-relevant events such as logins, settings changes and administrative actions. They are read-only and independent of usage logs.
 
-- Filter by time range, result (all/success/failure) and category.
-- The table shows time, username, event, IP, client, method and route.
-- Use "View" or expand a row for details — useful for investigating unusual sign-ins, key reveals and account-security actions.
+## Event list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit logs" src="/user-guide/en/logs-and-tasks/light/04-audit-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit logs" src="/user-guide/en/logs-and-tasks/dark/04-audit-logs.webp" />
+Columns include **Time**, **Username**, **Event**, **IP**, **Client**, **Method**, **Route**, **HTTP** status, **Result** and **Details**. Every sign-in and configuration change leaves an entry.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit logs list" src="/user-guide/en/audit-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit logs list" src="/user-guide/en/audit-logs/dark/01-logs.webp" />
+
+## Filter events
+
+Narrow the list with **Date Range**, **Result** and **Category** filters, then press **Search**. This is the fastest way to investigate a suspicious login.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit filters" src="/user-guide/en/audit-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit filters" src="/user-guide/en/audit-logs/dark/02-filters.webp" />
+
+## Event details
+
+Press **Details** on a row to see the full payload: actor, action, route, status and the request context recorded at the time.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit event details" src="/user-guide/en/audit-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit event details" src="/user-guide/en/audit-logs/dark/03-details.webp" />
+
+
+<Callout type="info">
+  Audit records are retained for security review and cannot be edited from the console.
+</Callout>

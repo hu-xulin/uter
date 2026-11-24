@@ -1,42 +1,29 @@
-# Ví
+# Wallet
 
-## Tổng quan ví
+The Wallet holds your credit balance and is the entry point for top-ups and subscriptions. Every request deducts from it; when it is empty, calls fail fast with an insufficient-balance error.
 
-Ví mở `/wallet`; phía trên hiển thị số dư, tổng mức dùng và số yêu cầu API.
+## Add funds
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Ví và nạp tiền" src="/user-guide/en/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Ví và nạp tiền" src="/user-guide/en/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+The **Add Funds** card offers preset amounts with their payment prices, plus a custom-amount field bounded by a minimum. Choose a **Payment Method** — the list is driven by server configuration and can include Alipay, WeChat, Stripe and others. The **Amount to pay:** line converts quota into the payment currency at the live exchange rate.
 
-## Nạp tiền
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Add funds" src="/user-guide/en/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Add funds" src="/user-guide/en/wallet/dark/01-wallet.webp" />
 
-1. Trong "Thêm tiền", chọn mức có sẵn ($10–$50.000) hoặc nhập số tiền.
-2. Kiểm tra số tiền cần trả (CNY).
-3. Chọn phương thức thanh toán khả dụng (ví dụ Alipay).
-4. Hoàn tất thanh toán; số dư xuất hiện phía trên và trong Lịch sử đơn hàng.
+## Order history
 
-Quy đổi hiển thị trên trang là căn cứ.
+**Order History** lists every top-up attempt, including expired ones, with its status (*Success / Pending / Expired*) and a searchable trade number. Quote the trade number in any support request.
 
-## Lịch sử đơn hàng
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Order history" src="/user-guide/en/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Order history" src="/user-guide/en/wallet/dark/02-orders.webp" />
 
-Hiển thị giao dịch nạp tiền và thanh toán, tìm theo mã đơn và đổi số dòng mỗi trang.
+## Subscription plans
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Lịch sử đơn hàng" src="/user-guide/en/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Lịch sử đơn hàng" src="/user-guide/en/wallet-and-subscription/dark/03-orders.webp" />
+The **Subscription Plans** card shows each plan’s quota, validity period, quota-reset schedule and purchase limit; a *Recommended* tag marks the admin’s pick. **Subscribe Now** starts the payment flow, and subscribed plans appear with an upgrade option where applicable.
 
-## Mã đổi thưởng
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Subscription plans" src="/user-guide/en/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Subscription plans" src="/user-guide/en/wallet/dark/03-plans.webp" />
 
-Nhập mã trong "Có mã đổi thưởng?" và nhấn "Đổi". Hạn ngạch được cộng vào số dư. Mã do quản trị viên hoặc chiến dịch phát hành; hãy xác minh nguồn.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Mã đổi thưởng" src="/user-guide/en/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Mã đổi thưởng" src="/user-guide/en/wallet-and-subscription/dark/02-redeem-code.webp" />
-
-## Chương trình giới thiệu
-
-Cuối trang Ví hiển thị chương trình giới thiệu: người đăng ký qua liên kết được tính vào số lời mời. Bảng hiển thị thưởng chờ xác nhận, tổng thu nhập và số lời mời, có thể sao chép liên kết.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Chương trình giới thiệu" src="/user-guide/en/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Chương trình giới thiệu" src="/user-guide/en/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  Liên kết và quy tắc thưởng do nền tảng cấu hình; thưởng ở trạng thái chờ đến khi xác nhận. Không nhầm liên kết giới thiệu với khóa API.
+  Use a real payment method for live top-ups; the demo figures shown here are for illustration only.
 </Callout>

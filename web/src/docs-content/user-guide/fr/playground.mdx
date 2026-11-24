@@ -1,26 +1,38 @@
-# Aire de jeux
+# Playground
 
-L'Aire de jeux permet de tester un modèle dans le navigateur ; elle utilise le même chemin d'appel que l'API.
+The Playground lets you try any available model directly in the browser, with no API key or code. It is the fastest way to compare answers and tune parameters before integrating.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Aire de jeux" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Aire de jeux" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+## Start a chat
 
-## Démarrer une conversation
+The main chat area shows the conversation as a transcript. Type a message and press **Send** to call the selected model; replies stream in token by token. **Clear chat history** resets the conversation.
 
-1. Choisissez un **canal** et un **modèle** sous la zone de saisie (par ex. « canal Uter / MiniMax-M2.5 ») ; les modèles disponibles varient selon le canal.
-2. Utilisez les suggestions (Analyser des données, Résumer un texte, Code, Obtenir des conseils) ou saisissez votre propre consigne.
-3. Cliquez sur « Envoyer » ; la réponse s'affiche et vous pouvez poursuivre la conversation.
+The **Attach** button adds files for models that accept them, and **Search** enables web lookup where supported.
 
-## Pièces jointes, recherche web et paramètres
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Playground chat" src="/user-guide/en/playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Playground chat" src="/user-guide/en/playground/dark/01-playground.webp" />
 
-- La zone de saisie propose des boutons pièce jointe, recherche web et outils, selon les capacités du modèle.
-- Le panneau de paramètres ajuste température, Top P, max tokens, etc. ; seuls les paramètres activés sont envoyés.
-- Arrêtez, régénérez, modifiez l'historique et effacez la conversation pour comparer les résultats.
+## Prompt suggestions
 
-<Callout type="info">
-  L'Aire de jeux facture le compte connecté selon les mêmes règles que l'API. Les modèles ou canaux indisponibles n'apparaissent pas dans les sélecteurs.
+Quick prompts such as **Analyze data**, **Summarize text**, **Code** and **Get advice** fill the input with a ready-made instruction. They are useful starting points when you want to probe a model’s strengths quickly.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Prompt suggestions" src="/user-guide/en/playground/light/02-prompts.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Prompt suggestions" src="/user-guide/en/playground/dark/02-prompts.webp" />
+
+## Choose a model
+
+The model selector at the bottom switches between the models you are entitled to use. Each entry shows the model id and its provider tag, so you can test exactly the same model your API calls will hit.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model selector" src="/user-guide/en/playground/light/03-model.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model selector" src="/user-guide/en/playground/dark/03-model.webp" />
+
+## Tune parameters
+
+Open **Parameters** to adjust sampling controls such as temperature and top-p. Lower values make answers more deterministic; higher values increase variety. Changes apply to the next message only.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Parameters panel" src="/user-guide/en/playground/light/04-parameters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Parameters panel" src="/user-guide/en/playground/dark/04-parameters.webp" />
+
+
+<Callout type="idea">
+  Playground calls count against your quota just like API requests, so it is a realistic preview of production cost.
 </Callout>
-
-## De l'Aire de jeux à l'API
-
-Après validation, créez une clé dans Clés API et appelez le même modèle. Utilisez `https://api.uter.ai/v1` par défaut (`https://api.uter.cc/v1` pour la Chine continentale, `https://api.uter.pro/v1` à l'étranger) avec `Authorization: Bearer sk-...`.

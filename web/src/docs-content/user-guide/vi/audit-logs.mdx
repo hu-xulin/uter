@@ -1,10 +1,29 @@
-# Nhật ký kiểm toán
+# Audit Logs
 
-Nhật ký kiểm toán mở `/usage-logs/audit` và ghi lại các sự kiện đăng nhập, bảo mật và truy cập.
+Audit logs capture security-relevant events such as logins, settings changes and administrative actions. They are read-only and independent of usage logs.
 
-- Lọc theo thời gian, kết quả (tất cả/thành công/thất bại) và danh mục.
-- Bảng hiển thị thời gian, người dùng, sự kiện, IP, ứng dụng, phương thức và tuyến.
-- "Xem" hoặc mở rộng dòng để xem chi tiết — hữu ích khi điều tra đăng nhập bất thường, xem khóa và thao tác bảo mật tài khoản.
+## Event list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Nhật ký kiểm toán" src="/user-guide/en/logs-and-tasks/light/04-audit-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Nhật ký kiểm toán" src="/user-guide/en/logs-and-tasks/dark/04-audit-logs.webp" />
+Columns include **Time**, **Username**, **Event**, **IP**, **Client**, **Method**, **Route**, **HTTP** status, **Result** and **Details**. Every sign-in and configuration change leaves an entry.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit logs list" src="/user-guide/en/audit-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit logs list" src="/user-guide/en/audit-logs/dark/01-logs.webp" />
+
+## Filter events
+
+Narrow the list with **Date Range**, **Result** and **Category** filters, then press **Search**. This is the fastest way to investigate a suspicious login.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit filters" src="/user-guide/en/audit-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit filters" src="/user-guide/en/audit-logs/dark/02-filters.webp" />
+
+## Event details
+
+Press **Details** on a row to see the full payload: actor, action, route, status and the request context recorded at the time.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Audit event details" src="/user-guide/en/audit-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Audit event details" src="/user-guide/en/audit-logs/dark/03-details.webp" />
+
+
+<Callout type="info">
+  Audit records are retained for security review and cannot be edited from the console.
+</Callout>

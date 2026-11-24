@@ -1,41 +1,36 @@
-# Profile
+# Settings
 
-## Profile
+Settings controls how the console notifies you and presents itself. These preferences are per-user and do not affect other members.
 
-Profile in the left navigation opens `/profile`. The top shows avatar, display name, username, user ID, group, balance, total usage and request count.
+## Notification methods
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Profile" src="/user-guide/en/profile-and-security/light/01-personal.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Profile" src="/user-guide/en/profile-and-security/dark/01-personal.webp" />
+Under **Notification Method**, enable the channels you want — **Email**, **Webhook**, **Bark** or **Gotify** — and configure their endpoints. Press **Save Settings** to apply.
 
-### Notifications and behaviour
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification methods" src="/user-guide/en/profile/light/01-notifications.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification methods" src="/user-guide/en/profile/dark/01-notifications.webp" />
 
-- **Notification method**: email, Webhook, Bark or Gotify.
-- **Notification email**: leave empty to use the account email.
-- **Low balance alert**: warn once below a threshold (USD, configurable).
-- **Accept unpriced models**: allow models without configured prices; when off they are rejected.
+## Events you are notified about
 
-Click "Save settings" after changes.
+**Notifications to receive** lets you choose which events trigger a message, such as low balance, failed login or completed task, so you only hear about what matters.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notifications and behaviour" src="/user-guide/en/profile-and-security/light/04-personal-notification-behavior-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notifications and behaviour" src="/user-guide/en/profile-and-security/dark/04-personal-notification-behavior-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification events" src="/user-guide/en/profile/light/02-rules.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification events" src="/user-guide/en/profile/dark/02-rules.webp" />
 
-### Language preference
+## Interface language
 
-Interface Language controls the console, docs and API error messages. The preference syncs to all signed-in devices.
+In **Preferences**, set the **Interface Language**. The guide serves the same chapter URL in every language, so switching language keeps you on the same page.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Language preference" src="/user-guide/en/profile-and-security/light/05-personal-language-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Language preference" src="/user-guide/en/profile-and-security/dark/05-personal-language-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Language preferences" src="/user-guide/en/profile/light/03-language.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Language preferences" src="/user-guide/en/profile/dark/03-language.webp" />
 
-### Sidebar personalisation
+## Sidebar personalization
 
-Left Sidebar Settings hides or shows menu items by area: chat (Playground, Chat), admin (Dashboard, API Keys, Usage Logs, Audit Logs, Drawing Logs, Task Logs) and personal (Wallet, Profile, Security & Access). Save when done, or reset to defaults.
+**Sidebar Personal Settings** controls which items appear in the **Chat Area**, **Console Area** and **Personal Center Area**. Hide sections you never use with **Reset to Default** to restore the standard layout.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sidebar personalisation" src="/user-guide/en/profile-and-security/light/06-personal-sidebar-settings.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sidebar personalisation" src="/user-guide/en/profile-and-security/dark/06-personal-sidebar-settings.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sidebar personalization" src="/user-guide/en/profile/light/04-sidebar.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sidebar personalization" src="/user-guide/en/profile/dark/04-sidebar.webp" />
 
-### Daily check-in
 
-Check in once per day for random quota added directly to your balance. The panel shows total check-ins, this month and all-time rewards, plus a calendar.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Daily check-in" src="/user-guide/en/profile-and-security/light/07-personal-check-in.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Daily check-in" src="/user-guide/en/profile-and-security/dark/07-personal-check-in.webp" />
+<Callout type="info">
+  Webhook notifications require a reachable URL; test the endpoint before relying on it.
+</Callout>

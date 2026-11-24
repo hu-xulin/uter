@@ -1,17 +1,29 @@
-# 資料看板
+# 数据看板
 
-點選左側導覽「資料看板」進入 `/dashboard/models`。看板在同一頁面內提供多個檢視：
+数据看板把请求历史可视化，帮助你了解使用了哪些模型、成本趋势如何以及流量去向。
 
-## 模型呼叫分析
+## 模型调用分析
 
-依時間範圍、模型與分組查看請求數、Token 數、快取讀寫、平均 RPM/TPM、消耗分布與呼叫趨勢。支援長條圖/面積圖切換、偏好設定與篩選。
+**模型调用分析**按模型聚合请求。通过标签页切换视图，使用**筛选**控件按模型、令牌或时间范围收窄数据。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="模型呼叫分析" src="/user-guide/zh/dashboard/light/04-dashboard-info-1.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="模型呼叫分析" src="/user-guide/zh/dashboard/dark/04-dashboard-info-1.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="模型调用分析" src="/user-guide/zh/dashboard/light/01-analytics.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="模型调用分析" src="/user-guide/zh/dashboard/dark/01-analytics.webp" />
 
-## 分流
+## 趋势与图表
 
-查看請求在使用者、API 金鑰、分組、模型與管道之間的分佈，用於判斷流量來源與管道使用情況。
+**调用趋势**、**调用次数分布**与**调用次数排行**卡片展示随时间变化的调用量。可在**柱状图**与**面积图**间切换，并打开**偏好设置**自定义指标。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="分流看板" src="/user-guide/zh/dashboard/light/05-dashboard-info-2.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="分流看板" src="/user-guide/zh/dashboard/dark/05-dashboard-info-2.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="调用趋势与图表" src="/user-guide/zh/dashboard/light/02-charts.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="调用趋势与图表" src="/user-guide/zh/dashboard/dark/02-charts.webp" />
+
+## 流量视图
+
+**流量**标签页以漏斗形式呈现从请求到完成的流转，便于发现请求在哪个环节被丢弃或重试。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="流量视图" src="/user-guide/zh/dashboard/light/03-flow.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="流量视图" src="/user-guide/zh/dashboard/dark/03-flow.webp" />
+
+
+<Callout type="idea">
+  将时间筛选与单个模型组合，可隔离出某一工作负载的成本。
+</Callout>

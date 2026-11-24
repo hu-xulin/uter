@@ -1,45 +1,29 @@
-# セキュリティとアクセス
+# Security & Access
 
-左ナビゲーションの「セキュリティとアクセス」で `/security` を開きます。ログインと認証、セッションとアクセス、アカウント操作とプライバシーに分かれます。
+Security & Access centralises password, two-factor authentication, login sessions and API access tokens. Review it periodically to keep your account safe.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="セキュリティとアクセス" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="セキュリティとアクセス" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+## Password and bindings
 
-## ログインと認証
+**Change Password** rotates your login password. **Account Bindings** shows whether Email, GitHub and Discord are linked, with a **Bind** action for each unconnected provider.
 
-- **パスワード変更**: 現在と新しいパスワードを入力。新パスワードは表示される強度要件を満たす必要があります。
-- **アカウント連携**: メール、GitHub、Discord を連携/解除。解除前に別の利用可能なログイン方法を確保してください。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password and account bindings" src="/user-guide/en/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password and account bindings" src="/user-guide/en/security/dark/01-account.webp" />
 
-## ログインセッション
+## Security verification
 
-ブラウザ・端末ごとのセッションを IP、ログイン方法、最終アクティブ、有効期限とともに表示します。個別失効、他セッションのログアウト、現在のセッションのログアウトが可能です。
+Enable **Two-Step Verification** to add TOTP-based 2FA; keep the backup codes somewhere safe. You can also toggle **Record IP Address** under Privacy and press **Save Settings**. **Access records** shows recent security events.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="ログインセッション" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="ログインセッション" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Two-factor authentication" src="/user-guide/en/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Two-factor authentication" src="/user-guide/en/security/dark/02-mfa.webp" />
 
-## アクセストークン
+## Sessions and access tokens
 
-アクセストークンはスクリプトや自動化からコンソール API を呼ぶためのもので、モデル用 API キーとは別です。作成時に次を選びます。
+**Login sessions** lists active devices — use **Sign out other sessions** to revoke them. **Access tokens** are for calling the dashboard API from scripts; create one with **Create access token** and **Revoke** it when no longer needed.
 
-- **有効期限**: 30/90/180 日、1 年、カスタム、無期限。
-- **権限範囲**: プロフィール、API キー、使用量、ウォレット、アカウントセキュリティの個人向け読み書き権限（最小権限）。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions and access tokens" src="/user-guide/en/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions and access tokens" src="/user-guide/en/security/dark/03-sessions.webp" />
 
-トークンは作成時のみ完全表示されます。すぐ保存し、不要になったら削除してください。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="アクセストークン" src="/user-guide/en/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="アクセストークン" src="/user-guide/en/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="アクセストークンの作成" src="/user-guide/en/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="アクセストークンの作成" src="/user-guide/en/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## アカウント操作とプライバシー
-
-- **アカウント削除**: アカウントとデータを完全に削除（復元不可）。
-- **IP の記録**: 利用ログとエラーログにリクエスト IP を残すかどうか。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="アカウント操作とプライバシー" src="/user-guide/en/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="アカウント操作とプライバシー" src="/user-guide/en/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  パスワード、キー、セッション、アカウント削除は機密操作です。実行前にアカウント、対象、影響範囲を確認してください。
+<Callout type="warn">
+  The Delete Account action is permanent and removes all data. It cannot be undone.
 </Callout>

@@ -1,40 +1,44 @@
 # Login
 
-Uter offers three sign-in methods: email verification code, GitHub, and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular user account.
+Uter supports three ways to sign in: email verification code, GitHub and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular account.
+
+## Sign in with a password
+
+On the sign-in page enter your **username or email** and **password**, tick the agreement checkbox, then press **Sign in**. Use the eye icon beside the password field to reveal what you typed before submitting.
+
+A wrong username or password shows an inline error — no account is locked for a single mistake. If you have not set a password yet, use the email-code method below instead.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password sign-in form" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password sign-in form" src="/user-guide/en/auth/dark/01-login.webp" />
 
 ## Sign in with an email code
 
-1. Open the sign-in page and enter your email address.
-2. Click "Send code" and use the 6-digit code from the email.
-3. Enter the code and accept the User Agreement and Privacy Policy.
-4. Click "Sign in".
+Click **Sign in with email code** to switch to the code flow. Enter your email and request a code; a 6-digit code arrives by email and is valid for 10 minutes.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/01-login.webp" />
+A new, unregistered email is turned into a regular account after verification, so there is no separate registration form. Five wrong attempts invalidate the code and you must request a new one.
 
-<Callout type="info">
-  The code is valid for 10 minutes and can be used once; five wrong attempts invalidate it and a new code is required. An unregistered email becomes a new account after verification — no separate registration step.
-</Callout>
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/02-email-code.webp" />
 
 ## Sign in with GitHub
 
-1. Accept the User Agreement and Privacy Policy on the sign-in page.
-2. Click "Continue with GitHub".
-3. Confirm on GitHub; you return to the Uter console automatically.
+Tick the agreement checkbox, then select the **Continue with GitHub** button (shown selected below). Uter hands you to GitHub for authorization and returns you to the console automatically once you approve.
+
+Only the basic profile needed to sign you in is stored. If the button is missing, that provider has been disabled by the administrator.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub sign-in button selected" src="/user-guide/en/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub sign-in button selected" src="/user-guide/en/auth/dark/03-github.webp" />
 
 ## Sign in with Discord
 
-1. Accept the User Agreement and Privacy Policy on the sign-in page.
-2. Click "Continue with Discord".
-3. Confirm on Discord; you return to the Uter console automatically.
+With the agreement accepted, select **Continue with Discord** (shown selected below) and approve the authorization on Discord. You are redirected back to the console on success.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub and Discord sign-in" src="/user-guide/en/auth/light/02-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub and Discord sign-in" src="/user-guide/en/auth/dark/02-login.webp" />
+OAuth sign-in uses your GitHub or Discord identity — you can bind or unbind these providers later under Security & Access.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Discord sign-in button selected" src="/user-guide/en/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Discord sign-in button selected" src="/user-guide/en/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  GitHub and Discord use their own accounts for authorization; Uter stores only the basic profile needed to sign you in. A missing button means that method is disabled.
+  The agreement checkbox must be ticked before any sign-in method works. Session cookies are HttpOnly and rotated on login.
 </Callout>
-
-## After sign-in
-
-You land on Overview. Profile shows your account information, and Security & Access manages login sessions, account bindings, access tokens and security settings.

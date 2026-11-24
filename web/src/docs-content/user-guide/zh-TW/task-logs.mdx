@@ -1,29 +1,29 @@
-# 任務日誌
+# 任务日志
 
-左側導覽「任務日誌」進入 `/usage-logs/task`，頁面頂部可切換「繪圖日誌」與「任務日誌」。
+任务日志跟踪异步作业，例如图片生成、音乐创作等在提交后异步完成的模型任务。
 
-## 繪圖日誌
+## 任务列表
 
-記錄繪圖類任務。可依時間範圍篩選，查看提交時間、任務 ID、狀態、進度與結果；點選任務可查看詳情或製品。
+表格展示**提交时间**、**任务 ID**、**耗时**、**状态**、**进度**、**产物**与**详情**。状态含排队中、处理中、成功与失败。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="繪圖日誌" src="/user-guide/zh/logs-and-tasks/light/02-drawing-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="繪圖日誌" src="/user-guide/zh/logs-and-tasks/dark/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="任务日志列表" src="/user-guide/zh/task-logs/light/01-tasks.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="任务日志列表" src="/user-guide/zh/task-logs/dark/01-tasks.webp" />
 
-## 任務日誌
+## 任务详情
 
-記錄影片、音訊等非同步任務。可依時間範圍與任務 ID 篩選，查看提交時間、耗時、狀態、進度、製品與詳情。
+点击**查看详情**查看任务负载、进度历史与生成的产物，失败任务还会显示重试信息。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="任務日誌" src="/user-guide/zh/logs-and-tasks/light/03-task-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="任務日誌" src="/user-guide/zh/logs-and-tasks/dark/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="任务详情" src="/user-guide/zh/task-logs/light/02-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="任务详情" src="/user-guide/zh/task-logs/dark/02-details.webp" />
+
+## 绘图日志
+
+切换到**绘图日志**标签页查看图像类作业，可快速访问生成的图片及其参数。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="绘图日志" src="/user-guide/zh/task-logs/light/03-drawing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="绘图日志" src="/user-guide/zh/task-logs/dark/03-drawing.webp" />
+
 
 <Callout type="info">
-  非同步任務的狀態與進度以伺服器端記錄為準；任務失敗或逾時後可依管道規則自動退款。任務 ID 可用於在「使用日誌」中定位對應的計費記錄。
+  任务在完成时计费；消耗了上游资源的失败任务同样会在此显示。
 </Callout>
-
-## 日誌關係
-
-- **使用日誌**：每次模型呼叫的計費與效能明細。
-- **審計日誌**：登入、安全與帳號存取事件。
-- **繪圖/任務日誌**：非同步任務的生命週期與製品。
-
-排查問題時，建議先用審計日誌確認帳號與存取，再用使用日誌核對計費，最後用任務日誌查看非同步執行結果。

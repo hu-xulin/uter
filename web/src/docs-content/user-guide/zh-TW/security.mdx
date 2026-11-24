@@ -1,45 +1,29 @@
-# 安全與存取
+# 安全与访问
 
-點選左側導覽「安全與存取」進入 `/security`，頁面分為登入與驗證、工作階段與存取、帳號操作與隱私。
+「安全与访问」集中管理密码、双因素认证、登录会话与 API 访问令牌。建议定期检查以保障账号安全。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="安全與存取頁" src="/user-guide/zh/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="安全與存取頁" src="/user-guide/zh/profile-and-security/dark/08-personal-security.webp" />
+## 密码与绑定
 
-## 登入與驗證
+**修改密码**可轮换登录密码。**账号绑定**显示邮箱、GitHub 与 Discord 的绑定状态，未连接的渠道可通过**绑定**添加。
 
-- **變更密碼**：輸入目前密碼與新密碼完成修改；新密碼需符合頁面提示的強度要求。
-- **帳號綁定**：綁定或解除綁定電子郵件、GitHub、Discord。綁定後可使用對應方式登入，解除綁定前需確保帳號仍有其他可用登入方式。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="密码与账号绑定" src="/user-guide/zh/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="密码与账号绑定" src="/user-guide/zh/security/dark/01-account.webp" />
 
-## 登入工作階段
+## 安全验证
 
-「登入工作階段」列出目前帳號在不同瀏覽器與裝置上的工作階段，包括 IP、登入方式、最後活躍時間與到期時間。可以撤銷單一工作階段、登出其他工作階段，或登出目前工作階段。
+开启**两步验证**可启用基于 TOTP 的双因素认证，请妥善保存备用码。还可在隐私设置中切换**记录 IP 地址**并**保存设置**，**访问记录**展示近期安全事件。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="登入工作階段" src="/user-guide/zh/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="登入工作階段" src="/user-guide/zh/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="双因素认证" src="/user-guide/zh/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="双因素认证" src="/user-guide/zh/security/dark/02-mfa.webp" />
 
-## 存取權杖
+## 会话与访问令牌
 
-存取權杖用於在腳本或自動化工具中呼叫主控台 API，與用於模型呼叫的 API 金鑰相互獨立。建立時可選擇：
+**登录会话**列出活跃设备，可用**退出其他会话**将其吊销。**访问令牌**用于脚本调用控制台 API，通过**创建访问令牌**生成，不用时及时**撤销**。
 
-- **到期時間**：30 天、90 天、180 天、1 年、自訂或永不過期。
-- **權限範圍**：依「個人」維度授予個人資料、API 金鑰、用量、錢包、帳號安全等檢視/編輯權限，遵循最小權限原則。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="会话与访问令牌" src="/user-guide/zh/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="会话与访问令牌" src="/user-guide/zh/security/dark/03-sessions.webp" />
 
-權杖只在建立時完整顯示一次，請立即保存；不再使用時請及時刪除。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="存取權杖列表" src="/user-guide/zh/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="存取權杖列表" src="/user-guide/zh/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="建立存取權杖" src="/user-guide/zh/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="建立存取權杖" src="/user-guide/zh/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## 帳號操作與隱私
-
-- **刪除帳號**：永久刪除帳號及資料，操作不可復原。
-- **記錄 IP 位址**：控制是否在使用日誌與錯誤日誌中記錄請求 IP；依需開啟後儲存設定。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="帳號操作與隱私" src="/user-guide/zh/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="帳號操作與隱私" src="/user-guide/zh/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  涉及密碼、金鑰、工作階段與帳號刪除的操作都屬於敏感操作，執行前請確認目前帳號、操作對象與影響範圍。
+<Callout type="warn">
+  删除账号为永久操作，会清除所有数据，且无法撤销。
 </Callout>

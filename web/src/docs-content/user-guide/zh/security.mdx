@@ -1,45 +1,29 @@
 # 安全与访问
 
-点击左侧导航「安全与访问」进入 `/security`，页面分为登录与认证、会话与访问、账户操作与隐私。
+「安全与访问」集中管理密码、双因素认证、登录会话与 API 访问令牌。建议定期检查以保障账号安全。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="安全与访问页" src="/user-guide/zh/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="安全与访问页" src="/user-guide/zh/profile-and-security/dark/08-personal-security.webp" />
+## 密码与绑定
 
-## 登录与认证
+**修改密码**可轮换登录密码。**账号绑定**显示邮箱、GitHub 与 Discord 的绑定状态，未连接的渠道可通过**绑定**添加。
 
-- **更改密码**：输入当前密码和新密码完成修改；新密码需满足页面提示的强度要求。
-- **账户绑定**：绑定或解绑邮箱、GitHub、Discord。绑定后可使用对应方式登录，解绑前需确保账号仍有其他可用登录方式。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="密码与账号绑定" src="/user-guide/zh/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="密码与账号绑定" src="/user-guide/zh/security/dark/01-account.webp" />
 
-## 登录会话
+## 安全验证
 
-「登录会话」列出当前账号在不同浏览器和设备上的会话，包括 IP、登录方式、最后活跃时间和到期时间。可以撤销单个会话、退出其他会话，或登出当前会话。
+开启**两步验证**可启用基于 TOTP 的双因素认证，请妥善保存备用码。还可在隐私设置中切换**记录 IP 地址**并**保存设置**，**访问记录**展示近期安全事件。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="登录会话" src="/user-guide/zh/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="登录会话" src="/user-guide/zh/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="双因素认证" src="/user-guide/zh/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="双因素认证" src="/user-guide/zh/security/dark/02-mfa.webp" />
 
-## 访问令牌
+## 会话与访问令牌
 
-访问令牌用于在脚本或自动化工具中调用控制台 API，与用于模型调用的 API 密钥相互独立。创建时可选择：
+**登录会话**列出活跃设备，可用**退出其他会话**将其吊销。**访问令牌**用于脚本调用控制台 API，通过**创建访问令牌**生成，不用时及时**撤销**。
 
-- **到期时间**：30 天、90 天、180 天、1 年、自定义或永不过期。
-- **权限范围**：按「个人」维度授予个人资料、API 密钥、用量、钱包、账户安全等查看/编辑权限，遵循最小权限原则。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="会话与访问令牌" src="/user-guide/zh/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="会话与访问令牌" src="/user-guide/zh/security/dark/03-sessions.webp" />
 
-令牌只在创建时完整显示一次，请立即保存；不再使用时请及时删除。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="访问令牌列表" src="/user-guide/zh/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="访问令牌列表" src="/user-guide/zh/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="创建访问令牌" src="/user-guide/zh/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="创建访问令牌" src="/user-guide/zh/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## 账户操作与隐私
-
-- **删除账户**：永久删除账号及数据，操作不可恢复。
-- **记录 IP 地址**：控制是否在使用日志和错误日志中记录请求 IP；按需开启后保存设置。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="账户操作与隐私" src="/user-guide/zh/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="账户操作与隐私" src="/user-guide/zh/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  涉及密码、密钥、会话和账户删除的操作都属于敏感操作，执行前请确认当前账号、操作对象和影响范围。
+<Callout type="warn">
+  删除账号为永久操作，会清除所有数据，且无法撤销。
 </Callout>

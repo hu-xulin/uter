@@ -1,15 +1,36 @@
 # 使用日志
 
-左侧导航「使用日志」进入 `/usage-logs/common`，记录每一次模型调用。
+使用日志记录每次模型请求及其 token 用量与费用，用于核对账单和排查失败调用。
 
-- **筛选**：时间范围、模型名称、分组、类型，以及展开后的令牌、用户等条件。
-- **统计条**：当前筛选结果的总用量、RPM、TPM、缓存读/写，以及每一步的变化量。
-- **列表**：时间、令牌、模型、流式/非流式、Tokens、费用、耗时和详情。
-- **操作**：重置、搜索、导出、调整每页数量、分页和查看详情。
+## 请求列表
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="使用日志" src="/user-guide/zh/logs-and-tasks/light/01-usage-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="使用日志" src="/user-guide/zh/logs-and-tasks/dark/01-usage-logs.webp" />
+每行展示**时间**、**令牌**、**模型**、**流式**、**Token 数**、**费用**、**耗时**及**详情**操作。列表分页展示，并遵循所选时间范围。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="调用日志列表" src="/user-guide/zh/usage-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="调用日志列表" src="/user-guide/zh/usage-logs/dark/01-logs.webp" />
+
+## 筛选日志
+
+使用日期范围选择与**所有类型**下拉框按时间和请求类型收窄，然后点击**搜索**。**重置**清空所有筛选条件。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="日志筛选" src="/user-guide/zh/usage-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="日志筛选" src="/user-guide/zh/usage-logs/dark/02-filters.webp" />
+
+## 请求详情
+
+点击某行的**查看**打开详情对话框，展示请求与响应、token 明细、实际扣费与耗时——这是核对争议扣费的权威依据。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="日志详情对话框" src="/user-guide/zh/usage-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="日志详情对话框" src="/user-guide/zh/usage-logs/dark/03-details.webp" />
+
+## 导出
+
+**导出**将筛选结果下载为文件，便于离线分析或对账。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="导出日志" src="/user-guide/zh/usage-logs/light/04-export.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="导出日志" src="/user-guide/zh/usage-logs/dark/04-export.webp" />
+
 
 <Callout type="info">
-  日志中的费用按请求结算结果记录；失败请求是否计费取决于失败阶段和渠道返回。余额与总用量可在「钱包」交叉核对。
+  消耗了上游 token 的失败请求同样会记录并计费。
 </Callout>

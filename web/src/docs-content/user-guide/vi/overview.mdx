@@ -1,38 +1,36 @@
-# Tổng quan
+# Overview
 
-Sau khi đăng nhập, chọn Tổng quan ở thanh điều hướng trái để mở `/dashboard/overview`. Trang tổng hợp số dư, mức dùng 24 giờ, số yêu cầu, thông tin API, thông báo, FAQ và tình trạng hoạt động.
+Overview is the landing page after sign-in. It summarises your balance and usage, exposes the API connection details, and answers common onboarding questions.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tổng quan: bắt đầu và mức dùng" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tổng quan: bắt đầu và mức dùng" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" />
+## Usage at a glance
 
-### Bắt đầu
+The top cards show your current balance, today’s requests and recent consumption. These numbers come from the same quota ledger that billing uses, so they reflect real deductions.
 
-Ba bước ở đầu trang:
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Usage at a glance" src="/user-guide/en/overview/light/01-glance.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Usage at a glance" src="/user-guide/en/overview/dark/01-glance.webp" />
 
-1. **Tạo khóa API** tại trang Khóa API.
-2. **Nạp hạn ngạch** trong Ví hoặc dùng mã đổi thưởng.
-3. **Gửi yêu cầu** trong Sân chơi hoặc ứng dụng của bạn.
+## API info
 
-Bên phải hiển thị mô hình đang chọn, trạng thái xác thực và ví dụ `curl` có thể sao chép. "Ẩn hướng dẫn" thu gọn khu vực này.
+The **API Info** card lists your Base URL and shows a **Copy URL** button. Point your OpenAI-compatible client at this address, then use a key from API Keys to authenticate.
 
-### Mức dùng và thông tin API
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API info and base URL" src="/user-guide/en/overview/light/02-api-info.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API info and base URL" src="/user-guide/en/overview/dark/02-api-info.webp" />
 
-Trang hiển thị 24 giờ gần nhất, tổng mức dùng, số yêu cầu, số dư còn lại và ước tính thời gian dùng. Thông tin API có ba địa chỉ:
+## FAQ
 
-- `https://api.uter.ai`: tối ưu CN2 GIA, toàn cầu.
-- `https://api.uter.cc`: tối ưu cho Trung Quốc đại lục.
-- `https://api.uter.pro`: tối ưu cho nước ngoài.
+The **FAQ** accordion covers what Uter is, registration, Base URL, supported models, pricing, top-ups, error codes (401 / 429 / timeout), data safety, balance queries and support. Click any question to expand its answer.
 
-Mỗi địa chỉ có kiểm tra độ trễ và nút sao chép.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="FAQ" src="/user-guide/en/overview/light/03-faq.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="FAQ" src="/user-guide/en/overview/dark/03-faq.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tổng quan: mức dùng và API" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tổng quan: mức dùng và API" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" />
+## Uptime
 
-### Thông báo, FAQ và thời gian hoạt động
+The **Uptime** panel reports service availability over time. A dip here usually corresponds to a maintenance window or an upstream provider incident.
 
-- **Thông báo**: tin mới nhất hoặc trạng thái trống.
-- **FAQ**: địa chỉ, mô hình, tính phí, nạp tiền, lỗi, lưu dữ liệu, số dư và hỗ trợ.
-- **Thời gian hoạt động**: giám sát nhóm khi đã cấu hình Uptime Kuma; nếu chưa, hiển thị gợi ý.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Uptime" src="/user-guide/en/overview/light/04-uptime.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Uptime" src="/user-guide/en/overview/dark/04-uptime.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tổng quan: thông báo và FAQ" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tổng quan: thông báo và FAQ" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" />
+
+<Callout type="info">
+  Use the Setup guide on this page if this is your first time connecting a client.
+</Callout>

@@ -1,25 +1,29 @@
-# Giá cả
+# Pricing
 
-Trang Giá cả liệt kê mô hình đang bật và lọc theo kênh, nhà cung cấp, loại và thẻ. Ô tìm kiếm khớp tên mô hình, nhà cung cấp, endpoint và thẻ.
+Pricing is the live catalog of models and their prices. It is the authoritative source for what a request costs before you send it.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Trang Giá cả" src="/user-guide/en/pricing-and-ranking/light/01-model-marketplace.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Trang Giá cả" src="/user-guide/en/pricing-and-ranking/dark/01-model-marketplace.webp" />
+## Browse and filter
 
-### Bộ lọc và chế độ xem
+Each card shows the model name, provider and price tiers. Use **Filter** to narrow by provider or capability, and switch between **Card view** and **Table view**. The **Standard** badge indicates the pricing mode.
 
-- **Kênh**: kênh Uter, kênh nhà cung cấp…; con số là số mô hình trong kênh.
-- **Nhà cung cấp**: Anthropic, Google, OpenAI, ByteDance, Alibaba, DeepSeek, Meta, Z.ai, Moonshot, MiniMax…
-- **Thẻ**: suy luận, công cụ, thị giác.
-- **Chế độ xem**: chuẩn, nạp tiền (CNY), `/1M`, `/1K`.
-- **Sắp xếp và bố cục**: theo tên, danh sách/lưới.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model pricing catalog" src="/user-guide/en/pricing/light/01-pricing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model pricing catalog" src="/user-guide/en/pricing/dark/01-pricing.webp" />
 
-### Thẻ mô hình
+## Price basis
 
-Thẻ hiển thị tên, nhà cung cấp, mô tả, thẻ, cách tính phí, đơn giá Uter, giá chính thức, giảm giá, nhóm, endpoint, trạng thái và độ trễ/thông lượng. "Chi tiết" mở đầy đủ: tổng quan (TPS, độ trễ trung bình, tỷ lệ thành công, giá cơ bản và theo nhóm), hiệu năng, ví dụ API và ngữ cảnh (đầu vào/ra tối đa, phương thức, ngày kiến thức và phát hành).
+Prices are shown per million tokens (**/1M**) or per thousand (**/1K**) depending on the model, with separate input and output rates. Toggle the unit to compare models on the same basis.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Chi tiết mô hình" src="/user-guide/en/pricing-and-ranking/light/03-model-detail.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Chi tiết mô hình" src="/user-guide/en/pricing-and-ranking/dark/03-model-detail.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Pricing filters" src="/user-guide/en/pricing/light/02-filter.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Pricing filters" src="/user-guide/en/pricing/dark/02-filter.webp" />
+
+## Model details
+
+Open **Details** on a model to see its full rate card, supported capabilities and context limits. Use **Copy model name** to paste the exact id into your application.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model pricing details" src="/user-guide/en/pricing/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model pricing details" src="/user-guide/en/pricing/dark/03-details.webp" />
+
 
 <Callout type="info">
-  Phí thực tế theo quyết toán yêu cầu; trang hiển thị giá tham chiếu đã cấu hình. Giá, giảm giá và hệ số nhóm có thể thay đổi theo thượng nguồn.
+  Prices reflect the current catalog and may differ from what was charged for older requests — check Usage Logs for historical charges.
 </Callout>

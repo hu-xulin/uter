@@ -1,45 +1,29 @@
-# Безопасность и доступ
+# Security & Access
 
-«Безопасность и доступ» открывает `/security`. Разделы: вход и аутентификация, сеансы и доступ, операции с аккаунтом и конфиденциальность.
+Security & Access centralises password, two-factor authentication, login sessions and API access tokens. Review it periodically to keep your account safe.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Безопасность и доступ" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Безопасность и доступ" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+## Password and bindings
 
-## Вход и аутентификация
+**Change Password** rotates your login password. **Account Bindings** shows whether Email, GitHub and Discord are linked, with a **Bind** action for each unconnected provider.
 
-- **Смена пароля**: введите текущий и новый; новый должен соответствовать требованиям.
-- **Привязки**: привяжите или отвяжите e-mail, GitHub и Discord. Перед отвязкой убедитесь, что остался рабочий способ входа.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password and account bindings" src="/user-guide/en/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password and account bindings" src="/user-guide/en/security/dark/01-account.webp" />
 
-## Сеансы входа
+## Security verification
 
-Список сеансов по браузерам и устройствам: IP, способ входа, последняя активность и срок. Можно отозвать один сеанс, выйти из остальных или из текущего.
+Enable **Two-Step Verification** to add TOTP-based 2FA; keep the backup codes somewhere safe. You can also toggle **Record IP Address** under Privacy and press **Save Settings**. **Access records** shows recent security events.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Сеансы входа" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Сеансы входа" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Two-factor authentication" src="/user-guide/en/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Two-factor authentication" src="/user-guide/en/security/dark/02-mfa.webp" />
 
-## Токены доступа
+## Sessions and access tokens
 
-Токены вызывают API консоли из скриптов и автоматизации и не связаны с ключами API моделей. При создании выбираются:
+**Login sessions** lists active devices — use **Sign out other sessions** to revoke them. **Access tokens** are for calling the dashboard API from scripts; create one with **Create access token** and **Revoke** it when no longer needed.
 
-- **Срок**: 30/90/180 дней, 1 год, свой или бессрочно.
-- **Права**: личные права чтения/записи для профиля, ключей API, расхода, кошелька и безопасности (минимально необходимые).
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions and access tokens" src="/user-guide/en/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions and access tokens" src="/user-guide/en/security/dark/03-sessions.webp" />
 
-Токен показывается полностью один раз — сохраните его сразу и удалите, когда он больше не нужен.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Токены доступа" src="/user-guide/en/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Токены доступа" src="/user-guide/en/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Создание токена доступа" src="/user-guide/en/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Создание токена доступа" src="/user-guide/en/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## Операции с аккаунтом и конфиденциальность
-
-- **Удаление аккаунта**: безвозвратно удаляет аккаунт и данные.
-- **Запись IP**: сохранять ли IP запросов в журналах использования и ошибок.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Операции с аккаунтом и конфиденциальность" src="/user-guide/en/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Операции с аккаунтом и конфиденциальность" src="/user-guide/en/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  Пароли, ключи, сеансы и удаление аккаунта — чувствительные операции: проверьте аккаунт, объект и последствия.
+<Callout type="warn">
+  The Delete Account action is permanent and removes all data. It cannot be undone.
 </Callout>

@@ -1,17 +1,29 @@
-# ダッシュボード
+# Data Dashboard
 
-左ナビゲーションの「ダッシュボード」で `/dashboard/models` を開きます。1 ページに複数のビューがあります。
+The data dashboard turns your request history into charts, helping you see which models you use, how costs trend, and where traffic flows.
 
-## モデル分析
+## Model call analytics
 
-期間・モデル・グループで絞り込み、リクエスト数、トークン、キャッシュ読み書き、平均 RPM/TPM、消費分布、推移を確認します。棒/面グラフの切替、設定、フィルターに対応します。
+**Model Call Analytics** aggregates requests by model. Use the tabs to switch views and the **Filter** control to narrow by model, token or time range.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="モデル分析" src="/user-guide/en/dashboard/light/04-dashboard-info-1.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="モデル分析" src="/user-guide/en/dashboard/dark/04-dashboard-info-1.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model call analytics" src="/user-guide/en/dashboard/light/01-analytics.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model call analytics" src="/user-guide/en/dashboard/dark/01-analytics.webp" />
 
-## トラフィック分流
+## Trends and charts
 
-ユーザー、API キー、グループ、モデル、チャネル間のリクエスト分布を確認し、流入元とチャネル利用を把握します。
+The **Call Trend**, **Call Count Distribution** and **Call Count Ranking** cards visualise volume over time. Toggle between **Bar Chart** and **Area Chart**, and open **Preferences** to customise the metrics shown.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="分流ダッシュボード" src="/user-guide/en/dashboard/light/05-dashboard-info-2.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="分流ダッシュボード" src="/user-guide/en/dashboard/dark/05-dashboard-info-2.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Call trend and charts" src="/user-guide/en/dashboard/light/02-charts.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Call trend and charts" src="/user-guide/en/dashboard/dark/02-charts.webp" />
+
+## Flow view
+
+The **Flow** tab presents traffic as a funnel from request to completion. It is useful for spotting where requests are dropped or retried.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Flow view" src="/user-guide/en/dashboard/light/03-flow.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Flow view" src="/user-guide/en/dashboard/dark/03-flow.webp" />
+
+
+<Callout type="idea">
+  Combine a time filter with a single model to isolate the cost of one workload.
+</Callout>

@@ -1,45 +1,29 @@
-# Bảo mật và truy cập
+# Security & Access
 
-Bảo mật và truy cập mở `/security`, gồm đăng nhập và xác thực, phiên và truy cập, thao tác tài khoản và quyền riêng tư.
+Security & Access centralises password, two-factor authentication, login sessions and API access tokens. Review it periodically to keep your account safe.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Bảo mật và truy cập" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Bảo mật và truy cập" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+## Password and bindings
 
-## Đăng nhập và xác thực
+**Change Password** rotates your login password. **Account Bindings** shows whether Email, GitHub and Discord are linked, with a **Bind** action for each unconnected provider.
 
-- **Đổi mật khẩu**: nhập mật khẩu hiện tại và mới; mật khẩu mới phải đạt yêu cầu hiển thị.
-- **Liên kết tài khoản**: liên kết/bỏ liên kết email, GitHub, Discord. Trước khi bỏ, đảm bảo còn cách đăng nhập khác.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password and account bindings" src="/user-guide/en/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password and account bindings" src="/user-guide/en/security/dark/01-account.webp" />
 
-## Phiên đăng nhập
+## Security verification
 
-Danh sách phiên theo trình duyệt và thiết bị: IP, cách đăng nhập, hoạt động cuối và hạn. Có thể thu hồi một phiên, đăng xuất các phiên khác hoặc phiên hiện tại.
+Enable **Two-Step Verification** to add TOTP-based 2FA; keep the backup codes somewhere safe. You can also toggle **Record IP Address** under Privacy and press **Save Settings**. **Access records** shows recent security events.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Phiên đăng nhập" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Phiên đăng nhập" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Two-factor authentication" src="/user-guide/en/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Two-factor authentication" src="/user-guide/en/security/dark/02-mfa.webp" />
 
-## Token truy cập
+## Sessions and access tokens
 
-Token truy cập gọi API bảng điều khiển từ script/tự động hóa, tách biệt với khóa API mô hình. Khi tạo chọn:
+**Login sessions** lists active devices — use **Sign out other sessions** to revoke them. **Access tokens** are for calling the dashboard API from scripts; create one with **Create access token** and **Revoke** it when no longer needed.
 
-- **Thời hạn**: 30/90/180 ngày, 1 năm, tùy chỉnh hoặc không hết hạn.
-- **Phạm vi**: quyền đọc/sửa cá nhân cho hồ sơ, khóa API, mức dùng, ví và bảo mật tài khoản, theo nguyên tắc tối thiểu.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions and access tokens" src="/user-guide/en/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions and access tokens" src="/user-guide/en/security/dark/03-sessions.webp" />
 
-Token chỉ hiển thị đầy đủ một lần — lưu ngay và xóa khi không dùng.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Token truy cập" src="/user-guide/en/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Token truy cập" src="/user-guide/en/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tạo token truy cập" src="/user-guide/en/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tạo token truy cập" src="/user-guide/en/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## Thao tác tài khoản và quyền riêng tư
-
-- **Xóa tài khoản**: xóa vĩnh viễn tài khoản và dữ liệu.
-- **Ghi IP**: có lưu IP yêu cầu trong nhật ký sử dụng và lỗi hay không.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Thao tác tài khoản và quyền riêng tư" src="/user-guide/en/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Thao tác tài khoản và quyền riêng tư" src="/user-guide/en/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  Mật khẩu, khóa, phiên và xóa tài khoản là thao tác nhạy cảm: xác nhận tài khoản, đối tượng và phạm vi ảnh hưởng trước khi thực hiện.
+<Callout type="warn">
+  The Delete Account action is permanent and removes all data. It cannot be undone.
 </Callout>

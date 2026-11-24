@@ -1,42 +1,29 @@
-# 錢包
+# 钱包
 
-## 錢包概覽
+钱包保存你的额度余额，是充值与订阅的入口。每次请求都会从中扣费；余额用尽时调用会快速失败并提示余额不足。
 
-左側導覽「錢包」進入 `/wallet`，頂部展示目前餘額、總用量與 API 請求數。
+## 充值
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="錢包概覽與儲值" src="/user-guide/zh/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="錢包概覽與儲值" src="/user-guide/zh/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+**充值**卡片提供多个预设金额及对应支付价格，并支持在最低限额之上自定义金额。选择**支付方式**——列表由服务端配置决定，可能包含支付宝、微信、Stripe 等。**应付金额**按实时汇率将额度换算为支付币种。
 
-## 線上儲值
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="充值" src="/user-guide/zh/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="充值" src="/user-guide/zh/wallet/dark/01-wallet.webp" />
 
-1. 在「新增資金」中選擇預設金額（$10 至 $50,000），或輸入自訂金額。
-2. 核對右側的待支付金額（人民幣）。
-3. 選擇可用的付款方式（例如支付寶）。
-4. 依支付頁面提示完成付款，餘額到帳後可在頂部與「訂單歷史」中核對。
+## 订单历史
 
-金額與人民幣的換算以頁面即時顯示為準。
+**订单历史**列出每次充值尝试（含已过期），展示状态（成功／待支付／已过期）与可搜索的交易号。任何客服请求都请附上交易号。
 
-## 訂單歷史
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="订单历史" src="/user-guide/zh/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="订单历史" src="/user-guide/zh/wallet/dark/02-orders.webp" />
 
-點選「訂單歷史」查看儲值交易記錄與付款歷史，支援依訂單號搜尋與切換每頁筆數。
+## 订阅计划
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="訂單歷史" src="/user-guide/zh/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="訂單歷史" src="/user-guide/zh/wallet-and-subscription/dark/03-orders.webp" />
+**订阅计划**卡片展示各方案的额度、有效期、额度重置周期与购买限制，*推荐*标签标记管理员推荐项。**立即订阅**启动支付流程，已订阅方案在适用时显示升级选项。
 
-## 兌換碼
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="订阅计划" src="/user-guide/zh/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="订阅计划" src="/user-guide/zh/wallet/dark/03-plans.webp" />
 
-在錢包頁「有兌換碼嗎？」區域輸入兌換碼並點選「兌換額度」，額度會加入帳戶餘額。兌換碼通常由管理員或活動發放，輸入前請確認來源可信。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="兌換碼" src="/user-guide/zh/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="兌換碼" src="/user-guide/zh/wallet-and-subscription/dark/02-redeem-code.webp" />
-
-## 推薦計畫
-
-錢包頁底部展示推薦計畫：透過你的推薦連結註冊的使用者會計入邀請人數。面板展示待確認獎勵、總收入與邀請數，可複製推薦連結分享。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="推薦計畫" src="/user-guide/zh/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="推薦計畫" src="/user-guide/zh/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  推薦連結與獎勵規則由平台設定；獎勵到帳前處於「待確認」狀態。不要把推薦連結與 API 金鑰混淆，前者只用於邀請註冊。
+  实际充值请使用真实支付方式；此处演示数字仅作说明。
 </Callout>

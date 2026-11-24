@@ -1,52 +1,29 @@
-# Clés API
+# API Keys
 
-Les clés API appellent les endpoints de modèles d'Uter. Ouvrez `/keys` depuis la navigation gauche. Le menu d'adresse API en haut bascule et copie trois endpoints :
+API keys are the credentials your applications use to call Uter. Create a separate key per app so you can control and revoke access independently.
 
-- `https://api.uter.ai` : optimisé CN2 GIA, mondial (par défaut).
-- `https://api.uter.cc` : optimisé pour la Chine continentale.
-- `https://api.uter.pro` : optimisé pour l'étranger.
+## Key list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Liste des clés API" src="/user-guide/en/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Liste des clés API" src="/user-guide/en/api-keys/dark/01-keys-info.webp" />
+The table lists each key with its **Name**, **Status**, masked value, **Quota ($)**, **Group**, allowed **Models**, **IP Restriction**, creation time and expiry. Keys are masked after creation — copy the value when you first see it.
 
-La liste affiche nom, état, clé masquée, quota, groupe, limites de modèles, limites IP, création/dernière utilisation et expiration. Filtrez par nom ou clé et par état.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API keys list" src="/user-guide/en/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API keys list" src="/user-guide/en/api-keys/dark/01-keys.webp" />
 
-## Créer une clé API
+## Create a key
 
-1. Cliquez sur « Créer une clé API ».
-2. Saisissez un nom et choisissez un groupe.
-3. Définissez l'expiration : jamais, 1 mois, 1 jour, 1 heure ou personnalisée.
-4. Choisissez la quantité ; au-delà de 1, un suffixe aléatoire est ajouté.
-5. Activez « Quota illimité » ou fixez un montant.
-6. Dépliez « Paramètres avancés » pour les limites de modèles et d'IP.
-7. Cliquez sur « Enregistrer ».
+Press **Create API Key** to open the creation dialog. Give the key a name, set a quota limit, choose a group and optionally restrict models or source IPs, then save. The full key is shown once.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Créer une clé API" src="/user-guide/en/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Créer une clé API" src="/user-guide/en/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create API key dialog" src="/user-guide/en/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create API key dialog" src="/user-guide/en/api-keys/dark/02-create.webp" />
 
-La console indique le nombre créé et les clés apparaissent dans la liste.
+## API addresses
 
-## Voir, copier et gérer
+**API Addresses** opens the list of endpoint URLs for each supported protocol. Copy the one that matches your client (OpenAI-compatible, Responses, Anthropic, etc.).
 
-- **Voir/copier** : cliquez sur la clé ou le bouton de copie. Afficher la clé complète est sensible et exige une vérification de sécurité ; la page invite à en configurer une si nécessaire.
-- **Menu de ligne** : copier la clé, copier les infos de connexion, ouvrir l'intégration ou supprimer.
-- **Activer/désactiver** : une clé désactivée ne peut plus appeler l'API ; les enregistrements restent.
-- **Modifier** : nom, groupe, quota, expiration et contraintes d'accès.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API addresses dialog" src="/user-guide/en/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API addresses dialog" src="/user-guide/en/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Actions sur la clé API" src="/user-guide/en/api-keys/light/03-view-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Actions sur la clé API" src="/user-guide/en/api-keys/dark/03-view-key.webp" />
 
-## Utiliser la clé
-
-Placez la clé dans l'en-tête :
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-votre-cle" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"bonjour"}]}'
-```
-
-<Callout type="info">
-  Une clé est un identifiant de compte : jamais dans le code front-end, un dépôt public ou une conversation. En cas de fuite, désactivez-la et supprimez-la, puis créez-en une nouvelle. Vérifiez qu'aucun service ne l'utilise avant suppression.
+<Callout type="warn">
+  Treat keys like passwords. Disable a key immediately if it leaks, then create a replacement.
 </Callout>

@@ -1,40 +1,44 @@
 # 登录
 
-Uter 当前开启三种登录方式：邮箱验证码、GitHub 和 Discord。登录成功即进入控制台；首次使用邮箱验证码登录时，系统会自动创建普通用户账号。
+Uter 支持三种登录方式：邮箱验证码、GitHub 和 Discord。登录成功后进入控制台；首次使用邮箱验证码登录会自动创建普通账号。
+
+## 密码登录
+
+在登录页输入**用户名或邮箱**与**密码**，勾选协议后点击**登录**。密码框右侧的眼睛图标可切换明文显示，便于提交前核对。
+
+用户名或密码错误会就地提示，单次输错不会锁定账号。如果尚未设置密码，请改用下方的邮箱验证码方式。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="密码登录表单" src="/user-guide/zh/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="密码登录表单" src="/user-guide/zh/auth/dark/01-login.webp" />
 
 ## 邮箱验证码登录
 
-1. 打开登录页，输入邮箱地址。
-2. 点击「发送验证码」，查收邮件中的 6 位数字验证码。
-3. 输入验证码，勾选同意用户协议和隐私政策。
-4. 点击「登录」。
+点击**使用邮箱验证码登录**切换到验证码流程，输入邮箱并获取验证码。6 位数字验证码通过邮件发送，有效期 10 分钟。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="邮箱验证码登录" src="/user-guide/zh/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="邮箱验证码登录" src="/user-guide/zh/auth/dark/01-login.webp" />
+未注册的新邮箱在验证后会自动成为普通账号，无需单独注册。连续 5 次输错会使验证码失效，需要重新获取。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="邮箱验证码登录" src="/user-guide/zh/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="邮箱验证码登录" src="/user-guide/zh/auth/dark/02-email-code.webp" />
+
+## GitHub 登录
+
+勾选协议后，选中**使用 GitHub 登录**按钮（下图为选中状态）。Uter 会跳转到 GitHub 完成授权，通过后自动返回控制台。
+
+平台只保存登录所需的基础资料。如果看不到该按钮，说明管理员已停用此登录方式。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="选中 GitHub 登录按钮" src="/user-guide/zh/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="选中 GitHub 登录按钮" src="/user-guide/zh/auth/dark/03-github.webp" />
+
+## Discord 登录
+
+勾选协议后选中**使用 Discord 登录**按钮（下图为选中状态），在 Discord 端确认授权，成功后自动跳回控制台。
+
+OAuth 登录使用你的 GitHub 或 Discord 身份，之后可在「安全与访问」中绑定或解绑。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="选中 Discord 登录按钮" src="/user-guide/zh/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="选中 Discord 登录按钮" src="/user-guide/zh/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  验证码 10 分钟内有效、仅可使用一次；连续输错 5 次后作废，需要重新发送。未注册的邮箱通过验证码后会直接创建账号，无需单独注册。
+  任何登录方式都需先勾选用户协议。会话 Cookie 为 HttpOnly，并在登录时轮换。
 </Callout>
-
-## 使用 GitHub 登录
-
-1. 在登录页先勾选同意用户协议和隐私政策。
-2. 点击「使用 GitHub 登录」。
-3. 在 GitHub 授权页确认授权，完成后自动返回 Uter 控制台。
-
-## 使用 Discord 登录
-
-1. 在登录页先勾选同意用户协议和隐私政策。
-2. 点击「使用 Discord 登录」。
-3. 在 Discord 授权页确认授权，完成后自动返回 Uter 控制台。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub 与 Discord 登录入口" src="/user-guide/zh/auth/light/02-oauth.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub 与 Discord 登录入口" src="/user-guide/zh/auth/dark/02-oauth.webp" />
-
-<Callout type="info">
-  GitHub 和 Discord 登录使用对应平台的账号授权；授权后 Uter 只保存登录所需的基础信息。若按钮未显示，说明该登录方式未开启。
-</Callout>
-
-## 登录后
-
-登录成功后会进入「概览」。可以在「个人资料」查看账号信息，在「安全与访问」管理登录会话、账户绑定、访问令牌和安全设置。

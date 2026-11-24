@@ -1,40 +1,44 @@
-# Вход
+# Login
 
-Uter предлагает три способа входа: код на e-mail, GitHub и Discord. После входа открывается консоль; при первом входе по коду автоматически создаётся обычная учётная запись.
+Uter supports three ways to sign in: email verification code, GitHub and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular account.
 
-## Вход по коду на e-mail
+## Sign in with a password
 
-1. Откройте страницу входа и укажите e-mail.
-2. Нажмите «Отправить код» и используйте 6-значный код из письма.
-3. Введите код и примите пользовательское соглашение и политику конфиденциальности.
-4. Нажмите «Войти».
+On the sign-in page enter your **username or email** and **password**, tick the agreement checkbox, then press **Sign in**. Use the eye icon beside the password field to reveal what you typed before submitting.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Вход по коду на e-mail" src="/user-guide/en/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Вход по коду на e-mail" src="/user-guide/en/auth/dark/01-login.webp" />
+A wrong username or password shows an inline error — no account is locked for a single mistake. If you have not set a password yet, use the email-code method below instead.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password sign-in form" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password sign-in form" src="/user-guide/en/auth/dark/01-login.webp" />
+
+## Sign in with an email code
+
+Click **Sign in with email code** to switch to the code flow. Enter your email and request a code; a 6-digit code arrives by email and is valid for 10 minutes.
+
+A new, unregistered email is turned into a regular account after verification, so there is no separate registration form. Five wrong attempts invalidate the code and you must request a new one.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/02-email-code.webp" />
+
+## Sign in with GitHub
+
+Tick the agreement checkbox, then select the **Continue with GitHub** button (shown selected below). Uter hands you to GitHub for authorization and returns you to the console automatically once you approve.
+
+Only the basic profile needed to sign you in is stored. If the button is missing, that provider has been disabled by the administrator.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub sign-in button selected" src="/user-guide/en/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub sign-in button selected" src="/user-guide/en/auth/dark/03-github.webp" />
+
+## Sign in with Discord
+
+With the agreement accepted, select **Continue with Discord** (shown selected below) and approve the authorization on Discord. You are redirected back to the console on success.
+
+OAuth sign-in uses your GitHub or Discord identity — you can bind or unbind these providers later under Security & Access.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Discord sign-in button selected" src="/user-guide/en/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Discord sign-in button selected" src="/user-guide/en/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  Код действует 10 минут и используется один раз; после пяти ошибок он аннулируется. Незарегистрированный e-mail после подтверждения становится новой учётной записью без отдельной регистрации.
+  The agreement checkbox must be ticked before any sign-in method works. Session cookies are HttpOnly and rotated on login.
 </Callout>
-
-## Вход через GitHub
-
-1. Примите соглашение и политику конфиденциальности.
-2. Нажмите «Продолжить с GitHub».
-3. Подтвердите на GitHub — вы вернётесь в консоль Uter.
-
-## Вход через Discord
-
-1. Примите соглашение и политику конфиденциальности.
-2. Нажмите «Продолжить с Discord».
-3. Подтвердите в Discord — вы вернётесь в консоль Uter.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Вход через GitHub и Discord" src="/user-guide/en/auth/light/02-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Вход через GitHub и Discord" src="/user-guide/en/auth/dark/02-login.webp" />
-
-<Callout type="info">
-  GitHub и Discord используют собственные учётные записи; Uter хранит только базовые данные, необходимые для входа. Если кнопка отсутствует, способ отключён.
-</Callout>
-
-## После входа
-
-Открывается «Обзор». В «Профиле» видны данные учётной записи, в «Безопасность и доступ» — сеансы, привязки, токены доступа и настройки безопасности.

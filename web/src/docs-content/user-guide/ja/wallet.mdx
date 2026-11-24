@@ -1,42 +1,29 @@
-# ウォレット
+# Wallet
 
-## ウォレット概要
+The Wallet holds your credit balance and is the entry point for top-ups and subscriptions. Every request deducts from it; when it is empty, calls fail fast with an insufficient-balance error.
 
-左ナビゲーションの「ウォレット」で `/wallet` を開きます。上部に残高、累計使用量、API リクエスト数を表示します。
+## Add funds
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="ウォレット概要とチャージ" src="/user-guide/en/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="ウォレット概要とチャージ" src="/user-guide/en/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+The **Add Funds** card offers preset amounts with their payment prices, plus a custom-amount field bounded by a minimum. Choose a **Payment Method** — the list is driven by server configuration and can include Alipay, WeChat, Stripe and others. The **Amount to pay:** line converts quota into the payment currency at the live exchange rate.
 
-## オンラインチャージ
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Add funds" src="/user-guide/en/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Add funds" src="/user-guide/en/wallet/dark/01-wallet.webp" />
 
-1. 「資金を追加」でプリセット（$10〜$50,000）または任意の金額を選びます。
-2. 右側の支払額（人民元）を確認します。
-3. 利用可能な支払い方法（例: Alipay）を選びます。
-4. 支払いを完了すると残高が反映され、上部と注文履歴で確認できます。
+## Order history
 
-換算はページの表示が基準です。
+**Order History** lists every top-up attempt, including expired ones, with its status (*Success / Pending / Expired*) and a searchable trade number. Quote the trade number in any support request.
 
-## 注文履歴
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Order history" src="/user-guide/en/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Order history" src="/user-guide/en/wallet/dark/02-orders.webp" />
 
-チャージ取引と支払い履歴を表示し、注文番号検索とページサイズ切替に対応します。
+## Subscription plans
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="注文履歴" src="/user-guide/en/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="注文履歴" src="/user-guide/en/wallet-and-subscription/dark/03-orders.webp" />
+The **Subscription Plans** card shows each plan’s quota, validity period, quota-reset schedule and purchase limit; a *Recommended* tag marks the admin’s pick. **Subscribe Now** starts the payment flow, and subscribed plans appear with an upgrade option where applicable.
 
-## 引き換えコード
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Subscription plans" src="/user-guide/en/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Subscription plans" src="/user-guide/en/wallet/dark/03-plans.webp" />
 
-「引き換えコードはありますか？」欄に入力して「引き換え」を押すと、クォータが残高に加算されます。コードは管理者やキャンペーンが発行します。信頼できる入手元か確認してください。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="引き換えコード" src="/user-guide/en/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="引き換えコード" src="/user-guide/en/wallet-and-subscription/dark/02-redeem-code.webp" />
-
-## 紹介プログラム
-
-ウォレット下部に紹介プログラムがあります。リンク経由の登録が招待数に数えられます。パネルには確定待ち報酬、累計収益、招待数、リンクのコピーがあります。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="紹介プログラム" src="/user-guide/en/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="紹介プログラム" src="/user-guide/en/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  紹介リンクと報酬規則はプラットフォームが設定し、報酬は確定まで待機状態です。紹介リンクと API キーを混同しないでください。
+  Use a real payment method for live top-ups; the demo figures shown here are for illustration only.
 </Callout>

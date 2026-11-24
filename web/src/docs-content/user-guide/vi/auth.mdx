@@ -1,40 +1,44 @@
-# Đăng nhập
+# Login
 
-Uter hiện có ba cách đăng nhập: mã xác minh email, GitHub và Discord. Đăng nhập thành công sẽ vào bảng điều khiển; lần đầu đăng nhập bằng mã email, hệ thống tự tạo tài khoản người dùng thường.
+Uter supports three ways to sign in: email verification code, GitHub and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular account.
 
-## Đăng nhập bằng mã email
+## Sign in with a password
 
-1. Mở trang đăng nhập và nhập địa chỉ email.
-2. Nhấn "Gửi mã" và dùng mã 6 chữ số trong email.
-3. Nhập mã và đồng ý điều khoản người dùng và chính sách quyền riêng tư.
-4. Nhấn "Đăng nhập".
+On the sign-in page enter your **username or email** and **password**, tick the agreement checkbox, then press **Sign in**. Use the eye icon beside the password field to reveal what you typed before submitting.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Đăng nhập bằng mã email" src="/user-guide/en/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Đăng nhập bằng mã email" src="/user-guide/en/auth/dark/01-login.webp" />
+A wrong username or password shows an inline error — no account is locked for a single mistake. If you have not set a password yet, use the email-code method below instead.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password sign-in form" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password sign-in form" src="/user-guide/en/auth/dark/01-login.webp" />
+
+## Sign in with an email code
+
+Click **Sign in with email code** to switch to the code flow. Enter your email and request a code; a 6-digit code arrives by email and is valid for 10 minutes.
+
+A new, unregistered email is turned into a regular account after verification, so there is no separate registration form. Five wrong attempts invalidate the code and you must request a new one.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/02-email-code.webp" />
+
+## Sign in with GitHub
+
+Tick the agreement checkbox, then select the **Continue with GitHub** button (shown selected below). Uter hands you to GitHub for authorization and returns you to the console automatically once you approve.
+
+Only the basic profile needed to sign you in is stored. If the button is missing, that provider has been disabled by the administrator.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub sign-in button selected" src="/user-guide/en/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub sign-in button selected" src="/user-guide/en/auth/dark/03-github.webp" />
+
+## Sign in with Discord
+
+With the agreement accepted, select **Continue with Discord** (shown selected below) and approve the authorization on Discord. You are redirected back to the console on success.
+
+OAuth sign-in uses your GitHub or Discord identity — you can bind or unbind these providers later under Security & Access.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Discord sign-in button selected" src="/user-guide/en/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Discord sign-in button selected" src="/user-guide/en/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  Mã có hiệu lực 10 phút và chỉ dùng một lần; sai 5 lần sẽ bị hủy và phải gửi lại. Email chưa đăng ký sẽ tạo tài khoản mới sau khi xác minh, không cần đăng ký riêng.
+  The agreement checkbox must be ticked before any sign-in method works. Session cookies are HttpOnly and rotated on login.
 </Callout>
-
-## Đăng nhập bằng GitHub
-
-1. Đồng ý điều khoản và chính sách quyền riêng tư.
-2. Nhấn "Tiếp tục với GitHub".
-3. Xác nhận trên GitHub; bạn quay lại bảng điều khiển Uter.
-
-## Đăng nhập bằng Discord
-
-1. Đồng ý điều khoản và chính sách quyền riêng tư.
-2. Nhấn "Tiếp tục với Discord".
-3. Xác nhận trên Discord; bạn quay lại bảng điều khiển Uter.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Đăng nhập GitHub và Discord" src="/user-guide/en/auth/light/02-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Đăng nhập GitHub và Discord" src="/user-guide/en/auth/dark/02-login.webp" />
-
-<Callout type="info">
-  GitHub và Discord dùng tài khoản của họ để cấp quyền; Uter chỉ lưu thông tin cơ bản cần thiết. Nếu không thấy nút, phương thức đó đang tắt.
-</Callout>
-
-## Sau khi đăng nhập
-
-Bạn vào Tổng quan. Hồ sơ hiển thị thông tin tài khoản; Bảo mật và truy cập quản lý phiên đăng nhập, liên kết tài khoản, token truy cập và cài đặt bảo mật.

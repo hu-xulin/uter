@@ -1,30 +1,29 @@
-# Tarification
+# Pricing
 
-La page Tarification liste les modèles activés et filtre par canal, fournisseur, type et tag. La recherche couvre nom, fournisseur, endpoint et tags.
+Pricing is the live catalog of models and their prices. It is the authoritative source for what a request costs before you send it.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Page Tarification" src="/user-guide/en/pricing-and-ranking/light/01-model-marketplace.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Page Tarification" src="/user-guide/en/pricing-and-ranking/dark/01-model-marketplace.webp" />
+## Browse and filter
 
-### Filtres et affichage
+Each card shows the model name, provider and price tiers. Use **Filter** to narrow by provider or capability, and switch between **Card view** and **Table view**. The **Standard** badge indicates the pricing mode.
 
-- **Canal** : canal Uter, canaux fournisseurs, etc. ; le nombre est celui des modèles du canal.
-- **Fournisseur** : Anthropic, Google, OpenAI, ByteDance, Alibaba, DeepSeek, Meta, Z.ai, Moonshot, MiniMax, etc.
-- **Tags** : raisonnement, outils, vision.
-- **Affichage** : standard, recharge (CNY), `/1M`, `/1K`.
-- **Tri et disposition** : par nom, liste ou grille.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model pricing catalog" src="/user-guide/en/pricing/light/01-pricing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model pricing catalog" src="/user-guide/en/pricing/dark/01-pricing.webp" />
 
-### Cartes de modèle
+## Price basis
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Détails du modèle" src="/user-guide/en/pricing-and-ranking/light/03-model-detail.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Détails du modèle" src="/user-guide/en/pricing-and-ranking/dark/03-model-detail.webp" />
+Prices are shown per million tokens (**/1M**) or per thousand (**/1K**) depending on the model, with separate input and output rates. Toggle the unit to compare models on the same basis.
 
-Les cartes affichent nom, fournisseur, résumé, tags, mode de facturation, prix Uter, prix officiel, remise, groupe, endpoints, état et latence/débit. « Détails » ouvre la vue complète :
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Pricing filters" src="/user-guide/en/pricing/light/02-filter.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Pricing filters" src="/user-guide/en/pricing/dark/02-filter.webp" />
 
-- **Aperçu** : TPS, latence moyenne, taux de réussite, tarifs de base et par groupe.
-- **Performance** : indicateurs récents.
-- **API** : exemples de requête copiables et endpoints.
-- **Contexte** : entrée/sortie maximales, modalités, date de connaissance et de publication.
+## Model details
+
+Open **Details** on a model to see its full rate card, supported capabilities and context limits. Use **Copy model name** to paste the exact id into your application.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model pricing details" src="/user-guide/en/pricing/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model pricing details" src="/user-guide/en/pricing/dark/03-details.webp" />
+
 
 <Callout type="info">
-  La facturation réelle suit le règlement de la requête ; la page affiche le prix de référence configuré. Prix, remises et ratios peuvent évoluer avec l'amont.
+  Prices reflect the current catalog and may differ from what was charged for older requests — check Usage Logs for historical charges.
 </Callout>

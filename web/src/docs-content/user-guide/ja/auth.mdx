@@ -1,40 +1,44 @@
-# ログイン
+# Login
 
-Uter は現在、メール認証コード・GitHub・Discord の 3 つのログイン方法を提供しています。ログインするとコンソールに入り、初回のメールコードログインでは一般ユーザーアカウントが自動作成されます。
+Uter supports three ways to sign in: email verification code, GitHub and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular account.
 
-## メール認証コードでログイン
+## Sign in with a password
 
-1. ログインページでメールアドレスを入力します。
-2. 「コードを送信」を押し、メールの 6 桁コードを確認します。
-3. コードを入力し、利用規約とプライバシーポリシーに同意します。
-4. 「ログイン」を押します。
+On the sign-in page enter your **username or email** and **password**, tick the agreement checkbox, then press **Sign in**. Use the eye icon beside the password field to reveal what you typed before submitting.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="メールコードによるログイン" src="/user-guide/en/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="メールコードによるログイン" src="/user-guide/en/auth/dark/01-login.webp" />
+A wrong username or password shows an inline error — no account is locked for a single mistake. If you have not set a password yet, use the email-code method below instead.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password sign-in form" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password sign-in form" src="/user-guide/en/auth/dark/01-login.webp" />
+
+## Sign in with an email code
+
+Click **Sign in with email code** to switch to the code flow. Enter your email and request a code; a 6-digit code arrives by email and is valid for 10 minutes.
+
+A new, unregistered email is turned into a regular account after verification, so there is no separate registration form. Five wrong attempts invalidate the code and you must request a new one.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/02-email-code.webp" />
+
+## Sign in with GitHub
+
+Tick the agreement checkbox, then select the **Continue with GitHub** button (shown selected below). Uter hands you to GitHub for authorization and returns you to the console automatically once you approve.
+
+Only the basic profile needed to sign you in is stored. If the button is missing, that provider has been disabled by the administrator.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub sign-in button selected" src="/user-guide/en/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub sign-in button selected" src="/user-guide/en/auth/dark/03-github.webp" />
+
+## Sign in with Discord
+
+With the agreement accepted, select **Continue with Discord** (shown selected below) and approve the authorization on Discord. You are redirected back to the console on success.
+
+OAuth sign-in uses your GitHub or Discord identity — you can bind or unbind these providers later under Security & Access.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Discord sign-in button selected" src="/user-guide/en/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Discord sign-in button selected" src="/user-guide/en/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  コードは 10 分間有効で 1 回のみ使用できます。5 回間違えると無効になり再送が必要です。未登録のメールは認証後にそのままアカウントが作成されます。
+  The agreement checkbox must be ticked before any sign-in method works. Session cookies are HttpOnly and rotated on login.
 </Callout>
-
-## GitHub でログイン
-
-1. 利用規約とプライバシーポリシーに同意します。
-2. 「GitHub で続行」を押します。
-3. GitHub で認可すると Uter コンソールに戻ります。
-
-## Discord でログイン
-
-1. 利用規約とプライバシーポリシーに同意します。
-2. 「Discord で続行」を押します。
-3. Discord で認可すると Uter コンソールに戻ります。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub と Discord のログイン" src="/user-guide/en/auth/light/02-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub と Discord のログイン" src="/user-guide/en/auth/dark/02-login.webp" />
-
-<Callout type="info">
-  GitHub / Discord は各サービスのアカウントで認可します。Uter はログインに必要な基本情報のみ保存します。ボタンが表示されない場合は無効化されています。
-</Callout>
-
-## ログイン後
-
-「概要」に移動します。「プロフィール」でアカウント情報、「セキュリティとアクセス」でセッション・連携・アクセストークン・セキュリティ設定を管理できます。

@@ -1,29 +1,29 @@
-# Journaux de tâches
+# Task Logs
 
-Journaux de tâches ouvre `/usage-logs/task` ; le haut de page bascule entre Journaux de dessin et Journaux de tâches.
+Task logs track asynchronous jobs such as image generation, music creation and other model-driven tasks that complete after submission.
 
-## Journaux de dessin
+## Task list
 
-Enregistre les tâches d'image. Filtrez par période et consultez heure de soumission, ID, état, progression et résultat ; ouvrez une tâche pour les détails ou artefacts.
+The table shows **Submit Time**, **Task ID**, **Duration**, **Status**, **Progress**, **Artifacts** and **Details**. Statuses include queued, processing, succeeded and failed.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Journaux de dessin" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Journaux de dessin" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs list" src="/user-guide/en/task-logs/light/01-tasks.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs list" src="/user-guide/en/task-logs/dark/01-tasks.webp" />
 
-## Journaux de tâches
+## Task details
 
-Enregistre les tâches vidéo et audio asynchrones. Filtrez par période et ID ; consultez heure, durée, état, progression, artefacts et détails.
+Click **View details** to inspect the task payload, progress history and generated artifacts, including retry information when a task fails.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Journaux de tâches" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Journaux de tâches" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task details" src="/user-guide/en/task-logs/light/02-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task details" src="/user-guide/en/task-logs/dark/02-details.webp" />
+
+## Drawing logs
+
+Switch to the **Drawing Logs** tab for image-specific jobs, with quick access to generated images and their parameters.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/task-logs/light/03-drawing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/task-logs/dark/03-drawing.webp" />
+
 
 <Callout type="info">
-  L'état et la progression viennent du serveur. Une tâche échouée ou expirée peut être remboursée selon les règles du canal. L'ID permet de retrouver la facturation dans les Journaux d'utilisation.
+  Tasks are billed when they complete; a failed task that consumed upstream resources still appears here.
 </Callout>
-
-## Relations entre journaux
-
-- **Journaux d'utilisation** : facturation et performances de chaque appel.
-- **Journaux d'audit** : connexions, sécurité et accès au compte.
-- **Journaux de dessin/tâches** : cycle de vie et artefacts des tâches asynchrones.
-
-En cas d'incident : vérifiez le compte et l'accès dans l'audit, la facturation dans l'usage, puis l'exécution asynchrone dans les tâches.

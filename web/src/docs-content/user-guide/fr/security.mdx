@@ -1,45 +1,29 @@
-# Sécurité et accès
+# Security & Access
 
-Sécurité et accès ouvre `/security`. La page couvre connexion et authentification, sessions et accès, puis opérations de compte et confidentialité.
+Security & Access centralises password, two-factor authentication, login sessions and API access tokens. Review it periodically to keep your account safe.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sécurité et accès" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sécurité et accès" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+## Password and bindings
 
-## Connexion et authentification
+**Change Password** rotates your login password. **Account Bindings** shows whether Email, GitHub and Discord are linked, with a **Bind** action for each unconnected provider.
 
-- **Changer le mot de passe** : saisissez l'ancien et le nouveau ; le nouveau doit respecter les règles affichées.
-- **Liaisons de compte** : liez ou déliez e-mail, GitHub et Discord. Gardez au moins une méthode utilisable avant de délier.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password and account bindings" src="/user-guide/en/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password and account bindings" src="/user-guide/en/security/dark/01-account.webp" />
 
-## Sessions de connexion
+## Security verification
 
-La liste affiche les sessions par navigateur et appareil : IP, méthode, dernière activité et expiration. Révoquez une session, déconnectez les autres ou la session courante.
+Enable **Two-Step Verification** to add TOTP-based 2FA; keep the backup codes somewhere safe. You can also toggle **Record IP Address** under Privacy and press **Save Settings**. **Access records** shows recent security events.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions de connexion" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions de connexion" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Two-factor authentication" src="/user-guide/en/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Two-factor authentication" src="/user-guide/en/security/dark/02-mfa.webp" />
 
-## Jetons d’accès
+## Sessions and access tokens
 
-Les jetons d'accès appellent l'API de la console depuis des scripts ; ils sont distincts des clés API de modèles. À la création :
+**Login sessions** lists active devices — use **Sign out other sessions** to revoke them. **Access tokens** are for calling the dashboard API from scripts; create one with **Create access token** and **Revoke** it when no longer needed.
 
-- **Expiration** : 30/90/180 jours, 1 an, personnalisée ou jamais.
-- **Portées** : lecture/écriture personnelles pour profil, clés API, usage, portefeuille et sécurité, selon le moindre privilège.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions and access tokens" src="/user-guide/en/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions and access tokens" src="/user-guide/en/security/dark/03-sessions.webp" />
 
-Le jeton n'est affiché qu'une fois — conservez-le immédiatement et supprimez-le ensuite.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Jetons d’accès" src="/user-guide/en/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Jetons d’accès" src="/user-guide/en/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Créer un jeton d’accès" src="/user-guide/en/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Créer un jeton d’accès" src="/user-guide/en/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## Opérations de compte et confidentialité
-
-- **Supprimer le compte** : suppression définitive, irréversible.
-- **Enregistrer l'IP** : enregistre ou non l'IP des requêtes dans les journaux d'usage et d'erreur.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Opérations de compte et confidentialité" src="/user-guide/en/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Opérations de compte et confidentialité" src="/user-guide/en/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  Mots de passe, clés, sessions et suppression de compte sont sensibles : vérifiez le compte, la cible et l'impact avant d'agir.
+<Callout type="warn">
+  The Delete Account action is permanent and removes all data. It cannot be undone.
 </Callout>

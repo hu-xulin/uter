@@ -1,15 +1,36 @@
-# Журнал использования
+# Usage Logs
 
-«Журнал использования» открывает `/usage-logs/common` и фиксирует каждый вызов модели.
+Usage logs record every model request with its token usage and cost. Use them to reconcile billing and diagnose failed calls.
 
-- **Фильтры**: период, модель, группа, тип, а также ключ, пользователь и др.
-- **Сводка**: общий расход по фильтру, RPM, TPM, чтение/запись кэша и изменения по шагам.
-- **Таблица**: время, ключ, модель, потоковость, токены, стоимость, задержка, детали.
-- **Действия**: сброс, поиск, экспорт, размер страницы, пагинация, детали.
+## Request list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Журнал использования" src="/user-guide/en/logs-and-tasks/light/01-usage-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Журнал использования" src="/user-guide/en/logs-and-tasks/dark/01-usage-logs.webp" />
+Each row shows **Time**, **Token**, **Model**, **Stream**, **Tokens**, **Cost**, **Timing** and a **Details** action. The page is paginated and reflects the selected date range.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Common logs list" src="/user-guide/en/usage-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Common logs list" src="/user-guide/en/usage-logs/dark/01-logs.webp" />
+
+## Filter logs
+
+Use the date-range picker and the **All Types** dropdown to narrow by time and request type, then press **Search**. **Reset** clears all filters.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Log filters" src="/user-guide/en/usage-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Log filters" src="/user-guide/en/usage-logs/dark/02-filters.webp" />
+
+## Request details
+
+Click **View** on a row to open the detail dialog. It shows the request and response, token breakdown, the exact charge, and timing — this is the authoritative source for a disputed charge.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Log details dialog" src="/user-guide/en/usage-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Log details dialog" src="/user-guide/en/usage-logs/dark/03-details.webp" />
+
+## Export
+
+**Export** downloads the filtered results as a file for offline analysis or accounting.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Export logs" src="/user-guide/en/usage-logs/light/04-export.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Export logs" src="/user-guide/en/usage-logs/dark/04-export.webp" />
+
 
 <Callout type="info">
-  Стоимость отражает результат расчёта запроса; платность ошибки зависит от этапа и ответа канала. Баланс и итоги сверяйте в «Кошельке».
+  Failed requests that consume upstream tokens are still logged with their cost.
 </Callout>

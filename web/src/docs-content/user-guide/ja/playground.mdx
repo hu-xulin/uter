@@ -1,26 +1,38 @@
-# プレイグラウンド
+# Playground
 
-プレイグラウンドはブラウザでモデルを試し、検証するための画面で、API と同じ呼び出し経路を使用します。
+The Playground lets you try any available model directly in the browser, with no API key or code. It is the fastest way to compare answers and tune parameters before integrating.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="プレイグラウンド" src="/user-guide/en/api-and-playground/light/01-playground.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="プレイグラウンド" src="/user-guide/en/api-and-playground/dark/01-playground.webp" />
+## Start a chat
 
-## 会話を始める
+The main chat area shows the conversation as a transcript. Type a message and press **Send** to call the selected model; replies stream in token by token. **Clear chat history** resets the conversation.
 
-1. 入力欄の下で**チャネル**と**モデル**を選びます（例:「Uter チャネル / MiniMax-M2.5」）。利用可能なモデルはチャネルごとに異なります。
-2. 「データ分析」「テキスト要約」「コード」「アドバイス」などのスタータープロンプトを使うか、自由に入力します。
-3. 「送信」を押すと応答が表示され、続けて会話できます。
+The **Attach** button adds files for models that accept them, and **Search** enables web lookup where supported.
 
-## 添付・Web 検索・パラメータ
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Playground chat" src="/user-guide/en/playground/light/01-playground.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Playground chat" src="/user-guide/en/playground/dark/01-playground.webp" />
 
-- 入力欄には添付・Web 検索・ツールのボタンがあり、モデルの対応状況に依存します。
-- パラメータパネルで temperature、Top P、最大トークンなどを調整でき、有効にした項目だけが送信されます。
-- 生成の停止、再生成、履歴編集、会話の消去が可能です。
+## Prompt suggestions
 
-<Callout type="info">
-  プレイグラウンドも API と同じ規則でログイン中アカウントの残高から課金されます。利用できないモデルやチャネルは選択肢に出ません。
+Quick prompts such as **Analyze data**, **Summarize text**, **Code** and **Get advice** fill the input with a ready-made instruction. They are useful starting points when you want to probe a model’s strengths quickly.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Prompt suggestions" src="/user-guide/en/playground/light/02-prompts.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Prompt suggestions" src="/user-guide/en/playground/dark/02-prompts.webp" />
+
+## Choose a model
+
+The model selector at the bottom switches between the models you are entitled to use. Each entry shows the model id and its provider tag, so you can test exactly the same model your API calls will hit.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Model selector" src="/user-guide/en/playground/light/03-model.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Model selector" src="/user-guide/en/playground/dark/03-model.webp" />
+
+## Tune parameters
+
+Open **Parameters** to adjust sampling controls such as temperature and top-p. Lower values make answers more deterministic; higher values increase variety. Changes apply to the next message only.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Parameters panel" src="/user-guide/en/playground/light/04-parameters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Parameters panel" src="/user-guide/en/playground/dark/04-parameters.webp" />
+
+
+<Callout type="idea">
+  Playground calls count against your quota just like API requests, so it is a realistic preview of production cost.
 </Callout>
-
-## プレイグラウンドから API へ
-
-検証後、API キー画面でキーを作成し同じモデル名で呼び出します。Base URL は `https://api.uter.ai/v1`（中国本土は `https://api.uter.cc/v1`、海外は `https://api.uter.pro/v1`）、ヘッダーは `Authorization: Bearer sk-...` です。

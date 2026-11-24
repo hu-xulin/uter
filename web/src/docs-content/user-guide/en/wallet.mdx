@@ -1,42 +1,29 @@
 # Wallet
 
-## Wallet overview
+The Wallet holds your credit balance and is the entry point for top-ups and subscriptions. Every request deducts from it; when it is empty, calls fail fast with an insufficient-balance error.
 
-Wallet in the left navigation opens `/wallet`; the top shows current balance, total usage and API requests.
+## Add funds
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Wallet overview and top-up" src="/user-guide/en/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Wallet overview and top-up" src="/user-guide/en/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+The **Add Funds** card offers preset amounts with their payment prices, plus a custom-amount field bounded by a minimum. Choose a **Payment Method** — the list is driven by server configuration and can include Alipay, WeChat, Stripe and others. The **Amount to pay:** line converts quota into the payment currency at the live exchange rate.
 
-## Top up
-
-1. In "Add funds", choose a preset ($10 to $50,000) or enter a custom amount.
-2. Check the payable amount (CNY) on the right.
-3. Choose an available payment method (for example Alipay).
-4. Complete payment; the balance arrives and can be checked at the top and in Order History.
-
-The conversion shown on the page is authoritative.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Add funds" src="/user-guide/en/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Add funds" src="/user-guide/en/wallet/dark/01-wallet.webp" />
 
 ## Order history
 
-Order History lists top-up transactions and payment history, with search by order number and a page-size switch.
+**Order History** lists every top-up attempt, including expired ones, with its status (*Success / Pending / Expired*) and a searchable trade number. Quote the trade number in any support request.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Order history" src="/user-guide/en/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Order history" src="/user-guide/en/wallet-and-subscription/dark/03-orders.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Order history" src="/user-guide/en/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Order history" src="/user-guide/en/wallet/dark/02-orders.webp" />
 
-## Redeem code
+## Subscription plans
 
-Enter a code in the "Have a redeem code?" area and click "Redeem". The quota is added to your balance. Codes are usually issued by administrators or campaigns; verify the source before redeeming.
+The **Subscription Plans** card shows each plan’s quota, validity period, quota-reset schedule and purchase limit; a *Recommended* tag marks the admin’s pick. **Subscribe Now** starts the payment flow, and subscribed plans appear with an upgrade option where applicable.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Redeem code" src="/user-guide/en/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Redeem code" src="/user-guide/en/wallet-and-subscription/dark/02-redeem-code.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Subscription plans" src="/user-guide/en/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Subscription plans" src="/user-guide/en/wallet/dark/03-plans.webp" />
 
-## Referral program
-
-The bottom of the Wallet page shows the referral program: users who register through your link count toward your invites. The panel shows pending rewards, total earnings and invite count, and lets you copy the referral link.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Referral program" src="/user-guide/en/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Referral program" src="/user-guide/en/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  Referral links and reward rules are configured by the platform; rewards stay pending until confirmed. Do not confuse a referral link with an API key — the former is only for invitations.
+  Use a real payment method for live top-ups; the demo figures shown here are for illustration only.
 </Callout>

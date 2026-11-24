@@ -1,52 +1,29 @@
-# API 金鑰
+# API 密钥
 
-API 金鑰用於呼叫 Uter 的模型介面。左側導覽「API 金鑰」進入 `/keys`，頁面頂部提供「API 位址」下拉選單，可在下列三個位址之間切換並複製：
+API 密钥是应用调用 Uter 的凭据。建议为每个应用单独创建密钥，便于分别管控与吊销。
 
-- `https://api.uter.ai`：CN2 GIA 優化線路，全球通用（預設）。
-- `https://api.uter.cc`：國內專用優化線路。
-- `https://api.uter.pro`：海外專用優化線路。
+## 密钥列表
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 金鑰列表" src="/user-guide/zh/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 金鑰列表" src="/user-guide/zh/api-keys/dark/01-keys-info.webp" />
+表格列出每个密钥的**名称**、**状态**、掩码后的值、**额度（$）**、**分组**、可用**模型**、**IP 限制**、创建时间与过期时间。密钥创建后会掩码，首次看到时请复制保存。
 
-列表展示名稱、狀態、API Key（預設遮蔽）、額度、分組、模型限制、IP 限制、建立/最後使用時間與到期時間。支援依名稱、金鑰篩選，並依狀態查看。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 密钥列表" src="/user-guide/zh/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 密钥列表" src="/user-guide/zh/api-keys/dark/01-keys.webp" />
 
-## 建立 API 金鑰
+## 创建密钥
 
-1. 點選右上角「建立 API 金鑰」。
-2. 填寫名稱，選擇分組。
-3. 設定到期時間：永不過期、1 個月、1 天、1 小時，或自訂時間。
-4. 設定建立數量；數量大於 1 時名稱會自動附加隨機後綴。
-5. 選擇「無限配額」，或關閉後設定具體額度。
-6. 展開「進階設定」可設定模型限制、IP 限制等存取約束。
-7. 點選「儲存變更」。
+点击**创建 API 密钥**打开对话框，填写名称、设置额度上限、选择分组，可按需限制模型或来源 IP，然后保存。完整密钥只显示一次。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="建立 API 金鑰" src="/user-guide/zh/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="建立 API 金鑰" src="/user-guide/zh/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="创建 API 密钥对话框" src="/user-guide/zh/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="创建 API 密钥对话框" src="/user-guide/zh/api-keys/dark/02-create.webp" />
 
-建立成功後會提示建立數量，金鑰出現在列表中。
+## 接口地址
 
-## 查看、複製與操作
+**接口地址**打开各支持协议的端点 URL 列表，复制与你的客户端匹配的地址（OpenAI 兼容、Responses、Anthropic 等）。
 
-- **查看/複製**：點選金鑰文字或複製按鈕。查看完整金鑰屬於敏感操作，需先完成安全驗證；若帳號沒有可用的驗證方式，頁面會提示先綁定驗證方式。
-- **操作選單**：可複製金鑰、複製連線資訊、開啟應用整合，或刪除金鑰。
-- **啟用/停用**：停用後該金鑰不能繼續呼叫介面，但記錄保留。
-- **編輯**：修改名稱、分組、額度、到期時間與存取限制。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="接口地址对话框" src="/user-guide/zh/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="接口地址对话框" src="/user-guide/zh/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API 金鑰操作選單" src="/user-guide/zh/api-keys/light/03-key-actions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API 金鑰操作選單" src="/user-guide/zh/api-keys/dark/03-key-actions.webp" />
 
-## 使用金鑰
-
-在請求標頭中攜帶金鑰：
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-你的金鑰" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"你好"}]}'
-```
-
-<Callout type="info">
-  金鑰等同帳號憑證，請勿寫入前端程式碼、公開倉庫或聊天記錄。發現洩漏時立即停用並刪除，再建立新金鑰。刪除金鑰前請確認沒有線上服務仍在使用。
+<Callout type="warn">
+  请把密钥当作密码保管。一旦泄露立即停用，并创建新密钥替代。
 </Callout>

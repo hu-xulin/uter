@@ -1,41 +1,36 @@
-# Hồ sơ
+# Settings
 
-## Hồ sơ
+Settings controls how the console notifies you and presents itself. These preferences are per-user and do not affect other members.
 
-Hồ sơ mở `/profile`. Phía trên hiển thị ảnh đại diện, tên hiển thị, tên người dùng, ID, nhóm, số dư, tổng mức dùng và số yêu cầu.
+## Notification methods
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Hồ sơ" src="/user-guide/en/profile-and-security/light/01-personal.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Hồ sơ" src="/user-guide/en/profile-and-security/dark/01-personal.webp" />
+Under **Notification Method**, enable the channels you want — **Email**, **Webhook**, **Bark** or **Gotify** — and configure their endpoints. Press **Save Settings** to apply.
 
-### Thông báo và hành vi
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification methods" src="/user-guide/en/profile/light/01-notifications.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification methods" src="/user-guide/en/profile/dark/01-notifications.webp" />
 
-- **Cách nhận thông báo**: email, Webhook, Bark, Gotify.
-- **Email nhận thông báo**: để trống dùng email tài khoản.
-- **Cảnh báo số dư thấp**: cảnh báo một lần khi dưới ngưỡng (USD, tùy chỉnh).
-- **Chấp nhận mô hình chưa định giá**: cho phép mô hình chưa có giá; tắt thì bị từ chối.
+## Events you are notified about
 
-Nhấn "Lưu cài đặt" sau khi thay đổi.
+**Notifications to receive** lets you choose which events trigger a message, such as low balance, failed login or completed task, so you only hear about what matters.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Thông báo và hành vi" src="/user-guide/en/profile-and-security/light/04-personal-notification-behavior-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Thông báo và hành vi" src="/user-guide/en/profile-and-security/dark/04-personal-notification-behavior-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification events" src="/user-guide/en/profile/light/02-rules.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification events" src="/user-guide/en/profile/dark/02-rules.webp" />
 
-### Ngôn ngữ
+## Interface language
 
-"Ngôn ngữ giao diện" áp dụng cho bảng điều khiển, tài liệu và thông báo lỗi API, đồng bộ trên mọi thiết bị đã đăng nhập.
+In **Preferences**, set the **Interface Language**. The guide serves the same chapter URL in every language, so switching language keeps you on the same page.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Tùy chọn ngôn ngữ" src="/user-guide/en/profile-and-security/light/05-personal-language-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Tùy chọn ngôn ngữ" src="/user-guide/en/profile-and-security/dark/05-personal-language-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Language preferences" src="/user-guide/en/profile/light/03-language.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Language preferences" src="/user-guide/en/profile/dark/03-language.webp" />
 
-### Cá nhân hóa thanh bên
+## Sidebar personalization
 
-"Cài đặt thanh bên trái" ẩn/hiện mục theo khu vực: trò chuyện (Sân chơi, Chat), quản trị (Bảng điều khiển, Khóa API, các nhật ký) và cá nhân (Ví, Hồ sơ, Bảo mật và truy cập). Lưu hoặc đặt lại mặc định.
+**Sidebar Personal Settings** controls which items appear in the **Chat Area**, **Console Area** and **Personal Center Area**. Hide sections you never use with **Reset to Default** to restore the standard layout.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Cá nhân hóa thanh bên" src="/user-guide/en/profile-and-security/light/06-personal-sidebar-settings.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Cá nhân hóa thanh bên" src="/user-guide/en/profile-and-security/dark/06-personal-sidebar-settings.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sidebar personalization" src="/user-guide/en/profile/light/04-sidebar.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sidebar personalization" src="/user-guide/en/profile/dark/04-sidebar.webp" />
 
-### Điểm danh hàng ngày
 
-Mỗi ngày điểm danh một lần nhận hạn ngạch ngẫu nhiên vào số dư. Bảng hiển thị tổng số lần, trong tháng, tổng nhận và lịch.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Điểm danh hàng ngày" src="/user-guide/en/profile-and-security/light/07-personal-check-in.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Điểm danh hàng ngày" src="/user-guide/en/profile-and-security/dark/07-personal-check-in.webp" />
+<Callout type="info">
+  Webhook notifications require a reachable URL; test the endpoint before relying on it.
+</Callout>

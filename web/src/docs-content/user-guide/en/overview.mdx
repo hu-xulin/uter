@@ -1,38 +1,36 @@
 # Overview
 
-After sign-in, choose Overview in the left navigation to open `/dashboard/overview`. It summarizes balance, the last 24 hours of usage, request count, API endpoints, announcements, FAQ and uptime.
+Overview is the landing page after sign-in. It summarises your balance and usage, exposes the API connection details, and answers common onboarding questions.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Overview: get started and usage" src="/user-guide/en/dashboard/light/01-overview-get-started.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Overview: get started and usage" src="/user-guide/en/dashboard/dark/01-overview-get-started.webp" />
+## Usage at a glance
 
-### Get started
+The top cards show your current balance, today’s requests and recent consumption. These numbers come from the same quota ledger that billing uses, so they reflect real deductions.
 
-The top of the page guides you through three steps:
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Usage at a glance" src="/user-guide/en/overview/light/01-glance.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Usage at a glance" src="/user-guide/en/overview/dark/01-glance.webp" />
 
-1. **Create an API key** on the API Keys page.
-2. **Add quota** in Wallet, or redeem a code.
-3. **Send a request** in the Playground or your own client.
+## API info
 
-The right side shows the selected model, auth status and a copyable `curl` example. "Hide setup guide" collapses this area.
+The **API Info** card lists your Base URL and shows a **Copy URL** button. Point your OpenAI-compatible client at this address, then use a key from API Keys to authenticate.
 
-### Usage and API information
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API info and base URL" src="/user-guide/en/overview/light/02-api-info.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API info and base URL" src="/user-guide/en/overview/dark/02-api-info.webp" />
 
-The page shows the last 24 hours, lifetime usage, request count and remaining balance, with an estimate of how long it will last. API information lists three endpoints:
+## FAQ
 
-- `https://api.uter.ai`: CN2 GIA optimized, globally available.
-- `https://api.uter.cc`: optimized for mainland China.
-- `https://api.uter.pro`: optimized for overseas networks.
+The **FAQ** accordion covers what Uter is, registration, Base URL, supported models, pricing, top-ups, error codes (401 / 429 / timeout), data safety, balance queries and support. Click any question to expand its answer.
 
-Each endpoint offers a latency check and a copy button.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="FAQ" src="/user-guide/en/overview/light/03-faq.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="FAQ" src="/user-guide/en/overview/dark/03-faq.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Overview: usage and API information" src="/user-guide/en/dashboard/light/02-overview-info-1.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Overview: usage and API information" src="/user-guide/en/dashboard/dark/02-overview-info-1.webp" />
+## Uptime
 
-### Announcements, FAQ and uptime
+The **Uptime** panel reports service availability over time. A dip here usually corresponds to a maintenance window or an upstream provider incident.
 
-- **Announcements**: the latest platform notices, or an empty state.
-- **FAQ**: endpoints, models, billing, top-up, errors, data retention, balance and support.
-- **Uptime**: grouped monitoring when Uptime Kuma is configured; otherwise a hint is shown.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Uptime" src="/user-guide/en/overview/light/04-uptime.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Uptime" src="/user-guide/en/overview/dark/04-uptime.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Overview: announcements and FAQ" src="/user-guide/en/dashboard/light/03-overview-info-2.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Overview: announcements and FAQ" src="/user-guide/en/dashboard/dark/03-overview-info-2.webp" />
+
+<Callout type="info">
+  Use the Setup guide on this page if this is your first time connecting a client.
+</Callout>

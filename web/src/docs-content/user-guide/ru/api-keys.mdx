@@ -1,52 +1,29 @@
-# Ключи API
+# API Keys
 
-Ключи API вызывают модельные эндпоинты Uter. Откройте `/keys` в левом меню. Меню адреса API сверху переключает и копирует три эндпоинта:
+API keys are the credentials your applications use to call Uter. Create a separate key per app so you can control and revoke access independently.
 
-- `https://api.uter.ai` — CN2 GIA, глобально (по умолчанию).
-- `https://api.uter.cc` — для материкового Китая.
-- `https://api.uter.pro` — для зарубежья.
+## Key list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Список ключей API" src="/user-guide/en/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Список ключей API" src="/user-guide/en/api-keys/dark/01-keys-info.webp" />
+The table lists each key with its **Name**, **Status**, masked value, **Quota ($)**, **Group**, allowed **Models**, **IP Restriction**, creation time and expiry. Keys are masked after creation — copy the value when you first see it.
 
-Список показывает имя, состояние, маскированный ключ, квоту, группу, ограничения моделей и IP, время создания/использования и срок. Есть фильтры по имени, ключу и состоянию.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API keys list" src="/user-guide/en/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API keys list" src="/user-guide/en/api-keys/dark/01-keys.webp" />
 
-## Создание ключа API
+## Create a key
 
-1. Нажмите «Создать ключ API».
-2. Укажите имя и группу.
-3. Задайте срок: бессрочно, 1 месяц, 1 день, 1 час или вручную.
-4. Выберите количество; при >1 к имени добавляется случайный суффикс.
-5. Включите «Безлимитная квота» или задайте сумму.
-6. Разверните «Дополнительно» для ограничений моделей и IP.
-7. Нажмите «Сохранить изменения».
+Press **Create API Key** to open the creation dialog. Give the key a name, set a quota limit, choose a group and optionally restrict models or source IPs, then save. The full key is shown once.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Создание ключа API" src="/user-guide/en/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Создание ключа API" src="/user-guide/en/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create API key dialog" src="/user-guide/en/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create API key dialog" src="/user-guide/en/api-keys/dark/02-create.webp" />
 
-Консоль сообщает количество созданных ключей, они появляются в списке.
+## API addresses
 
-## Просмотр, копирование и управление
+**API Addresses** opens the list of endpoint URLs for each supported protocol. Copy the one that matches your client (OpenAI-compatible, Responses, Anthropic, etc.).
 
-- **Просмотр/копирование**: нажмите ключ или кнопку копирования. Показ полного ключа — чувствительная операция с проверкой безопасности; при её отсутствии страница предложит настроить способ.
-- **Меню строки**: копировать ключ, копировать данные подключения, открыть интеграцию, удалить.
-- **Включить/отключить**: отключённый ключ не вызывает API, записи сохраняются.
-- **Изменить**: имя, группа, квота, срок и ограничения.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API addresses dialog" src="/user-guide/en/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API addresses dialog" src="/user-guide/en/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Действия с ключом API" src="/user-guide/en/api-keys/light/03-view-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Действия с ключом API" src="/user-guide/en/api-keys/dark/03-view-key.webp" />
 
-## Использование ключа
-
-Передайте ключ в заголовке:
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-ваш-ключ" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"привет"}]}'
-```
-
-<Callout type="info">
-  Ключ — это учётные данные: не помещайте его во фронтенд, публичный репозиторий или чат. При утечке отключите и удалите ключ, создайте новый. Перед удалением убедитесь, что им не пользуются в продакшене.
+<Callout type="warn">
+  Treat keys like passwords. Disable a key immediately if it leaks, then create a replacement.
 </Callout>

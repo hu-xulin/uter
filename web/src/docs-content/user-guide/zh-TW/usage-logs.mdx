@@ -1,15 +1,36 @@
-# 使用日誌
+# 使用日志
 
-左側導覽「使用日誌」進入 `/usage-logs/common`，記錄每一次模型呼叫。
+使用日志记录每次模型请求及其 token 用量与费用，用于核对账单和排查失败调用。
 
-- **篩選**：時間範圍、模型名稱、分組、類型，以及展開後的權杖、使用者等條件。
-- **統計條**：目前篩選結果的總用量、RPM、TPM、快取讀/寫，以及每一步的變化量。
-- **列表**：時間、權杖、模型、串流/非串流、Tokens、費用、耗時與詳情。
-- **操作**：重設、搜尋、匯出、調整每頁數量、分頁與查看詳情。
+## 请求列表
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="使用日誌" src="/user-guide/zh/logs-and-tasks/light/01-usage-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="使用日誌" src="/user-guide/zh/logs-and-tasks/dark/01-usage-logs.webp" />
+每行展示**时间**、**令牌**、**模型**、**流式**、**Token 数**、**费用**、**耗时**及**详情**操作。列表分页展示，并遵循所选时间范围。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="调用日志列表" src="/user-guide/zh/usage-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="调用日志列表" src="/user-guide/zh/usage-logs/dark/01-logs.webp" />
+
+## 筛选日志
+
+使用日期范围选择与**所有类型**下拉框按时间和请求类型收窄，然后点击**搜索**。**重置**清空所有筛选条件。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="日志筛选" src="/user-guide/zh/usage-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="日志筛选" src="/user-guide/zh/usage-logs/dark/02-filters.webp" />
+
+## 请求详情
+
+点击某行的**查看**打开详情对话框，展示请求与响应、token 明细、实际扣费与耗时——这是核对争议扣费的权威依据。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="日志详情对话框" src="/user-guide/zh/usage-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="日志详情对话框" src="/user-guide/zh/usage-logs/dark/03-details.webp" />
+
+## 导出
+
+**导出**将筛选结果下载为文件，便于离线分析或对账。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="导出日志" src="/user-guide/zh/usage-logs/light/04-export.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="导出日志" src="/user-guide/zh/usage-logs/dark/04-export.webp" />
+
 
 <Callout type="info">
-  日誌中的費用依請求結算結果記錄；失敗請求是否計費取決於失敗階段與管道回應。餘額與總用量可在「錢包」交叉核對。
+  消耗了上游 token 的失败请求同样会记录并计费。
 </Callout>

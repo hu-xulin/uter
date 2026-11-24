@@ -1,52 +1,29 @@
 # API Keys
 
-API keys call Uter's model endpoints. Open `/keys` from the left navigation. The API address menu at the top switches and copies three endpoints:
+API keys are the credentials your applications use to call Uter. Create a separate key per app so you can control and revoke access independently.
 
-- `https://api.uter.ai`: CN2 GIA optimized, globally available (default).
-- `https://api.uter.cc`: optimized for mainland China.
-- `https://api.uter.pro`: optimized for overseas networks.
+## Key list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API key list" src="/user-guide/en/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API key list" src="/user-guide/en/api-keys/dark/01-keys-info.webp" />
+The table lists each key with its **Name**, **Status**, masked value, **Quota ($)**, **Group**, allowed **Models**, **IP Restriction**, creation time and expiry. Keys are masked after creation — copy the value when you first see it.
 
-The list shows name, status, masked key, quota, group, model limits, IP limits, creation/last-used time and expiry. Filter by name or key, and view by status.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API keys list" src="/user-guide/en/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API keys list" src="/user-guide/en/api-keys/dark/01-keys.webp" />
 
-## Create an API key
+## Create a key
 
-1. Click "Create API Key" in the top right.
-2. Enter a name and choose a group.
-3. Set expiry: never, 1 month, 1 day, 1 hour, or a custom time.
-4. Choose how many keys to create; names get a random suffix when more than one.
-5. Enable "Unlimited quota", or set a specific amount.
-6. Expand "Advanced settings" for model limits, IP limits and other constraints.
-7. Click "Save changes".
+Press **Create API Key** to open the creation dialog. Give the key a name, set a quota limit, choose a group and optionally restrict models or source IPs, then save. The full key is shown once.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create an API key" src="/user-guide/en/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create an API key" src="/user-guide/en/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create API key dialog" src="/user-guide/en/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create API key dialog" src="/user-guide/en/api-keys/dark/02-create.webp" />
 
-The console reports how many keys were created and the keys appear in the list.
+## API addresses
 
-## View, copy and manage
+**API Addresses** opens the list of endpoint URLs for each supported protocol. Copy the one that matches your client (OpenAI-compatible, Responses, Anthropic, etc.).
 
-- **View/copy**: click the key text or the copy button. Revealing the full key is sensitive and requires a security verification step; the page prompts you to add one when none is available.
-- **Row menu**: copy the key, copy connection info, open app integration, or delete.
-- **Enable/disable**: a disabled key cannot call the API; its records remain.
-- **Edit**: change name, group, quota, expiry and access constraints.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API addresses dialog" src="/user-guide/en/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API addresses dialog" src="/user-guide/en/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API key actions" src="/user-guide/en/api-keys/light/03-view-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API key actions" src="/user-guide/en/api-keys/dark/03-view-key.webp" />
 
-## Use the key
-
-Put the key in the request header:
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-your-key" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"hello"}]}'
-```
-
-<Callout type="info">
-  A key is an account credential: never put it in frontend code, public repositories or chat logs. If leaked, disable and delete it, then create a new one. Confirm no production service still uses a key before deleting it.
+<Callout type="warn">
+  Treat keys like passwords. Disable a key immediately if it leaks, then create a replacement.
 </Callout>

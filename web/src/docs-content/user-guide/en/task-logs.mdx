@@ -1,29 +1,29 @@
 # Task Logs
 
-Task Logs in the left navigation opens `/usage-logs/task`; the top of the page switches between Drawing Logs and Task Logs.
+Task logs track asynchronous jobs such as image generation, music creation and other model-driven tasks that complete after submission.
+
+## Task list
+
+The table shows **Submit Time**, **Task ID**, **Duration**, **Status**, **Progress**, **Artifacts** and **Details**. Statuses include queued, processing, succeeded and failed.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs list" src="/user-guide/en/task-logs/light/01-tasks.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs list" src="/user-guide/en/task-logs/dark/01-tasks.webp" />
+
+## Task details
+
+Click **View details** to inspect the task payload, progress history and generated artifacts, including retry information when a task fails.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task details" src="/user-guide/en/task-logs/light/02-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task details" src="/user-guide/en/task-logs/dark/02-details.webp" />
 
 ## Drawing logs
 
-Records image tasks. Filter by time range and inspect submission time, task ID, status, progress and result; open a task for details or artifacts.
+Switch to the **Drawing Logs** tab for image-specific jobs, with quick access to generated images and their parameters.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/task-logs/light/03-drawing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/task-logs/dark/03-drawing.webp" />
 
-## Task logs
-
-Records asynchronous video and audio tasks. Filter by time range and task ID; inspect submission time, duration, status, progress, artifacts and details.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
 
 <Callout type="info">
-  Task status and progress come from the server. Failed or timed-out tasks may be refunded according to the channel rules. Use the task ID to find the matching billing record in Usage Logs.
+  Tasks are billed when they complete; a failed task that consumed upstream resources still appears here.
 </Callout>
-
-## How the logs relate
-
-- **Usage Logs**: billing and performance for each model call.
-- **Audit Logs**: sign-in, security and account-access events.
-- **Drawing/Task Logs**: asynchronous task lifecycle and artifacts.
-
-When troubleshooting, confirm the account and access in Audit Logs, verify billing in Usage Logs, then inspect async results in Task Logs.

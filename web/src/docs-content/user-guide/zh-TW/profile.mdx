@@ -1,41 +1,36 @@
-# 個人資料
+# 设置
 
-## 個人資料
+设置控制控制台如何通知你以及如何呈现界面。这些偏好按用户保存，不影响其他成员。
 
-點選左側導覽「個人資料」進入 `/profile`。頁面頂部顯示頭像、顯示名稱、使用者名稱、使用者 ID、分組、餘額、總用量與請求數。
+## 通知方式
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="個人資料頁" src="/user-guide/zh/profile-and-security/light/01-personal.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="個人資料頁" src="/user-guide/zh/profile-and-security/dark/01-personal.webp" />
+在**通知方式**下启用你需要的渠道——**邮件**、**Webhook**、**Bark** 或 **Gotify**——并配置对应地址，点击**保存设置**生效。
 
-### 通知與行為偏好
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="通知方式" src="/user-guide/zh/profile/light/01-notifications.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="通知方式" src="/user-guide/zh/profile/dark/01-notifications.webp" />
 
-- **通知方式**：電子郵件、Webhook、Bark、Gotify，可依需切換。
-- **通知電子郵件**：留空時使用帳號電子郵件。
-- **餘額不足提醒**：餘額低於閾值時提醒一次，可自訂提醒閾值（USD）。
-- **接受未定價模型**：允許呼叫尚未設定價格的模型；關閉後此類模型會被拒絕。
+## 通知事项
 
-修改後點選「儲存設定」。
+**接收的通知**可选择哪些事件触发消息，例如余额不足、登录失败或任务完成，让你只关注真正重要的内容。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="通知與行為偏好" src="/user-guide/zh/profile-and-security/light/04-personal-notification-behavior-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="通知與行為偏好" src="/user-guide/zh/profile-and-security/dark/04-personal-notification-behavior-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="通知事项" src="/user-guide/zh/profile/light/02-rules.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="通知事项" src="/user-guide/zh/profile/dark/02-rules.webp" />
 
-### 語言偏好
+## 界面语言
 
-「介面語言」決定主控台、文件與 API 錯誤訊息使用的語言。語言偏好會同步到所有已登入裝置。
+在**偏好设置**中设置**界面语言**。用户指南各语言共用同一章节 URL，因此切换语言后仍停留在当前页面。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="語言偏好" src="/user-guide/zh/profile-and-security/light/05-personal-language-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="語言偏好" src="/user-guide/zh/profile-and-security/dark/05-personal-language-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="语言偏好" src="/user-guide/zh/profile/light/03-language.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="语言偏好" src="/user-guide/zh/profile/dark/03-language.webp" />
 
-### 側邊欄個人化
+## 侧边栏个性化
 
-「左側邊欄個人設定」可以依區域隱藏或顯示選單項目：聊天區域（遊樂場、聊天）、管理區域（資料看板、API 金鑰、使用日誌、審計日誌、繪圖日誌、任務日誌）與個人中心區域（錢包、個人資料、安全與存取）。調整後點選「儲存變更」，需要時可用「重設為預設」。
+**侧边栏个性化设置**控制**对话区**、**控制台区**与**个人中心区**显示哪些条目。可隐藏不用的板块，或用**恢复默认**还原标准布局。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="側邊欄個人化設定" src="/user-guide/zh/profile-and-security/light/06-personal-sidebar-settings.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="側邊欄個人化設定" src="/user-guide/zh/profile-and-security/dark/06-personal-sidebar-settings.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="侧边栏个性化" src="/user-guide/zh/profile/light/04-sidebar.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="侧边栏个性化" src="/user-guide/zh/profile/dark/04-sidebar.webp" />
 
-### 每日簽到
 
-每日可簽到一次，獎勵為隨機額度，直接加入帳戶餘額。面板展示累計簽到次數、本月獲得與累計獲得，並提供簽到日曆。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="每日簽到" src="/user-guide/zh/profile-and-security/light/07-personal-check-in.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="每日簽到" src="/user-guide/zh/profile-and-security/dark/07-personal-check-in.webp" />
+<Callout type="info">
+  Webhook 通知需要可访问的 URL，正式依赖前请先测试端点。
+</Callout>

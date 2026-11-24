@@ -1,45 +1,29 @@
 # Security & Access
 
-Security & Access in the left navigation opens `/security`. The page covers sign-in and authentication, sessions and access, and account operations and privacy.
+Security & Access centralises password, two-factor authentication, login sessions and API access tokens. Review it periodically to keep your account safe.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Security and access" src="/user-guide/en/profile-and-security/light/08-personal-security.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Security and access" src="/user-guide/en/profile-and-security/dark/08-personal-security.webp" />
+## Password and bindings
 
-## Sign-in and authentication
+**Change Password** rotates your login password. **Account Bindings** shows whether Email, GitHub and Discord are linked, with a **Bind** action for each unconnected provider.
 
-- **Change password**: enter the current and new password; the new one must meet the strength rules shown.
-- **Account bindings**: bind or unbind email, GitHub and Discord. Bound methods can sign in; keep at least one usable method before unbinding.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password and account bindings" src="/user-guide/en/security/light/01-account.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password and account bindings" src="/user-guide/en/security/dark/01-account.webp" />
 
-## Login sessions
+## Security verification
 
-Login Sessions lists sessions across browsers and devices with IP, sign-in method, last activity and expiry. Revoke one session, sign out others, or sign out the current session.
+Enable **Two-Step Verification** to add TOTP-based 2FA; keep the backup codes somewhere safe. You can also toggle **Record IP Address** under Privacy and press **Save Settings**. **Access records** shows recent security events.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Login sessions" src="/user-guide/en/profile-and-security/light/11-personal-login-sessions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Login sessions" src="/user-guide/en/profile-and-security/dark/11-personal-login-sessions.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Two-factor authentication" src="/user-guide/en/security/light/02-mfa.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Two-factor authentication" src="/user-guide/en/security/dark/02-mfa.webp" />
 
-## Access tokens
+## Sessions and access tokens
 
-Access tokens call the console API from scripts or automation; they are separate from the API keys used for model calls. When creating one you choose:
+**Login sessions** lists active devices — use **Sign out other sessions** to revoke them. **Access tokens** are for calling the dashboard API from scripts; create one with **Create access token** and **Revoke** it when no longer needed.
 
-- **Expiry**: 30/90/180 days, 1 year, custom, or never.
-- **Scopes**: personal-scope read/edit permissions for profile, API keys, usage, wallet and account security, following least privilege.
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sessions and access tokens" src="/user-guide/en/security/light/03-sessions.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sessions and access tokens" src="/user-guide/en/security/dark/03-sessions.webp" />
 
-The token is shown in full only once — store it immediately and delete it when no longer needed.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Access tokens" src="/user-guide/en/profile-and-security/light/12-personal-access-tokens.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Access tokens" src="/user-guide/en/profile-and-security/dark/12-personal-access-tokens.webp" />
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create an access token" src="/user-guide/en/profile-and-security/light/13-personal-access-token-create.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create an access token" src="/user-guide/en/profile-and-security/dark/13-personal-access-token-create.webp" />
-
-## Account operations and privacy
-
-- **Delete account**: permanently removes the account and data; this cannot be undone.
-- **Record IP address**: controls whether request IPs are stored in usage and error logs.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Account actions and privacy" src="/user-guide/en/profile-and-security/light/14-personal-account-privacy.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Account actions and privacy" src="/user-guide/en/profile-and-security/dark/14-personal-account-privacy.webp" />
-
-<Callout type="info">
-  Passwords, keys, sessions and account deletion are sensitive: confirm the account, the target and the impact before acting.
+<Callout type="warn">
+  The Delete Account action is permanent and removes all data. It cannot be undone.
 </Callout>

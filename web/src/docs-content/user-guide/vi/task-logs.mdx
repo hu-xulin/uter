@@ -1,29 +1,29 @@
-# Nhật ký tác vụ
+# Task Logs
 
-Nhật ký tác vụ mở `/usage-logs/task`; phía trên chuyển giữa Nhật ký vẽ và Nhật ký tác vụ.
+Task logs track asynchronous jobs such as image generation, music creation and other model-driven tasks that complete after submission.
 
-## Nhật ký vẽ
+## Task list
 
-Ghi lại tác vụ hình ảnh. Lọc theo thời gian; xem thời điểm gửi, ID tác vụ, trạng thái, tiến độ và kết quả; mở tác vụ để xem chi tiết hoặc tệp kết quả.
+The table shows **Submit Time**, **Task ID**, **Duration**, **Status**, **Progress**, **Artifacts** and **Details**. Statuses include queued, processing, succeeded and failed.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Nhật ký vẽ" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Nhật ký vẽ" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs list" src="/user-guide/en/task-logs/light/01-tasks.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs list" src="/user-guide/en/task-logs/dark/01-tasks.webp" />
 
-## Nhật ký tác vụ
+## Task details
 
-Ghi lại tác vụ video và âm thanh bất đồng bộ. Lọc theo thời gian và ID; xem thời điểm gửi, thời lượng, trạng thái, tiến độ, tệp kết quả và chi tiết.
+Click **View details** to inspect the task payload, progress history and generated artifacts, including retry information when a task fails.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Nhật ký tác vụ" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Nhật ký tác vụ" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task details" src="/user-guide/en/task-logs/light/02-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task details" src="/user-guide/en/task-logs/dark/02-details.webp" />
+
+## Drawing logs
+
+Switch to the **Drawing Logs** tab for image-specific jobs, with quick access to generated images and their parameters.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/task-logs/light/03-drawing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/task-logs/dark/03-drawing.webp" />
+
 
 <Callout type="info">
-  Trạng thái và tiến độ lấy từ máy chủ. Tác vụ lỗi hoặc quá thời gian có thể được hoàn theo quy tắc của kênh. ID tác vụ giúp tìm bản ghi tính phí trong Nhật ký sử dụng.
+  Tasks are billed when they complete; a failed task that consumed upstream resources still appears here.
 </Callout>
-
-## Quan hệ giữa các nhật ký
-
-- **Sử dụng**: tính phí và hiệu năng từng lần gọi.
-- **Kiểm toán**: đăng nhập, bảo mật và truy cập tài khoản.
-- **Vẽ/tác vụ**: vòng đời và tệp kết quả của tác vụ bất đồng bộ.
-
-Khi xử lý sự cố: kiểm toán → sử dụng → tác vụ.

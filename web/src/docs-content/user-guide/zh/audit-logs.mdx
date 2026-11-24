@@ -1,10 +1,29 @@
 # 审计日志
 
-「审计日志」进入 `/usage-logs/audit`，记录登录、安全与访问相关事件。
+审计日志记录登录、设置变更与管理操作等安全相关事件，为只读记录，与使用日志相互独立。
 
-- 支持时间范围、结果（全部/成功/失败）和分类筛选。
-- 表格展示时间、用户名、事件、IP、客户端、请求方法和路由。
-- 点击「查看」或展开可查看事件详情，用于排查异常登录、密钥查看、账户安全操作等。
+## 事件列表
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="审计日志" src="/user-guide/zh/logs-and-tasks/light/04-audit-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="审计日志" src="/user-guide/zh/logs-and-tasks/dark/04-audit-logs.webp" />
+列包括**时间**、**用户名**、**事件**、**IP**、**客户端**、**方法**、**路由**、**HTTP** 状态、**结果**与**详情**。每次登录和配置变更都会留下记录。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="审计日志列表" src="/user-guide/zh/audit-logs/light/01-logs.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="审计日志列表" src="/user-guide/zh/audit-logs/dark/01-logs.webp" />
+
+## 筛选事件
+
+使用**日期范围**、**结果**与**分类**筛选，再点击**搜索**。这是排查可疑登录最快的方式。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="审计筛选" src="/user-guide/zh/audit-logs/light/02-filters.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="审计筛选" src="/user-guide/zh/audit-logs/dark/02-filters.webp" />
+
+## 事件详情
+
+点击某行的**详情**查看完整内容：操作者、动作、路由、状态以及当时记录的请求上下文。
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="审计事件详情" src="/user-guide/zh/audit-logs/light/03-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="审计事件详情" src="/user-guide/zh/audit-logs/dark/03-details.webp" />
+
+
+<Callout type="info">
+  审计记录用于安全审查，无法在控制台中修改。
+</Callout>

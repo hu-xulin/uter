@@ -1,41 +1,36 @@
-# Profil
+# Settings
 
-## Profil
+Settings controls how the console notifies you and presents itself. These preferences are per-user and do not affect other members.
 
-Profil ouvre `/profile`. Le haut affiche avatar, nom affiché, nom d'utilisateur, ID, groupe, solde, usage total et nombre de requêtes.
+## Notification methods
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Profil" src="/user-guide/en/profile-and-security/light/01-personal.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Profil" src="/user-guide/en/profile-and-security/dark/01-personal.webp" />
+Under **Notification Method**, enable the channels you want — **Email**, **Webhook**, **Bark** or **Gotify** — and configure their endpoints. Press **Save Settings** to apply.
 
-### Notifications et comportement
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification methods" src="/user-guide/en/profile/light/01-notifications.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification methods" src="/user-guide/en/profile/dark/01-notifications.webp" />
 
-- **Moyen de notification** : e-mail, Webhook, Bark ou Gotify.
-- **E-mail de notification** : vide = e-mail du compte.
-- **Alerte de solde faible** : un avertissement sous un seuil (USD, réglable).
-- **Accepter les modèles sans prix** : autoriser les modèles non tarifés ; sinon ils sont refusés.
+## Events you are notified about
 
-Cliquez sur « Enregistrer » après modification.
+**Notifications to receive** lets you choose which events trigger a message, such as low balance, failed login or completed task, so you only hear about what matters.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notifications et comportement" src="/user-guide/en/profile-and-security/light/04-personal-notification-behavior-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notifications et comportement" src="/user-guide/en/profile-and-security/dark/04-personal-notification-behavior-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification events" src="/user-guide/en/profile/light/02-rules.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification events" src="/user-guide/en/profile/dark/02-rules.webp" />
 
-### Langue
+## Interface language
 
-La langue de l'interface s'applique à la console, à la documentation et aux messages d'erreur API. Elle se synchronise sur tous les appareils connectés.
+In **Preferences**, set the **Interface Language**. The guide serves the same chapter URL in every language, so switching language keeps you on the same page.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Préférence de langue" src="/user-guide/en/profile-and-security/light/05-personal-language-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Préférence de langue" src="/user-guide/en/profile-and-security/dark/05-personal-language-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Language preferences" src="/user-guide/en/profile/light/03-language.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Language preferences" src="/user-guide/en/profile/dark/03-language.webp" />
 
-### Personnalisation de la barre latérale
+## Sidebar personalization
 
-Les paramètres de barre latérale masquent ou affichent des éléments par zone : chat (Aire de jeux, Chat), administration (Tableau de bord, Clés API, Journaux) et personnel (Portefeuille, Profil, Sécurité et accès). Enregistrez ou réinitialisez.
+**Sidebar Personal Settings** controls which items appear in the **Chat Area**, **Console Area** and **Personal Center Area**. Hide sections you never use with **Reset to Default** to restore the standard layout.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Personnalisation de la barre latérale" src="/user-guide/en/profile-and-security/light/06-personal-sidebar-settings.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Personnalisation de la barre latérale" src="/user-guide/en/profile-and-security/dark/06-personal-sidebar-settings.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sidebar personalization" src="/user-guide/en/profile/light/04-sidebar.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sidebar personalization" src="/user-guide/en/profile/dark/04-sidebar.webp" />
 
-### Pointage quotidien
 
-Un pointage par jour donne un quota aléatoire ajouté au solde. Le panneau affiche le total, le mois et le cumul, avec un calendrier.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Pointage quotidien" src="/user-guide/en/profile-and-security/light/07-personal-check-in.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Pointage quotidien" src="/user-guide/en/profile-and-security/dark/07-personal-check-in.webp" />
+<Callout type="info">
+  Webhook notifications require a reachable URL; test the endpoint before relying on it.
+</Callout>

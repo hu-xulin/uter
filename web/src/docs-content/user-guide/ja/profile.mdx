@@ -1,41 +1,36 @@
-# プロフィール
+# Settings
 
-## プロフィール
+Settings controls how the console notifies you and presents itself. These preferences are per-user and do not affect other members.
 
-左ナビゲーションの「プロフィール」で `/profile` を開きます。上部にアバター、表示名、ユーザー名、ID、グループ、残高、累計使用量、リクエスト数を表示します。
+## Notification methods
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="プロフィール" src="/user-guide/en/profile-and-security/light/01-personal.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="プロフィール" src="/user-guide/en/profile-and-security/dark/01-personal.webp" />
+Under **Notification Method**, enable the channels you want — **Email**, **Webhook**, **Bark** or **Gotify** — and configure their endpoints. Press **Save Settings** to apply.
 
-### 通知と動作設定
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification methods" src="/user-guide/en/profile/light/01-notifications.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification methods" src="/user-guide/en/profile/dark/01-notifications.webp" />
 
-- **通知方法**: メール、Webhook、Bark、Gotify。
-- **通知メール**: 空欄ならアカウントのメール。
-- **残高不足通知**: しきい値（USD）を下回った時に 1 回通知。
-- **未価格モデルの許可**: 価格未設定のモデルを許可。オフなら拒否。
+## Events you are notified about
 
-変更後「設定を保存」を押します。
+**Notifications to receive** lets you choose which events trigger a message, such as low balance, failed login or completed task, so you only hear about what matters.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="通知と動作設定" src="/user-guide/en/profile-and-security/light/04-personal-notification-behavior-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="通知と動作設定" src="/user-guide/en/profile-and-security/dark/04-personal-notification-behavior-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Notification events" src="/user-guide/en/profile/light/02-rules.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Notification events" src="/user-guide/en/profile/dark/02-rules.webp" />
 
-### 言語設定
+## Interface language
 
-「表示言語」はコンソール、ドキュメント、API エラーメッセージの言語を決め、ログイン中の全端末に同期されます。
+In **Preferences**, set the **Interface Language**. The guide serves the same chapter URL in every language, so switching language keeps you on the same page.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="言語設定" src="/user-guide/en/profile-and-security/light/05-personal-language-preferences.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="言語設定" src="/user-guide/en/profile-and-security/dark/05-personal-language-preferences.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Language preferences" src="/user-guide/en/profile/light/03-language.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Language preferences" src="/user-guide/en/profile/dark/03-language.webp" />
 
-### サイドバーの個人設定
+## Sidebar personalization
 
-「左サイドバー個人設定」で領域別にメニューを表示/非表示にできます。チャット（プレイグラウンド、チャット）、管理（ダッシュボード、API キー、各ログ）、個人（ウォレット、プロフィール、セキュリティとアクセス）。保存または既定に戻せます。
+**Sidebar Personal Settings** controls which items appear in the **Chat Area**, **Console Area** and **Personal Center Area**. Hide sections you never use with **Reset to Default** to restore the standard layout.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="サイドバー個人設定" src="/user-guide/en/profile-and-security/light/06-personal-sidebar-settings.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="サイドバー個人設定" src="/user-guide/en/profile-and-security/dark/06-personal-sidebar-settings.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Sidebar personalization" src="/user-guide/en/profile/light/04-sidebar.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Sidebar personalization" src="/user-guide/en/profile/dark/04-sidebar.webp" />
 
-### 毎日のチェックイン
 
-1 日 1 回チェックインするとランダムなクォータが残高に加算されます。累計回数、今月分、累計報酬、カレンダーを表示します。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="毎日のチェックイン" src="/user-guide/en/profile-and-security/light/07-personal-check-in.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="毎日のチェックイン" src="/user-guide/en/profile-and-security/dark/07-personal-check-in.webp" />
+<Callout type="info">
+  Webhook notifications require a reachable URL; test the endpoint before relying on it.
+</Callout>

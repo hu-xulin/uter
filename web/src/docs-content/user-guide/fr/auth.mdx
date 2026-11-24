@@ -1,40 +1,44 @@
-# Connexion
+# Login
 
-Uter propose trois méthodes de connexion : code par e-mail, GitHub et Discord. Une connexion réussie ouvre la console ; la première connexion par code crée automatiquement un compte utilisateur standard.
+Uter supports three ways to sign in: email verification code, GitHub and Discord. A successful sign-in opens the console; the first email-code sign-in automatically creates a regular account.
 
-## Connexion par code e-mail
+## Sign in with a password
 
-1. Ouvrez la page de connexion et saisissez votre adresse e-mail.
-2. Cliquez sur « Envoyer le code » et utilisez le code à 6 chiffres reçu.
-3. Saisissez le code et acceptez les conditions d'utilisation et la politique de confidentialité.
-4. Cliquez sur « Se connecter ».
+On the sign-in page enter your **username or email** and **password**, tick the agreement checkbox, then press **Sign in**. Use the eye icon beside the password field to reveal what you typed before submitting.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Connexion par code e-mail" src="/user-guide/en/auth/light/01-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Connexion par code e-mail" src="/user-guide/en/auth/dark/01-login.webp" />
+A wrong username or password shows an inline error — no account is locked for a single mistake. If you have not set a password yet, use the email-code method below instead.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Password sign-in form" src="/user-guide/en/auth/light/01-login.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Password sign-in form" src="/user-guide/en/auth/dark/01-login.webp" />
+
+## Sign in with an email code
+
+Click **Sign in with email code** to switch to the code flow. Enter your email and request a code; a 6-digit code arrives by email and is valid for 10 minutes.
+
+A new, unregistered email is turned into a regular account after verification, so there is no separate registration form. Five wrong attempts invalidate the code and you must request a new one.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Email code sign-in" src="/user-guide/en/auth/light/02-email-code.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Email code sign-in" src="/user-guide/en/auth/dark/02-email-code.webp" />
+
+## Sign in with GitHub
+
+Tick the agreement checkbox, then select the **Continue with GitHub** button (shown selected below). Uter hands you to GitHub for authorization and returns you to the console automatically once you approve.
+
+Only the basic profile needed to sign you in is stored. If the button is missing, that provider has been disabled by the administrator.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="GitHub sign-in button selected" src="/user-guide/en/auth/light/03-github.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="GitHub sign-in button selected" src="/user-guide/en/auth/dark/03-github.webp" />
+
+## Sign in with Discord
+
+With the agreement accepted, select **Continue with Discord** (shown selected below) and approve the authorization on Discord. You are redirected back to the console on success.
+
+OAuth sign-in uses your GitHub or Discord identity — you can bind or unbind these providers later under Security & Access.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Discord sign-in button selected" src="/user-guide/en/auth/light/04-discord.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Discord sign-in button selected" src="/user-guide/en/auth/dark/04-discord.webp" />
+
 
 <Callout type="info">
-  Le code est valable 10 minutes et à usage unique ; cinq erreurs l'invalident et il faut en demander un autre. Une adresse inconnue devient un nouveau compte après vérification, sans inscription séparée.
+  The agreement checkbox must be ticked before any sign-in method works. Session cookies are HttpOnly and rotated on login.
 </Callout>
-
-## Se connecter avec GitHub
-
-1. Acceptez les conditions et la politique de confidentialité.
-2. Cliquez sur « Continuer avec GitHub ».
-3. Confirmez sur GitHub ; vous revenez automatiquement dans la console Uter.
-
-## Se connecter avec Discord
-
-1. Acceptez les conditions et la politique de confidentialité.
-2. Cliquez sur « Continuer avec Discord ».
-3. Confirmez sur Discord ; vous revenez automatiquement dans la console Uter.
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Connexion GitHub et Discord" src="/user-guide/en/auth/light/02-login.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Connexion GitHub et Discord" src="/user-guide/en/auth/dark/02-login.webp" />
-
-<Callout type="info">
-  GitHub et Discord utilisent leurs propres comptes pour l'autorisation ; Uter ne conserve que les informations de base nécessaires. Un bouton absent signifie que la méthode est désactivée.
-</Callout>
-
-## Après la connexion
-
-Vous arrivez sur la Vue d'ensemble. Le Profil affiche vos informations, et Sécurité et accès gère les sessions, les liaisons de compte, les jetons d'accès et les paramètres de sécurité.

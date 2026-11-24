@@ -1,52 +1,29 @@
-# API キー
+# API Keys
 
-API キーは Uter のモデル API を呼び出すための資格情報です。左ナビゲーション「API キー」で `/keys` を開きます。上部の「API アドレス」メニューで次の 3 つを切り替えてコピーできます。
+API keys are the credentials your applications use to call Uter. Create a separate key per app so you can control and revoke access independently.
 
-- `https://api.uter.ai`: CN2 GIA 最適化、グローバル（既定）。
-- `https://api.uter.cc`: 中国本土向け。
-- `https://api.uter.pro`: 海外向け。
+## Key list
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API キー一覧" src="/user-guide/en/api-keys/light/01-keys-info.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API キー一覧" src="/user-guide/en/api-keys/dark/01-keys-info.webp" />
+The table lists each key with its **Name**, **Status**, masked value, **Quota ($)**, **Group**, allowed **Models**, **IP Restriction**, creation time and expiry. Keys are masked after creation — copy the value when you first see it.
 
-一覧には名前、状態、マスクされたキー、クォータ、グループ、モデル制限、IP 制限、作成/最終使用時刻、有効期限が表示されます。名前・キー・状態で絞り込めます。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API keys list" src="/user-guide/en/api-keys/light/01-keys.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API keys list" src="/user-guide/en/api-keys/dark/01-keys.webp" />
 
-## API キーを作成
+## Create a key
 
-1. 右上の「API キーを作成」を押します。
-2. 名前を入力し、グループを選択します。
-3. 有効期限を設定します（無期限、1 か月、1 日、1 時間、カスタム）。
-4. 作成数を指定します（2 以上は名前にランダムな接尾辞）。
-5. 「無制限クォータ」を有効にするか、金額を指定します。
-6. 「詳細設定」でモデル制限・IP 制限などを設定します。
-7. 「変更を保存」を押します。
+Press **Create API Key** to open the creation dialog. Give the key a name, set a quota limit, choose a group and optionally restrict models or source IPs, then save. The full key is shown once.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API キーの作成" src="/user-guide/en/api-keys/light/02-create-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API キーの作成" src="/user-guide/en/api-keys/dark/02-create-key.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Create API key dialog" src="/user-guide/en/api-keys/light/02-create.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Create API key dialog" src="/user-guide/en/api-keys/dark/02-create.webp" />
 
-作成後、作成数が通知され一覧に表示されます。
+## API addresses
 
-## 表示・コピー・管理
+**API Addresses** opens the list of endpoint URLs for each supported protocol. Copy the one that matches your client (OpenAI-compatible, Responses, Anthropic, etc.).
 
-- **表示/コピー**: キーまたはコピーボタンを押します。完全なキーの表示は機密操作で、セキュリティ確認が必要です。確認手段がない場合は先に設定するよう案内されます。
-- **行メニュー**: キーのコピー、接続情報のコピー、アプリ連携、削除。
-- **有効/無効**: 無効化すると API を呼べなくなりますが、記録は残ります。
-- **編集**: 名前、グループ、クォータ、有効期限、アクセス制限を変更します。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="API addresses dialog" src="/user-guide/en/api-keys/light/03-addresses.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API addresses dialog" src="/user-guide/en/api-keys/dark/03-addresses.webp" />
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="API キーの操作" src="/user-guide/en/api-keys/light/03-view-key.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="API キーの操作" src="/user-guide/en/api-keys/dark/03-view-key.webp" />
 
-## キーを使う
-
-リクエストヘッダーにキーを含めます。
-
-```bash
-curl https://api.uter.ai/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-あなたのキー" \
-  -d '{"model":"MiniMax-M2.5","messages":[{"role":"user","content":"こんにちは"}]}'
-```
-
-<Callout type="info">
-  キーはアカウントの資格情報です。フロントエンド、公開リポジトリ、チャットに記載しないでください。漏洩時は無効化・削除し、新しいキーを作成してください。削除前に本番利用がないか確認してください。
+<Callout type="warn">
+  Treat keys like passwords. Disable a key immediately if it leaks, then create a replacement.
 </Callout>

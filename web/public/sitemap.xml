@@ -160,6 +160,9 @@
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -176,6 +179,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/en/guide/wiki/user-guide/security</loc>
@@ -355,6 +364,9 @@
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -371,6 +383,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/guide/wiki/user-guide/security</loc>
@@ -550,6 +568,9 @@
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -566,6 +587,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/guide/wiki/user-guide/security</loc>
@@ -745,6 +772,9 @@
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -761,6 +791,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/guide/wiki/user-guide/security</loc>
@@ -940,6 +976,9 @@
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -956,6 +995,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/guide/wiki/user-guide/security</loc>
@@ -1135,6 +1180,9 @@
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -1151,6 +1199,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/guide/wiki/user-guide/security</loc>
@@ -1330,6 +1384,9 @@
     <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/auth</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/checkin</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/dashboard</loc>
   </url>
   <url>
@@ -1346,6 +1403,12 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/ranking</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/redeem</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/referral</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/guide/wiki/user-guide/security</loc>

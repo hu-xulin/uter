@@ -1,42 +1,29 @@
 # 钱包
 
-## 钱包概览
+钱包保存你的额度余额，是充值与订阅的入口。每次请求都会从中扣费；余额用尽时调用会快速失败并提示余额不足。
 
-左侧导航「钱包」进入 `/wallet`，顶部展示当前余额、总用量和 API 请求数。
+## 充值
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="钱包概览与充值" src="/user-guide/zh/wallet-and-subscription/light/01-wallet-subscriptions.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="钱包概览与充值" src="/user-guide/zh/wallet-and-subscription/dark/01-wallet-subscriptions.webp" />
+**充值**卡片提供多个预设金额及对应支付价格，并支持在最低限额之上自定义金额。选择**支付方式**——列表由服务端配置决定，可能包含支付宝、微信、Stripe 等。**应付金额**按实时汇率将额度换算为支付币种。
 
-## 在线充值
-
-1. 在「添加资金」中选择预设金额（$10 至 $50,000），或输入自定义金额。
-2. 核对右侧的待支付金额（人民币）。
-3. 选择可用的付款方式（如支付宝）。
-4. 按支付页面提示完成付款，余额到账后可在顶部与「订单历史」中核对。
-
-金额与人民币的换算以页面实时显示为准。
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="充值" src="/user-guide/zh/wallet/light/01-wallet.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="充值" src="/user-guide/zh/wallet/dark/01-wallet.webp" />
 
 ## 订单历史
 
-点击「订单历史」查看充值交易记录和付款历史，支持按订单号搜索和切换每页条数。
+**订单历史**列出每次充值尝试（含已过期），展示状态（成功／待支付／已过期）与可搜索的交易号。任何客服请求都请附上交易号。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="订单历史" src="/user-guide/zh/wallet-and-subscription/light/03-orders.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="订单历史" src="/user-guide/zh/wallet-and-subscription/dark/03-orders.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="订单历史" src="/user-guide/zh/wallet/light/02-orders.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="订单历史" src="/user-guide/zh/wallet/dark/02-orders.webp" />
 
-## 兑换码
+## 订阅计划
 
-在钱包页「有兑换码吗？」区域输入兑换码并点击「兑换额度」，额度会加入账户余额。兑换码通常由管理员或活动发放，输入前请确认来源可信。
+**订阅计划**卡片展示各方案的额度、有效期、额度重置周期与购买限制，*推荐*标签标记管理员推荐项。**立即订阅**启动支付流程，已订阅方案在适用时显示升级选项。
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="兑换码" src="/user-guide/zh/wallet-and-subscription/light/02-redeem-code.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="兑换码" src="/user-guide/zh/wallet-and-subscription/dark/02-redeem-code.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="订阅计划" src="/user-guide/zh/wallet/light/03-plans.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="订阅计划" src="/user-guide/zh/wallet/dark/03-plans.webp" />
 
-## 推荐计划
-
-钱包页底部展示推荐计划：通过你的推荐链接注册的用户会计入邀请人数。面板展示待确认奖励、总收入和邀请数，可复制推荐链接分享。
-
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="推荐计划" src="/user-guide/zh/wallet-and-subscription/light/04-referral.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="推荐计划" src="/user-guide/zh/wallet-and-subscription/dark/04-referral.webp" />
 
 <Callout type="info">
-  推荐链接和奖励规则由平台配置；奖励到账前处于「待确认」状态。不要把推荐链接与 API 密钥混淆，前者只用于邀请注册。
+  实际充值请使用真实支付方式；此处演示数字仅作说明。
 </Callout>

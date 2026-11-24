@@ -1,29 +1,29 @@
-# Журнал задач
+# Task Logs
 
-«Журнал задач» открывает `/usage-logs/task`; сверху переключаются «Журнал изображений» и «Журнал задач».
+Task logs track asynchronous jobs such as image generation, music creation and other model-driven tasks that complete after submission.
 
-## Журнал изображений
+## Task list
 
-Записывает задачи изображений. Фильтр по периоду; видны время отправки, ID задачи, статус, прогресс и результат; можно открыть детали и артефакты.
+The table shows **Submit Time**, **Task ID**, **Duration**, **Status**, **Progress**, **Artifacts** and **Details**. Statuses include queued, processing, succeeded and failed.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Журнал изображений" src="/user-guide/en/logs-and-tasks/light/02-drawing-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Журнал изображений" src="/user-guide/en/logs-and-tasks/dark/02-drawing-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task logs list" src="/user-guide/en/task-logs/light/01-tasks.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task logs list" src="/user-guide/en/task-logs/dark/01-tasks.webp" />
 
-## Журнал задач
+## Task details
 
-Записывает асинхронные видео- и аудиозадачи. Фильтр по периоду и ID; видны время, длительность, статус, прогресс, артефакты и детали.
+Click **View details** to inspect the task payload, progress history and generated artifacts, including retry information when a task fails.
 
-<img className="block w-full rounded-lg border border-border dark:hidden" alt="Журнал задач" src="/user-guide/en/logs-and-tasks/light/03-task-logs.webp" />
-<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Журнал задач" src="/user-guide/en/logs-and-tasks/dark/03-task-logs.webp" />
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Task details" src="/user-guide/en/task-logs/light/02-details.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Task details" src="/user-guide/en/task-logs/dark/02-details.webp" />
+
+## Drawing logs
+
+Switch to the **Drawing Logs** tab for image-specific jobs, with quick access to generated images and their parameters.
+
+<img className="block w-full rounded-lg border border-border dark:hidden" alt="Drawing logs" src="/user-guide/en/task-logs/light/03-drawing.webp" />
+<img className="block w-full rounded-lg border border-border hidden dark:block" alt="Drawing logs" src="/user-guide/en/task-logs/dark/03-drawing.webp" />
+
 
 <Callout type="info">
-  Статус и прогресс берутся с сервера. Ошибки и тайм-ауты могут компенсироваться по правилам канала. По ID задачи можно найти запись биллинга в журнале использования.
+  Tasks are billed when they complete; a failed task that consumed upstream resources still appears here.
 </Callout>
-
-## Связь журналов
-
-- **Использование**: биллинг и производительность каждого вызова.
-- **Аудит**: входы, безопасность и доступ к аккаунту.
-- **Изображения/задачи**: жизненный цикл асинхронных задач.
-
-При разборе: аудит → использование → задачи.
