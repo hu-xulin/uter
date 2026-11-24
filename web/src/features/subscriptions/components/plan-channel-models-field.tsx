@@ -27,30 +27,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Label } from '@/components/ui/label'
 import { MultiSelect } from '@/components/multi-select'
 import { getChannels } from '@/features/channels/api'
-
-/**
- * A plan may restrict model choice to specific models on specific channels.
- * The stored value is a JSON object `{"<channelId>": ["model", ...]}`.
- * An empty string means unrestricted.
- */
-export function parseChannelModels(value: string): Record<string, string[]> {
-  const raw = (value || '').trim()
-  if (!raw || raw === '{}' || raw === 'null') return {}
-  try {
-    const parsed = JSON.parse(raw) as Record<string, unknown>
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
-    const out: Record<string, string[]> = {}
-    for (const [channelId, models] of Object.entries(parsed)) {
-      if (!Array.isArray(models)) continue
-      out[channelId] = models
-        .filter((m): m is string => typeof m === 'string' && m.trim() !== '')
-        .map((m) => m.trim())
-    }
-    return out
-  } catch {
-    return {}
-  }
-}
+import { parseChannelModels } from '@/features/subscriptions/lib/channel-models'
 
 type Props = {
   value: string
@@ -95,7 +72,8 @@ export function PlanChannelModelsField({ value, onChange, disabled }: Props) {
     enabled: !disabled,
     retry: false,
   })
-  const channels = channelsQuery.data ?? []
+  // data 引用稳定，但 `?? []` 每次渲染会造新数组，导致下游 useMemo 反复计算。
+  const channels = useMemo(() => channelsQuery.data ?? [], [channelsQuery.data])
 
   const channelOptions = useMemo(
     () =>

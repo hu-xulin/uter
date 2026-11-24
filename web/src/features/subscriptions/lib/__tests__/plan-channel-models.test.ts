@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
-import { parseChannelModels } from '../../components/plan-channel-models-field'
+import { parseChannelModels } from '../channel-models'
 import { formValuesToPlanPayload, planToFormValues } from '../plan-form'
 
 describe('parseChannelModels', () => {
