@@ -25,13 +25,13 @@ For commercial licensing, please contact support@uter.ai
  * - Chained properties: "OpenAI.Avatar.type={'platform'}"
  * - Size parameter: getLobeIcon("OpenAI", 20)
  *
- * The variant metadata (`@lobehub/icons/es/toc.json`, ≈100 KB) is imported
+ * The variant metadata (`@lobehub/icons/es/toc`, ≈100 KB) is imported
  * synchronously so `colorIconName` / `monoIconName` / `getLobeIconNames` stay
  * pure and synchronous (and unit-testable) without pulling the whole icon set
  * into the first-paint graph. Each icon component is then loaded lazily, one
  * SVG variant at a time, instead of importing the full brand index.
  */
-import toc from '@lobehub/icons/es/toc.json'
+import { toc } from '@lobehub/icons/es/toc'
 import {
   lazy,
   Suspense,
@@ -280,11 +280,14 @@ export function getLobeIcon(
   let IconComponent = LAZY_ICONS.get(cacheKey)
   if (!IconComponent) {
     // Load the selected SVG variant, avoiding the brand index's Avatar/UI dependencies.
-    // Rspack applies webpackInclude before normalizing Windows path separators.
+    // Use the installed package path directly: the package exports map has no
+    // directory entry for `@lobehub/icons/es`, which blocks a bare-specifier
+    // dynamic context in Rspack. Rspack applies webpackInclude before
+    // normalizing Windows path separators.
     IconComponent = lazy(() =>
       import(
-        /* webpackInclude: /[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.js$/ */
-        `@lobehub/icons/es/${baseKey}/components/${variant}.js`
+        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.mjs$/ */
+        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.mjs`
       ).catch(() => ({
         default: (props: Record<string, unknown>) =>
           renderLobeIconFallback(
