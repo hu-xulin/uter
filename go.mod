@@ -124,7 +124,8 @@ require (
 	github.com/go-webauthn/webauthn v0.14.0
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.3
+	// GO-2026-6278: v1.5.3 tag predates the crypto/rand fix; pin upstream commit d67f418.
+	github.com/gorilla/websocket v1.5.4-0.20240701034025-d67f41855da4
 	github.com/grafana/pyroscope-go v1.2.7
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/jfreymuth/oggvorbis v1.0.5
