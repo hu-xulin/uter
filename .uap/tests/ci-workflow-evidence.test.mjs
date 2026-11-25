@@ -11,7 +11,7 @@ function stepBlock(name) {
   const marker = `- name: ${name}`
   const start = workflow.indexOf(marker)
   assert.notEqual(start, -1, `workflow step not found: ${name}`)
-  const next = workflow.indexOf('\\n      - name:', start + marker.length)
+  const next = workflow.indexOf('\n      - name:', start + marker.length)
   return workflow.slice(start, next === -1 ? workflow.length : next)
 }
 
@@ -39,14 +39,14 @@ test('UAP evidence-producing steps run even when an earlier gate fails', () => {
   ]
 
   for (const name of names) {
-    assert.match(stepBlock(name), /if: always\\(\\)/, name)
+    assert.match(stepBlock(name), /if: always\(\)/, name)
   }
 })
 
 test('isolated server startup is conditional on a successful release binary build', () => {
   assert.match(
     stepBlock('Start isolated Uter server with disposable SQLite'),
-    /if: always\\(\\) && steps\\.uap_backend_build\\.outcome == 'success'/
+    /if: always\(\) && steps\.uap_backend_build\.outcome == 'success'/
   )
 })
 
@@ -59,7 +59,7 @@ test('the final gate fails closed when required UAP prerequisites are skipped', 
   ]) {
     assert.ok(gate.includes(`${name}:`), `${name} must be reported`)
     assert.ok(
-      gate.includes(`test "\\$${name}" = success`),
+      gate.includes(`test "${name}" = success`),
       `${name} must be required for a passing gate`
     )
   }
@@ -67,6 +67,6 @@ test('the final gate fails closed when required UAP prerequisites are skipped', 
 
 test('CI publishes the canonical UDS gate evidence and TAP failure identities', () => {
   assert.ok(workflow.includes("read('docs/design-system/GATE-EVIDENCE.json')"))
-  assert.match(workflow, /^\\s+docs\\/design-system\\/GATE-EVIDENCE\\.json$/m)
+  assert.match(workflow, /^\s+docs\/design-system\/GATE-EVIDENCE\.json$/m)
   assert.ok(workflow.includes('report.failed_tests ?? []'))
 })
