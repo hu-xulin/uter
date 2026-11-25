@@ -203,15 +203,17 @@ export function RechargeFormCard({
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
 
   useEffect(() => {
-    setLocalAmount((prev) => {
-      // 空字符串必须保留，否则输入框永远清不掉。
-      if (prev === '' && topupAmount === 0) return prev
-      // 用户正在输入的中间态（`1.` / `0.50` / `1.0`）数值上已经等于当前金额，
-      // 原样保留。否则 `1.` 会被回写成 `1`，小数点永远打不进去 —— 最低充值
-      // 改成 0.01 之后，金额输入框不能只接受整数。
-      if (Number(prev) === topupAmount) return prev
-      return topupAmount.toString()
-    })
+    void (async () => {
+      setLocalAmount((prev) => {
+        // 空字符串必须保留，否则输入框永远清不掉。
+        if (prev === '' && topupAmount === 0) return prev
+        // 用户正在输入的中间态（`1.` / `0.50` / `1.0`）数值上已经等于当前金额，
+        // 原样保留。否则 `1.` 会被回写成 `1`，小数点永远打不进去 —— 最低充值
+        // 改成 0.01 之后，金额输入框不能只接受整数。
+        if (Number(prev) === topupAmount) return prev
+        return topupAmount.toString()
+      })
+    })()
   }, [topupAmount])
 
   const handleAmountChange = (value: string) => {
