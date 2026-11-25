@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Loader2 } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Dialog } from '@/components/dialog'
@@ -52,30 +52,36 @@ export function UserInfoDialog({
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchUserInfo = useCallback(
-    async (id: number) => {
-      setIsLoading(true)
-      try {
-        const result = await getUserInfo(id)
+  const loadKey = open && userId ? userId : null
+  const [prevLoadKey, setPrevLoadKey] = useState(loadKey)
+
+  if (loadKey !== prevLoadKey) {
+    setPrevLoadKey(loadKey)
+    if (loadKey !== null) setIsLoading(true)
+  }
+
+  useEffect(() => {
+    if (!open || !userId) return
+    let alive = true
+    getUserInfo(userId)
+      .then((result) => {
+        if (!alive) return
         if (result.success) {
           setUserInfo(result.data || null)
         } else {
           handleServerError(result, t('Failed to fetch user information'))
         }
-      } catch (error) {
-        handleServerError(error, t('Failed to fetch user information'))
-      } finally {
         setIsLoading(false)
-      }
-    },
-    [t]
-  )
-
-  useEffect(() => {
-    if (open && userId) {
-      fetchUserInfo(userId)
+      })
+      .catch((error) => {
+        if (!alive) return
+        handleServerError(error, t('Failed to fetch user information'))
+        setIsLoading(false)
+      })
+    return () => {
+      alive = false
     }
-  }, [open, userId, fetchUserInfo])
+  }, [open, userId, t])
 
   return (
     <Dialog
