@@ -354,9 +354,7 @@ test('batch pricing preview shows the scaled expression for expression-priced mo
   await previewButton.click()
 
   expect(await screen.findByText('gpt-image-2')).toBeVisible()
-  expect(
-    screen.getByText(/img_o \* 24\.75/)
-  ).toBeVisible()
+  expect(screen.getByText(/img_o \* 24\.75/)).toBeVisible()
   expect(screen.getByText('Expression')).toBeVisible()
   expect(screen.queryByText(/skipped/i)).not.toBeInTheDocument()
 })
