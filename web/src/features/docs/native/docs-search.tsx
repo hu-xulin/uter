@@ -102,6 +102,13 @@ export function DocsSearchDialog({
   const [query, setQuery] = useState('')
   const [docs, setDocs] = useState<SearchDoc[]>([])
   const [state, setState] = useState<'idle' | 'loading' | 'ready'>('idle')
+  const loadKey = `${open}:${docsLocale}`
+  const [prevLoadKey, setPrevLoadKey] = useState(loadKey)
+
+  if (loadKey !== prevLoadKey) {
+    setPrevLoadKey(loadKey)
+    setState(open ? 'loading' : 'idle')
+  }
 
   // ⌘/Ctrl+K opens (and re-closes) the dialog. The combination lives in
   // `docs-search-hotkey.ts` together with the sidebar's on-screen hint, so
@@ -118,7 +125,6 @@ export function DocsSearchDialog({
 
   useEffect(() => {
     if (!open) return
-    setState('loading')
     loadIndex(docsLocale)
       .then((loaded) => {
         setDocs(loaded)
