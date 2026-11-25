@@ -70,7 +70,7 @@ jobs:
           const read = (p) => fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : null;
           const real = read('docs/design-system/audit/visual-regression.json');
           const baseline = read('docs/design-system/audit/visual-baseline-check.json');
-          const gates = read('docs/design-system/audit/GATE-EVIDENCE.json');
+          const gates = read('docs/design-system/GATE-EVIDENCE.json');
           console.log('--- UDS8 REAL PAGE REGRESSION ---');
           if (!real) console.log('visual-regression.json missing');
           else console.log(JSON.stringify({
@@ -89,11 +89,24 @@ jobs:
           }, null, 2));
           console.log('--- UDS8 GATE EVIDENCE ---');
           if (!gates) console.log('GATE-EVIDENCE.json missing');
-          else console.log(JSON.stringify(gates, null, 2).slice(-24000));
+          else console.log(JSON.stringify({
+            checker: gates.checker,
+            failed_checks: gates.checker?.failed_checks ?? [],
+            legacy_reference_scan: gates.legacy_reference_scan,
+            visual: gates.visual,
+            stdout_tail: gates.stdout_tail,
+            stderr_tail: gates.stderr_tail
+          }, null, 2));
           NODE
       - name: Build isolated Uter backend release binary
+        id: uap_backend_build
+        if: always()
+        continue-on-error: true
         run: go build -o "$RUNNER_TEMP/uter-bin" .
       - name: Start isolated Uter server with disposable SQLite
+        id: uap_server
+        if: always() && steps.uap_backend_build.outcome == 'success'
+        continue-on-error: true
         run: |
           mkdir -p "$RUNNER_TEMP/uap"
           rm -f .uap/reports/H5-BROWSER-MATRIX.json .uap/reports/DEPLOY-DRY-RUN.json
@@ -127,6 +140,8 @@ jobs:
       # impossible to combine. The fingerprint is still independently rechecked.
       - name: Open single UAP evidence batch
         id: uap_batch
+        if: always()
+        continue-on-error: true
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -137,20 +152,24 @@ jobs:
           NODE
       - name: UAP full audit and current architecture/knowledge index refresh
         id: uap_full_audit
+        if: always()
         continue-on-error: true
         run: node .uap/bin/uap.mjs workflow run uap-full-audit
       - name: Generate current UAP build evidence
         id: uap_build
+        if: always()
         continue-on-error: true
         run: node .uap/bin/uap.mjs build
       # Run every UAP gate even when an earlier gate fails so CI preserves
       # complete evidence instead of skipping the self-test suite on validator failure.
       - name: UAP runtime health
         id: uap_doctor
+        if: always()
         continue-on-error: true
         run: node .uap/bin/uap.mjs doctor
       - name: UAP registry and validator execution
         id: uap_validate
+        if: always()
         continue-on-error: true
         env:
           H5_BASE_URL: http://127.0.0.1:3000
@@ -206,8 +225,11 @@ jobs:
             timed_out: report.timed_out,
             duration_ms: report.duration_ms,
             test_files: report.test_files,
+            failed_tests: report.failed_tests ?? [],
             stderr_tail: report.stderr_tail,
           }, null, 2));
+          console.log('--- TAP FAILURE SUMMARIES ---');
+          console.log(JSON.stringify(report.failed_tests ?? [], null, 2));
           const tap = String(report.stdout_tail || '');
           const lines = tap.split('\n');
           const failed = [];
@@ -220,22 +242,22 @@ jobs:
           console.log(failed.length ? failed.join('\\n--- FAILURE ---\\n') : tap.slice(-12000));
           NODE
       - name: UAP real code repair and independent regression
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_capabilities
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-capabilities
       - name: UAP isolated database integration and migrations
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_database
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-database
       - name: UAP local payment simulation (no provider calls)
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_payment
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-payment
       - name: UAP browser E2E and accessibility verification
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_e2e
         continue-on-error: true
         env:
@@ -246,7 +268,7 @@ jobs:
           UAP_TEST_STACK: isolated
         run: node .uap/bin/uap.mjs verify-e2e
       - name: UAP visual regression verification
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_visual
         continue-on-error: true
         env:
@@ -255,22 +277,22 @@ jobs:
           UAP_TEST_STACK: isolated
         run: node .uap/bin/uap.mjs verify-visual
       - name: UAP security negative tests and secret scan
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_security
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-security
       - name: UAP full requirement traceability verification (538 requirements)
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_requirements
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-requirements
       - name: Regenerate final UAP reports from current execution
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_report
         continue-on-error: true
         run: node .uap/bin/uap.mjs report --final
       - name: Run authoritative UAP final acceptance closure
-        if: github.event_name == 'push'
+        if: always() && github.event_name == 'push'
         id: uap_accept
         continue-on-error: true
         run: node .uap/bin/uap.mjs accept
@@ -302,6 +324,9 @@ jobs:
       - name: Enforce UAP governance gate
         if: always()
         env:
+          UAP_BACKEND_BUILD_OUTCOME: ${{ steps.uap_backend_build.outcome }}
+          UAP_SERVER_OUTCOME: ${{ steps.uap_server.outcome }}
+          UAP_BATCH_OUTCOME: ${{ steps.uap_batch.outcome }}
           BUILD_OUTCOME: ${{ steps.uap_build.outcome }}
           DOCTOR_OUTCOME: ${{ steps.uap_doctor.outcome }}
           VALIDATE_OUTCOME: ${{ steps.uap_validate.outcome }}
@@ -309,8 +334,11 @@ jobs:
           FULL_AUDIT_OUTCOME: ${{ steps.uap_full_audit.outcome }}
           ACCEPTANCE_OUTCOME: ${{ steps.uap_accept.outcome }}
         run: |
-          printf 'build=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfull_audit=%s\\nfinal_acceptance=%s\\n' "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$FULL_AUDIT_OUTCOME" "$ACCEPTANCE_OUTCOME"
+          printf 'backend_build=%s\\nserver=%s\\nbatch=%s\\nbuild=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfull_audit=%s\\nfinal_acceptance=%s\\n' "$UAP_BACKEND_BUILD_OUTCOME" "$UAP_SERVER_OUTCOME" "$UAP_BATCH_OUTCOME" "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$FULL_AUDIT_OUTCOME" "$ACCEPTANCE_OUTCOME"
           if [[ "$ACCEPTANCE_OUTCOME" != "success" ]]; then echo "::warning::Operational UAP gate passed/checked separately; final acceptance remains blocked or unverified."; fi
+          test "$UAP_BACKEND_BUILD_OUTCOME" = success
+          test "$UAP_SERVER_OUTCOME" = success
+          test "$UAP_BATCH_OUTCOME" = success
           test "$BUILD_OUTCOME" = success
           test "$DOCTOR_OUTCOME" = success
           test "$VALIDATE_OUTCOME" = success
@@ -330,6 +358,7 @@ jobs:
             .uap/state/adr-inventory.json
             .uap/state/architecture-graph.json
             .uap/state/workflow-uap-full-audit-last-run.json
+            docs/design-system/GATE-EVIDENCE.json
             docs/design-system/audit/uds8-final-acceptance.json
             docs/design-system/audit/uds8-final-scan.json
             docs/design-system/audit/uds8-legacy-reference-report.json
