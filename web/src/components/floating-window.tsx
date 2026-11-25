@@ -220,12 +220,20 @@ export function FloatingWindow(props: FloatingWindowProps) {
     size: { width: number; height: number }
   } | null>(null)
 
-  useEffect(() => {
-    if (props.expandRequest === undefined) return
+  // expandRequest 是外部给出的「展开一次」信号：在渲染期按信号变化调整状态，
+  // 避免用 effect 同步导致额外一轮渲染。
+  const [lastExpandRequest, setLastExpandRequest] = useState(
+    props.expandRequest
+  )
+  if (
+    props.expandRequest !== undefined &&
+    props.expandRequest !== lastExpandRequest
+  ) {
+    setLastExpandRequest(props.expandRequest)
     setState((previous) =>
       previous.collapsed ? { ...previous, collapsed: false } : previous
     )
-  }, [props.expandRequest])
+  }
 
   useEffect(() => {
     if (!props.storageKey) return
