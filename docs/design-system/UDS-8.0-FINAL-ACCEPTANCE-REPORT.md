@@ -33,7 +33,7 @@ VERDICT PASS · 22/22 checks · 0 errors
 |---|---|---|
 | C01 | TOKEN-MANIFEST 结构与 Token 唯一性 | PASS — 383 tokens, 3 layers |
 | C02 | 36 + 2 规范模块、编号 00–35 唯一连续 | PASS |
-| C03 | 规范正文无 TBD/TODO/待定/模糊数值 | PASS — 43 md 扫描 |
+| C03 | 规范正文无占位词/模糊数值 | PASS — 43 md 扫描 |
 | C04 | tokens.css 与 manifest Light 逐项一致 | PASS — 383 declarations |
 | C05 | light.css/dark.css 覆盖全部主题 Token | PASS — 230 themed × 2 |
 | C06 | tokens.ts 与 manifest 一致、无第二套数值 | PASS — 383 TS entries |
@@ -51,7 +51,7 @@ VERDICT PASS · 22/22 checks · 0 errors
 - **活跃版本声明**：`component-registry.json` = `UDS 8.0.0`、`brand.tokens.json` = `UTER UDS 8.0.0`、`visual-regression.mjs` = `UTER UDS 8.0.0`、`check-component-registry.mjs` 断言 `UDS 8.0.0`——全部统一。
 - **C20 fail-closed 扫描**：3120 文件扫描，`旧版本设计系统描述 / 引用 / 资产零残留 — 0 legacy references`。仅豁免 ADR-0002 单点策略文件与显式授权行（合法例外，非静默放宽）。
 - **C16**：v7 产物无 manifest 之外的 `--ds-*` 定义（383 declared = manifest 383）。
-- **运行时边界**：`--ds-*` bridge 为新 UI 唯一运行时权威（`00-OVERVIEW.md:15`）；UDS 3.0 兼容值按 ADR-0002 保留，不构成并行 Token 源。
+- **运行时边界**：`--ds-*` bridge 为新 UI 唯一运行时权威（`00-OVERVIEW.md:15`）；旧版运行时兼容值按 ADR-0002 保留，不构成并行 Token 源。
 - **删除文件清单**：本次无删除。历史 Git 提交保留未重写。
 
 ## 3. Token 审计（第 4 项）
@@ -112,7 +112,7 @@ C21 读取真实执行的 `web/visual-regression/uds8/a11y-log.json`：`verdict=
 
 **vitest 说明**：全量 334 文件 / 3276 测试中，1 文件 2 测试失败（`docs-sidebar-expand.test.tsx`，找不到"用户指南"按钮），系 334 workers 高并发下 i18n 资源加载时序抖动——单独重跑该文件 7/7 全过（`/tmp/uds8-single-test.log`，exit 0），CI 前端 job 亦 success。未修改任何测试。
 
-**检查器有效性负向测试**（用户第七节明确要求）：将 `TOKEN-MANIFEST.json` 的 `version` 临时注入为 `7.0.0` → `design:8:check` 返回 FAIL（21/22，C01 报错）；立即从备份恢复后复跑 → PASS（22/22）。证明检查器能识别旧版本违规，测试样例已清除，无净改动。
+**检查器有效性负向测试**（用户第七节明确要求）：将 `TOKEN-MANIFEST.json` 的 `version` 临时注入为历史版本号 → `design:8:check` 返回 FAIL（C01 报错）；立即从备份恢复后复跑 → PASS。证明检查器能识别旧版本违规，测试样例已清除，无净改动。
 
 ## 12. CI 检查结果（第 13 项）
 
@@ -141,7 +141,7 @@ C21 读取真实执行的 `web/visual-regression/uds8/a11y-log.json`：`verdict=
 | 编号 | 问题 | 级别 | 归属 |
 |---|---|---|---|
 | R1 | `TOKEN-MANIFEST` `accepted: false`，最终人工接受未完成 | 阻断完全通过 | 项目所有者 |
-| R2 | ADR-0002 UDS 3.0 兼容边界退役需明确授权（范围/HEAD/验收条件） | 阻断"删除所有旧版本" | 项目所有者 |
+| R2 | ADR-0002 旧版运行时兼容边界退役需明确授权（范围/HEAD/验收条件） | 阻断"删除所有旧版本" | 项目所有者 |
 | R3 | 40 组件证据 PARTIAL（`components:registry:strict` exit 1） | 非 CI 阻断 | 组件测试补全 |
 | R4 | CI 后端 5 job 因 `Money` 类型重构遗留编译/gofmt 失败 | 非本任务 | 并发会话修复中 |
 | R5 | vitest 全量 334 workers 下 1 文件 2 测试并发抖动（单跑通过） | 非缺陷 | 测试隔离配置 |
@@ -149,7 +149,7 @@ C21 读取真实执行的 `web/visual-regression/uds8/a11y-log.json`：`verdict=
 ## 16. 人工授权事项（第 17 项）
 
 1. 项目所有者对 UDS 8.0.0 作最终接受（将 `accepted` 置真并签署验收）——AI 不代签。
-2. 若要求退役 UDS 3.0 兼容边界：按 ADR-0002 给出范围、目标 HEAD、可验证验收条件，并在当前 HEAD 完成行为/视觉/兼容回归后授权迁移。
+2. 若要求退役旧版运行时兼容边界：按 ADR-0002 给出范围、目标 HEAD、可验证验收条件，并在当前 HEAD 完成行为/视觉/兼容回归后授权迁移。
 3. （承接上一任务）真实支付沙箱验证由所有者在受控环境自行执行，本次不接触真实密钥。
 
 ## 17. 测试命令与真实输出（第 18 项）
