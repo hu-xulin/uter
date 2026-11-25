@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { PublicLayout } from '@/components/layout'
@@ -52,19 +52,50 @@ function TreeItem({
 }) {
   const { t } = useTranslation()
   const splat = splatOf(node.url)
+  const hasChildren = (node.children?.length ?? 0) > 0
+  // A toggle-only folder has no page of its own: its header never shows the
+  // selected state, even while one of its children is the active page.
+  const isActive = !node.toggleOnly && splat === activeSplat
   const [open, setOpen] = useState(
     subtreeContains(node, activeSplat) || node.defaultOpen === true
   )
-  const hasChildren = (node.children?.length ?? 0) > 0
-  const isActive = splat === activeSplat
+  // A toggle-only folder has no landing page, so "activated" means the
+  // reader is on one of its children; a normal folder activates on its own
+  // URL. This drives auto-expand on navigation without ever selecting the
+  // toggle-only header itself.
+  const activated = node.toggleOnly
+    ? subtreeContains(node, activeSplat)
+    : isActive
+  // Every folder heading toggles its subtree — top-level sections and nested
+  // groups alike. A click on a heading link also flips `activated` to true by
+  // navigating to its landing page; without a guard the effect below would
+  // immediately reopen a subtree the reader just collapsed.
+  const headerToggledRef = useRef(false)
   const indent = { paddingLeft: `${8 + depth * 12}px` }
 
   // When navigation lands on this section's own landing page (or a page
   // inside its subtree), open it — SPA transitions keep the component
   // mounted, so the useState initialiser alone would leave it collapsed.
+  // The guard is read and cleared inside the effect (never during render),
+  // so a reader who just collapsed the header is not fought by this effect.
   useEffect(() => {
-    if (isActive && hasChildren) setOpen(true)
-  }, [isActive, hasChildren])
+    if (!activated || !hasChildren) return
+    if (headerToggledRef.current) {
+      headerToggledRef.current = false
+      return
+    }
+    setOpen(true)
+  }, [activated, hasChildren])
+
+  /** Toggle from the heading link of any folder that has children. */
+  const toggleFromHeader = () => {
+    if (!hasChildren) return
+    // Guard only when the click will also flip `isActive` (navigating in
+    // from another section). On the landing page itself no such transition
+    // follows, so leaving a stale guard would suppress a later real one.
+    if (!isActive) headerToggledRef.current = true
+    setOpen((v) => !v)
+  }
 
   if (!hasChildren) {
     return (
@@ -92,18 +123,34 @@ function TreeItem({
         }`}
         style={indent}
       >
-        <Link
-          to='/docs/$'
-          params={{ _splat: splat }}
-          aria-current={isActive ? 'page' : undefined}
-          className={`flex min-w-0 flex-1 items-center gap-1 text-left text-sm no-underline ${
-            isActive
-              ? 'text-sidebar-active-foreground font-medium'
-              : 'text-fg-secondary hover:text-fg-primary'
-          }`}
-        >
-          <span className='min-w-0 truncate'>{node.title}</span>
-        </Link>
+        {node.toggleOnly ? (
+          // A folder with no landing page: the whole header is a disclosure
+          // control — clicking it expands/collapses the children, never
+          // navigates. The chevron below stays in sync via the same `open`.
+          <button
+            type='button'
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className='text-fg-secondary hover:text-fg-primary flex min-w-0 flex-1 items-center gap-1 text-left text-sm'
+          >
+            <span className='min-w-0 truncate'>{node.title}</span>
+          </button>
+        ) : (
+          <Link
+            to='/docs/$'
+            params={{ _splat: splat }}
+            aria-current={isActive ? 'page' : undefined}
+            aria-expanded={open}
+            onClick={toggleFromHeader}
+            className={`flex min-w-0 flex-1 items-center gap-1 text-left text-sm no-underline ${
+              isActive
+                ? 'text-sidebar-active-foreground font-medium'
+                : 'text-fg-secondary hover:text-fg-primary'
+            }`}
+          >
+            <span className='min-w-0 truncate'>{node.title}</span>
+          </Link>
+        )}
         <button
           type='button'
           aria-expanded={open}
