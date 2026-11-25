@@ -286,8 +286,8 @@ export function getLobeIcon(
     // normalizing Windows path separators.
     IconComponent = lazy(() =>
       import(
-        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.mjs$/ */
-        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.mjs`
+        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.js$/ */
+        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.js`
       ).catch(() => ({
         default: (props: Record<string, unknown>) =>
           renderLobeIconFallback(
