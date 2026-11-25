@@ -392,7 +392,7 @@ function ResponseBlock(props: { demo: ApiDemoConfig; transitioning: boolean }) {
 
 function SectionLabel(props: { children: ReactNode }) {
   return (
-    <span className='text-term-dim-4 font-sans text-xs font-semibold uppercase'>
+    <span className='text-term-dim-4 font-ui text-xs font-semibold uppercase'>
       {props.children}
     </span>
   )
