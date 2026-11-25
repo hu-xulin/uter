@@ -36,7 +36,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import * as z from 'zod'
 
@@ -127,8 +127,14 @@ export function ModelDescriptionLocalizationSection({ defaultValues }: Props) {
     ),
   })
 
-  const syncOn = form.watch('ModelDescriptionSyncEnabled')
-  const translateOn = form.watch('ModelDescriptionTranslateEnabled')
+  const syncOn = useWatch({
+    control: form.control,
+    name: 'ModelDescriptionSyncEnabled',
+  })
+  const translateOn = useWatch({
+    control: form.control,
+    name: 'ModelDescriptionTranslateEnabled',
+  })
 
   const onSubmit = (values: FormValues) => {
     // useUpdateOption 是单键更新，toast 与错误处理都由 hook 统一负责，
