@@ -197,11 +197,16 @@ function ChapterCard({
 
 export function UserGuideIndex({ locale }: { locale: DocsLocaleCode }) {
   const [teasers, setTeasers] = useState<Record<string, string>>({})
+  const [prevLocale, setPrevLocale] = useState(locale)
+
+  // A language switch must not briefly show the previous locale's prose.
+  if (locale !== prevLocale) {
+    setPrevLocale(locale)
+    setTeasers({})
+  }
 
   useEffect(() => {
     let alive = true
-    // A language switch must not briefly show the previous locale's prose.
-    setTeasers({})
     loadTeasers(locale)
       .then((value) => {
         if (alive) setTeasers(value)
