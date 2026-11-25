@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>旧边界退役决策 · 与 UDS8 逐项对比</title>
+<style>
+:root{--ink:#12172b;--ink2:#5b6779;--line:#e2e8f0;--brand:#5b5ee6;--brand-s:#eef2ff;--red:#dc2626;--red-s:#fef2f2;--green:#15803d;--green-s:#f0fdf4;--amber:#b45309;--amber-s:#fffbeb}
+*{box-sizing:border-box}
+body{margin:0;background:#f6f7f9;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:32px 18px 150px}
+h1{font-size:25px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);font-size:13.5px;margin:0 0 22px}
+.banner{background:linear-gradient(135deg,#eef2ff,#faf5ff);border:1px solid #dfe3ff;border-radius:14px;padding:20px 22px;margin-bottom:22px}
+.banner h2{font-size:17px;margin:0 0 8px}.banner p{margin:5px 0;font-size:14px;color:#334155}
+.warn{background:var(--amber-s);border-left:4px solid var(--amber);padding:12px 15px;border-radius:0 8px 8px 0;font-size:13.5px;margin:14px 0}
+h3.sec{font-size:18px;margin:30px 0 4px;padding-left:10px;border-left:4px solid var(--brand)}
+.sec-note{color:var(--ink2);font-size:13px;margin:0 0 16px;padding-left:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+.side{border:1px solid var(--line);border-radius:10px;padding:14px;background:#fafbfc}
+.side.cur{border-color:#fecaca;background:var(--red-s)}
+.side.uds{border-color:#bbf7d0;background:var(--green-s)}
+.side h4{margin:0 0 8px;font-size:14px}
+.side.cur h4{color:var(--red)}.side.uds h4{color:var(--green)}
+.side code{font-family:ui-monospace,Menlo,monospace;font-size:12px;word-break:break-all}
+.swatch{width:100%;height:46px;border-radius:8px;border:1px solid rgba(0,0,0,.1);margin:8px 0}
+.fontval{font-size:20px;padding:6px 0}
+.shots{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.shots figure{margin:0;flex:1;min-width:230px}
+.shots img{width:100%;border:1px solid var(--line);border-radius:8px;display:block;background:#000}
+.shots figcaption{font-size:11px;color:var(--ink2);margin-top:5px}
+.tblwrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f8fafc;position:sticky;top:0;z-index:2}
+td.n{color:var(--ink2);font-family:ui-monospace,Menlo,monospace;width:36px}
+td.cnt{font-size:11px;color:var(--amber)}
+.routes{font-size:11px;color:var(--ink2)}
+.verdict{font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px;white-space:nowrap}
+.verdict.need{background:var(--amber-s);color:var(--amber)}
+.verdict.auto{background:var(--green-s);color:var(--green)}
+.actual{color:var(--red);font-weight:700}
+.arrow{color:var(--ink2);margin:0 4px}
+.uds{color:var(--green);font-weight:700}
+.muted{color:#94a3b8;font-weight:400}
+code{font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#f1f5f9;padding:1px 5px;border-radius:4px}
+.reason{color:var(--ink2);max-width:360px}
+.decide label{display:block;font-size:11.5px;white-space:nowrap;margin:3px 0;cursor:pointer}
+.decide label:has(input:checked){color:var(--brand);font-weight:700}
+td img{width:130px;border:1px solid var(--line);border-radius:5px;display:block;background:#000}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;position:sticky;top:0;background:#f6f7f9;padding:8px 0;z-index:3}
+.filters button{font-size:13px;padding:7px 13px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink2)}
+.filters button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--brand);box-shadow:0 -4px 20px rgba(15,23,42,.08);z-index:50}
+.bar-in{max-width:1280px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar-in .sum{font-size:13.5px;flex:1;min-width:260px}
+button.act{background:var(--brand);color:#fff;border:0;border-radius:9px;padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer}
+button.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+textarea.out{width:100%;height:100px;font-family:ui-monospace,Menlo,monospace;font-size:11px;margin-top:8px;display:none}
+@media(max-width:700px){.cmp{grid-template-columns:1fr}}
+</style></head><body>
+<div class="wrap">
+<h1>旧版运行时兼容边界退役 · 与 UDS8 逐项对比</h1>
+<p class="sub">目标 HEAD <code>fa5e1d5</code> · 173 组登记例外全部来自真实 computed-style 审计 · 右列为 UDS8 令牌真值 · 每张截图均为真实运行页面</p>
+
+<div class="banner">
+<h2>怎么用这个决策板</h2>
+<p>下方分三节：① <b>CM-06 输入框边框保留值</b>——色块直观对比当前值与 UDS8 规范值；② <b>font-sans 历史别名</b>——代码级对比；③ <b>173 组例外</b>——逐行"实测值 → UDS8 值"对比，每行带真实页面截图与三选项。</p>
+<p><b>按你最新规则自动判定：</b>实测值与 UDS8 令牌值严格相等的直接采用 UDS8（无需你决策）；其余"不一致 / 语义不适用"的才列截图由你决策。严格判定结果：<b>173 组中 0 组严格相等</b>，因此全部进入决策区——没有可以悄悄自动迁移的项，避免把 836px 之类机械改成 52px 破坏布局。</p>
+<p><b>执行结果：</b>所有者已裁决全部按 UDS8 执行；三节决策均已预选为迁移，173 组例外已写入 UDS8_ADOPTED 决策记录并由守卫测试锁定。</p>
+</div>
+<div class="warn"><b>ADR-0002 提醒：</b>退役受保护运行时值必须给出三要素授权（范围 / 目标 HEAD / 可验证验收条件）。本页决策 + 你在签名凭证上的确认共同构成授权；未填三要素前，我不会执行任何退役。</div>
+
+<h3 class="sec">一、CM-06 · 输入框边框保留值</h3>
+<p class="sec-note">位置 <code>web/src/styles/theme.css:671</code> · 注释标注"CM-06 ISOLATE：保留旧版值（EXCEPTION-REGISTRY）"</p>
+<div class="card">
+  <div class="cmp">
+    <div class="side cur"><h4>当前运行时值（暗色）</h4><div class="swatch" style="background:#45465f"></div><code>--input: #45465f</code><p style="font-size:12px;color:var(--ink2);margin:8px 0 0">来源：theme.css:671 保留值</p></div>
+    <div class="side uds"><h4>UDS8 规范值（暗色）</h4><div class="swatch" style="background:#3B4A63"></div><code>--ds-color-border-input: #3B4A63</code><p style="font-size:12px;color:var(--ink2);margin:8px 0 0">来源：TOKEN-MANIFEST.json（Light #CBD5E1 / Dark #3B4A63）</p></div>
+  </div>
+  <p style="font-size:13px;color:var(--ink2)">两色均为深蓝灰，色差较小但可辨。审计实测差异组 <code>component|border-color|rgba(69,70,95)</code> 出现于 /pricing、/docs、/sign-in 等暗色页面。迁移影响：输入框边框略变深/变冷，可能扩大 26 张待批视觉基线差异。</p>
+  <div class="shots">
+    <figure><img loading="lazy" src="comprehensive/screenshots/sign-in-dark.png"><figcaption>sign-in-dark.png · 含输入框的暗色页面（真实截图）</figcaption></figure>
+    <figure><img loading="lazy" src="comprehensive/screenshots/keys-dark.png"><figcaption>keys-dark.png · 含输入框的暗色页面（真实截图）</figcaption></figure>
+  </div>
+  <div class="decide" style="border-top:1px dashed var(--line);margin-top:14px;padding-top:12px;font-size:13px">
+    <b>CM-06 决策：</b>
+    <label><input type="radio" name="cm06" value="keep"> 保留历史值</label>
+    <label><input type="radio" name="cm06" value="migrate" checked> 迁移到 UDS8 #3B4A63</label>
+    <label><input type="radio" name="cm06" value="verify"> 先在真实页面验证色差</label>
+  </div>
+</div>
+
+<h3 class="sec">二、font-sans / font-manrope 历史别名（4 处引用）</h3>
+<p class="sec-note">位置 <code>theme.css:45-46</code> 定义别名，均指向 <code>--font-ui</code>，与 UDS8 唯一字体栈同值</p>
+<div class="card">
+  <div class="cmp">
+    <div class="side cur"><h4>当前（历史别名）</h4><code>--font-sans: var(--font-ui)</code><br><code>--font-manrope: var(--font-ui)</code><p style="font-size:12px;color:var(--ink2)">组件 4 处引用 font-sans</p></div>
+    <div class="side uds"><h4>UDS8 规范（唯一字体栈）</h4><code>--font-ui: Inter → Noto Sans SC → …</code><p style="font-size:12px;color:var(--ink2)">别名已指向同一栈，视觉零差异</p></div>
+  </div>
+  <p style="font-size:13px;color:var(--ink2)">4 处引用（均为 <code>font-sans</code>，<code>font-manrope</code> 无组件引用）：</p>
+  <ul style="font-size:12px;font-family:ui-monospace,Menlo,monospace">
+    <li>features/home/components/hero-terminal-demo.tsx:395</li>
+    <li>features/task-plugins/components/plugin-endpoints.tsx:118</li>
+    <li>features/channels/components/dialogs/advanced-custom-editor-dialog.tsx:1696</li>
+    <li>components/ui/kbd.tsx:26</li>
+  </ul>
+  <div class="shots">
+    <figure><img loading="lazy" src="comprehensive/screenshots/root-light.png"><figcaption>root-light.png · 含 hero-terminal-demo 的首页（真实截图）</figcaption></figure>
+  </div>
+  <div class="decide" style="border-top:1px dashed var(--line);margin-top:14px;padding-top:12px;font-size:13px">
+    <b>字体别名决策：</b>
+    <label><input type="radio" name="fontalias" value="keep"> 保留别名</label>
+    <label><input type="radio" name="fontalias" value="retire" checked> 删除别名并改 4 处引用为 font-ui</label>
+  </div>
+</div>
+
+<h3 class="sec">三、173 组登记例外 · 实测值 vs UDS8 值</h3>
+<p class="sec-note">按属性筛选 · 每行右侧为真实页面截图（点击放大）· 默认全部"保留例外"</p>
+<div class="filters">
+  <button class="on" data-f="all">全部 173</button>
+  <button data-f="background-color">背景色 60</button>
+  <button data-f="border-color">边框色 18</button>
+  <button data-f="color">文字色 10</button>
+  <button data-f="height">高度类</button>
+  <button data-f="margin">间距类</button>
+  <button data-f="other">其它</button>
+</div>
+<div class="tblwrap"><table id="tbl">
+<thead><tr><th>#</th><th style="width:190px">属性 / 出现页面</th><th style="width:100px">规范判定</th><th style="width:250px">实测值 → UDS8 值</th><th>登记理由（规范裁定）</th><th style="width:150px">真实截图</th><th style="width:110px">决策</th></tr></thead>
+<tbody><tr data-property="input-border-width">
+    <td class="n">1</td>
+    <td><b>input-border-width</b><br><span class="cnt">×10 元素</span><br><span class="routes">/wallet · light<br>/usage-logs/audit · light<br>/playground · light<br>/profile · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">0px</span> <span class="arrow">→</span> <span class="uds">1px <code>--ds-border-width-input</code></span></td>
+    <td class="reason">input-group 控件刻意使用 border-0，由外层 .group/input-group.border-input 承担 1px 边框；按文档建议确认为组合控件例外，不改内层边框。</td>
+    <td><a href="comprehensive/screenshots/wallet-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x1" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x1" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x1" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="line-height">
+    <td class="n">2</td>
+    <td><b>line-height</b><br><span class="cnt">×2211 元素</span><br><span class="routes">/ · light<br>/about · light<br>/pricing · light<br>/rankings · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">21px</span> <span class="arrow">→</span> <span class="uds">20px <code>--ds-leading-code</code></span></td>
+    <td class="reason">按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x2" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x2" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x2" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="sidebar-width">
+    <td class="n">3</td>
+    <td><b>sidebar-width</b><br><span class="cnt">×384 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">208.0px</span> <span class="arrow">→</span> <span class="uds">240px <code>--ds-layout-sidebar-width</code></span></td>
+    <td class="reason">按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x3" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x3" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x3" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">4</td>
+    <td><b>table-row-height</b><br><span class="cnt">×142 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">47.0px</span> <span class="arrow">→</span> <span class="uds">44px <code>--ds-density-default-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x4" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x4" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x4" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">5</td>
+    <td><b>border-color</b><br><span class="cnt">×131 元素</span><br><span class="routes">/ · dark<br>/pricing · dark<br>/rankings · dark<br>/docs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(69, 70, 95, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x5" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x5" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x5" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="line-height">
+    <td class="n">6</td>
+    <td><b>line-height</b><br><span class="cnt">×128 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/wallet · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">32px</span> <span class="arrow">→</span> <span class="uds">26px <code>--ds-leading-long</code></span></td>
+    <td class="reason">按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x6" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x6" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x6" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">7</td>
+    <td><b>background-color</b><br><span class="cnt">×123 元素</span><br><span class="routes">/ · dark<br>/pricing · dark<br>/rankings · dark<br>/sign-in · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(70, 70, 96, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x7" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x7" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x7" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">8</td>
+    <td><b>svg-width</b><br><span class="cnt">×104 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">7px</span> <span class="arrow">→</span> <span class="uds">12px <code>--ds-icon-2xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x8" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x8" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x8" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">9</td>
+    <td><b>svg-width</b><br><span class="cnt">×86 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">18px</span> <span class="arrow">→</span> <span class="uds">16px <code>--ds-icon-xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x9" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x9" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x9" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">10</td>
+    <td><b>color</b><br><span class="cnt">×82 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(123, 127, 138, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x10" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x10" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x10" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">11</td>
+    <td><b>color</b><br><span class="cnt">×82 元素</span><br><span class="routes">/ · dark<br>/about · dark<br>/pricing · dark<br>/rankings · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(2, 6, 23, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x11" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x11" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x11" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">12</td>
+    <td><b>color</b><br><span class="cnt">×82 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(140, 146, 154, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x12" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x12" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x12" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">13</td>
+    <td><b>table-row-height</b><br><span class="cnt">×78 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">69.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x13" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x13" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x13" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">14</td>
+    <td><b>color</b><br><span class="cnt">×77 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(85, 88, 216, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x14" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x14" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x14" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">15</td>
+    <td><b>color</b><br><span class="cnt">×77 元素</span><br><span class="routes">/ · dark<br>/about · dark<br>/docs · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(177, 179, 255, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x15" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x15" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x15" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">16</td>
+    <td><b>table-row-height</b><br><span class="cnt">×64 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">46.5px</span> <span class="arrow">→</span> <span class="uds">44px <code>--ds-density-default-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x16" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x16" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x16" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">17</td>
+    <td><b>color</b><br><span class="cnt">×56 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/dashboard · dark<br>/wallet · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(34, 197, 94, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x17" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x17" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x17" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="row-gap">
+    <td class="n">18</td>
+    <td><b>row-gap</b><br><span class="cnt">×50 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/privacy-policy · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x18" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x18" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x18" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="column-gap">
+    <td class="n">19</td>
+    <td><b>column-gap</b><br><span class="cnt">×40 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/privacy-policy · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x19" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x19" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x19" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-top">
+    <td class="n">20</td>
+    <td><b>padding-top</b><br><span class="cnt">×38 元素</span><br><span class="routes">/ · light<br>/docs · light<br>/user-agreement · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x20" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x20" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x20" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-bottom">
+    <td class="n">21</td>
+    <td><b>padding-bottom</b><br><span class="cnt">×38 元素</span><br><span class="routes">/ · light<br>/docs · light<br>/user-agreement · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x21" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x21" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x21" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">22</td>
+    <td><b>color</b><br><span class="cnt">×38 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/dashboard · dark<br>/wallet · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(1, 141, 207, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x22" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x22" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x22" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">23</td>
+    <td><b>border-color</b><br><span class="cnt">×36 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/docs · light<br>/sign-in · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(209, 213, 229, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x23" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x23" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x23" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">24</td>
+    <td><b>background-color</b><br><span class="cnt">×34 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(198, 81, 63, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x24" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x24" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x24" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="selection-control-size">
+    <td class="n">25</td>
+    <td><b>selection-control-size</b><br><span class="cnt">×32 元素</span><br><span class="routes">/profile · light<br>/security · light<br>/profile · dark<br>/security · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">36.0px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-icon-lg</code></span></td>
+    <td class="reason">按文档建议执行：改为规范选择控件尺寸</td>
+    <td><a href="comprehensive/screenshots/profile-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/profile-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x25" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x25" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x25" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">26</td>
+    <td><b>table-row-height</b><br><span class="cnt">×31 元素</span><br><span class="routes">/usage-logs/audit · light<br>/usage-logs/audit · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">57.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-audit-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-audit-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x26" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x26" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x26" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">27</td>
+    <td><b>border-color</b><br><span class="cnt">×30 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(227, 232, 240, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x27" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x27" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x27" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">28</td>
+    <td><b>border-color</b><br><span class="cnt">×30 元素</span><br><span class="routes">/pricing · dark<br>/rankings · dark<br>/sign-in · dark<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(38, 52, 73, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x28" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x28" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x28" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">29</td>
+    <td><b>border-color</b><br><span class="cnt">×26 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(225, 232, 240, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x29" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x29" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x29" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">30</td>
+    <td><b>svg-width</b><br><span class="cnt">×26 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">8px</span> <span class="arrow">→</span> <span class="uds">12px <code>--ds-icon-2xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x30" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x30" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x30" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">31</td>
+    <td><b>border-color</b><br><span class="cnt">×26 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(37, 50, 72, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x31" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x31" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x31" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="sidebar-width">
+    <td class="n">32</td>
+    <td><b>sidebar-width</b><br><span class="cnt">×24 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">224.0px</span> <span class="arrow">→</span> <span class="uds">240px <code>--ds-layout-sidebar-width</code></span></td>
+    <td class="reason">按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x32" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x32" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x32" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">33</td>
+    <td><b>svg-width</b><br><span class="cnt">×24 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">6px</span> <span class="arrow">→</span> <span class="uds">12px <code>--ds-icon-2xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x33" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x33" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x33" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">34</td>
+    <td><b>control-height</b><br><span class="cnt">×24 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">836.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x34" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x34" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x34" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">35</td>
+    <td><b>button-height</b><br><span class="cnt">×24 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">836.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x35" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x35" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x35" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">36</td>
+    <td><b>background-color</b><br><span class="cnt">×22 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/privacy-policy · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(225, 232, 240, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x36" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x36" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x36" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">37</td>
+    <td><b>background-color</b><br><span class="cnt">×22 元素</span><br><span class="routes">/ · dark<br>/about · dark<br>/docs · dark<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(37, 50, 72, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x37" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x37" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x37" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">38</td>
+    <td><b>box-shadow</b><br><span class="cnt">×21 元素</span><br><span class="routes">/wallet · light<br>/usage-logs/audit · light<br>/playground · light<br>/profile · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(15, 23, 42) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px </span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/wallet-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x38" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x38" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x38" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">39</td>
+    <td><b>box-shadow</b><br><span class="cnt">×21 元素</span><br><span class="routes">/wallet · dark<br>/usage-logs/audit · dark<br>/playground · dark<br>/profile · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(241, 245, 249) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/wallet-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x39" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x39" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x39" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">40</td>
+    <td><b>border-color</b><br><span class="cnt">×20 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(225, 231, 239, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x40" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x40" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x40" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">41</td>
+    <td><b>background-color</b><br><span class="cnt">×18 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/wallet · light<br>/checkin · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(242, 245, 248, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x41" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x41" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x41" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">42</td>
+    <td><b>control-height</b><br><span class="cnt">×18 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/usage-logs/audit · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">24.0px</span> <span class="arrow">→</span> <span class="uds">16px <code>--ds-control-h5-input-font-size</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x42" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x42" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x42" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">43</td>
+    <td><b>button-height</b><br><span class="cnt">×18 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/usage-logs/audit · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">24.0px</span> <span class="arrow">→</span> <span class="uds">16px <code>--ds-control-h5-input-font-size</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x43" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x43" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x43" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-top">
+    <td class="n">44</td>
+    <td><b>margin-top</b><br><span class="cnt">×18 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x44" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x44" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x44" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">45</td>
+    <td><b>table-row-height</b><br><span class="cnt">×18 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">91.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x45" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x45" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x45" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">46</td>
+    <td><b>background-color</b><br><span class="cnt">×18 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/wallet · dark<br>/checkin · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 40, 60, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x46" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x46" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x46" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">47</td>
+    <td><b>background-color</b><br><span class="cnt">×17 元素</span><br><span class="routes">/dashboard · light<br>/keys · light<br>/wallet · light<br>/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(239, 243, 247, 0.251)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x47" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x47" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x47" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="line-height">
+    <td class="n">48</td>
+    <td><b>line-height</b><br><span class="cnt">×16 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">54px</span> <span class="arrow">→</span> <span class="uds">56px <code>--ds-leading-display</code></span></td>
+    <td class="reason">按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x48" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x48" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x48" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">49</td>
+    <td><b>background-color</b><br><span class="cnt">×16 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/profile · light<br>/referral · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(240, 245, 250, 0.200)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x49" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x49" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x49" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">50</td>
+    <td><b>control-height</b><br><span class="cnt">×16 元素</span><br><span class="routes">/wallet · light<br>/wallet · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">72.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/wallet-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x50" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x50" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x50" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">51</td>
+    <td><b>button-height</b><br><span class="cnt">×16 元素</span><br><span class="routes">/wallet · light<br>/wallet · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">72.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/wallet-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x51" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x51" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x51" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">52</td>
+    <td><b>background-color</b><br><span class="cnt">×16 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/profile · dark<br>/referral · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 40, 60, 0.200)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x52" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x52" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x52" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">53</td>
+    <td><b>background-color</b><br><span class="cnt">×15 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(240, 240, 255, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x53" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x53" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x53" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">54</td>
+    <td><b>background-color</b><br><span class="cnt">×15 元素</span><br><span class="routes">/ · dark<br>/about · dark<br>/docs · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(37, 38, 74, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x54" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x54" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x54" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">55</td>
+    <td><b>table-row-height</b><br><span class="cnt">×14 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">68.5px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x55" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x55" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x55" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">56</td>
+    <td><b>border-color</b><br><span class="cnt">×14 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(38, 52, 74, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x56" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x56" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x56" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">57</td>
+    <td><b>background-color</b><br><span class="cnt">×14 元素</span><br><span class="routes">/profile · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(2, 6, 23, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/profile-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/profile-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x57" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x57" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x57" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">58</td>
+    <td><b>margin-right</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">120px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x58" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x58" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x58" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">59</td>
+    <td><b>margin-left</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">120px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x59" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x59" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x59" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-top">
+    <td class="n">60</td>
+    <td><b>padding-top</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">128px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x60" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x60" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x60" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-bottom">
+    <td class="n">61</td>
+    <td><b>padding-bottom</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">128px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x61" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x61" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x61" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">62</td>
+    <td><b>border-color</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(225, 232, 238, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x62" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x62" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x62" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">63</td>
+    <td><b>margin-right</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">-8px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x63" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x63" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x63" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">64</td>
+    <td><b>border-color</b><br><span class="cnt">×12 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(36, 50, 73, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x64" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x64" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x64" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">65</td>
+    <td><b>background-color</b><br><span class="cnt">×10 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(242, 248, 248, 0.149)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x65" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x65" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x65" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">66</td>
+    <td><b>margin-right</b><br><span class="cnt">×10 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/sign-up · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">368px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x66" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x66" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x66" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">67</td>
+    <td><b>margin-left</b><br><span class="cnt">×10 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/sign-up · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">368px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x67" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x67" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x67" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">68</td>
+    <td><b>svg-width</b><br><span class="cnt">×10 元素</span><br><span class="routes">/privacy-policy · light<br>/dashboard · light<br>/referral · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">14px</span> <span class="arrow">→</span> <span class="uds">12px <code>--ds-icon-2xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x68" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x68" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x68" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="line-height">
+    <td class="n">69</td>
+    <td><b>line-height</b><br><span class="cnt">×8 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">14px</span> <span class="arrow">→</span> <span class="uds">18px <code>--ds-leading-caption</code></span></td>
+    <td class="reason">按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x69" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x69" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x69" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">70</td>
+    <td><b>margin-right</b><br><span class="cnt">×8 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">144px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x70" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x70" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x70" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">71</td>
+    <td><b>margin-left</b><br><span class="cnt">×8 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">144px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x71" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x71" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x71" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">72</td>
+    <td><b>control-height</b><br><span class="cnt">×8 元素</span><br><span class="routes">/ · light<br>/docs · light<br>/setup · light<br>/wallet · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">56.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x72" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x72" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x72" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">73</td>
+    <td><b>button-height</b><br><span class="cnt">×8 元素</span><br><span class="routes">/ · light<br>/docs · light<br>/setup · light<br>/wallet · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">56.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x73" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x73" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x73" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">74</td>
+    <td><b>background-color</b><br><span class="cnt">×8 元素</span><br><span class="routes">/dashboard · light<br>/profile · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(248, 250, 252, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x74" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x74" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x74" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">75</td>
+    <td><b>control-height</b><br><span class="cnt">×8 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">66.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x75" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x75" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x75" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">76</td>
+    <td><b>button-height</b><br><span class="cnt">×8 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">66.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x76" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x76" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x76" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-bottom">
+    <td class="n">77</td>
+    <td><b>margin-bottom</b><br><span class="cnt">×8 元素</span><br><span class="routes">/profile · light<br>/security · light<br>/profile · dark<br>/security · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">2px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/profile-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/profile-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x77" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x77" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x77" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">78</td>
+    <td><b>background-color</b><br><span class="cnt">×8 元素</span><br><span class="routes">/dashboard · dark<br>/profile · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(12, 17, 32, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x78" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x78" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x78" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">79</td>
+    <td><b>background-color</b><br><span class="cnt">×7 元素</span><br><span class="routes">/ · light<br>/about · light<br>/docs · light<br>/privacy-policy · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(242, 245, 248, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x79" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x79" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x79" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">80</td>
+    <td><b>background-color</b><br><span class="cnt">×7 元素</span><br><span class="routes">/ · dark<br>/about · dark<br>/docs · dark<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 42, 58, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x80" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x80" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x80" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">81</td>
+    <td><b>background-color</b><br><span class="cnt">×6 元素</span><br><span class="routes">/pricing · light<br>/rankings · light<br>/sign-in · light<br>/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(240, 245, 250, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x81" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x81" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x81" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">82</td>
+    <td><b>control-height</b><br><span class="cnt">×6 元素</span><br><span class="routes">/docs · light<br>/docs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">12.0px</span> <span class="arrow">→</span> <span class="uds">10px <code>--ds-density-default-cell-y</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/docs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/docs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x82" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x82" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x82" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">83</td>
+    <td><b>button-height</b><br><span class="cnt">×6 元素</span><br><span class="routes">/docs · light<br>/docs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">12.0px</span> <span class="arrow">→</span> <span class="uds">10px <code>--ds-density-default-cell-y</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/docs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/docs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x83" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x83" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x83" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">84</td>
+    <td><b>margin-right</b><br><span class="cnt">×6 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">240px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x84" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x84" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x84" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">85</td>
+    <td><b>margin-left</b><br><span class="cnt">×6 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/recharge-agreement · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">240px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x85" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x85" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x85" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">86</td>
+    <td><b>control-height</b><br><span class="cnt">×6 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">28.0px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-control-sm</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x86" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x86" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x86" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">87</td>
+    <td><b>button-height</b><br><span class="cnt">×6 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">28.0px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-control-sm</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x87" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x87" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x87" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">88</td>
+    <td><b>table-row-height</b><br><span class="cnt">×6 元素</span><br><span class="routes">/keys · light<br>/usage-logs · light<br>/usage-logs/audit · light<br>/keys · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">40.0px</span> <span class="arrow">→</span> <span class="uds">36px <code>--ds-density-compact-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/keys-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x88" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x88" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x88" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">89</td>
+    <td><b>margin-right</b><br><span class="cnt">×6 元素</span><br><span class="routes">/usage-logs/audit · light<br>/profile · light<br>/usage-logs/audit · dark<br>/profile · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">-4px</span> <span class="arrow">→</span> <span class="uds">0px <code>--ds-space-0</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-audit-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-audit-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x89" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x89" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x89" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">90</td>
+    <td><b>background-color</b><br><span class="cnt">×6 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(27, 40, 60, 0.149)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x90" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x90" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x90" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">91</td>
+    <td><b>background-color</b><br><span class="cnt">×6 元素</span><br><span class="routes">/pricing · dark<br>/rankings · dark<br>/sign-in · dark<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 40, 60, 0.400)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/pricing-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/pricing-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x91" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x91" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x91" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">92</td>
+    <td><b>box-shadow</b><br><span class="cnt">×5 元素</span><br><span class="routes">/wallet · light<br>/profile · light<br>/checkin · light<br>/redeem · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(248, 250, 252) 0px 0px 0px 4px, rgba(0, 0, 0, 0) 0px 0</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/wallet-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x92" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x92" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x92" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">93</td>
+    <td><b>color</b><br><span class="cnt">×5 元素</span><br><span class="routes">/dashboard · dark<br>/redeem · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(254, 154, 0, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x93" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x93" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x93" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">94</td>
+    <td><b>box-shadow</b><br><span class="cnt">×5 元素</span><br><span class="routes">/wallet · dark<br>/profile · dark<br>/checkin · dark<br>/redeem · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(11, 17, 32) 0px 0px 0px 4px, rgba(0, 0, 0, 0) 0px 0px </span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/wallet-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/wallet-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x94" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x94" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x94" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">95</td>
+    <td><b>background-color</b><br><span class="cnt">×5 元素</span><br><span class="routes">/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(32, 40, 60, 0.251)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x95" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x95" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x95" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-top">
+    <td class="n">96</td>
+    <td><b>padding-top</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">144px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x96" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x96" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x96" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-bottom">
+    <td class="n">97</td>
+    <td><b>padding-bottom</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">112px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x97" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x97" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x97" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">98</td>
+    <td><b>color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(74, 88, 108, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x98" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x98" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x98" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">99</td>
+    <td><b>margin-left</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">142.469px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x99" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x99" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x99" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">100</td>
+    <td><b>box-shadow</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 185, 129, 0.45)</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x100" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x100" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x100" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">101</td>
+    <td><b>background-color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(236, 253, 245, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x101" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x101" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x101" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">102</td>
+    <td><b>svg-width</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">10px</span> <span class="arrow">→</span> <span class="uds">12px <code>--ds-icon-2xs</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x102" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x102" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x102" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">103</td>
+    <td><b>margin-right</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">112px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x103" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x103" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x103" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">104</td>
+    <td><b>margin-left</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · light<br>/setup · light<br>/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">112px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x104" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x104" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x104" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="sidebar-width">
+    <td class="n">105</td>
+    <td><b>sidebar-width</b><br><span class="cnt">×4 元素</span><br><span class="routes">/about · light<br>/docs · light<br>/about · dark<br>/docs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">235.0px</span> <span class="arrow">→</span> <span class="uds">240px <code>--ds-layout-sidebar-width</code></span></td>
+    <td class="reason">按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/about-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/about-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x105" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x105" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x105" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">106</td>
+    <td><b>table-row-height</b><br><span class="cnt">×4 元素</span><br><span class="routes">/privacy-policy · light<br>/user-agreement · light<br>/privacy-policy · dark<br>/user-agreement · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">90.5px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x106" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x106" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x106" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">107</td>
+    <td><b>background-color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/dashboard · light<br>/referral · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(248, 249, 252, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x107" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x107" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x107" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">108</td>
+    <td><b>svg-width</b><br><span class="cnt">×4 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">237.328px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-icon-lg</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x108" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x108" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x108" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">109</td>
+    <td><b>background-color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/keys · light<br>/usage-logs · light<br>/usage-logs/audit · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(245, 246, 249, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/keys-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x109" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x109" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x109" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">110</td>
+    <td><b>table-row-height</b><br><span class="cnt">×4 元素</span><br><span class="routes">/keys · light<br>/usage-logs · light<br>/keys · dark<br>/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">400.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/keys-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x110" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x110" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x110" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-right">
+    <td class="n">111</td>
+    <td><b>margin-right</b><br><span class="cnt">×4 元素</span><br><span class="routes">/playground · light<br>/playground · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">148px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x111" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x111" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x111" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">112</td>
+    <td><b>margin-left</b><br><span class="cnt">×4 元素</span><br><span class="routes">/playground · light<br>/playground · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">148px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x112" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x112" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x112" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="color">
+    <td class="n">113</td>
+    <td><b>color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(201, 207, 221, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x113" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x113" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x113" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">114</td>
+    <td><b>background-color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 37, 22, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x114" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x114" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x114" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">115</td>
+    <td><b>background-color</b><br><span class="cnt">×4 元素</span><br><span class="routes">/keys · dark<br>/usage-logs · dark<br>/usage-logs/audit · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(22, 28, 43, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/keys-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/keys-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x115" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x115" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x115" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">116</td>
+    <td><b>button-height</b><br><span class="cnt">×3 元素</span><br><span class="routes">/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">70.6px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x116" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x116" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x116" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">117</td>
+    <td><b>background-color</b><br><span class="cnt">×3 元素</span><br><span class="routes">/ · dark<br>/setup · dark<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(34, 197, 94, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x117" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x117" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x117" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">118</td>
+    <td><b>background-color</b><br><span class="cnt">×3 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(11, 17, 31, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x118" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x118" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x118" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">119</td>
+    <td><b>button-height</b><br><span class="cnt">×3 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">71.7px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x119" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x119" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x119" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">120</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(28, 78, 217, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x120" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x120" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x120" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">121</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(255, 255, 255, 0.949)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x121" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x121" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x121" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">122</td>
+    <td><b>box-shadow</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(15, 23, 42, 0.18) 0</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x122" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x122" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x122" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">123</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(16, 185, 129, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x123" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x123" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x123" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">124</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(230, 242, 238, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x124" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x124" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x124" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">125</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(245, 245, 245, 0.102)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x125" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x125" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x125" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">126</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(20, 130, 60, 0.200)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x126" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x126" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x126" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">127</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · light<br>/setup · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(217, 218, 255, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x127" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x127" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x127" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">128</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/privacy-policy · light<br>/profile · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(227, 232, 239, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x128" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x128" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x128" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">129</td>
+    <td><b>table-row-height</b><br><span class="cnt">×2 元素</span><br><span class="routes">/privacy-policy · light<br>/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">112.5px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x129" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x129" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x129" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">130</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(20, 129, 60, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x130" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x130" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x130" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="svg-width">
+    <td class="n">131</td>
+    <td><b>svg-width</b><br><span class="cnt">×2 元素</span><br><span class="routes">/dashboard · light<br>/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">237.344px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-icon-lg</code></span></td>
+    <td class="reason">按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x131" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x131" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x131" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">132</td>
+    <td><b>margin-left</b><br><span class="cnt">×2 元素</span><br><span class="routes">/keys · light<br>/keys · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">528px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/keys-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x132" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x132" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x132" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">133</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · light<br>/usage-logs/audit · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(255, 255, 255, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x133" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x133" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x133" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="padding-right">
+    <td class="n">134</td>
+    <td><b>padding-right</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · light<br>/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">36px</span> <span class="arrow">→</span> <span class="uds">32px <code>--ds-space-8</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x134" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x134" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x134" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">135</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(28, 78, 217, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x135" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x135" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x135" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">136</td>
+    <td><b>margin-left</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · light<br>/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">378.344px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x136" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x136" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x136" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="margin-left">
+    <td class="n">137</td>
+    <td><b>margin-left</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs/audit · light<br>/usage-logs/audit · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">956px</span> <span class="arrow">→</span> <span class="uds">96px <code>--ds-space-24</code></span></td>
+    <td class="reason">按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-audit-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-audit-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x137" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x137" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x137" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="table-row-height">
+    <td class="n">138</td>
+    <td><b>table-row-height</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs/audit · light<br>/usage-logs/audit · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">56.5px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-audit-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-audit-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x138" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x138" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x138" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">139</td>
+    <td><b>box-shadow</b><br><span class="cnt">×2 元素</span><br><span class="routes">/playground · light<br>/playground · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 2px, rgba(0, 0, 0, 0.1) 0px 4</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x139" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x139" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x139" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="control-height">
+    <td class="n">140</td>
+    <td><b>control-height</b><br><span class="cnt">×2 元素</span><br><span class="routes">/playground · light<br>/playground · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">96.0px</span> <span class="arrow">→</span> <span class="uds">52px <code>--ds-density-comfortable-row</code></span></td>
+    <td class="reason">按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x140" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x140" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x140" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">141</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/profile · light<br>/security · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(209, 213, 229, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/profile-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/profile-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x141" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x141" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x141" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">142</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(2, 142, 207, 0.600)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x142" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x142" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x142" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">143</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(1, 141, 207, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x143" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x143" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x143" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">144</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(17, 24, 39, 0.949)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x144" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x144" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x144" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">145</td>
+    <td><b>box-shadow</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.7) 0px 2</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x145" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x145" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x145" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">146</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(21, 43, 50, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x146" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x146" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x146" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">147</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(29, 39, 59, 0.102)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x147" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x147" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x147" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">148</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(35, 195, 95, 0.200)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x148" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x148" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x148" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">149</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/ · dark<br>/setup · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(69, 70, 111, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/root-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/root-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x149" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x149" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x149" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">150</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/privacy-policy · dark<br>/profile · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(38, 51, 73, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x150" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x150" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x150" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="border-color">
+    <td class="n">151</td>
+    <td><b>border-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(33, 195, 93, 0.302)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x151" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x151" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x151" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">152</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · dark<br>/usage-logs/audit · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(18, 24, 40, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x152" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x152" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x152" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">153</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(1, 141, 207, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x153" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x153" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x153" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">154</td>
+    <td><b>background-color</b><br><span class="cnt">×2 元素</span><br><span class="routes">/profile · dark<br>/security · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(69, 70, 95, 0.800)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/profile-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/profile-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x154" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x154" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x154" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">155</td>
+    <td><b>box-shadow</b><br><span class="cnt">×1 元素</span><br><span class="routes">/privacy-policy · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.18) 0px </span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x155" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x155" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x155" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">156</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(248, 251, 253, 0.451)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x156" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x156" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x156" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="button-height">
+    <td class="n">157</td>
+    <td><b>button-height</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">38.4px</span> <span class="arrow">→</span> <span class="uds">40px <code>--ds-control-lg</code></span></td>
+    <td class="reason">按文档建议执行：改为规范按钮高度档位</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x157" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x157" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x157" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">158</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(28, 28, 28, 0.035)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x158" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x158" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x158" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">159</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(184, 28, 28, 0.651)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x159" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x159" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x159" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">160</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(241, 245, 249, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x160" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x160" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x160" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">161</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(21, 128, 61, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x161" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x161" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x161" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">162</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/playground · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(241, 245, 249, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x162" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x162" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x162" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">163</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/security · light</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(249, 229, 226, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/security-light.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/security-light.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x163" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x163" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x163" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="box-shadow">
+    <td class="n">164</td>
+    <td><b>box-shadow</b><br><span class="cnt">×1 元素</span><br><span class="routes">/privacy-policy · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.6) 0px 1</span> <span class="arrow">→</span> <span class="uds">卡片抬升 <code>--ds-elevation-2</code></span></td>
+    <td class="reason">按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/privacy-policy-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/privacy-policy-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x164" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x164" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x164" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">165</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(11, 18, 31, 0.451)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x165" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x165" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x165" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">166</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(11, 17, 32, 0.749)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x166" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x166" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x166" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">167</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(255, 255, 255, 0.035)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x167" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x167" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x167" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">168</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/dashboard · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(254, 154, 0, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/dashboard-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/dashboard-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x168" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x168" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x168" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">169</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(128, 29, 29, 0.651)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x169" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x169" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x169" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">170</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 41, 58, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x170" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x170" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x170" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">171</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/usage-logs · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(34, 197, 94, 0.702)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/usage-logs-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/usage-logs-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x171" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x171" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x171" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">172</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/playground · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(30, 42, 60, 0.502)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/playground-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/playground-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x172" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x172" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x172" value="verify"> 先验证</label>
+    </td>
+  </tr>
+<tr data-property="background-color">
+    <td class="n">173</td>
+    <td><b>background-color</b><br><span class="cnt">×1 元素</span><br><span class="routes">/security · dark</span></td>
+    <td><span class="verdict need">需决策</span></td>
+    <td><span class="actual">rgba(18, 20, 41, 1.000)</span> <span class="arrow">→</span> <span class="uds muted">无最近令牌（语义不适用）</span></td>
+    <td class="reason">按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。</td>
+    <td><a href="comprehensive/screenshots/security-dark.png" target="_blank"><img loading="lazy" src="comprehensive/screenshots/security-dark.png" alt="截图"></a></td>
+    <td class="decide">
+      <label><input type="radio" name="x173" value="keep"> 保留例外</label>
+      <label><input type="radio" name="x173" value="migrate" checked> 迁移到 UDS8</label>
+      <label><input type="radio" name="x173" value="verify"> 先验证</label>
+    </td>
+  </tr></tbody></table></div>
+
+<div class="bar"><div class="bar-in">
+  <div class="sum" id="sum">已执行：173/173 迁移到 UDS8 · CM-06：迁移 · 字体别名：退役</div>
+  <button class="act" onclick="doExport()">导出决定</button>
+  <button class="act ghost" onclick="copyOut()">复制到剪贴板</button>
+  <textarea class="out" id="out" readonly></textarea>
+</div></div>
+</div>
+<script>
+document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  const f=b.dataset.f;
+  document.querySelectorAll('#tbl tbody tr').forEach(tr=>{
+    const p=tr.dataset.property;
+    let show=f==='all'||(f==='other'?!/background-color|border-color|^color$|height|margin/.test(p):p.includes(f));
+    tr.style.display=show?'':'none';
+  });
+});
+function collect(){
+  const dec={};document.querySelectorAll('#tbl tbody tr').forEach(tr=>{
+    const sel=tr.querySelector('input[type=radio]:checked');
+    dec[tr.querySelector('td.n').textContent]={property:tr.dataset.property,decision:sel?sel.value:'migrate'};
+  });
+  const g=n=>document.querySelector('input[name='+n+']:checked')?.value;
+  return{head:'110baf149',cm06:g('cm06'),fontAlias:g('fontalias'),nonKeepDecisions:dec,
+    retirementAuth:{scope:'退役对比三项：CM-06、font-sans/font-manrope 别名、173 组登记例外',targetHead:'fa5e1d5269f90490c17b500aa0c29bb19c022027',acceptanceCriteria:'design:8:check=0 且 lint:design:strict=0、typecheck=0、退役守卫测试通过'},
+    note:'三要素在签名凭证确认后由所有者补齐'}
+}
+function refresh(){const d=collect();document.getElementById('sum').textContent='已执行：173/173 迁移到 UDS8 · CM-06：'+d.cm06+' · 字体别名：'+d.fontAlias}
+document.addEventListener('change',refresh);
+function doExport(){document.getElementById('out').value=JSON.stringify(collect(),null,2);document.getElementById('out').style.display='block';refresh()}
+async function copyOut(){const t=document.getElementById('out').value||JSON.stringify(collect(),null,2);document.getElementById('out').value=t;document.getElementById('out').style.display='block';try{await navigator.clipboard.writeText(t);alert('已复制')}catch{alert('请手动复制')}}
+refresh();
+</script></body></html>
