@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Code, Table, Plus, Trash2 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { JsonCodeEditor } from '@/components/json-code-editor'
@@ -82,19 +82,18 @@ export function JsonEditor({
   const [mode, setMode] = useState<'visual' | 'json'>('visual')
   const [rows, setRows] = useState<EditorRow[]>(() => parseJsonRows(value))
   const [jsonValue, setJsonValue] = useState(value)
+  const [prevValue, setPrevValue] = useState(value)
 
   const parseJsonToRows = (json: string) => {
     setRows(parseJsonRows(json))
   }
 
   // Parse JSON to rows when value changes externally
-  useEffect(() => {
-    if (value !== jsonValue) {
-      setJsonValue(value)
-      parseJsonToRows(value)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  if (value !== prevValue) {
+    setPrevValue(value)
+    setJsonValue(value)
+    parseJsonToRows(value)
+  }
 
   const convertRowsToJson = (updatedRows: EditorRow[]): string => {
     if (updatedRows.length === 0) {
