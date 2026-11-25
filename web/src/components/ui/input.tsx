@@ -40,15 +40,18 @@ function Input({
   mono?: boolean
 }) {
   const useMono = mono ?? type === 'url'
-  // 无可见 label 且未显式提供可访问名称时，placeholder 是最接近的中文名称。
-  // 由组件统一兜底，避免各业务页重复补 aria-label；调用方显式传入的值仍优先。
+  // placeholder 兜底只用于「完全没有外部可访问名称来源」的控件。
+  // 有 id 时业务方通常用 <label for> 关联，若仍写 aria-label=placeholder
+  // 会覆盖显式标签，导致 getByRole('textbox', { name: label }) 找不到控件。
+  const hasExternalName =
+    props.id !== undefined ||
+    props['aria-label'] !== undefined ||
+    props['aria-labelledby'] !== undefined
   const derivedAriaLabel =
     props['aria-label'] ??
-    (props['aria-labelledby'] || props.id
-      ? undefined
-      : typeof props.placeholder === 'string'
-        ? props.placeholder
-        : undefined)
+    (!hasExternalName && typeof props.placeholder === 'string'
+      ? props.placeholder
+      : undefined)
   return (
     <InputPrimitive
       type={type}
