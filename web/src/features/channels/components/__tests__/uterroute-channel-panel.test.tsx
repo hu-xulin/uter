@@ -52,7 +52,10 @@ beforeEach(() => {
       return {
         data: {
           success: true,
-          data: { base_url: 'https://route.example.com', host: 'route.example.com' },
+          data: {
+            base_url: 'https://route.example.com',
+            host: 'route.example.com',
+          },
         },
       }
     }
@@ -65,7 +68,9 @@ test('before a draft exists the panel offers a manual prepare action', async () 
   const onCreateDraft = vi.fn().mockResolvedValue(11)
   renderPanel(null, onCreateDraft)
 
-  await user.click(screen.getByRole('button', { name: 'Prepare draft channel' }))
+  await user.click(
+    screen.getByRole('button', { name: 'Prepare draft channel' })
+  )
 
   expect(onCreateDraft).toHaveBeenCalledOnce()
 })
@@ -87,7 +92,10 @@ test('changing the discount group re-syncs with the newly selected group', async
       return {
         data: {
           success: true,
-          data: { base_url: 'https://route.example.com', host: 'route.example.com' },
+          data: {
+            base_url: 'https://route.example.com',
+            host: 'route.example.com',
+          },
         },
       }
     }
@@ -98,7 +106,13 @@ test('changing the discount group re-syncs with the newly selected group', async
           synced: true,
           discount_group: 'default',
           discount_groups: ['default', 'vip'],
-          summary: { models: 2, groups: 2, pricing_version: 'v1', fetched_at: 'now', price_basis: 'ratio' },
+          summary: {
+            models: 2,
+            groups: 2,
+            pricing_version: 'v1',
+            fetched_at: 'now',
+            price_basis: 'ratio',
+          },
         },
       },
     }
@@ -125,7 +139,9 @@ test('syncing the Uter Route catalog invalidates the pricing query', async () =>
   client.setQueryData(['pricing'], { pages: [] })
   expect(client.getQueryState(['pricing'])?.isInvalidated).toBe(false)
 
-  await user.click(screen.getByRole('button', { name: 'Sync Uter Route catalog' }))
+  await user.click(
+    screen.getByRole('button', { name: 'Sync Uter Route catalog' })
+  )
 
   await waitFor(() => {
     expect(postSpy).toHaveBeenCalledWith(
