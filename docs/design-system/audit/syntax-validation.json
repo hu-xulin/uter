@@ -1,6 +1,6 @@
 {
   "schema": "UDS8-SYNTAX-VALIDATION/1.0",
-  "generated_at": "2026-11-24T17:05:19.410Z",
+  "generated_at": "2026-11-24T18:31:48.947Z",
   "engine": {
     "name": "shiki",
     "version": "4.3.0",
@@ -3011,6 +3011,7 @@
               "source.css.scss",
               "meta.property-list.scss",
               "meta.property-name.scss",
+              "meta.property-name.css",
               "support.type.property-name.css"
             ]
           },
@@ -3098,6 +3099,7 @@
               "meta.property-list.scss",
               "meta.property-list.scss",
               "meta.property-name.scss",
+              "meta.property-name.css",
               "support.type.property-name.css"
             ]
           },
