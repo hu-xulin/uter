@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -93,7 +93,10 @@ export function SetupWizard() {
     mode: 'onBlur',
   })
 
-  const watchedValues = form.watch()
+  const watchedValues = useWatch({
+    control: form.control,
+    compute: (values) => values,
+  })
 
   const {
     data: statusResponse,
@@ -128,6 +131,20 @@ export function SetupWizard() {
     },
   })
 
+  // Adopt the fetched setup status during render so the wizard starts on the
+  // right step without a second render from an effect.
+  const fetchedStatus = statusResponse?.success
+    ? statusResponse.data
+    : undefined
+  const [prevStatusResponse, setPrevStatusResponse] = useState(statusResponse)
+  if (prevStatusResponse !== statusResponse) {
+    setPrevStatusResponse(statusResponse)
+    if (fetchedStatus && !fetchedStatus.status) {
+      setSetupStatus(fetchedStatus)
+      setCurrentStep(0)
+    }
+  }
+
   useEffect(() => {
     if (!statusResponse) return
 
@@ -143,9 +160,6 @@ export function SetupWizard() {
       navigate({ to: '/' })
       return
     }
-
-    setSetupStatus(status)
-    setCurrentStep(0)
 
     // Pre-fill usage mode if backend echoes it
     if (status.SelfUseModeEnabled) {
