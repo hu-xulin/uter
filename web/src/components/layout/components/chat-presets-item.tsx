@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { Loader2, ChevronRight, CircleHelp } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -253,13 +253,15 @@ export function ChatPresetsItem({ item }: { item: NavChatPresets }) {
   // 但反过来：当停留在 /playground 等非聊天页面时，点击聊天父项必须真正
   // 导航到首个 web 预设（见 handleParentActivate），否则父项永远无法被选中、
   // 游乐场也始终高亮。导航后路由进入 /chat/*，高亮随之切换，互斥关系不变。
-  const [open, setOpen] = useState(() => normalizedHref.startsWith('/chat'))
-  // 路径变化且确实进入 / 离开聊天区时自动展开 / 收起；路径不变时不覆盖用户
-  // 手动展开 / 收起的结果。
-  useEffect(() => {
-    setOpen(normalizedHref.startsWith('/chat'))
-  }, [normalizedHref])
   const chatActive = normalizedHref.startsWith('/chat')
+  const [open, setOpen] = useState(chatActive)
+  // 路径变化且确实进入 / 离开聊天区时自动展开 / 收起；路径不变时不覆盖用户
+  // 手动展开 / 收起的结果。在渲染期同步可避免 effect 带来的级联渲染。
+  const [prevChatActive, setPrevChatActive] = useState(chatActive)
+  if (prevChatActive !== chatActive) {
+    setPrevChatActive(chatActive)
+    setOpen(chatActive)
+  }
   const [loadingPresetId, setLoadingPresetId] = useState<string | null>(null)
   const loadingPresetIdRef = useRef<string | null>(null)
   const [pendingPreset, setPendingPreset] = useState<ChatPreset | null>(null)
