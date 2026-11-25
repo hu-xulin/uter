@@ -13,8 +13,8 @@
  * A FAIL from this validator means NO requirement may remain VERIFIED — the
  * engine downgrades them to NOT_VERIFIED (honest fail-closed).
  *
- * This validator is deliberately BOUNDED: it does not re-run the whole 538-
- * command matrix or expensive Go/browser suites. The real behaviour commands
+ * This validator is deliberately BOUNDED: it does not re-run one command per
+ * registered requirement or expensive Go/browser suites. The real behaviour commands
  * are executed once by requirement-verification.mjs; this validator re-checks
  * the immutable evidence those runs produced.
  */
@@ -44,6 +44,94 @@ function deriveStates(rows) {
   return states;
 }
 
+/**
+ * Independently derive the requirement ID catalog from the specification
+ * registry and the numbered requirement sections in each registered file.
+ * This intentionally does not import the production matrix extractor.
+ */
+function deriveRegisteredRequirementIds() {
+  const registryPath = path.join(ROOT, '.uap', 'config', 'specification-registry.yaml');
+  const registryText = fs.readFileSync(registryPath, 'utf8');
+  const specs = [];
+  let current = null;
+  for (const line of registryText.split(/\r?\n/)) {
+    const idMatch = /^\s*-\s*id:\s*(UAP-\d{2}-\d{3})\s*$/.exec(line);
+    if (idMatch) {
+      current = { id: idMatch[1], file: null };
+      specs.push(current);
+      continue;
+    }
+    if (!current || current.file) continue;
+    const fileMatch = /^\s{4}file:\s*"?([^"\n]+?)"?\s*$/.exec(line);
+    if (fileMatch) current.file = fileMatch[1];
+  }
+  if (specs.length === 0) throw new Error('specification registry contains no registered specifications');
+  const ids = [];
+  for (const spec of specs) {
+    if (!spec.file) throw new Error(`${spec.id}: registered specification has no file path`);
+    const specPath = path.join(ROOT, spec.file);
+    const source = fs.readFileSync(specPath, 'utf8');
+    for (const [heading, tag] of [['强制性要求', 'REQ'], ['验收条件', 'ACC']]) {
+      const parts = source.split(new RegExp(`^## ${heading}\\s*/**
+ * Independent Validator for strict Phase-2 Requirement verification (P2-06).
+ *
+ * It does NOT trust the verification engine's own conclusions. Independently:
+ *   1. re-derives the 4-state counts from the raw `rows` and compares them to
+ *      the emitted `states`/`counts` (the `states:` line);
+ *   2. re-reads EVERY VERIFIED evidence record from disk and recomputes its
+ *      sha256, checks hash validity + execution binding (id / HEAD / worktree);
+ *   3. checks that no VERIFIED row lacks evidence_refs or a real actual_result;
+ *   4. checks that distinct assertions back distinct VERIFIED requirements;
+ *   5. fails closed on any disagreement.
+ *
+ * A FAIL from this validator means NO requirement may remain VERIFIED — the
+ * engine downgrades them to NOT_VERIFIED (honest fail-closed).
+ *
+ * This validator is deliberately BOUNDED: it does not re-run one command per
+ * registered requirement or expensive Go/browser suites. The real behaviour commands
+ * are executed once by requirement-verification.mjs; this validator re-checks
+ * the immutable evidence those runs produced.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { get as getEvidence, verify as verifyEvidence } from '../runtime/evidence-engine/index.mjs';
+import { currentExecution } from '../runtime/status-engine/execution.mjs';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '../..');
+const REPORTS = path.join(ROOT, '.uap', 'reports');
+const OUT = path.join(REPORTS, 'REQUIREMENT-INDEPENDENT-VALIDATION.json');
+// Env override exists for negative tests: pointing the validator at a missing
+// results file must fail closed (N3). Never used in production runs.
+const RESULTS_IN = process.env.UAP_REQUIREMENT_RESULTS_IN
+  ? path.resolve(ROOT, process.env.UAP_REQUIREMENT_RESULTS_IN)
+  : path.join(REPORTS, 'REQUIREMENT-VERIFICATION-RESULTS.json');
+
+const sha = (s) => crypto.createHash('sha256').update(String(s)).digest('hex');
+const readJSON = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return d; } };
+
+function deriveStates(rows) {
+  const states = { VERIFIED: 0, NOT_VERIFIED: 0, BLOCKED: 0, NOT_APPLICABLE: 0 };
+  for (const r of rows) if (Object.prototype.hasOwnProperty.call(states, r.status)) states[r.status] += 1;
+  return states;
+}
+
+, 'm'));
+      const body = (parts[1] || '').split(/^## /m)[0];
+      const items = body.split(/\r?\n/).filter((line) => /^\d+\.\s+/.test(line));
+      items.forEach((_, index) => {
+        ids.push(`${spec.id}-${tag}-${String(index + 1).padStart(3, '0')}`);
+      });
+    }
+  }
+  const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+  if (ids.length === 0) throw new Error('registered specifications contain no numbered requirements');
+  if (duplicates.length) throw new Error(`duplicate registry-derived requirement IDs: ${[...new Set(duplicates)].join(', ')}`);
+  return { specification_count: specs.length, ids };
+}
+
 export async function independentValidate({ rows = [], states = null, execution = null, write = true } = {}) {
   const problems = [];
   const checks = [];
@@ -62,7 +150,29 @@ export async function independentValidate({ rows = [], states = null, execution 
   }) : true;
   add('states_line_matches_matrix', statesMatch,
     `derived=${JSON.stringify(derived)} emitted=${JSON.stringify(emitted)}`);
-  add('all_538_requirements_present', rows.length === 538, `${rows.length} rows`);
+  let registryCatalog = null;
+  let registryCatalogError = null;
+  try {
+    registryCatalog = deriveRegisteredRequirementIds();
+  } catch (error) {
+    registryCatalogError = String(error?.message || error);
+  }
+  add('registered_requirement_catalog_available', Boolean(registryCatalog),
+    registryCatalogError || `${registryCatalog?.specification_count || 0} specs / ${registryCatalog?.ids.length || 0} registered requirement IDs`);
+  const expectedIds = registryCatalog?.ids || [];
+  const actualIds = rows.map((r) => r?.requirement_id ?? r?.id ?? null);
+  const expectedSet = new Set(expectedIds);
+  const actualSet = new Set(actualIds.filter((id) => typeof id === 'string' && id.trim()));
+  const missingIds = expectedIds.filter((id) => !actualSet.has(id));
+  const unexpectedIds = actualIds.filter((id) => typeof id !== 'string' || !expectedSet.has(id));
+  const duplicateIds = actualIds.filter((id, index) => actualIds.indexOf(id) !== index);
+  const catalogMatches = Boolean(registryCatalog)
+    && rows.length === expectedIds.length
+    && new Set(actualIds).size === actualIds.length
+    && missingIds.length === 0
+    && unexpectedIds.length === 0;
+  add('matrix_ids_match_registered_specifications', catalogMatches,
+    `expected=${expectedIds.length} actual=${rows.length} missing=${missingIds.length} unexpected=${unexpectedIds.length} duplicates=${duplicateIds.length}`);
   add('states_sum_to_total', Object.values(derived).reduce((a, b) => a + b, 0) === rows.length,
     `sum=${Object.values(derived).reduce((a, b) => a + b, 0)} total=${rows.length}`);
 
