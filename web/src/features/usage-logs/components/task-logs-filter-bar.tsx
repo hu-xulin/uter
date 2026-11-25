@@ -120,8 +120,10 @@ export function TaskLogsFilterBar<TData>(props: TaskLogsFilterBarProps<TData>) {
             ...(searchParams.filter ? { taskId: searchParams.filter } : {}),
           }
 
-    setFilters(next)
-    setUserIdRaw(null)
+    void (async () => {
+      setFilters(next)
+      setUserIdRaw(null)
+    })()
   }, [
     props.logCategory,
     searchParams.startTime,
