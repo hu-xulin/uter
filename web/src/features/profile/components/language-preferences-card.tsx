@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Languages, Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -52,10 +52,11 @@ export function LanguagePreferencesCard(props: LanguagePreferencesCardProps) {
   }, [props.profile?.setting, i18n.language])
 
   const [currentLanguage, setCurrentLanguage] = useState(savedLanguage)
-
-  useEffect(() => {
+  const [prevSavedLanguage, setPrevSavedLanguage] = useState(savedLanguage)
+  if (prevSavedLanguage !== savedLanguage) {
+    setPrevSavedLanguage(savedLanguage)
     setCurrentLanguage(savedLanguage)
-  }, [savedLanguage])
+  }
 
   const handleLanguageChange = async (language: string | null) => {
     if (!language) return
