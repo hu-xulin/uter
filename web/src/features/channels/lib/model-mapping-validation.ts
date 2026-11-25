@@ -117,6 +117,80 @@ export function extractRedirectModels(modelMapping: string): string[] {
 }
 
 /**
+ * Follow a model_mapping chain to the concrete upstream name. A cycle has no
+ * authoritative target and is returned as empty so callers skip the alias.
+ */
+export function resolveMappingTargetChain(
+  source: string,
+  mapping: Record<string, string>
+): string {
+  const seen = new Set<string>()
+  let current = source.trim()
+  while (current && typeof mapping[current] === 'string') {
+    if (seen.has(current)) return ''
+    seen.add(current)
+    current = mapping[current].trim()
+  }
+  return current
+}
+
+/**
+ * Preview saved pricing rows under the request aliases created by an unsaved
+ * batch redirect. Saved rows are keyed by upstream names; a redirect publishes
+ * aliases in the channel model list. Without this remap the wizard shows every
+ * redirected model as having no price even though the upstream row exists.
+ */
+export function remapPricingRowsForPreview<T extends { model_name: string }>(
+  rows: T[],
+  modelMapping: string,
+  selectedModels: string[]
+): T[] {
+  if (!modelMapping?.trim() || selectedModels.length === 0) return rows
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(modelMapping)
+  } catch {
+    return rows
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return rows
+  const mapping = parsed as Record<string, string>
+  if (Object.values(mapping).some((value) => typeof value !== 'string')) return rows
+
+  const selected = new Set(selectedModels.map((model) => model.trim()))
+  const aliasesByUpstream = new Map<string, string[]>()
+  for (const source of Object.keys(mapping)) {
+    const alias = source.trim()
+    if (!alias || !selected.has(alias)) continue
+    const target = resolveMappingTargetChain(alias, mapping)
+    if (!target || target === alias) continue
+    const aliases = aliasesByUpstream.get(target) ?? []
+    if (!aliases.includes(alias)) aliases.push(alias)
+    aliasesByUpstream.set(target, aliases)
+  }
+  if (aliasesByUpstream.size === 0) return rows
+
+  const remapped: T[] = []
+  const seen = new Set<string>()
+  for (const row of rows) {
+    const aliases = aliasesByUpstream.get(row.model_name)
+    if (!aliases?.length) {
+      if (!seen.has(row.model_name)) {
+        seen.add(row.model_name)
+        remapped.push(row)
+      }
+      continue
+    }
+    for (const alias of aliases) {
+      if (seen.has(alias)) continue
+      seen.add(alias)
+      remapped.push({ ...row, model_name: alias })
+    }
+  }
+  return remapped
+}
+
+/**
  * Check if model configuration has changed
  */
 export function hasModelConfigChanged(
