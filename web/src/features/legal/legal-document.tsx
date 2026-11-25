@@ -126,9 +126,14 @@ function BundledLegalDocument({
   const [Doc, setDoc] = useState<ComponentType<Record<string, unknown>> | null>(
     null
   )
+  const [prevLoader, setPrevLoader] = useState(loader)
+
+  if (loader !== prevLoader) {
+    setPrevLoader(loader)
+    setDoc(null)
+  }
 
   useEffect(() => {
-    setDoc(null)
     if (!loader) return
     let alive = true
     loader()
