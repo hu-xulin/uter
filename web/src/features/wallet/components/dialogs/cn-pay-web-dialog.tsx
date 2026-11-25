@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 import { Loader2, QrCode, Smartphone, XCircle } from 'lucide-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -74,7 +74,6 @@ export function CnPayWebDialog({
   onOpenChange,
   topupAmount,
   paymentAmount,
-  initialQuota,
   paymentMethod,
   onSuccess,
 }: CnPayWebDialogProps) {
@@ -85,25 +84,33 @@ export function CnPayWebDialog({
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
-  const initialQuotaRef = useRef(initialQuota)
-  const onSuccessRef = useRef(onSuccess)
   const doneRef = useRef(false)
   const tradeNoRef = useRef('')
 
-  initialQuotaRef.current = initialQuota
-  onSuccessRef.current = onSuccess
+  // Always call the latest success callback from the polling timer without
+  // mutating a ref during render.
+  const notifySuccess = useEffectEvent(() => onSuccess())
 
   const isAlipay = isAlipayWebPayment(paymentMethod?.type ?? '')
   const providerName = isAlipay ? t('Alipay') : t('WeChat Pay')
+
+  // Start each new dialog session from a clean cashier view. Adjusting state
+  // during render keeps this in sync with `open` without a cascading effect.
+  const [prevOpen, setPrevOpen] = useState(open)
+  if (prevOpen !== open) {
+    setPrevOpen(open)
+    if (open) {
+      setQrContent(null)
+      setRedirecting(false)
+      setError(null)
+      setDone(false)
+    }
+  }
 
   // Create the order when the dialog opens.
   useEffect(() => {
     if (!open) return
     let cancelled = false
-    setQrContent(null)
-    setRedirecting(false)
-    setError(null)
-    setDone(false)
     doneRef.current = false
 
     const createOrder = async () => {
@@ -176,7 +183,7 @@ export function CnPayWebDialog({
         doneRef.current = true
         setDone(true)
         toast.success(t('Payment successful'))
-        setTimeout(() => onSuccessRef.current(), 600)
+        setTimeout(() => notifySuccess(), 600)
       },
       onPending: () => {},
       isCancelled: () => cancelled || doneRef.current,
