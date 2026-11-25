@@ -436,15 +436,25 @@ export function OAuthSection(props: OAuthSectionProps) {
     toast.success(t('Form reset to saved values'))
   }
 
+  // 在事件处理器中调用 handleSubmit，避免在渲染期把表单 ref 传给函数。
+  const submitForm = () => {
+    void form.handleSubmit(onSubmit)()
+  }
+
   return (
     <>
       <FormNavigationGuard when={form.formState.isDirty} />
 
       <SettingsSection title={t('OAuth Integrations')}>
         <Form {...form}>
-          <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+          <SettingsForm
+            onSubmit={(event) => {
+              event.preventDefault()
+              submitForm()
+            }}
+          >
             <SettingsPageFormActions
-              onSave={form.handleSubmit(onSubmit)}
+              onSave={submitForm}
               onReset={handleReset}
               isSaving={form.formState.isSubmitting}
               isResetDisabled={!form.formState.isDirty}
