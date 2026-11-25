@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { ChevronDown } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DataTableRowActionMenu } from '@/components/data-table'
@@ -276,9 +276,7 @@ function PricingRuleCard(
   const hasIssues = props.issues.some((issue) =>
     ids.has(issue.id.split(':')[0])
   )
-  useEffect(() => {
-    if (hasIssues) setOpen(true)
-  }, [hasIssues])
+  if (hasIssues && !open) setOpen(true)
 
   return (
     <Collapsible
