@@ -16,6 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -37,6 +38,9 @@ interface TimestampCellProps {
 }
 
 export function TimestampCell(props: TimestampCellProps) {
+  // Snapshot the current time once per mount; an explicit `now` prop still
+  // wins for deterministic rendering and tests.
+  const [mountedAt] = useState(() => Date.now())
   if (!props.timestamp || props.timestamp === -1) {
     return <span className='text-muted-foreground'>-</span>
   }
@@ -54,7 +58,7 @@ export function TimestampCell(props: TimestampCellProps) {
     )
   }
 
-  const now = props.now ?? Date.now()
+  const now = props.now ?? mountedAt
   const isJustNow = timestampMs <= now && now - timestampMs < 60_000
   const relativeTime = isJustNow
     ? props.justNowLabel
