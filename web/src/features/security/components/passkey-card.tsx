@@ -106,7 +106,7 @@ export function PasskeyCard({ loading: pageLoading }: PasskeyCardProps) {
       const failure = AuthOperationError.from(error)
       if (failure.code !== 'AUTH_CANCELLED') handleServerError(failure)
     }
-  }, [registering, remove, removing, t, verification])
+  }, [registering, remove, removing, setConfirmOpen, t, verification])
 
   if (pageLoading || loading) {
     return (
