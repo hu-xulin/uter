@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { RefreshCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { Resolver } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -122,11 +122,13 @@ export function PricingSection({
   const updateOption = useUpdateOption()
   const queryClient = useQueryClient()
   const [lastSyncedAt, setLastSyncedAt] = useState(exchangeRateUpdatedAt)
+  const [prevUpdatedAt, setPrevUpdatedAt] = useState(exchangeRateUpdatedAt)
   const [syncing, setSyncing] = useState(false)
 
-  useEffect(() => {
+  if (exchangeRateUpdatedAt !== prevUpdatedAt) {
+    setPrevUpdatedAt(exchangeRateUpdatedAt)
     setLastSyncedAt(exchangeRateUpdatedAt)
-  }, [exchangeRateUpdatedAt])
+  }
 
   const pricingSchema = createPricingSchema(t)
 
