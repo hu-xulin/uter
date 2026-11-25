@@ -30,17 +30,20 @@ import (
 // non-auto-derived source, so a later upstream re-sync never overwrites it.
 const aliasPricingInheritSource = "redirect_alias"
 
-// aliasPricingInheritance is the pure decision for one redirect pair: the
-// alias must be served by the channel and have no row, while the upstream name
-// must have exactly one configured, billable row to inherit from. Anything
-// ambiguous stays unresolved so the publish gate keeps failing closed.
+// aliasPricingInheritance is the pure decision for one served request name.
+// The name must have no row of its own, and the redirect chain must expose
+// exactly one configured, billable row to inherit from. Relay bills against
+// the served name, so the same rule works in both directions: an alias served
+// by the channel can inherit the upstream row, and an upstream name still
+// served after a partial redirect can inherit a row left under the alias.
+// Anything ambiguous stays unresolved so the publish gate keeps failing closed.
 type aliasPricingInheritance struct {
 	Alias  string
 	Target model.ChannelModelPricing
 }
 
 // resolveAliasPricingInheritance computes, without writing anything, which
-// redirect aliases may inherit a billable price from their upstream target.
+// served names may inherit a billable price from the other end of a redirect.
 // selectedModels is the channel's model list; rows is the channel price table.
 func resolveAliasPricingInheritance(
 	selectedModels []string,
@@ -68,43 +71,80 @@ func resolveAliasPricingInheritance(
 			byModel[name] = append(byModel[name], row)
 		}
 	}
+	// A row keyed by any hop of the chain shares the billable identity of the
+	// chain tail. Indexing by that tail makes a partial redirect resolvable in
+	// either direction instead of depending on which name the row kept.
+	byIdentity := make(map[string][]model.ChannelModelPricing, len(byModel))
+	for name, nameRows := range byModel {
+		identity, cyclic := followUterRouteModelMapping(mapping, name)
+		if cyclic || identity == "" {
+			identity = name
+		}
+		byIdentity[identity] = append(byIdentity[identity], nameRows...)
+	}
 
 	inherit := make([]aliasPricingInheritance, 0)
 	unresolved := make([]string, 0)
+	unresolvedSeen := make(map[string]bool, len(mapping))
+	markUnresolved := func(name string) {
+		name = strings.TrimSpace(name)
+		if name == "" || unresolvedSeen[name] {
+			return
+		}
+		unresolvedSeen[name] = true
+		unresolved = append(unresolved, name)
+	}
+	scheduled := make(map[string]bool, len(mapping))
 	for alias, direct := range mapping {
 		alias, direct = strings.TrimSpace(alias), strings.TrimSpace(direct)
-		if alias == "" || direct == "" || !served[alias] {
+		if alias == "" || direct == "" {
 			continue
 		}
-		// Walk the same chain the relay walks, so an alias inherits from the
+		// Walk the same chain the relay walks, so a name inherits from the
 		// concrete upstream name its request is ultimately rewritten to. A
 		// cycle (or an empty hop) has no authoritative target; skip it so the
-		// publish gate still fails closed on that alias.
+		// publish gate still fails closed on that name.
 		target, cyclic := followUterRouteModelMapping(mapping, alias)
 		if cyclic || target == "" || target == alias {
-			unresolved = append(unresolved, alias)
+			if served[alias] {
+				markUnresolved(alias)
+			}
 			continue
 		}
-		// An alias that already has a row is never rewritten; the publish gate,
-		// not this helper, decides whether that row is billable.
-		if len(byModel[alias]) > 0 {
-			continue
+		// Alias is served but its row still sits under the upstream name.
+		if served[alias] && !scheduled[alias] && len(byModel[alias]) == 0 {
+			if row, ok := singleBillablePricingRow(byIdentity[target]); ok {
+				inherit = append(inherit, aliasPricingInheritance{Alias: alias, Target: row})
+				scheduled[alias] = true
+			} else {
+				markUnresolved(alias)
+			}
 		}
-		candidates := byModel[target]
-		if len(candidates) != 1 {
-			unresolved = append(unresolved, alias)
-			continue
+		// Upstream name is still served while the row was regenerated under the
+		// alias. Materialize it under the name relay will bill against.
+		if served[target] && !scheduled[target] && len(byModel[target]) == 0 {
+			if row, ok := singleBillablePricingRow(byIdentity[target]); ok {
+				inherit = append(inherit, aliasPricingInheritance{Alias: target, Target: row})
+				scheduled[target] = true
+			} else {
+				markUnresolved(target)
+			}
 		}
-		row := candidates[0]
-		if row.PricingStatus != model.ChannelPricingStatusConfigured ||
-			strings.TrimSpace(row.InternalPricing) == "" ||
-			!billableInternalPricing(row.InternalPricing) {
-			unresolved = append(unresolved, alias)
-			continue
-		}
-		inherit = append(inherit, aliasPricingInheritance{Alias: alias, Target: row})
 	}
 	return inherit, unresolved
+}
+
+func singleBillablePricingRow(rows []model.ChannelModelPricing) (model.ChannelModelPricing, bool) {
+	if len(rows) != 1 {
+		return model.ChannelModelPricing{}, false
+	}
+	row := rows[0]
+	if row.PricingStatus != model.ChannelPricingStatusConfigured ||
+		strings.TrimSpace(row.InternalPricing) == "" ||
+		!billableInternalPricing(row.InternalPricing) {
+		return model.ChannelModelPricing{}, false
+	}
+	return row, true
 }
 
 // billableInternalPricing reports whether the stored internal price normalizes
@@ -119,8 +159,8 @@ func billableInternalPricing(raw string) bool {
 	return err == nil
 }
 
-// EnsureRedirectAliasPricing materializes billable price rows for redirect
-// aliases that the channel serves but that were never given their own row.
+// EnsureRedirectAliasPricing materializes billable price rows for served names
+// whose row still sits under the other end of a redirect mapping.
 // Relay bills against the request alias, so a channel-scoped price must exist
 // under that name; inheriting the upstream target's configured price keeps the
 // alias consistent with the price the operator already approved.

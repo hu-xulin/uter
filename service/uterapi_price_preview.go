@@ -88,6 +88,11 @@ func PreviewUterAPIPriceCatalog(ctx context.Context, group string) (*UterAPIPric
 			applyGroupRatioToRecord(&records[i], group, ratio)
 		}
 	}
+	// Mirror the saved-channel path: credit-dollar quotes become real USD in
+	// the preview too, so the wizard and the plaza show the same number.
+	if err := applyUterAPICreditExchangeRate(records); err != nil {
+		return nil, err
+	}
 	return &UterAPIPricePreview{
 		Group: group, GroupName: groupName, Ratio: ratio,
 		Currency: "USD", FetchedAt: now.Unix(), Records: records,

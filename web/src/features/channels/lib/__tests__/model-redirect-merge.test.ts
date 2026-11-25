@@ -18,7 +18,10 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, test } from 'vitest'
 
-import { mergeUpstreamModelsWithRedirects } from '../model-mapping-validation'
+import {
+  mergeUpstreamModelsWithRedirects,
+  normalizeSelectedModelsForRedirect,
+} from '../model-mapping-validation'
 
 describe('mergeUpstreamModelsWithRedirects', () => {
   test('批量全选时跳过已重定向的上游原名，避免 82 个模型翻倍成 164', () => {
@@ -56,5 +59,48 @@ describe('mergeUpstreamModelsWithRedirects', () => {
     expect(
       mergeUpstreamModelsWithRedirects(['alias-a'], ['model-a'], '{bad json')
     ).toEqual(['alias-a', 'model-a'])
+  })
+})
+
+describe('normalizeSelectedModelsForRedirect', () => {
+  // The "配置模型" dialog applies a whole new selection. Unlike the upstream
+  // merge it must translate, not just skip: dropping a lone upstream name
+  // would silently remove a model the operator meant to keep serving.
+  const mapping = JSON.stringify({
+    'claude-haiku-4-5-dr': 'claude-haiku-4-5',
+    'claude-opus-4-6-dr': 'claude-opus-4-6',
+  })
+
+  test('别名与原名同时选中时去掉上游原名，避免列表翻倍并暴露供应原名', () => {
+    expect(
+      normalizeSelectedModelsForRedirect(
+        ['claude-haiku-4-5-dr', 'claude-haiku-4-5', 'unrelated'],
+        mapping
+      )
+    ).toEqual(['claude-haiku-4-5-dr', 'unrelated'])
+  })
+
+  test('只选中上游原名时替换为请求别名，模型不丢失', () => {
+    expect(
+      normalizeSelectedModelsForRedirect(['claude-opus-4-6'], mapping)
+    ).toEqual(['claude-opus-4-6-dr'])
+  })
+
+  test('同一原名对应多个别名且都已选中时只保留别名', () => {
+    expect(
+      normalizeSelectedModelsForRedirect(
+        ['a-dr', 'b-dr', 'upstream', 'upstream'],
+        JSON.stringify({ 'a-dr': 'upstream', 'b-dr': 'upstream' })
+      )
+    ).toEqual(['a-dr', 'b-dr'])
+  })
+
+  test('无映射或映射无效时保持原选择不变', () => {
+    expect(normalizeSelectedModelsForRedirect(['model-a'], '')).toEqual([
+      'model-a',
+    ])
+    expect(
+      normalizeSelectedModelsForRedirect(['model-a'], '{bad json')
+    ).toEqual(['model-a'])
   })
 })

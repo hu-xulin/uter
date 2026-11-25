@@ -61,6 +61,7 @@ func withPreviewCatalogURL(t *testing.T, url string) {
 func TestPreviewUterAPIPriceCatalogAppliesGroupRatioAndDisplayName(t *testing.T) {
 	server := previewCatalogServer(t)
 	withPreviewCatalogURL(t, server.URL)
+	withFXRate(t, 5)
 
 	preview, err := PreviewUterAPIPriceCatalog(context.Background(), "Codex")
 	require.NoError(t, err)
@@ -76,9 +77,10 @@ func TestPreviewUterAPIPriceCatalogAppliesGroupRatioAndDisplayName(t *testing.T)
 	require.NotNil(t, view.ChannelPrice)
 	require.NotNil(t, view.ChannelPrice.InputPerMillionUSD)
 	require.NotNil(t, view.ChannelPrice.OutputPerMillionUSD)
-	// Official expression 10/50 times the 0.5 group ratio.
-	assert.InDelta(t, 5, view.ChannelPrice.InputPerMillionUSD.Float64(), 1e-9)
-	assert.InDelta(t, 25, view.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-9)
+	// Official expression 10/50 × 0.5 group ratio = 5/25 credit dollars;
+	// dividing by the 5 CNY/USD market rate gives the real channel price.
+	assert.InDelta(t, 1, view.ChannelPrice.InputPerMillionUSD.Float64(), 1e-9)
+	assert.InDelta(t, 5, view.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-9)
 }
 
 func TestPreviewUterAPIPriceCatalogFailsClosed(t *testing.T) {

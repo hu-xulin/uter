@@ -23,6 +23,7 @@ import { useStatus } from '@/hooks/use-status'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getPricing } from '../api'
+import { excludeRedirectedUpstreams } from '../lib/model-helpers'
 import {
   canonicalVendorIcon,
   canonicalVendorName,
@@ -72,7 +73,7 @@ export function usePricingData(enabled = true) {
 
     const vendorMap = new Map(data.vendors.map((v) => [v.id, v]))
 
-    return data.data.map((model) => {
+    return excludeRedirectedUpstreams(data.data).map((model) => {
       const vendor = model.vendor_id
         ? vendorMap.get(model.vendor_id)
         : undefined

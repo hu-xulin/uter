@@ -130,6 +130,46 @@ func TestResolveAliasPricingInheritanceSkipsUnservedAlias(t *testing.T) {
 	assert.Empty(t, unresolved)
 }
 
+// 部分重定向可能留下反向形态：渠道仍服务原名，而已有的可计费行落在别名下。
+// 前端就绪度会把两侧归一到同一身份，后端也必须补原名行，避免前端显示就绪、
+// 发布时却报 PRICE_MISSING。
+func TestResolveAliasPricingInheritanceFromAliasRowToServedUpstream(t *testing.T) {
+	rows := []model.ChannelModelPricing{aliasTestBillableRow(t, "base-dr")}
+	mapping := `{"base-dr":"base"}`
+
+	inherit, unresolved := resolveAliasPricingInheritance([]string{"base"}, mapping, rows)
+
+	require.Len(t, inherit, 1)
+	assert.Equal(t, "base", inherit[0].Alias)
+	assert.Equal(t, "base-dr", inherit[0].Target.ModelName)
+	assert.Empty(t, unresolved)
+}
+
+func TestResolveAliasPricingInheritanceReverseFollowsChain(t *testing.T) {
+	rows := []model.ChannelModelPricing{aliasTestBillableRow(t, "a-dr")}
+	mapping := `{"a-dr":"b-dr","b-dr":"concrete"}`
+
+	inherit, unresolved := resolveAliasPricingInheritance([]string{"concrete"}, mapping, rows)
+
+	require.Len(t, inherit, 1)
+	assert.Equal(t, "concrete", inherit[0].Alias)
+	assert.Equal(t, "a-dr", inherit[0].Target.ModelName)
+	assert.Empty(t, unresolved)
+}
+
+func TestResolveAliasPricingInheritanceReverseRejectsAmbiguousRows(t *testing.T) {
+	rows := []model.ChannelModelPricing{
+		aliasTestBillableRow(t, "a-dr"),
+		aliasTestBillableRow(t, "b-dr"),
+	}
+	mapping := `{"a-dr":"base","b-dr":"base"}`
+
+	inherit, unresolved := resolveAliasPricingInheritance([]string{"base"}, mapping, rows)
+
+	assert.Empty(t, inherit)
+	assert.Equal(t, []string{"base"}, unresolved)
+}
+
 func TestResolveAliasPricingInheritanceEmptyMapping(t *testing.T) {
 	rows := []model.ChannelModelPricing{aliasTestBillableRow(t, "base")}
 

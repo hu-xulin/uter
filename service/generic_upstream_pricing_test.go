@@ -137,6 +137,49 @@ func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
 	require.Equal(t, 0.08, call.Tiers[0].PerUnitUSD.Float64())
 }
 
+// 批量重定向后，渠道模型列表是请求别名，上游目录仍是原名。同步必须用别名
+// 查目录、用请求名落计费行；否则所有重定向模型都会得到零行并报不可计费。
+func TestGenericChannelPricingRecordsWithMappingUsesRequestName(t *testing.T) {
+	entries := []GenericPricingEntry{
+		{ModelName: "claude-a", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 1 + c * 2)`},
+		{ModelName: "gpt-b", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 3 + c * 6)`},
+		{ModelName: "not-served", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 9 + c * 9)`},
+	}
+	mapping := `{"claude-a-dr":"claude-a","gpt-b-dr":"gpt-mid","gpt-mid":"gpt-b"}`
+	records := GenericChannelPricingRecordsWithMapping(
+		7, []string{"claude-a-dr", "gpt-b-dr"}, entries, time.Unix(100, 0),
+		500000, true, "uterapi", mapping,
+	)
+	require.Len(t, records, 2)
+
+	names := []string{records[0].ModelName, records[1].ModelName}
+	assert.ElementsMatch(t, []string{"claude-a-dr", "gpt-b-dr"}, names)
+	byName := map[string]model.ChannelOfficialPricing{}
+	for _, record := range records {
+		assert.Equal(t, "uterapi", record.Provider)
+		assert.NotEmpty(t, record.InternalPricing)
+		var official model.ChannelOfficialPricing
+		require.NoError(t, common.UnmarshalJsonStr(record.NormalizedPricing, &official))
+		byName[record.ModelName] = official
+	}
+	require.Len(t, byName["claude-a-dr"].Tiers, 1)
+	assert.Equal(t, 1.0, byName["claude-a-dr"].Tiers[0].InputPerMillionUSD.Float64())
+	require.Len(t, byName["gpt-b-dr"].Tiers, 1)
+	assert.Equal(t, 3.0, byName["gpt-b-dr"].Tiers[0].InputPerMillionUSD.Float64())
+}
+
+func TestGenericChannelPricingRecordsWithMappingBadJSONFallsBackToDirectNames(t *testing.T) {
+	entries := []GenericPricingEntry{
+		{ModelName: "direct", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 2)`},
+	}
+	records := GenericChannelPricingRecordsWithMapping(
+		8, []string{"direct"}, entries, time.Unix(100, 0),
+		0, true, "uterapi", "{bad json",
+	)
+	require.Len(t, records, 1)
+	assert.Equal(t, "direct", records[0].ModelName)
+}
+
 func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
 	entries := []GenericPricingEntry{
 		{ModelName: "served", QuotaType: 0, ModelRatio: 1, CompletionRatio: 2},

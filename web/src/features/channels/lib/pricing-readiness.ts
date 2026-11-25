@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { ChannelModelPricingRecord } from '../types'
+import { resolveMappingTargetChain } from './model-mapping-validation'
 
 export interface SelectedPricingReadiness {
   /** Number of models the operator selected for this channel. */
@@ -53,6 +54,45 @@ function formatPending(model: string, status: string): string {
 }
 
 /**
+ * Parse a channel's model_mapping into the plain string map the resolver
+ * needs. A malformed mapping is ignored rather than guessed — readiness then
+ * falls back to exact-name matching, which is the conservative behavior.
+ */
+function parseReadinessMapping(
+  modelMapping?: string
+): Record<string, string> | null {
+  if (!modelMapping?.trim()) return null
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(modelMapping)
+  } catch {
+    return null
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+    return null
+  if (Object.values(parsed).some((value) => typeof value !== 'string'))
+    return null
+  return parsed as Record<string, string>
+}
+
+/**
+ * The identity a name bills under. A redirect alias and its upstream name are
+ * the same billable model: the catalogue row may still be keyed by the upstream
+ * name while the channel publishes the alias, or vice versa. Resolving both
+ * sides to the chain tail lets readiness match them instead of reporting a
+ * configured model as "(missing)". A cycle resolves to empty and falls back
+ * to the trimmed name so a broken mapping never invents a match.
+ */
+function billingIdentity(
+  name: string,
+  mapping: Record<string, string> | null
+): string {
+  const trimmed = name.trim()
+  if (!mapping) return trimmed
+  return resolveMappingTargetChain(trimmed, mapping) || trimmed
+}
+
+/**
  * Summarize publish readiness for the models the operator actually selected.
  *
  * The draft catalogue sync writes the whole upstream directory, so rows for
@@ -64,35 +104,51 @@ function formatPending(model: string, status: string): string {
  * model that is not `configured`, so a model with one configured and one
  * review-only row is still blocked. This summary keeps the same rule: a
  * model is billable only when every one of its rows is configured.
+ *
+ * `modelMapping` makes the match redirect-aware: an alias and its upstream
+ * name share one billing identity, so a redirected model is not reported as
+ * missing when its catalogue row exists under the other name.
  */
 export function summarizeSelectedPricingReadiness(
   records: ChannelModelPricingRecord[],
-  selectedModels: string[]
+  selectedModels: string[],
+  modelMapping?: string
 ): SelectedPricingReadiness {
-  const wanted = new Set<string>()
+  const mapping = parseReadinessMapping(modelMapping)
+  // Keep the original selected name for display, but index rows by the
+  // identity they bill under so an alias matches its upstream price row.
+  const wanted = new Map<string, string>()
   for (const name of selectedModels) {
     const trimmed = name.trim()
-    if (trimmed) wanted.add(trimmed)
+    if (trimmed) wanted.set(trimmed, billingIdentity(trimmed, mapping))
   }
 
   // Duplicate rows per model are possible (one per provider identity). The
   // worst status wins, so a review-only duplicate cannot hide behind a
-  // configured row the way it would on the server.
+  // configured row the way it would on the server. A chain that resolves to
+  // the same tail counts as a duplicate of that identity.
   const byModel = new Map<string, string>()
   for (const record of records) {
-    const name = record.model_name.trim()
-    if (!wanted.has(name)) continue
-    const previous = byModel.get(name)
+    const identity = billingIdentity(record.model_name, mapping)
+    let matched = false
+    for (const wantedIdentity of wanted.values()) {
+      if (wantedIdentity === identity) {
+        matched = true
+        break
+      }
+    }
+    if (!matched) continue
+    const previous = byModel.get(identity)
     if (previous == null || isConfigured(previous)) {
-      byModel.set(name, record.pricing_status)
+      byModel.set(identity, record.pricing_status)
     }
   }
 
   const blocking: string[] = []
   const missing: string[] = []
   let configured = 0
-  for (const name of wanted) {
-    const status = byModel.get(name)
+  for (const [name, identity] of wanted) {
+    const status = byModel.get(identity)
     if (status == null) {
       missing.push(formatPending(name, MISSING))
       continue

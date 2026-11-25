@@ -23,13 +23,20 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"sort"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // 正式回归夹具：2026-11-25 从 xxapi.ai /api/pricing 抓取的完整文档。
@@ -114,6 +121,13 @@ func TestXXAPIPricePreviewAppliesGroupRatioToOfficialAndImagePrices(t *testing.T
 	previousOptions := common.OptionMap
 	common.OptionMap = map[string]string{UterAPIUpstreamURLOption: server.URL}
 	t.Cleanup(func() { common.OptionMap = previousOptions })
+	// The upstream quotes credit dollars (¥1 buys $1). Pin the market rate so
+	// the converted channel price is deterministic; official tiers must stay
+	// at the published dollar figures.
+	const fxRate = 6.68
+	previousFX := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = fxRate
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousFX })
 
 	ctx := context.Background()
 	codex, err := PreviewUterAPIPriceCatalog(ctx, "Codex Pro")
@@ -129,10 +143,10 @@ func TestXXAPIPricePreviewAppliesGroupRatioToOfficialAndImagePrices(t *testing.T
 	require.InDelta(t, 0.1, token.Tiers[0].CachePerMillionUSD.Float64(), 1e-12)
 	require.InDelta(t, 2.5, token.Tiers[0].CreateCachePerMillionUSD.Float64(), 1e-12)
 	require.NotNil(t, token.ChannelPrice)
-	require.InDelta(t, 0.8, token.ChannelPrice.InputPerMillionUSD.Float64(), 1e-12)
-	require.InDelta(t, 4, token.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-12)
-	require.InDelta(t, 0.04, token.ChannelPrice.CachePerMillionUSD.Float64(), 1e-12)
-	require.InDelta(t, 1, token.ChannelPrice.CreateCachePerMillionUSD.Float64(), 1e-12)
+	require.InDelta(t, 0.8/fxRate, token.ChannelPrice.InputPerMillionUSD.Float64(), 1e-12)
+	require.InDelta(t, 4/fxRate, token.ChannelPrice.OutputPerMillionUSD.Float64(), 1e-12)
+	require.InDelta(t, 0.04/fxRate, token.ChannelPrice.CachePerMillionUSD.Float64(), 1e-12)
+	require.InDelta(t, 1/fxRate, token.ChannelPrice.CreateCachePerMillionUSD.Float64(), 1e-12)
 	require.Equal(t, "Codex Pro", token.DiscountGroup)
 	require.NotNil(t, token.DiscountRatio)
 	require.InDelta(t, 0.4, *token.DiscountRatio, 1e-12)
@@ -148,7 +162,7 @@ func TestXXAPIPricePreviewAppliesGroupRatioToOfficialAndImagePrices(t *testing.T
 	require.InDelta(t, 0.05, image.Tiers[0].PerUnitUSD.Float64(), 1e-12)
 	require.NotNil(t, image.ChannelPrice)
 	require.Equal(t, "per_image", image.ChannelPrice.Unit)
-	require.InDelta(t, 0.35, image.ChannelPrice.PerUnitUSD.Float64(), 1e-12)
+	require.InDelta(t, 0.35/fxRate, image.ChannelPrice.PerUnitUSD.Float64(), 1e-12)
 	require.Equal(t, "image 4K 图像", image.DiscountGroup)
 	require.NotNil(t, image.DiscountRatio)
 	require.InDelta(t, 7, *image.DiscountRatio, 1e-12)
@@ -159,4 +173,123 @@ func TestXXAPIUnknownPriceShapeStaysUnpriced(t *testing.T) {
 	tier, ok := upstreamExpressionTier(`tier("base", mystery_price * 0.05) * image_count`, 1, "base")
 	require.False(t, ok)
 	require.Nil(t, tier.PerUnitUSD)
+}
+
+// Claude Code · 高级（稳定快速）(Claude-稳定) 与报错里的 12 个 Claude 模型走同一条
+// Uter.api 同步链路。批量重定向后模型列表是别名，目录仍是原名；同步、分组倍率、
+// 汇率换算和采购成本都必须在别名身份上闭环，否则会报零行可计费或成本失真。
+func TestSyncUterAPIChannelPricingHighClaudeGroupResolvesRedirectAliases(t *testing.T) {
+	raw, payload := loadXXAPIPricingFixture(t)
+	const group = "Claude-稳定"
+	const groupName = "Claude Code · 高级（稳定快速）"
+
+	upstream := make([]string, 0)
+	entriesByName := map[string]GenericPricingEntry{}
+	for _, entry := range payload.Data {
+		name := strings.TrimSpace(entry.ModelName)
+		for _, enabled := range entry.EnableGroups {
+			if strings.EqualFold(strings.TrimSpace(enabled), group) {
+				upstream = append(upstream, name)
+				entriesByName[name] = entry
+				break
+			}
+		}
+	}
+	sort.Strings(upstream)
+	require.NotEmpty(t, upstream)
+
+	mapping := make(map[string]string, len(upstream))
+	aliases := make([]string, 0, len(upstream))
+	for _, name := range upstream {
+		alias := name + "-dr"
+		aliases = append(aliases, alias)
+		mapping[alias] = name
+	}
+	encodedMapping, err := common.Marshal(mapping)
+	require.NoError(t, err)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "/api/pricing", r.URL.Path)
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write(raw)
+	}))
+	t.Cleanup(server.Close)
+
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(
+		&model.Channel{}, &model.ChannelModelPricing{}, &model.ChannelPricingHistory{}, &model.ChannelSyncState{},
+		&model.Option{}, &model.BillingPriceSnapshot{}, &model.BillingCostBreakdown{}, &model.BillingFinancialLedger{},
+		&model.SystemTask{}, &model.SystemTaskLock{},
+	))
+	previousDB := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previousDB })
+	previousOptions := common.OptionMap
+	common.OptionMap = map[string]string{UterAPIUpstreamURLOption: server.URL}
+	t.Cleanup(func() { common.OptionMap = previousOptions })
+	const fxRate = 6.68
+	previousFX := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = fxRate
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousFX })
+
+	baseURL, mappingRaw := server.URL, string(encodedMapping)
+	channel := &model.Channel{
+		Type:         constant.ChannelTypeUterAPI,
+		Name:         "Uter.api-claude-高级",
+		BaseURL:      &baseURL,
+		Key:          "sk-high",
+		Models:       strings.Join(aliases, ","),
+		ModelMapping: &mappingRaw,
+		Group:        "default",
+		Status:       1,
+	}
+	require.NoError(t, db.Create(channel).Error)
+
+	written, groupRatio, resolvedGroupName, err := SyncUterAPIChannelPricing(context.Background(), channel, group)
+	require.NoError(t, err)
+	require.Equal(t, len(aliases), written)
+	require.InDelta(t, 3.5, groupRatio, 1e-12)
+	require.Equal(t, groupName, resolvedGroupName)
+
+	rows, err := model.ListChannelModelPricing(channel.Id)
+	require.NoError(t, err)
+	require.Len(t, rows, len(aliases))
+	seen := map[string]model.ChannelModelPricing{}
+	for _, row := range rows {
+		seen[row.ModelName] = row
+	}
+	for _, alias := range aliases {
+		row, ok := seen[alias]
+		require.True(t, ok, "alias %s must get its own billable row", alias)
+		assert.Equal(t, "uterapi", row.Provider)
+		assert.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus)
+		assert.NotEmpty(t, row.InternalPricing)
+	}
+
+	entry := entriesByName[upstream[0]]
+	baseTier, ok := upstreamExpressionTier(entry.BillingExpr, 1, "base")
+	require.True(t, ok)
+	first := seen[aliases[0]]
+	var official model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(first.NormalizedPricing, &official))
+	require.Len(t, official.Tiers, 1)
+	assert.InDelta(t, baseTier.InputPerMillionUSD.Float64(), official.Tiers[0].InputPerMillionUSD.Float64(), 1e-12)
+	require.NotNil(t, official.ChannelPrice)
+	assert.InDelta(t, baseTier.InputPerMillionUSD.Float64()*groupRatio/fxRate,
+		official.ChannelPrice.InputPerMillionUSD.Float64(), 1e-12)
+
+	// 重定向后仍必须能按别名冻结采购合同，且成本与换算后的渠道价同口径。
+	cost := model.ParseChannelPurchaseCost(first.PurchasePricing)
+	require.NotNil(t, cost, "redirected alias must keep a group purchase contract")
+	assert.Contains(t, cost.Pricing.BillingExpr, "* 3.5")
+	requestID := "req-uterapi-high-claude"
+	recordRequestFinancials(&model.BillingPriceSnapshot{
+		RequestId: requestID, ModelName: aliases[0], PurchaseContract: first.PurchasePricing,
+	}, `{"prompt_tokens":1000}`, 1000, 0)
+	costs, err := model.ListBillingCostBreakdowns(requestID, "", aliases[0])
+	require.NoError(t, err)
+	require.Len(t, costs, 1)
+	expectedCost := baseTier.InputPerMillionUSD.Float64() * groupRatio / fxRate * 1000 / 1_000_000
+	assert.InDelta(t, expectedCost, costs[0].AmountUSD.Float64(), 1e-9)
 }

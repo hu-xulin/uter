@@ -60,6 +60,77 @@ export function mergeUpstreamModelsWithRedirects(
 }
 
 /**
+ * Normalize an applied model selection so a redirected upstream name never
+ * sits in the channel list next to the request alias that already represents
+ * it. Keeping both exposes the vendor-specific name through `/v1/models` and
+ * makes the same model occupy two slots.
+ *
+ * The "配置模型" dialog applies a fresh, complete selection (unlike the
+ * upstream "select all" merge), so removing the raw name alone could drop a
+ * model the operator meant to keep. When only the upstream name is picked we
+ * publish its alias instead; when both are picked the alias wins. A malformed
+ * mapping leaves the selection untouched, matching the conservative fallback
+ * used elsewhere in this module.
+ */
+export function normalizeSelectedModelsForRedirect(
+  selectedModels: string[],
+  modelMapping: string
+): string[] {
+  if (!modelMapping?.trim()) return [...selectedModels]
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(modelMapping)
+  } catch {
+    return [...selectedModels]
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return [...selectedModels]
+  }
+  if (Object.values(parsed).some((value) => typeof value !== 'string')) {
+    return [...selectedModels]
+  }
+  const mapping = parsed as Record<string, string>
+
+  const aliasesByTarget = new Map<string, string[]>()
+  for (const [rawSource, rawTarget] of Object.entries(mapping)) {
+    const source = rawSource.trim()
+    const target = rawTarget.trim()
+    if (!source || !target || source === target) continue
+    const aliases = aliasesByTarget.get(target) ?? []
+    if (!aliases.includes(source)) aliases.push(source)
+    aliasesByTarget.set(target, aliases)
+  }
+  if (aliasesByTarget.size === 0) return [...selectedModels]
+
+  const selected = new Set(
+    selectedModels.map((model) => model.trim()).filter(Boolean)
+  )
+  const normalized: string[] = []
+  const handled = new Set<string>()
+  for (const model of selectedModels) {
+    const name = model.trim()
+    if (!name || handled.has(name)) continue
+    const aliases = aliasesByTarget.get(name)
+    if (!aliases?.length) {
+      handled.add(name)
+      normalized.push(name)
+      continue
+    }
+    handled.add(name)
+    // The alias is already selected: the upstream name is redundant.
+    if (aliases.some((alias) => selected.has(alias))) continue
+    // Only the upstream name was selected: publish its alias so the model is
+    // still served under the friendly request name.
+    const replacement = aliases.find((alias) => !handled.has(alias))
+    if (!replacement) continue
+    handled.add(replacement)
+    normalized.push(replacement)
+  }
+  return normalized
+}
+
+/**
  * Normalize model name
  */
 export function normalizeModelName(model: string): string {

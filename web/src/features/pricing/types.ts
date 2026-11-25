@@ -136,6 +136,11 @@ export type PricingModel = {
   channel_prices?: Record<string, PricingChannelPrice>
   /** When the selected channel has a price row that is not billable. */
   channel_pricing_status?: string
+  /**
+   * Upstream name replaced by a channel's batch redirect alias. The row stays
+   * in the payload for billing/schema consumers; the pricing plaza hides it.
+   */
+  hidden_by_redirect?: boolean
   /** Task-plugin usage facts and their billing units. */
   billing_usage_schema?: BillingUsageSchema
   /** Display-only labeled usage vectors for pricing examples. */

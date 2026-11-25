@@ -45,13 +45,15 @@ func TestResolveRedirectAliasView(t *testing.T) {
 		assert.Empty(t, view.targetByAlias)
 	})
 
-	t.Run("channel deliberately keeping both names keeps both on the plaza", func(t *testing.T) {
+	t.Run("upstream lingering in the model list is still hidden", func(t *testing.T) {
+		// The real batch-redirect shape: a later "select all upstream models"
+		// pass re-added the raw name next to its alias.
 		view := resolveRedirectAliasView(
 			[]redirectChannelSource{{Models: "my-gpt,gpt-4o", ModelMapping: `{"my-gpt":"gpt-4o"}`}},
 			pricingCandidates("my-gpt", "gpt-4o"),
 		)
-		assert.Empty(t, view.hiddenTargets)
-		assert.Empty(t, view.targetByAlias)
+		assert.Equal(t, pricingCandidates("gpt-4o"), view.hiddenTargets)
+		assert.Equal(t, map[string]string{"my-gpt": "gpt-4o"}, view.targetByAlias)
 	})
 
 	t.Run("published alias hides the raw upstream name", func(t *testing.T) {
@@ -128,6 +130,29 @@ func TestResolveRedirectAliasView(t *testing.T) {
 		assert.Equal(t, "gpt-4o", view.targetByAlias["my-gpt"])
 	})
 
+	t.Run("any channel mapping works regardless of alias naming", func(t *testing.T) {
+		// No -dr suffix, no special channel id: the rule is data-driven from
+		// every enabled channel's model_mapping.
+		view := resolveRedirectAliasView(
+			[]redirectChannelSource{
+				{
+					Models:       "sf-qwen3-8b,Qwen/Qwen3-8B",
+					ModelMapping: `{"sf-qwen3-8b":"Qwen/Qwen3-8B"}`,
+				},
+				{
+					Models:       "groq-gpt-oss-120b",
+					ModelMapping: `{"groq-gpt-oss-120b":"openai/gpt-oss-120b"}`,
+				},
+			},
+			pricingCandidates("sf-qwen3-8b", "Qwen/Qwen3-8B", "groq-gpt-oss-120b"),
+		)
+		assert.Equal(t, pricingCandidates("Qwen/Qwen3-8B", "openai/gpt-oss-120b"), view.hiddenTargets)
+		assert.Equal(t, map[string]string{
+			"sf-qwen3-8b":       "Qwen/Qwen3-8B",
+			"groq-gpt-oss-120b": "openai/gpt-oss-120b",
+		}, view.targetByAlias)
+	})
+
 	t.Run("malformed mapping fails soft", func(t *testing.T) {
 		view := resolveRedirectAliasView(
 			[]redirectChannelSource{{Models: "my-gpt", ModelMapping: "{bad json"}},
@@ -184,7 +209,7 @@ func TestResolvePricingIcon(t *testing.T) {
 	})
 }
 
-func TestUpdatePricingHidesRedirectedUpstreamAndInheritsLogo(t *testing.T) {
+func TestUpdatePricingFlagsRedirectedUpstreamAndInheritsLogo(t *testing.T) {
 	resetPricingEndpointTestTables(t)
 
 	channelID := 7318
@@ -195,11 +220,11 @@ func TestUpdatePricingHidesRedirectedUpstreamAndInheritsLogo(t *testing.T) {
 		Key:          "key-7318",
 		Status:       common.ChannelStatusEnabled,
 		Name:         "redirected-channel",
-		Models:       "my-gpt",
+		Models:       "gpt-4o,my-gpt",
 		ModelMapping: &mapping,
 	}).Error)
-	// The raw name can still linger in abilities from another channel or a
-	// previous save; that is exactly what must no longer reach the plaza.
+	// The raw name lingers both in the channel model list and in abilities —
+	// the real batch-redirect shape after an "add upstream models" pass.
 	insertPricingEndpointAbility(t, channelID, "my-gpt")
 	insertPricingEndpointAbility(t, channelID, "gpt-4o")
 	require.NoError(t, DB.Create(&Model{
@@ -212,12 +237,66 @@ func TestUpdatePricingHidesRedirectedUpstreamAndInheritsLogo(t *testing.T) {
 	updatePricing()
 
 	aliasFound := false
+	upstreamFound := false
 	for _, item := range pricingMap {
-		assert.NotEqual(t, "gpt-4o", item.ModelName, "raw upstream name must be hidden")
-		if item.ModelName == "my-gpt" {
+		switch item.ModelName {
+		case "my-gpt":
 			aliasFound = true
 			assert.Equal(t, "upstream-product-icon", item.Icon)
+			assert.False(t, item.HiddenByRedirect, "the published alias must stay visible")
+		case "gpt-4o":
+			upstreamFound = true
+			assert.True(t, item.HiddenByRedirect, "raw upstream name must be flagged for the plaza")
 		}
 	}
 	assert.True(t, aliasFound, "the published alias must stay on the pricing plaza")
+	assert.True(t, upstreamFound, "billing/schema consumers keep the upstream row")
+}
+
+func TestUpdatePricingFlagsRedirectsAcrossChannels(t *testing.T) {
+	resetPricingEndpointTestTables(t)
+
+	// Different channels, different alias naming, no -dr anywhere. The view is
+	// derived from each enabled channel's model_mapping, not from a fixed rule.
+	internalMapping := `{"sf-qwen3-8b":"Qwen/Qwen3-8B"}`
+	require.NoError(t, DB.Create(&Channel{
+		Id:           22,
+		Type:         constant.ChannelTypeOpenAI,
+		Key:          "key-22",
+		Status:       common.ChannelStatusEnabled,
+		Name:         "internal",
+		Models:       "sf-qwen3-8b,Qwen/Qwen3-8B",
+		ModelMapping: &internalMapping,
+	}).Error)
+	groqMapping := `{"groq-gpt-oss-120b":"openai/gpt-oss-120b"}`
+	require.NoError(t, DB.Create(&Channel{
+		Id:           23,
+		Type:         constant.ChannelTypeOpenAI,
+		Key:          "key-23",
+		Status:       common.ChannelStatusEnabled,
+		Name:         "groq",
+		Models:       "groq-gpt-oss-120b",
+		ModelMapping: &groqMapping,
+	}).Error)
+
+	insertPricingEndpointAbility(t, 22, "sf-qwen3-8b")
+	insertPricingEndpointAbility(t, 22, "Qwen/Qwen3-8B")
+	insertPricingEndpointAbility(t, 23, "groq-gpt-oss-120b")
+	require.NoError(t, DB.Create(&Model{
+		ModelName: "Qwen/Qwen3-8B",
+		NameRule:  NameRuleExact,
+		Status:    1,
+		Icon:      "qwen-product-logo",
+	}).Error)
+
+	updatePricing()
+
+	byName := pricingByModel(pricingMap)
+	require.Contains(t, byName, "Qwen/Qwen3-8B", "billing keeps the upstream row")
+	assert.True(t, byName["Qwen/Qwen3-8B"].HiddenByRedirect)
+	require.Contains(t, byName, "sf-qwen3-8b")
+	assert.False(t, byName["sf-qwen3-8b"].HiddenByRedirect)
+	assert.Equal(t, "qwen-product-logo", byName["sf-qwen3-8b"].Icon)
+	require.Contains(t, byName, "groq-gpt-oss-120b")
+	assert.False(t, byName["groq-gpt-oss-120b"].HiddenByRedirect)
 }

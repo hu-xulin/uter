@@ -32,6 +32,7 @@ import (
 
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // UterAPIUpstreamURLOption stores the operational endpoint for Uter.api. It is
@@ -281,8 +282,13 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 	// Uter.api 是独立供应商，不能再写成通用的 newapi-compatible。
 	// UpsertChannelOfficialPricing 会按渠道+模型身份接管旧 Provider 的行，
 	// 避免同一模型出现两个身份；人工销售价不会被自动同步覆盖。
-	records := GenericChannelPricingRecords(
-		channel.Id, channel.GetModels(), payload.Data, time.Now().UTC(), "uterapi",
+	// Uter.api supports batch redirects too: the channel model list then holds
+	// request aliases while the catalogue publishes raw names. Resolve aliases
+	// before matching so a redirected channel still gets a channel-scoped price
+	// row under the request name relay bills against.
+	records := GenericChannelPricingRecordsWithMapping(
+		channel.Id, channel.GetModels(), payload.Data, time.Now().UTC(),
+		0, true, "uterapi", channel.GetModelMapping(),
 	)
 	if len(records) == 0 {
 		return 0, ratio, groupName, errors.New("no pricing entries matched the channel models")
@@ -291,6 +297,13 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 		for i := range records {
 			applyGroupRatioToRecord(&records[i], group, ratio)
 		}
+	}
+	// The upstream quotes credit dollars (¥1 buys $1 of balance). Convert the
+	// channel price into real USD before persisting it; official reference
+	// tiers stay untouched. A bad rate aborts the sync instead of writing a
+	// misleading price.
+	if err := applyUterAPICreditExchangeRate(records); err != nil {
+		return 0, ratio, groupName, err
 	}
 	written, err := model.UpsertChannelOfficialPricing(records)
 	if err != nil {
@@ -307,7 +320,10 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 		if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
 			common.SysError(common.LogText("persist Uter.api group failed: channel_id=%d, error=%v", channel.Id, err))
 		}
-		applyGenericGroupPurchaseCost(channel.Id, payload, records)
+		// The purchase contract must use the same real-USD basis as the
+		// converted channel price; otherwise profit would be measured against
+		// un-converted credit dollars.
+		applyGenericGroupPurchaseCost(channel.Id, payload, records, channel.GetModelMapping(), 1/operation_setting.USDExchangeRate)
 	}
 	AutoVerifyChannelPricing(channel.Id)
 	return written, ratio, groupName, nil

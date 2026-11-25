@@ -260,6 +260,95 @@ func GenericChannelPricingRecords(
 	return genericChannelPricingRecords(channelID, channelModels, entries, now, 0, true, resolveGenericProviderID(providerID))
 }
 
+// GenericChannelPricingRecordsWithMapping is the redirect-aware form used by
+// Uter.api. After a batch redirect the channel's model list holds request names
+// (aliases) while the upstream catalogue still publishes raw model names.
+// Matching the two directly drops every redirected model, leaving no channel
+// price row and reporting the channel as un-billable. Resolve each requested
+// name through model_mapping to look up the catalogue entry, then key the
+// stored row by the request name the channel actually serves — that is the
+// identity relay bills against. This mirrors Uter Route's
+// UterRouteChannelPricingRecordsWithMapping.
+func GenericChannelPricingRecordsWithMapping(
+	channelID int,
+	channelModels []string,
+	entries []GenericPricingEntry,
+	now time.Time,
+	quotaPerUnit float64,
+	deriveSalePrice bool,
+	providerID string,
+	modelMapping string,
+) []model.ChannelOfficialPricingRecord {
+	var mapping map[string]string
+	if strings.TrimSpace(modelMapping) != "" {
+		if err := common.UnmarshalJsonStr(modelMapping, &mapping); err != nil {
+			// A malformed mapping must not suppress the rest of the catalogue;
+			// fall back to direct name matching, as the relay does.
+			mapping = nil
+		}
+	}
+
+	// raw upstream name -> request names this channel exposes for it.
+	requestNamesByUpstream := make(map[string][]string, len(channelModels))
+	seenRequest := make(map[string]bool, len(channelModels))
+	for _, name := range channelModels {
+		name = strings.TrimSpace(name)
+		if name == "" || seenRequest[name] {
+			continue
+		}
+		seenRequest[name] = true
+		upstream, cyclic := followUterRouteModelMapping(mapping, name)
+		if cyclic || upstream == "" {
+			upstream = name
+		}
+		requestNamesByUpstream[upstream] = append(requestNamesByUpstream[upstream], name)
+	}
+
+	records := make([]model.ChannelOfficialPricingRecord, 0, len(entries))
+	for _, entry := range entries {
+		upstreamName := strings.TrimSpace(entry.ModelName)
+		if upstreamName == "" {
+			continue
+		}
+		servedNames := requestNamesByUpstream[upstreamName]
+		if len(channelModels) > 0 && len(servedNames) == 0 {
+			continue
+		}
+		if len(servedNames) == 0 {
+			servedNames = []string{upstreamName}
+		}
+		for _, servedName := range servedNames {
+			quota := quotaPerUnit
+			if entry.QuotaPerUnit != nil && *entry.QuotaPerUnit > 0 {
+				quota = *entry.QuotaPerUnit
+			}
+			official, needsReview, reasons := genericOfficialPricing(entry, now.Unix(), quota)
+			raw, err := common.Marshal(entry)
+			if err != nil {
+				continue
+			}
+			normalized, err := common.Marshal(official)
+			if err != nil {
+				continue
+			}
+			_ = needsReview
+			_ = reasons
+			internal := ""
+			if deriveSalePrice {
+				internal = genericExpressionInternalPricing(entry, now.Unix())
+			}
+			records = append(records, model.ChannelOfficialPricingRecord{
+				ChannelId: channelID, Provider: providerID,
+				ModelName: servedName, Currency: official.Currency,
+				OfficialPricing: string(raw), NormalizedPricing: string(normalized),
+				InternalPricing: internal,
+				Source:          "newapi:/api/pricing", FetchedAt: now.Unix(),
+			})
+		}
+	}
+	return records
+}
+
 // GenericOfficialPricingRecords builds sync rows: official data and the channel
 // quote only. Automatic updates must never re-derive or overwrite a sale price.
 func GenericOfficialPricingRecords(
@@ -682,7 +771,7 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 	if err != nil {
 		return written, models, err
 	}
-	applyGenericGroupPurchaseCost(channel.Id, entries, records)
+	applyGenericGroupPurchaseCost(channel.Id, entries, records, channel.GetModelMapping(), 1)
 	// Model existence and price availability are separate: a callable model
 	// without a public price stays in the catalogue and must not be disabled
 	// just because it produced no price record.
@@ -888,7 +977,19 @@ func setGenericSyncState(channelID int, at int64) {
 // applyGenericGroupPurchaseCost freezes the provider's group multiplier into a
 // per-model expression purchase contract. It is opt-in: without a selected
 // group the channel keeps no procurement cost and profit stays pending.
-func applyGenericGroupPurchaseCost(channelID int, payload *GenericPricingPayload, records []model.ChannelOfficialPricingRecord) {
+//
+// Records are keyed by the name the channel serves (the identity relay bills
+// against), while the catalogue is keyed by the upstream name. modelMapping
+// resolves that gap, and fxFactor is 1 for ordinary New API channels and the
+// credit-to-real-USD factor for Uter.api. Scaling the catalogue expression
+// before applying the group multiplier keeps the multiplier itself exact.
+func applyGenericGroupPurchaseCost(
+	channelID int,
+	payload *GenericPricingPayload,
+	records []model.ChannelOfficialPricingRecord,
+	modelMapping string,
+	fxFactor float64,
+) {
 	group := GetGenericUpstreamBillingGroup(channelID)
 	if group == "" || payload == nil {
 		return
@@ -897,6 +998,12 @@ func applyGenericGroupPurchaseCost(channelID int, payload *GenericPricingPayload
 	if math.IsNaN(ratio) || math.IsInf(ratio, 0) || ratio <= 0 {
 		return
 	}
+	var mapping map[string]string
+	if strings.TrimSpace(modelMapping) != "" {
+		if err := common.UnmarshalJsonStr(modelMapping, &mapping); err != nil {
+			mapping = nil
+		}
+	}
 	byName := make(map[string]GenericPricingEntry, len(payload.Data))
 	for _, entry := range payload.Data {
 		byName[strings.TrimSpace(entry.ModelName)] = entry
@@ -904,17 +1011,32 @@ func applyGenericGroupPurchaseCost(channelID int, payload *GenericPricingPayload
 	source := fmt.Sprintf("newapi:/api/pricing#group=%s", group)
 	updatedAt := time.Now().Unix()
 	for _, record := range records {
-		entry, ok := byName[record.ModelName]
+		upstreamName := record.ModelName
+		if len(mapping) > 0 {
+			if resolved, cyclic := followUterRouteModelMapping(mapping, record.ModelName); !cyclic && resolved != "" {
+				upstreamName = resolved
+			}
+		}
+		entry, ok := byName[upstreamName]
 		if !ok || strings.TrimSpace(entry.BillingExpr) == "" {
 			continue
 		}
 		if !NormalizeUpstreamExpression(entry.BillingExpr).Executable {
 			continue
 		}
+		baseExpr := strings.TrimSpace(entry.BillingExpr)
+		if fxFactor != 1 {
+			converted, ok := scaleBillingExprByFactor(baseExpr, fxFactor)
+			if !ok {
+				common.SysError(common.LogText("group purchase cost FX conversion failed: channel_id=%d, model=%s", channelID, record.ModelName))
+				continue
+			}
+			baseExpr = converted
+		}
 		cost := model.ChannelPurchaseCost{
 			Pricing: model.ChannelInternalPricing{
 				Mode:        model.ChannelPricingModeTieredExpr,
-				BillingExpr: fmt.Sprintf("(%s) * %s", strings.TrimSpace(entry.BillingExpr), strconv.FormatFloat(ratio, 'f', -1, 64)),
+				BillingExpr: fmt.Sprintf("(%s) * %s", baseExpr, strconv.FormatFloat(ratio, 'f', -1, 64)),
 				Source:      source,
 				UpdatedAt:   updatedAt,
 			},

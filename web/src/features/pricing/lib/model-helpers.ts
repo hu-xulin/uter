@@ -24,6 +24,18 @@ import type { PricingModel } from '../types'
 // ----------------------------------------------------------------------------
 
 /**
+ * Plaza-only view of the model list. A channel's batch redirect publishes
+ * request aliases in place of raw upstream names; the backend keeps both rows
+ * in the payload for billing/schema consumers and flags the stale ones, so
+ * only the plaza drops them here.
+ */
+export function excludeRedirectedUpstreams<
+  T extends { hidden_by_redirect?: boolean }
+>(models: T[]): T[] {
+  return models.filter((model) => !model.hidden_by_redirect)
+}
+
+/**
  * Get available groups for a model
  */
 export function getAvailableGroups(

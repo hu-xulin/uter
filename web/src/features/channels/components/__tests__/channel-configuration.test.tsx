@@ -1951,6 +1951,11 @@ test('Uter.api connection picks one group and one key box', async () => {
 })
 
 test('Uter.api mirrors its pasted key into the form so fetching models never reports a missing credential', async () => {
+  // Keep model discovery inside this test. An unmocked POST would outlive the
+  // case, receive a 401 in the next case, and clear its root session there.
+  const fetchModelsPost = vi.spyOn(api, 'post').mockResolvedValue({
+    data: { success: true, data: ['claude-preview'] },
+  })
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
   await user.click(
@@ -1978,16 +1983,23 @@ test('Uter.api mirrors its pasted key into the form so fetching models never rep
       screen.queryByText(/section\(s\) need attention/)
     ).not.toBeInTheDocument()
   })
+  expect(fetchModelsPost).toHaveBeenCalledWith(
+    '/api/channel/fetch_models',
+    expect.objectContaining({ key: expect.stringContaining('sk-one') }),
+    expect.anything()
+  )
 })
 
 test('Uter Route appears in custom providers with its own channel number', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness />)
 
-  const option = await screen.findByRole('option', {
-    name: /Uter Route.*#65/i,
-  })
-  await user.click(option)
+  // Wait for the async plugin query before clicking: otherwise the Uter Route
+  // option can be replaced while the click is still being processed.
+  await screen.findByRole('option', { name: /Video A/ })
+  await user.click(
+    await screen.findByRole('option', { name: /Uter Route.*#65/i })
+  )
 
   expect(
     screen.queryByLabelText('Base URL', {
@@ -1995,7 +2007,7 @@ test('Uter Route appears in custom providers with its own channel number', async
     })
   ).toBeNull()
   expect(
-    screen.getByRole('button', { name: 'Change provider' })
+    await screen.findByRole('button', { name: 'Change provider' })
   ).toHaveTextContent('Uter Route')
 })
 

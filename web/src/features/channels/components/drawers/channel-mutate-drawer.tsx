@@ -202,6 +202,7 @@ import {
   parseModelsString,
   formatModelsArray,
   mergeUpstreamModelsWithRedirects,
+  normalizeSelectedModelsForRedirect,
   normalizeModelName,
   sortUterapiGroupSlots,
   mergeModelMappingPairs,
@@ -1005,8 +1006,13 @@ export function ChannelMutateDrawer({
     [pricingReadinessQuery.data]
   )
   const pricingReadiness = useMemo(
-    () => summarizeSelectedPricingReadiness(pricingRows, currentModelsArray),
-    [pricingRows, currentModelsArray]
+    () =>
+      summarizeSelectedPricingReadiness(
+        pricingRows,
+        currentModelsArray,
+        currentModelMapping
+      ),
+    [pricingRows, currentModelsArray, currentModelMapping]
   )
 
   const currentTypeLabel = useMemo(
@@ -2070,10 +2076,16 @@ export function ChannelMutateDrawer({
     [updateModels, t]
   )
 
-  // Handle model selection change from MultiSelect
+  // Handle model selection change from MultiSelect. Applying a fresh selection
+  // must not re-expose upstream names that a redirect already publishes as an
+  // alias; normalize them to the request name the channel actually serves.
   const handleModelsChange = useCallback(
     (selected: string[]) => {
-      form.setValue('models', selected.join(','))
+      const normalized = normalizeSelectedModelsForRedirect(
+        selected,
+        form.getValues('model_mapping') || ''
+      )
+      form.setValue('models', formatModelsArray(normalized))
     },
     [form]
   )
@@ -2515,7 +2527,8 @@ export function ChannelMutateDrawer({
       if (effectiveChannelId != null && pricingReadinessQuery.data) {
         const readiness = summarizeSelectedPricingReadiness(
           pricingRows,
-          parseModelsString(data.models || '')
+          parseModelsString(data.models || ''),
+          data.model_mapping || ''
         )
         if (
           shouldBlockSubmitForPricing({

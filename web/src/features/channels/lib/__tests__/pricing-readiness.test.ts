@@ -119,3 +119,130 @@ test('no selected models means nothing is pending', () => {
     pending: [],
   })
 })
+
+// --- redirect-aware matching -------------------------------------------------
+
+test('upstream name selected with an alias-keyed price row is billable', () => {
+  // The reported bug: a batch redirect publishes "claude-xxx-dr" and syncs the
+  // catalogue row under that alias, but the operator selected the raw upstream
+  // "claude-xxx". Exact matching reported it as (missing).
+  const summary = summarizeSelectedPricingReadiness(
+    [record('claude-opus-4-6-dr', 'configured')],
+    ['claude-opus-4-6'],
+    JSON.stringify({ 'claude-opus-4-6-dr': 'claude-opus-4-6' })
+  )
+
+  expect(summary.configured).toBe(1)
+  expect(summary.missing).toEqual([])
+})
+
+test('alias selected with an upstream-keyed price row is billable', () => {
+  // The mirror case: unsaved redirect aliases in the model list, catalogues
+  // still keyed by the upstream name.
+  const summary = summarizeSelectedPricingReadiness(
+    [record('claude-haiku-4-5', 'configured')],
+    ['claude-haiku-4-5-dr'],
+    JSON.stringify({ 'claude-haiku-4-5-dr': 'claude-haiku-4-5' })
+  )
+
+  expect(summary.configured).toBe(1)
+  expect(summary.missing).toEqual([])
+})
+
+test('redirect readiness follows a chained mapping to the tail', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('gpt-4o', 'configured')],
+    ['gpt-final'],
+    JSON.stringify({ 'gpt-final': 'gpt-hop', 'gpt-hop': 'gpt-4o' })
+  )
+
+  expect(summary.configured).toBe(1)
+  expect(summary.missing).toEqual([])
+})
+
+test('a redirected alias with no mapped price row is still missing', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('unrelated', 'configured')],
+    ['claude-sonnet-5-dr'],
+    JSON.stringify({ 'claude-sonnet-5-dr': 'claude-sonnet-5' })
+  )
+
+  expect(summary.configured).toBe(0)
+  expect(summary.missing).toEqual(['claude-sonnet-5-dr (missing)'])
+})
+
+test('a non-configured row behind a redirect still blocks', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('claude-opus-5-dr', 'needs_review')],
+    ['claude-opus-5'],
+    JSON.stringify({ 'claude-opus-5-dr': 'claude-opus-5' })
+  )
+
+  expect(summary.configured).toBe(0)
+  expect(summary.blocking).toEqual(['claude-opus-5 (needs_review)'])
+})
+
+test('a cyclic mapping does not invent a match', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('model-b', 'configured')],
+    ['model-a'],
+    JSON.stringify({ 'model-a': 'model-b', 'model-b': 'model-a' })
+  )
+
+  // resolveMappingTargetChain returns empty on a cycle; billingIdentity falls
+  // back to the literal name, so "model-a" has no row.
+  expect(summary.configured).toBe(0)
+  expect(summary.missing).toEqual(['model-a (missing)'])
+})
+
+test('a malformed mapping falls back to exact-name matching', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('alias-dr', 'configured')],
+    ['alias'],
+    '{not valid json'
+  )
+
+  expect(summary.configured).toBe(0)
+  expect(summary.missing).toEqual(['alias (missing)'])
+})
+
+test('without a mapping argument behavior is unchanged', () => {
+  const summary = summarizeSelectedPricingReadiness(
+    [record('claude-opus-4-6-dr', 'configured')],
+    ['claude-opus-4-6']
+  )
+
+  expect(summary.configured).toBe(0)
+  expect(summary.missing).toEqual(['claude-opus-4-6 (missing)'])
+})
+
+test('all 12 reported names become billable under a batch -dr mapping', () => {
+  const names = [
+    'claude-haiku-4-5',
+    'claude-haiku-4-5-20251001',
+    'claude-haiku-5-5',
+    'claude-opus-4-5',
+    'claude-opus-4-6',
+    'claude-opus-4-7',
+    'claude-opus-4-8',
+    'claude-opus-5',
+    'claude-opus-5-5',
+    'claude-sonnet-4-6',
+    'claude-sonnet-5',
+    'claude-sonnet-5-5',
+  ]
+  const mapping = JSON.stringify(
+    Object.fromEntries(names.map((name) => [`${name}-dr`, name]))
+  )
+  // Catalogue rows are keyed by the alias after the batch redirect.
+  const summary = summarizeSelectedPricingReadiness(
+    names.map((name) => record(`${name}-dr`, 'configured')),
+    names,
+    mapping
+  )
+
+  expect(summary.selected).toBe(12)
+  expect(summary.configured).toBe(12)
+  expect(summary.missing).toEqual([])
+  expect(summary.blocking).toEqual([])
+})

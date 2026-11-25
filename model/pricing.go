@@ -80,6 +80,10 @@ type Pricing struct {
 	ChannelInternalPerMinuteUSD float64                        `json:"channel_internal_per_minute_usd,omitempty"`
 	ChannelPricingTiered        bool                           `json:"channel_pricing_tiered,omitempty"`
 	ChannelPricingStatus        string                         `json:"channel_pricing_status,omitempty"`
+	// HiddenByRedirect marks an upstream name replaced by a channel's batch
+	// redirect alias. The row stays in the pricing payload so billing and
+	// schema consumers keep their original view; the plaza filters on this flag.
+	HiddenByRedirect bool `json:"hidden_by_redirect,omitempty"`
 
 	// 目录规格：定价页模型详情的「上下文 / 最大输出 / 知识截止 / 发布于 / 模态」
 	// 五格直接消费这五个字段。
@@ -678,14 +682,14 @@ func (v redirectAliasView) hides(name string) bool {
 
 // resolveRedirectAliasView derives the redirect view from channel mappings.
 //
-// A mapping entry counts only when the channel serves the alias but no longer
-// serves its upstream name, and the alias is a pricing candidate. A channel
-// exposing both names on purpose keeps both on the plaza; hiding a name the
-// channel still serves would remove a model the plaza has to show (for example
-// a half-applied batch edit, or an alias disabled by its group). Chains are
-// followed to their tail exactly like the relay rewrites a request, and an
-// alias resolving to two different tails is ignored: the view never guesses
-// which product logo to copy or which upstream name to hide.
+// A mapping entry counts only when the channel actually serves its alias and
+// that alias is a pricing candidate. The upstream name may still linger in the
+// channel's model list and in abilities (a batch redirect followed by a fresh
+// "select all upstream models" re-adds it); that stale row must not surface on
+// the plaza as a duplicate of the alias. Chains are followed to their tail
+// exactly like the relay rewrites a request, and an alias resolving to two
+// different tails is ignored: the view never guesses which product logo to
+// copy or which upstream name to hide.
 func resolveRedirectAliasView(
 	channels []redirectChannelSource,
 	candidates map[string]struct{},
@@ -732,13 +736,6 @@ func resolveRedirectAliasView(
 			}
 			tail, cyclic := followChannelModelMapping(normalized, alias)
 			if cyclic || tail == "" || tail == alias {
-				continue
-			}
-			// A channel that still serves the upstream name alongside the
-			// alias deliberately kept both (for example two different billing
-			// profiles). Only a redirect that actually replaced the raw name
-			// in the model list hides it from the plaza.
-			if _, stillServed := exposed[tail]; stillServed {
 				continue
 			}
 			tails := tailsByAlias[alias]
@@ -974,13 +971,11 @@ func updatePricing() {
 	pricingMap = make([]Pricing, 0)
 	pluginGeneration := jsplugin.DefaultRegistry.Generation()
 	for model, groups := range modelGroupsMap {
-		if aliasView.hides(model) {
-			continue
-		}
 		pricing := Pricing{
 			ModelName:              model,
 			EnableGroup:            groups.Items(),
 			SupportedEndpointTypes: modelSupportEndpointTypes[model],
+			HiddenByRedirect:       aliasView.hides(model),
 		}
 		if channelSet, ok := modelChannelsMap[model]; ok {
 			channels := channelSet.Items()
