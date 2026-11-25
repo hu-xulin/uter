@@ -154,6 +154,7 @@ import {
   syncUterRouteUpstream,
   refreshBailianCatalog,
   refreshCodexCredential,
+  saveChannelUpstreamConsoleCredentials,
   syncChannelUpstreamPrices,
   updateChannel,
 } from '../../api'
@@ -211,8 +212,8 @@ import {
   findMissingModelsInMapping,
   validateModelMappingJson,
 } from '../../lib'
-import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
 import { fetchModelsWithCurrentAddress } from '../../lib/channel-address-refresh'
+import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
 import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
@@ -225,6 +226,7 @@ import {
   supportsChannelPluginExtensions,
   supportsNewAPIUpstream,
 } from '../../lib/channel-plugin-extensions'
+import { shouldBlockSubmitForPricing } from '../../lib/channel-submit-guard'
 import { getChannelTypeConfig } from '../../lib/channel-type-config'
 import { summarizeSelectedPricingReadiness } from '../../lib/pricing-readiness'
 import {
@@ -238,8 +240,8 @@ import {
 import { isUterRouteBaseUrl } from '../../lib/uterroute'
 import type { Channel } from '../../types'
 import { BailianChannelPanel } from '../bailian-channel-panel'
-import { ChannelConsoleCredentialsSection } from '../channel-console-credentials-section'
 import { ChannelBrandingEditor } from '../channel-branding-editor'
+import { ChannelConsoleCredentialsSection } from '../channel-console-credentials-section'
 import { ChannelPluginExtensions } from '../channel-plugin-extensions'
 import { ChannelPricingPanel } from '../channel-pricing-panel'
 import { ChannelPricingScheduleSection } from '../channel-pricing-schedule-section'
@@ -249,10 +251,6 @@ import { useChannels } from '../channels-provider'
 import { AdvancedCustomEditorDialog } from '../dialogs/advanced-custom-editor-dialog'
 import { ChannelPluginConfigDialog } from '../dialogs/channel-plugin-config-dialog'
 import { ConfigureModelsDialog } from '../dialogs/configure-models-dialog'
-import {
-  MissingModelsConfirmationDialog,
-  type MissingModelsAction,
-} from '../dialogs/missing-models-confirmation-dialog'
 import { ParamOverrideEditorDialog } from '../dialogs/param-override-editor-dialog'
 import {
   PassthroughWarningDialog,
@@ -260,7 +258,6 @@ import {
 } from '../dialogs/passthrough-warning-dialog'
 import { StatusCodeRiskDialog } from '../dialogs/status-code-risk-dialog'
 import { FetchedPricePreview } from '../fetched-price-preview'
-import { UterApiPricePreview } from '../uterapi-price-preview'
 import {
   ModelMappingBatchDialog,
   type ModelMappingBatchResult,
@@ -274,6 +271,7 @@ import { ModelRedirectPanel } from '../model-redirect-panel'
 import { PricingReadinessSummary } from '../pricing-readiness-summary'
 import { ResponsesWebSocketSetting } from '../responses-websocket-setting'
 import { UpstreamModelSelection } from '../upstream-model-selection'
+import { UterApiPricePreview } from '../uterapi-price-preview'
 import { UterRouteChannelPanel } from '../uterroute-channel-panel'
 import {
   ChannelConfiguration,
@@ -512,11 +510,6 @@ export function ChannelMutateDrawer({
     useState<PassthroughKind | null>(null)
   const passthroughWarningResolveRef = useRef<
     ((confirmed: boolean) => void) | null
-  >(null)
-  const [missingModelsDialogOpen, setMissingModelsDialogOpen] = useState(false)
-  const [missingModelsList, setMissingModelsList] = useState<string[]>([])
-  const missingModelsResolveRef = useRef<
-    ((action: MissingModelsAction) => void) | null
   >(null)
   const channelFormRef = useRef<HTMLFormElement>(null)
   const [modelConfiguration, setModelConfiguration] = useState<{
@@ -1599,6 +1592,38 @@ export function ChannelMutateDrawer({
     return run
   }, [form])
 
+  const [savingConsoleCredentials, setSavingConsoleCredentials] =
+    useState(false)
+
+  // Create-wizard "save credentials" step: persist the console login triple on
+  // the draft row so the following cross-check / upstream-login steps can use
+  // them before the whole channel is submitted. In edit mode the row already
+  // exists, so the same endpoint simply refreshes the stored credentials.
+  const handleSaveConsoleCredentials = useCallback(async () => {
+    const values = form.getValues()
+    const loginUrl = values.console_login_url?.trim() || ''
+    const username = values.console_username?.trim() || ''
+    if (!loginUrl || !username) {
+      toast.error(t('Enter console login URL and username before saving'))
+      return
+    }
+    setSavingConsoleCredentials(true)
+    try {
+      let channelId = effectiveChannelId
+      if (!channelId) channelId = await createDraftChannel()
+      await saveChannelUpstreamConsoleCredentials(channelId, {
+        login_url: loginUrl,
+        username,
+        password: values.console_password || '',
+      })
+      toast.success(t('Console credentials saved'))
+    } catch (error) {
+      handleServerError(error, t('Failed to save console credentials'))
+    } finally {
+      setSavingConsoleCredentials(false)
+    }
+  }, [form, effectiveChannelId, createDraftChannel, t])
+
   // Ordinary edits use the saved channel. Advanced Custom retains its existing
   // preview path, which reuses the saved credential on the server.
   const previewModels =
@@ -1720,7 +1745,10 @@ export function ChannelMutateDrawer({
       updateModels(models)
       toast.success(t('Models refreshed from the new address'))
     } catch (error) {
-      handleServerError(error, t('Failed to refresh models from the new address'))
+      handleServerError(
+        error,
+        t('Failed to refresh models from the new address')
+      )
     } finally {
       setIsRefreshingAddress(false)
     }
@@ -2234,30 +2262,6 @@ export function ChannelMutateDrawer({
     setOpen(null)
   }, [channelId, queryClient, onOpenChange, setOpen])
 
-  // Show missing models confirmation dialog
-  const confirmMissingModelMappings = useCallback(
-    (missingModels: string[]): Promise<MissingModelsAction> => {
-      return new Promise((resolve) => {
-        setMissingModelsList(missingModels)
-        setMissingModelsDialogOpen(true)
-        missingModelsResolveRef.current = resolve
-      })
-    },
-    []
-  )
-
-  // Handle missing models dialog action
-  const handleMissingModelsAction = useCallback(
-    (action: MissingModelsAction) => {
-      setMissingModelsDialogOpen(false)
-      if (missingModelsResolveRef.current) {
-        missingModelsResolveRef.current(action)
-        missingModelsResolveRef.current = null
-      }
-    },
-    []
-  )
-
   const confirmStatusCodeRisk = useCallback(
     (detailItems: string[]): Promise<boolean> =>
       new Promise((resolve) => {
@@ -2460,14 +2464,15 @@ export function ChannelMutateDrawer({
       // Normalize models array
       const normalizedModels = parseModelsString(data.models || '')
 
-      // Check for missing models in model_mapping
+      // 重定向涉及的别名必须同时出现在渠道模型列表里，否则调用时选不到
+      // 可用渠道。设置（含批量）重定向后自动补齐，不再要求手动添加。
       if (hasModelMapping) {
         const missingModels = findMissingModelsInMapping(
           modelMappingValue,
           normalizedModels
         )
 
-        const shouldPromptMissing =
+        const shouldSyncMissing =
           missingModels.length > 0 &&
           hasModelConfigChanged(
             normalizedModels,
@@ -2476,18 +2481,17 @@ export function ChannelMutateDrawer({
             initialModelMappingRef.current
           )
 
-        if (shouldPromptMissing) {
-          const confirmAction = await confirmMissingModelMappings(missingModels)
-          if (confirmAction === 'cancel') {
-            return
-          }
-          if (confirmAction === 'add') {
-            const updatedModels = [
-              ...new Set([...normalizedModels, ...missingModels]),
-            ]
-            data.models = formatModelsArray(updatedModels)
-            form.setValue('models', data.models)
-          }
+        if (shouldSyncMissing) {
+          const updatedModels = [
+            ...new Set([...normalizedModels, ...missingModels]),
+          ]
+          data.models = formatModelsArray(updatedModels)
+          form.setValue('models', data.models)
+          toast.success(
+            t('Filled {{count}} related model(s)', {
+              count: missingModels.length,
+            })
+          )
         }
       }
 
@@ -2497,12 +2501,21 @@ export function ChannelMutateDrawer({
       // a toast after the save failed. Missing rows are informational — the
       // server does not block on them.
       setPricingSubmitBlocked(false)
+      // 凭据保存与价格计费正交：携带新控制台密码时跳过价格 preflight，
+      // 避免"价格未定不能保存凭据 → 没凭据无法确定价格"的死锁。
+      // 判定收敛在 channel-submit-guard，发布的服务端门禁不受影响。
       if (effectiveChannelId != null && pricingReadinessQuery.data) {
         const readiness = summarizeSelectedPricingReadiness(
           pricingRows,
           parseModelsString(data.models || '')
         )
-        if (readiness.blocking.length > 0) {
+        if (
+          shouldBlockSubmitForPricing({
+            hasPricingData: true,
+            blockingCount: readiness.blocking.length,
+            formData: data,
+          })
+        ) {
           setPricingSubmitBlocked(true)
           setConfigurationSection('pricing_config')
           return
@@ -2522,7 +2535,6 @@ export function ChannelMutateDrawer({
       sensitiveLocked,
       channelData,
       form,
-      confirmMissingModelMappings,
       confirmStatusCodeRisk,
       channelMutation,
       handleSuccess,
@@ -4704,6 +4716,8 @@ export function ChannelMutateDrawer({
           channelId={effectiveChannelId}
           sensitiveLocked={sensitiveLocked}
           primaryModels={upstreamModelList}
+          onSaveCredentials={handleSaveConsoleCredentials}
+          savingCredentials={savingConsoleCredentials}
         />
 
         <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
@@ -5962,7 +5976,8 @@ export function ChannelMutateDrawer({
   }
 
   const selectedUterapiGroupKey =
-    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ?? ''
+    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ??
+    ''
 
   const pricingFetchSection = (
     <div className='space-y-4'>
@@ -5973,6 +5988,8 @@ export function ChannelMutateDrawer({
       {requiresDraftForPricing || effectiveChannelId ? (
         <FetchedPricePreview
           channelId={effectiveChannelId ?? 0}
+          modelMapping={formValues.model_mapping || ''}
+          models={currentModelsArray}
           setupState={draftSetupState}
           setupError={draftSetupError}
           fetchState={
@@ -6733,14 +6750,6 @@ export function ChannelMutateDrawer({
       )}
 
       <SecureVerificationDialog {...verification.dialogProps} />
-
-      {/* Missing Models Confirmation Dialog */}
-      <MissingModelsConfirmationDialog
-        open={missingModelsDialogOpen}
-        missingModels={missingModelsList}
-        onConfirm={handleMissingModelsAction}
-        onOpenChange={setMissingModelsDialogOpen}
-      />
 
       <StatusCodeRiskDialog
         open={statusCodeRiskOpen}
