@@ -31,7 +31,7 @@ test('UAP evidence-producing steps run even when an earlier gate fails', () => {
     'UAP browser E2E and accessibility verification',
     'UAP visual regression verification',
     'UAP security negative tests and secret scan',
-    'UAP full requirement traceability verification (538 requirements)',
+    'UAP full requirement traceability verification',
     'Regenerate final UAP reports from current execution',
     'Run authoritative UAP final acceptance closure',
     'Publish authoritative UAP final acceptance status',
