@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import i18next from 'i18next'
 import { ChevronDown, RefreshCw } from 'lucide-react'
-import { useEffect, useId, useState } from 'react'
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -330,9 +330,7 @@ export function TierPriceFields(props: TierPriceFieldsProps) {
       : Number(props.prices[variable.key] ?? 0) > 0
   )
   const [mediaOpen, setMediaOpen] = useState(hasMediaPricing)
-  useEffect(() => {
-    if (hasMediaPricing) setMediaOpen(true)
-  }, [hasMediaPricing])
+  if (hasMediaPricing && !mediaOpen) setMediaOpen(true)
   const renderPriceVariable = (variable: {
     key: VisualPrice['variable']
     label: string
