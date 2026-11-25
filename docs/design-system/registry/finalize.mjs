@@ -101,6 +101,10 @@ const gateEvidence = {
     checks_total: checker?.checksTotal ?? 0,
     errors: checker?.errors ?? null,
     error_list: checker?.errorList ?? [],
+    checks: Array.isArray(checker?.checks) ? checker.checks : [],
+    failed_checks: Array.isArray(checker?.checks)
+      ? checker.checks.filter((check) => check.status !== 'PASS')
+      : [],
   },
   visual: {
     showcase: visualStatus,
