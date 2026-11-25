@@ -24,7 +24,7 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { createTable, getCoreRowModel } from '@tanstack/react-table'
 import {
   cleanup,
   render,
@@ -47,9 +47,12 @@ const pointerCaptureDescriptor = Object.getOwnPropertyDescriptor(
 )
 
 function FilterFixture() {
-  const table = useReactTable({
+  const table = createTable({
     data: [],
     columns: [],
+    state: {},
+    onStateChange: () => {},
+    renderFallbackValue: null,
     getCoreRowModel: getCoreRowModel(),
   })
   return (
