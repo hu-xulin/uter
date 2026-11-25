@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { ColumnDef, RowSelectionState } from '@tanstack/react-table'
 import { Search } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -84,24 +84,31 @@ export function ChannelSelectorDialog({
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search, 200)
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const selectionKey = selectedChannelIds.join(',')
+  const channelKey = channels.map((channel) => channel.id).join(',')
+  const [prevSelection, setPrevSelection] = useState({
+    selectionKey,
+    channelKey,
+  })
+  if (
+    prevSelection.selectionKey !== selectionKey ||
+    prevSelection.channelKey !== channelKey
+  ) {
+    setPrevSelection({ selectionKey, channelKey })
 
-  useEffect(() => {
     if (!selectedChannelIds.length) {
       setRowSelection({})
-      return
+    } else {
+      const availableChannelIds = new Set(channels.map((channel) => channel.id))
+      const newSelection: RowSelectionState = {}
+      selectedChannelIds.forEach((id) => {
+        if (availableChannelIds.has(id)) {
+          newSelection[id.toString()] = true
+        }
+      })
+      setRowSelection(newSelection)
     }
-
-    const availableChannelIds = new Set(channels.map((channel) => channel.id))
-    const newSelection: RowSelectionState = {}
-
-    selectedChannelIds.forEach((id) => {
-      if (availableChannelIds.has(id)) {
-        newSelection[id.toString()] = true
-      }
-    })
-
-    setRowSelection(newSelection)
-  }, [selectedChannelIds, channels])
+  }
 
   const updateEndpoint = useCallback(
     (channelId: number, endpoint: string) => {
