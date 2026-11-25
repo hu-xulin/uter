@@ -108,7 +108,9 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
   }, [customProviders])
 
   useEffect(() => {
-    fetchCustomBindings()
+    void (async () => {
+      await fetchCustomBindings()
+    })()
   }, [fetchCustomBindings])
 
   const handleUnbindCustom = async () => {
@@ -216,9 +218,11 @@ export function AccountBindings({ profile, onUpdate }: AccountBindingsProps) {
 
   const closeDialogs = dialogs.closeAll
   useEffect(() => {
-    setPreparedBinding(null)
-    setUnbindTarget(null)
-    closeDialogs()
+    void (async () => {
+      setPreparedBinding(null)
+      setUnbindTarget(null)
+      closeDialogs()
+    })()
   }, [security.sessionKey, closeDialogs])
 
   if (!profile || !status || loading) return null
