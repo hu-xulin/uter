@@ -454,7 +454,36 @@ func TestUterRouteOfficialLineMarksHistoricalSnapshot(t *testing.T) {
 	require.Equal(t, 2.0, *line.Input)
 }
 
+// withReferenceBillingAuthorization pins the global option for a single test
+// and restores the whole map afterwards. It clones under the same mutex the
+// production reader uses, so it is safe even when OptionMap starts nil.
+// Tests using it must not call t.Parallel.
+// value == "" removes the key (the default-authorized state).
+func withReferenceBillingAuthorization(t *testing.T, value string) {
+	t.Helper()
+	key := UterRouteReferencePriceBillingOption
+	common.OptionMapRWMutex.Lock()
+	previous := common.OptionMap
+	clone := make(map[string]string, len(previous)+1)
+	for k, v := range previous {
+		clone[k] = v
+	}
+	if value == "" {
+		delete(clone, key)
+	} else {
+		clone[key] = value
+	}
+	common.OptionMap = clone
+	common.OptionMapRWMutex.Unlock()
+	t.Cleanup(func() {
+		common.OptionMapRWMutex.Lock()
+		common.OptionMap = previous
+		common.OptionMapRWMutex.Unlock()
+	})
+}
+
 func TestUterRouteRatioDerivedPriceStaysReviewOnly(t *testing.T) {
+	withReferenceBillingAuthorization(t, "false")
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		GroupRatio:      map[string]float64{"openai": 0.6},
@@ -496,6 +525,7 @@ func TestDiffUterRouteUpstreamDetectsBillingExpressionChange(t *testing.T) {
 }
 
 func TestUterRouteHistoricalSnapshotStaysReviewOnly(t *testing.T) {
+	withReferenceBillingAuthorization(t, "false")
 	ratio := func(v float64) *float64 { return &v }
 	snapshot := &UpstreamSnapshot{
 		GroupRatio:      map[string]float64{"default": 1},
@@ -519,7 +549,75 @@ func TestUterRouteHistoricalSnapshotStaysReviewOnly(t *testing.T) {
 	require.Empty(t, internal)
 }
 
+// The 2026-11-25 operator decision authorizes billing from ratio-derived and
+// historical reference prices (ratio * $2/1M is the gateway's own charging
+// basis). Both the default state and an explicit "true" must make those rows
+// billable, while the provenance reason stays for audit.
+func TestUterRouteReferencePricesBillWhenAuthorized(t *testing.T) {
+	for _, optionValue := range []string{"", "true"} {
+		t.Run("option="+optionValue, func(t *testing.T) {
+			withReferenceBillingAuthorization(t, optionValue)
+
+			ratio := func(v float64) *float64 { return &v }
+			snapshot := &UpstreamSnapshot{
+				GroupRatio:      map[string]float64{"default": 1},
+				GroupGroupRatio: map[string]map[string]float64{"default": {"gemini": 0.6}},
+			}
+			for _, status := range []string{"DERIVED_FROM_RATIOS", "HISTORICAL_SNAPSHOT"} {
+				item := UpstreamModelRecord{
+					ModelName: "ref-" + status, EnableGroups: []string{"gemini"},
+					PriceStatus: status,
+					OfficialPrice: &UpstreamPriceLine{
+						Input: ratio(5), Output: ratio(25), Currency: "USD", Unit: "per_1m_token",
+					},
+				}
+				view, internal := uterRouteChannelOfficialPricing(snapshot, item, 100, "default")
+				require.False(t, view.NeedsReview, "%s must be billable once authorized", status)
+				require.NotEmpty(t, internal, "%s must carry an auto sale price once authorized", status)
+				require.NotContains(t, view.ReviewReasons, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
+				require.Contains(t, view.ReviewReasons, status, "provenance must stay visible for audit")
+				require.Equal(t, 3.0, view.ChannelPrice.InputPerMillionUSD.Float64())
+			}
+		})
+	}
+}
+
+// The end-to-end path must produce configured records for reference rows once
+// authorized — this is what turns the 31 pending channel-1249 models billable
+// on the next upstream sync.
+func TestUterRouteSyncAuthorizesReferencePricesByDefault(t *testing.T) {
+	withReferenceBillingAuthorization(t, "")
+
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "uterroute", PriceBasis: UpstreamPriceBasisRatioOnly,
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"gemini": 0.6}},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName: "gemini-3.5-flash", EnableGroups: []string{"gemini"},
+				PriceStatus: "DERIVED_FROM_RATIOS", ModelRatio: ratio(0.75),
+				OfficialPrice: &UpstreamPriceLine{Input: ratio(1.5), Output: ratio(9), Currency: "USD", Unit: "per_1m_token"},
+			},
+			{
+				ModelName: "seedance-2.0", EnableGroups: []string{"gemini"},
+				PriceStatus: "HISTORICAL_SNAPSHOT",
+				OfficialPrice: &UpstreamPriceLine{Input: ratio(6.9), Output: ratio(6.9), Currency: "USD", Unit: "per_1m_token"},
+			},
+		},
+	}
+	records, err := UterRouteChannelPricingRecords(snapshot, 1249, []string{"gemini-3.5-flash", "seedance-2.0"}, "default")
+	require.NoError(t, err)
+	require.Len(t, records, 2)
+	for _, rec := range records {
+		require.NotEmpty(t, rec.InternalPricing, "%s must carry a billable price", rec.ModelName)
+		require.NotContains(t, rec.NormalizedPricing, `"needs_review":true`)
+		require.NotContains(t, rec.NormalizedPricing, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
+	}
+}
+
 func TestUterRouteExpressionKeepsAllTiersAndParksRatioReference(t *testing.T) {
+	withReferenceBillingAuthorization(t, "false")
 	ratio := func(v float64) *float64 { return &v }
 	expr := `len <= 200000 ? tier("standard", p * 1.25 + c * 10 + cr * 0.13) : tier("long", p * 2.5 + c * 15 + cr * 0.25)`
 	snapshot := &UpstreamSnapshot{

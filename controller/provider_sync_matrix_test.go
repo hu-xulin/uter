@@ -110,19 +110,20 @@ func testUterRouteSyncMatrix(t *testing.T) {
 	_, err = model.UpsertChannelOfficialPricing(records)
 	require.NoError(t, err)
 
-	// dr-token is ratio-only. Uter Route supplies a concrete price reference,
-	// but a ratio-derived amount is not a verified purchase cost and must not
-	// auto-enable billing without an explicit operator decision.
+	// dr-token is ratio-only. The operator authorized billing from the
+	// ratio-derived price (model_ratio * $2/1M is the gateway's own charging
+	// basis), so the row is billable. The provenance stays visible for audit:
+	// it is a reconstructed reference, not a published absolute price.
 	drToken, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
 		ChannelId: channel.Id, Provider: "uterroute", ModelName: "dr-token",
 	})
 	require.NoError(t, err)
-	require.Empty(t, drToken.InternalPricing)
-	require.Equal(t, model.ChannelPricingStatusNeedsReview, drToken.PricingStatus)
+	require.NotEmpty(t, drToken.InternalPricing)
+	require.Equal(t, model.ChannelPricingStatusConfigured, drToken.PricingStatus)
 	require.Contains(t, drToken.NormalizedPricing, `"price_kind":"RATIO_ONLY"`)
-	require.Contains(t, drToken.NormalizedPricing, `"REFERENCE_PRICE_BILLING_NOT_AUTHORIZED"`)
+	require.NotContains(t, drToken.NormalizedPricing, `"REFERENCE_PRICE_BILLING_NOT_AUTHORIZED"`)
 	_, billable := model.ResolveChannelBillingPricing(channel.Id, "dr-token")
-	require.False(t, billable)
+	require.True(t, billable)
 
 	// The complete expression rule is executable and keeps its image count.
 	two := 2

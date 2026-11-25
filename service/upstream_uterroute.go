@@ -116,6 +116,29 @@ type UpstreamProvider struct {
 // names the supplier.
 const UterRouteUpstreamURLOption = "UterRouteUpstreamBaseURL"
 
+// UterRouteReferencePriceBillingOption records the operator's authorization to
+// bill from reference prices: upstream rows that publish only billing ratios
+// (`DERIVED_FROM_RATIOS`) or only a historical snapshot (`HISTORICAL_SNAPSHOT`).
+// The provider's pricing page publishes no absolute price for those rows, but
+// `model_ratio * 2` is the gateway's own charging basis
+// (`common.QuotaPerUnit = 500000`, i.e. $2/1M at ratio 1), so the reconstructed
+// price equals what the gateway actually charges, not a guess.
+//
+// Authorized by default (2026-11-25 operator decision); setting the option to
+// the exact value "false" restores the fail-closed review gate. The flag only
+// affects reference rows — it never rewrites an operator-entered price, an
+// expression price, or any other option, and `NO_UPSTREAM_DISCOUNT` and other
+// hard gates remain in force.
+const UterRouteReferencePriceBillingOption = "UterRouteReferencePriceBillingAuthorized"
+
+// uterRouteReferencePriceBillingAuthorized reports whether billing from
+// ratio-derived / historical reference prices is authorized. Enabled unless
+// the operator explicitly sets the option to "false".
+func uterRouteReferencePriceBillingAuthorized() bool {
+	value := strings.ToLower(strings.TrimSpace(common.GetOption(UterRouteReferencePriceBillingOption)))
+	return value != "false" && value != "0"
+}
+
 // UterRouteUpstreamBaseURL returns the configured endpoint or "" when the
 // administrator has not configured it yet.
 func UterRouteUpstreamBaseURL() string {
@@ -1424,7 +1447,9 @@ func uterRouteChannelOfficialPricing(
 		}
 		if isUterRouteReferencePriceStatus(item.PriceStatus) {
 			markUterRouteReferencePriceReview(&view, item.PriceStatus)
-			return view, ""
+			if view.NeedsReview {
+				return view, ""
+			}
 		}
 		return view, internalPricing
 	}
@@ -1458,16 +1483,14 @@ func uterRouteChannelOfficialPricing(
 		expressionRule = true
 	case "DERIVED_FROM_RATIOS":
 		// The upstream supplies an official_price derived from its ratios.
-		// Expose it as a reference tier so the page is not blank, but keep the
-		// record review-only: it must never auto-enable billing or count as a
-		// verified absolute official price.
-		view.NeedsReview = true
+		// Expose it as a reference tier so the page is not blank; whether it
+		// may auto-enable billing follows the operator's authorization (see
+		// markUterRouteReferencePriceReview below).
 		view.ReviewReasons = []string{"DERIVED_FROM_RATIOS"}
 		if line != nil && line.Input != nil {
 			view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
 		}
 	case "HISTORICAL_SNAPSHOT":
-		view.NeedsReview = true
 		view.ReviewReasons = []string{"HISTORICAL_SNAPSHOT"}
 		if line != nil && line.Input != nil {
 			view.Tiers = []model.ChannelPricingTier{uterRoutePricingTier(line)}
@@ -1537,11 +1560,16 @@ func isUterRouteReferencePriceStatus(status string) bool {
 }
 
 func markUterRouteReferencePriceReview(view *model.ChannelOfficialPricing, status string) {
-	view.NeedsReview = true
+	// The provenance is always recorded so the pricing page can show that the
+	// number was reconstructed, not published. Only the billing gate follows
+	// the operator's authorization flag.
 	view.ReviewReasons = appendUterRouteReviewReason(view.ReviewReasons, status)
-	view.ReviewReasons = appendUterRouteReviewReason(
-		view.ReviewReasons, uterRouteReferenceBillingNotAuthorizedReason,
-	)
+	if !uterRouteReferencePriceBillingAuthorized() {
+		view.NeedsReview = true
+		view.ReviewReasons = appendUterRouteReviewReason(
+			view.ReviewReasons, uterRouteReferenceBillingNotAuthorizedReason,
+		)
+	}
 }
 
 func appendUterRouteReviewReason(reasons []string, reason string) []string {
