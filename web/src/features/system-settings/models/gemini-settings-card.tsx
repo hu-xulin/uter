@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { type FormEvent, useEffect, useMemo, useRef } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -189,7 +189,10 @@ export function GeminiSettingsCard({ defaultValues }: GeminiSettingsCardProps) {
     form.reset(buildFormDefaults(defaultValues))
   }, [defaultValues, form])
 
-  const isAdapterEnabled = form.watch('gemini.thinking_adapter_enabled')
+  const isAdapterEnabled = useWatch({
+    control: form.control,
+    name: 'gemini.thinking_adapter_enabled',
+  })
 
   const onSubmit = async (values: GeminiSettingsFormValues) => {
     const normalized: FlatGeminiSettings = {
@@ -233,12 +236,16 @@ export function GeminiSettingsCard({ defaultValues }: GeminiSettingsCardProps) {
     []
   )
 
+  const submitForm = (event?: FormEvent<HTMLFormElement>) => {
+    void form.handleSubmit(onSubmit)(event)
+  }
+
   return (
     <SettingsSection title={t('Gemini')}>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm onSubmit={submitForm}>
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={() => submitForm()}
             isSaving={updateOption.isPending}
           />
           <FormField
