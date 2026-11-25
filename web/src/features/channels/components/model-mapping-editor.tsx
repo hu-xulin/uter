@@ -196,19 +196,26 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
     }
   }
 
-  const syncExternalValue = useEffectEvent(() => {
-    lastEmittedRef.current = props.value
-    setJsonValue(props.value)
-    parseJsonToRows(props.value)
-  })
-
   const commit = () => {
     props.onCommit?.(lastEmittedRef.current)
   }
 
-  // Only replace the draft when the external value changes, not on language changes.
+  // Only replace the draft when the external value changes, not on language
+  // changes. Adjusting during render keeps the draft in sync without an
+  // effect that triggers a second render.
+  // Start from an uninitialized sentinel so the incoming value is parsed on
+  // mount just as it is when the caller changes it later.
+  const [prevExternalValue, setPrevExternalValue] = useState<string | null>(
+    null
+  )
+  if (prevExternalValue !== props.value) {
+    setPrevExternalValue(props.value)
+    setJsonValue(props.value)
+    parseJsonToRows(props.value)
+  }
+
   useEffect(() => {
-    syncExternalValue()
+    lastEmittedRef.current = props.value
   }, [props.value])
 
   // A freshly added row exists one commit after the click, so focus it once
@@ -458,59 +465,62 @@ export function ModelMappingEditor(props: ModelMappingEditorProps) {
                   )}
                 </div>
               )}
-              <div className='grid grid-cols-[1fr_1fr_auto] gap-2 text-sm font-medium'>
-                <div>{t('Request Model Name')}</div>
-                <div>{t('Upstream Model Name')}</div>
-                <div className='w-10' />
-              </div>
-              {visibleRows.map((row) => (
-                <div
-                  key={row.id}
-                  className='grid grid-cols-[1fr_1fr_auto] gap-2'
-                >
-                  <ComboboxInput
-                    id={rowInputId(row.id, 'from')}
-                    options={sourceOptions}
-                    value={row.from}
-                    onValueChange={(value) =>
-                      handleRowChange(row.id, 'from', value)
-                    }
-                    placeholder='gpt-3.5-turbo'
-                    emptyText={t('No matching items')}
-                    allowCustomValue
-                    disabled={props.disabled}
-                    aria-label={t('Request Model Name')}
-                  />
-                  <ComboboxInput
-                    id={rowInputId(row.id, 'to')}
-                    options={targetOptions}
-                    value={row.to}
-                    onValueChange={(value) =>
-                      handleRowChange(row.id, 'to', value)
-                    }
-                    placeholder='gpt-3.5-turbo-0125'
-                    emptyText={t('No matching items')}
-                    allowCustomValue
-                    disabled={props.disabled}
-                    aria-label={t('Upstream Model Name')}
-                  />
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon-lg'
-                    onClick={() => handleDeleteRow(row.id)}
-                    disabled={props.disabled}
-                    aria-label={t('Delete mapping')}
-                  >
-                    <Trash2 className='h-4.5 w-4.5' aria-hidden='true' />
-                  </Button>
+              {/* 表头钉在列表容器顶部，只有下面的映射行滚动。 */}
+              <div className='max-h-[22rem] space-y-2 overflow-y-auto overscroll-contain'>
+                <div className='bg-background sticky top-0 z-10 grid grid-cols-[1fr_1fr_auto] gap-2 border-b px-3 py-2 text-sm font-medium'>
+                  <div>{t('Request Model Name')}</div>
+                  <div>{t('Upstream Model Name')}</div>
+                  <div className='w-10' />
                 </div>
-              ))}
-              {visibleRows.length === 0 && (
-                <p className='text-muted-foreground py-3 text-center text-sm'>
-                  {t('No matching items')}
-                </p>
-              )}
+                {visibleRows.map((row) => (
+                  <div
+                    key={row.id}
+                    className='grid grid-cols-[1fr_1fr_auto] gap-2'
+                  >
+                    <ComboboxInput
+                      id={rowInputId(row.id, 'from')}
+                      options={sourceOptions}
+                      value={row.from}
+                      onValueChange={(value) =>
+                        handleRowChange(row.id, 'from', value)
+                      }
+                      placeholder='gpt-3.5-turbo'
+                      emptyText={t('No matching items')}
+                      allowCustomValue
+                      disabled={props.disabled}
+                      aria-label={t('Request Model Name')}
+                    />
+                    <ComboboxInput
+                      id={rowInputId(row.id, 'to')}
+                      options={targetOptions}
+                      value={row.to}
+                      onValueChange={(value) =>
+                        handleRowChange(row.id, 'to', value)
+                      }
+                      placeholder='gpt-3.5-turbo-0125'
+                      emptyText={t('No matching items')}
+                      allowCustomValue
+                      disabled={props.disabled}
+                      aria-label={t('Upstream Model Name')}
+                    />
+                    <Button
+                      type='button'
+                      variant='ghost'
+                      size='icon-lg'
+                      onClick={() => handleDeleteRow(row.id)}
+                      disabled={props.disabled}
+                      aria-label={t('Delete mapping')}
+                    >
+                      <Trash2 className='h-4.5 w-4.5' aria-hidden='true' />
+                    </Button>
+                  </div>
+                ))}
+                {visibleRows.length === 0 && (
+                  <p className='text-muted-foreground py-3 text-center text-sm'>
+                    {t('No matching items')}
+                  </p>
+                )}
+              </div>
             </div>
           ) : (
             <div className='text-muted-foreground flex h-24 items-center justify-center rounded-md border border-dashed text-sm'>
