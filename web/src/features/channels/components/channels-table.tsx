@@ -335,9 +335,11 @@ export function ChannelsTable() {
     !enableTagMode &&
     hasPermission(user, 'channel', 'write')
   const reorderActive = reorderEnabled && canReorder
-  useEffect(() => {
+  const [prevCanReorder, setPrevCanReorder] = useState(canReorder)
+  if (prevCanReorder !== canReorder) {
+    setPrevCanReorder(canReorder)
     if (!canReorder) setReorderEnabled(false)
-  }, [canReorder])
+  }
   const reorderScope = JSON.stringify([
     viewMode,
     reorderActive,
