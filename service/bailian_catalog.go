@@ -47,6 +47,7 @@ type BailianPriceRange struct {
 // BailianModel is one model record returned by GET /api/v1/models.
 type BailianModel struct {
 	Model              string              `json:"model"`
+	ModelAlias         string              `json:"model_alias,omitempty"`
 	Name               string              `json:"name"`
 	Description        string              `json:"description"`
 	Provider           string              `json:"provider"`

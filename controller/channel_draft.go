@@ -14,6 +14,7 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
 )
 
 type channelDraftRequest struct {
@@ -174,6 +175,15 @@ func PublishChannelDraft(c *gin.Context) {
 	other := channel.GetOtherSettings()
 	if !other.Draft {
 		common.ApiErrorMsg(c, "Only draft channels can be published")
+		return
+	}
+	// A batch redirect publishes request aliases into the model list while the
+	// configured sale price still lives under the upstream name. Relay bills
+	// against the alias, so materialize its channel-scoped price by inheriting
+	// the already-approved upstream price before the publish gate runs. This
+	// never rewrites an existing row and never enables a non-billable price.
+	if _, _, aliasErr := service.EnsureRedirectAliasPricing(id); aliasErr != nil {
+		common.ApiError(c, aliasErr)
 		return
 	}
 	rows, err := model.ListChannelModelPricing(id)

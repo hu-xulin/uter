@@ -2350,6 +2350,14 @@ export function ChannelMutateDrawer({
             group: (data.group ?? []).join(',') || 'default',
           })
           const created = response.data?.created ?? 0
+          // The create endpoint answers with a business-level ApiError
+          // (success:false) when no channel could be created, and the action
+          // config opts out of the global business-error toast. Surface it here
+          // so a zero-create result is never reported as success.
+          if (response.success === false || created === 0) {
+            toast.error(response.message || t('Failed to create the Uter.api channel'))
+            return
+          }
           const pricingIssues = (response.data?.channels ?? []).filter(
             (channel) => channel.pricing_error
           ).length
