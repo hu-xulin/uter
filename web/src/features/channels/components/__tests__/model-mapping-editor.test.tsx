@@ -44,6 +44,16 @@ test('external mapping changes update the editor without emitting an edit', () =
   expect(onChange).not.toHaveBeenCalled()
 })
 
+test('visual mapping header stays fixed while only the mapping rows scroll', () => {
+  render(
+    <ModelMappingEditor value='{"client-a":"upstream-a"}' onChange={vi.fn()} />
+  )
+
+  const header = screen.getByText('Request Model Name').parentElement
+  expect(header).toHaveClass('sticky', 'top-0', 'z-10', 'bg-background')
+  expect(header?.parentElement).toHaveClass('max-h-[22rem]', 'overflow-y-auto')
+})
+
 test('language changes preserve draft mappings and explain the same direction in JSON mode', async () => {
   const i18n = createInstance()
   await i18n.init({
