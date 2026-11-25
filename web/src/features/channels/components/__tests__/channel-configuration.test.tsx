@@ -1922,7 +1922,7 @@ test('Uter.api fetch-prices step shows the selected group official and channel p
   expect(await screen.findByText('claude-preview')).toBeVisible()
   expect(screen.getByText('$10.0000 / $50.0000')).toBeVisible()
   expect(screen.getByText('$25.0000 / $125.0000')).toBeVisible()
-  expect(screen.getByText(/Claude Standard/)).toBeVisible()
+  expect(screen.getByText(/Group: Claude Standard/)).toBeVisible()
 })
 
 test('Uter.api connection picks one group and one key box', async () => {
