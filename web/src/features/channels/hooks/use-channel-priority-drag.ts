@@ -140,7 +140,9 @@ export function useChannelPriorityDrag(options: DragOptions) {
   const landing = useRef<AnimationPlaybackControls | null>(null)
   const animations = useRef(new Map<HTMLElement, AnimationPlaybackControls>())
   const latest = useRef(options)
-  latest.current = options
+  useEffect(() => {
+    latest.current = options
+  })
   const reduced = useReducedMotion()
   const transition = useMemo(
     () =>
@@ -334,7 +336,7 @@ export function useChannelPriorityDrag(options: DragOptions) {
   )
 
   const tick = useCallback(
-    (time: number) => {
+    function tick(time: number) {
       frame.current = undefined
       const current = point.current
       if (!current || !root.current) return
@@ -346,13 +348,14 @@ export function useChannelPriorityDrag(options: DragOptions) {
           return
         }
         // Batch every layout read before adding the ghost or writing styles.
+        // Resolve nodes from the document (scoped to this root) so the mutable
+        // drag snapshot does not retain frozen ref values from render.
         const elements = [
-          ...root.current.querySelectorAll<HTMLElement>(
+          ...document.querySelectorAll<HTMLElement>(
             '[data-sortable-id^="channel:"]'
           ),
-        ]
-        current.slots = elements.map((element) => ({
-          id: Number(element.dataset.sortableId?.split(':')[1]),
+        ].filter((element) => root.current?.contains(element))
+        const measured = elements.map((element) => ({
           element,
           rect: element.getBoundingClientRect(),
           transform: element.style.transform,
@@ -360,6 +363,18 @@ export function useChannelPriorityDrag(options: DragOptions) {
           willChange: element.style.willChange,
           boxShadow: element.style.boxShadow,
           backgroundColor: element.style.backgroundColor,
+        }))
+        // Apply the drag styles before the nodes are stored in the mutable
+        // gesture snapshot, so the snapshot itself stays immutable.
+        for (const { element, rect } of measured) {
+          element.style.willChange = 'transform'
+          if (element.tagName !== 'TR') {
+            element.style.minHeight = `${rect.height}px`
+          }
+        }
+        current.slots = measured.map((measuredSlot) => ({
+          id: Number(measuredSlot.element.dataset.sortableId?.split(':')[1]),
+          ...measuredSlot,
           x: 0,
           y: 0,
         }))
@@ -480,12 +495,6 @@ export function useChannelPriorityDrag(options: DragOptions) {
         setFeedbackContainer(feedback)
         current.overlay = overlay
         current.clone = ghost
-        for (const slot of current.slots) {
-          slot.element.style.willChange = 'transform'
-          if (slot.element.tagName !== 'TR') {
-            slot.element.style.minHeight = `${slot.rect.height}px`
-          }
-        }
         current.source.style.opacity = '0.2'
         current.source.style.outline = '2px dashed var(--primary)'
         root.current.dataset.priorityDragging = 'true'
