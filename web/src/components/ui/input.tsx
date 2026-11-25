@@ -44,7 +44,7 @@ function Input({
   // 由组件统一兜底，避免各业务页重复补 aria-label；调用方显式传入的值仍优先。
   const derivedAriaLabel =
     props['aria-label'] ??
-    (props['aria-labelledby']
+    (props['aria-labelledby'] || props.id
       ? undefined
       : typeof props.placeholder === 'string'
         ? props.placeholder
