@@ -417,3 +417,5 @@
 {"execution_id":"UAP-EXEC-20261124074849-f6094b0d","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261124074949-170ed076","closed_at":"2026-11-24T07:49:49.174Z"}
 {"execution_id":"UAP-EXEC-20261124074949-170ed076","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261124074953-995c5954","closed_at":"2026-11-24T07:49:53.175Z"}
 {"execution_id":"UAP-EXEC-20261124074953-995c5954","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261124075950-88f2cace","closed_at":"2026-11-24T07:59:51.134Z"}
+{"execution_id":"UAP-EXEC-20261124075950-88f2cace","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261124184333-86f6bb23","closed_at":"2026-11-24T18:43:33.194Z"}
+{"execution_id":"UAP-EXEC-20261124184333-86f6bb23","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261124184352-72687ca7","closed_at":"2026-11-24T18:43:52.150Z"}
