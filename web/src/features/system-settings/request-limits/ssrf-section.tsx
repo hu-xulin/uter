@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -201,15 +201,31 @@ export function SSRFSection({ defaultValues }: SSRFSectionProps) {
     baselineRef.current = normalized
   }
 
-  const domainFilterMode = form.watch('fetch_setting.domain_filter_mode')
-  const ipFilterMode = form.watch('fetch_setting.ip_filter_mode')
+  const domainFilterMode = useWatch({
+    control: form.control,
+    name: 'fetch_setting.domain_filter_mode',
+  })
+  const ipFilterMode = useWatch({
+    control: form.control,
+    name: 'fetch_setting.ip_filter_mode',
+  })
+
+  // 在事件处理器中调用 handleSubmit，避免在渲染期把表单 ref 传给函数。
+  const submitForm = () => {
+    void form.handleSubmit(onSubmit)()
+  }
 
   return (
     <SettingsSection title={t('SSRF Protection')}>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitForm()
+          }}
+        >
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={submitForm}
             isSaving={updateOption.isPending}
             saveLabel='Save SSRF settings'
           />
