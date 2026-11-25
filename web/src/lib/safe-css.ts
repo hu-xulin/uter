@@ -333,7 +333,9 @@ function balanceBraces(css: string): string {
  * leaving selectors untouched.
  */
 export function sanitizeStyleSheet(css: string): string {
-  let result = balanceBraces(stripCssComments(css).replace(atRulePattern, ''))
+  let result = balanceBraces(
+    stripCssComments(css).replaceAll(atRulePattern, '')
+  )
 
   // Repeat until stable so rules nested in at-rules such as `@media` are
   // filtered too.
@@ -347,7 +349,7 @@ export function sanitizeStyleSheet(css: string): string {
     result = next
   }
 
-  const filtered = result.replace(atRulePattern, '')
+  const filtered = result.replaceAll(atRulePattern, '')
 
   // Safety net: the loop above can only rewrite text inside braces. Anything
   // still matching a fetch/execute pattern is outside every rule we recognised,
