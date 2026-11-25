@@ -71,10 +71,11 @@ export function MarketplaceSourcesDialog(props: MarketplaceSourcesDialogProps) {
   // The dialog edits a local copy so a half-typed row is never pushed to the
   // server; it is re-seeded whenever the dialog opens with fresh server data.
   useEffect(() => {
-    if (props.open && sourcesQuery.data) {
-      setDraft(
-        sourcesQuery.data.map((source) => ({ ...source, rowId: makeRowId() }))
-      )
+    const sources = sourcesQuery.data
+    if (props.open && sources) {
+      void (async () => {
+        setDraft(sources.map((source) => ({ ...source, rowId: makeRowId() })))
+      })()
     }
   }, [props.open, sourcesQuery.data])
 
