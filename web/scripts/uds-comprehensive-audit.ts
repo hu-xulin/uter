@@ -332,11 +332,9 @@ function nearestColor(value: string, colors: string[]) {
     const rgb = /^#/.test(color)
       ? (() => {
           let h = color.slice(1)
-          if (h.length === 3)
-            h = h
-              .split('')
-              .map((c) => c + c)
-              .join('')
+          if (h.length === 3) {
+            h = [...h].map((c) => c + c).join('')
+          }
           return [
             parseInt(h.slice(0, 2), 16),
             parseInt(h.slice(2, 4), 16),
@@ -363,8 +361,8 @@ function slugify(input: string) {
   return (
     input
       .replace(/^\//, '')
-      .replace(/[^a-zA-Z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '') || 'root'
+      .replaceAll(/[^a-zA-Z0-9]+/g, '-')
+      .replaceAll(/^-+|-+$/g, '') || 'root'
   )
 }
 
@@ -478,7 +476,8 @@ async function auditPage(
       const cv = document.createElement('canvas')
       cv.width = 1
       cv.height = 1
-      const ctx = cv.getContext('2d', { willReadFrequently: true })!
+      const ctx = cv.getContext('2d', { willReadFrequently: true })
+      if (!ctx) throw new Error('Canvas 2D context is unavailable')
       const norm = (v: string) => {
         ctx.clearRect(0, 0, 1, 1)
         ctx.fillStyle = '#000000'
@@ -576,13 +575,9 @@ async function auditPage(
         while (node && node.tagName !== 'HTML' && parts.length < 6) {
           const tag = node.tagName.toLowerCase()
           const id = node.id ? `#${node.id}` : ''
-          const cls = node.getAttribute('class')
-            ? `.${node
-                .getAttribute('class')!
-                .trim()
-                .split(/\s+/)
-                .slice(0, 2)
-                .join('.')}`
+          const classAttribute = node.getAttribute('class')
+          const cls = classAttribute
+            ? `.${classAttribute.trim().split(/\s+/).slice(0, 2).join('.')}`
             : ''
           parts.unshift(`${tag}${id}${cls}`)
           node = node.parentElement
@@ -593,22 +588,25 @@ async function auditPage(
       const elements: ElementRecord[] = []
       const issues: any[] = []
       let idCounter = 0
-      const all = Array.from(document.body.querySelectorAll('*'))
+      const all = [...document.body.querySelectorAll('*')]
       for (const raw of all) {
         const el = raw as HTMLElement & SVGElement
-        if (el.closest('script, style, noscript, template')) continue
+        if (el.closest('script, style, noscript, template')) {
+          continue
+        }
         if (el.getAttribute('aria-hidden') === 'true') continue
         const s = getComputedStyle(el)
         if (
           s.display === 'none' ||
           s.visibility === 'hidden' ||
           Number(s.opacity) === 0
-        )
+        ) {
           continue
+        }
         const rect = el.getBoundingClientRect()
         if (rect.width < 1 || rect.height < 1) continue
         const text = (el.innerText ?? el.textContent ?? '')
-          .replace(/\s+/g, ' ')
+          .replaceAll(/\s+/g, ' ')
           .trim()
           .slice(0, 90)
         const className = (el.getAttribute('class') ?? '').slice(0, 180)
@@ -616,28 +614,35 @@ async function auditPage(
         el.setAttribute('data-uds-audit-id', id)
         const clsLower = className.toLowerCase()
         let component = 'generic'
-        if (/badge|chip|pill/.test(clsLower)) component = 'badge'
-        else if (/card|surface/.test(clsLower)) component = 'card'
-        else if (el.tagName === 'TABLE') component = 'table'
-        else if (el.tagName === 'TR') component = 'table-row'
-        else if (/^(TH|TD)$/i.test(el.tagName)) component = 'table-cell'
-        else if (
+        if (/badge|chip|pill/.test(clsLower)) {
+          component = 'badge'
+        } else if (/card|surface/.test(clsLower)) {
+          component = 'card'
+        } else if (el.tagName === 'TABLE') {
+          component = 'table'
+        } else if (el.tagName === 'TR') {
+          component = 'table-row'
+        } else if (/^(TH|TD)$/i.test(el.tagName)) {
+          component = 'table-cell'
+        } else if (
           /^(BUTTON)$/i.test(el.tagName) ||
           el.getAttribute('role') === 'button'
-        )
+        ) {
           component = 'button'
-        else if (/^(INPUT|TEXTAREA|SELECT)$/i.test(el.tagName))
+        } else if (/^(INPUT|TEXTAREA|SELECT)$/i.test(el.tagName)) {
           component = 'input'
-        else if (
+        } else if (
           /^(CHECKBOX|RADIO|SWITCH)$/i.test(el.getAttribute('role') ?? '')
-        )
+        ) {
           component = 'selection-control'
-        else if (
+        } else if (
           /^(HEADER|NAV|ASIDE)$/i.test(el.tagName) ||
           /sidebar|breadcrumb/.test(clsLower)
-        )
+        ) {
           component = 'navigation'
-        else if (el instanceof SVGElement) component = 'icon'
+        } else if (el instanceof SVGElement) {
+          component = 'icon'
+        }
 
         const record: ElementRecord = {
           id,
@@ -971,15 +976,12 @@ async function auditPage(
           }
         }
 
+        const labelledBy = el.getAttribute('aria-labelledby')
         const accessibleName =
           text ||
           el.getAttribute('aria-label') ||
           el.getAttribute('title') ||
-          (el.getAttribute('aria-labelledby')
-            ? document
-                .getElementById(el.getAttribute('aria-labelledby')!)
-                ?.textContent?.trim()
-            : '') ||
+          (labelledBy ? document.getElementById(labelledBy)?.textContent?.trim() : '') ||
           (el instanceof HTMLInputElement
             ? el.labels?.[0]?.textContent?.trim()
             : '')
@@ -1130,16 +1132,18 @@ async function auditPage(
         if (component === 'table-row') {
           if (![36, 44, 52].some((v) => Math.abs(v - rect.height) <= 1)) {
             const n = near(rect.height, [36, 44, 52])?.tokenValue ?? null
+            let densityToken = '--ds-density-default-row'
+            if (n === 36) {
+              densityToken = '--ds-density-compact-row'
+            } else if (n === 52) {
+              densityToken = '--ds-density-comfortable-row'
+            }
             addIssue(
               'component',
               'table-row-height',
               `${rect.height.toFixed(1)}px`,
               '36/44/52px',
-              n === 36
-                ? '--ds-density-compact-row'
-                : n === 52
-                  ? '--ds-density-comfortable-row'
-                  : '--ds-density-default-row',
+              densityToken,
               n === null ? null : `${n}px`,
               'REVIEW',
               '16 密度规范 / 23 数据展示规范',
@@ -1323,7 +1327,8 @@ async function main() {
       const cv = document.createElement('canvas')
       cv.width = 1
       cv.height = 1
-      const ctx = cv.getContext('2d', { willReadFrequently: true })!
+      const ctx = cv.getContext('2d', { willReadFrequently: true })
+      if (!ctx) throw new Error('Canvas 2D context is unavailable')
       const norm = (v: string) => {
         ctx.clearRect(0, 0, 1, 1)
         ctx.fillStyle = '#000000'
@@ -1478,14 +1483,14 @@ async function main() {
 
 function escapeHtml(value: string) {
   return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+    .replaceAll(/&/g, '&amp;')
+    .replaceAll(/</g, '&lt;')
+    .replaceAll(/>/g, '&gt;')
+    .replaceAll(/"/g, '&quot;')
 }
 
 function renderHtml(data: any) {
-  const serialized = JSON.stringify(data).replace(/<\/script/gi, '<\\/script')
+  const serialized = JSON.stringify(data).replaceAll(/<\/script/gi, '<\\/script')
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
