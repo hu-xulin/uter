@@ -35,7 +35,7 @@ import {
   Trash2,
   type LucideIcon,
 } from 'lucide-react'
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { type ReactNode, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -263,6 +263,19 @@ function buildRouteGroups(
   return groups
 }
 
+// Route keys are disposable UI identity. A module-level counter keeps them
+// unique without reading a ref during render.
+let nextRouteKey = 0
+
+function createRouteKey() {
+  nextRouteKey += 1
+  return `advanced-custom-route-${nextRouteKey}`
+}
+
+function createRouteKeys(count: number) {
+  return Array.from({ length: count }, () => createRouteKey())
+}
+
 export function AdvancedCustomEditorDialog({
   open,
   value,
@@ -270,7 +283,6 @@ export function AdvancedCustomEditorDialog({
   onSave,
 }: AdvancedCustomEditorDialogProps) {
   const { t } = useTranslation()
-  const routeKeyCounterRef = useRef(0)
   const [config, setConfig] = useState<AdvancedCustomConfig>(
     () => parseAdvancedCustomConfig(value) || createAdvancedCustomConfig()
   )
@@ -363,9 +375,13 @@ export function AdvancedCustomEditorDialog({
 
   // Synchronize the draft only when the dialog opens or the source value changes.
   // Route keys are disposable UI identity and do not belong in the saved config.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    if (!open) return
+  // prevOpen starts as false so an initially-open dialog syncs on first render.
+  const [prevOpen, setPrevOpen] = useState(false)
+  const [prevValue, setPrevValue] = useState(value)
+
+  if (open && (open !== prevOpen || value !== prevValue)) {
+    setPrevOpen(open)
+    setPrevValue(value)
     const parsed =
       parseAdvancedCustomConfig(value) || createAdvancedCustomConfig()
     const normalized = normalizeAdvancedCustomConfig(parsed)
@@ -381,15 +397,7 @@ export function AdvancedCustomEditorDialog({
     setExpandedRouteGroups(
       firstForwardingPath ? new Set([firstForwardingPath]) : new Set()
     )
-  }, [open, value])
-
-  const createRouteKey = () => {
-    routeKeyCounterRef.current += 1
-    return `advanced-custom-route-${routeKeyCounterRef.current}`
   }
-
-  const createRouteKeys = (count: number) =>
-    Array.from({ length: count }, () => createRouteKey())
 
   const updateRoute = (index: number, patch: Partial<AdvancedCustomRoute>) => {
     setConfig((current) => {
@@ -1136,12 +1144,14 @@ function DisplayPreviewBadge(props: {
 }) {
   const { t } = useTranslation()
   const [logoBroken, setLogoBroken] = useState(false)
+  const [prevLogo, setPrevLogo] = useState(props.logo)
   const label = props.label || props.fallbackLabel
   const showLogo = props.logo.trim() !== '' && !logoBroken
 
-  useEffect(() => {
+  if (props.logo !== prevLogo) {
+    setPrevLogo(props.logo)
     setLogoBroken(false)
-  }, [props.logo])
+  }
 
   return (
     <span className='bg-muted text-muted-foreground ml-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-normal'>
@@ -1436,55 +1446,58 @@ function RouteGroupEditor({
         ) : null}
       </div>
 
-      <div
-        className={cn(
-          'text-muted-foreground hidden items-center gap-2 border-t bg-muted/10 px-3 py-2 text-xs font-medium lg:grid',
-          routeEditorGridClassName
-        )}
-      >
-        <span>{t('Route')}</span>
-        <span className='inline-flex items-center gap-1'>
-          {t('Client model')}
-          <ModelRuleHelpPopover />
-        </span>
-        <span>{t('Upstream path')}</span>
-        <span>{t('Converter')}</span>
-        <span>{t('Auth')}</span>
-        <span className='inline-flex items-center gap-1'>
-          {t('Pass-through')}
-          <PassThroughHelpPopover />
-        </span>
-        <span className='text-right'>{t('Actions')}</span>
-      </div>
+      {/* 路由表头固定在滚动容器顶部；滚动时只移动下面的路由行。 */}
+      <div className='max-h-[32rem] overflow-y-auto overscroll-contain'>
+        <div
+          className={cn(
+            'text-muted-foreground bg-muted sticky top-0 z-10 hidden items-center gap-2 border-t px-3 py-2 text-xs font-medium lg:grid',
+            routeEditorGridClassName
+          )}
+        >
+          <span>{t('Route')}</span>
+          <span className='inline-flex items-center gap-1'>
+            {t('Client model')}
+            <ModelRuleHelpPopover />
+          </span>
+          <span>{t('Upstream path')}</span>
+          <span>{t('Converter')}</span>
+          <span>{t('Auth')}</span>
+          <span className='inline-flex items-center gap-1'>
+            {t('Pass-through')}
+            <PassThroughHelpPopover />
+          </span>
+          <span className='text-right'>{t('Actions')}</span>
+        </div>
 
-      <div className='divide-y'>
-        {group.routeRows.map((routeRow, position) => {
-          const canMoveUp = position > 0
-          const canMoveDown = position < group.routeRows.length - 1
-          const catchAllOutOfOrder =
-            isCatchAllRoute(routeRow.route) && canMoveDown
-          const routeErrorMessage =
-            validationError?.routeIndex === routeRow.index
-              ? validationError.message
-              : undefined
+        <div className='divide-y'>
+          {group.routeRows.map((routeRow, position) => {
+            const canMoveUp = position > 0
+            const canMoveDown = position < group.routeRows.length - 1
+            const catchAllOutOfOrder =
+              isCatchAllRoute(routeRow.route) && canMoveDown
+            const routeErrorMessage =
+              validationError?.routeIndex === routeRow.index
+                ? validationError.message
+                : undefined
 
-          return (
-            <RouteEditor
-              key={routeRow.routeKey}
-              route={routeRow.route}
-              index={routeRow.index}
-              errorMessage={routeErrorMessage}
-              canMoveUp={canMoveUp}
-              canMoveDown={canMoveDown}
-              catchAllOutOfOrder={catchAllOutOfOrder}
-              onChange={(patch) => onRouteChange(routeRow.index, patch)}
-              onMoveDown={() => onMoveRoute(routeRow.index, 1)}
-              onMoveUp={() => onMoveRoute(routeRow.index, -1)}
-              onMoveCatchAllToEnd={() => onMoveRouteToEnd(routeRow.index)}
-              onRemove={() => onRemoveRoute(routeRow.index)}
-            />
-          )
-        })}
+            return (
+              <RouteEditor
+                key={routeRow.routeKey}
+                route={routeRow.route}
+                index={routeRow.index}
+                errorMessage={routeErrorMessage}
+                canMoveUp={canMoveUp}
+                canMoveDown={canMoveDown}
+                catchAllOutOfOrder={catchAllOutOfOrder}
+                onChange={(patch) => onRouteChange(routeRow.index, patch)}
+                onMoveDown={() => onMoveRoute(routeRow.index, 1)}
+                onMoveUp={() => onMoveRoute(routeRow.index, -1)}
+                onMoveCatchAllToEnd={() => onMoveRouteToEnd(routeRow.index)}
+                onRemove={() => onRemoveRoute(routeRow.index)}
+              />
+            )
+          })}
+        </div>
       </div>
     </section>
   )
@@ -1693,7 +1706,7 @@ function RouteEditor({
                         variant={ruleKind === 'regex' ? 'outline' : 'secondary'}
                         className='text-mono max-w-full gap-1.5 font-mono'
                       >
-                        <span className='font-sans text-xs uppercase'>
+                        <span className='font-ui text-xs uppercase'>
                           {t(ruleKind === 'regex' ? 'Regex' : 'Exact')}
                         </span>
                         <span className='truncate'>{displayModel}</span>
