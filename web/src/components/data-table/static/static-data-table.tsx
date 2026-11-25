@@ -34,6 +34,11 @@ import { staticDataTableClassNames } from './static-data-table-classnames'
 type StaticDataTableBaseProps = {
   className?: string
   tableClassName?: string
+  /**
+   * 让表头钉在最近的滚动容器顶部。仅用于包裹在 `overflow-auto` 里、
+   * 表体明显长于可视区间的表格；不透明背景避免滚动行从表头透出。
+   */
+  stickyHeader?: boolean
   containerProps?: Omit<React.ComponentProps<'div'>, 'className' | 'children'>
   tableProps?: Omit<
     React.ComponentProps<typeof Table>,
@@ -74,14 +79,32 @@ export type StaticDataTableColumn<TData = unknown> = {
 export function StaticDataTable<TData = unknown>(
   props: StaticDataTableProps<TData>
 ) {
-  const { className, tableClassName, containerProps, tableProps } = props
+  const {
+    className,
+    tableClassName,
+    stickyHeader,
+    containerProps,
+    tableProps,
+  } = props
 
   return (
     <div
-      className={cn(staticDataTableClassNames.container, className)}
+      className={cn(
+        staticDataTableClassNames.container,
+        // 容器自带的 overflow-hidden 会成为 sticky 的滚动祖先却不会滚动，
+        // 表头因此钉不住；交给外层真正的滚动容器来裁剪。
+        stickyHeader && 'overflow-visible',
+        className
+      )}
       {...containerProps}
     >
-      <Table className={tableClassName} {...tableProps}>
+      <Table
+        className={tableClassName}
+        // Table 默认自带的包裹层是 overflow-x-auto/overflow-y-hidden，会成为
+        // sticky 的滚动祖先却不会纵向滚动；固定表头时必须去掉这一层。
+        withContainer={stickyHeader ? false : undefined}
+        {...tableProps}
+      >
         {props.columns !== undefined ? (
           <StaticDataTableWithColumns {...props} />
         ) : (
@@ -102,6 +125,7 @@ function StaticDataTableWithColumns<TData>({
   emptyContent,
   emptyClassName,
   headerRowClassName,
+  stickyHeader,
 }: StaticDataTableDataProps<TData>) {
   const isEmpty = empty ?? (data !== undefined && data.length === 0)
   const bodyRows = data.map((row, index) => (
@@ -117,7 +141,9 @@ function StaticDataTableWithColumns<TData>({
 
   return (
     <>
-      <TableHeader>
+      <TableHeader
+        className={cn(stickyHeader && 'bg-background sticky top-0 z-10')}
+      >
         <TableRow className={headerRowClassName}>
           {columns.map((column) => (
             <TableHead key={column.id} className={column.className}>
