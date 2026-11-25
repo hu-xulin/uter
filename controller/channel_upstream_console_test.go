@@ -128,3 +128,58 @@ func TestConsoleHasLogin(t *testing.T) {
 		LoginURL: "https://x", Username: "u", PasswordEncrypted: "env",
 	}).HasLogin())
 }
+
+func TestMergeConsoleCredentialsPreservesDraftAndPricingMode(t *testing.T) {
+	initConsoleTestSecrets(t)
+	originRaw := `{"draft":true,"pricing_mode":"CHANNEL_SCOPED_PENDING","proxy":"keep-me","upstream_model_update_check_enabled":true}`
+
+	merged, err := mergeConsoleCredentialsIntoSettings(
+		originRaw, "https://console.example.com", "admin", "top-secret")
+	require.NoError(t, err)
+
+	var settings map[string]any
+	require.NoError(t, json.Unmarshal([]byte(merged), &settings))
+	require.Equal(t, true, settings["draft"], "draft marker must survive (billing fail-closed)")
+	require.Equal(t, "CHANNEL_SCOPED_PENDING", settings["pricing_mode"])
+	require.Equal(t, "keep-me", settings["proxy"])
+	require.Equal(t, true, settings["upstream_model_update_check_enabled"])
+
+	console := settings["upstream_console"].(map[string]any)
+	require.Equal(t, "https://console.example.com", console["login_url"])
+	require.Equal(t, "admin", console["username"])
+	require.NotContains(t, console, "password", "plaintext must never persist")
+	require.NotEmpty(t, console["password_encrypted"])
+	plain, err := common.DecryptSecret(console["password_encrypted"].(string))
+	require.NoError(t, err)
+	require.Equal(t, "top-secret", plain)
+}
+
+func TestMergeConsoleCredentialsBlankPasswordKeepsStored(t *testing.T) {
+	initConsoleTestSecrets(t)
+	originRaw := `{"draft":true}`
+	first, err := mergeConsoleCredentialsIntoSettings(
+		originRaw, "https://console.example.com", "admin", "original-secret")
+	require.NoError(t, err)
+	stored := consoleFromSettingsString(first).PasswordEncrypted
+	require.NotEmpty(t, stored)
+
+	// Operator edits only URL/username and leaves the password box empty.
+	second, err := mergeConsoleCredentialsIntoSettings(
+		first, "https://console.example.com", "admin", "")
+	require.NoError(t, err)
+	require.Equal(t, stored, consoleFromSettingsString(second).PasswordEncrypted,
+		"blank password keeps the stored encrypted envelope")
+	var settings map[string]any
+	require.NoError(t, json.Unmarshal([]byte(second), &settings))
+	require.Equal(t, true, settings["draft"])
+}
+
+func TestMergeConsoleCredentialsRejectsEmptyLogin(t *testing.T) {
+	initConsoleTestSecrets(t)
+	// normalizeUpstreamConsoleOnSave drops an entirely empty console block;
+	// the HTTP handler validates URL/username before calling this, so here we
+	// only assert the merge stays fail-closed for a fully blank credential.
+	merged, err := mergeConsoleCredentialsIntoSettings(`{"draft":true}`, "", "", "")
+	require.NoError(t, err)
+	require.NotContains(t, merged, "upstream_console")
+}
