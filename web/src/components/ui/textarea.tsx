@@ -32,13 +32,17 @@ function Textarea({
    */
   mono?: boolean
 }) {
+  // 与 Input 同口径：有 id / aria-label / aria-labelledby 时说明已有外部
+  // 可访问名称，不能用 placeholder 覆盖显式 <label>。
+  const hasExternalName =
+    props.id !== undefined ||
+    props['aria-label'] !== undefined ||
+    props['aria-labelledby'] !== undefined
   const derivedAriaLabel =
     props['aria-label'] ??
-    (props['aria-labelledby'] || props.id
-      ? undefined
-      : typeof props.placeholder === 'string'
-        ? props.placeholder
-        : undefined)
+    (!hasExternalName && typeof props.placeholder === 'string'
+      ? props.placeholder
+      : undefined)
   return (
     <textarea
       data-slot='textarea'
