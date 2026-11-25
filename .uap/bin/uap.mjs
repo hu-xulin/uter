@@ -35,6 +35,7 @@ import {
   generateEvidenceManifest, verifyEvidenceManifest, repositoryIdentity,
 } from '../runtime/evidence-engine/manifest.mjs';
 import { runFinalAcceptance } from '../tools/final-acceptance-gate.mjs';
+import { compareRequirementIds } from '../tools/requirement-matrix.mjs';
 // Pure, independently testable visual-diff classifier (final remediation).
 import { classifyVisualDiff, MANDATED_CATEGORIES } from '../runtime/status-engine/visual-classifier.mjs';
 // One TEST-RUNS.json, one schema. `quality.engineering_integrity` calls
@@ -2034,12 +2035,27 @@ async function cmdVerifyRequirements({ flags }) {
   });
   const counts = /states: (\{.*\})/.exec(r.stdout)?.[1];
   if (counts) { try { data.counts = JSON.parse(counts); } catch { /* honest tail only */ } }
-  // Strict post-run validation of the REAL regenerated matrix. A file that
-  // merely exists, or a matrix with fewer than 538 rows, is not verification.
+  // Strict post-run validation of the REAL regenerated matrix. Completeness
+  // is derived from the current registered specifications, never a frozen count.
   const matrix = readJSON(reportPath('REQUIREMENT-TRACEABILITY-MATRIX.json'), null);
-  const rows = matrix?.requirements || matrix?.items || [];
+  const rows = Array.isArray(matrix?.requirements)
+    ? matrix.requirements
+    : (Array.isArray(matrix?.items) ? matrix.items : []);
   const problems = [];
-  if (rows.length !== 538) problems.push(`matrix has ${rows.length} rows, expected 538`);
+  let catalog;
+  try {
+    catalog = compareRequirementIds(rows);
+  } catch (error) {
+    catalog = { ok: false, error: String(error?.message || error) };
+  }
+  if (!catalog.ok) {
+    problems.push(
+      `matrix IDs do not match current registered requirements: expected=${catalog.expected_total ?? 'unavailable'} `
+      + `actual=${catalog.actual_total ?? rows.length} missing=${(catalog.missing_ids || []).length} `
+      + `unexpected=${(catalog.unexpected_ids || []).length} duplicates=${(catalog.duplicate_ids || []).length} `
+      + `error=${catalog.error || 'none'}`,
+    );
+  }
   const allowed = new Set(['VERIFIED', 'NOT_VERIFIED', 'BLOCKED', 'NOT_APPLICABLE']);
   const invalid = rows.filter((x) => !allowed.has(x.status || x.verification_status));
   if (invalid.length) problems.push(`${invalid.length} row(s) with invalid/unset status`);
@@ -2050,7 +2066,14 @@ async function cmdVerifyRequirements({ flags }) {
   for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at']) {
     if (!matrix?.[field]) problems.push(`matrix missing binding field ${field}`);
   }
-  data.matrix_validation = { total: rows.length, invalid: invalid.length, bogus_verified: bogusVerified.length, problems };
+  data.matrix_validation = {
+    total: rows.length,
+    expected_total: catalog.expected_total ?? null,
+    invalid: invalid.length,
+    bogus_verified: bogusVerified.length,
+    catalog,
+    problems,
+  };
   if (r.exit_code !== 0 || problems.length) {
     return fail(`requirement verification FAILED: exit=${r.exit_code}; ${problems.join('; ')}`, data);
   }
