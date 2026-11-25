@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { StaticDataTable } from '@/components/data-table'
@@ -146,7 +146,11 @@ export function SyncWizardDialog(props: {
     onError: (error) => handleServerError(error),
   })
 
-  useEffect(() => {
+  // Reset the wizard as the dialog opens. Adjusting during render avoids an
+  // effect that would immediately trigger another render.
+  const [prevOpen, setPrevOpen] = useState(props.open)
+  if (prevOpen !== props.open) {
+    setPrevOpen(props.open)
     if (props.open) {
       setPreview(null)
       setSelection({})
@@ -158,9 +162,7 @@ export function SyncWizardDialog(props: {
       load.reset()
       apply.reset()
     }
-    // Reset only when the dialog opens; mutation objects change on each render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.open])
+  }
 
   const filteredCandidates = useMemo(() => {
     const keyword = search.trim().toLowerCase()
