@@ -90,7 +90,9 @@ export function useAffiliate() {
   }, [])
 
   useEffect(() => {
-    fetchAffiliateCode()
+    void (async () => {
+      await fetchAffiliateCode()
+    })()
   }, [fetchAffiliateCode])
 
   return {
