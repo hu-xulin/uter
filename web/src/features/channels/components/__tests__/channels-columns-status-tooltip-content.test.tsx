@@ -18,9 +18,10 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  createTable,
   flexRender,
   getCoreRowModel,
-  useReactTable,
+  type TableState,
 } from '@tanstack/react-table'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -31,10 +32,14 @@ import { useChannelsColumns } from '../channels-columns'
 import { ChannelsProvider } from '../channels-provider'
 
 function ExampleAutoDisabledStatusCell(props: { channel: Channel }) {
-  const table = useReactTable({
+  // Use the headless core API: the React wrapper hook is not memoization-safe.
+  const table = createTable({
     data: [props.channel],
     columns: useChannelsColumns({ enableSelection: false }),
     getCoreRowModel: getCoreRowModel(),
+    state: {} as TableState,
+    onStateChange: () => {},
+    renderFallbackValue: null,
   })
   const cell = table
     .getRowModel()
