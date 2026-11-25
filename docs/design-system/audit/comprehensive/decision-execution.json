@@ -1,14 +1,15 @@
 {
   "schema": "UDS8-DECISION-EXECUTION/1.0",
-  "generatedAt": "2026-11-24T18:06:58.680Z",
+  "generatedAt": "2026-11-25T03:24:23+08:00",
   "sourceAudit": "audit-data.json",
-  "rule": "有最近令牌的按最近令牌执行；没有最近令牌的按文档给出的建议执行。数值近似但语义不适用的组按文档建议登记例外，不机械替换。",
+  "rule": "有最近令牌的按最近令牌执行；没有最近令牌的按文档给出的建议执行。数值近似但语义不适用的组按文档建议登记例外，不机械替换。 2026-11-25 所有者裁决：173 组登记例外全部按 UDS8 执行，例外状态改为 UDS8_ADOPTED。",
   "totals": {
     "groups": 175,
     "statusCounts": {
       "PARTIAL_FIX": 1,
-      "REGISTERED_EXCEPTION": 173,
-      "FIXED": 1
+      "REGISTERED_EXCEPTION": 0,
+      "FIXED": 1,
+      "UDS8_ADOPTED": 173
     }
   },
   "sourceFixSummary": [
@@ -57,9 +58,14 @@
       "nearestToken": "--ds-border-width-input",
       "nearestValue": "1px",
       "recommendation": "输入边框改回 1px",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "input-group 控件刻意使用 border-0，由外层 .group/input-group.border-input 承担 1px 边框；按文档建议确认为组合控件例外，不改内层边框。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "input-group 控件刻意使用 border-0，由外层 .group/input-group.border-input 承担 1px 边框；按文档建议确认为组合控件例外，不改内层边框。"
     },
     {
       "key": "accessibility|input-label|missing|",
@@ -88,9 +94,14 @@
       "nearestToken": "--ds-leading-code",
       "nearestValue": "20px",
       "recommendation": "确认行高是否属于有登记的组合例外",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "layout|sidebar-width|208.0px|--ds-layout-sidebar-width",
@@ -102,9 +113,14 @@
       "nearestToken": "--ds-layout-sidebar-width",
       "nearestValue": "240px",
       "recommendation": "确认侧栏展开/收起宽度",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|47.0px|--ds-density-default-row",
@@ -116,9 +132,14 @@
       "nearestToken": "--ds-density-default-row",
       "nearestValue": "44px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(69, 70, 95, 1.000)|",
@@ -130,9 +151,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "typography|line-height|32px|--ds-leading-long",
@@ -144,9 +170,14 @@
       "nearestToken": "--ds-leading-long",
       "nearestValue": "26px",
       "recommendation": "确认行高是否属于有登记的组合例外",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(70, 70, 96, 0.302)|",
@@ -158,9 +189,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|7px|--ds-icon-2xs",
@@ -172,9 +208,14 @@
       "nearestToken": "--ds-icon-2xs",
       "nearestValue": "12px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|18px|--ds-icon-xs",
@@ -186,9 +227,14 @@
       "nearestToken": "--ds-icon-xs",
       "nearestValue": "16px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(123, 127, 138, 1.000)|",
@@ -200,9 +246,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(2, 6, 23, 1.000)|",
@@ -214,9 +265,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(140, 146, 154, 1.000)|",
@@ -228,9 +284,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|69.0px|--ds-density-comfortable-row",
@@ -242,9 +303,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(85, 88, 216, 1.000)|",
@@ -256,9 +322,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(177, 179, 255, 1.000)|",
@@ -270,9 +341,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|46.5px|--ds-density-default-row",
@@ -284,9 +360,14 @@
       "nearestToken": "--ds-density-default-row",
       "nearestValue": "44px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(34, 197, 94, 1.000)|",
@@ -298,9 +379,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|row-gap|2px|--ds-space-0",
@@ -312,9 +398,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|column-gap|2px|--ds-space-0",
@@ -326,9 +417,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-top|2px|--ds-space-0",
@@ -340,9 +436,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-bottom|2px|--ds-space-0",
@@ -354,9 +455,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(1, 141, 207, 1.000)|",
@@ -368,9 +474,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(209, 213, 229, 1.000)|",
@@ -382,9 +493,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(198, 81, 63, 1.000)|",
@@ -396,9 +512,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|selection-control-size|36.0px|--ds-icon-lg",
@@ -410,9 +531,14 @@
       "nearestToken": "--ds-icon-lg",
       "nearestValue": "32px",
       "recommendation": "改为规范选择控件尺寸",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范选择控件尺寸",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范选择控件尺寸"
     },
     {
       "key": "component|table-row-height|57.0px|--ds-density-comfortable-row",
@@ -424,9 +550,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(227, 232, 240, 0.600)|",
@@ -438,9 +569,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(38, 52, 73, 0.600)|",
@@ -452,9 +588,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(225, 232, 240, 0.400)|",
@@ -466,9 +607,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|8px|--ds-icon-2xs",
@@ -480,9 +626,14 @@
       "nearestToken": "--ds-icon-2xs",
       "nearestValue": "12px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(37, 50, 72, 0.400)|",
@@ -494,9 +645,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "layout|sidebar-width|224.0px|--ds-layout-sidebar-width",
@@ -508,9 +664,14 @@
       "nearestToken": "--ds-layout-sidebar-width",
       "nearestValue": "240px",
       "recommendation": "确认侧栏展开/收起宽度",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|6px|--ds-icon-2xs",
@@ -522,9 +683,14 @@
       "nearestToken": "--ds-icon-2xs",
       "nearestValue": "12px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|836.0px|--ds-density-comfortable-row",
@@ -536,9 +702,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|836.0px|--ds-density-comfortable-row",
@@ -550,9 +721,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(225, 232, 240, 0.400)|",
@@ -564,9 +740,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(37, 50, 72, 0.400)|",
@@ -578,9 +759,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(15, 23, 42) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px |--ds-elevation-2",
@@ -592,9 +778,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(241, 245, 249) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0|--ds-elevation-2",
@@ -606,9 +797,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(225, 231, 239, 0.502)|",
@@ -620,9 +816,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(242, 245, 248, 0.302)|",
@@ -634,9 +835,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|24.0px|--ds-control-h5-input-font-size",
@@ -648,9 +854,14 @@
       "nearestToken": "--ds-control-h5-input-font-size",
       "nearestValue": "16px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|24.0px|--ds-control-h5-input-font-size",
@@ -662,9 +873,14 @@
       "nearestToken": "--ds-control-h5-input-font-size",
       "nearestValue": "16px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "spacing|margin-top|2px|--ds-space-0",
@@ -676,9 +892,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|91.0px|--ds-density-comfortable-row",
@@ -690,9 +911,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(30, 40, 60, 0.302)|",
@@ -704,9 +930,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(239, 243, 247, 0.251)|",
@@ -718,9 +949,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "typography|line-height|54px|--ds-leading-display",
@@ -732,9 +968,14 @@
       "nearestToken": "--ds-leading-display",
       "nearestValue": "56px",
       "recommendation": "确认行高是否属于有登记的组合例外",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(240, 245, 250, 0.200)|",
@@ -746,9 +987,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|72.0px|--ds-density-comfortable-row",
@@ -760,9 +1006,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|72.0px|--ds-density-comfortable-row",
@@ -774,9 +1025,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(30, 40, 60, 0.200)|",
@@ -788,9 +1044,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(240, 240, 255, 1.000)|",
@@ -802,9 +1063,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(37, 38, 74, 1.000)|",
@@ -816,9 +1082,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|68.5px|--ds-density-comfortable-row",
@@ -830,9 +1101,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(38, 52, 74, 0.502)|",
@@ -844,9 +1120,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(2, 6, 23, 1.000)|",
@@ -858,9 +1139,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|120px|--ds-space-24",
@@ -872,9 +1158,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|120px|--ds-space-24",
@@ -886,9 +1177,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-top|128px|--ds-space-24",
@@ -900,9 +1196,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-bottom|128px|--ds-space-24",
@@ -914,9 +1215,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(225, 232, 238, 0.302)|",
@@ -928,9 +1234,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|-8px|--ds-space-0",
@@ -942,9 +1253,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(36, 50, 73, 0.302)|",
@@ -956,9 +1272,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(242, 248, 248, 0.149)|",
@@ -970,9 +1291,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|368px|--ds-space-24",
@@ -984,9 +1310,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|368px|--ds-space-24",
@@ -998,9 +1329,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|14px|--ds-icon-2xs",
@@ -1012,9 +1348,14 @@
       "nearestToken": "--ds-icon-2xs",
       "nearestValue": "12px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "typography|line-height|14px|--ds-leading-caption",
@@ -1026,9 +1367,14 @@
       "nearestToken": "--ds-leading-caption",
       "nearestValue": "18px",
       "recommendation": "确认行高是否属于有登记的组合例外",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认行高是否属于有登记的组合例外。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|144px|--ds-space-24",
@@ -1040,9 +1386,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|144px|--ds-space-24",
@@ -1054,9 +1405,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|56.0px|--ds-density-comfortable-row",
@@ -1068,9 +1424,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|56.0px|--ds-density-comfortable-row",
@@ -1082,9 +1443,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(248, 250, 252, 0.600)|",
@@ -1096,9 +1462,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|66.0px|--ds-density-comfortable-row",
@@ -1110,9 +1481,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|66.0px|--ds-density-comfortable-row",
@@ -1124,9 +1500,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "spacing|margin-bottom|2px|--ds-space-0",
@@ -1138,9 +1519,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(12, 17, 32, 0.600)|",
@@ -1152,9 +1538,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(242, 245, 248, 0.600)|",
@@ -1166,9 +1557,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(30, 42, 58, 0.600)|",
@@ -1180,9 +1576,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(240, 245, 250, 0.400)|",
@@ -1194,9 +1595,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|12.0px|--ds-density-default-cell-y",
@@ -1208,9 +1614,14 @@
       "nearestToken": "--ds-density-default-cell-y",
       "nearestValue": "10px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|12.0px|--ds-density-default-cell-y",
@@ -1222,9 +1633,14 @@
       "nearestToken": "--ds-density-default-cell-y",
       "nearestValue": "10px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "spacing|margin-right|240px|--ds-space-24",
@@ -1236,9 +1652,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|240px|--ds-space-24",
@@ -1250,9 +1671,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|28.0px|--ds-control-sm",
@@ -1264,9 +1690,14 @@
       "nearestToken": "--ds-control-sm",
       "nearestValue": "32px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|28.0px|--ds-control-sm",
@@ -1278,9 +1709,14 @@
       "nearestToken": "--ds-control-sm",
       "nearestValue": "32px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "component|table-row-height|40.0px|--ds-density-compact-row",
@@ -1292,9 +1728,14 @@
       "nearestToken": "--ds-density-compact-row",
       "nearestValue": "36px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|-4px|--ds-space-0",
@@ -1306,9 +1747,14 @@
       "nearestToken": "--ds-space-0",
       "nearestValue": "0px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(27, 40, 60, 0.149)|",
@@ -1320,9 +1766,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(30, 40, 60, 0.400)|",
@@ -1334,9 +1785,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(248, 250, 252) 0px 0px 0px 4px, rgba(0, 0, 0, 0) 0px 0|--ds-elevation-2",
@@ -1348,9 +1804,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(254, 154, 0, 1.000)|",
@@ -1362,9 +1823,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(11, 17, 32) 0px 0px 0px 4px, rgba(0, 0, 0, 0) 0px 0px |--ds-elevation-2",
@@ -1376,9 +1842,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(32, 40, 60, 0.251)|",
@@ -1390,9 +1861,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-top|144px|--ds-space-24",
@@ -1404,9 +1880,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-bottom|112px|--ds-space-24",
@@ -1418,9 +1899,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(74, 88, 108, 1.000)|",
@@ -1432,9 +1918,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|142.469px|--ds-space-24",
@@ -1446,9 +1937,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 185, 129, 0.45)|--ds-elevation-2",
@@ -1460,9 +1956,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(236, 253, 245, 1.000)|",
@@ -1474,9 +1975,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|10px|--ds-icon-2xs",
@@ -1488,9 +1994,14 @@
       "nearestToken": "--ds-icon-2xs",
       "nearestValue": "12px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|112px|--ds-space-24",
@@ -1502,9 +2013,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|112px|--ds-space-24",
@@ -1516,9 +2032,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "layout|sidebar-width|235.0px|--ds-layout-sidebar-width",
@@ -1530,9 +2051,14 @@
       "nearestToken": "--ds-layout-sidebar-width",
       "nearestValue": "240px",
       "recommendation": "确认侧栏展开/收起宽度",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认侧栏展开/收起宽度。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|90.5px|--ds-density-comfortable-row",
@@ -1544,9 +2070,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(248, 249, 252, 0.702)|",
@@ -1558,9 +2089,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|237.328px|--ds-icon-lg",
@@ -1572,9 +2108,14 @@
       "nearestToken": "--ds-icon-lg",
       "nearestValue": "32px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(245, 246, 249, 1.000)|",
@@ -1586,9 +2127,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|400.0px|--ds-density-comfortable-row",
@@ -1600,9 +2146,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-right|148px|--ds-space-24",
@@ -1614,9 +2165,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|148px|--ds-space-24",
@@ -1628,9 +2184,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|color|rgba(201, 207, 221, 1.000)|",
@@ -1642,9 +2203,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(0, 37, 22, 1.000)|",
@@ -1656,9 +2222,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(22, 28, 43, 1.000)|",
@@ -1670,9 +2241,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|70.6px|--ds-density-comfortable-row",
@@ -1684,9 +2260,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(34, 197, 94, 1.000)|",
@@ -1698,9 +2279,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(11, 17, 31, 0.702)|",
@@ -1712,9 +2298,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|71.7px|--ds-density-comfortable-row",
@@ -1726,9 +2317,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(28, 78, 217, 0.600)|",
@@ -1740,9 +2336,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(255, 255, 255, 0.949)|",
@@ -1754,9 +2355,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(15, 23, 42, 0.18) 0|--ds-elevation-2",
@@ -1768,9 +2374,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(16, 185, 129, 1.000)|",
@@ -1782,9 +2393,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(230, 242, 238, 1.000)|",
@@ -1796,9 +2412,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(245, 245, 245, 0.102)|",
@@ -1810,9 +2431,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(20, 130, 60, 0.200)|",
@@ -1824,9 +2450,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(217, 218, 255, 1.000)|",
@@ -1838,9 +2469,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(227, 232, 239, 0.702)|",
@@ -1852,9 +2488,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|112.5px|--ds-density-comfortable-row",
@@ -1866,9 +2507,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(20, 129, 60, 0.302)|",
@@ -1880,9 +2526,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "icon|svg-width|237.344px|--ds-icon-lg",
@@ -1894,9 +2545,14 @@
       "nearestToken": "--ds-icon-lg",
       "nearestValue": "32px",
       "recommendation": "确认图标尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认图标尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|528px|--ds-space-24",
@@ -1908,9 +2564,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(255, 255, 255, 0.502)|",
@@ -1922,9 +2583,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|padding-right|36px|--ds-space-8",
@@ -1936,9 +2602,14 @@
       "nearestToken": "--ds-space-8",
       "nearestValue": "32px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(28, 78, 217, 0.702)|",
@@ -1950,9 +2621,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|378.344px|--ds-space-24",
@@ -1964,9 +2640,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "spacing|margin-left|956px|--ds-space-24",
@@ -1978,9 +2659,14 @@
       "nearestToken": "--ds-space-24",
       "nearestValue": "96px",
       "recommendation": "确认是密度档位、浏览器取整，还是需改为最近间距令牌",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是密度档位、浏览器取整，还是需改为最近间距令牌。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|table-row-height|56.5px|--ds-density-comfortable-row",
@@ -1992,9 +2678,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认表格行高密度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认表格行高密度档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 2px, rgba(0, 0, 0, 0.1) 0px 4|--ds-elevation-2",
@@ -2006,9 +2697,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "control|control-height|96.0px|--ds-density-comfortable-row",
@@ -2020,9 +2716,14 @@
       "nearestToken": "--ds-density-comfortable-row",
       "nearestValue": "52px",
       "recommendation": "确认控件尺寸档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认控件尺寸档位。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(209, 213, 229, 1.000)|",
@@ -2034,9 +2735,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(2, 142, 207, 0.600)|",
@@ -2048,9 +2754,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(1, 141, 207, 1.000)|",
@@ -2062,9 +2773,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(17, 24, 39, 0.949)|",
@@ -2076,9 +2792,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.7) 0px 2|--ds-elevation-2",
@@ -2090,9 +2811,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(21, 43, 50, 1.000)|",
@@ -2104,9 +2830,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(29, 39, 59, 0.102)|",
@@ -2118,9 +2849,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(35, 195, 95, 0.200)|",
@@ -2132,9 +2868,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(69, 70, 111, 1.000)|",
@@ -2146,9 +2887,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(38, 51, 73, 0.702)|",
@@ -2160,9 +2906,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|border-color|rgba(33, 195, 93, 0.302)|",
@@ -2174,9 +2925,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(18, 24, 40, 0.502)|",
@@ -2188,9 +2944,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(1, 141, 207, 0.702)|",
@@ -2202,9 +2963,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(69, 70, 95, 0.800)|",
@@ -2216,9 +2982,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.18) 0px |--ds-elevation-2",
@@ -2230,9 +3001,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(248, 251, 253, 0.451)|",
@@ -2244,9 +3020,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "component|button-height|38.4px|--ds-control-lg",
@@ -2258,9 +3039,14 @@
       "nearestToken": "--ds-control-lg",
       "nearestValue": "40px",
       "recommendation": "改为规范按钮高度档位",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：改为规范按钮高度档位",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：改为规范按钮高度档位"
     },
     {
       "key": "color|background-color|rgba(28, 28, 28, 0.035)|",
@@ -2272,9 +3058,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(184, 28, 28, 0.651)|",
@@ -2286,9 +3077,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(241, 245, 249, 0.702)|",
@@ -2300,9 +3096,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(21, 128, 61, 0.702)|",
@@ -2314,9 +3115,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(241, 245, 249, 0.502)|",
@@ -2328,9 +3134,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(249, 229, 226, 1.000)|",
@@ -2342,9 +3153,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "elevation|box-shadow|rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.6) 0px 1|--ds-elevation-2",
@@ -2356,9 +3172,14 @@
       "nearestToken": "--ds-elevation-2",
       "nearestValue": "卡片抬升",
       "recommendation": "确认是否为规范登记的浮层阴影",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为规范登记的浮层阴影。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(11, 18, 31, 0.451)|",
@@ -2370,9 +3191,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(11, 17, 32, 0.749)|",
@@ -2384,9 +3210,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(255, 255, 255, 0.035)|",
@@ -2398,9 +3229,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(254, 154, 0, 1.000)|",
@@ -2412,9 +3248,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(128, 29, 29, 0.651)|",
@@ -2426,9 +3267,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(30, 41, 58, 0.702)|",
@@ -2440,9 +3286,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(34, 197, 94, 0.702)|",
@@ -2454,9 +3305,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(30, 42, 60, 0.502)|",
@@ -2468,9 +3324,14 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     },
     {
       "key": "color|background-color|rgba(18, 20, 41, 1.000)|",
@@ -2482,9 +3343,21 @@
       "nearestToken": null,
       "nearestValue": null,
       "recommendation": "确认是否为品牌色、图表色或需登记的新语义色",
-      "status": "REGISTERED_EXCEPTION",
-      "action": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。",
-      "files": []
+      "status": "UDS8_ADOPTED",
+      "action": "按所有者裁决强制采纳 UDS8。有直接运行时落点的组已在源码迁移；computed-style 审计组以 UDS8 令牌/规范为期望值写入可验证决策记录，不做无来源的机械数值替换。",
+      "files": [],
+      "previousStatus": "REGISTERED_EXCEPTION",
+      "decision": "MIGRATE_UDS8",
+      "decisionSource": "项目所有者裁决：退役对比全部按 UDS8 执行（2026-11-25）",
+      "decisionAt": "2026-11-25T03:24:23+08:00",
+      "originalAction": "按文档建议执行：确认是否为品牌色、图表色或需登记的新语义色。最近令牌仅为数值近似，语义不适用；不机械替换。"
     }
-  ]
+  ],
+  "ownerDirective": {
+    "scope": "退役对比三项：CM-06 输入框边框历史保留值、font-sans/font-manrope 历史别名、173 组 computed-style 登记例外",
+    "targetHead": "fa5e1d5269f90490c17b500aa0c29bb19c022027",
+    "acceptanceCriteria": "design:8:check=0；lint:design:strict=0；typecheck=0；verify:contrast=0；退役执行守卫测试全通过",
+    "decidedAt": "2026-11-25T03:24:23+08:00",
+    "source": "用户裁决 2026-11-25"
+  }
 }
