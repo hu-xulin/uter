@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { api } from '@/lib/api'
 import { getLobeIcon } from '@/lib/lobe-icon'
@@ -57,10 +57,13 @@ function GatewayPluginIcon(props: PluginIconProps) {
     meta: { errorToast: false },
   })
   const [image, setImage] = useState<{ blob: Blob; src: string } | null>(null)
+  const blobRef = useRef<Blob | null>(null)
   useEffect(() => {
-    if (!query.data) return
-    const src = URL.createObjectURL(query.data)
-    setImage({ blob: query.data, src })
+    blobRef.current = query.data ?? null
+    const blob = blobRef.current
+    if (!blob) return
+    const src = URL.createObjectURL(blob)
+    setImage({ blob, src })
     return () => URL.revokeObjectURL(src)
   }, [query.data])
 
