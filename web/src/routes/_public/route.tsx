@@ -41,6 +41,7 @@ import { EmbedScrollContext } from '@/components/layout/components/public-header
 function PublicAreaLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const [embedScrolled, setEmbedScrolled] = useState<boolean | null>(null)
+  const [prevPathname, setPrevPathname] = useState(pathname)
 
   // 文档/关于页是 iframe 渲染：滚动发生在 iframe 内部，host 窗口不滚动，
   // `PublicHeader` 自身的 `useScrolled` 永远为 false。被框站点通过
@@ -59,9 +60,10 @@ function PublicAreaLayout() {
   }, [])
 
   // 离开被框页面时清掉 iframe 信号，使其它公开页回落到 host 自身滚动状态。
-  useEffect(() => {
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname)
     setEmbedScrolled(null)
-  }, [pathname])
+  }
 
   return (
     <EmbedScrollContext.Provider value={embedScrolled}>
