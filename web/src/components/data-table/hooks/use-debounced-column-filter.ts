@@ -42,8 +42,13 @@ export function useDebouncedColumnFilter({
   const [pendingValue, setPendingValue] = React.useState(value)
   const isComposingRef = React.useRef(false)
   const debouncedValue = useDebounce(pendingValue, delay)
-  const onColumnFiltersChangeRef = React.useRef(onColumnFiltersChange)
-  onColumnFiltersChangeRef.current = onColumnFiltersChange
+  // Stable effect-only callback that always sees the latest parent handler,
+  // without mutating a ref during render.
+  const notifyFiltersChange = React.useEffectEvent(
+    (updater: Parameters<OnChangeFn<ColumnFiltersState>>[0]) => {
+      onColumnFiltersChange(updater)
+    }
+  )
 
   React.useEffect(() => {
     // Keep the input aligned when URL state changes outside the local field.
@@ -58,7 +63,7 @@ export function useDebouncedColumnFilter({
   React.useEffect(() => {
     if (debouncedValue === value) return
 
-    onColumnFiltersChangeRef.current((previous) => {
+    notifyFiltersChange((previous) => {
       const filters = previous.filter((filter) => filter.id !== columnId)
       return debouncedValue
         ? [...filters, { id: columnId, value: debouncedValue }]
