@@ -179,11 +179,9 @@ export function RatioSettingsCard({
   const savePricing = useSaveModelPricing()
   const [pricingBaseline, setPricingBaseline] =
     useState<ModelPricingConfig | null>(null)
-  useEffect(() => {
-    if (!pricingBaseline && pricingQuery.data) {
-      setPricingBaseline(pricingQuery.data)
-    }
-  }, [pricingBaseline, pricingQuery.data])
+  if (!pricingBaseline && pricingQuery.data) {
+    setPricingBaseline(pricingQuery.data)
+  }
   const modelDefaults = useMemo(
     () =>
       pricingBaseline
@@ -221,7 +219,9 @@ export function RatioSettingsCard({
     onError: (error) => handleServerError(error),
   })
 
-  const modelNormalizedDefaults = useRef({
+  // Build the normalized defaults once per render pass and seed both the ref
+  // and the state from the same value, rather than reading a ref during render.
+  const initialModelNormalizedDefaults = {
     ModelPrice: normalizeJsonString(modelDefaults.ModelPrice),
     ModelRatio: normalizeJsonString(modelDefaults.ModelRatio),
     CacheRatio: normalizeJsonString(modelDefaults.CacheRatio),
@@ -236,9 +236,10 @@ export function RatioSettingsCard({
     BillingMode: normalizeJsonString(modelDefaults.BillingMode),
     BillingExpr: normalizeJsonString(modelDefaults.BillingExpr),
     PluginBillingExpr: normalizeJsonString(modelDefaults.PluginBillingExpr),
-  })
+  }
+  const modelNormalizedDefaults = useRef(initialModelNormalizedDefaults)
   const [savedModelValues, setSavedModelValues] = useState(
-    modelNormalizedDefaults.current
+    initialModelNormalizedDefaults
   )
 
   const groupNormalizedDefaults = useRef({
