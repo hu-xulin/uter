@@ -45,11 +45,17 @@ export function DeleteAccountDialog(props: DeleteAccountDialogProps) {
   const [confirmation, setConfirmation] = useState('')
   const security = useAccountSecurity()
   const cancel = security.cancel
+  const resetKey = `${props.open}:${props.username}:${security.sessionKey}`
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
+    setConfirmation('')
+  }
 
   useEffect(() => {
-    setConfirmation('')
     if (!props.open) cancel()
-  }, [props.open, props.username, security.sessionKey, cancel])
+  }, [props.open, security.sessionKey, cancel])
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
