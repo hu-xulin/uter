@@ -25,7 +25,7 @@ import {
   RefreshCcw,
   Trash2,
 } from 'lucide-react'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -128,12 +128,15 @@ export function PrefillGroupManagementDialog({
     [sortedGroups]
   )
 
-  useEffect(() => {
+  const [lastOpen, setLastOpen] = useState(open)
+  // 关闭抽屉时复位删除确认状态，渲染期按 open 变化调整即可。
+  if (open !== lastOpen) {
+    setLastOpen(open)
     if (!open) {
       setDeleteState({ open: false, group: null })
       setIsDeleting(false)
     }
-  }, [open])
+  }
 
   const handleDeleteClick = (group: PrefillGroup) => {
     setDeleteState({ open: true, group })
