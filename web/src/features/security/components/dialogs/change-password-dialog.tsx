@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -77,6 +77,7 @@ export function ChangePasswordDialog(props: ChangePasswordDialogProps) {
   })
   const reset = form.reset
   const cancel = security.cancel
+  const newPassword = useWatch({ control: form.control, name: 'newPassword' })
 
   useEffect(() => {
     reset(emptyPasswordForm)
@@ -222,7 +223,7 @@ export function ChangePasswordDialog(props: ChangePasswordDialogProps) {
                     />
                   </FormControl>
                   <PasswordStrength
-                    value={form.watch('newPassword') ?? ''}
+                    value={newPassword ?? ''}
                     className='mt-2'
                   />
                   <FormMessage />
