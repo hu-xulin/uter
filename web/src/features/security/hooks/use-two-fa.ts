@@ -52,9 +52,25 @@ export function useTwoFA(enabled = true) {
     }
   }, [enabled])
 
+  // 首次加载独立于 refetch：effect 只负责与外部系统同步，并在 enabled
+  // 变化或卸载时取消过期结果，避免在 effect 里同步写入 loading/error。
   useEffect(() => {
-    fetchStatus()
-  }, [fetchStatus])
+    if (!enabled) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const nextStatus = await get2FAStatus()
+        if (!cancelled) setStatus(nextStatus)
+      } catch (error) {
+        if (!cancelled) setError(AuthOperationError.from(error).message)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [enabled])
 
   return {
     status,
