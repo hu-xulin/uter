@@ -61,6 +61,12 @@ import { useChannels } from '../channels-provider'
 
 const CHANNEL_TYPE_OLLAMA = 4
 
+function mergeSelectedModels(prev: string[], models: OllamaModel[]) {
+  if (!prev.length) return models.map((m) => m.id)
+  const stillAvailable = prev.filter((id) => models.some((m) => m.id === id))
+  return stillAvailable.length ? stillAvailable : models.map((m) => m.id)
+}
+
 export function OllamaModelsDialog({
   open,
   onOpenChange,
@@ -100,7 +106,76 @@ export function OllamaModelsDialog({
     [currentRow?.models]
   )
 
-  useEffect(() => {
+  // 纯数据获取：不触碰组件状态，effect 与事件处理器共用同一份逻辑。
+  const loadOllamaModels = useCallback(async () => {
+    if (!channelId) return { models: [] as OllamaModel[], error: null }
+    let normalized: OllamaModel[] = []
+    let lastErr = ''
+
+    // 1) Prefer live fetch for Ollama if base_url is set (more accurate / supports unsaved changes)
+    const baseUrl = resolveOllamaBaseUrl(currentRow ?? null)
+    if (isOllamaChannel && baseUrl) {
+      try {
+        const payloadLive = await fetchModelsFromEndpoint({
+          base_url: baseUrl,
+          type: CHANNEL_TYPE_OLLAMA,
+          key: typeof currentRow?.key === 'string' ? currentRow.key : '',
+        })
+        if (payloadLive?.success) {
+          normalized = normalizeOllamaModels(payloadLive.data)
+        } else {
+          lastErr = getServerMessage(payloadLive) || ''
+        }
+      } catch (err: unknown) {
+        lastErr = err instanceof Error ? err.message : ''
+      }
+    }
+
+    // 2) Fallback to server-side fetch by channelId
+    if (!normalized.length) {
+      const payload = await fetchUpstreamModels(Number(channelId))
+      if (payload?.success) {
+        normalized = normalizeOllamaModels(payload.data)
+        lastErr = ''
+      } else {
+        lastErr = getServerMessage(payload) || ''
+      }
+    }
+
+    if (!normalized.length && lastErr) {
+      return { models: [] as OllamaModel[], error: new Error(lastErr) }
+    }
+    return { models: normalized, error: null }
+  }, [channelId, currentRow, isOllamaChannel])
+
+  // 事件处理器（刷新按钮等）使用：负责状态更新。
+  const fetchOllamaModels = useCallback(async () => {
+    setIsFetching(true)
+    try {
+      const { models: normalized, error } = await loadOllamaModels()
+      if (error) handleServerError(error, t('Failed to fetch models'))
+      setModels(normalized)
+      setSelected((prev) => mergeSelectedModels(prev, normalized))
+    } catch (err: unknown) {
+      handleServerError(err, t('Failed to fetch models'))
+      setModels([])
+    } finally {
+      setIsFetching(false)
+    }
+  }, [loadOllamaModels, t])
+
+  const shouldFetchModels = open && isOllamaChannel && !!channelId
+  const [prevShouldFetch, setPrevShouldFetch] = useState(shouldFetchModels)
+
+  if (shouldFetchModels !== prevShouldFetch) {
+    setPrevShouldFetch(shouldFetchModels)
+    if (shouldFetchModels) setIsFetching(true)
+  }
+
+  const [prevOpen, setPrevOpen] = useState(open)
+
+  if (open !== prevOpen) {
+    setPrevOpen(open)
     if (!open) {
       setModels([])
       setSelected([])
@@ -108,75 +183,35 @@ export function OllamaModelsDialog({
       setPullName('')
       setIsPulling(false)
       setPullProgress(null)
+    }
+  }
+
+  useEffect(() => {
+    if (!open) {
       pullAbortRef.current?.abort()
       pullAbortRef.current = null
       return
     }
-
-    if (open && isOllamaChannel && channelId) {
-      void fetchOllamaModels()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, isOllamaChannel, channelId])
-
-  const fetchOllamaModels = useCallback(async () => {
-    if (!channelId) return
-    setIsFetching(true)
-    try {
-      let normalized: OllamaModel[] = []
-      let lastErr = ''
-
-      // 1) Prefer live fetch for Ollama if base_url is set (more accurate / supports unsaved changes)
-      const baseUrl = resolveOllamaBaseUrl(currentRow ?? null)
-      if (isOllamaChannel && baseUrl) {
-        try {
-          const payloadLive = await fetchModelsFromEndpoint({
-            base_url: baseUrl,
-            type: CHANNEL_TYPE_OLLAMA,
-            key: typeof currentRow?.key === 'string' ? currentRow.key : '',
-          })
-          if (payloadLive?.success) {
-            normalized = normalizeOllamaModels(payloadLive.data)
-          } else {
-            lastErr = getServerMessage(payloadLive) || ''
-          }
-        } catch (err: unknown) {
-          lastErr = err instanceof Error ? err.message : ''
-        }
-      }
-
-      // 2) Fallback to server-side fetch by channelId
-      if (!normalized.length) {
-        const payload = await fetchUpstreamModels(Number(channelId))
-        if (payload?.success) {
-          normalized = normalizeOllamaModels(payload.data)
-          lastErr = ''
-        } else {
-          lastErr = getServerMessage(payload) || ''
-        }
-      }
-
-      if (!normalized.length && lastErr) {
-        handleServerError(new Error(lastErr), t('Failed to fetch models'))
-      }
-
-      setModels(normalized)
-      setSelected((prev) => {
-        if (!prev.length) return normalized.map((m) => m.id)
-        const stillAvailable = prev.filter((id) =>
-          normalized.some((m) => m.id === id)
-        )
-        return stillAvailable.length
-          ? stillAvailable
-          : normalized.map((m) => m.id)
+    if (!isOllamaChannel || !channelId) return
+    let cancelled = false
+    void loadOllamaModels()
+      .then(({ models: normalized, error }) => {
+        if (cancelled) return
+        if (error) handleServerError(error, t('Failed to fetch models'))
+        setModels(normalized)
+        setSelected((prev) => mergeSelectedModels(prev, normalized))
+        setIsFetching(false)
       })
-    } catch (err: unknown) {
-      handleServerError(err, t('Failed to fetch models'))
-      setModels([])
-    } finally {
-      setIsFetching(false)
+      .catch((err: unknown) => {
+        if (cancelled) return
+        handleServerError(err, t('Failed to fetch models'))
+        setModels([])
+        setIsFetching(false)
+      })
+    return () => {
+      cancelled = true
     }
-  }, [channelId, currentRow, isOllamaChannel, t])
+  }, [open, isOllamaChannel, channelId, loadOllamaModels, t])
 
   const toggleSelected = (modelId: string, checked: boolean) => {
     setSelected((prev) => {
