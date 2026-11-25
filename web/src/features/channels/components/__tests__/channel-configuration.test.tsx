@@ -161,7 +161,8 @@ beforeEach(() => {
   })
   vi.spyOn(api, 'get').mockImplementation(async (url, config) => {
     if (url === '/api/channel/uterapi/price-preview') {
-      const group = (config?.params as { group?: string } | undefined)?.group ?? ''
+      const group =
+        (config?.params as { group?: string } | undefined)?.group ?? ''
       return {
         data: {
           success: true,
@@ -1917,12 +1918,14 @@ test('Uter.api fetch-prices step shows the selected group official and channel p
   // Pick the group in the connection step; the preview then shows both columns.
   await user.click(screen.getByRole('tab', { name: /Connect channel/ }))
   await user.click(screen.getByRole('combobox', { name: 'Group' }))
-  await user.click(await screen.findByRole('option', { name: 'Claude Standard' }))
+  await user.click(
+    await screen.findByRole('option', { name: 'Claude Standard' })
+  )
   await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
   expect(await screen.findByText('claude-preview')).toBeVisible()
   expect(screen.getByText('$10.0000 / $50.0000')).toBeVisible()
   expect(screen.getByText('$25.0000 / $125.0000')).toBeVisible()
-  expect(screen.getByText(/Group: Claude Standard/)).toBeVisible()
+  expect(screen.getByText(/Group\s*:\s*Claude Standard/)).toBeVisible()
 })
 
 test('Uter.api connection picks one group and one key box', async () => {
@@ -1966,7 +1969,9 @@ test('Uter.api mirrors its pasted key into the form so fetching models never rep
   // be mirrored into it; otherwise fetching models reports a missing key and
   // marks the connection step as needing attention.
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
-  await user.click(screen.getByRole('button', { name: /Sync model information/ }))
+  await user.click(
+    screen.getByRole('button', { name: /Sync model information/ })
+  )
 
   await waitFor(() => {
     expect(
