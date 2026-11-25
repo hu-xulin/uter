@@ -24,7 +24,6 @@ import {
   createContext,
   type ReactNode,
   useContext,
-  useEffect,
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -163,15 +162,10 @@ export const WebPreviewUrl = ({
 }: WebPreviewUrlProps) => {
   const { t } = useTranslation()
   const { url, setUrl } = useWebPreview()
-  const [inputValue, setInputValue] = useState(url)
-
-  // Sync input value with context URL when it changes externally
-  useEffect(() => {
-    setInputValue(url)
-  }, [url])
+  const [draftValue, setDraftValue] = useState<string | null>(null)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value)
+    setDraftValue(event.target.value)
     onChange?.(event)
   }
 
@@ -179,6 +173,7 @@ export const WebPreviewUrl = ({
     if (event.key === 'Enter') {
       const target = event.target as HTMLInputElement
       setUrl(target.value)
+      setDraftValue(null)
     }
     onKeyDown?.(event)
   }
@@ -189,7 +184,7 @@ export const WebPreviewUrl = ({
       onChange={onChange ?? handleChange}
       onKeyDown={handleKeyDown}
       placeholder={t('Enter URL...')}
-      value={value ?? inputValue}
+      value={value ?? draftValue ?? url}
       {...props}
     />
   )
