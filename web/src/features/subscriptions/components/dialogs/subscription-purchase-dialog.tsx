@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Crown, CalendarClock, Package } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -66,15 +66,22 @@ export function SubscriptionPurchaseDialog(props: Props) {
   const { t } = useTranslation()
   const { currency } = useSystemConfig()
   const [paying, setPaying] = useState(false)
-  const [selectedEpayMethod, setSelectedEpayMethod] = useState('')
+  const defaultEpayMethod =
+    props.epayMethods && props.epayMethods.length > 0
+      ? props.epayMethods[0].type
+      : ''
+  const [selectedEpayMethod, setSelectedEpayMethod] = useState(
+    props.open ? defaultEpayMethod : ''
+  )
+  const [prevOpen, setPrevOpen] = useState(props.open)
+  const [prevDefaultEpayMethod, setPrevDefaultEpayMethod] =
+    useState(defaultEpayMethod)
 
-  useEffect(() => {
-    if (props.open && props.epayMethods && props.epayMethods.length > 0) {
-      setSelectedEpayMethod(props.epayMethods[0].type)
-    } else if (!props.open) {
-      setSelectedEpayMethod('')
-    }
-  }, [props.open, props.epayMethods])
+  if (props.open !== prevOpen || defaultEpayMethod !== prevDefaultEpayMethod) {
+    setPrevOpen(props.open)
+    setPrevDefaultEpayMethod(defaultEpayMethod)
+    setSelectedEpayMethod(props.open ? defaultEpayMethod : '')
+  }
 
   const plan = props.plan?.plan
   if (!plan) return null
