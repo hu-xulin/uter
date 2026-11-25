@@ -121,6 +121,33 @@ func TestChannelModelPricingViewStillDerivesRatioWithoutOfficialTier(t *testing.
 	require.InDelta(t, 25.0, view.UpstreamQuote.OutputPerMillionUSD.Float64(), 1e-9)
 }
 
+// needs_review 行若后端回落到官方标价，必须用 OFFICIAL_REFERENCE 明确标记
+// price_basis，前端才能据此拒绝把它当渠道价展示。数字可以相同，语义必须分离。
+// 这条测试锁定"basis 是契约"：任何把官方价改标成 CHANNEL_* 的回归都会失败。
+func TestChannelModelPricingViewMarksOfficialFallbackBasis(t *testing.T) {
+	input, output := 10.0, 50.0
+	normalized, err := common.Marshal(model.ChannelOfficialPricing{
+		Currency: "USD", Source: "uterroute-expression",
+		Tiers: []model.ChannelPricingTier{{
+			Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(&input),
+			OutputPerMillionUSD: model.MoneyFromFloatPtr(&output),
+		}},
+		NeedsReview:   true,
+		ReviewReasons: []string{"NO_UPSTREAM_DISCOUNT"},
+	})
+	require.NoError(t, err)
+
+	view := channelModelPricingToView(model.ChannelModelPricing{
+		ChannelId: 1245, ModelName: "claude-fable-5", Provider: "uterroute",
+		NormalizedPricing: string(normalized), PricingStatus: "needs_review",
+	})
+	require.NotNil(t, view.UpstreamQuote)
+	require.Equal(t, "OFFICIAL_REFERENCE", view.UpstreamQuote.PriceBasis,
+		"官方价回落必须标注 OFFICIAL_REFERENCE，供展示层拒绝渲染为渠道价")
+	require.Equal(t, 10.0, view.UpstreamQuote.InputPerMillionUSD.Float64())
+	require.Equal(t, 50.0, view.UpstreamQuote.OutputPerMillionUSD.Float64())
+}
+
 func TestChannelModelPricingViewExposesDiscountedChannelQuote(t *testing.T) {
 	input, output, discount := 6.0, 30.0, 0.6
 	normalized, err := common.Marshal(model.ChannelOfficialPricing{
