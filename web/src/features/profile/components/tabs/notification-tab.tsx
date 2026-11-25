@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Bell, Loader2, Mail, Server, Webhook } from 'lucide-react'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -96,10 +96,17 @@ export function NotificationTab({
   const role = profile?.role ?? 0
   const isAdmin = role >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
-  const [settings, setSettings] = useState<NotificationSettingsDraft>(() =>
-    normalizeUserSettings()
+  const initialSettings = profile?.setting
+    ? normalizeUserSettings(profile.setting)
+    : normalizeUserSettings()
+  const [settings, setSettings] =
+    useState<NotificationSettingsDraft>(initialSettings)
+  const [thresholdInput, setThresholdInput] = useState(
+    initialSettings.quota_warning_threshold
+      ? String(quotaUnitsToDollars(initialSettings.quota_warning_threshold))
+      : ''
   )
-  const [thresholdInput, setThresholdInput] = useState('')
+  const [prevProfile, setPrevProfile] = useState(profile)
 
   // Update form field helper
   const updateField = useCallback(
@@ -112,7 +119,8 @@ export function NotificationTab({
     []
   )
 
-  useEffect(() => {
+  if (prevProfile !== profile) {
+    setPrevProfile(profile)
     if (profile?.setting) {
       const next = normalizeUserSettings(profile.setting)
       setSettings(next)
@@ -123,7 +131,7 @@ export function NotificationTab({
           : ''
       )
     }
-  }, [profile])
+  }
 
   const handleSave = async () => {
     try {
