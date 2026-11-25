@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -181,6 +181,9 @@ export function SidebarModulesSection({
   const form = useForm<SidebarFormValues>({
     defaultValues: formDefaults,
   })
+  // Watch once at the component level; the per-section enabled state is
+  // derived from this snapshot while rendering the module list.
+  const watchedSections = useWatch({ control: form.control })
 
   useEffect(() => {
     form.reset(formDefaults)
@@ -279,8 +282,7 @@ export function SidebarModulesSection({
                                 checked={Boolean(field.value)}
                                 onCheckedChange={field.onChange}
                                 disabled={
-                                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                  !form.watch(`${sectionKey}.enabled` as any)
+                                  !watchedSections?.[sectionKey]?.enabled
                                 }
                               />
                             </FormControl>
