@@ -27,10 +27,16 @@ import {
 
 // buildSettingsJSON is private; exercise it through the public create payload.
 type ConsoleSettingsPayload = {
-  upstream_console?: { login_url?: string; username?: string; password?: string }
+  upstream_console?: {
+    login_url?: string
+    username?: string
+    password?: string
+  }
 }
 
-function settingsOf(values: typeof CHANNEL_FORM_DEFAULT_VALUES): ConsoleSettingsPayload {
+function settingsOf(
+  values: typeof CHANNEL_FORM_DEFAULT_VALUES
+): ConsoleSettingsPayload {
   const payload = transformFormDataToCreatePayload(values)
   return JSON.parse(payload.channel.settings || '{}') as ConsoleSettingsPayload
 }
