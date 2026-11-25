@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { getRouteApi } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -57,6 +57,16 @@ export function ExportLogsDialog() {
   const [range, setRange] = useState<{ start?: Date; end?: Date }>({})
   const [exportedCount, setExportedCount] = useState<number | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const [nowMs, setNowMs] = useState(() => Date.now())
+
+  // Refresh the reference time when the dialog opens so range validation uses
+  // a current timestamp rather than calling an impure function during render.
+  useEffect(() => {
+    if (!open) return
+    void (async () => {
+      setNowMs(Date.now())
+    })()
+  }, [open])
 
   if (!canManageScope && status?.log_export_enabled === false) return null
 
@@ -67,7 +77,7 @@ export function ExportLogsDialog() {
   if (startMs !== undefined && endMs !== undefined) {
     if (endMs < startMs) {
       rangeError = t('End time must be after start time')
-    } else if (Math.min(endMs, Date.now()) - startMs > maxDays * DAY_MS) {
+    } else if (Math.min(endMs, nowMs) - startMs > maxDays * DAY_MS) {
       rangeError = t('The time range cannot exceed {{days}} days', {
         days: maxDays,
       })
