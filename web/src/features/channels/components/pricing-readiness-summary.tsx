@@ -18,11 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useTranslation } from 'react-i18next'
 
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 import type { SelectedPricingReadiness } from '../lib/pricing-readiness'
 
