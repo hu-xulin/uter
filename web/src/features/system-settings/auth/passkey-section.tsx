@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -227,16 +227,24 @@ export function PasskeySection(props: PasskeySectionProps) {
     origins.trim() !== '' &&
     !origins.split(/[,\n]/).some((origin) => origin.trim() === currentOrigin)
 
-  const baselineRef = useRef<FlatPasskeyDefaults>(props.defaultValues)
-  const baselineSerializedRef = useRef<string>(
+  const [baseline, setBaseline] = useState(props.defaultValues)
+  const [baselineSerialized, setBaselineSerialized] = useState(() =>
     JSON.stringify(props.defaultValues)
   )
+  const [prevDefaults, setPrevDefaults] = useState(props.defaultValues)
+
+  // Adopt incoming defaults during render so the submit handler can read the
+  // baseline as ordinary state instead of a mutable ref.
+  if (prevDefaults !== props.defaultValues) {
+    setPrevDefaults(props.defaultValues)
+    const serialized = JSON.stringify(props.defaultValues)
+    if (serialized !== baselineSerialized) {
+      setBaseline(props.defaultValues)
+      setBaselineSerialized(serialized)
+    }
+  }
 
   useEffect(() => {
-    const serialized = JSON.stringify(props.defaultValues)
-    if (serialized === baselineSerializedRef.current) return
-    baselineRef.current = props.defaultValues
-    baselineSerializedRef.current = serialized
     form.reset(buildFormDefaults(props.defaultValues))
   }, [props.defaultValues, form])
 
@@ -246,9 +254,7 @@ export function PasskeySection(props: PasskeySectionProps) {
   ) => {
     const changedKeys = (
       Object.keys(normalized) as Array<keyof FlatPasskeyDefaults>
-    ).filter(
-      (key) => (normalized[key] ?? '') !== (baselineRef.current[key] ?? '')
-    )
+    ).filter((key) => (normalized[key] ?? '') !== (baseline[key] ?? ''))
     if (changedKeys.length === 0) {
       toast.info(t('No changes to save'))
       return
@@ -274,12 +280,12 @@ export function PasskeySection(props: PasskeySectionProps) {
         saved['passkey.rp_id'] = result.data.rp_id
         saved['passkey.legacy_rp_ids'] = result.data.legacy_rp_ids
         saved['passkey.origins'] = result.data.origins
-        baselineRef.current = {
-          ...baselineRef.current,
+        setBaseline({
+          ...baseline,
           'passkey.rp_id': saved['passkey.rp_id'],
           'passkey.legacy_rp_ids': saved['passkey.legacy_rp_ids'],
           'passkey.origins': saved['passkey.origins'],
-        }
+        })
       }
       for (const key of changedKeys) {
         if (passkeyDomainKeys.some((domainKey) => domainKey === key)) continue
@@ -289,8 +295,8 @@ export function PasskeySection(props: PasskeySectionProps) {
       // The mutation reports the error once. Keep the draft available for retry.
       return
     }
-    baselineRef.current = saved
-    baselineSerializedRef.current = JSON.stringify(saved)
+    setBaseline(saved)
+    setBaselineSerialized(JSON.stringify(saved))
     form.reset(buildFormDefaults(saved))
     setPendingDomainChange(null)
   }
@@ -298,7 +304,7 @@ export function PasskeySection(props: PasskeySectionProps) {
   const onSubmit = async (values: PasskeyFormValues) => {
     const normalized = normalizeFormValues(values)
     const changesDomains = passkeyDomainKeys.some(
-      (key) => (normalized[key] ?? '') !== (baselineRef.current[key] ?? '')
+      (key) => (normalized[key] ?? '') !== (baseline[key] ?? '')
     )
     if (!changesDomains) {
       await saveSettings(normalized)
@@ -313,7 +319,7 @@ export function PasskeySection(props: PasskeySectionProps) {
       })
       const preview = result.data
       const clearsPrimary =
-        baselineRef.current['passkey.rp_id'].trim() !== '' &&
+        baseline['passkey.rp_id'].trim() !== '' &&
         normalized['passkey.rp_id'].trim() === ''
       if (
         preview.previous_rp_id !== preview.effective_rp_id ||
