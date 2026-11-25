@@ -78,7 +78,9 @@ export function Wallet(props: WalletProps) {
   >(null)
   const [paymentLoading, setPaymentLoading] = useState<string | null>(null)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
-  const [billingDialogOpen, setBillingDialogOpen] = useState(false)
+  const [billingDialogOpen, setBillingDialogOpen] = useState(
+    Boolean(props.initialShowHistory)
+  )
   const [creemDialogOpen, setCreemDialogOpen] = useState(false)
   const [selectedCreemProduct, setSelectedCreemProduct] =
     useState<CreemProduct | null>(null)
@@ -134,8 +136,12 @@ export function Wallet(props: WalletProps) {
     }
   }, [t])
 
+  // 首次加载在 effect 中以微任务启动，复用 fetchUser 的处理逻辑，
+  // 避免在 effect 里直接调用带同步 setState 的回调。
   useEffect(() => {
-    fetchUser()
+    void (async () => {
+      await fetchUser()
+    })()
   }, [fetchUser])
 
   // Payment can complete after the Alipay return poll has given up (webhook
@@ -199,9 +205,10 @@ export function Wallet(props: WalletProps) {
     }
   }, [fetchUser, t])
 
+  const initialHistoryHandledRef = useRef(false)
   useEffect(() => {
-    if (props.initialShowHistory) {
-      setBillingDialogOpen(true)
+    if (props.initialShowHistory && !initialHistoryHandledRef.current) {
+      initialHistoryHandledRef.current = true
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [props.initialShowHistory])
@@ -225,6 +232,11 @@ export function Wallet(props: WalletProps) {
     }
   }, [topupInfo, presetAmounts, calculatePaymentAmount])
 
+  // Get current payment type (selected or default)
+  const getCurrentPaymentType = useCallback(() => {
+    return selectedPaymentMethod?.type || getDefaultPaymentType(topupInfo)
+  }, [selectedPaymentMethod, topupInfo])
+
   // 汇率（status.price）被后台修改并即时同步到钱包后，重新计价，使「应付金额」也
   // 立即跟随，无需用户重新点选面额。面额 / 支付方式变更走各自的处理函数，不在此触发。
   useEffect(() => {
@@ -235,11 +247,6 @@ export function Wallet(props: WalletProps) {
     // 变化已由各自的处理函数覆盖，这里刻意不列入依赖以避免重复计价。
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status?.price])
-
-  // Get current payment type (selected or default)
-  const getCurrentPaymentType = useCallback(() => {
-    return selectedPaymentMethod?.type || getDefaultPaymentType(topupInfo)
-  }, [selectedPaymentMethod, topupInfo])
 
   // Handle preset selection
   const handleSelectPreset = (preset: PresetAmount) => {
