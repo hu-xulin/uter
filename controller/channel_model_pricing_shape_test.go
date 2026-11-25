@@ -74,6 +74,14 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 				Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(shapePrice(0.08)),
 			}}},
 			shape:     "per_second",
+			supported: true,
+		},
+		{
+			name: "per second without unit amount",
+			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{{
+				Unit: "per_second",
+			}}},
+			shape:     "per_second",
 			supported: false,
 		},
 		{
