@@ -24,11 +24,7 @@ import {
   createMemoryHistory,
   RouterProvider,
 } from '@tanstack/react-router'
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+import { createTable, flexRender, getCoreRowModel } from '@tanstack/react-table'
 import {
   render,
   screen,
@@ -96,9 +92,12 @@ function Page() {
 
 function CatalogPrice(props: { model: PricingModel }) {
   const columns = usePricingColumns({ tokenUnit: 'M' })
-  const table = useReactTable({
+  const table = createTable({
     data: [props.model],
     columns,
+    state: {},
+    onStateChange: () => {},
+    renderFallbackValue: null,
     getCoreRowModel: getCoreRowModel(),
   })
   const cell = table
