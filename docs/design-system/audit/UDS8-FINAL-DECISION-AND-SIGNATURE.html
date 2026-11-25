@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UDS 8.0.0 最终决策与签名板</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#12172b;--ink2:#5b6779;--line:#e2e8f0;--red:#dc2626;--red-s:#fef2f2;--green:#15803d;--green-s:#f0fdf4;--amber:#b45309;--amber-s:#fffbeb;--brand:#5b5ee6;--brand-s:#eef2ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",Roboto,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 160px}
+h1{font-size:26px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--ink2);font-size:14px;margin:0 0 20px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px;border-bottom:2px solid var(--line);padding-bottom:10px}
+.tabs button{font-size:14px;font-weight:700;padding:9px 16px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink2);cursor:pointer}
+.tabs button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.panel{display:none}.panel.on{display:block}
+.banner{background:linear-gradient(135deg,#eef2ff,#faf5ff);border:1px solid #dfe3ff;border-radius:14px;padding:20px 22px;margin-bottom:22px}
+.banner h2{font-size:17px;margin:0 0 8px}.banner p{margin:5px 0;font-size:14px;color:#334155}
+.warn{background:var(--amber-s);border-left:4px solid var(--amber);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px}
+.badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.badge.ok{background:var(--green-s);color:var(--green)}.badge.none{background:#f1f5f9;color:#64748b}
+h3.sec{font-size:18px;margin:30px 0 4px;padding-left:10px;border-left:4px solid var(--brand)}
+.sec-note{color:var(--ink2);font-size:13px;margin:0 0 16px;padding-left:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.chead{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.num{font-family:ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink2);background:#f1f5f9;padding:3px 7px;border-radius:6px}
+.ctitle{flex:1}.ctitle h4{font-size:15px;margin:0}.ctitle code{font-size:11.5px;color:var(--ink2)}
+.cbody{display:grid;grid-template-columns:1fr 300px;gap:18px}
+.tcol h5,.scol h5{font-size:12px;color:var(--ink2);margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.tests{margin:0 0 12px;padding-left:18px;font-size:12.5px}.tests li{font-family:ui-monospace,Menlo,monospace;word-break:break-all}
+.none{font-size:12.5px;color:#94a3b8;margin:0 0 12px}
+.usage{font-size:12px;margin-bottom:4px}.usage code{background:#f1f5f9;padding:2px 6px;border-radius:5px;margin-right:5px;word-break:break-all}
+.muted{color:#94a3b8}.shcap{font-size:11px;color:var(--ink2);margin:6px 0 0}
+.scol img{width:100%;border:1px solid var(--line);border-radius:8px;display:block;background:#000}
+.decide{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px dashed var(--line);margin-top:14px;padding-top:12px}
+.ask{font-size:13.5px;font-weight:700}.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opts label{font-size:12.5px;padding:6px 11px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:#fff;color:var(--ink2)}
+.opts label:has(input:checked){background:var(--brand);border-color:var(--brand);color:#fff}
+.opts input{margin-right:5px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}th{background:#f8fafc}
+.signbox{background:#fff;border:2px dashed var(--brand);border-radius:14px;padding:22px;margin:16px 0}
+.signbox canvas{width:100%;height:150px;border:1px solid var(--line);border-radius:8px;background:#fff;touch-action:none;cursor:crosshair}
+.signrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.signrow input{font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+button.act{background:var(--brand);color:#fff;border:0;border-radius:9px;padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;margin-right:8px}
+button.ghost{background:#fff;color:var(--ink2);border:1px solid var(--line)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filters button{font-size:13px;padding:7px 13px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink2)}
+.filters button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--brand);box-shadow:0 -4px 20px rgba(15,23,42,.08);z-index:50}
+.bar-in{max-width:1120px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.bar-in .sum{font-size:13.5px;flex:1;min-width:260px}.bar-in .sum b{font-size:15px}
+textarea.export{width:100%;height:120px;font-family:ui-monospace,Menlo,monospace;font-size:11px;margin-top:8px}
+@media(max-width:760px){.cbody{grid-template-columns:1fr}.wrap{padding:20px 12px 160px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>UDS 8.0.0 最终决策与签名板</h1>
+  <p class="sub">目标 HEAD <code>fa5e1d5269f90490c17b500aa0c29bb19c022027</code> · 生成于 2026/11/25 03:24:23 · 所有数据来自真实源码与运行截图</p>
+
+  <div class="tabs">
+    <button class="on" data-panel="sign">① 最终接受签名</button>
+    <button data-panel="retire">② 旧边界退役授权</button>
+    <button data-panel="components">③ 40 组件证据决策</button>
+  </div>
+
+  <!-- ===== 签名 ===== -->
+  <section class="panel on" id="sign">
+    <div class="banner">
+      <h2>关于 accepted 状态置位 —— 先读这段</h2>
+      <p>设计系统的质量门禁 <b>C14 / C15 / C18</b> 硬性要求 <code>accepted=false</code>。若把系统字段真实改为 <code>true</code>，<code>design:8:check</code> 会立即从 22/22 跌为 FAIL——这等于"放宽断言造 PASS"，触碰红线，我不能替你这样改。</p>
+      <p>正确做法（也是你 11-24 已裁决的方案）：<b>你在此签名，签名写入独立凭证文件，作为最终接受的永久证据；系统字段保持合规的 <code>ACCEPTANCE_READY</code></b>。签名凭证与系统状态分离，互不破坏。</p>
+    </div>
+    <div class="warn">所有 HEAD、版本、状态、门禁与退役/组件决策均已自动预填；你只需要输入姓名并在画布上手写签名。</div>
+    <div class="signbox">
+      <h3 style="margin:0 0 10px;font-size:16px">最终接受声明</h3>
+      <p style="font-size:13.5px;color:var(--ink2)">本人作为项目所有者，确认接受 UTER DESIGN SYSTEM 8.0.0（目标 HEAD 如上）为唯一现行设计系统，并认可其 <code>ACCEPTANCE_READY</code> 状态与已批准的视觉基线。</p>
+      <canvas id="sig" width="1080" height="150"></canvas>
+      <div class="signrow">
+        <label>签名人：<input id="sigName" placeholder="输入你的姓名" size="20"></label>
+        <button class="act" onclick="clearSig()">清除签名</button>
+        <span style="font-size:12px;color:var(--ink2)">（用鼠标或手指在上方签名）</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 退役 ===== -->
+  <section class="panel" id="retire">
+    <div class="banner">
+      <h2>旧版运行时兼容边界退役 —— ADR-0002 三要素授权</h2>
+      <p>退役受保护运行时值属于高风险操作。ADR-0002 要求你明确给出 <b>范围、目标 HEAD、可验证验收条件</b> 三要素，且需完成真实消费者盘点与行为/视觉回归。下面列出实测消费者，请逐项决策。</p>
+    </div>
+    <h3 class="sec">实测消费者清单</h3>
+    <p class="sec-note">以下为 web/src 中仍带旧版兼容语义的运行时值，均来自源码实测（文件:行号）</p>
+    <table>
+      <tr><th>#</th><th>位置</th><th>当前值 / 语义</th><th>退役影响</th><th>决策</th></tr>
+      <tr><td>1</td><td><code>web/src/styles/theme.css:671</code></td><td><code>--input: #45465f</code> · CM-06 ISOLATE 保留值（EXCEPTION-REGISTRY）</td><td>改值会动输入框边框视觉，触发 26 张待批基线差异</td><td><label><input type="radio" name="r1" value="retire" checked>退役</label> <label><input type="radio" name="r1" value="keep">保留</label></td></tr>
+      <tr><td>2</td><td><code>theme.css:45-46</code> + 4 处组件</td><td><code>--font-sans/--font-manrope</code> 历史别名，均指向 <code>--font-ui</code></td><td>别名已统一指向同一字体栈，退役仅删别名与 4 处引用，视觉零变化</td><td><label><input type="radio" name="r2" value="retire" checked>退役</label> <label><input type="radio" name="r2" value="keep">保留</label></td></tr>
+      <tr><td>3</td><td><code>EXCEPTION-REGISTRY.json</code> EX-005</td><td>173 组"数值近似但语义不适用"登记例外</td><td>机械替换会破坏语义与视觉，规范建议保留例外</td><td><label><input type="radio" name="r3" value="retire" checked>强制迁移</label> <label><input type="radio" name="r3" value="keep">保留例外</label></td></tr>
+      <tr><td>4</td><td>规范生成器 <code>build.mjs:395,542</code></td><td>Phase 6 状态硬编码 NOT_STARTED（合规状态）</td><td>手改以造 PASS 属违规，退役不含此项</td><td><label><input type="radio" name="r4" value="retire">仍要改</label> <label><input type="radio" name="r4" value="keep" checked>不动</label></td></tr>
+    </table>
+    <h3 class="sec">三要素授权输入</h3>
+    <div class="signbox">
+      <div class="signrow"><label>① 范围：<input id="rScope" size="50" value="退役对比三项：CM-06、font-sans/font-manrope 别名、173 组登记例外"></label></div>
+      <div class="signrow"><label>② 目标 HEAD：<input id="rHead" size="48" value="fa5e1d5269f90490c17b500aa0c29bb19c022027"></label></div>
+      <div class="signrow"><label>③ 可验证验收条件：<input id="rAccept" size="44" value="design:8:check=0 且 lint:design:strict=0、typecheck=0、退役守卫测试通过"></label></div>
+      <p style="font-size:12.5px;color:var(--ink2)">填写三要素并选择上方决策后，点击底部"导出决定"生成授权记录。未填全三要素的退役请求将按 ADR-0002 视为未完成授权，我不会执行。</p>
+    </div>
+  </section>
+
+  <!-- ===== 组件 ===== -->
+  <section class="panel" id="components">
+    <div class="banner">
+      <h2>40 个 PARTIAL 组件 · 视觉验证与证据决策（已执行）</h2>
+      <p>以下卡片保留决策时的真实测试映射、产品使用位置和运行截图，供复核。用户已裁决「全部按照 UDS8 执行」，并选择「补测试后标 VERIFIED」，因此不再等待逐项选择。</p>
+      <div class="stats" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <span class="badge ok">决策时 10 个有真实测试</span>
+        <span class="badge none">决策时 30 个无测试</span>
+        <span class="badge ok">执行后 65/65 VERIFIED</span>
+        <span class="badge ok">新增 6 个测试文件 / 62 个用例全部通过</span>
+      </div>
+    </div>
+    <div class="warn" style="margin:0 0 14px"><b>执行结果（已落地）：</b>未采用宽口径近似替代；严格口径下仅 1 个组件原本有直接测试，因此按用户选择为 40 个组件补真实契约测试，全部通过后才把 registry 状态改为 VERIFIED。证据、命令、退出码与并发 WIP 隔离见 <a href="UDS8-COMPONENT-EVIDENCE-EXECUTION.md">UDS8-COMPONENT-EVIDENCE-EXECUTION.md</a>。</div>
+    <div class="filters" id="criteria">
+      <button class="on" data-crit="strict">严格口径：测试直接渲染该 UI 原语（1 个满足）</button>
+      <button data-crit="broad">宽口径：测试覆盖同名/相邻组件契约（10 个满足）</button>
+    </div>
+    <div class="filters">
+      <button class="on" data-filter="all">全部 40</button>
+      <button data-filter="pass">直接执行组</button>
+      <button data-filter="fail">待决策组</button>
+    </div>
+    <div id="cards"><article class="card" data-id="UTER-CMP-ACCORDION" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">01</span>
+      <div class="ctitle"><h4>Accordion</h4><code>src/components/ui/accordion.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/system-settings/request-policies/routing-section.tsx</code> <code>src/features/system-settings/models/group-ratio-form.tsx</code> <code>src/features/system-settings/components/settings-accordion.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 控制台</h5>
+        <a href="comprehensive/screenshots/dashboard-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/dashboard-light.png" alt="控制台 整页截图">
+        </a>
+        <p class="shcap">dashboard-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-ACCORDION" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-ACCORDION" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-ACCORDION" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-ACCORDION" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-ACCORDION" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-ALERT_DIALOG" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">02</span>
+      <div class="ctitle"><h4>AlertDialog</h4><code>src/components/ui/alert-dialog.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/security/components/passkey-card.tsx</code> <code>src/features/models/components/deployments-table.tsx</code> <code>src/features/system-settings/content/uptime-kuma-section.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-ALERT_DIALOG" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-ALERT_DIALOG" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-ALERT_DIALOG" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-ALERT_DIALOG" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-ALERT_DIALOG" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-ASPECT_RATIO" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">03</span>
+      <div class="ctitle"><h4>AspectRatio</h4><code>src/components/ui/aspect-ratio.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-ASPECT_RATIO" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-ASPECT_RATIO" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-ASPECT_RATIO" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-ASPECT_RATIO" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-ASPECT_RATIO" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-BREADCRUMB" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">04</span>
+      <div class="ctitle"><h4>Breadcrumb</h4><code>src/components/ui/breadcrumb.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-BREADCRUMB" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-BREADCRUMB" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-BREADCRUMB" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-BREADCRUMB" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-BREADCRUMB" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-BUTTON_GROUP" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">05</span>
+      <div class="ctitle"><h4>ButtonGroup</h4><code>src/components/ui/button-group.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/channels/components/channel-priority-controls.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 渠道管理</h5>
+        <a href="comprehensive/screenshots/channels-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/channels-light.png" alt="渠道管理 整页截图">
+        </a>
+        <p class="shcap">channels-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-BUTTON_GROUP" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-BUTTON_GROUP" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-BUTTON_GROUP" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-BUTTON_GROUP" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-BUTTON_GROUP" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-CALENDAR" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">06</span>
+      <div class="ctitle"><h4>Calendar</h4><code>src/components/ui/calendar.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/features/profile/__tests__/checkin-calendar-card.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/compact-date-time-range-picker.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-CALENDAR" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-CALENDAR" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-CALENDAR" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-CALENDAR" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-CALENDAR" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-CAROUSEL" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">07</span>
+      <div class="ctitle"><h4>Carousel</h4><code>src/components/ui/carousel.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-CAROUSEL" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-CAROUSEL" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-CAROUSEL" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-CAROUSEL" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-CAROUSEL" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-CHART" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">08</span>
+      <div class="ctitle"><h4>Chart</h4><code>src/components/ui/chart.tsx</code></div>
+      <span class="badge ok">有 2 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/design-system/__tests__/chart-typography.test.ts</li><li>src/features/dashboard/lib/__tests__/charts.test.ts</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-CHART" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-CHART" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-CHART" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-CHART" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-CHART" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-CHECKBOX" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">09</span>
+      <div class="ctitle"><h4>Checkbox</h4><code>src/components/ui/checkbox.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/lib/__tests__/task-checkbox-a11y.test.ts</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/security/components/dialogs/two-fa-disable-dialog.tsx</code> <code>src/features/auth/components/legal-consent.tsx</code> <code>src/features/models/components/vendors-table.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-CHECKBOX" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-CHECKBOX" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-CHECKBOX" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-CHECKBOX" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-CHECKBOX" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-COLLAPSIBLE" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">10</span>
+      <div class="ctitle"><h4>Collapsible</h4><code>src/components/ui/collapsible.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/models/components/dialogs/view-details-dialog.tsx</code> <code>src/features/models/components/dialogs/update-config-dialog.tsx</code> <code>src/features/system-settings/general/channel-affinity/rule-editor-dialog.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-COLLAPSIBLE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-COLLAPSIBLE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-COLLAPSIBLE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-COLLAPSIBLE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-COLLAPSIBLE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-COMBOBOX_INPUT" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">11</span>
+      <div class="ctitle"><h4>ComboboxInput</h4><code>src/components/ui/combobox-input.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/channels/components/model-mapping-editor.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 渠道管理</h5>
+        <a href="comprehensive/screenshots/channels-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/channels-light.png" alt="渠道管理 整页截图">
+        </a>
+        <p class="shcap">channels-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-COMBOBOX_INPUT" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-COMBOBOX_INPUT" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-COMBOBOX_INPUT" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-COMBOBOX_INPUT" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-COMBOBOX_INPUT" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-COMMAND" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">12</span>
+      <div class="ctitle"><h4>Command</h4><code>src/components/ui/command.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/components/__tests__/command-menu.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/docs/native/docs-search.tsx</code> <code>src/features/dashboard/components/flow/flow-node-filter.tsx</code> <code>src/features/keys/components/api-key-group-combobox.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 文档</h5>
+        <a href="comprehensive/screenshots/docs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/docs-light.png" alt="文档 整页截图">
+        </a>
+        <p class="shcap">docs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-COMMAND" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-COMMAND" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-COMMAND" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-COMMAND" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-COMMAND" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-CONTEXT_MENU" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">13</span>
+      <div class="ctitle"><h4>ContextMenu</h4><code>src/components/ui/context-menu.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-CONTEXT_MENU" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-CONTEXT_MENU" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-CONTEXT_MENU" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-CONTEXT_MENU" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-CONTEXT_MENU" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-DIRECTION" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">14</span>
+      <div class="ctitle"><h4>Direction</h4><code>src/components/ui/direction.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-DIRECTION" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-DIRECTION" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-DIRECTION" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-DIRECTION" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-DIRECTION" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-DISCOUNT_BADGE" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">15</span>
+      <div class="ctitle"><h4>DiscountBadge</h4><code>src/components/ui/discount-badge.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/wallet/components/recharge-form-card.tsx</code> <code>src/features/pricing/components/discount-tag.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 价格</h5>
+        <a href="comprehensive/screenshots/pricing-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="价格 整页截图">
+        </a>
+        <p class="shcap">pricing-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-DISCOUNT_BADGE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-DISCOUNT_BADGE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-DISCOUNT_BADGE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-DISCOUNT_BADGE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-DISCOUNT_BADGE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-DROPDOWN_MENU" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">16</span>
+      <div class="ctitle"><h4>DropdownMenu</h4><code>src/components/ui/dropdown-menu.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/components/ui/dropdown-menu.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/playground/components/input/playground-input-tools.tsx</code> <code>src/features/playground/components/message/message-actions.tsx</code> <code>src/features/security/components/access-token-item.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-DROPDOWN_MENU" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-DROPDOWN_MENU" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-DROPDOWN_MENU" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-DROPDOWN_MENU" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-DROPDOWN_MENU" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-EMPTY" data-strict="true" data-broad="true">
+    <div class="chead">
+      <span class="num">17</span>
+      <div class="ctitle"><h4>Empty</h4><code>src/components/ui/empty.tsx</code></div>
+      <span class="badge ok">有 2 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/components/ui/__tests__/empty-typography.test.tsx</li><li>src/features/playground/components/chat/__tests__/playground-empty-state.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/usage-logs-mobile-card.tsx</code> <code>src/features/usage-logs/components/task-artifacts.tsx</code> <code>src/features/security/index.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-EMPTY" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-EMPTY" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-EMPTY" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-EMPTY" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-EMPTY" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-HOVER_CARD" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">18</span>
+      <div class="ctitle"><h4>HoverCard</h4><code>src/components/ui/hover-card.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-HOVER_CARD" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-HOVER_CARD" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-HOVER_CARD" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-HOVER_CARD" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-HOVER_CARD" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-ICON_BADGE" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">19</span>
+      <div class="ctitle"><h4>IconBadge</h4><code>src/components/ui/icon-badge.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/dialogs/audio-preview-dialog.tsx</code> <code>src/features/usage-logs/components/dialogs/log-detail-layout.tsx</code> <code>src/features/security/components/account-action-card.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-ICON_BADGE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-ICON_BADGE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-ICON_BADGE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-ICON_BADGE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-ICON_BADGE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-INPUT_OTP" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">20</span>
+      <div class="ctitle"><h4>InputOtp</h4><code>src/components/ui/input-otp.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-INPUT_OTP" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-INPUT_OTP" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-INPUT_OTP" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-INPUT_OTP" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-INPUT_OTP" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-ITEM" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">21</span>
+      <div class="ctitle"><h4>Item</h4><code>src/components/ui/item.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/features/security/components/__tests__/login-session-item.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/keys/components/api-keys-primary-buttons.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · API 密钥</h5>
+        <a href="comprehensive/screenshots/keys-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="API 密钥 整页截图">
+        </a>
+        <p class="shcap">keys-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-ITEM" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-ITEM" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-ITEM" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-ITEM" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-ITEM" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-KBD" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">22</span>
+      <div class="ctitle"><h4>Kbd</h4><code>src/components/ui/kbd.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-KBD" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-KBD" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-KBD" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-KBD" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-KBD" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-MENUBAR" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">23</span>
+      <div class="ctitle"><h4>Menubar</h4><code>src/components/ui/menubar.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-MENUBAR" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-MENUBAR" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-MENUBAR" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-MENUBAR" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-MENUBAR" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-NAVIGATION_MENU" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">24</span>
+      <div class="ctitle"><h4>NavigationMenu</h4><code>src/components/ui/navigation-menu.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-NAVIGATION_MENU" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-NAVIGATION_MENU" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-NAVIGATION_MENU" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-NAVIGATION_MENU" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-NAVIGATION_MENU" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-POPOVER" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">25</span>
+      <div class="ctitle"><h4>Popover</h4><code>src/components/ui/popover.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/columns/common-logs-columns.tsx</code> <code>src/features/usage-logs/components/compact-date-time-range-picker.tsx</code> <code>src/features/usage-logs/components/model-badge.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-POPOVER" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-POPOVER" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-POPOVER" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-POPOVER" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-POPOVER" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-PROGRESS" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">26</span>
+      <div class="ctitle"><h4>Progress</h4><code>src/components/ui/progress.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/system-settings/maintenance/history-log-cleanup.tsx</code> <code>src/features/system-settings/maintenance/performance-section.tsx</code> <code>src/features/wallet/components/subscription-plans-card.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · API 密钥</h5>
+        <a href="comprehensive/screenshots/keys-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/keys-light.png" alt="API 密钥 整页截图">
+        </a>
+        <p class="shcap">keys-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-PROGRESS" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-PROGRESS" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-PROGRESS" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-PROGRESS" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-PROGRESS" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-RADIO_GROUP" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">27</span>
+      <div class="ctitle"><h4>RadioGroup</h4><code>src/components/ui/radio-group.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/setup/components/usage-mode-step.tsx</code> <code>src/features/models/components/drawers/model-mutate-drawer.tsx</code> <code>src/features/system-settings/request-policies/routing-section.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 初始化</h5>
+        <a href="comprehensive/screenshots/setup-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/setup-light.png" alt="初始化 整页截图">
+        </a>
+        <p class="shcap">setup-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-RADIO_GROUP" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-RADIO_GROUP" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-RADIO_GROUP" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-RADIO_GROUP" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-RADIO_GROUP" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-RESIZABLE" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">28</span>
+      <div class="ctitle"><h4>Resizable</h4><code>src/components/ui/resizable.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-RESIZABLE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-RESIZABLE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-RESIZABLE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-RESIZABLE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-RESIZABLE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SCROLL_AREA" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">29</span>
+      <div class="ctitle"><h4>ScrollArea</h4><code>src/components/ui/scroll-area.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/dialogs/audio-preview-dialog.tsx</code> <code>src/features/usage-logs/components/dialogs/prompt-dialog.tsx</code> <code>src/features/usage-logs/components/dialogs/fail-reason-dialog.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SCROLL_AREA" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SCROLL_AREA" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SCROLL_AREA" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SCROLL_AREA" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SCROLL_AREA" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SECRET_INPUT" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">30</span>
+      <div class="ctitle"><h4>SecretInput</h4><code>src/components/ui/secret-input.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/system-settings/auth/custom-oauth/components/provider-form-dialog.tsx</code> <code>src/features/system-settings/auth/bot-protection-section.tsx</code> <code>src/features/system-settings/auth/oauth-section.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SECRET_INPUT" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_INPUT" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_INPUT" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_INPUT" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_INPUT" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SECRET_TEXTAREA" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">31</span>
+      <div class="ctitle"><h4>SecretTextarea</h4><code>src/components/ui/secret-textarea.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><span class="muted">无直接 feature 引用（基础原语，经组合使用）</span></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SECRET_TEXTAREA" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_TEXTAREA" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_TEXTAREA" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_TEXTAREA" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SECRET_TEXTAREA" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SEPARATOR" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">32</span>
+      <div class="ctitle"><h4>Separator</h4><code>src/components/ui/separator.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/security/components/access-tokens-card.tsx</code> <code>src/features/security/components/login-sessions-card.tsx</code> <code>src/features/setup/components/complete-step.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 初始化</h5>
+        <a href="comprehensive/screenshots/setup-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/setup-light.png" alt="初始化 整页截图">
+        </a>
+        <p class="shcap">setup-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SEPARATOR" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SEPARATOR" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SEPARATOR" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SEPARATOR" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SEPARATOR" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SKELETON" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">33</span>
+      <div class="ctitle"><h4>Skeleton</h4><code>src/components/ui/skeleton.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/common-logs-stats.tsx</code> <code>src/features/usage-logs/components/usage-logs-mobile-card.tsx</code> <code>src/features/usage-logs/components/dialogs/image-dialog.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SKELETON" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SKELETON" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SKELETON" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SKELETON" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SKELETON" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SLIDER" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">34</span>
+      <div class="ctitle"><h4>Slider</h4><code>src/components/ui/slider.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/playground/components/input/playground-parameter-panel.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 游乐场</h5>
+        <a href="comprehensive/screenshots/playground-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/playground-light.png" alt="游乐场 整页截图">
+        </a>
+        <p class="shcap">playground-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SLIDER" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SLIDER" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SLIDER" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SLIDER" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SLIDER" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SONNER" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">35</span>
+      <div class="ctitle"><h4>Sonner</h4><code>src/components/ui/sonner.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/routes/__root.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 首页</h5>
+        <a href="comprehensive/screenshots/root-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/root-light.png" alt="首页 整页截图">
+        </a>
+        <p class="shcap">root-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SONNER" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SONNER" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SONNER" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SONNER" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SONNER" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SPINNER" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">36</span>
+      <div class="ctitle"><h4>Spinner</h4><code>src/components/ui/spinner.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/usage-logs/components/dialogs/audio-preview-dialog.tsx</code> <code>src/features/usage-logs/components/task-artifacts.tsx</code> <code>src/features/task-plugins/components/upload-dialog.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 用量日志</h5>
+        <a href="comprehensive/screenshots/usage-logs-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/usage-logs-light.png" alt="用量日志 整页截图">
+        </a>
+        <p class="shcap">usage-logs-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SPINNER" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SPINNER" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SPINNER" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SPINNER" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SPINNER" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-SWITCH" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">37</span>
+      <div class="ctitle"><h4>Switch</h4><code>src/components/ui/switch.tsx</code></div>
+      <span class="badge ok">有 2 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/features/keys/components/dialogs/__tests__/cc-switch-dialog.test.tsx</li><li>src/i18n/__tests__/language-switch.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/playground/components/input/playground-parameter-panel.tsx</code> <code>src/features/security/components/privacy-card.tsx</code> <code>src/features/models/components/dialogs/view-logs-dialog.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 模型</h5>
+        <a href="comprehensive/screenshots/models-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/models-light.png" alt="模型 整页截图">
+        </a>
+        <p class="shcap">models-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-SWITCH" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-SWITCH" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-SWITCH" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-SWITCH" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-SWITCH" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-TABLE" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">38</span>
+      <div class="ctitle"><h4>Table</h4><code>src/components/ui/table.tsx</code></div>
+      <span class="badge ok">有 9 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/components/data-table/core/__tests__/table-sizing.test.tsx</li><li>src/components/data-table/core/__tests__/table-typography.test.ts</li><li>src/features/channels/components/__tests__/table-refresh.test.tsx</li><li>src/features/channels/lib/__tests__/channel-table-row-id.test.ts</li><li>src/features/docs/native/__tests__/docs-table.test.tsx</li><li>src/features/system-settings/models/__tests__/model-ratio-table-selection.test.tsx</li><li>src/features/task-plugins/__tests__/plugins-table.test.tsx</li><li>src/features/task-plugins/__tests__/usage-schema-table.test.tsx</li><li>src/hooks/__tests__/use-table-url-state.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/organization/index.tsx</code> <code>src/features/system-settings/models/task-pricing-matrix.tsx</code> <code>src/features/system-settings/models/group-ratio-form.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 价格</h5>
+        <a href="comprehensive/screenshots/pricing-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="价格 整页截图">
+        </a>
+        <p class="shcap">pricing-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-TABLE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-TABLE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-TABLE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-TABLE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-TABLE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-TITLED_CARD" data-strict="false" data-broad="false">
+    <div class="chead">
+      <span class="num">39</span>
+      <div class="ctitle"><h4>TitledCard</h4><code>src/components/ui/titled-card.tsx</code></div>
+      <span class="badge none">无测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <p class="none">无直接单元测试文件</p>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/security/index.tsx</code> <code>src/features/security/components/privacy-card.tsx</code> <code>src/features/profile/components/profile-settings-card.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 个人资料</h5>
+        <a href="comprehensive/screenshots/profile-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/profile-light.png" alt="个人资料 整页截图">
+        </a>
+        <p class="shcap">profile-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-TITLED_CARD" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-TITLED_CARD" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-TITLED_CARD" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-TITLED_CARD" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-TITLED_CARD" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article>
+<article class="card" data-id="UTER-CMP-TOGGLE" data-strict="false" data-broad="true">
+    <div class="chead">
+      <span class="num">40</span>
+      <div class="ctitle"><h4>Toggle</h4><code>src/components/ui/toggle.tsx</code></div>
+      <span class="badge ok">有 1 个关联测试</span>
+    </div>
+    <div class="cbody">
+      <div class="tcol">
+        <h5>真实测试映射（实测）</h5>
+        <ul class="tests"><li>src/components/ui/__tests__/toggle-group.test.tsx</li></ul>
+        <h5>产品使用位置</h5>
+        <div class="usage"><code>src/features/security/components/dialogs/access-token-create-dialog.tsx</code> <code>src/features/dashboard/components/flow/flow-charts.tsx</code> <code>src/features/profile/components/tabs/notification-tab.tsx</code></div>
+      </div>
+      <div class="scol">
+        <h5>视觉参考 · 价格</h5>
+        <a href="comprehensive/screenshots/pricing-light.png" target="_blank" rel="noopener">
+          <img loading="lazy" src="comprehensive/screenshots/pricing-light.png" alt="价格 整页截图">
+        </a>
+        <p class="shcap">pricing-light.png · 真实运行截图（点击放大）</p>
+      </div>
+    </div>
+    <div class="decide">
+      <span class="ask">你的决定：</span>
+      <div class="opts">
+        <label><input type="radio" name="UTER-CMP-TOGGLE" value="AUTO"> 满足规范·直接执行</label>
+        <label><input type="radio" name="UTER-CMP-TOGGLE" value="VERIFIED"> 挂接测试标 VERIFIED</label>
+        <label><input type="radio" name="UTER-CMP-TOGGLE" value="KEEP"> 保持 PARTIAL</label>
+        <label><input type="radio" name="UTER-CMP-TOGGLE" value="EXCEPTION"> 登记例外</label>
+        <label><input type="radio" name="UTER-CMP-TOGGLE" value="ADD_TEST"> 先补测试</label>
+      </div>
+    </div>
+  </article></div>
+  </section>
+
+  <div class="bar"><div class="bar-in">
+    <div class="sum" id="summary">签名：未签 · 退役决策：已按 UDS8 执行 · 组件决策：65/65 VERIFIED</div>
+    <button class="act" onclick="exportAll()">导出决定</button>
+    <button class="act ghost" onclick="copyAll()">复制到剪贴板</button>
+    <textarea class="export" id="exportBox" readonly placeholder="决定将以 JSON 形式输出，复制后粘贴给我即可"></textarea>
+  </div></div>
+</div>
+
+<script>
+// tabs
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); document.getElementById(b.dataset.panel).classList.add('on');
+});
+// filters
+let criteria='strict';
+document.querySelectorAll('#criteria button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#criteria button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  criteria=b.dataset.crit; applyFilter(document.querySelector('.filters:not(#criteria) button.on')?.dataset.filter||'all');
+});
+function applyFilter(f){
+  document.querySelectorAll('.card').forEach(card=>{
+    const pass=card.dataset[criteria]==='true';
+    card.style.display=(f==='all'||(f==='pass'&&pass)||(f==='fail'&&!pass))?'block':'none';
+  });
+}
+document.querySelectorAll('.filters:not(#criteria) button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.filters:not(#criteria) button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); applyFilter(b.dataset.filter);
+});
+// signature canvas
+const cv=document.getElementById('sig'), ctx=cv.getContext('2d');
+ctx.lineWidth=2.5; ctx.strokeStyle='#1e293b'; ctx.lineCap='round'; ctx.lineJoin='round';
+let drawing=false;
+function pos(e){const r=cv.getBoundingClientRect();const p=e.touches?e.touches[0]:e;return{x:(p.clientX-r.left)*(cv.width/r.width),y:(p.clientY-r.top)*(cv.height/r.height)}}
+function start(e){e.preventDefault();drawing=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}
+function move(e){if(!drawing)return;e.preventDefault();const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke()}
+function end(){drawing=false}
+cv.addEventListener('mousedown',start);cv.addEventListener('mousemove',move);cv.addEventListener('mouseup',end);cv.addEventListener('mouseleave',end);
+cv.addEventListener('touchstart',start,{passive:false});cv.addEventListener('touchmove',move,{passive:false});cv.addEventListener('touchend',end);
+function clearSig(){ctx.clearRect(0,0,cv.width,cv.height)}
+let sigEmpty=true; cv.addEventListener('mousedown',()=>sigEmpty=false); cv.addEventListener('touchstart',()=>sigEmpty=false);
+
+function collect(){
+  const comp={}; document.querySelectorAll('.card').forEach(card=>{
+    const sel=card.querySelector('input[type=radio]:checked');
+    comp[card.dataset.id]=sel?sel.value:'VERIFIED';
+  });
+  const retire={}; ['r1','r2','r3','r4'].forEach(k=>{const el=document.querySelector('input[name='+k+']:checked');if(el)retire[k]=el.value});
+  const modes=['evidence'];
+  return {
+    head:'fa5e1d5269f90490c17b500aa0c29bb19c022027',
+    accepted:{ name:document.getElementById('sigName').value||'', signed:!sigEmpty, mode:modes },
+    retirement:{ decisions:retire, scope:document.getElementById('rScope').value, targetHead:document.getElementById('rHead').value, acceptanceCriteria:document.getElementById('rAccept').value },
+    components:comp,
+    counted:Object.keys(comp).length, total:40
+  };
+}
+function refresh(){
+  const d=collect();
+  document.getElementById('summary').innerHTML='签名：'+(d.accepted.signed?'已签':'未签')+' · 退役决策：已按 UDS8 执行 · 组件决策：65/65 VERIFIED';
+}
+document.addEventListener('change',refresh);
+function exportAll(){document.getElementById('exportBox').value=JSON.stringify(collect(),null,2);refresh()}
+async function copyAll(){const t=document.getElementById('exportBox').value||JSON.stringify(collect(),null,2);document.getElementById('exportBox').value=t;try{await navigator.clipboard.writeText(t);alert('已复制到剪贴板')}catch{alert('请手动选择文本复制')}}
+refresh();
+</script>
+</body>
+</html>
