@@ -32,11 +32,11 @@ import (
 )
 
 type channelUpstreamQuoteTier struct {
-	RangeName                             string   `json:"range_name"`
-	TimeBand                              string   `json:"time_band,omitempty"`
-	MinInputTokens                        int64    `json:"min_input_tokens,omitempty"`
-	MaxInputTokens                        int64    `json:"max_input_tokens,omitempty"`
-	Unit                                  string   `json:"unit"`
+	RangeName                             string       `json:"range_name"`
+	TimeBand                              string       `json:"time_band,omitempty"`
+	MinInputTokens                        int64        `json:"min_input_tokens,omitempty"`
+	MaxInputTokens                        int64        `json:"max_input_tokens,omitempty"`
+	Unit                                  string       `json:"unit"`
 	InputPerMillionUSD                    *model.Money `json:"input_per_million_usd,omitempty"`
 	OutputPerMillionUSD                   *model.Money `json:"output_per_million_usd,omitempty"`
 	CachePerMillionUSD                    *model.Money `json:"cache_per_million_usd,omitempty"`
@@ -54,8 +54,8 @@ type channelUpstreamQuoteTier struct {
 	// PerUnitUSD is the amount for the tier's own unit (call, second, minute,
 	// image). It is the canonical value; PerCallUSD stays populated only for
 	// older clients that read every per-unit price from that field.
-	PerUnitUSD    *model.Money                           `json:"per_unit_usd,omitempty"`
-	PerCallUSD    *model.Money                           `json:"per_call_usd,omitempty"`
+	PerUnitUSD    *model.Money                       `json:"per_unit_usd,omitempty"`
+	PerCallUSD    *model.Money                       `json:"per_call_usd,omitempty"`
 	RawComponents []model.ChannelPricingRawComponent `json:"raw_components,omitempty"`
 }
 
@@ -63,22 +63,22 @@ type channelUpstreamQuoteView struct {
 	PriceBasis                            string                     `json:"price_basis"`
 	Currency                              string                     `json:"currency"`
 	Unit                                  string                     `json:"unit"`
-	InputPerMillionUSD                    *model.Money                   `json:"input_per_million_usd,omitempty"`
-	OutputPerMillionUSD                   *model.Money                   `json:"output_per_million_usd,omitempty"`
-	CachePerMillionUSD                    *model.Money                   `json:"cache_per_million_usd,omitempty"`
-	CreateCachePerMillionUSD              *model.Money                   `json:"create_cache_per_million_usd,omitempty"`
-	ImageInputPerMillionUSD               *model.Money                   `json:"image_input_per_million_usd,omitempty"`
-	ThinkingInputPerMillionUSD            *model.Money                   `json:"thinking_input_per_million_usd,omitempty"`
-	ThinkingOutputPerMillionUSD           *model.Money                   `json:"thinking_output_per_million_usd,omitempty"`
-	ThinkingCachePerMillionUSD            *model.Money                   `json:"thinking_cache_per_million_usd,omitempty"`
-	ThinkingCreateCachePerMillionUSD      *model.Money                   `json:"thinking_create_cache_per_million_usd,omitempty"`
-	ThinkingImageInputPerMillionUSD       *model.Money                   `json:"thinking_image_input_per_million_usd,omitempty"`
-	MultiInputOutputPerMillionUSD         *model.Money                   `json:"multi_input_output_per_million_usd,omitempty"`
-	ThinkingMultiInputOutputPerMillionUSD *model.Money                   `json:"thinking_multi_input_output_per_million_usd,omitempty"`
-	AudioInputPerMillionUSD               *model.Money                   `json:"audio_input_per_million_usd,omitempty"`
-	AudioOutputPerMillionUSD              *model.Money                   `json:"audio_output_per_million_usd,omitempty"`
-	PerUnitUSD                            *model.Money                   `json:"per_unit_usd,omitempty"`
-	PerCallUSD                            *model.Money                   `json:"per_call_usd,omitempty"`
+	InputPerMillionUSD                    *model.Money               `json:"input_per_million_usd,omitempty"`
+	OutputPerMillionUSD                   *model.Money               `json:"output_per_million_usd,omitempty"`
+	CachePerMillionUSD                    *model.Money               `json:"cache_per_million_usd,omitempty"`
+	CreateCachePerMillionUSD              *model.Money               `json:"create_cache_per_million_usd,omitempty"`
+	ImageInputPerMillionUSD               *model.Money               `json:"image_input_per_million_usd,omitempty"`
+	ThinkingInputPerMillionUSD            *model.Money               `json:"thinking_input_per_million_usd,omitempty"`
+	ThinkingOutputPerMillionUSD           *model.Money               `json:"thinking_output_per_million_usd,omitempty"`
+	ThinkingCachePerMillionUSD            *model.Money               `json:"thinking_cache_per_million_usd,omitempty"`
+	ThinkingCreateCachePerMillionUSD      *model.Money               `json:"thinking_create_cache_per_million_usd,omitempty"`
+	ThinkingImageInputPerMillionUSD       *model.Money               `json:"thinking_image_input_per_million_usd,omitempty"`
+	MultiInputOutputPerMillionUSD         *model.Money               `json:"multi_input_output_per_million_usd,omitempty"`
+	ThinkingMultiInputOutputPerMillionUSD *model.Money               `json:"thinking_multi_input_output_per_million_usd,omitempty"`
+	AudioInputPerMillionUSD               *model.Money               `json:"audio_input_per_million_usd,omitempty"`
+	AudioOutputPerMillionUSD              *model.Money               `json:"audio_output_per_million_usd,omitempty"`
+	PerUnitUSD                            *model.Money               `json:"per_unit_usd,omitempty"`
+	PerCallUSD                            *model.Money               `json:"per_call_usd,omitempty"`
 	Source                                string                     `json:"source"`
 	DiscountGroup                         string                     `json:"discount_group,omitempty"`
 	DiscountRatio                         *float64                   `json:"discount_ratio,omitempty"`
@@ -131,7 +131,6 @@ func floatMoneyPtr(value *float64) *model.Money {
 	m := model.MoneyFromFloat(*value)
 	return &m
 }
-
 
 func classifyOfficialPricingShape(official *model.ChannelOfficialPricing) (string, bool) {
 	if official == nil || len(official.Tiers) == 0 {
