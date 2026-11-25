@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { SSE } from 'sse.js'
 
 import { getFreshAuthHeaders } from '@/lib/api'
@@ -203,11 +203,10 @@ export function createStreamRequestController(
  */
 export function useStreamRequest() {
   const [isStreaming, setIsStreaming] = useState(false)
-  const controllerRef = useRef<ReturnType<
-    typeof createStreamRequestController
-  > | null>(null)
-  if (!controllerRef.current) {
-    controllerRef.current = createStreamRequestController({
+  // Create the controller once via a lazy initializer instead of reading a
+  // ref during render (React Compiler refs rule).
+  const [controller] = useState(() =>
+    createStreamRequestController({
       getHeaders: getFreshAuthHeaders,
       createSource: (payload, headers) =>
         new SSE(API_ENDPOINTS.CHAT_COMPLETIONS, {
@@ -217,7 +216,7 @@ export function useStreamRequest() {
         }) as StreamEventSource,
       setStreaming: setIsStreaming,
     })
-  }
+  )
 
   const sendStreamRequest = useCallback(
     (
@@ -226,23 +225,23 @@ export function useStreamRequest() {
       onComplete: () => void,
       onError: (error: string, errorCode?: string) => void
     ) =>
-      controllerRef.current?.send(payload, {
+      controller.send(payload, {
         onUpdate,
         onComplete,
         onError,
       }),
-    []
+    [controller]
   )
 
   const stopStream = useCallback(() => {
-    controllerRef.current?.stop()
-  }, [])
+    controller.stop()
+  }, [controller])
 
   useEffect(
     () => () => {
-      controllerRef.current?.dispose()
+      controller.dispose()
     },
-    []
+    [controller]
   )
 
   return {
