@@ -315,11 +315,24 @@ func channelPricingOfficialView(raw string) (channelOfficialView, error) {
 	if err := common.UnmarshalJsonStr(raw, &view); err != nil {
 		return channelOfficialView{}, err
 	}
-	if len(view.Tiers) == 0 {
+	// Bailian catalog rows persist their official quote in ChannelPriceTiers and
+	// leave Tiers empty (see bailianOfficialPricing). The plaza view must see the
+	// same official basis as the channel-management view, which already falls
+	// back to ChannelPriceTiers. Prefer Tiers, then that fallback, so a row with
+	// both keeps its original semantics.
+	tiers := view.Tiers
+	if len(tiers) == 0 {
+		tiers = view.ChannelPriceTiers
+	}
+	if len(tiers) == 0 {
 		return channelOfficialView{}, errors.New("normalized pricing has no tier")
 	}
-	tier := view.Tiers[0]
-	return channelOfficialView{tier: &tier, unit: tier.Unit}, nil
+	tier := tiers[0]
+	unit := tier.Unit
+	if unit == "" {
+		unit = view.Unit
+	}
+	return channelOfficialView{tier: &tier, unit: unit}, nil
 }
 
 // loadChannelInternalPrices returns the lowest configured channel price per
@@ -641,6 +654,145 @@ func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointTy
 	}
 }
 
+// redirectChannelSource is the minimal channel data needed to decide which
+// upstream names a batch redirect replaces on the pricing plaza. Only these
+// two columns are loaded, so channel credentials never enter the pricing path.
+type redirectChannelSource struct {
+	Models       string
+	ModelMapping string
+}
+
+// redirectAliasView is the plaza-facing result of all operator-declared
+// redirects. hiddenTargets are upstream model names replaced by a published
+// request alias; targetByAlias lets that alias borrow the upstream model's
+// product logo.
+type redirectAliasView struct {
+	hiddenTargets map[string]struct{}
+	targetByAlias map[string]string
+}
+
+func (v redirectAliasView) hides(name string) bool {
+	_, ok := v.hiddenTargets[name]
+	return ok
+}
+
+// resolveRedirectAliasView derives the redirect view from channel mappings.
+//
+// A mapping entry counts only when the channel serves the alias but no longer
+// serves its upstream name, and the alias is a pricing candidate. A channel
+// exposing both names on purpose keeps both on the plaza; hiding a name the
+// channel still serves would remove a model the plaza has to show (for example
+// a half-applied batch edit, or an alias disabled by its group). Chains are
+// followed to their tail exactly like the relay rewrites a request, and an
+// alias resolving to two different tails is ignored: the view never guesses
+// which product logo to copy or which upstream name to hide.
+func resolveRedirectAliasView(
+	channels []redirectChannelSource,
+	candidates map[string]struct{},
+) redirectAliasView {
+	view := redirectAliasView{
+		hiddenTargets: make(map[string]struct{}),
+		targetByAlias: make(map[string]string),
+	}
+	if len(channels) == 0 || len(candidates) == 0 {
+		return view
+	}
+
+	tailsByAlias := make(map[string]map[string]struct{})
+	for _, ch := range channels {
+		mappingJSON := strings.TrimSpace(ch.ModelMapping)
+		if mappingJSON == "" || mappingJSON == "{}" {
+			continue
+		}
+		var mapping map[string]string
+		if err := common.UnmarshalJsonStr(mappingJSON, &mapping); err != nil || len(mapping) == 0 {
+			continue
+		}
+		// Normalize once so chain walking uses the same trimmed names the
+		// relay and the channel model list use.
+		normalized := make(map[string]string, len(mapping))
+		for from, to := range mapping {
+			from, to = strings.TrimSpace(from), strings.TrimSpace(to)
+			if from != "" && to != "" {
+				normalized[from] = to
+			}
+		}
+		exposed := make(map[string]struct{})
+		for _, name := range strings.Split(ch.Models, ",") {
+			if name = strings.TrimSpace(name); name != "" {
+				exposed[name] = struct{}{}
+			}
+		}
+		for alias := range normalized {
+			if _, ok := exposed[alias]; !ok {
+				continue
+			}
+			if _, ok := candidates[alias]; !ok {
+				continue
+			}
+			tail, cyclic := followChannelModelMapping(normalized, alias)
+			if cyclic || tail == "" || tail == alias {
+				continue
+			}
+			// A channel that still serves the upstream name alongside the
+			// alias deliberately kept both (for example two different billing
+			// profiles). Only a redirect that actually replaced the raw name
+			// in the model list hides it from the plaza.
+			if _, stillServed := exposed[tail]; stillServed {
+				continue
+			}
+			tails := tailsByAlias[alias]
+			if tails == nil {
+				tails = make(map[string]struct{})
+				tailsByAlias[alias] = tails
+			}
+			tails[tail] = struct{}{}
+		}
+	}
+	for alias, tails := range tailsByAlias {
+		if len(tails) != 1 {
+			continue
+		}
+		for target := range tails {
+			view.targetByAlias[alias] = target
+			view.hiddenTargets[target] = struct{}{}
+		}
+	}
+	// A tail that is itself a published alias stays visible: hiding it would
+	// delete a model callers still address by that name.
+	for alias := range view.targetByAlias {
+		delete(view.hiddenTargets, alias)
+	}
+	return view
+}
+
+// resolvePricingIcon keeps the plaza's single logo rule: only a model's own
+// product logo, never a vendor/company icon. A redirect alias has no catalogue
+// entry of its own, so it borrows the upstream model's product logo when the
+// alias itself has none.
+func resolvePricingIcon(
+	name string,
+	meta *Model,
+	metaMap map[string]*Model,
+	aliasView redirectAliasView,
+) string {
+	if meta != nil && meta.Icon != "" {
+		return meta.Icon
+	}
+	if target, redirected := aliasView.targetByAlias[name]; redirected {
+		if targetMeta := metaMap[target]; targetMeta != nil && targetMeta.Icon != "" {
+			return targetMeta.Icon
+		}
+		if icon := defaultProductIconForModel(target); icon != "" {
+			return icon
+		}
+	}
+	if icon := defaultProductIconForModel(name); icon != "" {
+		return icon
+	}
+	return ""
+}
+
 func updatePricing() {
 	//modelRatios := common.GetModelRatios()
 	enableAbilities, err := GetAllEnableAbilityWithChannels()
@@ -715,6 +867,23 @@ func updatePricing() {
 	for _, name := range channelNames {
 		pricingChannelsList = append(pricingChannelsList, PricingChannel{Name: name, Type: channelTypeByName[name]})
 	}
+
+	// A batch redirect publishes request aliases instead of the raw upstream
+	// names. Resolve that view once against the same candidate set the plaza is
+	// built from, so the upstream names disappear and their product logos move
+	// to the aliases that replaced them.
+	candidates := make(map[string]struct{}, len(modelGroupsMap))
+	for name := range modelGroupsMap {
+		candidates[name] = struct{}{}
+	}
+	var redirectChannels []redirectChannelSource
+	if err := DB.Table("channels").
+		Select("models", "model_mapping").
+		Where("status = ?", common.ChannelStatusEnabled).
+		Find(&redirectChannels).Error; err != nil {
+		common.SysLog(common.LogText("load redirect channels for pricing error: %v", err))
+	}
+	aliasView := resolveRedirectAliasView(redirectChannels, candidates)
 
 	//这里使用切片而不是Set，因为一个模型可能支持多个端点类型，并且第一个端点是优先使用端点
 	modelSupportEndpointsStr := make(map[string][]string)
@@ -805,6 +974,9 @@ func updatePricing() {
 	pricingMap = make([]Pricing, 0)
 	pluginGeneration := jsplugin.DefaultRegistry.Generation()
 	for model, groups := range modelGroupsMap {
+		if aliasView.hides(model) {
+			continue
+		}
 		pricing := Pricing{
 			ModelName:              model,
 			EnableGroup:            groups.Items(),
@@ -846,22 +1018,12 @@ func updatePricing() {
 			pricing.ReleaseDate = meta.ReleaseDate
 			pricing.InputModalities = splitCatalogModalities(meta.InputModalities)
 			pricing.OutputModalities = splitCatalogModalities(meta.OutputModalities)
-			// 入库模型若图标为空，按名称归因到自己的产品 logo，
-			// 与同家族模型保持一致，避免卡片回落到首字母占位。
-			if meta.Icon != "" {
-				pricing.Icon = meta.Icon
-			} else if icon := defaultProductIconForModel(model); icon != "" {
-				pricing.Icon = icon
-			}
+			// logo 只取产品图：自己的优先，重定向别名没有自己的图标时
+			// 继承上游原名的产品 logo，最后才按名字归因；绝不用公司 logo。
+			pricing.Icon = resolvePricingIcon(model, meta, metaMap, aliasView)
 		} else {
 			pricing.Tags = canonicalModelTag(model, nil, modelSupportEndpointTypes[model])
-			// 未入库（无元数据）的模型：按模型名归因到自己的产品 logo，
-			// 与同家族已入库模型保持一致。否则卡片会回落到首字母占位，
-			// 即用户看到的「logo 变成不存在」。defaultProductIconForModel
-			// 只在 @lobehub/icons 存在可渲染变体时才返回，否则回落空串。
-			if icon := defaultProductIconForModel(model); icon != "" {
-				pricing.Icon = icon
-			}
+			pricing.Icon = resolvePricingIcon(model, nil, metaMap, aliasView)
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {
