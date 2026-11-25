@@ -58,9 +58,10 @@ func TestGenericChannelPricingRecordsPreserveShapes(t *testing.T) {
 		{ModelName: "token-a", QuotaType: 0, ModelRatio: 2.5, CompletionRatio: 5, CacheRatio: 0.1},
 		{ModelName: "call-a", QuotaType: 1, ModelPrice: 0.04},
 		{ModelName: "tiered-a", QuotaType: 0, BillingMode: "tiered_expr", BillingExpr: "tier(...)"},
+		{ModelName: "parsed-tiered", QuotaType: 0, BillingMode: "tiered_expr", BillingExpr: `tier("standard", p * 2 + c * 8)`},
 	}
-	records := GenericChannelPricingRecordsWithQuota(7, []string{"token-a", "call-a", "tiered-a"}, entries, time.Unix(100, 0), 500000)
-	require.Len(t, records, 3)
+	records := GenericChannelPricingRecordsWithQuota(7, []string{"token-a", "call-a", "tiered-a", "parsed-tiered"}, entries, time.Unix(100, 0), 500000)
+	require.Len(t, records, 4)
 
 	byName := map[string]model.ChannelOfficialPricing{}
 	for _, record := range records {
@@ -84,6 +85,13 @@ func TestGenericChannelPricingRecordsPreserveShapes(t *testing.T) {
 	require.Empty(t, tiered.Tiers)
 	require.Equal(t, "expression", tiered.Unit)
 	require.Equal(t, UpstreamExpressionUnsupported, tiered.ExpressionStatus)
+
+	parsedTiered := byName["parsed-tiered"]
+	require.False(t, parsedTiered.NeedsReview)
+	require.Len(t, parsedTiered.Tiers, 1)
+	require.Equal(t, "per_1m_token", parsedTiered.Tiers[0].Unit)
+	require.Equal(t, 2.0, parsedTiered.Tiers[0].InputPerMillionUSD.Float64())
+	require.NotNil(t, parsedTiered.ChannelPrice)
 }
 
 func TestGenericChannelPricingRecordsClassifyPriceSources(t *testing.T) {
@@ -151,7 +159,11 @@ func TestGenericPricingPreservesExecutableUpstreamExpression(t *testing.T) {
 	require.Equal(t, UpstreamExpressionExecutable, view.ExpressionStatus)
 	require.NotEmpty(t, view.ExpressionHash)
 	require.Equal(t, entry.BillingExpr, view.BillingExpr)
-	require.Empty(t, view.Tiers)
+	require.Len(t, view.Tiers, 1, "executable tiered expressions must expose an official tier")
+	require.Equal(t, "per_1m_token", view.Tiers[0].Unit)
+	require.Equal(t, 1.0, view.Tiers[0].InputPerMillionUSD.Float64())
+	require.Equal(t, 2.0, view.Tiers[0].OutputPerMillionUSD.Float64())
+	require.NotNil(t, view.ChannelPrice)
 	require.Contains(t, records[0].InternalPricing, `"mode":"tiered_expr"`)
 	require.Contains(t, records[0].InternalPricing, `"source":"newapi-expression"`)
 }
