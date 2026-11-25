@@ -25,6 +25,7 @@ import {
   type DocsLocaleCode,
 } from '@/lib/docs-link'
 
+import { ApiCatalog, AppsCatalog } from './catalog-index'
 import {
   docRefForPagePath,
   docsModulePath,
@@ -67,6 +68,18 @@ export function loadNativeDoc(
         default: UserGuideIndex as unknown as ComponentType<
           Record<string, unknown>
         >,
+      })
+  }
+  // The API reference and AI-app landings are synthesised catalog pages
+  // too — their `index.mdx` files are prose outlines, while the reader
+  // facing entry is a card grid built from the same nav manifest as the
+  // sidebar. Only the section landing is synthesised; each child page
+  // still loads its own Markdown below.
+  if (ref.slug === 'index' && (ref.set === 'api' || ref.set === 'apps')) {
+    const Catalog = ref.set === 'api' ? ApiCatalog : AppsCatalog
+    return () =>
+      Promise.resolve({
+        default: Catalog as unknown as ComponentType<Record<string, unknown>>,
       })
   }
   const suffix = `/docs-content/${docsModulePath(ref, locale)}`
