@@ -18,11 +18,15 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import type { ComponentProps } from 'react'
 import { beforeEach, expect, test, vi } from 'vitest'
 
 import { api } from '@/lib/api'
 
-import { FetchedPricePreview } from '../fetched-price-preview'
+import {
+  FetchedPricePreview,
+  PricePreviewTable,
+} from '../fetched-price-preview'
 
 function pricingItem() {
   return {
@@ -69,13 +73,15 @@ beforeEach(() => {
   vi.restoreAllMocks()
 })
 
-function renderPreview() {
+function renderPreview(
+  props: Partial<ComponentProps<typeof FetchedPricePreview>> = {}
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   return render(
     <QueryClientProvider client={client}>
-      <FetchedPricePreview channelId={7} />
+      <FetchedPricePreview channelId={7} {...props} />
     </QueryClientProvider>
   )
 }
@@ -87,6 +93,21 @@ test('fetched price preview shows official and channel prices per model', async 
   renderPreview()
 
   expect(await screen.findByText('qwen-plus')).toBeVisible()
+  expect(screen.getByText('$2.0000 / $4.0000')).toBeVisible()
+  expect(screen.getByText('$1.5000 / $3.0000')).toBeVisible()
+})
+
+test('fetched price preview remaps saved upstream prices to unsaved redirect aliases', async () => {
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: { success: true, data: { channel_id: 7, items: [pricingItem()] } },
+  })
+  renderPreview({
+    modelMapping: '{"qwen-alias":"qwen-plus"}',
+    models: ['qwen-alias'],
+  })
+
+  expect(await screen.findByText('qwen-alias')).toBeVisible()
+  expect(screen.queryByText('qwen-plus')).not.toBeInTheDocument()
   expect(screen.getByText('$2.0000 / $4.0000')).toBeVisible()
   expect(screen.getByText('$1.5000 / $3.0000')).toBeVisible()
 })
@@ -141,4 +162,43 @@ test('fetched price preview shows a sync hint when the catalog is empty', async 
       'No prices fetched yet. Sync the channel catalog first.'
     )
   ).toBeVisible()
+})
+
+test('price preview header stays fixed while only the rows scroll', () => {
+  render(<PricePreviewTable items={[pricingItem()]} />)
+
+  const header = screen.getByText('Model').parentElement
+  expect(header).toHaveClass('sticky', 'top-0', 'z-10', 'bg-muted')
+  // 表头必须钉在滚动容器里；若容器不滚动，sticky 会失效。
+  expect(header?.parentElement).toHaveClass('max-h-80', 'overflow-y-auto')
+})
+
+test('needs_review row never renders the official price as the channel price', async () => {
+  // 复现截图 claude-fable-5 等 6 行：后端 channelUpstreamQuote 回落到
+  // OFFICIAL_REFERENCE 填入 upstream_quote（$10/$50），但渠道价真实为空。
+  // 界面必须显示"不可用"，不能把官方价冒充渠道价。
+  const needsReviewRow = {
+    ...pricingItem(),
+    model_name: 'claude-fable-5',
+    pricing_status: 'needs_review',
+    upstream_quote: {
+      price_basis: 'OFFICIAL_REFERENCE',
+      currency: 'USD',
+      unit: 'per_1m_token',
+      input_per_million_usd: 10,
+      output_per_million_usd: 50,
+      source: 'uterroute-expression',
+    },
+  }
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: { success: true, data: { channel_id: 7, items: [needsReviewRow] } },
+  })
+  renderPreview()
+
+  expect(await screen.findByText('claude-fable-5')).toBeVisible()
+  // 官方价列（fixture 为 $2/$4）仍显示；渠道价列必须显示"不可用"，
+  // 绝不能把 upstream_quote 里的 $10/$50 渲染出来。
+  expect(screen.getByText('$2.0000 / $4.0000')).toBeVisible()
+  expect(screen.queryByText('$10.0000 / $50.0000')).not.toBeInTheDocument()
+  expect(screen.getByText('Not available')).toBeVisible()
 })
