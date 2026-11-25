@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { type FormEvent, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -82,20 +82,30 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
   const cancel = security.cancel
   const resetResend = resend.reset
   const resetDeadline = deadline.reset
+  // Keep a current timestamp available to event handlers without calling an
+  // impure function during render.
+  const nowRef = useRef(0)
+  useEffect(() => {
+    nowRef.current = Date.now()
+  })
 
   useEffect(() => {
-    reset(emptyEmailForm)
-    setFlow(null)
-    resetResend()
-    resetDeadline()
-  }, [security.sessionKey, reset, resetResend, resetDeadline])
-  useEffect(() => {
-    if (!props.open) {
-      cancel()
+    void (async () => {
       reset(emptyEmailForm)
       setFlow(null)
       resetResend()
       resetDeadline()
+    })()
+  }, [security.sessionKey, reset, resetResend, resetDeadline])
+  useEffect(() => {
+    if (!props.open) {
+      void (async () => {
+        cancel()
+        reset(emptyEmailForm)
+        setFlow(null)
+        resetResend()
+        resetDeadline()
+      })()
     }
   }, [props.open, cancel, reset, resetResend, resetDeadline])
 
@@ -120,7 +130,7 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
     form.setValue('email', next.email)
     form.setValue('newCode', '')
     form.setValue('oldCode', '')
-    const now = Date.now() / 1000
+    const now = nowRef.current / 1000
     resend.start(Math.max(1, Math.ceil(next.resend_at - now)))
     deadline.start(Math.max(1, Math.ceil(next.expires_at - now)))
   }
@@ -166,6 +176,14 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
     toast.success(t('Email bound successfully!'))
     handleOpenChange(false)
     props.onSuccess()
+  }
+  const submitForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    void (async () => {
+      if (await form.trigger()) {
+        await submit(form.getValues())
+      }
+    })()
   }
   const resendCodes = async () => {
     if (!flow || resend.isActive || expired) return
@@ -232,7 +250,7 @@ export function EmailBindDialog(props: EmailBindDialogProps) {
         <Form {...form}>
           <form
             id='email-bind-form'
-            onSubmit={form.handleSubmit(submit)}
+            onSubmit={submitForm}
             className='space-y-4'
           >
             <FormField
