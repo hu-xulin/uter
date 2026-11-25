@@ -214,10 +214,25 @@ export function useChannelPriorityOrder(props: {
     }
   }
 
+  // View/filter/page changes cancel a pending gesture, but not an in-flight
+  // save. Reset the render state during render; the external store/timeout
+  // cleanup below stays in the effect.
+  const [prevView, setPrevView] = useState({
+    scope: props.scope,
+    enabled: props.enabled,
+  })
+  if (prevView.scope !== props.scope || prevView.enabled !== props.enabled) {
+    setPrevView({ scope: props.scope, enabled: props.enabled })
+    setActive(false)
+    setOptimisticDrop(null)
+    setSavedPreview(null)
+  }
+
   useEffect(() => {
-    cancel()
-    // View/filter/page changes cancel a pending gesture, but not an in-flight save.
-  }, [props.scope, props.enabled, cancel])
+    clearTimeout(timer.current)
+    session.current = null
+    previewStore.publish({ drop: null, preview: null, preparing: false })
+  }, [props.scope, props.enabled, previewStore])
   useEffect(
     () => () => {
       clearTimeout(timer.current)
