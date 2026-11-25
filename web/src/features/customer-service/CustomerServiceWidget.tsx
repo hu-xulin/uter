@@ -182,7 +182,7 @@ export function CustomerServiceWidget() {
   const [typing, setTyping] = useState(false)
   const [history, setHistory] = useState<{ role: string; text: string }[]>([])
   const [showPresets, setShowPresets] = useState(true)
-  const sessionId = useRef<string>(
+  const [sessionId] = useState(() =>
     typeof crypto !== 'undefined' && 'randomUUID' in crypto
       ? crypto.randomUUID()
       : `cs-${Date.now()}`
@@ -236,7 +236,7 @@ export function CustomerServiceWidget() {
         body: JSON.stringify({
           text: q,
           history,
-          session_id: sessionId.current,
+          session_id: sessionId,
           // 站点当前语言：后端据此在 7 个语言版本的文档里做语种对齐，
           // 否则中文提问可能命中英文文档并回英文答案。
           lang: currentLang(),
@@ -273,22 +273,21 @@ export function CustomerServiceWidget() {
   // 组件与单测共用同一份实现，避免两边规则漂移。
   const pageEnabled = shouldShowCustomerService(pathname, pages)
 
-  // 切到未开启的页面时收起面板。必须走 effect 而不是在 render 期间 setState：
-  // 后者是 React 明令禁止的模式（会触发 "Cannot update a component while
-  // rendering a different component"，在 StrictMode 下还可能重复执行）。
-  // 留一个副作用把会话收干净，避免「入口消失但对话还开着」且仍能继续发消息。
-  useEffect(() => {
-    if (!pageEnabled && open) {
-      setOpen(false)
-    }
-  }, [pageEnabled, open])
+  // 切到未开启的页面时收起面板。用「渲染期根据 props 变化调整 state」的标准
+  // 模式（仅在 pageEnabled 翻转时更新），避免 effect 内的同步 setState。
+  const [prevPageEnabled, setPrevPageEnabled] = useState(pageEnabled)
+
+  if (pageEnabled !== prevPageEnabled) {
+    setPrevPageEnabled(pageEnabled)
+    if (!pageEnabled) setOpen(false)
+  }
 
   // 两个门都通过才渲染入口：base 为空 = 后端未配置客服地址（未配置地址时即便
   // 页面开关全开也无从连接）；pageEnabled 为假 = 当前页面未开启。
   //
   // ⚠️ 这个提前 return 必须位于**所有 Hook 之后**：早于任何一个 useEffect 都会让
   // Hook 调用顺序随 base/pages 变化，触发 React 的 "Rendered fewer hooks than
-  // expected" 并整页崩溃。上面两个 useEffect 正是为此而下沉到此处之前。
+  // expected" 并整页崩溃。上面的 useEffect 正是为此而下沉到此处之前。
   if (!base || !pageEnabled) return null
 
   return (
