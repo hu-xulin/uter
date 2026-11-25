@@ -161,7 +161,9 @@ export function SidebarModulesCard() {
   }, [])
 
   useEffect(() => {
-    loadConfig()
+    void (async () => {
+      await loadConfig()
+    })()
   }, [loadConfig])
 
   const toggleSection = (sectionKey: string, val: boolean) => {
