@@ -25,6 +25,7 @@ import {
   Music,
   RefreshCw,
   Video,
+  type LucideProps,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -71,16 +72,19 @@ import {
 import type { TaskArtifact, TaskArtifactType, TaskLog } from '../types'
 import { AudioPreviewDialog } from './dialogs/audio-preview-dialog'
 
-function artifactIcon(type: TaskArtifactType) {
+function ArtifactIcon({
+  type,
+  ...props
+}: { type: TaskArtifactType } & LucideProps) {
   switch (type) {
     case 'image':
-      return Image
+      return <Image {...props} />
     case 'video':
-      return Video
+      return <Video {...props} />
     case 'audio':
-      return Music
+      return <Music {...props} />
     case 'file':
-      return File
+      return <File {...props} />
   }
 }
 
@@ -201,7 +205,6 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
   const { t } = useTranslation()
   const [mediaFailed, setMediaFailed] = useState(false)
   const [mediaRevision, setMediaRevision] = useState(0)
-  const ArtifactIcon = artifactIcon(props.artifact.type)
   const isVisualArtifact =
     props.artifact.type === 'image' || props.artifact.type === 'video'
 
@@ -212,7 +215,7 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
         isVisualArtifact ? 'aspect-video min-h-48' : 'min-h-20'
       )}
     >
-      <ArtifactIcon className='size-8' />
+      <ArtifactIcon type={props.artifact.type} className='size-8' />
     </div>
   )
   if (mediaFailed) {
@@ -239,7 +242,11 @@ function TaskArtifactCard(props: { artifact: TaskArtifact }) {
     <Card size='sm'>
       <CardHeader>
         <CardTitle className='flex min-w-0 items-center gap-1.5'>
-          <ArtifactIcon className='size-4 shrink-0' aria-hidden='true' />
+          <ArtifactIcon
+            type={props.artifact.type}
+            className='size-4 shrink-0'
+            aria-hidden='true'
+          />
           <span className='truncate'>
             {t(artifactTypeLabel(props.artifact.type))}
           </span>
