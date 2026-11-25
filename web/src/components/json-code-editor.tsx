@@ -96,9 +96,13 @@ export function JsonCodeEditor({
     []
   )
 
-  latestValueRef.current = value
-  latestOnChangeRef.current = onChange
-  latestOnBlurRef.current = onBlur
+  // Keep the latest props available to the editor's event handlers. Updating
+  // them in an effect (instead of during render) keeps refs out of render.
+  useEffect(() => {
+    latestValueRef.current = value
+    latestOnChangeRef.current = onChange
+    latestOnBlurRef.current = onBlur
+  }, [value, onChange, onBlur])
 
   useEffect(() => {
     const mountNode = mountRef.current
