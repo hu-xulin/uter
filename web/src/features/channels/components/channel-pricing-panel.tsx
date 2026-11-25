@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Activity, Calculator, RefreshCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -349,9 +349,8 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   })
   // A preview only describes the rule that produced it. Editing the rule
   // invalidates those row versions, so apply must preview again first.
-  useEffect(() => {
-    setPreview(null)
-  }, [
+  // 用规则签名在渲染期判断是否需要清空，避免 effect 的额外一轮渲染。
+  const ruleSignature = JSON.stringify([
     basis,
     mode,
     value,
@@ -365,6 +364,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
     protectionMode,
     approvalNote,
   ])
+  const [lastRuleSignature, setLastRuleSignature] = useState(ruleSignature)
+  if (ruleSignature !== lastRuleSignature) {
+    setLastRuleSignature(ruleSignature)
+    setPreview(null)
+  }
 
   const parsedValue = Number(value)
   const valueEmpty = value.trim() === ''
@@ -564,9 +568,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
   const isBailian =
     normalizedBaseUrl.includes('.maas.aliyuncs.com') ||
     normalizedBaseUrl.includes('dashscope')
-  useEffect(() => {
+  const [bailianHandled, setBailianHandled] = useState(isBailian)
+  if (isBailian !== bailianHandled) {
+    setBailianHandled(isBailian)
     if (isBailian) setBasis('channel')
-  }, [isBailian])
+  }
   let capabilityLabel = 'Manual pricing required'
   if (isUterRoute) capabilityLabel = 'Ratio-only upstream prices'
   else if (isBailian) capabilityLabel = 'Automatic official prices'
