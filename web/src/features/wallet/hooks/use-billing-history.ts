@@ -150,7 +150,9 @@ export function useBillingHistory(options: UseBillingHistoryOptions = {}) {
   useEffect(() => {
     if (keyword !== debouncedKeyword) return
 
-    fetchBillingHistory()
+    void (async () => {
+      await fetchBillingHistory()
+    })()
   }, [debouncedKeyword, fetchBillingHistory, keyword])
 
   return {
