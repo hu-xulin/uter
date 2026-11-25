@@ -17,8 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import {
+  type FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -228,32 +235,43 @@ export function PerformanceSection(props: Props) {
   }, [])
 
   useEffect(() => {
-    fetchStats()
+    void (async () => {
+      await fetchStats()
+    })()
   }, [fetchStats])
 
-  const onSubmit = async (values: PerfFormValues) => {
-    const normalized = normalizeFormValues(values)
-    const changedKeys = (
-      Object.keys(normalized) as Array<keyof FlatPerfDefaults>
-    ).filter((key) => normalized[key] !== baselineRef.current[key])
+  const onSubmit = useCallback(
+    async (values: PerfFormValues) => {
+      const normalized = normalizeFormValues(values)
+      const changedKeys = (
+        Object.keys(normalized) as Array<keyof FlatPerfDefaults>
+      ).filter((key) => normalized[key] !== baselineRef.current[key])
 
-    if (changedKeys.length === 0) {
-      toast.info(t('No changes to save'))
-      return
-    }
+      if (changedKeys.length === 0) {
+        toast.info(t('No changes to save'))
+        return
+      }
 
-    for (const key of changedKeys) {
-      await updateOption.mutateAsync({
-        key,
-        value: normalized[key],
-      })
-    }
+      for (const key of changedKeys) {
+        await updateOption.mutateAsync({
+          key,
+          value: normalized[key],
+        })
+      }
 
-    baselineRef.current = normalized
-    baselineSerializedRef.current = JSON.stringify(normalized)
-    form.reset(buildFormDefaults(normalized))
-    fetchStats()
-  }
+      baselineRef.current = normalized
+      baselineSerializedRef.current = JSON.stringify(normalized)
+      form.reset(buildFormDefaults(normalized))
+      fetchStats()
+    },
+    [t, updateOption, form, fetchStats]
+  )
+  const submit = useCallback(
+    (event?: FormEvent<HTMLFormElement>) => {
+      void form.handleSubmit(onSubmit)(event)
+    },
+    [form, onSubmit]
+  )
 
   const clearDiskCache = async () => {
     try {
@@ -297,11 +315,18 @@ export function PerformanceSection(props: Props) {
     }
   }
 
-  const diskEnabled = form.watch('performance_setting.disk_cache_enabled')
-  const monitorEnabled = form.watch('performance_setting.monitor_enabled')
-  const maxCacheSizeRaw = form.watch(
-    'performance_setting.disk_cache_max_size_mb'
-  )
+  const diskEnabled = useWatch({
+    control: form.control,
+    name: 'performance_setting.disk_cache_enabled',
+  })
+  const monitorEnabled = useWatch({
+    control: form.control,
+    name: 'performance_setting.monitor_enabled',
+  })
+  const maxCacheSizeRaw = useWatch({
+    control: form.control,
+    name: 'performance_setting.disk_cache_max_size_mb',
+  })
   const maxCacheSizeMb =
     typeof maxCacheSizeRaw === 'number'
       ? maxCacheSizeRaw
@@ -327,9 +352,9 @@ export function PerformanceSection(props: Props) {
   return (
     <SettingsSection title={t('Performance Settings')}>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm onSubmit={submit}>
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={submit}
             isSaving={updateOption.isPending}
           />
           {/* Disk Cache Settings */}
