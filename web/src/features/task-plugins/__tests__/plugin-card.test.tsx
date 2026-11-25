@@ -17,9 +17,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import {
+  createTable,
   getCoreRowModel,
-  useReactTable,
   type ColumnDef,
+  type RowData,
+  type TableOptions,
 } from '@tanstack/react-table'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -70,8 +72,21 @@ const stubColumns: ColumnDef<TaskPluginListItem, unknown>[] = [
   { id: 'actions', cell: () => 'actions-menu' },
 ]
 
+// Static single-row table: the harness never mutates table state, so the core
+// factory replaces useReactTable's compiler-incompatible state management.
+function createStaticTable<TData extends RowData>(
+  options: TableOptions<TData>
+) {
+  return createTable({
+    ...options,
+    state: options.state ?? {},
+    onStateChange: options.onStateChange ?? (() => {}),
+    renderFallbackValue: options.renderFallbackValue ?? null,
+  })
+}
+
 function PluginCardHarness({ item }: { item: TaskPluginListItem }) {
-  const table = useReactTable({
+  const table = createStaticTable({
     data: [item],
     columns: stubColumns,
     getCoreRowModel: getCoreRowModel(),
