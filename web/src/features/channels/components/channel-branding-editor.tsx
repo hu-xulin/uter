@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { ImageUp, Trash2 } from 'lucide-react'
-import { type RefObject, useEffect, useRef, useState } from 'react'
+import { type RefObject, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -209,18 +209,21 @@ function BrandingPreview(props: {
   const { t } = useTranslation()
   const [lightBroken, setLightBroken] = useState(false)
   const [darkBroken, setDarkBroken] = useState(false)
+  const [prevLogo, setPrevLogo] = useState(props.logo)
+  if (prevLogo !== props.logo) {
+    setPrevLogo(props.logo)
+    setLightBroken(false)
+  }
+  const [prevLogoDark, setPrevLogoDark] = useState(props.logoDark)
+  if (prevLogoDark !== props.logoDark) {
+    setPrevLogoDark(props.logoDark)
+    setDarkBroken(false)
+  }
   const label = props.label || props.fallbackLabel
   const lightLogo = props.logo.trim()
   const darkLogo = props.logoDark.trim() || lightLogo
   const showLight = lightLogo !== '' && !lightBroken
   const showDark = darkLogo !== '' && !darkBroken
-
-  useEffect(() => {
-    setLightBroken(false)
-  }, [props.logo])
-  useEffect(() => {
-    setDarkBroken(false)
-  }, [props.logoDark])
 
   return (
     <span className='bg-muted text-muted-foreground inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-xs font-normal'>
