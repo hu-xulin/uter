@@ -36,9 +36,9 @@ describe('parseChannelModels', () => {
   })
 
   it('drops non-array and blank entries', () => {
-    expect(
-      parseChannelModels('{"12":["gpt-4", "", 5],"bad":"x"}')
-    ).toEqual({ 12: ['gpt-4'] })
+    expect(parseChannelModels('{"12":["gpt-4", "", 5],"bad":"x"}')).toEqual({
+      12: ['gpt-4'],
+    })
   })
 })
 
