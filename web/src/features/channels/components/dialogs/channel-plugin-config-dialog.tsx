@@ -68,33 +68,45 @@ export function ChannelPluginConfigDialog(
   const hint = resolveLocalizedText(props.keyHint, i18n.language)
   const parsedConfig = useMemo(() => parsePluginConfigObject(draft), [draft])
 
-  useEffect(() => {
-    if (!props.open) return
-    setDraft(props.config)
-    setFlow(null)
-    setStep(null)
-    setFields({})
-    setCallbackUrl('')
-  }, [props.open, props.config])
+  const resetKey = `${props.open}:${props.config}`
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
+    if (props.open) {
+      setDraft(props.config)
+      setFlow(null)
+      setStep(null)
+      setFields({})
+      setCallbackUrl('')
+    }
+  }
+
+  const credentialsKey = props.open && channelId ? channelId : null
+  const [prevCredentialsKey, setPrevCredentialsKey] = useState(credentialsKey)
+
+  if (credentialsKey !== prevCredentialsKey) {
+    setPrevCredentialsKey(credentialsKey)
+    setCredentials([])
+    if (credentialsKey !== null) setLoadingCredentials(true)
+  }
 
   useEffect(() => {
-    if (!props.open || !channelId) {
-      setCredentials([])
-      return
-    }
+    if (!props.open || !channelId) return
     let cancelled = false
-    const load = async () => {
-      setLoadingCredentials(true)
-      try {
-        const items = await getPluginCredentials(channelId)
-        if (!cancelled) setCredentials(items)
-      } catch {
-        if (!cancelled) setCredentials([])
-      } finally {
-        if (!cancelled) setLoadingCredentials(false)
-      }
-    }
-    load().catch(() => undefined)
+    void getPluginCredentials(channelId)
+      .then((items) => {
+        if (!cancelled) {
+          setCredentials(items)
+          setLoadingCredentials(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCredentials([])
+          setLoadingCredentials(false)
+        }
+      })
     return () => {
       cancelled = true
     }
