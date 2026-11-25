@@ -202,7 +202,7 @@ func normalizeBailianPriceUnit(raw string) (string, bool) {
 		return "per_second", true
 	case "每分钟", "per minute":
 		return "per_minute", true
-	case "每次", "per call", "per request":
+	case "每次", "次", "per call", "per request":
 		return "per_call", true
 	case "每万字符", "per 10k characters", "per 10k chars":
 		return "per_10k_chars", true
@@ -242,7 +242,10 @@ func BailianMetadata(item BailianModel) model.MetadataValues {
 	}
 }
 
-// BailianCatalogMetadata indexes the official catalog by model name.
+// BailianCatalogMetadata indexes the official catalog by model name and by
+// unambiguous official alias. Ambiguous aliases are not indexed: a name that
+// can point at two catalog rows must stay unresolved instead of silently
+// inheriting the wrong metadata or price.
 func BailianCatalogMetadata(catalog *BailianCatalog) map[string]model.MetadataValues {
 	out := make(map[string]model.MetadataValues)
 	if catalog == nil {
@@ -255,7 +258,56 @@ func BailianCatalogMetadata(catalog *BailianCatalog) map[string]model.MetadataVa
 		}
 		out[item.Model] = values
 	}
+	_, byAlias := bailianCatalogIndex(catalog)
+	for alias, items := range byAlias {
+		if len(items) == 1 {
+			out[alias] = out[items[0].Model]
+		}
+	}
 	return out
+}
+
+// bailianCatalogIndex builds exact-name and alias indexes. Alias entries that
+// resolve to several distinct catalog models are retained so callers can fail
+// closed instead of guessing which price the operator meant.
+func bailianCatalogIndex(catalog *BailianCatalog) (map[string]BailianModel, map[string][]BailianModel) {
+	byName := make(map[string]BailianModel)
+	byAlias := make(map[string][]BailianModel)
+	if catalog == nil {
+		return byName, byAlias
+	}
+	for _, item := range catalog.Models {
+		name := strings.TrimSpace(item.Model)
+		if name == "" {
+			continue
+		}
+		byName[name] = item
+		alias := strings.TrimSpace(item.ModelAlias)
+		if alias == "" || alias == name {
+			continue
+		}
+		seen := false
+		for _, existing := range byAlias[alias] {
+			if existing.Model == item.Model {
+				seen = true
+				break
+			}
+		}
+		if !seen {
+			byAlias[alias] = append(byAlias[alias], item)
+		}
+	}
+	return byName, byAlias
+}
+
+func resolveBailianCatalogItem(name string, byName map[string]BailianModel, byAlias map[string][]BailianModel) (BailianModel, bool) {
+	if item, ok := byName[name]; ok {
+		return item, true
+	}
+	if items := byAlias[name]; len(items) == 1 {
+		return items[0], true
+	}
+	return resolveBailianCatalogAlias(name, byName)
 }
 
 func catalogModelCount(catalog *BailianCatalog) int {
@@ -339,10 +391,7 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 		// Without it no formal price record can be produced.
 		return nil
 	}
-	byName := make(map[string]BailianModel, len(catalog.Models))
-	for _, item := range catalog.Models {
-		byName[item.Model] = item
-	}
+	byName, byAlias := bailianCatalogIndex(catalog)
 	rate := operation_setting.USDExchangeRate
 	if rate <= 0 {
 		rate = operation_setting.DefaultUSDExchangeRate
@@ -355,12 +404,9 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 			continue
 		}
 		seen[name] = true
-		item, ok := byName[name]
+		item, ok := resolveBailianCatalogItem(name, byName, byAlias)
 		if !ok {
-			item, ok = resolveBailianCatalogAlias(name, byName)
-			if !ok {
-				continue
-			}
+			continue
 		}
 		raw, err := common.Marshal(item)
 		if err != nil {
@@ -452,10 +498,7 @@ func BailianSeenChannelModels(catalog *BailianCatalog, channelModels []string) [
 	if catalog == nil || len(channelModels) == 0 {
 		return nil
 	}
-	byName := make(map[string]BailianModel, len(catalog.Models))
-	for _, item := range catalog.Models {
-		byName[item.Model] = item
-	}
+	byName, byAlias := bailianCatalogIndex(catalog)
 	seen := make([]string, 0, len(channelModels))
 	dedupe := make(map[string]bool, len(channelModels))
 	for _, rawName := range channelModels {
@@ -463,12 +506,7 @@ func BailianSeenChannelModels(catalog *BailianCatalog, channelModels []string) [
 		if name == "" || dedupe[name] {
 			continue
 		}
-		if _, ok := byName[name]; ok {
-			seen = append(seen, name)
-			dedupe[name] = true
-			continue
-		}
-		if _, ok := resolveBailianCatalogAlias(name, byName); ok {
+		if _, ok := resolveBailianCatalogItem(name, byName, byAlias); ok {
 			seen = append(seen, name)
 			dedupe[name] = true
 		}
@@ -908,6 +946,9 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	unknownTypes := make(map[string]bool)
 	unknownUnits := make(map[string]bool)
 	componentByTier := make(map[*model.ChannelPricingTier]model.ChannelPricingComponent)
+	// Track whether the executable 5-minute cache-creation price has been seen
+	// for a tier, so a 1-hour price is skipped regardless of response order.
+	cacheCreation5m := make(map[*model.ChannelPricingTier]bool)
 	audioASR := false
 	for _, capability := range item.Capabilities {
 		lower := strings.ToLower(strings.TrimSpace(capability))
@@ -999,10 +1040,37 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			tier.RawPriceTypes = append(tier.RawPriceTypes, priceType)
 			switch {
 			case strings.Contains(priceType, "cache") && strings.Contains(priceType, "creation"):
-				if strings.Contains(priceType, "thinking") {
-					setTokenPrice(&tier.ThinkingCreateCachePerMillionUSD, usd, "thinking cache creation")
-				} else {
-					setTokenPrice(&tier.CreateCachePerMillionUSD, usd, "cache creation")
+				// The catalog can publish both a 5-minute and a 1-hour explicit
+				// cache-creation price for the same model (qwen4-max: 12.5 and 20
+				// CNY/M). The 5-minute price is the executable default; the 1-hour
+				// price stays auditable in RawComponents but must not overwrite the
+				// default or mark the row needs_review and kill the channel price.
+				// Order-independent: a 1h seen before 5m is also replaced.
+				thinkingCreation := strings.Contains(priceType, "thinking")
+				shortCreation := strings.Contains(priceType, "_5m") || strings.Contains(priceType, "_5M")
+				longCreation := strings.Contains(priceType, "_1h") || strings.Contains(priceType, "_1H")
+				target := &tier.CreateCachePerMillionUSD
+				if thinkingCreation {
+					target = &tier.ThinkingCreateCachePerMillionUSD
+				}
+				switch {
+				case shortCreation:
+					// 5m is authoritative: overwrite any 1h fallback written
+					// first, without a review reason.
+					cacheCreation5m[tier] = true
+					value := model.MoneyFromFloat(usd)
+					*target = &value
+				case longCreation:
+					// 1h stays in RawComponents only once a 5m price exists;
+					// otherwise it is the fallback executable default.
+					if cacheCreation5m[tier] || *target != nil {
+						continue
+					}
+					value := model.MoneyFromFloat(usd)
+					*target = &value
+				default:
+					// Existing behaviour for untagged creation prices is kept.
+					setTokenPrice(target, usd, "cache creation")
 				}
 			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input" ||
 				priceType == "text_input_token" || priceType == "thinking_text_input_token" ||

@@ -909,3 +909,57 @@ func TestBailianUnconfirmedCurrencyNeedsReview(t *testing.T) {
 	assert.True(t, noRate.NeedsReview)
 	assert.Contains(t, noRate.ReviewReasons, "CNY quote has no valid USD exchange rate")
 }
+
+// Regression: a model can publish both a 5-minute and a 1-hour explicit
+// cache-creation price (qwen4-max: 12.5 and 20 CNY/M). The design says the
+// 5-minute price is the executable default and the 1-hour price stays visible
+// as a raw component; the two differing values must not mark the whole row
+// needs_review and kill its channel price.
+func TestBailianCacheCreation5mPreferredOver1h(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	item := BailianModel{Model: "qwen4-max", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "10", PriceUnit: "每百万tokens"},
+			{Type: "output_token", Price: "30", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache_creation_5m", Price: "12.5", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache_creation_1h", Price: "20", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.False(t, view.NeedsReview, "5m/1h cache-creation pair must not block the row")
+	require.Len(t, view.ChannelPriceTiers, 1)
+	tier := view.ChannelPriceTiers[0]
+	require.NotNil(t, tier.CreateCachePerMillionUSD)
+	assert.InDelta(t, 12.5, tier.CreateCachePerMillionUSD.Float64(), 1e-9, "5m is the executable default")
+	assert.Len(t, tier.RawComponents, 4, "both cache-creation prices stay auditable")
+
+	internal := bailianInternalPricing(view)
+	require.NotEmpty(t, internal, "a flagship model with clear input/output prices must have a channel price")
+	assert.Contains(t, internal, `"create_cache_per_million_usd":12.5`)
+}
+
+func TestBailianCacheCreationOrderIndependent(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	// 1h published before 5m: 5m must still win the executable default.
+	item := BailianModel{Model: "qwen4-max", Prices: []BailianPriceRange{{
+		RangeName: "Default",
+		Prices: []BailianPrice{
+			{Type: "input_token", Price: "10", PriceUnit: "每百万tokens"},
+			{Type: "output_token", Price: "30", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache_creation_1h", Price: "20", PriceUnit: "每百万tokens"},
+			{Type: "input_token_cache_creation_5m", Price: "12.5", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.False(t, view.NeedsReview)
+	require.NotNil(t, view.ChannelPriceTiers[0].CreateCachePerMillionUSD)
+	assert.InDelta(t, 12.5, view.ChannelPriceTiers[0].CreateCachePerMillionUSD.Float64(), 1e-9)
+	assert.NotEmpty(t, bailianInternalPricing(view))
+}
