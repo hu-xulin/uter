@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2, Save } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -82,11 +82,26 @@ type FAQFormValues = z.infer<typeof faqSchema>
 
 const FAQ_FORM_ID = 'faq-form'
 
+function parseFaqData(data: string): FAQ[] {
+  try {
+    const parsed = JSON.parse(data || '[]')
+    if (!Array.isArray(parsed)) return []
+    return parsed.map((item, idx) => ({
+      ...item,
+      id: item.id || idx + 1,
+    }))
+  } catch {
+    return []
+  }
+}
+
 export function FAQSection({ enabled, data }: FAQSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
-  const [faqList, setFaqList] = useState<FAQ[]>([])
+  const [faqList, setFaqList] = useState<FAQ[]>(() => parseFaqData(data))
   const [isEnabled, setIsEnabled] = useState(enabled)
+  const [prevData, setPrevData] = useState(data)
+  const [prevEnabled, setPrevEnabled] = useState(enabled)
   const [hasChanges, setHasChanges] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [showDialog, setShowDialog] = useState(false)
@@ -102,25 +117,16 @@ export function FAQSection({ enabled, data }: FAQSectionProps) {
     },
   })
 
-  useEffect(() => {
-    try {
-      const parsed = JSON.parse(data || '[]')
-      if (Array.isArray(parsed)) {
-        setFaqList(
-          parsed.map((item, idx) => ({
-            ...item,
-            id: item.id || idx + 1,
-          }))
-        )
-      }
-    } catch {
-      setFaqList([])
-    }
-  }, [data])
-
-  useEffect(() => {
+  // Keep the editable list and toggle in sync with incoming props without
+  // resetting local edits on every render.
+  if (prevData !== data) {
+    setPrevData(data)
+    setFaqList(parseFaqData(data))
+  }
+  if (prevEnabled !== enabled) {
+    setPrevEnabled(enabled)
     setIsEnabled(enabled)
-  }, [enabled])
+  }
 
   const handleToggleEnabled = async (checked: boolean) => {
     try {
