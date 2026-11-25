@@ -18,9 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  createTable,
   flexRender,
   getCoreRowModel,
-  useReactTable,
+  type RowData,
+  type TableOptions,
 } from '@tanstack/react-table'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { createInstance } from 'i18next'
@@ -74,12 +76,25 @@ function makeLog(other: LogOtherData, type = 2): UsageLog {
   }
 }
 
+// Static table for a single log row: no table state is mutated, so the core
+// factory avoids useReactTable's React Compiler-incompatible state management.
+function createStaticTable<TData extends RowData>(
+  options: TableOptions<TData>
+) {
+  return createTable({
+    ...options,
+    state: options.state ?? {},
+    onStateChange: options.onStateChange ?? (() => {}),
+    renderFallbackValue: options.renderFallbackValue ?? null,
+  })
+}
+
 function DetailPreview(props: {
   other: LogOtherData
   isAdmin: boolean
   type?: number
 }) {
-  const table = useReactTable({
+  const table = createStaticTable({
     data: [makeLog(props.other, props.type)],
     columns: useCommonLogsColumns(props.isAdmin, false),
     getCoreRowModel: getCoreRowModel(),
