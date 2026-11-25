@@ -158,6 +158,35 @@ func uterRouteDurationUnitPrices(expr string) (uterRouteUnitPrices, bool) {
 	return prices, true
 }
 
+// 图片模型的表达式形如：
+//
+//	tier("standard", fixed(0.05)) * image_count
+//
+// fixed(X) 是每张图片的美元单价，image_count 是本次请求的图片张数；二者缺一
+// 不可。只写 fixed 而没有 image_count 时，无法确认它是按次还是按张，不能拿
+// 来生成官方价。与 token 表达式一致，多条档位取首次出现的固定价作为基准档。
+var (
+	uterRouteImageCountTerm = regexp.MustCompile(`\bimage_count\b`)
+	uterRouteFixedPriceTerm = regexp.MustCompile(`\bfixed\s*\(\s*([0-9]+(?:\.[0-9]+)?)\s*\)`)
+)
+
+// uterRoutePerImagePrice 从按张计费的表达式里解出官方单价（美元/张）。
+// 返回 ok=false 表示证据不足，调用方必须保留空价并告警，绝不猜价。
+func uterRoutePerImagePrice(expr string) (float64, bool) {
+	if !uterRouteImageCountTerm.MatchString(expr) {
+		return 0, false
+	}
+	match := uterRouteFixedPriceTerm.FindStringSubmatch(expr)
+	if len(match) != 2 {
+		return 0, false
+	}
+	value, err := strconv.ParseFloat(match[1], 64)
+	if err != nil || value <= 0 {
+		return 0, false
+	}
+	return value, true
+}
+
 // uterRouteScaleExpr 把表达式里所有单价系数乘以 factor，返回新表达式。
 //
 // 为什么必须改表达式而不是只改 ModelRatio：分层计费模型在运行时与定价页
