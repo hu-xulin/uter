@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "registry_id": "UDS8-R-EXCEPTIONS",
   "version": "8.0.0",
-  "generated_at": "2026-11-23T08:34:47.419Z",
+  "generated_at": "2026-11-25T03:24:23+08:00",
   "policy": "禁止用例外掩盖普通正文对比度缺陷；每条必须含失效条件",
   "items": [
     {
@@ -37,9 +37,20 @@
     {
       "id": "EX-005",
       "scope": "UDS 8.0 全页面 computed-style 审计中经人工确认的组合例外集合",
-      "reason": "逐项执行记录见 docs/design-system/audit/comprehensive/decision-execution.json；数值近似但语义不适用的最近令牌不机械替换，按各组的文档建议登记。",
-      "review_condition": "对应组件或 token 语义发生变更、或新的真实页面差异组无法归入既有记录时",
-      "status": "ALLOWED"
+      "reason": "所有 173 组已按所有者裁决强制采纳 UDS8；逐组决策与原始理由保留在 decision-execution.json。",
+      "review_condition": "仅当新增真实页面差异组无法归入既有记录时重新开启",
+      "status": "RESOLVED",
+      "action": "MIGRATE_TO_UDS8",
+      "resolved_by": "项目所有者裁决（签名凭证另行归档）",
+      "resolved_at": "2026-11-25T03:24:23+08:00",
+      "evidence": "docs/design-system/audit/UDS8-RETIREMENT-EXECUTION-EVIDENCE.md",
+      "decision": {
+        "scope": "173 组登记例外全部按 UDS8 执行",
+        "groups": 173,
+        "registeredExceptionRemaining": 0,
+        "uds8Adopted": 173,
+        "targetHead": "fa5e1d5269f90490c17b500aa0c29bb19c022027"
+      }
     }
   ],
   "registered_gradient_files": [
