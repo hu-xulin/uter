@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import * as z from 'zod'
 
@@ -109,6 +109,7 @@ export function HeaderNavigationSection({
     resolver: zodResolver(headerNavSchema),
     defaultValues: formDefaults,
   })
+  const watchedValues = useWatch({ control: form.control })
 
   useEffect(() => {
     form.reset(formDefaults)
@@ -290,7 +291,9 @@ export function HeaderNavigationSection({
                           <Switch
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            disabled={!form.watch(module.requireAuthDependsOn)}
+                            disabled={
+                              !watchedValues[module.requireAuthDependsOn]
+                            }
                           />
                         </FormControl>
                         <FormMessage />
