@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronDown, KeyRound, Settings2, WalletCards } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useForm, type SubmitErrorHandler } from 'react-hook-form'
+import { useForm, useWatch, type SubmitErrorHandler } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -205,66 +205,49 @@ export function ApiKeysMutateDrawer({
     defaultValues: getApiKeyFormDefaultValues(defaultUseAutoGroup),
   })
 
-  // Load existing data when updating
-  useEffect(() => {
-    if (!open) {
-      setInitializedTarget(null)
-      return
-    }
-    if (
-      !groupsFetched ||
-      groupsFetching ||
-      !autoGroupsFetched ||
-      autoGroupsFetching
-    ) {
-      return
-    }
-    if (isUpdate && (!apiKeyFetched || apiKeyFetching)) return
-    if (!isUpdate && statusLoading) return
+  const [prevOpen, setPrevOpen] = useState(open)
 
-    const target = isUpdate && currentRow ? `update:${currentRow.id}` : 'create'
-    if (initializedTarget === target) return
-    if (isUpdate && currentRow) {
-      if (apiKeyData?.success && apiKeyData.data) {
-        form.reset(
-          transformApiKeyToFormDefaults(
-            apiKeyData.data,
-            availableAutoGroupNames,
-            maxAutoGroups
-          )
+  if (open !== prevOpen) {
+    setPrevOpen(open)
+    if (!open) setInitializedTarget(null)
+  }
+
+  const formTarget =
+    isUpdate && currentRow ? `update:${currentRow.id}` : 'create'
+
+  // 数据就绪后一次性把表单重置为目标记录；状态更新发生在渲染期，
+  // 避免在 effect 中同步 setState（React Compiler set-state-in-effect）。
+  const getShouldInitialize = () => {
+    if (!open) return false
+    if (groupsFetching || autoGroupsFetching) return false
+    if (!groupsFetched || !autoGroupsFetched) return false
+    if (isUpdate && (!apiKeyFetched || apiKeyFetching)) return false
+    if (!isUpdate && statusLoading) return false
+    if (initializedTarget === formTarget) return false
+    if (isUpdate)
+      return !!(currentRow && apiKeyData?.success && apiKeyData.data)
+    return true
+  }
+
+  if (getShouldInitialize()) {
+    setInitializedTarget(formTarget)
+    if (isUpdate && apiKeyData?.success && apiKeyData.data) {
+      form.reset(
+        transformApiKeyToFormDefaults(
+          apiKeyData.data,
+          availableAutoGroupNames,
+          maxAutoGroups
         )
-        setInitializedTarget(target)
-      }
+      )
     } else {
       form.reset(
         getApiKeyFormDefaultValues(defaultUseAutoGroup && backendHasAuto)
       )
-      setInitializedTarget(target)
     }
-  }, [
-    open,
-    isUpdate,
-    currentRow,
-    form,
-    defaultUseAutoGroup,
-    statusLoading,
-    backendHasAuto,
-    groupsFetched,
-    groupsFetching,
-    autoGroupsFetched,
-    autoGroupsFetching,
-    apiKeyData,
-    apiKeyFetched,
-    apiKeyFetching,
-    availableAutoGroupNames,
-    maxAutoGroups,
-    initializedTarget,
-  ])
+  }
 
-  const formTarget =
-    isUpdate && currentRow ? `update:${currentRow.id}` : 'create'
   const isFormInitialized = initializedTarget === formTarget
-  const selectedGroup = form.watch('group')
+  const selectedGroup = useWatch({ control: form.control, name: 'group' })
 
   // Correct group after groups load: if the form value is not in available groups, fall back
   useEffect(() => {
@@ -312,7 +295,7 @@ export function ApiKeysMutateDrawer({
             name:
               i === 0 && data.name
                 ? data.name
-                : `${data.name || 'default'}-${Math.random().toString(36).slice(2, 8)}`,
+                : `${data.name || 'default'}-${crypto.randomUUID().slice(2, 8)}`,
           })
           if (result.success) {
             successCount++
@@ -364,8 +347,14 @@ export function ApiKeysMutateDrawer({
   const quotaPlaceholder = tokensOnly
     ? t('Enter quota in tokens')
     : t('Enter quota in {{currency}}', { currency: currencyLabel })
-  const autoGroupsMode = form.watch('auto_groups_mode')
-  const unlimitedQuota = form.watch('unlimited_quota')
+  const autoGroupsMode = useWatch({
+    control: form.control,
+    name: 'auto_groups_mode',
+  })
+  const unlimitedQuota = useWatch({
+    control: form.control,
+    name: 'unlimited_quota',
+  })
 
   return (
     <Sheet
