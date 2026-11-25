@@ -176,6 +176,47 @@ export function extractRequirements() {
 }
 
 /**
+ * Compare a generated matrix against the current registered specification
+ * catalog. The registry + numbered requirement sections are authoritative;
+ * a historical count or a stale matrix can never define completeness.
+ */
+export function compareRequirementIds(rows, expectedRequirements = null) {
+  const expected = expectedRequirements ?? extractRequirements().requirements;
+  if (!Array.isArray(expected)) throw new Error('registered requirement catalog is not an array');
+  const actualRows = Array.isArray(rows) ? rows : [];
+  const expectedIds = expected.map((r) => r?.requirement_id);
+  const actualIds = actualRows.map((r) => r?.requirement_id ?? r?.id ?? null);
+  const expectedCounts = new Map();
+  const actualCounts = new Map();
+  for (const id of expectedIds) expectedCounts.set(id, (expectedCounts.get(id) || 0) + 1);
+  for (const id of actualIds) actualCounts.set(id, (actualCounts.get(id) || 0) + 1);
+  const expectedDuplicateIds = [...expectedCounts].filter(([, count]) => count > 1).map(([id]) => id);
+  const duplicateIds = [...actualCounts].filter(([, count]) => count > 1).map(([id]) => id);
+  const expectedSet = new Set(expectedIds);
+  const actualSet = new Set(actualIds.filter((id) => typeof id === 'string' && id.trim()));
+  const missingIds = expectedIds.filter((id) => !actualSet.has(id));
+  const unexpectedIds = actualIds.filter((id) => typeof id !== 'string' || !expectedSet.has(id));
+  const invalidRowCount = actualIds.filter((id) => typeof id !== 'string' || !id.trim()).length;
+  const ok = expectedIds.length > 0
+    && expectedDuplicateIds.length === 0
+    && actualRows.length === expectedIds.length
+    && duplicateIds.length === 0
+    && invalidRowCount === 0
+    && missingIds.length === 0
+    && unexpectedIds.length === 0;
+  return {
+    ok,
+    expected_total: expectedIds.length,
+    actual_total: actualRows.length,
+    expected_duplicate_ids: expectedDuplicateIds,
+    duplicate_ids: duplicateIds,
+    invalid_row_count: invalidRowCount,
+    missing_ids: missingIds,
+    unexpected_ids: unexpectedIds,
+  };
+}
+
+/**
  * Apply the strict verification overlay from RESULTS.json, but ONLY when that
  * file was produced against the CURRENT execution (id / HEAD / worktree
  * fingerprint). A stale overlay can never promote a historical PASS.
