@@ -237,6 +237,9 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
         model.toLowerCase().includes(keyword)
     )
     return {
+      // `models` is the normalized, de-duplicated full set and is NOT affected
+      // by the search keyword — it backs the global select-all action.
+      models,
       filtered,
       existing,
       added,
@@ -253,6 +256,10 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
   ])
 
   const showChanges = props.showChanges ?? true
+  const selectedSet = new Set(props.selected)
+  const allSelected =
+    categorized.models.length > 0 &&
+    categorized.models.every((model) => selectedSet.has(model))
   const counts = {
     new: categorized.added.length,
     existing: categorized.existing.length,
@@ -286,25 +293,42 @@ export function UpstreamModelSelection(props: UpstreamModelSelectionProps) {
       />
       {!showChanges && (
         <div className='flex items-center justify-between gap-2'>
-          <span className='text-muted-foreground text-xs'>
+          <span className='text-muted-foreground min-w-0 truncate text-xs'>
             {props.summaryText ??
               t('Fetched {{count}} models', { count: props.models.length })}
           </span>
-          {search.trim().length > 0 && (
+          <span className='flex shrink-0 items-center gap-2'>
+            {search.trim().length > 0 && (
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                disabled={!categorized.filtered.length}
+                onClick={() =>
+                  props.onChange([
+                    ...new Set([...props.selected, ...categorized.filtered]),
+                  ])
+                }
+              >
+                {t('Select all matching models')}
+              </Button>
+            )}
             <Button
               type='button'
               variant='outline'
               size='sm'
-              disabled={!categorized.filtered.length}
+              disabled={!categorized.models.length}
               onClick={() =>
-                props.onChange([
-                  ...new Set([...props.selected, ...categorized.filtered]),
-                ])
+                props.onChange(
+                  allSelected
+                    ? []
+                    : [...new Set([...props.selected, ...categorized.models])]
+                )
               }
             >
-              {t('Select all matching models')}
+              {allSelected ? t('Clear selection') : t('Select all models')}
             </Button>
-          )}
+          </span>
         </div>
       )}
       {showChanges ? (
