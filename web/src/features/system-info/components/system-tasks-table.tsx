@@ -90,22 +90,22 @@ export function SystemTasksTable(props: SystemTasksTableProps) {
         {/* 全站表格统一 14px（text-sm）：表头也用 text-sm!，`!` 用于压过
             单元格后代的 font-size:inherit 继承规则。 */}
         <TableRow className='bg-muted/40 hover:bg-muted/40'>
-          <TableHead className='text-sm! h-9 w-[260px] px-4'>
+          <TableHead className='h-9 w-[260px] px-4 text-sm!'>
             {t('Type')}
           </TableHead>
-          <TableHead className='text-sm! h-9 w-[130px]'>
+          <TableHead className='h-9 w-[130px] text-sm!'>
             {t('Status')}
           </TableHead>
-          <TableHead className='text-sm! h-9 w-[180px]'>
+          <TableHead className='h-9 w-[180px] text-sm!'>
             {t('Progress')}
           </TableHead>
-          <TableHead className='text-sm! h-9 min-w-[260px]'>
+          <TableHead className='h-9 min-w-[260px] text-sm!'>
             {t('Executor')}
           </TableHead>
-          <TableHead className='text-sm! h-9 w-[190px]'>
+          <TableHead className='h-9 w-[190px] text-sm!'>
             {t('Updated')}
           </TableHead>
-          <TableHead className='text-sm! h-9 w-[220px] pr-4'>
+          <TableHead className='h-9 w-[220px] pr-4 text-sm!'>
             {t('Detail')}
           </TableHead>
         </TableRow>
