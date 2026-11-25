@@ -367,7 +367,7 @@ function auditLegacyEngine(existing, base, covMap) {
     probe_kind_counts: probeKindCounts(),
     legacy_baseline: legacyBaseline,
     legacy_distinct_behavior_assertions: 0,
-    note: 'Legacy 7-state engine: 0/538 requirements had a DISTINCT real behaviour assertion. PARTIALLY_VERIFIED verdicts came from shared generic probes + implementation-file presence. Static/file/config probes alone can never verify behaviour.',
+    note: `Legacy 7-state engine: 0/${base.length} registered requirements had a DISTINCT real behaviour assertion. PARTIALLY_VERIFIED verdicts came from shared generic probes + implementation-file presence. Static/file/config probes alone can never verify behaviour.`,
     legacy_coverage: {
       requirements_with_generic_command_probes: genericCoverage,
       requirements_static_only_coverage: staticOnly,
@@ -481,7 +481,7 @@ function writeCoverageSummary(out, rows) {
     '## 结论先行',
     '',
     `- 需求总数 **${rows.length}**（强制性 ${out.totals.mandatory} / 验收 ${out.totals.acceptance}）。`,
-    `- 本轮真实执行的**有界行为套件命令**数：**${behaviorRuns.length}**（不盲目执行 538 条命令矩阵）。`,
+    `- 本轮真实执行的**有界行为套件命令**数：**${behaviorRuns.length}**（注册要求共 ${rows.length} 条；不盲目执行逐条命令矩阵）。`,
     `- 真实观测到的**独立行为断言**数：**${behaviorRuns.reduce((n, r) => n + (r.assertions || []).filter((a) => a.found).length, 0)}**。`,
     `- 只有绑定了这些独立行为断言、命令 exit 0、且证据哈希有效并绑定当前执行的要求，才是 VERIFIED。`,
     '',
@@ -516,13 +516,13 @@ function writeCoverageSummary(out, rows) {
     `- **${states.BLOCKED} 条 BLOCKED**：依赖生产授权/真实支付/服务商沙箱/真机等外部条件，未满足，绝不假通过。`,
     `- 旧引擎事实：${out.audit.probe_kind_counts.STATIC_EXISTENCE} 个 STATIC_EXISTENCE 探针（文件/符号/配置/报告卡/文本哈希）、`,
     `  ${out.audit.probe_kind_counts.BEHAVIOR_EXECUTION} 个通用 BEHAVIOR_EXECUTION 命令（整套件/整 CLI/整构建，共享证据）；`,
-    '  **0/538 条要求**在旧引擎中拥有独立真实行为断言。',
+    `  **0/${rows.length} 条要求**在旧引擎中拥有独立真实行为断言。`,
     '- 外键等「观察即通过」的测试：本引擎要求真实断言（如 `FK enforced` + `orphan rejected`）出现在输出中，',
     '  仅「命令 exit 0」不足以 VERIFIED。',
     '',
     '## 复现命令',
     '',
-    '- `node .uap/tools/requirement-verification.mjs`（真实运行，写出 RESULTS + 全 538 严格 MATRIX + 本摘要）',
+    `- `node .uap/tools/requirement-verification.mjs`（真实运行，写出 RESULTS + 全 ${rows.length} 条严格 MATRIX + 本摘要）`,
     '- `node .uap/tools/requirement-verification.mjs --print-states`（从矩阵重算并打印诚实 `states:` 行）',
     '- `node .uap/tools/requirement-verification.mjs --dry-run`（单元/负向测试用，不执行命令、不写文件）',
     '',
@@ -631,7 +631,7 @@ export async function verifyRequirements({ batches = null, dryRun = false, execu
   }
   const shared = detectSharedEvidence(allBindings);
 
-  // Classify ALL 538 requirements (no sampling, no truncation).
+  // Classify every requirement extracted from the current specification registry (no sampling, no truncation).
   const rows = [];
   for (const r of base) {
     const cov = covMap.get(r.requirement_id) || { batch_id: 'UNMAPPED', batch_name: null, probes: [], coverage_basis: 'unmapped' };
