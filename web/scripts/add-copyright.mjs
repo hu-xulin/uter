@@ -68,7 +68,7 @@ For commercial licensing, please contact support@uter.ai
 `
 
 const PROJECT_COPYRIGHT_BLOCK_PATTERN =
-  /^\/\*\r?\nCopyright \(C\) .+? Uter.ai\r?\n[\s\S]*?For commercial licensing, please contact support@Uter.ai\.com\r?\n\*\/\r?\n?/
+  /^\/\*\r?\nCopyright \(C\) .+? Uter.ai\r?\n[\s\S]*?For commercial licensing, please contact support@uter\.ai\r?\n\*\/\r?\n?/
 const THIRD_PARTY_COPYRIGHT_PATTERN =
   /^\/\*[\s\S]*?Copyright[\s\S]*?\*\/\r?\n?/i
 
