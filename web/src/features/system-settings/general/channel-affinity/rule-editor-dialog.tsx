@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Plus, Trash2 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -111,14 +111,18 @@ interface Props {
   globalSessionMode?: SessionMode | ''
 }
 
+let nextKeySourceRowId = 0
+
+function createKeySourceRow(source?: Partial<KeySource>): KeySourceRow {
+  return {
+    ...normalizeKeySource(source ?? { type: 'gjson', path: '' }),
+    rowId: String(nextKeySourceRowId++),
+  }
+}
+
 export function RuleEditorDialog(props: Props) {
   const { t } = useTranslation()
   const isEdit = !!props.rule?.name
-  const nextKeySourceRowId = useRef(0)
-  const createKeySourceRow = (source?: Partial<KeySource>): KeySourceRow => ({
-    ...normalizeKeySource(source ?? { type: 'gjson', path: '' }),
-    rowId: String(nextKeySourceRowId.current++),
-  })
   const [keySources, setKeySources] = useState<KeySourceRow[]>(() => [
     createKeySourceRow(),
   ])
@@ -140,6 +144,24 @@ export function RuleEditorDialog(props: Props) {
       param_override_template_json: '',
     },
   })
+
+  const paramOverrideTemplateJson = useWatch({
+    control: form.control,
+    name: 'param_override_template_json',
+  })
+  const includeUsingGroup = useWatch({
+    control: form.control,
+    name: 'include_using_group',
+  })
+  const includeModelName = useWatch({
+    control: form.control,
+    name: 'include_model_name',
+  })
+  const includeRuleName = useWatch({
+    control: form.control,
+    name: 'include_rule_name',
+  })
+
   const paramOverrideTemplateField = form.register(
     'param_override_template_json'
   )
@@ -171,32 +193,43 @@ export function RuleEditorDialog(props: Props) {
     if (r.param_override_template) setAdvancedOpen(true)
   }
 
-  useEffect(() => {
-    if (!props.open) return
-
-    if (props.rule) {
-      resetFromRule(props.rule)
-    } else if (props.templateKey && RULE_TEMPLATES[props.templateKey]) {
-      resetFromRule(RULE_TEMPLATES[props.templateKey])
-    } else {
-      form.reset({
-        session_mode: 'inherit',
-        name: '',
-        model_regex_text: '',
-        path_regex_text: '',
-        user_agent_include_text: '',
-        value_regex: '',
-        ttl_seconds: 0,
-        skip_retry_on_failure: false,
-        include_using_group: true,
-        include_model_name: false,
-        include_rule_name: true,
-        param_override_template_json: '',
-      })
-      setKeySources([createKeySourceRow()])
+  const getResetKey = () => {
+    if (!props.open) return 'closed'
+    if (props.rule) return `rule:${JSON.stringify(props.rule)}`
+    if (props.templateKey && RULE_TEMPLATES[props.templateKey]) {
+      return `template:${props.templateKey}`
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.open, props.rule, props.templateKey])
+    return 'blank'
+  }
+  const resetKey = getResetKey()
+  const [prevResetKey, setPrevResetKey] = useState(resetKey)
+
+  if (resetKey !== prevResetKey) {
+    setPrevResetKey(resetKey)
+    if (props.open) {
+      if (props.rule) {
+        resetFromRule(props.rule)
+      } else if (props.templateKey && RULE_TEMPLATES[props.templateKey]) {
+        resetFromRule(RULE_TEMPLATES[props.templateKey])
+      } else {
+        form.reset({
+          session_mode: 'inherit',
+          name: '',
+          model_regex_text: '',
+          path_regex_text: '',
+          user_agent_include_text: '',
+          value_regex: '',
+          ttl_seconds: 0,
+          skip_retry_on_failure: false,
+          include_using_group: true,
+          include_model_name: false,
+          include_rule_name: true,
+          param_override_template_json: '',
+        })
+        setKeySources([createKeySourceRow()])
+      }
+    }
+  }
 
   const handleSave = (values: RuleFormValues) => {
     const modelRegex = normalizeStringList(values.model_regex_text)
@@ -485,7 +518,7 @@ export function RuleEditorDialog(props: Props) {
               </Label>
               <JsonCodeEditor
                 id='channel-affinity-param-override-template'
-                value={form.watch('param_override_template_json') || ''}
+                value={paramOverrideTemplateJson || ''}
                 onChange={(value) =>
                   form.setValue('param_override_template_json', value, {
                     shouldDirty: true,
@@ -509,19 +542,19 @@ export function RuleEditorDialog(props: Props) {
 
             <div className='flex flex-col gap-3'>
               <SettingsSwitchField
-                checked={form.watch('include_using_group')}
+                checked={includeUsingGroup}
                 onCheckedChange={(v) => form.setValue('include_using_group', v)}
                 label={t('Include Group')}
                 className='py-0'
               />
               <SettingsSwitchField
-                checked={form.watch('include_model_name')}
+                checked={includeModelName}
                 onCheckedChange={(v) => form.setValue('include_model_name', v)}
                 label={t('Include Model')}
                 className='py-0'
               />
               <SettingsSwitchField
-                checked={form.watch('include_rule_name')}
+                checked={includeRuleName}
                 onCheckedChange={(v) => form.setValue('include_rule_name', v)}
                 label={t('Include Rule Name')}
                 className='py-0'
