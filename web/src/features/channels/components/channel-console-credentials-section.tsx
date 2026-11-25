@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation } from '@tanstack/react-query'
-import { Eye, Globe2, RefreshCw } from 'lucide-react'
+import { Eye, Globe2, RefreshCw, Save } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -48,6 +48,10 @@ type Props = {
   // Models discovered by the PRIMARY API Key + base_url path, used to
   // cross-check the secondary console result.
   primaryModels: string[]
+  // Create-wizard save step: persists console credentials on the draft row so
+  // later steps can log into the upstream channel. Absent in read-only usage.
+  onSaveCredentials?: () => Promise<void> | void
+  savingCredentials?: boolean
 }
 
 /**
@@ -75,21 +79,31 @@ export function ChannelConsoleCredentialsSection(props: Props) {
 
   const configured = Boolean(
     props.form.watch('console_login_url')?.trim() &&
-      props.form.watch('console_username')?.trim()
+    props.form.watch('console_username')?.trim()
   )
 
   const normalize = (value: string) => value.trim().toLowerCase()
   const primarySet = new Set(props.primaryModels.map(normalize))
   const consoleSet = new Set((catalog?.models ?? []).map(normalize))
   const shared = [...consoleSet].filter((model) => primarySet.has(model)).length
-  const consoleOnly = [...consoleSet].filter((model) => !primarySet.has(model)).length
-  const primaryOnly = [...primarySet].filter((model) => !consoleSet.has(model)).length
+  const consoleOnly = [...consoleSet].filter(
+    (model) => !primarySet.has(model)
+  ).length
+  const primaryOnly = [...primarySet].filter(
+    (model) => !consoleSet.has(model)
+  ).length
 
   return (
     <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
-      <fieldset disabled={props.sensitiveLocked} className='space-y-4 disabled:opacity-60'>
+      <fieldset
+        disabled={props.sensitiveLocked}
+        className='space-y-4 disabled:opacity-60'
+      >
         <div className='flex items-start gap-3'>
-          <Globe2 className='text-muted-foreground mt-0.5 h-4 w-4 shrink-0' aria-hidden='true' />
+          <Globe2
+            className='text-muted-foreground mt-0.5 h-4 w-4 shrink-0'
+            aria-hidden='true'
+          />
           <div className='min-w-0 flex-1'>
             <p className='text-sm font-medium'>
               {t('Upstream console login (optional)')}
@@ -155,7 +169,9 @@ export function ChannelConsoleCredentialsSection(props: Props) {
                   type='button'
                   variant='ghost'
                   size='icon'
-                  aria-label={showPassword ? t('Hide password') : t('Show password')}
+                  aria-label={
+                    showPassword ? t('Hide password') : t('Show password')
+                  }
                   onClick={() => setShowPassword((value) => !value)}
                   className='absolute top-0 right-0 h-full px-3'
                 >
@@ -171,21 +187,44 @@ export function ChannelConsoleCredentialsSection(props: Props) {
         />
 
         {configured && (
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            onClick={() => crossCheck.mutate()}
-            disabled={crossCheck.isPending || !props.channelId}
-            title={!props.channelId ? t('Save the channel before cross-checking') : undefined}
-          >
-            {crossCheck.isPending ? (
-              <RefreshCw className='mr-2 h-4.5 w-4.5 animate-spin' />
-            ) : (
-              <RefreshCw className='mr-2 h-4.5 w-4.5' />
+          <div className='flex flex-wrap items-center gap-2'>
+            {props.onSaveCredentials && (
+              <Button
+                type='button'
+                variant='secondary'
+                size='sm'
+                onClick={() => void props.onSaveCredentials?.()}
+                disabled={props.savingCredentials === true}
+                title={t('Save console credentials for later upstream login')}
+              >
+                {props.savingCredentials === true ? (
+                  <RefreshCw className='mr-2 h-4.5 w-4.5 animate-spin' />
+                ) : (
+                  <Save className='mr-2 h-4.5 w-4.5' />
+                )}
+                {t('Save credentials')}
+              </Button>
             )}
-            {t('Fetch & cross-check')}
-          </Button>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={() => crossCheck.mutate()}
+              disabled={crossCheck.isPending || !props.channelId}
+              title={
+                !props.channelId
+                  ? t('Save the channel before cross-checking')
+                  : undefined
+              }
+            >
+              {crossCheck.isPending ? (
+                <RefreshCw className='mr-2 h-4.5 w-4.5 animate-spin' />
+              ) : (
+                <RefreshCw className='mr-2 h-4.5 w-4.5' />
+              )}
+              {t('Fetch & cross-check')}
+            </Button>
+          </div>
         )}
       </fieldset>
 
@@ -219,8 +258,12 @@ function CrossCheckResult(props: {
       <Alert className='mt-4'>
         <AlertDescription>
           {catalog.status === 'not_configured'
-            ? t('Console login not configured. Using API Key + Base URL as the source of truth.')
-            : t('Console login failed. Using API Key + Base URL as the source of truth.')}
+            ? t(
+                'Console login not configured. Using API Key + Base URL as the source of truth.'
+              )
+            : t(
+                'Console login failed. Using API Key + Base URL as the source of truth.'
+              )}
         </AlertDescription>
       </Alert>
     )
@@ -235,17 +278,22 @@ function CrossCheckResult(props: {
         <span className='flex items-center gap-2'>
           <Badge variant='default'>{t('Cross-check complete')}</Badge>
           <span>
-            {t('{{count}} model(s) from console', { count: catalog.models.length })}
+            {t('{{count}} model(s) from console', {
+              count: catalog.models.length,
+            })}
             {' · '}
             {t('{{count}} price row(s)', { count: catalog.prices.length })}
           </span>
         </span>
         <span className='text-muted-foreground'>
-          {t('{{shared}} match, {{consoleOnly}} console-only, {{primaryOnly}} API-only', {
-            shared: props.shared,
-            consoleOnly: props.consoleOnly,
-            primaryOnly: props.primaryOnly,
-          })}
+          {t(
+            '{{shared}} match, {{consoleOnly}} console-only, {{primaryOnly}} API-only',
+            {
+              shared: props.shared,
+              consoleOnly: props.consoleOnly,
+              primaryOnly: props.primaryOnly,
+            }
+          )}
         </span>
         {catalog.prices.length > 0 && (
           <Button
@@ -256,14 +304,18 @@ function CrossCheckResult(props: {
             aria-expanded={props.showPrices}
             onClick={props.onTogglePrices}
           >
-            {props.showPrices ? t('Hide console prices') : t('Show console prices')}
+            {props.showPrices
+              ? t('Hide console prices')
+              : t('Show console prices')}
           </Button>
         )}
         {props.showPrices && (
           <div className='border-border/60 mt-1 space-y-1 rounded-md border p-2'>
             <p className='text-sm font-medium'>{t('Console price')}</p>
             {catalog.prices.length === 0 ? (
-              <p className='text-muted-foreground text-sm'>{t('No price rows returned')}</p>
+              <p className='text-muted-foreground text-sm'>
+                {t('No price rows returned')}
+              </p>
             ) : (
               catalog.prices.map((price) => (
                 <div
@@ -282,7 +334,9 @@ function CrossCheckResult(props: {
           </div>
         )}
         <span className='text-muted-foreground'>
-          {t('Console data is read-only. Apply any change through the normal model and price steps.')}
+          {t(
+            'Console data is read-only. Apply any change through the normal model and price steps.'
+          )}
         </span>
       </AlertDescription>
     </Alert>
