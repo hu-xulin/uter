@@ -188,8 +188,12 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 		pruneHiddenUterRouteModels(channel, snapshot.ExcludedModels)
 		state := states.Channels[fmt.Sprintf("%d", channel.Id)]
 		if due.officialDue || due.channelDue {
-			records, recordErr := UterRouteChannelPricingRecords(
+			// Batch redirects replace the channel's model list with request
+			// aliases. Price rows must be keyed by those aliases or the pricing
+			// panel reports every redirected model as unavailable.
+			records, recordErr := UterRouteChannelPricingRecordsWithMapping(
 				snapshot, channel.Id, channel.GetModels(), GetUterRouteDiscountGroup(channel.Id),
+				channel.GetModelMapping(),
 			)
 			if recordErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, recordErr))
