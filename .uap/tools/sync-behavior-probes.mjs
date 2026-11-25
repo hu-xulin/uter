@@ -11,7 +11,7 @@
  * execution (production runtime imports with real return-value assertions, or
  * real `go test` / `node --test` spawns with an observed PASS marker). Those
  * assertions were previously never consumed by the requirement verification
- * engine, so all 538 requirements stayed NOT_VERIFIED except a handful of
+ * engine, so all registered requirements stayed NOT_VERIFIED except a handful of
  * legacy probes.
  *
  * This tool derives the probe definition from `buildProbeAssertions()` (the
@@ -45,7 +45,7 @@ export function renderProbeBlock() {
   const seen = new Set();
   for (const a of assertions) {
     if (!known.has(a.requirement_id)) {
-      throw new Error(`assertion id ${a.requirement_id} is not in the 538-row traceability matrix (fail-closed)`);
+      throw new Error(`assertion id ${a.requirement_id} is not in the ${known.size}-row registry-derived traceability matrix (fail-closed)`);
     }
     if (seen.has(a.requirement_id)) {
       throw new Error(`assertion id ${a.requirement_id} registered twice (shared evidence is forbidden)`);
