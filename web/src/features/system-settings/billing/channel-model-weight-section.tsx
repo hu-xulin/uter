@@ -533,7 +533,6 @@ export function ChannelModelWeightSection({
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Weight')}
-                          aria-label={`${rule.model || t('Model')} ${t('Weight')}`}
                           value={rule.weight}
                           onChange={(event) =>
                             patchRule(row.id, rule.id, {
@@ -546,7 +545,7 @@ export function ChannelModelWeightSection({
                           className='w-24'
                           inputMode='decimal'
                           placeholder={t('Priority')}
-                          aria-label={`${rule.model || t('Model')} ${t('Priority')}`}
+                          aria-label={`${t('Priority')} - ${rule.model || ''}`}
                           value={rule.priority}
                           onChange={(event) =>
                             patchRule(row.id, rule.id, {
