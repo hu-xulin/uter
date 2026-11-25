@@ -36,11 +36,19 @@ type HarnessProps = {
   channelId?: number | null
   primaryModels?: string[]
   values?: Partial<ChannelFormValues>
+  onSaveCredentials?: () => Promise<void> | void
+  savingCredentials?: boolean
 }
 
 function Harness(props: HarnessProps) {
   const [client] = useState(
-    () => new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: { retry: false },
+          mutations: { retry: false },
+        },
+      })
   )
   const form = useForm<ChannelFormValues>({
     defaultValues: { ...CHANNEL_FORM_DEFAULT_VALUES, ...props.values },
@@ -54,6 +62,8 @@ function Harness(props: HarnessProps) {
             channelId={props.channelId === undefined ? 1 : props.channelId}
             sensitiveLocked={false}
             primaryModels={props.primaryModels ?? []}
+            onSaveCredentials={props.onSaveCredentials}
+            savingCredentials={props.savingCredentials}
           />
         </form>
       </Form>
@@ -64,9 +74,16 @@ function Harness(props: HarnessProps) {
 describe('channel console credentials section', () => {
   test('renders three inputs for a channel regardless of type', () => {
     render(<Harness />)
-    expect(screen.getByRole('textbox', { name: 'Console login URL' })).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: 'Console username' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Console password')).toHaveAttribute('type', 'password')
+    expect(
+      screen.getByRole('textbox', { name: 'Console login URL' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Console username' })
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('Console password')).toHaveAttribute(
+      'type',
+      'password'
+    )
   })
 
   test('password visibility toggles between password and text', async () => {
@@ -81,15 +98,61 @@ describe('channel console credentials section', () => {
   })
 
   test('cross-check button hidden when credentials incomplete', () => {
-    render(<Harness values={{ console_login_url: 'https://console.example.com' }} />)
-    expect(screen.queryByRole('button', { name: /Fetch & cross-check/ })).toBeNull()
+    render(
+      <Harness values={{ console_login_url: 'https://console.example.com' }} />
+    )
+    expect(
+      screen.queryByRole('button', { name: /Fetch & cross-check/ })
+    ).toBeNull()
   })
 
   test('cross-check button appears when url and username are filled', () => {
     render(
-      <Harness values={{ console_login_url: 'https://console.example.com', console_username: 'admin' }} />
+      <Harness
+        values={{
+          console_login_url: 'https://console.example.com',
+          console_username: 'admin',
+        }}
+      />
     )
-    expect(screen.getByRole('button', { name: /Fetch & cross-check/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Fetch & cross-check/ })
+    ).toBeInTheDocument()
+  })
+
+  test('save button sits next to cross-check and calls onSaveCredentials', async () => {
+    const user = userEvent.setup()
+    const onSaveCredentials = vi.fn().mockResolvedValue(undefined)
+    render(
+      <Harness
+        values={{
+          console_login_url: 'https://console.example.com',
+          console_username: 'admin',
+        }}
+        onSaveCredentials={onSaveCredentials}
+      />
+    )
+    const save = screen.getByRole('button', { name: /Save credentials/ })
+    const crossCheck = screen.getByRole('button', {
+      name: /Fetch & cross-check/,
+    })
+    expect(save).toBeInTheDocument()
+    expect(crossCheck).toBeInTheDocument()
+    expect(save.compareDocumentPosition(crossCheck) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    await user.click(save)
+    expect(onSaveCredentials).toHaveBeenCalledTimes(1)
+  })
+
+  test('save button hidden without a save callback and disabled while saving', () => {
+    const values = {
+      console_login_url: 'https://console.example.com',
+      console_username: 'admin',
+    }
+    const { unmount } = render(<Harness values={values} />)
+    expect(screen.queryByRole('button', { name: /Save credentials/ })).toBeNull()
+    unmount()
+    render(<Harness values={values} onSaveCredentials={() => {}} savingCredentials />)
+    expect(screen.getByRole('button', { name: /Save credentials/ })).toBeDisabled()
   })
 
   test('shows API Key fallback message when backend reports not_configured', async () => {
@@ -112,10 +175,15 @@ describe('channel console credentials section', () => {
     })
     render(
       <Harness
-        values={{ console_login_url: 'https://console.example.com', console_username: 'admin' }}
+        values={{
+          console_login_url: 'https://console.example.com',
+          console_username: 'admin',
+        }}
       />
     )
-    await user.click(screen.getByRole('button', { name: /Fetch & cross-check/ }))
+    await user.click(
+      screen.getByRole('button', { name: /Fetch & cross-check/ })
+    )
     await waitFor(() =>
       expect(
         screen.getByText(/Using API Key \+ Base URL as the source of truth/)
@@ -134,7 +202,12 @@ describe('channel console credentials section', () => {
           fallback_primary: false,
           models: ['gpt-4o'],
           prices: [
-            { model: 'gpt-4o', input_price: 2.5, output_price: 10, currency: 'USD' },
+            {
+              model: 'gpt-4o',
+              input_price: 2.5,
+              output_price: 10,
+              currency: 'USD',
+            },
           ],
         },
       },
@@ -145,22 +218,30 @@ describe('channel console credentials section', () => {
     })
     render(
       <Harness
-        values={{ console_login_url: 'https://console.example.com', console_username: 'admin' }}
+        values={{
+          console_login_url: 'https://console.example.com',
+          console_username: 'admin',
+        }}
         primaryModels={['gpt-4o']}
       />
     )
-    await user.click(screen.getByRole('button', { name: /Fetch & cross-check/ }))
+    await user.click(
+      screen.getByRole('button', { name: /Fetch & cross-check/ })
+    )
     await waitFor(() =>
-      expect(screen.getByRole('button', { name: 'Show console prices' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Show console prices' })
+      ).toBeInTheDocument()
     )
     expect(screen.queryByText(/Input price: 2\.5/)).toBeNull()
 
-    await user.click(screen.getByRole('button', { name: 'Show console prices' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Show console prices' })
+    )
     expect(screen.getByText(/Input price: 2\.5/)).toBeInTheDocument()
     expect(screen.getByText(/Output price: 10/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Hide console prices' })).toHaveAttribute(
-      'aria-expanded',
-      'true'
-    )
+    expect(
+      screen.getByRole('button', { name: 'Hide console prices' })
+    ).toHaveAttribute('aria-expanded', 'true')
   })
 })
