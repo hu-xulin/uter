@@ -16,16 +16,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { useQuery } from '@tanstack/react-query'
 import { Plus, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useQuery } from '@tanstack/react-query'
-
+import { MultiSelect } from '@/components/multi-select'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Label } from '@/components/ui/label'
-import { MultiSelect } from '@/components/multi-select'
 import { getChannels } from '@/features/channels/api'
 import { parseChannelModels } from '@/features/subscriptions/lib/channel-models'
 
@@ -137,7 +136,7 @@ export function PlanChannelModelsField({ value, onChange, disabled }: Props) {
         return (
           <div
             key={row.key}
-            className='space-y-2 rounded-lg border border-border p-3'
+            className='border-border space-y-2 rounded-lg border p-3'
           >
             <div className='flex items-start gap-2'>
               <div className='min-w-0 flex-1 space-y-1.5'>
@@ -172,9 +171,7 @@ export function PlanChannelModelsField({ value, onChange, disabled }: Props) {
                 <MultiSelect
                   options={modelOptions}
                   selected={row.models}
-                  onChange={(values) =>
-                    updateRow(row.key, { models: values })
-                  }
+                  onChange={(values) => updateRow(row.key, { models: values })}
                   className='w-full'
                   placeholder={t('Select models')}
                   emptyText={t('This channel has no models')}
