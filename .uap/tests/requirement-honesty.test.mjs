@@ -14,6 +14,52 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const MATRIX_FILE = path.join(ROOT, '.uap', 'reports', 'REQUIREMENT-TRACEABILITY-MATRIX.json');
+function deriveExpectedRequirementIds() {
+  const registryPath = path.join(ROOT, '.uap', 'config', 'specification-registry.yaml');
+  const registryLines = fs.readFileSync(registryPath, 'utf8').split(/\r?\n/);
+  const specs = [];
+  let current = null;
+  for (const line of registryLines) {
+    const idMatch = /^\s*-\s*id:\s*(UAP-\d{2}-\d{3})\s*$/.exec(line);
+    if (idMatch) {
+      current = { id: idMatch[1], file: null };
+      specs.push(current);
+      continue;
+    }
+    if (!current || current.file) continue;
+    const fileMatch = /^\s{4}file:\s*"?([^"\n]+?)"?\s*$/.exec(line);
+    if (fileMatch) current.file = fileMatch[1];
+  }
+  assert.ok(specs.length > 0, 'specification registry must contain registered specs');
+  const ids = [];
+  for (const spec of specs) {
+    assert.ok(spec.file, `${spec.id}: registry file path missing`);
+    const source = fs.readFileSync(path.join(ROOT, spec.file), 'utf8');
+    for (const [heading, tag] of [['强制性要求', 'REQ'], ['验收条件', 'ACC']]) {
+      const parts = source.split(new RegExp(`^## ${heading}\\s*/**
+ * Requirement-verification HONESTY negative tests (P2-06).
+ *
+ * The independent audit's core finding was that a requirement could be marked
+ * VERIFIED by file existence, a shared suite run, or a stale evidence record.
+ * These tests exercise the EXACT production classifier and prove each false
+ * verification path is impossible.
+ */
+import { describe, test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+, 'm'));
+      const body = (parts[1] || '').split(/^## /m)[0];
+      const items = body.split(/\r?\n/).filter((line) => /^\d+\.\s+/.test(line));
+      items.forEach((_, index) => ids.push(`${spec.id}-${tag}-${String(index + 1).padStart(3, '0')}`));
+    }
+  }
+  return ids;
+}
+
 
 import {
   classifyStrict, RequirementStatus, computeStatesFromMatrix,
@@ -169,11 +215,15 @@ describe('P2-06 诚实性负向测试', () => {
     assert.equal(noBasis.status_reason_code, 'NA_BASIS_MISSING');
   });
 
-  test('矩阵完整性：538 条、ID 唯一、每个 VERIFIED 都有证据与真实结果', () => {
+  test('矩阵完整性：与当前注册规范派生的全部要求精确一致、ID 唯一', () => {
     const matrix = JSON.parse(fs.readFileSync(MATRIX_FILE, 'utf8'));
     const rows = matrix.requirements || [];
-    assert.equal(rows.length, 538, `matrix has ${rows.length} rows`);
+    const expectedIds = deriveExpectedRequirementIds();
     const ids = rows.map((r) => r.requirement_id);
+    assert.ok(expectedIds.length > 0, 'registered specifications must declare requirements');
+    assert.equal(new Set(expectedIds).size, expectedIds.length, 'registry-derived requirement IDs must be unique');
+    assert.equal(rows.length, expectedIds.length, `matrix has ${rows.length} rows; registry declares ${expectedIds.length}`);
+    assert.deepEqual([...ids].sort(), [...expectedIds].sort(), 'matrix IDs must exactly match the current registered specification requirements');
     assert.equal(new Set(ids).size, rows.length, 'duplicate requirement IDs');
     const allowed = new Set(['VERIFIED', 'NOT_VERIFIED', 'BLOCKED', 'NOT_APPLICABLE']);
     for (const r of rows) {
@@ -195,7 +245,7 @@ describe('P2-06 诚实性负向测试', () => {
     }
     const states = computeStatesFromMatrix(matrix);
     const sum = Object.values(states).reduce((a, b) => a + b, 0);
-    assert.equal(sum, 538, 'states must sum to 538');
+    assert.equal(sum, rows.length, 'states must sum to the matrix row count');
     // Binding fields must be present (machine-checkable evidence chain).
     for (const field of ['execution_id', 'git_head', 'worktree_fingerprint', 'generated_at', 'status_model']) {
       assert.ok(matrix[field], `matrix missing binding field ${field}`);
