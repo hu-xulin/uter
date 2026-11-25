@@ -103,7 +103,7 @@ export function CheckinSettingsSection({
   })
 
   const { isDirty, isSubmitting } = form.formState
-  const enabled = form.watch('enabled')
+  const enabled = useWatch({ control: form.control, name: 'enabled' })
 
   // Watched live so the USD-equivalent hint recomputes on every keystroke,
   // independent of validation timing.
