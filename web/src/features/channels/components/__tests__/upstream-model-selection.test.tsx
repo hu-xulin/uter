@@ -204,6 +204,47 @@ test('selecting search results adds only matching models and retains the manual 
   )
 })
 
+test('global select-all selects every model regardless of the search keyword and retains the manual selection', async () => {
+  const user = userEvent.setup()
+  render(<InlineSelection />)
+  const search = screen.getByRole('textbox', { name: 'Search models...' })
+
+  // The global action is always present, even with no search term.
+  await user.click(screen.getByRole('button', { name: 'Select all models' }))
+  expect(screen.getByLabelText('Selected models')).toHaveTextContent(
+    'manual-model,gpt-one,gpt-two,another-model'
+  )
+
+  // It flips to "Clear selection" once every model is selected.
+  const clear = screen.getByRole('button', { name: 'Clear selection' })
+  await user.click(clear)
+  expect(screen.getByLabelText('Selected models')).toHaveTextContent('')
+
+  // With an active (narrowing) search, the global action still selects the
+  // full upstream set (not just the matching rows).
+  await user.type(search, 'gpt-')
+  await user.click(screen.getByRole('button', { name: 'Select all models' }))
+  expect(screen.getByLabelText('Selected models')).toHaveTextContent(
+    'gpt-one,gpt-two,another-model'
+  )
+})
+
+test('clear-selection button appears only in the fully-selected state', async () => {
+  const user = userEvent.setup()
+  render(<InlineSelection />)
+  // InlineSelection starts with one of three models selected.
+  expect(
+    screen.queryByRole('button', { name: 'Clear selection' })
+  ).not.toBeInTheDocument()
+  await user.click(screen.getByRole('button', { name: 'Select all models' }))
+  expect(
+    screen.getByRole('button', { name: 'Clear selection' })
+  ).toBeInTheDocument()
+  expect(
+    screen.queryByRole('button', { name: 'Select all models' })
+  ).not.toBeInTheDocument()
+})
+
 test('the redirect action appears per model only when a handler is provided and reports the model without toggling it', async () => {
   const user = userEvent.setup()
   const onRedirect = vi.fn()
