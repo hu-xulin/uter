@@ -608,7 +608,6 @@ function getCodeBlockMaxHeight(
 
 function getCodeMirrorExtensions(options: {
   language: BundledLanguage | string
-  onKeyDown: (event: globalThis.KeyboardEvent) => void
   placeholder?: string
   readOnly: boolean
   showLineNumbers: boolean
@@ -622,12 +621,6 @@ function getCodeMirrorExtensions(options: {
     EditorView.editable.of(!options.readOnly),
     bracketMatching(),
     indentGuides,
-    EditorView.domEventHandlers({
-      keydown(event) {
-        options.onKeyDown(event)
-        return event.defaultPrevented
-      },
-    }),
   ]
 
   if (options.placeholder) {
@@ -667,17 +660,13 @@ function CodeMirrorCodeView({
   const editorViewRef = useRef<EditorView | null>(null)
   const initialValueRef = useRef(value)
   const onChangeRef = useRef(onChange)
-  const onKeyDownRef = useRef(onKeyDown)
   const editorMinHeight = `${Math.max(4, rows) * 1.25 + 2}rem`
-  // onKeyDown is delivered through a ref so a new handler identity from the
-  // parent (recreated on every keystroke-driven render) does not invalidate
-  // the extensions and tear down the EditorView, which would reset the cursor
-  // to the document start and make typing appear right-to-left.
+  // 键盘回调不再放进扩展里：父组件每次渲染重建的处理器只更新 DOM 监听器，
+  // 扩展保持只依赖编辑器的静态配置，避免 EditorView 被重建导致光标跳到开头。
   const editorExtensions = useMemo(
     () =>
       getCodeMirrorExtensions({
         language,
-        onKeyDown: (event) => onKeyDownRef.current?.(event),
         placeholder,
         readOnly,
         showLineNumbers,
@@ -687,8 +676,7 @@ function CodeMirrorCodeView({
 
   useEffect(() => {
     onChangeRef.current = onChange
-    onKeyDownRef.current = onKeyDown
-  }, [onChange, onKeyDown])
+  }, [onChange])
 
   useEffect(() => {
     const editorHost = editorHostRef.current
@@ -730,6 +718,19 @@ function CodeMirrorCodeView({
       editorViewRef.current = null
     }
   }, [ariaLabel, autoFocus, editorExtensions, readOnly])
+
+  useEffect(() => {
+    const editorView = editorViewRef.current
+    if (!editorView || !onKeyDown) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      onKeyDown(event)
+    }
+    editorView.contentDOM.addEventListener('keydown', handleKeyDown)
+    return () => {
+      editorView.contentDOM.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [onKeyDown])
 
   useEffect(() => {
     // Track the latest value so a future editor rebuild (e.g. language change)
