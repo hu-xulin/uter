@@ -41,18 +41,34 @@ export function useOfficialPrices(props: { enabled: boolean }) {
   const [prices, setPrices] = useState<PresetPrices | undefined>(() =>
     presetPricesCache.get('official')
   )
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(
+    () => props.enabled && !presetPricesCache.has('official')
+  )
   const [error, setError] = useState(false)
+
+  // Read the shared cache during render when the selected source or the
+  // enabled flag changes, so the effect only handles the actual network sync.
+  const [prevLoadKey, setPrevLoadKey] = useState({
+    enabled: props.enabled,
+    source,
+  })
+  if (prevLoadKey.enabled !== props.enabled || prevLoadKey.source !== source) {
+    setPrevLoadKey({ enabled: props.enabled, source })
+    if (!props.enabled) {
+      setLoading(false)
+    } else if (presetPricesCache.has(source)) {
+      setPrices(presetPricesCache.get(source))
+      setError(false)
+      setLoading(false)
+    } else {
+      setLoading(true)
+    }
+  }
 
   useEffect(() => {
     if (!props.enabled) return
-    if (presetPricesCache.has(source)) {
-      setPrices(presetPricesCache.get(source))
-      setError(false)
-      return
-    }
+    if (presetPricesCache.has(source)) return
     let cancelled = false
-    setLoading(true)
     void getPresetPrices(source)
       .then((data) => {
         presetPricesCache.set(source, data)
