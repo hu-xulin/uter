@@ -20,6 +20,7 @@ import { execFileSync } from 'node:child_process';
 import { buildStatusSnapshot } from '../runtime/status-engine/snapshot.mjs';
 import { verifyEvidenceManifest, verifyFinalReportBindings, MANIFEST_FILE, repositoryIdentity, FINAL_REPORTS, MAX_REPORT_AGE_MS } from '../runtime/evidence-engine/manifest.mjs';
 import { TEST_STATUS, summarize, assertNoFalsePass } from '../runtime/status-engine/test-status.mjs';
+import { compareRequirementIds } from './requirement-matrix.mjs';
 
 export const component = 'uap.final-acceptance-gate';
 export const version = '1.0.0';
@@ -253,14 +254,37 @@ function checkTestResults() {
   };
 }
 
-function checkRequirements() {
+export function checkRequirements({ reportsDir = REPORTS, expectedRequirements = null } = {}) {
   const problems = [], details = {};
-  const matrix = report('REQUIREMENT-TRACEABILITY-MATRIX.json');
-  const rows = matrix?.requirements || matrix?.items || [];
+  const matrix = report('REQUIREMENT-TRACEABILITY-MATRIX.json', reportsDir);
+  const rows = Array.isArray(matrix?.requirements)
+    ? matrix.requirements
+    : (Array.isArray(matrix?.items) ? matrix.items : []);
   details.total = rows.length;
-  if (rows.length !== 538) problems.push(`requirements: ${rows.length} rows, expected 538`);
-  const ids = new Set(rows.map((r) => r.requirement_id ?? r.id));
-  if (ids.size !== rows.length) problems.push('requirements: duplicate requirement IDs');
+  let catalog;
+  try {
+    catalog = compareRequirementIds(rows, expectedRequirements);
+  } catch (error) {
+    catalog = { ok: false, error: String(error?.message || error) };
+  }
+  details.registry_catalog = {
+    expected_total: catalog.expected_total ?? null,
+    actual_total: catalog.actual_total ?? rows.length,
+    duplicate_ids: catalog.duplicate_ids ?? [],
+    expected_duplicate_ids: catalog.expected_duplicate_ids ?? [],
+    invalid_row_count: catalog.invalid_row_count ?? null,
+    missing_ids: catalog.missing_ids ?? [],
+    unexpected_ids: catalog.unexpected_ids ?? [],
+    error: catalog.error ?? null,
+  };
+  if (!catalog.ok) {
+    problems.push(
+      `requirements: matrix IDs do not exactly match current registered specification requirements `
+      + `(expected=${catalog.expected_total ?? 'unavailable'}, actual=${catalog.actual_total ?? rows.length}, `
+      + `missing=${(catalog.missing_ids || []).length}, unexpected=${(catalog.unexpected_ids || []).length}, `
+      + `duplicates=${(catalog.duplicate_ids || []).length}, error=${catalog.error || 'none'})`,
+    );
+  }
   const allowed = new Set(['VERIFIED', 'NOT_VERIFIED', 'BLOCKED', 'NOT_APPLICABLE']);
   const counts = { VERIFIED: 0, NOT_VERIFIED: 0, BLOCKED: 0, NOT_APPLICABLE: 0 };
   let invalid = 0, unverifiableVerified = 0, missingEvidence = 0;
@@ -292,7 +316,7 @@ function checkRequirements() {
   if (invalid) problems.push(`requirements: ${invalid} row(s) with an invalid/unset status`);
   if (missingEvidence) problems.push(`requirements: ${missingEvidence} VERIFIED row(s) lack evidence or actual_result`);
   if (unverifiableVerified) problems.push(`requirements: ${unverifiableVerified} VERIFIED row(s) rely on static existence / lack version binding`);
-  const verification = report('REQUIREMENT-VERIFICATION-RESULTS.json');
+  const verification = report('REQUIREMENT-VERIFICATION-RESULTS.json', reportsDir);
   if (!verification) problems.push('requirements: REQUIREMENT-VERIFICATION-RESULTS.json missing');
   return {
     id: '6.4_requirements', status: problems.length ? TEST_STATUS.FAIL : TEST_STATUS.PASS,
