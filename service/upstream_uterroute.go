@@ -425,8 +425,15 @@ func SetUterRouteDiscountGroup(channelID int, group string) error {
 }
 
 // UterRouteDiscountForModel resolves the upstream discount multiplier for a
-// model under the selected billing group. It prefers the provider's
-// group-group table and falls back to the flat model-group table.
+// model under the selected billing group. The authoritative rule is the
+// pricing card's automatic group chain: the first group in AutoGroups that the
+// model enables, with that group's ratio from the group-group table (or the
+// flat table as an explicit fallback). A chain hit with an unusable ratio
+// fails closed instead of falling through to a lower-priority group.
+//
+// When the provider publishes no AutoGroups, legacy deterministic resolution
+// still applies: equal ratios are unambiguous, differing ratios require
+// review. This keeps older snapshots and isolated tests fail-closed.
 func UterRouteDiscountForModel(
 	snapshot *UpstreamSnapshot,
 	item UpstreamModelRecord,
@@ -438,6 +445,9 @@ func UterRouteDiscountForModel(
 	group = strings.TrimSpace(group)
 	if group == "" {
 		group = UterRouteDiscountGroupDefault
+	}
+	if autoGroup, ratio, ok := resolveUterRouteAutoGroupChain(snapshot, item, group); ok {
+		return ratio, autoGroup, true
 	}
 	// Collect every positive, finite ratio among the model's enable_groups
 	// for this channel's group. Upstream serializes enable_groups in unstable
@@ -464,6 +474,52 @@ func UterRouteDiscountForModel(
 		return resolve.ratio, resolve.group, true
 	}
 	return 0, "", false
+}
+
+// resolveUterRouteAutoGroupChain implements the pricing card's "automatic
+// group chain" contract. Uter settles under the default user group, and the
+// card shows the first AutoGroups entry that the model enables. That entry's
+// published ratio is the channel discount; no cheaper enabled group may be
+// substituted. An enabled first hit with a missing/invalid ratio is a broken
+// authoritative chain and must fail closed.
+func resolveUterRouteAutoGroupChain(
+	snapshot *UpstreamSnapshot,
+	item UpstreamModelRecord,
+	group string,
+) (string, float64, bool) {
+	if snapshot == nil || len(snapshot.AutoGroups) == 0 || len(item.EnableGroups) == 0 {
+		return "", 0, false
+	}
+	enabled := make(map[string]bool, len(item.EnableGroups))
+	for _, modelGroup := range item.EnableGroups {
+		modelGroup = strings.TrimSpace(modelGroup)
+		if modelGroup != "" {
+			enabled[modelGroup] = true
+		}
+	}
+	groupTable := snapshot.GroupGroupRatio[group]
+	for _, autoGroup := range snapshot.AutoGroups {
+		autoGroup = strings.TrimSpace(autoGroup)
+		if autoGroup == "" || !enabled[autoGroup] {
+			continue
+		}
+		if ratio, exists := groupTable[autoGroup]; exists {
+			if !validUpstreamRatio(ratio) {
+				return "", 0, false
+			}
+			return autoGroup, ratio, true
+		}
+		if ratio, exists := snapshot.GroupRatio[autoGroup]; exists {
+			if !validUpstreamRatio(ratio) {
+				return "", 0, false
+			}
+			return autoGroup, ratio, true
+		}
+		// The first chain hit exists but publishes no usable ratio. Do not
+		// silently skip it for a later, cheaper group.
+		return "", 0, false
+	}
+	return "", 0, false
 }
 
 type uterRouteGroupResolution struct {

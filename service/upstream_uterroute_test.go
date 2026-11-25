@@ -262,6 +262,80 @@ func TestUterRouteMultipleEnableGroupsAmbiguous(t *testing.T) {
 	require.False(t, ok, "flat fallback must not override an ambiguous group-group table")
 }
 
+func TestUterRouteAutoGroupChainIsAuthoritative(t *testing.T) {
+	// The pricing card resolves a model through the auto-group chain in a
+	// fixed order. Even when the model enables several groups with different
+	// ratios, the first chain hit wins regardless of upstream enable_groups
+	// order; this is the Uter default-group settlement identity.
+	snapshot := &UpstreamSnapshot{
+		AutoGroups: []string{"openai-image", "openai"},
+		GroupRatio: map[string]float64{},
+		GroupGroupRatio: map[string]map[string]float64{
+			"default": {"openai-image": 0.75, "openai": 0.6},
+		},
+	}
+	for _, groups := range [][]string{
+		{"openai", "openai-image"},
+		{"openai-image", "openai"},
+	} {
+		discount, modelGroup, ok := UterRouteDiscountForModel(snapshot, UpstreamModelRecord{EnableGroups: groups}, "default")
+		require.True(t, ok, "auto-group chain must resolve the discount deterministically")
+		require.Equal(t, 0.75, discount, "first auto-group hit wins, not the cheapest enabled group")
+		require.Equal(t, "openai-image", modelGroup)
+	}
+}
+
+func TestUterRouteAutoGroupChainFailsClosedOnUnusableFirstHit(t *testing.T) {
+	snapshot := &UpstreamSnapshot{
+		AutoGroups:      []string{"bad", "fallback"},
+		GroupRatio:      map[string]float64{"fallback": 0.6},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"bad": 0}},
+	}
+	_, _, ok := UterRouteDiscountForModel(
+		snapshot, UpstreamModelRecord{EnableGroups: []string{"fallback", "bad"}}, "default",
+	)
+	require.False(t, ok, "an unusable first chain hit must not fall through to a cheaper group")
+}
+
+func TestUterRouteSyncUsesAutoGroupChainAfterDataLayerFixIsOverwritten(t *testing.T) {
+	// A data-layer-only fix collapses enable_groups to one group, but the next
+	// upstream sync restores the upstream's multi-group list. Production sync
+	// must still resolve through the auto-group chain, so a repeated sync can
+	// never reintroduce the ambiguous/cheaper-group price. This is the exact
+	// regression behind channel 1247 → 1248.
+	ratio := func(v float64) *float64 { return &v }
+	snapshot := &UpstreamSnapshot{
+		ProviderID: "uterroute",
+		PriceBasis: UpstreamPriceBasisRatioOnly,
+		AutoGroups: []string{"openai-image", "openai"},
+		GroupRatio: map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{
+			"default": {"openai-image": 0.75, "openai": 0.6},
+		},
+		Models: []UpstreamModelRecord{
+			{
+				ModelName:    "gpt-image-2.5-flare",
+				ModelRatio:   ratio(1),
+				EnableGroups: []string{"openai", "openai-image"},
+				PriceStatus:  "OFFICIAL_API",
+				OfficialPrice: &UpstreamPriceLine{
+					Input: ratio(5), Output: ratio(25), Currency: "USD", Unit: "per_1m_token",
+				},
+			},
+		},
+	}
+	records, err := UterRouteChannelPricingRecords(
+		snapshot, 1248, []string{"gpt-image-2.5-flare"}, "default",
+	)
+	require.NoError(t, err)
+	require.Len(t, records, 1)
+	record := records[0]
+	require.NotContains(t, record.NormalizedPricing, `"needs_review":true`)
+	require.Contains(t, record.NormalizedPricing, `"discount_ratio":0.75`)
+	require.Contains(t, record.NormalizedPricing, `"discount_model_group":"openai-image"`)
+	require.Contains(t, record.NormalizedPricing, `"input_per_million_usd":3.75`)
+}
+
 func TestUterRouteDiscountSelectionIgnoresEnableGroupOrder(t *testing.T) {
 	// Equal ratios across enabled groups are unambiguous: every candidate
 	// resolves to the same price, so ordering still cannot change the result.
