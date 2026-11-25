@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Save } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -48,6 +48,29 @@ const defaultSchedule: ChannelPricingSchedule = {
   channel_sync_interval_minutes: 60,
 }
 
+// A channel that never saved a cadence is read back as a zero-value struct
+// (basis/mode "", value 0). Treat the whole object as unset so those fields
+// cannot overwrite the valid defaults and break server-side validation.
+// Partially filled legacy data keeps explicit values and drops empty ones.
+function resolveSchedule(saved: ChannelPricingSchedule | undefined) {
+  const loaded = { ...defaultSchedule }
+  if (saved) {
+    const unset =
+      !String(saved.basis ?? '').trim() && !String(saved.mode ?? '').trim()
+    if (!unset) {
+      for (const [key, value] of Object.entries(saved)) {
+        if (value === '' || value === null || value === undefined) continue
+        Object.assign(loaded, { [key]: value })
+      }
+    }
+  }
+  return {
+    schedule: loaded,
+    officialInterval: String(loaded.official_sync_interval_minutes),
+    channelInterval: String(loaded.channel_sync_interval_minutes),
+  }
+}
+
 function intervalValid(text: string): boolean {
   const trimmed = text.trim()
   if (trimmed === '') return false
@@ -71,10 +94,6 @@ export function ChannelPricingScheduleSection(
 ) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [schedule, setSchedule] =
-    useState<ChannelPricingSchedule>(defaultSchedule)
-  const [officialInterval, setOfficialInterval] = useState('1440')
-  const [channelInterval, setChannelInterval] = useState('60')
 
   const scheduleQuery = useQuery({
     queryKey: ['channel-pricing-schedule', props.channelId],
@@ -84,27 +103,27 @@ export function ChannelPricingScheduleSection(
     meta: { errorToast: false },
   })
 
-  useEffect(() => {
-    const saved = scheduleQuery.data?.schedule
-    if (!saved) return
-    // A channel that never saved a cadence is read back as a zero-value
-    // struct (basis/mode "", value 0). Treat the whole object as unset so
-    // those fields cannot overwrite the valid defaults and make enabling
-    // the schedule fail server-side validation. For partially filled legacy
-    // data, keep explicit values while dropping empty ones.
-    const unset =
-      !String(saved.basis ?? '').trim() && !String(saved.mode ?? '').trim()
-    const loaded = { ...defaultSchedule }
-    if (!unset) {
-      for (const [key, value] of Object.entries(saved)) {
-        if (value === '' || value === null || value === undefined) continue
-        Object.assign(loaded, { [key]: value })
-      }
-    }
-    setSchedule(loaded)
-    setOfficialInterval(String(loaded.official_sync_interval_minutes))
-    setChannelInterval(String(loaded.channel_sync_interval_minutes))
-  }, [scheduleQuery.data])
+  const initial = resolveSchedule(scheduleQuery.data?.schedule)
+  const [schedule, setSchedule] = useState<ChannelPricingSchedule>(
+    initial.schedule
+  )
+  const [officialInterval, setOfficialInterval] = useState(
+    initial.officialInterval
+  )
+  const [channelInterval, setChannelInterval] = useState(
+    initial.channelInterval
+  )
+  const [prevScheduleData, setPrevScheduleData] = useState(scheduleQuery.data)
+
+  // Adopt freshly loaded server values without resetting local edits on every
+  // re-render.
+  if (prevScheduleData !== scheduleQuery.data) {
+    setPrevScheduleData(scheduleQuery.data)
+    const next = resolveSchedule(scheduleQuery.data?.schedule)
+    setSchedule(next.schedule)
+    setOfficialInterval(next.officialInterval)
+    setChannelInterval(next.channelInterval)
+  }
 
   const saveSchedule = useMutation({
     mutationFn: () =>
