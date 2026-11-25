@@ -17,13 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 
 import { getChannelModelPricing } from '../api'
+import { canDisplayChannelPrice } from '../lib/channel-price-display'
+import { remapPricingRowsForPreview } from '../lib/model-mapping-validation'
 import type {
   ChannelModelPricingRecord,
   ChannelOfficialPricingTier,
@@ -32,6 +34,8 @@ import type {
 
 type FetchedPricePreviewProps = {
   channelId: number
+  modelMapping?: string
+  models?: string[]
   setupState?: 'idle' | 'creating' | 'failed'
   setupError?: string | null
   fetchState?: 'idle' | 'running' | 'done' | 'failed'
@@ -106,7 +110,9 @@ export function PricePreviewTable({
   const { t } = useTranslation()
   return (
     <div className='max-h-80 overflow-y-auto rounded-md border text-sm'>
-      <div className='bg-muted/40 grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 font-medium'>
+      {/* 表头固定在滚动容器顶部：只滚动下面的价格行，滚动时行不会从半透明
+          背景下透出来，所以这里用不透明的 bg-muted。 */}
+      <div className='bg-muted sticky top-0 z-10 grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] gap-2 border-b px-3 py-2 font-medium'>
         <span>{t('Model')}</span>
         <span>{t('Official price')}</span>
         <span>{t('Channel price')}</span>
@@ -121,7 +127,9 @@ export function PricePreviewTable({
             {officialLabel(item.official?.tiers?.[0], t)}
           </span>
           <span className='tabular-nums'>
-            {quoteLabel(item.upstream_quote, t)}
+            {canDisplayChannelPrice(item)
+              ? quoteLabel(item.upstream_quote, t)
+              : t('Not available')}
           </span>
         </div>
       ))}
@@ -144,7 +152,15 @@ export function FetchedPricePreview(props: FetchedPricePreviewProps) {
     retry: false,
     meta: { errorToast: false },
   })
-  const items: ChannelModelPricingRecord[] = query.data?.data?.items ?? []
+  const items: ChannelModelPricingRecord[] = useMemo(
+    () =>
+      remapPricingRowsForPreview(
+        query.data?.data?.items ?? [],
+        props.modelMapping ?? '',
+        props.models ?? []
+      ),
+    [query.data?.data?.items, props.modelMapping, props.models]
+  )
 
   let body: ReactNode
   if (props.setupState === 'failed') {
