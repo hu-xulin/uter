@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { VChart } from '@visactor/react-vchart'
 import { AreaChart, BarChart3, WalletCards } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { IconBadge } from '@/components/ui/icon-badge'
@@ -66,11 +66,17 @@ export function ConsumptionDistributionChart(
   const [chartType, setChartType] = useState<ConsumptionDistributionChartType>(
     props.defaultChartType ?? 'bar'
   )
+  const [prevDefaultChartType, setPrevDefaultChartType] = useState(
+    props.defaultChartType
+  )
   const timeGranularity = props.timeGranularity ?? DEFAULT_TIME_GRANULARITY
 
-  useEffect(() => {
+  // Adjust the local chart selection when the incoming default changes,
+  // without an effect that would cause a cascading render.
+  if (prevDefaultChartType !== props.defaultChartType) {
+    setPrevDefaultChartType(props.defaultChartType)
     if (props.defaultChartType) setChartType(props.defaultChartType)
-  }, [props.defaultChartType])
+  }
 
   const chartData = useMemo(
     () =>
