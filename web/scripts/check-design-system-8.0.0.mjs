@@ -621,9 +621,11 @@ check('C12', 'Uter 当前字体体系逐字保留，未引入新字体', () => {
 /* C13 chart / syntax / terminal 色系隔离 ----------------------------------- */
 check('C13', 'chart 色不得作为 syntax 色，代码/终端色系不互引', () => {
   const chartVals = new Set(
-    names
-      .filter((n) => n.startsWith('--ds-color-chart-'))
-      .flatMap((n) => [String(T[n].light), String(T[n].dark)])
+    names.flatMap((n) =>
+      n.startsWith('--ds-color-chart-')
+        ? [String(T[n].light), String(T[n].dark)]
+        : []
+    )
   )
   const synNames = names.filter((n) => n.startsWith('--ds-syntax-'))
   const cross = synNames.filter(
