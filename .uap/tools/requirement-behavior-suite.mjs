@@ -1420,7 +1420,7 @@ if (isMain) {
     const passed = out.lines.length;
     const missing = out.checks.filter((c) => !c.pass);
     console.log(`SUITE_INFO completed: ${out.executed} real behavior assertions attempted, ${passed} REQ_ASSERT PASS lines emitted, ${missing.length} not asserted this run.`);
-    console.log(\`SUITE_INFO exit_code 0 means ONLY "the suite ran to completion". It does NOT mean all \${loadKnownIds().size} registered requirements are VERIFIED.\`);
+    console.log('SUITE_INFO exit_code 0 means ONLY "the suite ran to completion". It does NOT mean all ' + loadKnownIds().size + ' registered requirements are VERIFIED.');
     console.log('SUITE_INFO every PASS line came from a REAL execution + assertion (runtime return-value check, or a real go/node test PASS marker observed in real stdout). Failed/throws/absent assertions emit NO PASS line (fail-closed).');
     if (missing.length) {
       console.log(`SUITE_INFO NOT asserted (no PASS line): ${missing.map((c) => `${c.requirement_id}[${c.detail.split(':')[0]}]`).join(', ')}`);
