@@ -48,19 +48,21 @@ export function DateTimePicker({
   const { t, i18n } = useTranslation()
   const placeholderText = placeholder ?? t('Select date')
   const calendarLocale = getCalendarLocale(i18n.language)
-  const currentYear = new Date().getFullYear()
+  const [currentYear] = React.useState(() => new Date().getFullYear())
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(value)
   const [month, setMonth] = React.useState<Date | undefined>(value)
-  const [time, setTime] = React.useState<string>('00:00:00')
+  const [time, setTime] = React.useState<string>(
+    value ? dayjs(value).format('HH:mm:ss') : '00:00:00'
+  )
+  const [previousValue, setPreviousValue] = React.useState(value)
 
-  React.useEffect(() => {
+  if (value !== previousValue) {
+    setPreviousValue(value)
     setDate(value)
     setMonth(value)
-    if (value) {
-      setTime(dayjs(value).format('HH:mm:ss'))
-    }
-  }, [value])
+    if (value) setTime(dayjs(value).format('HH:mm:ss'))
+  }
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
