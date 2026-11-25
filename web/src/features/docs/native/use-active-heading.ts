@@ -32,13 +32,15 @@ export function useActiveHeading(ids: string[], offset = 96): string | null {
   // 依赖数组不能直接放 `ids`（每次渲染都是新数组），用拼接后的字符串当键。
   const key = ids.join('|')
   const [active, setActive] = useState<string | null>(ids[0] ?? null)
+  const [prevKey, setPrevKey] = useState(key)
+  if (prevKey !== key) {
+    setPrevKey(key)
+    if (!key) setActive(null)
+  }
 
   useEffect(() => {
     const list = key ? key.split('|') : []
-    if (list.length === 0) {
-      setActive(null)
-      return
-    }
+    if (list.length === 0) return
 
     let frame = 0
 
