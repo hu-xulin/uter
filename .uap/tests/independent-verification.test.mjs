@@ -218,7 +218,6 @@ describe('独立验收：证据与报告完整性', () => {
   return ids;
 }
 const expectedRequirementIds = deriveExpectedRequirementIds();
-
 const sha256re = /^[a-f0-9]{64}$/;
 
 describe('独立验收：规范与追踪矩阵（不依赖 UAP 自身实现）', () => {
