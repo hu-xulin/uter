@@ -152,11 +152,15 @@ export function useTableUrlState(
   const [columnFilters, setColumnFilters] =
     useState<ColumnFiltersState>(initialColumnFilters)
 
-  // URL 为单一数据源：仅当 search（URL）变化时同步，避免依赖 initialColumnFilters 造成死循环（config 常为内联引用）
-  useEffect(() => {
+  // URL 为单一数据源：按派生筛选条件的签名在渲染期同步，避免依赖
+  // initialColumnFilters（config 常为内联引用）造成死循环。
+  const filtersSignature = JSON.stringify(initialColumnFilters)
+  const [lastFiltersSignature, setLastFiltersSignature] =
+    useState(filtersSignature)
+  if (filtersSignature !== lastFiltersSignature) {
+    setLastFiltersSignature(filtersSignature)
     setColumnFilters(initialColumnFilters)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search])
+  }
 
   const pagination: PaginationState = useMemo(() => {
     const rawPage = (search as SearchRecord)[pageKey]
