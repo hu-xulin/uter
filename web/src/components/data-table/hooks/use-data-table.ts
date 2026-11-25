@@ -23,11 +23,14 @@ import {
   type ExpandedState,
   type OnChangeFn,
   type PaginationState,
+  type RowData,
   type RowSelectionState,
   type SortingState,
+  type Table,
   type TableOptions,
   type Updater,
   type VisibilityState,
+  createTable,
   getCoreRowModel,
   getExpandedRowModel,
   getFacetedRowModel,
@@ -35,7 +38,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  useReactTable,
 } from '@tanstack/react-table'
 import * as React from 'react'
 
@@ -275,6 +277,44 @@ function readColumnSizing(
   }
 }
 
+/**
+ * Build a table instance from the framework-agnostic core API. All table state
+ * is controlled by the caller (see `useControllableTableState` below), so the
+ * React-specific state management inside `useReactTable` adds nothing here and
+ * is incompatible with React Compiler.
+ */
+function useTableInstance<TData extends RowData>(
+  options: TableOptions<TData>
+): Table<TData> {
+  const [table] = React.useState(() => {
+    const instance = createTable({
+      ...options,
+      state: options.state ?? {},
+      onStateChange: options.onStateChange ?? (() => {}),
+      renderFallbackValue: options.renderFallbackValue ?? null,
+    })
+    // Seed state from the feature-derived initialState so defaults such as
+    // columnPinning are present; useReactTable did the same internally.
+    instance.setOptions((previous) => ({
+      ...previous,
+      state: {
+        ...instance.initialState,
+        ...options.state,
+      },
+    }))
+    return instance
+  })
+  table.setOptions((previous) => ({
+    ...previous,
+    ...options,
+    state: {
+      ...previous.state,
+      ...options.state,
+    },
+  }))
+  return table
+}
+
 export function useDataTable<TData>(options: UseDataTableOptions<TData>) {
   const {
     data,
@@ -377,7 +417,7 @@ export function useDataTable<TData>(options: UseDataTableOptions<TData>) {
       Boolean(options.sorting) ||
       Boolean(options.onSortingChange))
 
-  const table = useReactTable({
+  const table = useTableInstance({
     data,
     columns,
     rowCount: totalCount,
