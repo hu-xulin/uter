@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -87,6 +87,14 @@ export function ModelPricingPanel(props: {
   const [entry, setEntry] = useState<ModelPricingEntry | null>(null)
   const [resetOpen, setResetOpen] = useState(false)
   const editor = useRef<ModelPricingEditorPanelHandle>(null)
+  // 查询结果到达（或模型切换）时同步编辑器草稿；在渲染期调整即可，
+  // 不必用 effect 再触发一次渲染。
+  const loadedEntry = query.data?.entries.find(
+    (item) => item.model_name === props.modelName
+  )
+  if (loadedEntry && (!entry || entry.model_name !== props.modelName)) {
+    setEntry(loadedEntry)
+  }
   const editData = useMemo(() => {
     if (!entry) return null
     const values = { ...entry.configured }
@@ -97,15 +105,6 @@ export function ModelPricingPanel(props: {
     }
     return pricingRow(entry.model_name, values)
   }, [entry])
-
-  useEffect(() => {
-    const loaded = query.data?.entries.find(
-      (item) => item.model_name === props.modelName
-    )
-    if (loaded && (!entry || entry.model_name !== props.modelName)) {
-      setEntry(loaded)
-    }
-  }, [query.data, entry, props.modelName])
 
   const persist = async (reset = false) => {
     if (!entry) return
