@@ -36,13 +36,13 @@ import {
 import { handleServerError } from '@/lib/handle-server-error'
 import { cn } from '@/lib/utils'
 
-import { invalidatePricingQueries } from '../lib/channel-actions'
 import {
   getUterRouteEndpoint,
   getUterRouteUpstreamSnapshot,
   syncUterRouteUpstream,
   type UterRouteUpstreamSnapshot,
 } from '../api'
+import { invalidatePricingQueries } from '../lib/channel-actions'
 
 type UterRouteChannelPanelProps = {
   channelId: number | null
