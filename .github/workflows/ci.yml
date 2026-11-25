@@ -281,7 +281,7 @@ jobs:
         id: uap_security
         continue-on-error: true
         run: node .uap/bin/uap.mjs verify-security
-      - name: UAP full requirement traceability verification (538 requirements)
+      - name: UAP full requirement traceability verification
         if: always() && github.event_name == 'push'
         id: uap_requirements
         continue-on-error: true
