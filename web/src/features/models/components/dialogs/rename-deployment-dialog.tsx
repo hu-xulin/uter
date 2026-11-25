@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -46,10 +46,14 @@ export function RenameDeploymentDialog({
   const queryClient = useQueryClient()
   const [name, setName] = useState(currentName || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  useEffect(() => {
+  const [prevOpenState, setPrevOpenState] = useState({ open, currentName })
+  if (
+    prevOpenState.open !== open ||
+    prevOpenState.currentName !== currentName
+  ) {
+    setPrevOpenState({ open, currentName })
     if (open) setName(currentName || '')
-  }, [open, currentName])
+  }
 
   const trimmed = name.trim()
 
