@@ -119,8 +119,11 @@ type channelModelPricingView struct {
 const channelPricingStaleAfter = 48 * time.Hour
 
 // classifyOfficialPricingShape tells the UI whether the official price can be
-// executed by the current billing engine. Storable but unexecutable shapes
-// (multi-tier, per-second, per-image) must stay visibly unsupported.
+// executed by the current billing engine. Multi-tier shapes have no single
+// executable price and must stay visibly unsupported. Per-second prices are
+// executable through quota_type=2 (per_second_usd), the same billing mode the
+// display contract already uses for per-second models, so they are supported
+// whenever the tier carries a per-unit amount.
 
 // floatMoneyPtr converts a float64 price from an upstream record into the
 // exact Money pointer carried by the pricing JSON view. Nil stays nil.
@@ -146,7 +149,9 @@ func classifyOfficialPricingShape(official *model.ChannelOfficialPricing) (strin
 	case "per_call":
 		return "per_call", tier.PerUnitUSD != nil
 	case "per_second":
-		return "per_second", false
+		// quota_type=2 bills a stored per_second_usd directly; no flattening
+		// into a token or per-call ratio is involved.
+		return "per_second", tier.PerUnitUSD != nil
 	case "per_image":
 		// A per-image price is a fixed amount per request, which the per-call
 		// billing mode can execute without flattening a duration-dependent price.
