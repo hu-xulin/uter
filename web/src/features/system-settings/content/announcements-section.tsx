@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2, Save } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -82,6 +82,19 @@ type AnnouncementsSectionProps = {
   data: string
 }
 
+const parseAnnouncements = (data: string): Announcement[] => {
+  try {
+    const parsed: unknown = JSON.parse(data || '[]')
+    if (!Array.isArray(parsed)) return []
+    return parsed.map((item: Partial<Announcement>, idx) => ({
+      ...item,
+      id: item.id || idx + 1,
+    })) as Announcement[]
+  } catch {
+    return []
+  }
+}
+
 const announcementSchema = z.object({
   content: z
     .string()
@@ -139,8 +152,12 @@ export function AnnouncementsSection({
   const { t, i18n } = useTranslation()
   const locale = toIntlLocale(i18n.resolvedLanguage || i18n.language)
   const updateOption = useUpdateOption()
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>(() =>
+    parseAnnouncements(data)
+  )
+  const [previousData, setPreviousData] = useState(data)
   const [isEnabled, setIsEnabled] = useState(enabled)
+  const [previousEnabled, setPreviousEnabled] = useState(enabled)
   const [hasChanges, setHasChanges] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [showDialog, setShowDialog] = useState(false)
@@ -149,35 +166,27 @@ export function AnnouncementsSection({
     useState<Announcement | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<'single' | 'batch'>('single')
 
+  const [defaultPublishDate] = useState(() => new Date().toISOString())
+
   const form = useForm<AnnouncementFormValues>({
     resolver: zodResolver(announcementSchema),
     defaultValues: {
       content: '',
-      publishDate: new Date().toISOString(),
+      publishDate: defaultPublishDate,
       type: 'default',
       extra: '',
     },
   })
 
-  useEffect(() => {
-    try {
-      const parsed = JSON.parse(data || '[]')
-      if (Array.isArray(parsed)) {
-        setAnnouncements(
-          parsed.map((item, idx) => ({
-            ...item,
-            id: item.id || idx + 1,
-          }))
-        )
-      }
-    } catch {
-      setAnnouncements([])
-    }
-  }, [data])
+  if (data !== previousData) {
+    setPreviousData(data)
+    setAnnouncements(parseAnnouncements(data))
+  }
 
-  useEffect(() => {
+  if (enabled !== previousEnabled) {
+    setPreviousEnabled(enabled)
     setIsEnabled(enabled)
-  }, [enabled])
+  }
 
   const handleToggleEnabled = async (checked: boolean) => {
     try {
