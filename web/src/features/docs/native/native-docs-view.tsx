@@ -25,7 +25,12 @@ import { labelTaskListCheckboxes } from '@/lib/task-checkbox-a11y'
 
 import { Callout } from './callout'
 import { DocsCodeBlock } from './docs-code-block'
-import { docRefForPagePath, NATIVE_USER_GUIDE_PATH } from './docs-content'
+import {
+  API_PATH,
+  APPS_PATH,
+  docRefForPagePath,
+  NATIVE_USER_GUIDE_PATH,
+} from './docs-content'
 import { loadNativeDoc } from './docs-loader'
 import { NativeDocsShell, type TocItem } from './docs-shell'
 import { DocsTable } from './docs-table'
@@ -63,9 +68,19 @@ export function NativeDocsView({
   const [Doc, setDoc] = useState<ComponentType<Record<string, unknown>> | null>(
     null
   )
+  // The loader itself is a function (`() => Promise<Module>`). Keeping the
+  // previous loader in useState would make React treat `useState(loader)` as
+  // a lazy initialiser and `setPrevLoader(loader)` as an updater — both call
+  // the loader, so `prevLoader !== loader` stays true forever and the render
+  // loops (React #301, "Too many re-renders"). A ref is the right tool: this
+  // value only guards a transition, it never participates in rendering.
+  const prevLoaderRef = useRef(loader)
+  if (prevLoaderRef.current !== loader) {
+    prevLoaderRef.current = loader
+    setDoc(null)
+  }
 
   useEffect(() => {
-    setDoc(null)
     if (!loader) return
     let alive = true
     loader()
@@ -137,13 +152,18 @@ export function NativeDocsView({
     }
   }, [Doc, locale, isLegalDoc])
 
-  // The guide's landing is a synthesised card page, not a Markdown
-  // document. Applying the prose scale here would override its `page-title`
-  // (30/38/600, §1.8) with the Markdown h1 rule (20/28) and restyle the
-  // cards' own type. The 72ch reading width of §1.12 would also clip the
-  // multi-column chapter grid.
+  // The guide, API and AI-app landings are synthesised card pages, not
+  // Markdown documents. Applying the prose scale here would override each
+  // page's `page-title` (30/38/600, §1.8) with the Markdown h1 rule
+  // (20/28) and — critically — its `[&_a]:text-fg-link [&_a]:underline`
+  // would turn every card link blue and underlined instead of matching the
+  // guide's dark, undecorated card type. The 72ch reading width of §1.12
+  // would also clip the two-column card grid.
+  const normalizedPath = pagePath.replace(/\/+$/, '')
   const isSyntheticIndex =
-    pagePath.replace(/\/+$/, '') === NATIVE_USER_GUIDE_PATH
+    normalizedPath === NATIVE_USER_GUIDE_PATH ||
+    normalizedPath === API_PATH ||
+    normalizedPath === APPS_PATH
 
   return (
     <NativeDocsShell locale={locale} pagePath={pagePath} toc={toc}>
