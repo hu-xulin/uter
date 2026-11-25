@@ -21,10 +21,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, expect, test, vi } from 'vitest'
 
-import {
-  getChannelBillingSnapshots,
-  getChannelModelPricing,
-} from '../../api'
+import { getChannelBillingSnapshots, getChannelModelPricing } from '../../api'
 import { ChannelModelPricingSection } from '../channel-model-pricing-section'
 
 vi.mock('../../api', async (importOriginal) => {
