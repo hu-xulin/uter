@@ -305,17 +305,25 @@ export function UpstreamRatioSync() {
   // Keep the latest channel price sources available inside the fetch mutation
   // callback without re-creating the mutation whenever they change.
   const channelPriceSourcesRef = useRef(channelPriceSources)
-  channelPriceSourcesRef.current = channelPriceSources
+  // ref 只在 effect 中更新，避免在渲染期写入。
   useEffect(() => {
-    if (!channels.length) return
-    setChannelEndpoints((previous) => {
-      const next = { ...previous }
-      for (const channel of channels) {
-        next[channel.id] ??= getDefaultEndpointForChannel(channel)
-      }
-      return next
-    })
-  }, [channels])
+    channelPriceSourcesRef.current = channelPriceSources
+  }, [channelPriceSources])
+  // 渠道列表变化时补齐默认端点；在渲染期按 ID 签名调整，省去 effect 的额外渲染。
+  const channelIdsSignature = channels.map((channel) => channel.id).join(',')
+  const [lastChannelIds, setLastChannelIds] = useState(channelIdsSignature)
+  if (channelIdsSignature !== lastChannelIds) {
+    setLastChannelIds(channelIdsSignature)
+    if (channels.length) {
+      setChannelEndpoints((previous) => {
+        const next = { ...previous }
+        for (const channel of channels) {
+          next[channel.id] ??= getDefaultEndpointForChannel(channel)
+        }
+        return next
+      })
+    }
+  }
   const resolutions = useMemo(
     () =>
       Object.fromEntries(
