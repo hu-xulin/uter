@@ -112,6 +112,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useTheme } from '@/context/theme-provider'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
+import { ChannelKeyDisplay } from '@/features/channels/components/channel-key-display'
 import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -5709,12 +5710,7 @@ export function ChannelMutateDrawer({
                                 </Button>
                               </div>
                             </div>
-                            <Input
-                              readOnly
-                              value={channelKey ?? ''}
-                              placeholder={t('Hidden — verify to reveal')}
-                              className='font-mono text-sm'
-                            />
+                            <ChannelKeyDisplay value={channelKey} />
                           </div>
                         )}
                         <FormMessage />
