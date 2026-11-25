@@ -279,7 +279,6 @@ describe('P2-06 诚实性负向测试', () => {
   return ids;
 }
 
-
 import {
   classifyStrict, RequirementStatus, computeStatesFromMatrix,
   detectSharedEvidence, isValidBehaviorAssertion,
