@@ -37,13 +37,11 @@ For commercial licensing, please contact support@uter.ai
    * custom property at runtime — `--font-ui` is what VChart reads (canvas
    * text does not inherit CSS). Keep them in sync when editing.
    *
-   * The font axis (Sans / Serif switcher) has been removed; `font-sans`
-   * and `font-manrope` survive only because components and the legacy
-   * FontProvider still reference them, and now alias the same stack so
-   * nothing can fall back to an OS face. */
+   * The font axis (Sans / Serif switcher) has been removed. `--font-inter`
+   * remains only so a legacy `font-inter` cookie still resolves to the
+   * single UI stack; `font-sans` / `font-manrope` aliases were retired and
+   * all call sites now use the canonical `font-ui` utility directly. */
   --font-inter: var(--font-ui);
-  --font-sans: var(--font-ui);
-  --font-manrope: var(--font-ui);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -401,7 +399,7 @@ For commercial licensing, please contact support@uter.ai
     --ds-color-border-strong
   ); /* UDS 8.0.0 §2.6 强调边界 = border-strong */
   --subtle: #fafbfc; /* UDS 8.0.0 §2.5 极浅表面 */
-  --input: #d1d5e5;
+  --input: var(--ds-color-border-input); /* UDS 8.0.0 输入框边框（Light） */
   --ring: var(--uter-brand-primary);
   /* UDS 8.0.0 chart-1..6（Light）：12 色图表体系前 6 系列，活引用 --ds-*，
    * 见 15-DATA-VISUALIZATION-STANDARD（CVD 由非颜色通道补偿）。 */
@@ -668,7 +666,9 @@ For commercial licensing, please contact support@uter.ai
     --ds-color-border-strong
   ); /* UDS 8.0.0 border-strong（Dark） */
   --subtle: #111c30; /* UDS 8.0.0 §2.5 极浅表面（保留并登记） */
-  --input: #45465f; /* CM-06 ISOLATE：保留 3.0 值（EXCEPTION-REGISTRY） */
+  --input: var(
+    --ds-color-border-input
+  ); /* UDS 8.0.0 输入框边框（Dark）；CM-06 历史保留值已退役 */
   /* 焦点环跟品牌（UDS 8.0.0 §15.1）：#8B8DF5 on 深底 ≥ 3:1 非文本线；
    * 与 6.0 border-focus Dark 同值。 */
   --ring: var(--uter-brand-primary);
