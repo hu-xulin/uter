@@ -47,22 +47,22 @@ const (
 // intentionally read-only: it never mutates channel pricing. Operators compare
 // it with the primary path and apply changes explicitly.
 type UpstreamConsoleCatalog struct {
-	Status           string                 `json:"status"`
-	LoginSucceeded   bool                   `json:"login_succeeded"`
-	FallbackPrimary  bool                   `json:"fallback_primary"`
-	Models           []string               `json:"models"`
-	Prices           []UpstreamConsolePrice `json:"prices"`
-	Warnings         []string               `json:"warnings,omitempty"`
+	Status          string                 `json:"status"`
+	LoginSucceeded  bool                   `json:"login_succeeded"`
+	FallbackPrimary bool                   `json:"fallback_primary"`
+	Models          []string               `json:"models"`
+	Prices          []UpstreamConsolePrice `json:"prices"`
+	Warnings        []string               `json:"warnings,omitempty"`
 }
 
 // UpstreamConsolePrice is one price row discovered from the console. Fields are
 // kept generic because upstream gateways expose price tables in several shapes.
 type UpstreamConsolePrice struct {
-	Model        string  `json:"model"`
-	InputPrice   float64 `json:"input_price,omitempty"`
-	OutputPrice  float64 `json:"output_price,omitempty"`
-	Currency     string  `json:"currency,omitempty"`
-	Raw          any     `json:"raw,omitempty"`
+	Model       string  `json:"model"`
+	InputPrice  float64 `json:"input_price,omitempty"`
+	OutputPrice float64 `json:"output_price,omitempty"`
+	Currency    string  `json:"currency,omitempty"`
+	Raw         any     `json:"raw,omitempty"`
 }
 
 type upstreamLoginRequest struct {
@@ -335,11 +335,11 @@ func parseConsolePrices(body []byte) []UpstreamConsolePrice {
 			continue
 		}
 		out = append(out, UpstreamConsolePrice{
-			Model:        model,
-			InputPrice:   numberField(row, "input_price", "prompt_price", "model_price"),
-			OutputPrice:  numberField(row, "output_price", "completion_price"),
-			Currency:     stringField(row, "currency"),
-			Raw:          row,
+			Model:       model,
+			InputPrice:  numberField(row, "input_price", "prompt_price", "model_price"),
+			OutputPrice: numberField(row, "output_price", "completion_price"),
+			Currency:    stringField(row, "currency"),
+			Raw:         row,
 		})
 	}
 	return out
