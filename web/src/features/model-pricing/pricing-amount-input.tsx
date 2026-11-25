@@ -41,6 +41,7 @@ export function PricingAmountInput({
   onChange,
   currency = USD_PRICING_CURRENCY,
   grouped,
+  ref,
   ...props
 }: PricingAmountInputProps) {
   const { t } = useTranslation()
@@ -87,8 +88,8 @@ export function PricingAmountInput({
         {...props}
         ref={(element) => {
           element?.setCustomValidity(error)
-          if (typeof props.ref === 'function') return props.ref(element)
-          if (props.ref) props.ref.current = element
+          if (typeof ref === 'function') return ref(element)
+          if (ref) ref.current = element
         }}
         data-pricing-amount=''
         type='text'
