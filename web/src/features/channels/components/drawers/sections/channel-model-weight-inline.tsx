@@ -177,7 +177,6 @@ export function ChannelModelWeightInline({
                 className='w-24'
                 inputMode='decimal'
                 placeholder={t('Weight')}
-                aria-label={`${model} ${t('Weight')}`}
                 value={e.weight}
                 onChange={(event) =>
                   setEntry(model, { weight: event.target.value })
@@ -187,7 +186,7 @@ export function ChannelModelWeightInline({
                 className='w-24'
                 inputMode='decimal'
                 placeholder={t('Priority')}
-                aria-label={`${model} ${t('Priority')}`}
+                aria-label={`${t('Priority')} - ${model}`}
                 value={e.priority}
                 onChange={(event) =>
                   setEntry(model, { priority: event.target.value })
