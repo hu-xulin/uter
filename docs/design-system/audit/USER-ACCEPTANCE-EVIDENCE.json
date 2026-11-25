@@ -45,7 +45,18 @@
       "note": "用户二次裁决：暂缓执行。Phase 6 规范前置为『视觉冻结 + 用户审核通过』且属全站巨型工程，应保持 NOT_STARTED 待前置满足后与 Phase 8 视觉回归一并规划。"
     }
   },
-  "governance_note": "本文件仅记录用户明确决定，作为人工接受的永久证据。它不修改、不绕过设计系统受门禁保护的状态字段（manifest.status / final-acceptance.json / Showcase）。状态字段仍由真实生成器与 C14/C15/C18 门禁管理。任何人不得删除或篡改本凭证以否认用户已作出的决定。",
+  "signature_evidence": {
+    "schema": "UDS8-FINAL-ACCEPTANCE-SIGNATURE/1.0",
+    "record_id": "UDS8-SIGN-fa5e1d5",
+    "file": "docs/design-system/audit/UDS8-FINAL-ACCEPTANCE-SIGNATURE.json",
+    "signer": "胡旭林",
+    "signed_at": "2026/11/25 03:24:23",
+    "target_head": "fa5e1d5269f90490c17b500aa0c29bb19c022027",
+    "png_sha256": "de319a70ef1e1cd760ca12a7fc76448537bb755a4c151294422c056c35188d3c",
+    "status": "RECEIVED_AND_RECORDED",
+    "note": "独立手写签名凭证已完整落盘；JSON 与 PNG 均校验通过。accepted 系统字段保持 false（C14/C15/C18 门禁保护），未被改写。"
+  },
+  "governance_note": "本文件仅记录用户明确决定，作为人工接受的永久证据。它不修改、不绕过设计系统受门禁保护的状态字段（manifest.status / final-acceptance.json / Showcase）。状态字段仍由真实生成器与 C14/C15/C18 门禁管理。任何人不得删除或篡改本凭证以否认用户已作出的决定。2026-11-25 补充的手写签名凭证见 signature_evidence 字段及独立 JSON 文件。",
   "verification": {
     "gate_after_creation": "bun run design:8:check",
     "result": "22/22 PASS, 0 errors",
