@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQueryClient } from '@tanstack/react-query'
 import { Loader2, RefreshCw, DollarSign } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -65,17 +65,23 @@ export function BalanceQueryDialog(props: BalanceQueryDialogProps) {
     useState<CodexUsageDialogData | null>(null)
 
   const isCodex = currentRow?.type === 57
+  const codexChannelId = currentRow?.id
+
+  const queryCodexUsage = useCallback(async () => {
+    if (!codexChannelId) return null
+    const res = await getCodexUsage(codexChannelId)
+    if (!res.success) {
+      throw createServerError(res, t('Failed to fetch usage'))
+    }
+    return res
+  }, [codexChannelId, t])
 
   const handleQueryCodexUsage = async () => {
-    const row = currentRow
-    if (!row) return
+    if (!currentRow) return
     setIsQuerying(true)
     try {
-      const res = await getCodexUsage(row.id)
-      if (!res.success) {
-        throw createServerError(res, t('Failed to fetch usage'))
-      }
-      setCodexUsageResponse(res)
+      const res = await queryCodexUsage()
+      if (res) setCodexUsageResponse(res)
     } catch (error: unknown) {
       handleServerError(error, t('Failed to fetch usage'))
     } finally {
@@ -83,12 +89,32 @@ export function BalanceQueryDialog(props: BalanceQueryDialogProps) {
     }
   }
 
+  const shouldQueryCodex = props.open && isCodex
+  const [prevShouldQuery, setPrevShouldQuery] = useState(shouldQueryCodex)
+
+  if (shouldQueryCodex !== prevShouldQuery) {
+    setPrevShouldQuery(shouldQueryCodex)
+    if (shouldQueryCodex) setIsQuerying(true)
+  }
+
   useEffect(() => {
-    if (!isCodex) return
-    if (!props.open) return
-    handleQueryCodexUsage()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.open, isCodex])
+    if (!shouldQueryCodex) return
+    let alive = true
+    void queryCodexUsage()
+      .then((res) => {
+        if (!alive) return
+        if (res) setCodexUsageResponse(res)
+        setIsQuerying(false)
+      })
+      .catch((error: unknown) => {
+        if (!alive) return
+        handleServerError(error, t('Failed to fetch usage'))
+        setIsQuerying(false)
+      })
+    return () => {
+      alive = false
+    }
+  }, [shouldQueryCodex, queryCodexUsage, t])
 
   if (!currentRow) return null
 
