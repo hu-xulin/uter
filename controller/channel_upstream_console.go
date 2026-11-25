@@ -70,8 +70,13 @@ func normalizeUpstreamConsoleOnSave(channel *model.Channel, origin *model.Channe
 	// A blank password on edit means "keep the stored one".
 	if strings.TrimSpace(console.Password) == "" {
 		if origin != nil {
-			existing := consoleFromSettingsString(origin.OtherSettings)
-			console.PasswordEncrypted = existing.PasswordEncrypted
+			// A channel may have no stored console block yet (e.g. the first
+			// save from the create wizard with an empty password box). Keep
+			// fail-closed: no envelope to preserve means stay empty, never
+			// dereference the nil result of consoleFromSettingsString.
+			if existing := consoleFromSettingsString(origin.OtherSettings); existing != nil {
+				console.PasswordEncrypted = existing.PasswordEncrypted
+			}
 		}
 	} else {
 		encrypted, err := common.EncryptSecret(console.Password)
@@ -91,6 +96,85 @@ func normalizeUpstreamConsoleOnSave(channel *model.Channel, origin *model.Channe
 	}
 	channel.OtherSettings = marshalSettingsMap(settings)
 	return nil
+}
+
+// mergeConsoleCredentialsIntoSettings replaces only the upstream_console block
+// of a stored settings string and returns the encrypted result. Every other
+// key (draft, pricing_mode, upstream-model flags, proxy, ...) is preserved.
+func mergeConsoleCredentialsIntoSettings(originRaw, loginURL, username, password string) (string, error) {
+	settings := parseSettingsMap(originRaw)
+	settings[upstreamConsoleKey] = map[string]any{
+		"login_url": loginURL,
+		"username":  username,
+		"password":  password,
+	}
+	candidate := &model.Channel{OtherSettings: marshalSettingsMap(settings)}
+	origin := &model.Channel{OtherSettings: originRaw}
+	if err := normalizeUpstreamConsoleOnSave(candidate, origin); err != nil {
+		return "", err
+	}
+	return candidate.OtherSettings, nil
+}
+
+// SaveChannelUpstreamConsoleCredentials persists the console-login credentials
+// on an existing channel without rewriting any other channel field. It is the
+// create-wizard's "save" step: the draft row already exists (created for the
+// pricing step) but the initial draft request carries no console credentials,
+// so the cross-check/上游登录 path would otherwise see "not configured" until
+// the operator finished the whole wizard.
+//
+// Only the upstream_console block of channel.settings is replaced. Every other
+// setting (draft marker, pricing_mode, upstream-model flags, ...) is preserved
+// by reading the stored row first and merging into it. A plaintext password is
+// encrypted by normalizeUpstreamConsoleOnSave; a blank password keeps the
+// stored encrypted one ("留空表示保留已保存的密码"), and is never echoed back.
+func SaveChannelUpstreamConsoleCredentials(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil || id <= 0 {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	var req struct {
+		LoginURL string `json:"login_url"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	loginURL := strings.TrimSpace(req.LoginURL)
+	username := strings.TrimSpace(req.Username)
+	if loginURL == "" || username == "" {
+		common.ApiErrorMsg(c, "Console login URL and username are required")
+		return
+	}
+
+	origin, err := model.GetChannelById(id, true)
+	if err != nil || origin == nil {
+		common.ApiErrorMsg(c, "Channel not found")
+		return
+	}
+
+	// Merge only the console block into the stored settings; keep draft,
+	// pricing_mode and every other setting untouched (billing fail-closed).
+	merged, err := mergeConsoleCredentialsIntoSettings(
+		origin.OtherSettings, loginURL, username, req.Password)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+
+	// Update only the settings column so no zero-valued channel field can be
+	// written by a partial update.
+	if err := model.DB.Model(&model.Channel{}).Where("id = ?", id).
+		Update("settings", merged).Error; err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	model.InitChannelCache()
+	recordManageAudit(c, "channel.upstream_console.save", map[string]any{"id": id})
+	common.ApiSuccess(c, gin.H{"id": id, "configured": true})
 }
 
 // redactUpstreamConsole clears all console secret material before a channel is
