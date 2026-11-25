@@ -203,7 +203,6 @@ if (isMain) {
   if (duplicates.length) throw new Error('duplicate registry-derived requirement IDs: ' + [...new Set(duplicates)].join(', '));
   return { specification_count: specs.length, ids };
 }
-
 export async function independentValidate({ rows = [], states = null, execution = null, write = true } = {}) {
   const problems = [];
   const checks = [];
