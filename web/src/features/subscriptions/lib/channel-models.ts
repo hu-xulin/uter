@@ -26,7 +26,8 @@ export function parseChannelModels(value: string): Record<string, string[]> {
   if (!raw || raw === '{}' || raw === 'null') return {}
   try {
     const parsed = JSON.parse(raw) as Record<string, unknown>
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+      return {}
     const out: Record<string, string[]> = {}
     for (const [channelId, models] of Object.entries(parsed)) {
       if (!Array.isArray(models)) continue
