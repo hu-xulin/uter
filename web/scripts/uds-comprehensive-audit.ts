@@ -1,3 +1,21 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@uter.ai
+*/
 /**
  * UDS 8.0 全页面元素差异审计（真实浏览器 computed style + 整页截图）
  *
@@ -9,7 +27,6 @@
  * 不修改业务源码，不停止/重启任何既有服务；默认访问 localhost:3001。
  */
 import { spawnSync } from 'node:child_process'
-import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -294,69 +311,6 @@ const allowedBase = {
   ),
 }
 
-function nearestNumber(value: number, values: number[]) {
-  let best = values[0] ?? null
-  let bestDiff = best === null ? Infinity : Math.abs(value - best)
-  for (const v of values) {
-    const d = Math.abs(value - v)
-    if (d < bestDiff) {
-      best = v
-      bestDiff = d
-    }
-  }
-  return { tokenValue: best, distance: bestDiff }
-}
-
-function tokenNameForValue(prefix: string, value: number | null) {
-  if (value === null) return null
-  const hit = valuesForType('size').find(
-    (t) => t.token.startsWith(prefix) && t.value === value
-  )
-  return hit?.token ?? null
-}
-
-function parseRgb(value: string): [number, number, number] | null {
-  const m = value.match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i)
-  if (!m) return null
-  return [Number(m[1]), Number(m[2]), Number(m[3])]
-}
-
-function nearestColor(value: string, colors: string[]) {
-  const target = parseRgb(value)
-  if (!target) return { token: null, distance: Infinity }
-  let best: string | null = null
-  let bestDistance = Infinity
-  const materialized = new Map<string, [number, number, number] | null>()
-  for (const color of colors) {
-    // 只在 Node 侧处理 HEX；rgba/currentColor 由浏览器侧完成归一化。
-    const rgb = /^#/.test(color)
-      ? (() => {
-          let h = color.slice(1)
-          if (h.length === 3) {
-            h = [...h].map((c) => c + c).join('')
-          }
-          return [
-            parseInt(h.slice(0, 2), 16),
-            parseInt(h.slice(2, 4), 16),
-            parseInt(h.slice(4, 6), 16),
-          ] as [number, number, number]
-        })()
-      : parseRgb(color)
-    materialized.set(color, rgb)
-    if (!rgb) continue
-    const d = Math.hypot(
-      target[0] - rgb[0],
-      target[1] - rgb[1],
-      target[2] - rgb[2]
-    )
-    if (d < bestDistance) {
-      bestDistance = d
-      best = color
-    }
-  }
-  return { token: best, distance: bestDistance, materialized }
-}
-
 function slugify(input: string) {
   return (
     input
@@ -477,7 +431,7 @@ async function auditPage(
       cv.width = 1
       cv.height = 1
       const ctx = cv.getContext('2d', { willReadFrequently: true })
-      if (!ctx) throw new Error('Canvas 2D context is unavailable')
+      if (!ctx) throw new Error('Canvas 2D context unavailable')
       const norm = (v: string) => {
         ctx.clearRect(0, 0, 1, 1)
         ctx.fillStyle = '#000000'
@@ -497,7 +451,7 @@ async function auditPage(
       probe.remove()
 
       const num = (v: string) => {
-        const n = parseFloat(v)
+        const n = Number.parseFloat(v)
         return Number.isFinite(n) ? n : null
       }
       const near = (v: number, values: number[]) => {
@@ -575,9 +529,9 @@ async function auditPage(
         while (node && node.tagName !== 'HTML' && parts.length < 6) {
           const tag = node.tagName.toLowerCase()
           const id = node.id ? `#${node.id}` : ''
-          const classAttribute = node.getAttribute('class')
-          const cls = classAttribute
-            ? `.${classAttribute.trim().split(/\s+/).slice(0, 2).join('.')}`
+          const classValue = node.getAttribute('class')
+          const cls = classValue
+            ? `.${classValue.trim().split(/\s+/).slice(0, 2).join('.')}`
             : ''
           parts.unshift(`${tag}${id}${cls}`)
           node = node.parentElement
@@ -591,9 +545,7 @@ async function auditPage(
       const all = [...document.body.querySelectorAll('*')]
       for (const raw of all) {
         const el = raw as HTMLElement & SVGElement
-        if (el.closest('script, style, noscript, template')) {
-          continue
-        }
+        if (el.closest('script, style, noscript, template')) continue
         if (el.getAttribute('aria-hidden') === 'true') continue
         const s = getComputedStyle(el)
         if (
@@ -614,17 +566,12 @@ async function auditPage(
         el.setAttribute('data-uds-audit-id', id)
         const clsLower = className.toLowerCase()
         let component = 'generic'
-        if (/badge|chip|pill/.test(clsLower)) {
-          component = 'badge'
-        } else if (/card|surface/.test(clsLower)) {
-          component = 'card'
-        } else if (el.tagName === 'TABLE') {
-          component = 'table'
-        } else if (el.tagName === 'TR') {
-          component = 'table-row'
-        } else if (/^(TH|TD)$/i.test(el.tagName)) {
-          component = 'table-cell'
-        } else if (
+        if (/badge|chip|pill/.test(clsLower)) component = 'badge'
+        else if (/card|surface/.test(clsLower)) component = 'card'
+        else if (el.tagName === 'TABLE') component = 'table'
+        else if (el.tagName === 'TR') component = 'table-row'
+        else if (/^(TH|TD)$/i.test(el.tagName)) component = 'table-cell'
+        else if (
           /^(BUTTON)$/i.test(el.tagName) ||
           el.getAttribute('role') === 'button'
         ) {
@@ -640,9 +587,7 @@ async function auditPage(
           /sidebar|breadcrumb/.test(clsLower)
         ) {
           component = 'navigation'
-        } else if (el instanceof SVGElement) {
-          component = 'icon'
-        }
+        } else if (el instanceof SVGElement) component = 'icon'
 
         const record: ElementRecord = {
           id,
@@ -976,12 +921,16 @@ async function auditPage(
           }
         }
 
-        const labelledBy = el.getAttribute('aria-labelledby')
         const accessibleName =
           text ||
           el.getAttribute('aria-label') ||
           el.getAttribute('title') ||
-          (labelledBy ? document.getElementById(labelledBy)?.textContent?.trim() : '') ||
+          (() => {
+            const labelId = el.getAttribute('aria-labelledby')
+            return labelId
+              ? document.getElementById(labelId)?.textContent?.trim() || ''
+              : ''
+          })() ||
           (el instanceof HTMLInputElement
             ? el.labels?.[0]?.textContent?.trim()
             : '')
@@ -1132,18 +1081,19 @@ async function auditPage(
         if (component === 'table-row') {
           if (![36, 44, 52].some((v) => Math.abs(v - rect.height) <= 1)) {
             const n = near(rect.height, [36, 44, 52])?.tokenValue ?? null
-            let densityToken = '--ds-density-default-row'
-            if (n === 36) {
-              densityToken = '--ds-density-compact-row'
-            } else if (n === 52) {
-              densityToken = '--ds-density-comfortable-row'
+            const rowTokenByValue: Record<number, string> = {
+              36: '--ds-density-compact-row',
+              52: '--ds-density-comfortable-row',
+              44: '--ds-density-default-row',
             }
             addIssue(
               'component',
               'table-row-height',
               `${rect.height.toFixed(1)}px`,
               '36/44/52px',
-              densityToken,
+              n === null
+                ? null
+                : (rowTokenByValue[n] ?? '--ds-density-default-row'),
               n === null ? null : `${n}px`,
               'REVIEW',
               '16 密度规范 / 23 数据展示规范',
@@ -1328,7 +1278,7 @@ async function main() {
       cv.width = 1
       cv.height = 1
       const ctx = cv.getContext('2d', { willReadFrequently: true })
-      if (!ctx) throw new Error('Canvas 2D context is unavailable')
+      if (!ctx) throw new Error('Canvas 2D context unavailable')
       const norm = (v: string) => {
         ctx.clearRect(0, 0, 1, 1)
         ctx.fillStyle = '#000000'
@@ -1359,9 +1309,6 @@ async function main() {
       }
       const result = await auditPage(page, route, theme, allowed)
       pageResults.push(result)
-      console.log(
-        `[UDS-AUDIT] ${theme} ${route.path} status=${result.httpStatus} elements=${result.elementCount} issues=${result.issues.length}${result.error ? ` error=${result.error.slice(0, 120)}` : ''}`
-      )
     }
     await context.close()
   }
@@ -1468,17 +1415,10 @@ async function main() {
 
   fs.writeFileSync(
     path.join(OUT_DIR, 'audit-data.json'),
-    JSON.stringify(data, null, 2) + '\n'
+    `${JSON.stringify(data, null, 2)}\n`
   )
   const html = renderHtml(data)
   fs.writeFileSync(path.join(OUT_DIR, 'index.html'), html)
-  const digest = createHash('sha256')
-    .update(JSON.stringify(data.totals) + data.generatedAt)
-    .digest('hex')
-    .slice(0, 12)
-  console.log(
-    `[UDS-AUDIT] DONE digest=${digest} scenarios=${data.totals.pageScenarios} elements=${data.totals.elementObservations} issues=${data.totals.issues} groups=${data.totals.groups}`
-  )
 }
 
 function escapeHtml(value: string) {
@@ -1490,7 +1430,10 @@ function escapeHtml(value: string) {
 }
 
 function renderHtml(data: any) {
-  const serialized = JSON.stringify(data).replaceAll(/<\/script/gi, '<\\/script')
+  const serialized = JSON.stringify(data).replaceAll(
+    /<\/script/gi,
+    '<\\/script'
+  )
   return `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
