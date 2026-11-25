@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-24T07:24:02.481Z",
-  "generated_for_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "generated_at": "2026-11-25T06:42:03.062Z",
+  "generated_for_head": "4189503ad246decc363e9e3cb4971c92f117b307",
   "executor_ids": [
     "architecture.adr"
   ],
-  "document_count": 219,
+  "document_count": 237,
   "formal_adr_count": 2,
-  "candidate_count": 217,
+  "candidate_count": 235,
   "historical_document_count": 64,
   "historical_roots_excluded": [
     ".uap/reports/",
@@ -76,6 +76,27 @@
       "size": 839
     },
     {
+      "id": "ADR-CANDIDATE-1cabdf46",
+      "path": "docs/audits/CHANNEL-1247-PRICE-DIAGNOSIS.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "渠道 1247 渠道价错误——定位与解决方案",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/features/channels/lib/channel-price-display.ts",
+        "web/dist",
+        "web/dist/static/js/index.",
+        "web/src/features/channels/lib/model-mapping-validation.ts",
+        "web/src/features/channels/components/fetched-price-preview.tsx",
+        "web/src/features/channels/components/drawers/channel-mutate-drawer.tsx"
+      ],
+      "updated_at": "2026-11-25T03:15:38.869Z",
+      "hash": "d6dd823e91a76025ab244a1f7c2ef17d1cd7d5014283c6b789aa67cbbb0afcfc",
+      "size": 11066
+    },
+    {
       "id": "ADR-CANDIDATE-df5192f1",
       "path": "docs/audits/PROVIDER-PRICING-DATA-AUDIT.md",
       "scope": "docs",
@@ -118,6 +139,34 @@
       "size": 2374
     },
     {
+      "id": "ADR-CANDIDATE-85f79559",
+      "path": "docs/audits/UTER-PRICING-BILLING-RECONCILIATION.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 实际计费对账——状态说明（2026-11-24）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T10:39:23.173Z",
+      "hash": "295476b90ba33d241ca0cbc749af359d0911e76ac8b0abd57499b0397ea56fc2",
+      "size": 542
+    },
+    {
+      "id": "ADR-CANDIDATE-47798866",
+      "path": "docs/audits/UTER-PRICING-DATA-MIGRATION.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价数据迁移——执行记录（2026-11-24）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T12:20:20.076Z",
+      "hash": "6b9d6ce20bbf5f2a07b90cf5ebcec22fb1823433d84cbde93230ef6ab09cb4b1",
+      "size": 1550
+    },
+    {
       "id": "ADR-CANDIDATE-fc273437",
       "path": "docs/audits/UTER-PRICING-DATA-STANDARD.md",
       "scope": "docs",
@@ -127,9 +176,9 @@
       "date": null,
       "has_frontmatter": false,
       "sources": [],
-      "updated_at": "2026-11-23T04:38:35.237Z",
-      "hash": "05bc55038b53c6b767d93b663f9d01899fbbb7e49430b88321ab34db5fc1dec2",
-      "size": 2151
+      "updated_at": "2026-11-24T12:44:42.357Z",
+      "hash": "27571b1b9b1e8a83d9aaefaff5c923ab72a4f4e84e0a9db2f10befea8aa65c81",
+      "size": 2431
     },
     {
       "id": "ADR-CANDIDATE-5a77e372",
@@ -157,9 +206,37 @@
       "sources": [
         "scripts/verify-all.sh"
       ],
-      "updated_at": "2026-11-23T13:52:16.242Z",
-      "hash": "2199e34d2b2773367e1d92b58d73e3c23b31624da38569180971a33998f8ecc9",
-      "size": 14396
+      "updated_at": "2026-11-24T12:46:54.026Z",
+      "hash": "d75a9b0ea073d7b9e4db85b7a738a47f6bd855f35b4d6aec6d59eacd3fd9325d",
+      "size": 22969
+    },
+    {
+      "id": "ADR-CANDIDATE-e3c48c61",
+      "path": "docs/audits/UTER-PRICING-FINAL-ACCEPTANCE.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价整改——最终验收清单（2026-11-24，HEAD `8c1e9139c`）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T12:44:51.117Z",
+      "hash": "e0fa85d3495326f07263f2b0d5f3973124dc66fd0b9a7ddd9284fb45c27ecb80",
+      "size": 2190
+    },
+    {
+      "id": "ADR-CANDIDATE-1014523c",
+      "path": "docs/audits/UTER-PRICING-FINAL-ARCHITECTURE.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价系统——本轮落地架构（PARTIAL）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T11:37:55.743Z",
+      "hash": "70bb18b3c6c4d13de1d704959f797c8b947eb27065a779d3c0f3689ab386e504",
+      "size": 1204
     },
     {
       "id": "ADR-CANDIDATE-ebe15fb3",
@@ -176,6 +253,82 @@
       "size": 11334
     },
     {
+      "id": "ADR-CANDIDATE-6589ecb1",
+      "path": "docs/audits/UTER-PRICING-LATEST-BASELINE.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价系统整改——最新代码基线",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T10:36:47.192Z",
+      "hash": "d0fd617ec81a3d6610eeccc5a82efd07d9f070f281e2d7b183c524903f47b6b4",
+      "size": 1269
+    },
+    {
+      "id": "ADR-CANDIDATE-d0730cb2",
+      "path": "docs/audits/UTER-PRICING-LATEST-CODE-AUDIT.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价系统——最新代码审计结论（2026-11-24，HEAD `8c1e9139c`）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T10:38:32.639Z",
+      "hash": "ffa6e1ed4501c9a999e887f3c92275a1199f58348e084a14df7199200e73ca1e",
+      "size": 803
+    },
+    {
+      "id": "ADR-CANDIDATE-c37f00a1",
+      "path": "docs/audits/UTER-PRICING-LIVE-VERIFICATION.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 真实上游验证——状态说明（2026-11-24）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T12:09:57.785Z",
+      "hash": "a7531d1a9c40df5704cc62c8fb0ae6fd0c71a4a3fcb6873cb61bc8d683d1a691",
+      "size": 1930
+    },
+    {
+      "id": "ADR-CANDIDATE-1de2a03d",
+      "path": "docs/audits/UTER-PRICING-PRODUCTION-READINESS-REPORT.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 价格体系生产级审计报告 — Uter Route 深度验证与整改",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/features/channels/api.ts",
+        "web/pnpm-workspace.yaml",
+        "web/src/lib/lobe-icon.tsx",
+        "web/dist",
+        "web/pnpm-lock.yaml"
+      ],
+      "updated_at": "2026-11-24T18:13:20.266Z",
+      "hash": "12755d926058e3317c3526e0be5962ddcc247b40850b9714d91aa66d61f4397c",
+      "size": 15908
+    },
+    {
+      "id": "ADR-CANDIDATE-67da38f2",
+      "path": "docs/audits/UTER-PRICING-REGRESSION-TESTS.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价整改——回归测试记录（2026-11-24，HEAD `8c1e9139c`）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T11:37:32.581Z",
+      "hash": "30b4b1125a2dbf9547c6c29e8e97c13ab830caf49611fd162dab15d0973300a1",
+      "size": 3907
+    },
+    {
       "id": "ADR-CANDIDATE-d6c38f9f",
       "path": "docs/audits/UTER-PRICING-RELEASE-ACCEPTANCE.md",
       "scope": "docs",
@@ -188,6 +341,20 @@
       "updated_at": "2026-11-23T06:07:06.690Z",
       "hash": "eeb92f5d5e54c4ed99f9c0919c7481f7cfc1f7c3d5b16d64cc7526cea9e4c17c",
       "size": 3083
+    },
+    {
+      "id": "ADR-CANDIDATE-24aec52c",
+      "path": "docs/audits/UTER-PRICING-ROOT-CAUSE-REPORT.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 定价系统根因分析报告（当前 HEAD 实测）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T12:44:25.776Z",
+      "hash": "1416b083b7edab7d4ebfc11bba231b52c2f5ea061e6aa1a3a91a8243687101cf",
+      "size": 5107
     },
     {
       "id": "ADR-CANDIDATE-4a0224d8",
@@ -216,6 +383,20 @@
       "updated_at": "2026-11-23T06:07:06.693Z",
       "hash": "6966daf4486eb15d13d9296d05eaab8724ed5956816c03f24c69caa418cb3411",
       "size": 1764
+    },
+    {
+      "id": "ADR-CANDIDATE-732c9571",
+      "path": "docs/audits/UTER-PROVIDER-ADAPTER-MATRIX.md",
+      "scope": "docs",
+      "formal_adr": false,
+      "title": "Uter 供应商适配矩阵（本轮核验结果，2026-11-24）",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [],
+      "updated_at": "2026-11-24T10:56:45.268Z",
+      "hash": "ae9fd23c6a657f9ce64b650dbfbbe8f7a24ccfc585167b6ac0a7be3b00c791af",
+      "size": 668
     },
     {
       "id": "ADR-CANDIDATE-cd57f4f1",
@@ -861,6 +1042,27 @@
       "size": 6224
     },
     {
+      "id": "ADR-CANDIDATE-dad54530",
+      "path": "docs/design-system/UDS-8.0-FINAL-ACCEPTANCE-REPORT.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS 8.0 最终验收报告",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "docs/adr/0002-...",
+        "web/scripts/check-design-system-8.0.0.mjs",
+        "docs/design-system/",
+        "docs/design-system/TOKEN-MANIFEST.json",
+        "web/src/design-system/component-registry.json",
+        "web/visual-regression/uds8/a11y-log.json"
+      ],
+      "updated_at": "2026-11-25T03:15:38.563Z",
+      "hash": "d49fcb75a56ea74e48504cfc60a37a877859e52d292c9ee87f7bcb11377375d2",
+      "size": 8338
+    },
+    {
       "id": "ADR-CANDIDATE-76ffd115",
       "path": "docs/design-system/UDS-8.0.0-FINAL-IMPLEMENTATION-AND-ACCEPTANCE-REPORT.md",
       "scope": "design-system",
@@ -899,8 +1101,8 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-16T13:32:54.234Z",
-      "hash": "3d0edd4d2239010f9843c51c0c3c14ff39da316120939b24aa80070525b33bde",
+      "updated_at": "2026-11-24T07:32:42.360Z",
+      "hash": "6d13cbc5c2b3886b38dd2496855563e117a03ecc1bd349e134b0f380dc4a2cf5",
       "size": 473
     },
     {
@@ -919,6 +1121,125 @@
       "updated_at": "2026-11-15T15:54:41.408Z",
       "hash": "e7d897afd3651e9f1bed763e1c21c69b1e5f2605c4ef17bd4ccc1c13f7f904dc",
       "size": 5220
+    },
+    {
+      "id": "ADR-CANDIDATE-4f09734f",
+      "path": "docs/design-system/audit/PHASE6-MIGRATION-EVIDENCE.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS 8.0.0 · Phase 6 迁移收口证据",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/design-system/__tests__/uds8-decision-fixes.test.ts",
+        "web/scripts/uds-comprehensive-audit.ts",
+        "docs/design-system/audit/syntax-validation.json",
+        "docs/design-system/UDS-8.0-FINAL-ACCEPTANCE-REPORT.md",
+        "docs/design-system/audit/PHASE6-MIGRATION-EVIDENCE.md"
+      ],
+      "updated_at": "2026-11-25T03:15:38.869Z",
+      "hash": "57589cb3c36481509a52145adab404449df22e7914fe703ee6abd2172ddd43f8",
+      "size": 3475
+    },
+    {
+      "id": "ADR-CANDIDATE-0f3da8d0",
+      "path": "docs/design-system/audit/UDS8-ALL-BLOCKERS-FIX-EVIDENCE.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS8 非本次阻塞项修复证据",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/components/ui/__tests__/input-accessible-name.test.tsx",
+        "scripts/uds-comprehensive-audit.ts",
+        "scripts/check-i18n-keys.mjs",
+        "scripts/add-copyright.mjs",
+        "scripts/check-design-system-8.0.0.mjs",
+        "scripts/check-design-tokens.mjs",
+        "scripts/verify-contrast.mjs",
+        "scripts/check-component-registry.mjs",
+        ".uap/state/",
+        "docs/design-system/audit/UDS8-SIGNATURE-CREDENTIAL.html"
+      ],
+      "updated_at": "2026-11-25T03:15:38.870Z",
+      "hash": "14a25122107845419b614fa9e7c8efb730d9f583cd7905ab1710881c3cb646cf",
+      "size": 4148
+    },
+    {
+      "id": "ADR-CANDIDATE-b6be43f5",
+      "path": "docs/design-system/audit/UDS8-COMPLIANCE-AUDIT-2026-11-24.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS 8.0.0 全面合规检查报告",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "AGENTS.md",
+        "docs/design-system/00-UTER-DESIGN-SYSTEM-OVERVIEW.md",
+        "web/AGENTS.md",
+        "web/src",
+        "web/design-tokens.baseline.json",
+        "web/e2e/visual/__screenshots__",
+        "web/src/components/ui/sidebar.tsx",
+        "web/src/features/wallet/components/dialogs/cn-pay-web-dialog.tsx",
+        "docs/design-system/registry/finalize.mjs",
+        "docs/design-system/GATE-EVIDENCE.json",
+        "docs/design-system/VISUAL-REGRESSION-REPORT.md",
+        "docs/design-system/audit/"
+      ],
+      "updated_at": "2026-11-24T07:37:55.580Z",
+      "hash": "e1ce90f11c2130d10db8d944eb836a273c9ca821ed1a568c642beb0a80a15515",
+      "size": 15859
+    },
+    {
+      "id": "ADR-CANDIDATE-8ef609af",
+      "path": "docs/design-system/audit/UDS8-COMPONENT-EVIDENCE-EXECUTION.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS8 组件证据执行与状态收口报告",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/components/ui/__tests__/component-contracts-display.test.tsx",
+        "web/src/components/ui/__tests__/component-contracts-interactive.test.tsx",
+        "web/src/components/ui/__tests__/component-contracts-overlay.test.tsx",
+        "web/src/components/ui/__tests__/component-contracts-structure.test.tsx",
+        "web/src/components/ui/__tests__/component-contracts-advanced.test.tsx",
+        "web/src/components/ui/__tests__/component-contracts-remaining.test.tsx",
+        "web/src/components/ui/__tests__/empty-typography.test.tsx",
+        "scripts/check-component-registry.mjs",
+        "scripts/check-design-system-8.0.0.mjs",
+        "scripts/check-design-tokens.mjs",
+        "scripts/verify-contrast.mjs",
+        "scripts/uds-comprehensive-audit.ts"
+      ],
+      "updated_at": "2026-11-25T03:15:38.870Z",
+      "hash": "70826c3db3783cbda8b8cc8137e6f7150557619e167c87a9a53e1154bb3be055",
+      "size": 5172
+    },
+    {
+      "id": "ADR-CANDIDATE-3c050535",
+      "path": "docs/design-system/audit/UDS8-RETIREMENT-EXECUTION-EVIDENCE.md",
+      "scope": "design-system",
+      "formal_adr": false,
+      "title": "UDS8 旧边界退役执行证据",
+      "status": null,
+      "date": null,
+      "has_frontmatter": false,
+      "sources": [
+        "web/src/styles/theme.css",
+        "scripts/check-design-system-8.0.0.mjs",
+        "scripts/check-design-tokens.mjs",
+        "scripts/verify-contrast.mjs",
+        "scripts/check-component-registry.mjs"
+      ],
+      "updated_at": "2026-11-25T03:15:38.873Z",
+      "hash": "5973965b06ea5569f6f091359cc35731aae372022e4dbff9f951415ca86ef9dc",
+      "size": 5021
     },
     {
       "id": "ADR-CANDIDATE-779824f1",
@@ -3467,9 +3788,9 @@
         ".uap/architecture/UAP-02-003-TECHNICAL-DECISIONS.md",
         ".uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md"
       ],
-      "updated_at": "2026-11-16T12:12:15.817Z",
-      "hash": "b99aca322816fc21dbc5be93ae51ccdfc58a056e5dbb82eaa7b2a927318fe2c5",
-      "size": 14807
+      "updated_at": "2026-11-24T07:46:11.467Z",
+      "hash": "056ef11ea3526ebf6faac308e1a6fe64419cd1903bee1842037655abca289f71",
+      "size": 14983
     },
     {
       "id": "ADR-CANDIDATE-a58a3483",

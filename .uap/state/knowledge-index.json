@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-24T07:24:02.754Z",
-  "generated_for_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "generated_at": "2026-11-25T06:42:03.470Z",
+  "generated_for_head": "4189503ad246decc363e9e3cb4971c92f117b307",
   "executor_ids": [
     "evolution.knowledge",
     "evolution.continuous"
@@ -64,9 +64,9 @@
         ".uap/agents/UAP-03-003-AGENT-COLLABORATION.md",
         ".uap/agents/UAP-03-004-AGENT-RECOVERY.md"
       ],
-      "updated_at": "2026-11-16T12:12:15.817Z",
-      "hash": "b99aca322816fc21dbc5be93ae51ccdfc58a056e5dbb82eaa7b2a927318fe2c5",
-      "size": 14807,
+      "updated_at": "2026-11-24T07:46:11.467Z",
+      "hash": "056ef11ea3526ebf6faac308e1a6fe64419cd1903bee1842037655abca289f71",
+      "size": 14983,
       "title": "UAP 1.0 — 规范索引",
       "section_hints": [
         "统一最终状态（与 FINAL-STATUS.json、uap status 同源）",
@@ -1448,7 +1448,7 @@
         "web/src/design-system/tokens/brand-colors.ts",
         "web/src/components/ai-elements/code-block.tsx"
       ],
-      "updated_at": "2026-11-23T08:34:47.267Z",
+      "updated_at": "2026-11-24T15:24:51.360Z",
       "hash": "c491547268715b18ae08aa59706ce38f71d9cc2786e774d718cfcbb1b814176e",
       "size": 317799,
       "title": null,
@@ -1536,7 +1536,7 @@
     "docs/design-system/SHOWCASE-8.0.0.html"
   ],
   "retired_runtime_dependency_scan": {
-    "scanned_file_count": 197,
+    "scanned_file_count": 198,
     "runtime_dependency_count": 0,
     "runtime_dependencies": [],
     "retirement_notes_ignored": 14,
@@ -1595,7 +1595,7 @@
     "policy": "spec prose saying \"retired\" is not a dependency; only command/import/path references count"
   },
   "legacy_design_system_path_scan": {
-    "scanned_file_count": 251,
+    "scanned_file_count": 262,
     "active_reference_count": 0,
     "active_references": [],
     "historical_tool_references": [

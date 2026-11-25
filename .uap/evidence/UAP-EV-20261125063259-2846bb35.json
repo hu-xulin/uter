@@ -1,0 +1,51 @@
+{
+  "evidence_id": "UAP-EV-20261125063259-2846bb35",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-25T06:32:59.936Z",
+  "started_at": "2026-11-25T06:32:59.936Z",
+  "finished_at": "2026-11-25T06:32:59.936Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate cross_platform.h5_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"cross_platform.h5_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.h5_build",
+      "message": "h5_build: 矩阵工具自身故障(exit=1, stderr=) — fail-closed"
+    },
+    {
+      "severity": "BLOCKER",
+      "code": "h5_matrix_tool_failure",
+      "message": "H5 矩阵工具执行失败, 无法取证"
+    }
+  ],
+  "summary": "cross_platform.h5_integrity 实检: h5_build=FAIL(矩阵工具自身故障(exit=1, stderr=) — fail-closed) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12213 个 | FAIL: 工具故障视为能力失败( fail-closed ), 不归为环境受限",
+  "content_hash": "92ed9108dd41ae702d17095d790a06491248c3fbae9d1e7872a8ef9e8e281425"
+}

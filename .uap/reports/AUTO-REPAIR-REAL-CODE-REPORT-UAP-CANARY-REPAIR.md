@@ -1,15 +1,15 @@
 # 真实业务代码自动修复验证报告
 
-- **Execution ID**：`UAP-RREPAIR-1795505046625-75df01`
+- **Execution ID**：`UAP-RREPAIR-1795588943469-bfa6f2`
 - **Task ID**：`UAP-CANARY-REPAIR`
 - **Workflow**：`uap-defect-repair` / `uap-final-verification`（本引擎为真实代码分支）
-- **Git HEAD**：`33def7a5a7585779965e85e5854596c4ca7f79e0`
-- **开始 / 结束**：2026-11-24T07:24:06.625Z → 2026-11-24T07:24:09.027Z
+- **Git HEAD**：`4189503ad246decc363e9e3cb4971c92f117b307`
+- **开始 / 结束**：2026-11-25T06:42:23.470Z → 2026-11-25T06:42:36.735Z
 - **最终结论**：**SUCCEEDED**（attempts=1/3，失败升级=NO）
 - **修复对象**：`.uap/tests/fixtures/repair-canary.mjs`
 - **修复前 SHA256**：`66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380`
 - **修复后 SHA256**：`4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1`
-- **回滚备份**：`.uap/state/repair-sandbox/backups/UAP-RREPAIR-1795505046625-75df01/repair-canary.mjs`
+- **回滚备份**：`.uap/state/repair-sandbox/backups/UAP-RREPAIR-1795588943469-bfa6f2/repair-canary.mjs`
 - **独立复核**：`node .uap/engines/auto-repair/independent-review.mjs` → exit 0
 
 > 本文件由 `.uap/engines/auto-repair/real-code-repair.mjs` 依据本次真实执行自动生成，
@@ -55,25 +55,25 @@
 
 | 命令 | 阶段 | 退出码 | 耗时(ms) |
 |---|---|---:|---:|
-| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 14 |
-| `git status --short -- .uap/tests/fixtures/repair-canary.mjs status --short -- .uap/tests/fixtures/repair-canary.mjs` | baseline | 0 | 24 |
-| `node .uap/tests/fixtures/repair-canary.repro.mjs .uap/tests/fixtures/repair-canary.repro.mjs` | reproduction_before | 1 | 83 |
-| `node -e import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); }) -e import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); })` | root_cause | 1 | 79 |
-| `node .uap/tests/fixtures/repair-canary.repro.mjs .uap/tests/fixtures/repair-canary.repro.mjs` | targeted_test_attempt_1 | 0 | 80 |
-| `node --check .uap/tests/fixtures/repair-canary.mjs --check .uap/tests/fixtures/repair-canary.mjs` | targeted_test_attempt_1 | 0 | 76 |
-| `node --check .uap/tests/fixtures/repair-canary.repro.mjs --check .uap/tests/fixtures/repair-canary.repro.mjs` | regression_attempt_1 | 0 | 73 |
-| `git diff --check -- .uap/tests/fixtures/repair-canary.mjs diff --check -- .uap/tests/fixtures/repair-canary.mjs` | regression_attempt_1 | 0 | 21 |
-| `node .uap/engines/auto-repair/independent-review.mjs .uap/engines/auto-repair/independent-review.mjs` | independent_review | 0 | 367 |
+| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 27 |
+| `git status --short -- .uap/tests/fixtures/repair-canary.mjs status --short -- .uap/tests/fixtures/repair-canary.mjs` | baseline | 0 | 34 |
+| `node .uap/tests/fixtures/repair-canary.repro.mjs .uap/tests/fixtures/repair-canary.repro.mjs` | reproduction_before | 1 | 111 |
+| `node -e import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); }) -e import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); })` | root_cause | 1 | 125 |
+| `node .uap/tests/fixtures/repair-canary.repro.mjs .uap/tests/fixtures/repair-canary.repro.mjs` | targeted_test_attempt_1 | 0 | 133 |
+| `node --check .uap/tests/fixtures/repair-canary.mjs --check .uap/tests/fixtures/repair-canary.mjs` | targeted_test_attempt_1 | 0 | 114 |
+| `node --check .uap/tests/fixtures/repair-canary.repro.mjs --check .uap/tests/fixtures/repair-canary.repro.mjs` | regression_attempt_1 | 0 | 110 |
+| `git diff --check -- .uap/tests/fixtures/repair-canary.mjs diff --check -- .uap/tests/fixtures/repair-canary.mjs` | regression_attempt_1 | 0 | 29 |
+| `node .uap/engines/auto-repair/independent-review.mjs .uap/engines/auto-repair/independent-review.mjs` | independent_review | 0 | 515 |
 
 ## 证据
 
-- `.uap/evidence/UAP-EV-20261124072407-187a12db.json`
-- `.uap/evidence/UAP-EV-20261124072407-83006a08.json`
-- `.uap/evidence/UAP-EV-20261124072408-67b353ce.json`
-- `.uap/evidence/UAP-EV-20261124072408-bff9c9d8.json`
-- `.uap/evidence/UAP-EV-20261124072408-9960d8f0.json`
-- `.uap/evidence/UAP-EV-20261124072408-c56eedfb.json`
-- `.uap/evidence/UAP-EV-20261124072408-3816ba84.json`
+- `.uap/evidence/UAP-EV-20261125064224-d190a518.json`
+- `.uap/evidence/UAP-EV-20261125064226-bd854db2.json`
+- `.uap/evidence/UAP-EV-20261125064228-e13ce111.json`
+- `.uap/evidence/UAP-EV-20261125064230-51940caf.json`
+- `.uap/evidence/UAP-EV-20261125064231-cf2b7015.json`
+- `.uap/evidence/UAP-EV-20261125064233-23ef41fe.json`
+- `.uap/evidence/UAP-EV-20261125064235-222b2f90.json`
 
 ## 阻断 / 未解决
 

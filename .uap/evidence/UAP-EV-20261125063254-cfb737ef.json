@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261125063254-cfb737ef",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-25T06:32:54.369Z",
+  "started_at": "2026-11-25T06:32:54.369Z",
+  "finished_at": "2026-11-25T06:32:54.369Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.reliability_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.reliability_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.reliability_integrity 实检: health=PASS(动态 import 并调用 health().ok===true: 4/4 (state-machine=true,scheduler=true,resource-manager=true,event-system=true)); timeout=PASS(runCommand 真实运行 exit_code=0 timed_out=false spawn_error=none; proc.mjs 含 setTimeout/timeoutMs=true); retry=PASS(TASK_TRANSITIONS FAILED->QUEUED=true; WAITING_RECOVERY->QUEUED=true (有界可重试路径真实存在)); recovery=PASS(导出 health/execute=true; BASELINE git.policy 含 no_destructive_git/preserve_user_changes=true; 依赖 DAG 无环=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12211 个 | 动态 import 4 个 runtime 模块并调用 health().ok===true 证明可运行; runCommand 真实记录 exit_code; 重试/恢复基于共享状态机与 BASELINE 策略",
+  "content_hash": "430658ba7562188cdaf3b81b7aa2b19a643a42c4b77e09affd6311232f604f21"
+}

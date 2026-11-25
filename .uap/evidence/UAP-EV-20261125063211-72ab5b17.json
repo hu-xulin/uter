@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261125063211-72ab5b17",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-25T06:32:11.694Z",
+  "started_at": "2026-11-25T06:32:11.694Z",
+  "finished_at": "2026-11-25T06:32:11.694Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125063205-730b3ab8",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "4eb10bfa213d49e70d6e294156f42726a0709e2686210e423c1e26423c63f5c8",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate agents.recovery_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"agents.recovery_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "agents.recovery_integrity 实检: state_persistence=PASS(BASELINE.json 含 workspace/git/toolchain=true; .uap/state 目录存在=true); interruption_recovery=PASS(recovery-engine 导出 导出 component,health,execute 齐全; WAITING_RECOVERY 可迁移=[QUEUED,FAILED,BLOCKED,CANCELLED] (含 QUEUED/FAILED=true)); idempotency=PASS(子进程复验终态(SUCCEEDED/CANCELLED 无后继)=true 无自环=true; exit_code=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12201 个 | 真实读取 BASELINE.json + 动态 import recovery-engine 导出 + node 子进程复验状态机幂等/终态; 不调用有写副作用的 recovery health()",
+  "content_hash": "0b2545928289d113646d6fb454e8778138fc41ff07208c69f2be3ba4b2270366"
+}

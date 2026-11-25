@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-24T07:24:02.481Z",
-  "generated_for_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "generated_at": "2026-11-25T06:42:03.062Z",
+  "generated_for_head": "4189503ad246decc363e9e3cb4971c92f117b307",
   "executor_ids": [
     "architecture.analyzer",
     "architecture.api_database"
@@ -2660,7 +2660,7 @@
       "gorm.io/driver/postgres",
       "gorm.io/gorm"
     ],
-    "model_file_count": 121,
+    "model_file_count": 124,
     "model_sample": [
       "model/ability.go",
       "model/account_security.go",

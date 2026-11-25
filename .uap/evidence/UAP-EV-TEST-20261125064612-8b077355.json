@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-TEST-20261125064612-8b077355",
+  "kind": "uap_tester_probe",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-25T06:46:12.581Z",
+  "started_at": "2026-11-25T06:46:12.581Z",
+  "finished_at": "2026-11-25T06:46:12.581Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125064415-c7ca9be1",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "a75875373d1456af94d685dd77f346da7cc763deede5944748f7f3f0374dd059",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125064415-c7ca9be1",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "a75875373d1456af94d685dd77f346da7cc763deede5944748f7f3f0374dd059",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap test",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "immutability probe",
+  "content_hash": "d42fedb991f0a23d59e1e3bb08a481bc7ece3faf7fbb15b9129797ae04b4922d"
+}

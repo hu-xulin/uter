@@ -994,10 +994,88 @@
         "UAP-EV-20261124072833-4dedb65b"
       ],
       "recorded_at": "2026-11-24T07:28:32.861Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/ci-workflow-evidence.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs .uap/tests/worktree-fingerprint-exclusions.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 378873,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 225,
+        "pass": 220,
+        "fail": 5
+      },
+      "test_files": [
+        ".uap/tests/architecture-adr-traceability.test.mjs",
+        ".uap/tests/ci-workflow-evidence.test.mjs",
+        ".uap/tests/deployment-drill-classification.test.mjs",
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/execution-lifecycle.test.mjs",
+        ".uap/tests/final-acceptance-capabilities.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs",
+        ".uap/tests/worktree-fingerprint-exclusions.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261125064149-42799814"
+      ],
+      "recorded_at": "2026-11-25T06:41:47.298Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/ci-workflow-evidence.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs .uap/tests/worktree-fingerprint-exclusions.test.mjs",
+      "exit_code": 1,
+      "timed_out": false,
+      "duration_ms": 332461,
+      "status": "FAILED_EXECUTED",
+      "tap": {
+        "tests": 225,
+        "pass": 220,
+        "fail": 5
+      },
+      "test_files": [
+        ".uap/tests/architecture-adr-traceability.test.mjs",
+        ".uap/tests/ci-workflow-evidence.test.mjs",
+        ".uap/tests/deployment-drill-classification.test.mjs",
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/execution-lifecycle.test.mjs",
+        ".uap/tests/final-acceptance-capabilities.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/independent-verification.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs",
+        ".uap/tests/worktree-fingerprint-exclusions.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261125064736-8026ba5a"
+      ],
+      "recorded_at": "2026-11-25T06:47:35.107Z"
     }
   ],
   "schema_version": "1.0",
-  "generated_at": "2026-11-24T07:28:32.861Z",
+  "generated_at": "2026-11-25T06:47:35.107Z",
   "executor_ids": [
     "quality.engineering",
     "quality.testing",
@@ -1006,19 +1084,19 @@
   "node_version": "v22.22.2",
   "environment": "local",
   "summary": {
-    "total": 29,
-    "executed": 29,
+    "total": 31,
+    "executed": 31,
     "passed": 23,
     "blocked": 0,
-    "failed": 6
+    "failed": 8
   },
   "test_plan": {
-    "generated_at": "2026-11-24T07:28:33.501Z",
+    "generated_at": "2026-11-25T06:47:37.557Z",
     "layers": [
       {
         "layer": "unit.go",
         "source": "*_test.go",
-        "discovered_test_files": 504,
+        "discovered_test_files": 515,
         "sample": [
           "main_docs_test.go",
           "common/api_type_task_plugin_test.go",
@@ -1036,7 +1114,7 @@
       {
         "layer": "unit.web",
         "source": "web/src/**/*.test.ts(x)",
-        "discovered_test_files": 328,
+        "discovered_test_files": 356,
         "sample": [
           "web/src/components/__tests__/command-menu.test.tsx",
           "web/src/components/__tests__/datetime-picker-time.test.tsx",
@@ -1052,7 +1130,7 @@
       {
         "layer": "uap.runtime",
         "source": ".uap/tests/*.test.mjs",
-        "discovered_test_files": 24,
+        "discovered_test_files": 25,
         "gate_command": "node --test .uap/tests/*.test.mjs",
         "status": "READY"
       },
@@ -1072,112 +1150,112 @@
     "ci_test_commands": [
       {
         "file": ".github/workflows/ci.yml",
-        "line": 192,
+        "line": 211,
         "command": "node .uap/bin/uap.mjs test --all"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 226,
+        "line": 248,
         "command": "node .uap/bin/uap.mjs verify-capabilities"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 231,
+        "line": 253,
         "command": "node .uap/bin/uap.mjs verify-database"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 236,
+        "line": 258,
         "command": "node .uap/bin/uap.mjs verify-payment"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 247,
+        "line": 269,
         "command": "node .uap/bin/uap.mjs verify-e2e"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 256,
+        "line": 278,
         "command": "node .uap/bin/uap.mjs verify-visual"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 261,
+        "line": 283,
         "command": "node .uap/bin/uap.mjs verify-security"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 266,
+        "line": 288,
         "command": "node .uap/bin/uap.mjs verify-requirements"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 427,
+        "line": 456,
         "command": "go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 431,
+        "line": 460,
         "command": "go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 435,
+        "line": 464,
         "command": "GOWORK=off go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 439,
+        "line": 468,
         "command": "GOWORK=off go vet ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 457,
+        "line": 486,
         "command": "make test"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 510,
+        "line": 539,
         "command": "go test -race -count=1 ./service/... ./relay/... ./middleware/... ./model/..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 515,
+        "line": 544,
         "command": "go test -race -count=1 ./e2e/..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 519,
+        "line": 548,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 523,
+        "line": 552,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 527,
+        "line": 556,
         "command": "GOWORK=off go test -race -count=1 ./..."
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 673,
+        "line": 702,
         "command": "node --test desktop-secrets.test.js"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 709,
+        "line": 738,
         "command": "bun run test"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 733,
+        "line": 762,
         "command": "bun run verify:contrast"
       },
       {
         "file": ".github/workflows/ci.yml",
-        "line": 742,
+        "line": 771,
         "command": "bun run test:visual"
       },
       {

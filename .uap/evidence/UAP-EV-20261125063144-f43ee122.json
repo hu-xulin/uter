@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261125063144-f43ee122",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-25T06:31:44.484Z",
+  "started_at": "2026-11-25T06:31:44.484Z",
+  "finished_at": "2026-11-25T06:31:44.484Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125063146-cfd32cbe",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "95930b5cd0614ee39ce892b88950c364964312cbf6dc3f191dbce56850f3a99b",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125063146-cfd32cbe",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "95930b5cd0614ee39ce892b88950c364964312cbf6dc3f191dbce56850f3a99b",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate security.permission_boundary",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"security.permission_boundary\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "security.permission_boundary 实检: least_privilege=PASS(default_effect=deny; 未注册 agent=DENY; 未声明权限=DENY; 已声明最小权限放行=ALLOW(控制组,证明非全 DENY 假阳性)); denied_operations=PASS(12/12 高危权限实判 DENY (含 production_write/real_payment/force_push/quality_gate_disable); 未拒绝=无; fail_closed=true); audit_logging=PASS(policy-audit.jsonl 行数 18030->18045 (新增 15); 新增 DENY 且命中高危权限=12) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12190 个 | 真实调用 policy-engine.check() 产生决策并核对审计日志追加; 未连接生产库/未发起任何真实支付; 仅模拟/本地策略",
+  "content_hash": "498c54769146008558d588598762a35f4f2224bdcdad3d7f93e19d01b480dbac"
+}

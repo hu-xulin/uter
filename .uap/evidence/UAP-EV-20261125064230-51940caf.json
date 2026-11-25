@@ -1,0 +1,51 @@
+{
+  "evidence_id": "UAP-EV-20261125064230-51940caf",
+  "kind": "real_code_repair_command",
+  "task_id": "UAP-CANARY-REPAIR",
+  "trace_id": "UAP-RREPAIR-1795588943469-bfa6f2",
+  "specification_ids": [
+    "UAP-00-001"
+  ],
+  "requirement_ids": [
+    "UAP-00-001-REQ-002",
+    "UAP-00-001-REQ-005"
+  ],
+  "recorded_at": "2026-11-25T06:42:30.265Z",
+  "started_at": "2026-11-25T06:42:30.155Z",
+  "finished_at": "2026-11-25T06:42:30.265Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261125064226-9a6e23b4",
+    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+    "worktree_fingerprint": "1500f28228a65a4d09301460ab1d781be413dc000751e7627a6fc85061b82248",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261125064226-9a6e23b4",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "worktree_fingerprint": "1500f28228a65a4d09301460ab1d781be413dc000751e7627a6fc85061b82248",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --check .uap/tests/fixtures/repair-canary.repro.mjs",
+  "exit_code": 0,
+  "duration_ms": 110,
+  "inputs": "{\"args\":[\"--check\",\".uap/tests/fixtures/repair-canary.repro.mjs\"],\"phase\":\"regression_attempt_1\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [
+    ".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json",
+    ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1795588943469-bfa6f2/repair-canary.mjs"
+  ],
+  "findings": [
+    "before=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
+    "after=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1"
+  ],
+  "summary": "[regression_attempt_1] SUCCEEDED",
+  "content_hash": "1148629199115062dba83107c876710a5c61e4910f81eba3fe47fd9fe91bb488"
+}

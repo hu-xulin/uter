@@ -1,9 +1,9 @@
 {
-  "execution_id": "UAP-RREPAIR-1795505046625-75df01",
+  "execution_id": "UAP-RREPAIR-1795588943469-bfa6f2",
   "task_id": "UAP-CANARY-REPAIR",
-  "started_at": "2026-11-24T07:24:06.625Z",
-  "finished_at": "2026-11-24T07:24:09.027Z",
-  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
+  "started_at": "2026-11-25T06:42:23.470Z",
+  "finished_at": "2026-11-25T06:42:36.735Z",
+  "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
   "status": "SUCCEEDED",
   "attempts": 1,
   "max_attempts": 3,
@@ -20,105 +20,105 @@
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": "git status --short -- .uap/tests/fixtures/repair-canary.mjs 为空",
-      "at": "2026-11-24T07:24:06.665Z"
+      "at": "2026-11-25T06:42:23.533Z"
     },
     {
       "stage": "发现问题",
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": ".uap/tests/fixtures/repair-canary.mjs 的 add() 按契约应返回两数之和，提交态实现为 a * b（刻意提交的缺陷态，作为修复金丝雀）。复现探针 repair-canary.repro.mjs 在缺陷态下失败。",
-      "at": "2026-11-24T07:24:06.672Z"
+      "at": "2026-11-25T06:42:23.543Z"
     },
     {
       "stage": "定位业务模块",
       "agent_id": "uap-development-agent",
       "status": "PASS",
       "detail": ".uap/tests/fixtures/repair-canary.mjs",
-      "at": "2026-11-24T07:24:06.672Z"
+      "at": "2026-11-25T06:42:23.543Z"
     },
     {
       "stage": "建立缺陷复现测试",
       "agent_id": "uap-test-agent",
       "status": "PASS",
       "detail": "exit=1（预期非 0）",
-      "at": "2026-11-24T07:24:06.755Z"
+      "at": "2026-11-25T06:42:23.654Z"
     },
     {
       "stage": "读取代码上下文与根因分析",
       "agent_id": "uap-development-agent",
       "status": "BLOCKED",
       "detail": "node -e import('.uap/tests/fixtures/repair-canary.mjs').then(m => { if (m.add(2,3) === 5) { console.error('canary already fixed'); process.exit(1); } console.log('canary defect present'); }) exit=1",
-      "at": "2026-11-24T07:24:06.835Z"
+      "at": "2026-11-25T06:42:23.780Z"
     },
     {
       "stage": "权限策略检查",
       "agent_id": "uap-security-agent",
       "status": "PASS",
       "detail": "7 条策略决策全部 ALLOW；分级=AUTO_ALLOW",
-      "at": "2026-11-24T07:24:06.841Z"
+      "at": "2026-11-25T06:42:23.792Z"
     },
     {
       "stage": "生成修复方案",
       "agent_id": "uap-repair-agent",
       "status": "PASS",
       "detail": "单锚点精确字符串补丁，已验证唯一匹配",
-      "at": "2026-11-24T07:24:06.841Z"
+      "at": "2026-11-25T06:42:23.792Z"
     },
     {
       "stage": "修复尝试 1/3",
       "agent_id": "uap-repair-agent",
       "status": "RUNNING",
       "detail": "应用补丁",
-      "at": "2026-11-24T07:24:06.842Z"
+      "at": "2026-11-25T06:42:23.793Z"
     },
     {
       "stage": "修复尝试 1/3",
       "agent_id": "uap-repair-agent",
       "status": "PASS",
       "detail": "定向测试与关联回归全部通过",
-      "at": "2026-11-24T07:24:07.092Z"
+      "at": "2026-11-25T06:42:24.179Z"
     },
     {
       "stage": "定向测试",
       "agent_id": "uap-test-agent",
       "status": "PASS",
       "detail": "2 条命令全部 exit 0",
-      "at": "2026-11-24T07:24:07.092Z"
+      "at": "2026-11-25T06:42:24.179Z"
     },
     {
       "stage": "关联回归测试",
       "agent_id": "uap-test-agent",
       "status": "PASS",
       "detail": "2 条命令全部 exit 0",
-      "at": "2026-11-24T07:24:07.092Z"
+      "at": "2026-11-25T06:42:24.179Z"
     },
     {
       "stage": "独立代码审查",
       "agent_id": "uap-review-agent",
       "status": "PASS",
       "detail": "exit=0",
-      "at": "2026-11-24T07:24:07.459Z"
+      "at": "2026-11-25T06:42:24.694Z"
     },
     {
       "stage": "独立验证",
       "agent_id": "uap-security-agent",
       "status": "PASS",
       "detail": "independent-review.mjs 复核哈希/范围/测试",
-      "at": "2026-11-24T07:24:07.459Z"
+      "at": "2026-11-25T06:42:24.694Z"
     },
     {
       "stage": "保存证据",
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": "Evidence Engine 追加写入",
-      "at": "2026-11-24T07:24:07.459Z"
+      "at": "2026-11-25T06:42:24.694Z"
     },
     {
       "stage": "更新任务状态",
       "agent_id": "uap-orchestrator",
       "status": "PASS",
       "detail": "SUCCEEDED",
-      "at": "2026-11-24T07:24:07.459Z"
+      "at": "2026-11-25T06:42:24.694Z"
     }
   ],
   "commands": [
@@ -130,8 +130,8 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 14,
-      "stdout": "33def7a5a7585779965e85e5854596c4ca7f79e0\n",
+      "duration_ms": 27,
+      "stdout": "4189503ad246decc363e9e3cb4971c92f117b307\n",
       "stderr": "",
       "phase": "baseline"
     },
@@ -145,7 +145,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 24,
+      "duration_ms": 34,
       "stdout": "",
       "stderr": "",
       "phase": "baseline"
@@ -157,7 +157,7 @@
       ],
       "exit_code": 1,
       "timed_out": false,
-      "duration_ms": 83,
+      "duration_ms": 111,
       "stdout": "",
       "stderr": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: add() 必须返回两数之和\n\n6 !== 5\n\n    at file:///Users/lincolnhu/uter/.uap/tests/fixtures/repair-canary.repro.mjs:8:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 6,\n  expected: 5,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v22.22.2\n",
       "phase": "reproduction_before"
@@ -170,7 +170,7 @@
       ],
       "exit_code": 1,
       "timed_out": false,
-      "duration_ms": 79,
+      "duration_ms": 125,
       "stdout": "",
       "stderr": "node:internal/modules/package_json_reader:270\n    throw new ERR_INVALID_MODULE_SPECIFIER(\n          ^\n\nTypeError [ERR_INVALID_MODULE_SPECIFIER]: Invalid module \".uap/tests/fixtures/repair-canary.mjs\" is not a valid package name imported from /Users/lincolnhu/uter/[eval]\n    at parsePackageName (node:internal/modules/package_json_reader:270:11)\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:281:53)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:855:18)\n    at defaultResolve (node:internal/modules/esm/resolve:985:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:731:20)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:310:38)\n    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:664:36)\n    at TracingChannel.tracePromise (node:diagnostics_channel:350:14) {\n  code: 'ERR_INVALID_MODULE_SPECIFIER'\n}\n\nNode.js v22.22.2\n",
       "phase": "root_cause"
@@ -182,7 +182,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 80,
+      "duration_ms": 133,
       "stdout": "repair-canary repro PASS\n",
       "stderr": "",
       "phase": "targeted_test_attempt_1"
@@ -195,7 +195,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 76,
+      "duration_ms": 114,
       "stdout": "",
       "stderr": "",
       "phase": "targeted_test_attempt_1"
@@ -208,7 +208,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 73,
+      "duration_ms": 110,
       "stdout": "",
       "stderr": "",
       "phase": "regression_attempt_1"
@@ -223,7 +223,7 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 21,
+      "duration_ms": 29,
       "stdout": "",
       "stderr": "",
       "phase": "regression_attempt_1"
@@ -235,8 +235,8 @@
       ],
       "exit_code": 0,
       "timed_out": false,
-      "duration_ms": 367,
-      "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-24T07:24:07.451Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1795505046625-75df01.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1795505046625-75df01.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1 ledger=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 ledger=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 -> 4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/tests/fixtures/repair-canary.mjs allowed=.uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=33def7a5a7585779965e85e5854596c4ca7f79e0 ledger=33def7a5a7585779965e85e5854596c4ca7f79e0\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/tests/fixtures/repair-canary.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/tests/fixtures/repair-canary.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n",
+      "duration_ms": 515,
+      "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-25T06:42:24.684Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1 ledger=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 ledger=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 -> 4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/tests/fixtures/repair-canary.mjs allowed=.uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=4189503ad246decc363e9e3cb4971c92f117b307 ledger=4189503ad246decc363e9e3cb4971c92f117b307\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/tests/fixtures/repair-canary.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/tests/fixtures/repair-canary.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n",
       "stderr": "",
       "phase": "independent_review"
     }
@@ -297,7 +297,7 @@
     ],
     "exit_code": 1,
     "timed_out": false,
-    "duration_ms": 83,
+    "duration_ms": 111,
     "stdout": "",
     "stderr": "node:internal/modules/run_main:123\n    triggerUncaughtException(\n    ^\n\nAssertionError [ERR_ASSERTION]: add() 必须返回两数之和\n\n6 !== 5\n\n    at file:///Users/lincolnhu/uter/.uap/tests/fixtures/repair-canary.repro.mjs:8:8\n    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)\n    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {\n  generatedMessage: false,\n  code: 'ERR_ASSERTION',\n  actual: 6,\n  expected: 5,\n  operator: 'strictEqual',\n  diff: 'simple'\n}\n\nNode.js v22.22.2\n"
   },
@@ -309,7 +309,7 @@
     ],
     "exit_code": 1,
     "timed_out": false,
-    "duration_ms": 79,
+    "duration_ms": 125,
     "stdout": "",
     "stderr": "node:internal/modules/package_json_reader:270\n    throw new ERR_INVALID_MODULE_SPECIFIER(\n          ^\n\nTypeError [ERR_INVALID_MODULE_SPECIFIER]: Invalid module \".uap/tests/fixtures/repair-canary.mjs\" is not a valid package name imported from /Users/lincolnhu/uter/[eval]\n    at parsePackageName (node:internal/modules/package_json_reader:270:11)\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:281:53)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:855:18)\n    at defaultResolve (node:internal/modules/esm/resolve:985:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:731:20)\n    at ModuleLoader.resolve (node:internal/modules/esm/loader:708:38)\n    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:310:38)\n    at onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:664:36)\n    at TracingChannel.tracePromise (node:diagnostics_channel:350:14) {\n  code: 'ERR_INVALID_MODULE_SPECIFIER'\n}\n\nNode.js v22.22.2\n"
   },
@@ -319,20 +319,20 @@
       ".uap/engines/auto-repair/independent-review.mjs"
     ],
     "exit_code": 0,
-    "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-24T07:24:07.451Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1795505046625-75df01.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1795505046625-75df01.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1 ledger=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 ledger=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 -> 4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/tests/fixtures/repair-canary.mjs allowed=.uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=33def7a5a7585779965e85e5854596c4ca7f79e0 ledger=33def7a5a7585779965e85e5854596c4ca7f79e0\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/tests/fixtures/repair-canary.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/tests/fixtures/repair-canary.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n"
+    "stdout": "{\"component\":\"independent-repair-review\",\"verdict\":\"PASS\",\"at\":\"2026-11-25T06:42:24.684Z\",\"ledger\":\".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json\",\"checks\":[{\"name\":\"ledger_present\",\"ok\":true,\"detail\":\".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json\"},{\"name\":\"after_hash_matches_disk\",\"ok\":true,\"detail\":\"disk=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1 ledger=4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"before_hash_matches_backup\",\"ok\":true,\"detail\":\"backup=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 ledger=66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380\"},{\"name\":\"code_really_changed\",\"ok\":true,\"detail\":\"66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380 -> 4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1\"},{\"name\":\"bounded_attempts\",\"ok\":true,\"detail\":\"1/3\"},{\"name\":\"all_recorded_commands_passed\",\"ok\":true,\"detail\":\"4 commands, failures=0\"},{\"name\":\"modified_files_in_scope\",\"ok\":true,\"detail\":\"modified=.uap/tests/fixtures/repair-canary.mjs allowed=.uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"no_sensitive_paths_touched\",\"ok\":true,\"detail\":\".uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"git_head_matches\",\"ok\":true,\"detail\":\"disk=4189503ad246decc363e9e3cb4971c92f117b307 ledger=4189503ad246decc363e9e3cb4971c92f117b307\"},{\"name\":\"git_diff_confined_to_authorized_file\",\"ok\":true,\"detail\":\"changed=[.uap/tests/fixtures/repair-canary.mjs]\"},{\"name\":\"ledger_has_commands_to_rerun\",\"ok\":true,\"detail\":\"rerunnable=4 recorded=4\"},{\"name\":\"independent_rerun_recorded_command_1\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_2\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.mjs\"},{\"name\":\"independent_rerun_recorded_command_3\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=node --check .uap/tests/fixtures/repair-canary.repro.mjs\"},{\"name\":\"independent_rerun_recorded_command_4\",\"ok\":true,\"detail\":\"exit=0 no_tests_to_run=false cmd=git diff --check -- .uap/tests/fixtures/repair-canary.mjs\"}],\"failures\":[],\"commands\":[{\"command\":\"node .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"node --check .uap/tests/fixtures/repair-canary.repro.mjs\",\"exit_code\":0,\"passed\":true},{\"command\":\"git diff --check -- .uap/tests/fixtures/repair-canary.mjs\",\"exit_code\":0,\"passed\":true}],\"commands_rerun\":4,\"independent_rerun_passed\":4}\n"
   },
   "before_hash": "66f6022ba7c47328c412b57a2fe8dc08829cda6b9b5764383494d54141fef380",
   "after_hash": "4b34c312fc85bd500f477e190effde68a35f408ae92bcdd22c5b8d1ac5dd99e1",
-  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1795505046625-75df01/repair-canary.mjs",
-  "ledger_path": ".uap/state/repair-ledger/UAP-RREPAIR-1795505046625-75df01.json",
+  "backup_path": ".uap/state/repair-sandbox/backups/UAP-RREPAIR-1795588943469-bfa6f2/repair-canary.mjs",
+  "ledger_path": ".uap/state/repair-ledger/UAP-RREPAIR-1795588943469-bfa6f2.json",
   "evidence_ids": [
-    "UAP-EV-20261124072407-187a12db",
-    "UAP-EV-20261124072407-83006a08",
-    "UAP-EV-20261124072408-67b353ce",
-    "UAP-EV-20261124072408-bff9c9d8",
-    "UAP-EV-20261124072408-9960d8f0",
-    "UAP-EV-20261124072408-c56eedfb",
-    "UAP-EV-20261124072408-3816ba84"
+    "UAP-EV-20261125064224-d190a518",
+    "UAP-EV-20261125064226-bd854db2",
+    "UAP-EV-20261125064228-e13ce111",
+    "UAP-EV-20261125064230-51940caf",
+    "UAP-EV-20261125064231-cf2b7015",
+    "UAP-EV-20261125064233-23ef41fe",
+    "UAP-EV-20261125064235-222b2f90"
   ],
   "blockers": []
 }
