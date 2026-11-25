@@ -251,18 +251,6 @@ func uterRouteExprPriceLine(expr string) (*UpstreamPriceLine, string) {
 // uterRouteOfficialLine returns the absolute official price line for a model.
 // It prefers the full sync snapshot and only falls back to the documented
 // ratio space (model_ratio 1 = $2 / 1M tokens, model_price = USD / call).
-func uterRouteRecordUsesMediaEndpoint(item UpstreamModelRecord) bool {
-	for _, endpoint := range item.SupportedEndpoints {
-		lower := strings.ToLower(endpoint)
-		if strings.Contains(lower, "video") ||
-			strings.Contains(lower, "audio") ||
-			strings.Contains(lower, "image") {
-			return true
-		}
-	}
-	return false
-}
-
 func uterRouteOfficialLine(
 	item UpstreamModelRecord,
 	legacy map[string]UterRouteModelRow,
@@ -280,10 +268,13 @@ func uterRouteOfficialLine(
 	}
 	// A ratio is a live multiplier, not an absolute purchase price. Convert it
 	// into a clearly-labelled reference so it never masquerades as official or
-	// contract cost.
+	// contract cost. This is preferred over a historical snapshot because it is
+	// live: media-endpoint models are included too — the upstream's ratio space
+	// is $2/1M at ratio 1 for every model, and their historical snapshots are
+	// exactly model_ratio * 2. Skipping them used to leave video models with
+	// no official price whenever the snapshot was unavailable.
 	if item.ModelRatio != nil && *item.ModelRatio > 0 &&
-		*item.ModelRatio != uterRoutePlaceholderModelRatio &&
-		!uterRouteRecordUsesMediaEndpoint(item) {
+		*item.ModelRatio != uterRoutePlaceholderModelRatio {
 		input := *item.ModelRatio * 2
 		line := &UpstreamPriceLine{Input: &input, Currency: "USD", Unit: "per_1m_token"}
 		if item.CompletionRatio != nil && *item.CompletionRatio > 0 {
@@ -736,6 +727,14 @@ type UpstreamModelRecord struct {
 	CompletionRatio  *float64 `json:"completion_ratio,omitempty"`
 	CacheRatio       *float64 `json:"cache_ratio,omitempty"`
 	CreateCacheRatio *float64 `json:"create_cache_ratio,omitempty"`
+	// Auxiliary modality/cache dimensions published by the upstream pricing
+	// page. Kept verbatim so the catalog is complete and auditable even when
+	// the primary billing expression already prices those dimensions.
+	// CacheStoragePriceUSD is an absolute USD amount (not a ratio).
+	CacheStoragePriceUSD *float64 `json:"cache_storage_price_usd,omitempty"`
+	ImageRatio           *float64 `json:"image_ratio,omitempty"`
+	AudioRatio           *float64 `json:"audio_ratio,omitempty"`
+	Icon                 string   `json:"icon,omitempty"`
 
 	PriceBasis      string             `json:"price_basis"`
 	OfficialPrice   *UpstreamPriceLine `json:"official_price"`
@@ -765,8 +764,13 @@ type UpstreamSnapshot struct {
 }
 
 type uterRoutePublicModel struct {
-	ModelName              string   `json:"model_name"`
-	VendorID               int      `json:"vendor_id"`
+	ModelName string `json:"model_name"`
+	// VendorID is a pointer on purpose: the upstream omits the key entirely
+	// for models whose vendor is not in its vendors catalogue (e.g. MiniMax).
+	// A missing key means "vendor unlabelled" — a fully priced, servable model
+	// — and must NOT be confused with an explicit vendor_id: 0, which the
+	// upstream uses to mark models hidden from its own pricing page.
+	VendorID               *int     `json:"vendor_id"`
 	QuotaType              int      `json:"quota_type"`
 	ModelRatio             *float64 `json:"model_ratio"`
 	ModelPrice             *float64 `json:"model_price"`
@@ -775,6 +779,10 @@ type uterRoutePublicModel struct {
 	CompletionRatio        *float64 `json:"completion_ratio"`
 	CacheRatio             *float64 `json:"cache_ratio"`
 	CreateCacheRatio       *float64 `json:"create_cache_ratio"`
+	CacheStoragePrice      *float64 `json:"cache_storage_price"`
+	ImageRatio             *float64 `json:"image_ratio"`
+	AudioRatio             *float64 `json:"audio_ratio"`
+	Icon                   string   `json:"icon"`
 	EnableGroups           []string `json:"enable_groups"`
 	SupportedEndpointTypes []string `json:"supported_endpoint_types"`
 	PricingVersion         string   `json:"pricing_version"`
@@ -895,31 +903,44 @@ func FetchUterRouteUpstream(ctx context.Context, baseURL string) (*UpstreamSnaps
 		if name == "" {
 			continue
 		}
-		if item.VendorID <= 0 {
+		// Only an EXPLICIT vendor_id <= 0 marks a model hidden from the
+		// upstream pricing page. A missing key (nil) means the vendor is simply
+		// not in the upstream's vendors catalogue — those models still carry
+		// complete pricing and must be kept. Treating nil as hidden used to
+		// drop MiniMax models and delete their channel rows on sync.
+		if item.VendorID != nil && *item.VendorID <= 0 {
 			snapshot.ExcludedModels = append(snapshot.ExcludedModels, name)
 			continue
 		}
+		vendorID := 0
+		if item.VendorID != nil {
+			vendorID = *item.VendorID
+		}
 		record := UpstreamModelRecord{
-			ProviderID:         snapshot.ProviderID,
-			UpstreamModelID:    name,
-			ModelName:          name,
-			VendorID:           item.VendorID,
-			VendorName:         vendorNames[item.VendorID],
-			QuotaType:          item.QuotaType,
-			EnableGroups:       item.EnableGroups,
-			SupportedEndpoints: item.SupportedEndpointTypes,
-			ModelRatio:         item.ModelRatio,
-			ModelPrice:         item.ModelPrice,
-			BillingMode:        item.BillingMode,
-			BillingExpr:        item.BillingExpr,
-			CompletionRatio:    item.CompletionRatio,
-			CacheRatio:         item.CacheRatio,
-			CreateCacheRatio:   item.CreateCacheRatio,
-			PriceBasis:         UpstreamPriceBasisRatioOnly,
-			Source:             "official_api",
-			SourceEndpoint:     endpoint,
-			PricingVersion:     item.PricingVersion,
-			VerifiedAt:         now,
+			ProviderID:           snapshot.ProviderID,
+			UpstreamModelID:      name,
+			ModelName:            name,
+			VendorID:             vendorID,
+			VendorName:           vendorNames[vendorID],
+			QuotaType:            item.QuotaType,
+			EnableGroups:         item.EnableGroups,
+			SupportedEndpoints:   item.SupportedEndpointTypes,
+			ModelRatio:           item.ModelRatio,
+			ModelPrice:           item.ModelPrice,
+			BillingMode:          item.BillingMode,
+			BillingExpr:          item.BillingExpr,
+			CompletionRatio:      item.CompletionRatio,
+			CacheRatio:           item.CacheRatio,
+			CreateCacheRatio:     item.CreateCacheRatio,
+			CacheStoragePriceUSD: item.CacheStoragePrice,
+			ImageRatio:           item.ImageRatio,
+			AudioRatio:           item.AudioRatio,
+			Icon:                 item.Icon,
+			PriceBasis:           UpstreamPriceBasisRatioOnly,
+			Source:               "official_api",
+			SourceEndpoint:       endpoint,
+			PricingVersion:       item.PricingVersion,
+			VerifiedAt:           now,
 		}
 		record.OfficialPrice, record.PriceStatus = uterRouteOfficialLine(record, legacy)
 		snapshot.Models = append(snapshot.Models, record)

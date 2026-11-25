@@ -601,7 +601,7 @@ func TestUterRouteSyncAuthorizesReferencePricesByDefault(t *testing.T) {
 			},
 			{
 				ModelName: "seedance-2.0", EnableGroups: []string{"gemini"},
-				PriceStatus: "HISTORICAL_SNAPSHOT",
+				PriceStatus:   "HISTORICAL_SNAPSHOT",
 				OfficialPrice: &UpstreamPriceLine{Input: ratio(6.9), Output: ratio(6.9), Currency: "USD", Unit: "per_1m_token"},
 			},
 		},
@@ -804,14 +804,20 @@ func TestUterRouteExpressionWithoutAbsoluteLineShowsDiscountedChannelPrice(t *te
 		billingexpr.TokenParams{P: 2000, C: 100, Len: 2000, CR: 50})
 }
 
-// 上游定价页不展示没有厂商信息的模型；快照与渠道都必须与页面口径一致。
-func TestFetchUterRouteUpstreamExcludesModelsWithoutVendor(t *testing.T) {
+// Only an EXPLICIT vendor_id: 0 marks a model hidden from the upstream pricing
+// page. A missing vendor_id key means the vendor is not in the upstream's
+// vendors catalogue (e.g. MiniMax) — those models carry complete pricing and
+// must be kept. Regression: treating a missing key as hidden dropped three
+// MiniMax models and deleted their channel pricing rows on every sync.
+func TestFetchUterRouteUpstreamVendorSemantics(t *testing.T) {
 	payload := `{
 	  "success": true,
 	  "pricing_version": "fixture-v2",
 	  "data": [
 	    {"model_name": "visible-a", "vendor_id": 7, "quota_type": 0, "model_ratio": 1, "model_price": 0, "completion_ratio": 2},
-	    {"model_name": "hidden-a", "vendor_id": 0, "quota_type": 0, "model_ratio": 37.5, "model_price": 0, "completion_ratio": 1}
+	    {"model_name": "hidden-a", "vendor_id": 0, "quota_type": 0, "model_ratio": 37.5, "model_price": 0, "completion_ratio": 1},
+	    {"model_name": "unlabelled-b", "quota_type": 0, "model_ratio": 0.15, "model_price": 0, "completion_ratio": 4,
+	     "cache_storage_price": 0.5, "image_ratio": 1, "audio_ratio": 2, "icon": "Meta"}
 	  ],
 	  "vendors": [{"id": 7, "name": "Vendor"}],
 	  "group_ratio": {"default": 1},
@@ -827,9 +833,25 @@ func TestFetchUterRouteUpstreamExcludesModelsWithoutVendor(t *testing.T) {
 
 	snapshot, err := FetchUterRouteUpstream(context.Background(), server.URL)
 	require.NoError(t, err)
-	require.Len(t, snapshot.Models, 1)
-	require.Equal(t, "visible-a", snapshot.Models[0].ModelName)
+	// visible-a and unlabelled-b are kept; only explicit vendor_id: 0 is hidden.
+	require.Len(t, snapshot.Models, 2)
 	require.Equal(t, []string{"hidden-a"}, snapshot.ExcludedModels)
+
+	byName := make(map[string]UpstreamModelRecord, len(snapshot.Models))
+	for _, model := range snapshot.Models {
+		byName[model.ModelName] = model
+	}
+	require.Contains(t, byName, "unlabelled-b")
+	unlabelled := byName["unlabelled-b"]
+	require.Zero(t, unlabelled.VendorID, "a missing vendor_id is normalized to 0, not excluded")
+	require.Empty(t, unlabelled.VendorName)
+	require.NotNil(t, unlabelled.CacheStoragePriceUSD)
+	require.Equal(t, 0.5, *unlabelled.CacheStoragePriceUSD)
+	require.NotNil(t, unlabelled.ImageRatio)
+	require.Equal(t, 1.0, *unlabelled.ImageRatio)
+	require.NotNil(t, unlabelled.AudioRatio)
+	require.Equal(t, 2.0, *unlabelled.AudioRatio)
+	require.Equal(t, "Meta", unlabelled.Icon)
 }
 
 // Regression: after a batch redirect the channel model list holds request
