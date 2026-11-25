@@ -397,8 +397,8 @@ func bailianNormalizedPrices(catalog *BailianCatalog, channelModels []string) ma
 		}
 		tier := tiers[0]
 		out[record.ModelName] = map[string]*float64{
-			"input": moneyFloatPtr(tier.InputPerMillionUSD),
-			"output": moneyFloatPtr(tier.OutputPerMillionUSD),
+			"input":    moneyFloatPtr(tier.InputPerMillionUSD),
+			"output":   moneyFloatPtr(tier.OutputPerMillionUSD),
 			"per_call": moneyFloatPtr(tier.PerUnitUSD),
 		}
 	}
