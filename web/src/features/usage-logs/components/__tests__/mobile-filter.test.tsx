@@ -24,7 +24,12 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  createTable,
+  getCoreRowModel,
+  type RowData,
+  type TableOptions,
+} from '@tanstack/react-table'
 import {
   render,
   screen,
@@ -59,8 +64,22 @@ beforeEach(() => {
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
 })
 
+// Static test tables use the framework-agnostic core factory: these fixtures
+// never mutate table state, so the React state management in useReactTable is
+// unnecessary (and incompatible with React Compiler).
+function createStaticTable<TData extends RowData>(
+  options: TableOptions<TData>
+) {
+  return createTable({
+    ...options,
+    state: options.state ?? {},
+    onStateChange: options.onStateChange ?? (() => {}),
+    renderFallbackValue: options.renderFallbackValue ?? null,
+  })
+}
+
 function Fixture() {
-  const table = useReactTable({
+  const table = createStaticTable({
     data: [],
     columns: [],
     getCoreRowModel: getCoreRowModel(),
@@ -215,7 +234,7 @@ it('keeps all quick actions visible without opening a menu', async () => {
 })
 
 function LoadingFixture(props: { loading: boolean; onSearch: () => void }) {
-  const table = useReactTable({
+  const table = createStaticTable({
     data: [],
     columns: [],
     getCoreRowModel: getCoreRowModel(),
@@ -257,7 +276,7 @@ it('keeps Search visible while loading and prevents repeated searches', async ()
 
 it('places the end action between Search and View on desktop', () => {
   function DesktopFixture() {
-    const table = useReactTable({
+    const table = createStaticTable({
       data: [],
       columns: [],
       getCoreRowModel: getCoreRowModel(),
@@ -282,7 +301,7 @@ it('places the end action between Search and View on desktop', () => {
 
 it('keeps Reset, Search, Export and View on the same control height', () => {
   function HeightFixture() {
-    const table = useReactTable({
+    const table = createStaticTable({
       data: [],
       columns: [],
       getCoreRowModel: getCoreRowModel(),
