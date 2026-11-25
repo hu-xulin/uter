@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { VChart } from '@visactor/react-vchart'
 import { PieChart as PieChartIcon } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { IconBadge } from '@/components/ui/icon-badge'
@@ -64,11 +64,15 @@ export function ModelCharts(props: ModelChartsProps) {
   const [activeTab, setActiveTab] = useState<ModelAnalyticsChartTab>(
     props.defaultChartTab ?? 'trend'
   )
+  const [prevDefaultChartTab, setPrevDefaultChartTab] = useState(
+    props.defaultChartTab
+  )
   const timeGranularity = props.timeGranularity ?? DEFAULT_TIME_GRANULARITY
 
-  useEffect(() => {
-    if (props.defaultChartTab) setActiveTab(props.defaultChartTab)
-  }, [props.defaultChartTab])
+  if (props.defaultChartTab && props.defaultChartTab !== prevDefaultChartTab) {
+    setPrevDefaultChartTab(props.defaultChartTab)
+    setActiveTab(props.defaultChartTab)
+  }
 
   const chartData = useMemo(
     () =>
