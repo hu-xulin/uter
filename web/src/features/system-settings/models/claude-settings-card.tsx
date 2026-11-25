@@ -180,13 +180,22 @@ export function ClaudeSettingsCard({ defaultValues }: ClaudeSettingsCardProps) {
     }
   }
 
+  // 在事件处理器中调用 handleSubmit，避免在渲染期把表单 ref 传给函数。
+  const submitForm = () => {
+    void form.handleSubmit(onSubmit)()
+  }
+
   return (
     <SettingsSection title={t('Claude')}>
       <Form {...form}>
-        {/* eslint-disable-next-line react-hooks/refs */}
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm
+          onSubmit={(event) => {
+            event.preventDefault()
+            submitForm()
+          }}
+        >
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={submitForm}
             isSaving={updateOption.isPending}
           />
           <FormField
