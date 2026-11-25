@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { Link } from '@tanstack/react-router'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { HtmlContent } from '@/components/html-content'
@@ -308,7 +308,7 @@ export function Footer(props: FooterProps) {
 
   const brandName = localizedBrandName(i18n.language)
   const isDemoSiteMode = Boolean(demoSiteEnabled)
-  const currentYear = new Date().getFullYear()
+  const [currentYear] = useState(() => new Date().getFullYear())
 
   const fallbackColumns = useMemo<FooterColumnProps[]>(
     () => [
