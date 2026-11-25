@@ -131,13 +131,14 @@ export function UserSubscriptionsDialog(props: Props) {
     return map
   }, [plans])
 
+  const userId = props.user?.id
   const loadData = useCallback(async () => {
-    if (!props.user?.id) return
+    if (!userId) return
     setLoading(true)
     try {
       const [plansRes, subsRes] = await Promise.all([
         getAdminPlans(),
-        getUserSubscriptions(props.user.id),
+        getUserSubscriptions(userId),
       ])
       if (plansRes.success) {
         setPlans(plansRes.data || [])
@@ -154,14 +155,24 @@ export function UserSubscriptionsDialog(props: Props) {
     } finally {
       setLoading(false)
     }
-  }, [props.user?.id, t])
+  }, [userId, t])
+
+  // 打开抽屉或切换用户时清空上次选择；在渲染期按身份变化调整，
+  // 数据加载仍由 effect 负责（仅与外部系统同步）。
+  const loadIdentity =
+    props.open && props.user?.id ? String(props.user.id) : null
+  const [lastLoadIdentity, setLastLoadIdentity] = useState<string | null>(null)
+  if (loadIdentity !== lastLoadIdentity) {
+    setLastLoadIdentity(loadIdentity)
+    if (loadIdentity) setSelectedPlanId('')
+  }
 
   useEffect(() => {
-    if (props.open && props.user?.id) {
-      setSelectedPlanId('')
-      loadData()
-    }
-  }, [props.open, props.user?.id, loadData])
+    if (!loadIdentity) return
+    void (async () => {
+      await loadData()
+    })()
+  }, [loadIdentity, loadData])
 
   const handleCreate = async () => {
     if (!props.user?.id || !selectedPlanId) {
