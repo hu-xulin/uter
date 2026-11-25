@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -78,6 +78,9 @@ import {
   type Organization,
 } from './types'
 
+// 成员编辑行的 key 单调递增，保证全局唯一、永不复用。
+let nextMemberRowKey = 1
+
 const ROLE_LABEL_KEY: Record<OrgRole, string> = {
   '': 'Member',
   owner: 'Owner',
@@ -134,16 +137,17 @@ function SubQuotaInput({
   const currencyLabel = getCurrencyLabel()
 
   // 以「金额」为编辑态；quota<=0 表示不限量，对应空输入。
-  const [amount, setAmount] = useState(() =>
+  const derivedAmount =
     quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
-  )
+  const [amount, setAmount] = useState(derivedAmount)
   const [badInput, setBadInput] = useState(false)
-  useEffect(() => {
-    setAmount(
-      quota > 0 ? String(Number((quota / config.quotaPerUnit).toFixed(6))) : ''
-    )
+  const [prevDerivedAmount, setPrevDerivedAmount] = useState(derivedAmount)
+
+  if (derivedAmount !== prevDerivedAmount) {
+    setPrevDerivedAmount(derivedAmount)
+    setAmount(derivedAmount)
     setBadInput(false)
-  }, [quota, config.quotaPerUnit])
+  }
 
   const restorePersistedAmount = () => {
     setAmount(
@@ -271,38 +275,78 @@ export function OrganizationPage() {
     [t]
   )
 
-  // 初始化只跑一次：t 与 loadAll 都是稳定引用（t 随语言包常驻，loadAll 仅依赖 t），
-  // 把它们列入依赖是为了让 exhaustive-deps 认可，不会造成重复请求。
-  const initialize = useCallback(async () => {
-    setLoading(true)
-    setInitError(null)
-    try {
-      const res = await getMyOrganization()
-      if (res.success && res.data?.organization) {
-        setOrg(res.data.organization)
-        setMyRole(res.data.role ?? 'member')
-        setCanViewBudget(res.data.can_view_budget ?? false)
-        setMySubQuota(res.data.my_sub_quota_limit ?? 0)
-        setMyUsedQuota(res.data.my_used_quota ?? 0)
-        // 普通成员（can_view_budget=false）不加载组织总预算与成员列表，
-        // 仅查看自己被分配的额度（MyQuotaCard）。
-        if (res.data.can_view_budget) {
-          await loadAll(res.data.organization.id, 1)
-        }
-      } else {
-        setOrg(null)
-      }
-    } catch {
-      setOrg(null)
-      setInitError(t('Failed to load organization data'))
-    } finally {
-      setLoading(false)
-    }
-  }, [loadAll, t])
-
+  // 初始化只跑一次。所有状态更新都发生在 Promise 回调中，避免在 effect 内
+  // 同步 setState（React Compiler set-state-in-effect）。
   useEffect(() => {
-    void initialize()
-  }, [initialize])
+    let alive = true
+    void getMyOrganization()
+      .then(async (res) => {
+        if (!alive) return
+        if (res.success && res.data?.organization) {
+          setOrg(res.data.organization)
+          setMyRole(res.data.role ?? 'member')
+          setCanViewBudget(res.data.can_view_budget ?? false)
+          setMySubQuota(res.data.my_sub_quota_limit ?? 0)
+          setMyUsedQuota(res.data.my_used_quota ?? 0)
+          // 普通成员（can_view_budget=false）不加载组织总预算与成员列表，
+          // 仅查看自己被分配的额度（MyQuotaCard）。
+          if (res.data.can_view_budget) {
+            setDataError(null)
+            const [statsRes, membersRes] = await Promise.allSettled([
+              getOrganizationStats(res.data.organization.id),
+              getOrganizationMembers(res.data.organization.id, {
+                p: 1,
+                page_size: PAGE_SIZE,
+              }),
+            ])
+            if (!alive) return
+            if (statsRes.status === 'fulfilled') {
+              const statsResult = statsRes.value
+              if (statsResult.success && statsResult.data) {
+                setStats({
+                  used_quota: statsResult.data.used_quota,
+                  remaining: statsResult.data.remaining,
+                })
+              } else {
+                setDataError(
+                  statsResult.message || t('Failed to load organization data')
+                )
+              }
+            } else {
+              setDataError(t('Failed to load organization data'))
+            }
+            if (membersRes.status === 'fulfilled') {
+              const membersResult = membersRes.value
+              if (membersResult.success && membersResult.data) {
+                setMembers(membersResult.data.items)
+                setTotal(membersResult.data.total)
+                setPage(1)
+              } else {
+                setDataError(
+                  (prev) => prev || membersResult.message || t('Failed to load')
+                )
+              }
+            } else {
+              setDataError((prev) => prev || t('Failed to load'))
+            }
+          }
+        } else {
+          setOrg(null)
+        }
+      })
+      .catch(() => {
+        if (alive) {
+          setOrg(null)
+          setInitError(t('Failed to load organization data'))
+        }
+      })
+      .finally(() => {
+        if (alive) setLoading(false)
+      })
+    return () => {
+      alive = false
+    }
+  }, [t])
 
   if (loading) {
     return (
@@ -746,18 +790,18 @@ function OrgOverviewCard({
   // 预算以**金额**录入（单位跟随系统货币设置），提交时换算回 quota；
   // 空/0 = 不限量。与创建组织的表单、以及成员列表里的 SubQuotaInput 三处口径一致。
   const [quota, setQuota] = useState(() => quotaToAmount(String(org.quota)))
+  const derivedQuota = quotaToAmount(String(org.quota))
+  const [prevDerivedQuota, setPrevDerivedQuota] = useState(derivedQuota)
   const [memberLimit, setMemberLimit] = useState(String(org.member_limit))
   const [status, setStatus] = useState(String(org.status))
   const [saving, setSaving] = useState(false)
 
   // 保存后 org.quota 由父组件回传，需把新的额度重新折算成金额显示，
   // 否则输入框会停留在保存前的旧值。
-  useEffect(() => {
-    setQuota(quotaToAmount(String(org.quota)))
-    // quotaToAmount 每次渲染重建，但它只依赖 config.quotaPerUnit（配置不变则结果不变），
-    // 故按其真实依赖声明，避免 exhaustive-deps 误报。
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [org.quota, config.quotaPerUnit])
+  if (derivedQuota !== prevDerivedQuota) {
+    setPrevDerivedQuota(derivedQuota)
+    setQuota(derivedQuota)
+  }
 
   const suspended = org.status === ORG_STATUS_DISABLED
   const used = stats?.used_quota ?? org.used_quota
@@ -956,22 +1000,17 @@ function AddMemberCard({
     errorMsg?: string
   }
 
-  // 行 key 用 ref 单调递增生成，保证全局唯一、永不复用，
+  // 行 key 单调递增生成，保证全局唯一、永不复用，
   // 避免并发点击/删空补行导致的重复 key 让 React 复用错 DOM（表现为「有时删不掉当前行」）。
-  const keyRef = useRef(1)
-  const [rows, setRows] = useState<AddRow[]>(() => {
-    const firstKey = keyRef.current
-    keyRef.current += 1
-    return [
-      {
-        key: firstKey,
-        userId: '',
-        subLimit: '',
-        dept: '',
-        status: 'idle',
-      },
-    ]
-  })
+  const [rows, setRows] = useState<AddRow[]>(() => [
+    {
+      key: nextMemberRowKey++,
+      userId: '',
+      subLimit: '',
+      dept: '',
+      status: 'idle',
+    },
+  ])
 
   if (!canManage) return null
 
@@ -987,8 +1026,7 @@ function AddMemberCard({
   }
 
   function addRow() {
-    const k = keyRef.current
-    keyRef.current += 1
+    const k = nextMemberRowKey++
     setRows((prev) => [
       ...prev,
       { key: k, userId: '', subLimit: '', dept: '', status: 'idle' },
