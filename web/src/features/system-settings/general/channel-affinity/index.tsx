@@ -84,7 +84,7 @@ export function ChannelAffinitySection(props: Props) {
   const rules = useMemo(() => parseRules(props.rulesJson), [props.rulesJson])
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual')
   const [cacheStats, setCacheStats] = useState<CacheStats | null>(null)
-  const [cacheLoading, setCacheLoading] = useState(false)
+  const [cacheLoading, setCacheLoading] = useState(true)
 
   const [ruleEditorOpen, setRuleEditorOpen] = useState(false)
   const [editingRule, setEditingRule] = useState<AffinityRule | null>(null)
@@ -94,25 +94,38 @@ export function ChannelAffinitySection(props: Props) {
   const [clearRuleName, setClearRuleName] = useState<string | null>(null)
   const [fillTemplateDialogOpen, setFillTemplateDialogOpen] = useState(false)
 
-  const refreshCache = useCallback(async () => {
-    setCacheLoading(true)
+  const fetchCacheStats = useCallback(async () => {
     try {
       const res = await getCacheStats()
-      if (res.success) {
-        setCacheStats(res.data || null)
-      } else {
-        handleServerError(res)
-      }
+      if (res.success) return { stats: res.data || null, failed: false }
+      handleServerError(res)
     } catch (error) {
       handleServerError(error, t('Failed to refresh cache stats'))
-    } finally {
-      setCacheLoading(false)
     }
+    return { stats: null, failed: true }
   }, [t])
 
+  const refreshCache = useCallback(async () => {
+    setCacheLoading(true)
+    const { stats, failed } = await fetchCacheStats()
+    if (!failed) setCacheStats(stats)
+    setCacheLoading(false)
+  }, [fetchCacheStats])
+
   useEffect(() => {
-    void refreshCache()
-  }, [refreshCache])
+    let alive = true
+    void fetchCacheStats()
+      .then(({ stats, failed }) => {
+        if (alive) {
+          if (!failed) setCacheStats(stats)
+          setCacheLoading(false)
+        }
+      })
+      .catch(() => undefined)
+    return () => {
+      alive = false
+    }
+  }, [fetchCacheStats])
 
   const appendCliTemplates = () => {
     const existingNames = new Set(
@@ -153,7 +166,7 @@ export function ChannelAffinitySection(props: Props) {
       const res = await clearAllCache()
       if (res.success) {
         toast.success(t('Cleared'))
-        refreshCache()
+        void refreshCache()
       } else {
         handleServerError(res)
       }
@@ -169,7 +182,7 @@ export function ChannelAffinitySection(props: Props) {
       const res = await clearRuleCache(clearRuleName)
       if (res.success) {
         toast.success(t('Cleared'))
-        refreshCache()
+        void refreshCache()
       } else {
         handleServerError(res)
       }
