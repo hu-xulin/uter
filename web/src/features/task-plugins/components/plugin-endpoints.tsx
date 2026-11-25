@@ -115,7 +115,7 @@ export function PluginEndpoints(props: {
             className='text-mono font-mono font-normal'
           >
             <span>{mode}</span>
-            <span className='font-sans'>{modeLabels[mode]}</span>
+            <span className='font-ui'>{modeLabels[mode]}</span>
           </Badge>
         ))
         // Chips belong on the create row, but a claim naming a protocol absent
