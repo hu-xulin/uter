@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -91,10 +91,15 @@ export function EditTagDialog({ open, onOpenChange }: EditTagDialogProps) {
     allModelsData?.data?.map((m) => m.id).filter(Boolean) || []
   const availableGroups = groupsData?.data || []
 
-  // Initialize form when tag changes
-  useEffect(() => {
-    if (open && currentTag) {
-      setNewTag(currentTag)
+  // Initialize form when tag changes：在渲染期按标签/查询结果变化填写表单，
+  // 避免 effect 引起的额外一轮渲染。
+  const formKey =
+    open && currentTag ? `${currentTag}:${tagModelsData?.data ?? ''}` : null
+  const [lastFormKey, setLastFormKey] = useState<string | null>(null)
+  if (formKey !== lastFormKey) {
+    setLastFormKey(formKey)
+    if (formKey) {
+      setNewTag(currentTag ?? '')
       setModelMapping('')
       setSelectedGroups([])
       setCustomModel('')
@@ -107,7 +112,7 @@ export function EditTagDialog({ open, onOpenChange }: EditTagDialogProps) {
         setSelectedModels([])
       }
     }
-  }, [open, currentTag, tagModelsData])
+  }
 
   const handleAddCustomModel = () => {
     if (!customModel.trim()) return
