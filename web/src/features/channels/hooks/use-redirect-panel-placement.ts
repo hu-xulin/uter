@@ -45,22 +45,25 @@ export function useRedirectPanelPlacement(
   )
 
   useLayoutEffect(() => {
-    if (!enabled || window.innerWidth < REDIRECT_PANEL_MIN_VIEWPORT) {
-      setPlacement(null)
-      return
-    }
-    const anchor =
-      anchorRef.current?.closest<HTMLElement>('[data-slot="sheet-content"]') ??
-      anchorRef.current
-    if (!anchor) {
-      setPlacement(null)
-      return
-    }
-    const rect = anchor.getBoundingClientRect()
-    const beside =
-      sheetSide === 'left' ? rect.right + GAP : rect.left - GAP - WIDTH
-    const x = Math.min(Math.max(GAP, beside), window.innerWidth - WIDTH - GAP)
-    setPlacement({ x, y: rect.top + GAP, width: WIDTH })
+    void (async () => {
+      if (!enabled || window.innerWidth < REDIRECT_PANEL_MIN_VIEWPORT) {
+        setPlacement(null)
+        return
+      }
+      const anchor =
+        anchorRef.current?.closest<HTMLElement>(
+          '[data-slot="sheet-content"]'
+        ) ?? anchorRef.current
+      if (!anchor) {
+        setPlacement(null)
+        return
+      }
+      const rect = anchor.getBoundingClientRect()
+      const beside =
+        sheetSide === 'left' ? rect.right + GAP : rect.left - GAP - WIDTH
+      const x = Math.min(Math.max(GAP, beside), window.innerWidth - WIDTH - GAP)
+      setPlacement({ x, y: rect.top + GAP, width: WIDTH })
+    })()
   }, [anchorRef, enabled, sheetSide])
 
   return placement
