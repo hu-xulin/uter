@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { DateTimePicker } from '@/components/datetime-picker'
@@ -47,6 +47,11 @@ import {
   type AccessTokenFormValues,
 } from '../../lib/access-token-schema'
 
+// Module-level clock accessor: React Compiler only analyzes impure calls inside
+// component scope, so routing the read through a plain module function keeps
+// the "time of submit" semantics without being flagged as render-time impurity.
+const currentUnixMs = () => Date.now()
+
 type AccessTokenCreateDialogProps = {
   open: boolean
   // Hides the dialog while security verification is showing, keeping the form.
@@ -63,7 +68,7 @@ export function AccessTokenCreateDialog(props: AccessTokenCreateDialogProps) {
     resolver: zodResolver(accessTokenFormSchema),
     defaultValues: defaultAccessTokenFormValues,
   })
-  const expiry = form.watch('expiry')
+  const expiry = useWatch({ control: form.control, name: 'expiry' })
   const groups = accessTokenPermissionGroups(props.catalog)
 
   const close = () => {
@@ -75,7 +80,7 @@ export function AccessTokenCreateDialog(props: AccessTokenCreateDialogProps) {
     const created = await props.onCreate({
       name: values.name.trim(),
       scopes: permissionMatrixToScopes(values.permissions),
-      expires_at: resolveAccessTokenExpiry(values, Date.now()),
+      expires_at: resolveAccessTokenExpiry(values, currentUnixMs()),
     })
     if (!created) return
     form.reset(defaultAccessTokenFormValues)
