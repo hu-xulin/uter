@@ -31,14 +31,7 @@ import {
   Route,
   WalletCards,
 } from 'lucide-react'
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { Fragment, useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MultiSelect } from '@/components/multi-select'
@@ -294,7 +287,11 @@ export function FlowCharts(props: FlowChartsProps) {
     () => stages.filter((stage) => !hiddenStages.includes(stage)),
     [stages, hiddenStages]
   )
-  useEffect(() => {
+  const [lastVisibleStages, setLastVisibleStages] = useState(visibleStages)
+  // 列被隐藏后图形会重排，选中态若指向已隐藏的阶段就失效；在渲染期按
+  // visibleStages 的变化清理，避免 effect 引起的额外一轮渲染。
+  if (visibleStages !== lastVisibleStages) {
+    setLastVisibleStages(visibleStages)
     const visible = new Set(visibleStages)
     setSelectedNodes((prev) => {
       const next = prev.filter((filter) => visible.has(filter.kind))
@@ -306,7 +303,7 @@ export function FlowCharts(props: FlowChartsProps) {
     // The graph reshapes when columns are toggled, so any highlighted edge may
     // no longer exist. Drop the link selection rather than leave it dangling.
     setActiveFlowLink(undefined)
-  }, [visibleStages])
+  }
   const toggleStage = (stage: FlowNodeKind) => {
     setHiddenStages((prev) => {
       const hidden = new Set(prev)
