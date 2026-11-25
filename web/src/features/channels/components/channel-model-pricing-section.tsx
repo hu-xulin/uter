@@ -45,6 +45,7 @@ import {
   seedChannelModelPricing,
   setChannelModelPricing,
 } from '../api'
+import { canDisplayChannelPrice } from '../lib/channel-price-display'
 import type {
   ChannelInternalPricingView,
   ChannelModelPricingRecord,
@@ -389,7 +390,7 @@ export function ChannelModelPricingSection(
 
   const upstreamQuoteLabel = (item: ChannelModelPricingRecord) => {
     const quote = item.upstream_quote
-    if (!quote) return t('Not available')
+    if (!quote || !canDisplayChannelPrice(item)) return t('Not available')
     if (
       quote.unit === 'per_call' ||
       quote.unit === 'per_second' ||
@@ -528,7 +529,9 @@ export function ChannelModelPricingSection(
     }
     if (visibleItems.length === 0) {
       return (
-        <p className='text-muted-foreground text-sm'>{t('No models available')}</p>
+        <p className='text-muted-foreground text-sm'>
+          {t('No models available')}
+        </p>
       )
     }
     return (
@@ -652,12 +655,12 @@ export function ChannelModelPricingSection(
                 ) : null}
                 <span>
                   {t('Upstream channel price')}: {upstreamQuoteLabel(item)}
-                  {item.upstream_quote ? (
+                  {canDisplayChannelPrice(item) && item.upstream_quote ? (
                     <Badge variant='outline' className='ml-1 font-normal'>
                       {t(item.upstream_quote.price_basis)}
                     </Badge>
                   ) : null}
-                  {item.upstream_quote?.discount_ratio ? (
+                  {canDisplayChannelPrice(item) && item.upstream_quote?.discount_ratio ? (
                     <Badge
                       variant='secondary'
                       className='ml-1 font-normal'
@@ -668,7 +671,7 @@ export function ChannelModelPricingSection(
                     </Badge>
                   ) : null}
                 </span>
-                {(item.upstream_quote?.tiers?.length ?? 0) > 1 ? (
+                {canDisplayChannelPrice(item) && (item.upstream_quote?.tiers?.length ?? 0) > 1 ? (
                   <details className='w-full'>
                     <summary className='text-muted-foreground cursor-pointer text-sm'>
                       {t('Upstream channel price tiers ({{count}})', {
