@@ -46,7 +46,10 @@ function record(
 
 test('only selected models count toward publish readiness', () => {
   const summary = summarizeSelectedPricingReadiness(
-    [record('billable-a', 'configured'), record('unselected-review', 'needs_review')],
+    [
+      record('billable-a', 'configured'),
+      record('unselected-review', 'needs_review'),
+    ],
     ['billable-a']
   )
 
