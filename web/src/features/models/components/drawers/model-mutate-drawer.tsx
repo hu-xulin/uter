@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -129,9 +129,9 @@ export function ModelMutateDrawer(props: {
     enabled: props.open,
   })
   const vendors = vendorsQuery.data?.data?.items ?? []
-  const selectedVendor = vendors.find(
-    (vendor) => vendor.id === form.watch('vendor_id')
-  )
+  const vendorId = useWatch({ control: form.control, name: 'vendor_id' })
+  const modelName = useWatch({ control: form.control, name: 'model_name' })
+  const selectedVendor = vendors.find((vendor) => vendor.id === vendorId)
   const modelQuery = useQuery({
     queryKey: modelsQueryKeys.detail(currentRow?.id ?? 0),
     queryFn: async () => {
@@ -146,24 +146,23 @@ export function ModelMutateDrawer(props: {
   })
   const savedModel = modelQuery.data ?? currentRow
 
-  useEffect(() => {
-    if (!props.open) return
+  const resetKey = props.open
+    ? `${props.initialSection ?? 'metadata'}:${props.currentRow?.id ?? ''}:${props.currentRow?.model_name ?? ''}`
+    : 'closed'
+  const [lastResetKey, setLastResetKey] = useState(resetKey)
+  if (resetKey !== lastResetKey) {
+    setLastResetKey(resetKey)
     setSection(props.initialSection ?? 'metadata')
     setPricingVisited(props.initialSection === 'pricing')
     setPricingName('')
     setPricingDirty(false)
     setPendingPricingName(null)
     setCloseConfirm(false)
-  }, [
-    props.open,
-    props.initialSection,
-    props.currentRow?.id,
-    props.currentRow?.model_name,
-  ])
+    setCreatedModel(null)
+  }
 
   useEffect(() => {
     if (!props.open) {
-      setCreatedModel(null)
       loadedKey.current = ''
       return
     }
@@ -335,8 +334,7 @@ export function ModelMutateDrawer(props: {
                             <FormDescription>
                               {t('The unique identifier for this model')}
                               {isEditing &&
-                                form.watch('model_name') !==
-                                  currentRow?.model_name && (
+                                modelName !== currentRow?.model_name && (
                                   <span className='text-warning mt-1 block'>
                                     {t(
                                       'Renaming metadata does not rename channel models or move pricing. Existing prices stay with the original model name.'
