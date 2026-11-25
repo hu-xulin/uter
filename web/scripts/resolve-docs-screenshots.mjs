@@ -89,7 +89,7 @@ for (const locale of LOCALES) {
     const original = readFileSync(path, 'utf8')
     let changed = false
 
-    const next = original.replace(IMG_TAG, (tag) => {
+    const next = original.replaceAll(IMG_TAG, (tag) => {
       const src = SRC_ATTR.exec(tag)
       if (!src) {
         failures.push(`${path}: <img> without a src attribute: ${tag}`)
