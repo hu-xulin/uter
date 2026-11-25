@@ -19,8 +19,8 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { Pencil } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -173,7 +173,9 @@ export function UsersMutateDrawer({
     } else if (open && !isUpdate) {
       // For create, reset to defaults
       form.reset(USER_FORM_DEFAULT_VALUES)
-      setAccountKind('user')
+      void (async () => {
+        setAccountKind('user')
+      })()
     }
   }, [open, isUpdate, currentRow, form, t])
 
@@ -181,110 +183,131 @@ export function UsersMutateDrawer({
   const currencyLabel = getCurrencyLabel()
   const tokensOnly = currencyMeta.kind === 'tokens'
 
-  const currentQuotaRaw = form.watch('quota_dollars') || 0
-  const selectedRole = form.watch('role')
+  const currentQuotaRaw =
+    useWatch({ control: form.control, name: 'quota_dollars' }) || 0
+  const selectedRole = useWatch({ control: form.control, name: 'role' })
   const canEditAdminPermissions = currentUser?.role === ROLE.SUPER_ADMIN
   const targetIsAdmin = (selectedRole ?? currentRow?.role ?? 0) >= ROLE.ADMIN
 
-  const onSubmit = async (data: UserFormValues) => {
-    if (!isUpdate || data.password) {
-      if (!accountPasswordSchema.safeParse(data.password ?? '').success) {
-        form.setError('password', {
+  const onSubmit = useCallback(
+    async (data: UserFormValues) => {
+      if (!isUpdate || data.password) {
+        if (!accountPasswordSchema.safeParse(data.password ?? '').success) {
+          form.setError('password', {
+            type: 'manual',
+            message: t('Password must contain between 8 and 128 characters.'),
+          })
+          return
+        }
+      }
+
+      // 选择「组织」角色时必须指定归属组织，否则退回普通用户逻辑无意义。
+      if (
+        accountKind === 'organization' &&
+        !(data.organization_id && data.organization_id > 0)
+      ) {
+        form.setError('organization_id', {
           type: 'manual',
-          message: t('Password must contain between 8 and 128 characters.'),
+          message: t('Please select an organization'),
         })
         return
       }
-    }
 
-    // 选择「组织」角色时必须指定归属组织，否则退回普通用户逻辑无意义。
-    if (
-      accountKind === 'organization' &&
-      !(data.organization_id && data.organization_id > 0)
-    ) {
-      form.setError('organization_id', {
-        type: 'manual',
-        message: t('Please select an organization'),
-      })
-      return
-    }
-
-    setIsSubmitting(true)
-    try {
-      const payload = transformFormDataToPayload(
-        data,
-        currentRow?.id,
-        permissionCatalog
-      )
-      if (
-        isUpdate &&
-        payload.admin_permissions &&
-        JSON.stringify(payload.admin_permissions) ===
-          JSON.stringify(
-            normalizeAdminPermissions(
-              loadedPermissions.current,
-              permissionCatalog
+      setIsSubmitting(true)
+      try {
+        const payload = transformFormDataToPayload(
+          data,
+          currentRow?.id,
+          permissionCatalog
+        )
+        if (
+          isUpdate &&
+          payload.admin_permissions &&
+          JSON.stringify(payload.admin_permissions) ===
+            JSON.stringify(
+              normalizeAdminPermissions(
+                loadedPermissions.current,
+                permissionCatalog
+              )
             )
-          )
-      ) {
-        delete payload.admin_permissions
-      }
-      // Resetting a password, rewriting admin permissions, or creating an
-      // administrator changes who can sign in or what they may do.
-      let proofToken: string | undefined
-      if (isUpdate && currentRow) {
-        if (payload.password || payload.admin_permissions) {
+        ) {
+          delete payload.admin_permissions
+        }
+        // Resetting a password, rewriting admin permissions, or creating an
+        // administrator changes who can sign in or what they may do.
+        let proofToken: string | undefined
+        if (isUpdate && currentRow) {
+          if (payload.password || payload.admin_permissions) {
+            const proof = await requestVerification({
+              scope: 'admin.user.update',
+              context: { user_id: currentRow.id },
+              title: t('Verify to update user credentials'),
+              description: t(
+                'Confirm your identity before changing the account {{username}}.',
+                { username: currentRow.username }
+              ),
+            })
+            if (!proof) return
+            proofToken = proof.proof_token
+          }
+        } else if ((payload.role ?? 0) >= ROLE.ADMIN) {
           const proof = await requestVerification({
-            scope: 'admin.user.update',
-            context: { user_id: currentRow.id },
-            title: t('Verify to update user credentials'),
+            scope: 'admin.user.create',
+            context: { role: payload.role ?? ROLE.ADMIN },
+            title: t('Verify to create administrator'),
             description: t(
-              'Confirm your identity before changing the account {{username}}.',
-              { username: currentRow.username }
+              'Confirm your identity before creating an administrator account.'
             ),
           })
           if (!proof) return
           proofToken = proof.proof_token
         }
-      } else if ((payload.role ?? 0) >= ROLE.ADMIN) {
-        const proof = await requestVerification({
-          scope: 'admin.user.create',
-          context: { role: payload.role ?? ROLE.ADMIN },
-          title: t('Verify to create administrator'),
-          description: t(
-            'Confirm your identity before creating an administrator account.'
-          ),
-        })
-        if (!proof) return
-        proofToken = proof.proof_token
-      }
-      const result = isUpdate
-        ? await updateUser(
-            payload as typeof payload & { id: number },
-            proofToken
-          )
-        : await createUser(payload, proofToken)
+        const result = isUpdate
+          ? await updateUser(
+              payload as typeof payload & { id: number },
+              proofToken
+            )
+          : await createUser(payload, proofToken)
 
-      if (result.success) {
-        toast.success(
-          isUpdate
-            ? t(SUCCESS_MESSAGES.USER_UPDATED)
-            : t(SUCCESS_MESSAGES.USER_CREATED)
+        if (result.success) {
+          toast.success(
+            isUpdate
+              ? t(SUCCESS_MESSAGES.USER_UPDATED)
+              : t(SUCCESS_MESSAGES.USER_CREATED)
+          )
+          onOpenChange(false)
+          triggerRefresh()
+        } else {
+          handleServerError(result, t(ERROR_MESSAGES.CREATE_FAILED))
+        }
+      } catch (error) {
+        handleServerError(
+          AuthOperationError.from(error),
+          t(ERROR_MESSAGES.UNEXPECTED)
         )
-        onOpenChange(false)
-        triggerRefresh()
-      } else {
-        handleServerError(result, t(ERROR_MESSAGES.CREATE_FAILED))
+      } finally {
+        setIsSubmitting(false)
       }
-    } catch (error) {
-      handleServerError(
-        AuthOperationError.from(error),
-        t(ERROR_MESSAGES.UNEXPECTED)
-      )
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
+    },
+    [
+      t,
+      form,
+      isUpdate,
+      accountKind,
+      currentRow,
+      permissionCatalog,
+      onOpenChange,
+      triggerRefresh,
+      requestVerification,
+    ]
+  )
+
+  const submit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      void form.handleSubmit(onSubmit)(event)
+    },
+    [form, onSubmit]
+  )
 
   const refreshUserData = async () => {
     if (!currentRow) return
@@ -327,7 +350,7 @@ export function UsersMutateDrawer({
           <Form {...form}>
             <form
               id='user-form'
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={submit}
               className={sideDrawerFormClassName()}
             >
               {/* Basic Information */}
