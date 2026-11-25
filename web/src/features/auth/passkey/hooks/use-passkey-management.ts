@@ -66,9 +66,28 @@ export function usePasskeyManagement() {
     }
   }, [])
 
+  // 首次加载在 effect 内独立完成并支持取消，refetch 仍走 fetchStatus。
   useEffect(() => {
     mounted.current = true
-    void fetchStatus()
+    void (async () => {
+      try {
+        const response = await getPasskeyStatus()
+        if (!mounted.current) return
+        if (!response.success || !response.data) {
+          throw new AuthOperationError(
+            getServerMessage(response) || 'Failed to load Passkey status'
+          )
+        }
+        setStatus(response.data)
+        setStatusError(null)
+      } catch (error) {
+        if (mounted.current) {
+          setStatusError(AuthOperationError.from(error).message)
+        }
+      } finally {
+        if (mounted.current) setLoading(false)
+      }
+    })()
     void isPasskeySupported().then((value) => {
       if (mounted.current) setSupported(value)
     })
@@ -76,7 +95,7 @@ export function usePasskeyManagement() {
       mounted.current = false
       operation.current?.abort()
     }
-  }, [fetchStatus])
+  }, [])
 
   const register = useCallback(
     async (proofToken: string) => {
