@@ -84,17 +84,23 @@ export function ServerLogFiles() {
   const [serverLogCleanupLoading, setServerLogCleanupLoading] = useState(false)
 
   const fetchServerLogInfo = useCallback(async () => {
-    try {
-      const res = await api.get('/api/performance/logs')
-      requireServerSuccess(res.data)
-      if (res.data.success) setServerLogInfo(res.data.data)
-    } catch (error) {
-      handleServerError(error)
-    }
+    const res = await api.get('/api/performance/logs')
+    requireServerSuccess(res.data)
+    return res.data.success ? res.data.data : null
   }, [])
 
   useEffect(() => {
+    let alive = true
     fetchServerLogInfo()
+      .then((info) => {
+        if (alive && info) setServerLogInfo(info)
+      })
+      .catch((error) => {
+        if (alive) handleServerError(error)
+      })
+    return () => {
+      alive = false
+    }
   }, [fetchServerLogInfo])
 
   const cleanupServerLogFiles = async () => {
@@ -123,7 +129,8 @@ export function ServerLogFiles() {
       } else {
         handleServerError(res.data, t('Cleanup failed'))
       }
-      fetchServerLogInfo()
+      const info = await fetchServerLogInfo()
+      if (info) setServerLogInfo(info)
     } catch (error) {
       handleServerError(error, t('Cleanup failed'))
     } finally {
