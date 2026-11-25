@@ -117,9 +117,12 @@ export function useProfile() {
     [refreshProfile]
   )
 
-  // Initial fetch
+  // Initial fetch — start it as an async task so the state updates inside the
+  // fetch callback are not treated as synchronous updates from the effect.
   useEffect(() => {
-    fetchProfile()
+    void (async () => {
+      await fetchProfile()
+    })()
   }, [fetchProfile])
 
   return {
