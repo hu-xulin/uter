@@ -24,7 +24,7 @@ import {
   CircleAlert,
   CircleDashed,
 } from 'lucide-react'
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge } from '@/components/ui/badge'
@@ -132,12 +132,16 @@ export function ChannelConfigurationStatusIndicator(props: {
 export function ChannelConfiguration(props: ChannelConfigurationProps) {
   const { t } = useTranslation()
   const [visited, setVisited] = useState(() => new Set([props.section]))
-  useEffect(() => {
-    setVisited((previous) => {
-      if (previous.has(props.section)) return previous
-      return new Set([...previous, props.section])
-    })
-  }, [props.section])
+  const [lastSection, setLastSection] = useState(props.section)
+  // section 变化时把新步骤并入已访问集合，直接在渲染期调整，省去 effect 的额外渲染。
+  if (props.section !== lastSection) {
+    setLastSection(props.section)
+    setVisited((previous) =>
+      previous.has(props.section)
+        ? previous
+        : new Set([...previous, props.section])
+    )
+  }
   const isCreate = props.mode === 'create'
   const sections: ConfigurationStep[] = [
     { id: 'connection', label: t('Connect channel') },
