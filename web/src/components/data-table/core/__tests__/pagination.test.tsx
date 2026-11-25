@@ -17,12 +17,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import {
+  createTable,
   getCoreRowModel,
   getPaginationRowModel,
-  useReactTable,
+  type TableState,
 } from '@tanstack/react-table'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { expect, it } from 'vitest'
 
 import { DataTablePagination } from '../pagination'
@@ -31,13 +33,29 @@ const rows = [{ id: 1 }, { id: 2 }, { id: 3 }]
 const emptyRows: { id: number }[] = []
 
 function Fixture(props: { empty?: boolean; compact?: boolean }) {
-  const table = useReactTable({
+  // createTable (from table-core) has no memoization hazard; manage the
+  // controlled state explicitly instead of using useReactTable.
+  const [table] = useState(() =>
+    createTable({
+      data: props.empty ? emptyRows : rows,
+      columns: [{ accessorKey: 'id' }],
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      state: {} as TableState,
+      onStateChange: () => {},
+      renderFallbackValue: null,
+    })
+  )
+  const [state, setState] = useState<TableState>(() => ({
+    ...table.initialState,
+    pagination: { pageIndex: 0, pageSize: 2 },
+  }))
+  table.setOptions((prev) => ({
+    ...prev,
     data: props.empty ? emptyRows : rows,
-    columns: [{ accessorKey: 'id' }],
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
-  })
+    state,
+    onStateChange: (updater) => setState(updater),
+  }))
   return <DataTablePagination table={table} compact={props.compact} />
 }
 it('moves between pages in compact mode and disables the boundary actions', async () => {
