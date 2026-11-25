@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -246,7 +246,7 @@ export function CustomerServiceSection({
     }
   }
 
-  const pageValues = form.watch('pages')
+  const pageValues = useWatch({ control: form.control, name: 'pages' })
   const togglePage = (key: string, on: boolean) => {
     const next = on
       ? [...pageValues, key]
@@ -705,7 +705,9 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
   )
 
   useEffect(() => {
-    void load()
+    void (async () => {
+      await load()
+    })()
   }, [load, reloadSignal])
 
   const update = async () => {
