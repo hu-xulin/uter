@@ -1,0 +1,234 @@
+/*
+Copyright (C) 2023-2026 Uter.ai
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterProvider,
+} from '@tanstack/react-router'
+import { cleanup, render, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
+
+import type { DocsLocaleCode } from '@/lib/docs-link'
+
+import { ApiCatalog, AppsCatalog } from '../catalog-index'
+import { catalogCards, catalogIdentity } from '../docs-content'
+
+afterEach(() => cleanup())
+
+async function renderCatalog(node: React.ReactElement, locale: DocsLocaleCode) {
+  const root = createRootRoute()
+  const docs = createRoute({
+    getParentRoute: () => root,
+    path: '/docs/$',
+    component: () => node,
+  })
+  const router = createRouter({
+    routeTree: root.addChildren([docs]),
+    history: createMemoryHistory({ initialEntries: [`/docs/${locale}/api`] }),
+  })
+  await router.load()
+  return render(<RouterProvider router={router} />)
+}
+
+describe('catalog data (from the nav manifest)', () => {
+  it('lists protocol groups and standalone endpoints in sidebar order', () => {
+    for (const [locale, expected] of [
+      ['zh', '音频（Audio）'],
+      ['en', 'Audio'],
+    ] as const) {
+      const cards = catalogCards(locale, 'api')
+      expect(cards.map((c) => c.id)).toEqual([
+        'ai-model-audio',
+        'ai-model-chat',
+        'ai-model-completions',
+        'ai-model-embeddings',
+        'ai-model-images-openai', // no group page → first child
+        'ai-model-models-list',
+        'ai-model-moderations',
+        'ai-model-realtime',
+        'ai-model-rerank',
+        'ai-model-videos',
+      ])
+      expect(cards[0].title).toBe(expected)
+    }
+  })
+
+  it('gives the standalone API endpoints their requested one-liners', () => {
+    const zh = catalogCards('zh', 'api')
+    expect(zh.find((c) => c.id === 'ai-model-moderations')).toMatchObject({
+      title: '审查（Moderations）',
+      description: '原生OpenAI格式',
+    })
+    expect(zh.find((c) => c.id === 'ai-model-realtime')).toMatchObject({
+      title: '实时语音（Realtime）',
+      description: '原生OpenAI格式',
+    })
+    expect(zh.find((c) => c.id === 'ai-model-rerank')).toMatchObject({
+      title: '重排序（Rerank）',
+      description: '文档重排序',
+    })
+    expect(
+      catalogCards('en', 'api').find((c) => c.id === 'ai-model-rerank')
+        ?.description
+    ).toBe('Document Reranking')
+  })
+
+  it('excludes the self-linking index entry and ships a description for every card', () => {
+    for (const section of ['api', 'apps'] as const) {
+      for (const locale of [
+        'zh',
+        'zh-TW',
+        'en',
+        'fr',
+        'ja',
+        'ru',
+        'vi',
+      ] as DocsLocaleCode[]) {
+        const cards = catalogCards(locale, section)
+        expect(cards.length, `${locale}/${section}`).toBeGreaterThan(0)
+        expect(
+          cards.some((c) => c.id === 'index'),
+          `${locale}/${section} self link`
+        ).toBe(false)
+        // AI apps ship their teaser in _nav.json; API endpoints carry only a
+        // title and get their one-liner from the docs-search index at runtime.
+        if (section === 'apps') {
+          for (const card of cards) {
+            expect(
+              card.description.length,
+              `${locale}/${card.id} teaser`
+            ).toBeGreaterThan(0)
+          }
+        }
+      }
+    }
+  })
+
+  it('uses only the name before the dash for AI app card titles', () => {
+    const zh = catalogCards('zh', 'apps')
+    expect(zh.find((c) => c.id === 'aionui')?.title).toBe('AionUi')
+    expect(zh.find((c) => c.id === 'cc-switch')?.title).toBe('CC Switch')
+    expect(zh.find((c) => c.id === 'claude-code')?.title).toBe('Claude Code')
+    for (const locale of [
+      'zh',
+      'zh-TW',
+      'en',
+      'fr',
+      'ja',
+      'ru',
+      'vi',
+    ] as DocsLocaleCode[]) {
+      for (const card of catalogCards(locale, 'apps')) {
+        expect(card.title, `${locale}/${card.id}`).not.toMatch(
+          /\s+[-—–]\s+/
+        )
+      }
+    }
+  })
+
+  it('exposes a localized title and blurb for each section', () => {
+    expect(catalogIdentity('zh', 'api').title).toBe('API 参考')
+    expect(catalogIdentity('en', 'apps').title).toBe('AI Apps')
+    expect(catalogIdentity('zh', 'apps').description.length).toBeGreaterThan(0)
+  })
+})
+
+describe('ApiCatalog / AppsCatalog cards', () => {
+  it('renders the API landing as a card grid with titles, icons and one-line teasers', async () => {
+    const { container } = await renderCatalog(<ApiCatalog locale='zh' />, 'zh')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+      'API 参考'
+    )
+    const links = screen.getAllByRole('link')
+    expect(links.length).toBe(catalogCards('zh', 'api').length)
+    // IconBadge renders an inline svg for each card.
+    expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(
+      links.length
+    )
+    const chat = links.find((a) =>
+      (a.getAttribute('href') ?? '').includes('/docs/zh/api/ai-model-chat')
+    )
+    expect(chat, 'chat card link').toBeTruthy()
+    expect(
+      within(chat!).getByText('聊天（Chat）', { selector: 'span' })
+    ).toBeTruthy()
+  })
+
+  it('renders the AI-app landing with a card per integration and a one-line description', async () => {
+    const { container } = await renderCatalog(<AppsCatalog locale='zh' />, 'zh')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+      'AI 应用'
+    )
+    const links = screen.getAllByRole('link')
+    expect(links.length).toBe(catalogCards('zh', 'apps').length)
+    expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(
+      links.length
+    )
+    const claude = links.find((a) =>
+      (a.getAttribute('href') ?? '').includes('/docs/zh/apps/claude-code')
+    )
+    expect(claude, 'claude-code card link').toBeTruthy()
+    expect(
+      within(claude!).getByText('Claude Code', { selector: 'span' })
+    ).toBeTruthy()
+    const aion = links.find((a) =>
+      (a.getAttribute('href') ?? '').includes('/docs/zh/apps/aionui')
+    )
+    expect(
+      within(aion!).getByText('AionUi', { selector: 'span' })
+    ).toBeTruthy()
+  })
+
+  it('follows the UI locale for card copy and link prefix', async () => {
+    await renderCatalog(<AppsCatalog locale='en' />, 'en')
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+      'AI Apps'
+    )
+    const links = screen.getAllByRole('link')
+    expect(
+      links.every((a) =>
+        (a.getAttribute('href') ?? '').startsWith('/docs/en/apps/')
+      )
+    ).toBe(true)
+  })
+
+  it('shows the child variants as the API card one-liner', async () => {
+    const audio = catalogCards('zh', 'api').find(
+      (c) => c.id === 'ai-model-audio'
+    )
+    expect(audio?.description).toBe('原生OpenAI格式、原生Gemini格式')
+
+    await renderCatalog(<ApiCatalog locale='zh' />, 'zh')
+    const card = screen
+      .getAllByRole('link')
+      .find((a) =>
+        (a.getAttribute('href') ?? '').includes('/docs/zh/api/ai-model-audio')
+      )
+    expect(
+      within(card!).getByText('原生OpenAI格式、原生Gemini格式')
+    ).toBeTruthy()
+  })
+
+  it('localizes the API card one-liner too', () => {
+    const audio = catalogCards('en', 'api').find(
+      (c) => c.id === 'ai-model-audio'
+    )
+    expect(audio?.description).toBe('OpenAI Format, Native Gemini Format')
+  })
+})
