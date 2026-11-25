@@ -1,0 +1,2208 @@
+{
+  "captured_at": "2026-11-25T06:25:42.358Z",
+  "source": {
+    "endpoint": "https://bailian-cs.console.aliyun.com/data/api.json?action=BroadScopeAspnGateway&product=sfm_bailian&api=zeldaHttp.dashscopeModel./zelda/api/v1/modelCenter/listFoundationModels&_v=",
+    "region": "cn-beijing",
+    "market_url": "https://bailian.console.aliyun.com/cn-beijing/model/market",
+    "api": "zeldaHttp.dashscopeModel./zelda/api/v1/modelCenter/listFoundationModels"
+  },
+  "selection": [
+    "qwen4-max",
+    "qwen3.8-max",
+    "sambert-zhiyue-v1",
+    "qwen-audio-3.1-tts-flash",
+    "qwen-audio-3.1-asr-flash",
+    "qwen3-vl-embedding",
+    "qwen-voice-enrollment",
+    "qwen3.7-plus-2026-05-26",
+    "qwen3.5-plus-2026-02-15",
+    "qwen3.6-plus-2026-04-02"
+  ],
+  "models": [
+    {
+      "applyType": 0,
+      "updateAt": "2026-11-16T02:00:00.000+00:00",
+      "description": "Qwen4-Max 是通义千问新一代旗舰多模态模型，融合文本生成、图片与视频理解及深度思考能力，适用于编程开发、办公、前端设计与复杂智能体任务。模型支持联网搜索、工具调用和结构化输出，兼容 OpenAI 与 Anthropic API，帮助开发者构建具备多模态理解与任务执行能力的智能应用。",
+      "aliyunRecommend": false,
+      "collectionTag": "qwen4",
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 1000000,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {
+        "eval": true,
+        "deploy": true
+      },
+      "minContextWindow": 1000000,
+      "model": "group-qwen4-max",
+      "categories": [
+        "Flagship"
+      ],
+      "group": true,
+      "capabilities": [
+        "TG",
+        "Reasoning",
+        "VU"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen4-Max 是通义千问新一代旗舰多模态模型，融合文本生成、图片与视频理解及深度思考能力，适用于编程开发、办公、前端设计与复杂智能体任务。模型支持联网搜索、工具调用和结构化输出，兼容 OpenAI 与 Anthropic API，帮助开发者构建具备多模态理解与任务执行能力的智能应用。",
+      "latestOnlineAt": "2026-11-16T02:00:00.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen4-Max",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Text",
+              "Image",
+              "Video"
+            ]
+          },
+          "applyType": 0,
+          "builtInToolMultiPrices": [
+            {
+              "supportedApi": "Responses API",
+              "name": "code_interpreter",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-code-interpreter",
+              "type": "code_interpreter",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "i2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/image-search",
+              "type": "i2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "48",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "t2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search-image",
+              "type": "t2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "24",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_extractor",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_extractor",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_fetch",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_fetch",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search_anthropic",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Completions API",
+              "name": "pdf_parsing",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/pdf-understanding",
+              "type": "pdf_parsing",
+              "prices": [
+                {
+                  "priceUnit": "每页",
+                  "price": "0.02",
+                  "currency": "CNY"
+                }
+              ]
+            }
+          ],
+          "updateAt": "2026-11-16T02:00:00.000+00:00",
+          "description": "Qwen4-Max 是通义千问新一代旗舰多模态模型，融合文本生成、图片与视频理解及深度思考能力，适用于编程开发、办公、前端设计与复杂智能体任务。模型支持联网搜索、工具调用和结构化输出，兼容 OpenAI 与 Anthropic API，帮助开发者构建具备多模态理解与任务执行能力的智能应用",
+          "aliyunRecommend": true,
+          "collectionTag": "qwen4",
+          "features": [
+            "cache",
+            "function-calling",
+            "prefix-completion",
+            "structured-outputs",
+            "web-search",
+            "batch"
+          ],
+          "modelInfo": {
+            "contextWindow": 1000000,
+            "maxInputTokens": 991808,
+            "maxReasoningTokens": 262144,
+            "reasoningMaxInputTokens": 983616,
+            "maxOutputTokens": 131072,
+            "reasoningMaxOutputTokens": 262144
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "fineTune": false,
+            "experienceV2": true,
+            "eval": true,
+            "inference": true,
+            "appV2": true,
+            "tokenMetering": true,
+            "managedAgents": true,
+            "autoTPM": true,
+            "displayQpmLimit": true,
+            "deploy": true,
+            "workflowText": true
+          },
+          "model": "qwen4-max",
+          "prices": [
+            {
+              "priceUnit": "每百万tokens",
+              "price": "10",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token",
+              "type": "input_token",
+              "priceName": "输入"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "30",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "output_token",
+              "type": "output_token",
+              "priceName": "输出"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "0.5",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache",
+              "type": "input_token_cache",
+              "priceName": "输入（缓存命中）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "5",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_batch",
+              "type": "input_token_batch",
+              "priceName": "输入（Batch File）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "15",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "output_token_batch",
+              "type": "output_token_batch",
+              "priceName": "输出（Batch File）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "12.5",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache_creation_5m",
+              "type": "input_token_cache_creation_5m",
+              "priceName": "5分钟显式缓存创建"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "20",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache_creation_1h",
+              "type": "input_token_cache_creation_1h",
+              "priceName": "1小时显式缓存创建"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "0.5",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache_read",
+              "type": "input_token_cache_read",
+              "priceName": "显式缓存命中"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "10",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "discount": 0.5,
+              "ntmAmountType": "input_token_batch",
+              "type": "input_token_batch_chat",
+              "priceName": "输入（Batch Chat)"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "30",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "discount": 0.5,
+              "ntmAmountType": "output_token_batch",
+              "type": "output_token_batch_chat",
+              "priceName": "输出（Batch Chat)"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "usage_limit": 500000,
+              "usage_limit_field": "total_tokens",
+              "usage_limit_period": 6,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "TG",
+            "Reasoning",
+            "VU"
+          ],
+          "activationStatus": 0,
+          "versionTag": "MAJOR",
+          "shortDescription": "Qwen4-Max 是通义千问新一代旗舰多模态模型，融合文本生成、图片与视频理解及深度思考能力，适用于编程开发、办公、前端设计与复杂智能体任务。模型支持联网搜索、工具调用和结构化输出，兼容 OpenAI 与 Anthropic API，帮助开发者构建具备多模态理解与任务执行能力的智能应用",
+          "maxOutputTokens": 131072,
+          "latestOnlineAt": "2026-11-16T02:00:00.000+00:00",
+          "tags": [],
+          "license": {},
+          "contextWindow": 1000000,
+          "maxInputTokens": 991808,
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen4-Max",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+          "needApply": false,
+          "category": "Flagship"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-09-01T09:00:33.000+00:00",
+      "description": "Qwen3.8原生视觉语言系列Max模型，是通义千问迄今能力最强的旗舰模型，拥有2.4万亿参数，采用MoE架构，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.7系列显著提升。",
+      "aliyunRecommend": false,
+      "collectionTag": "qwen3.8",
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 1000000,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {
+        "eval": true,
+        "experience": true,
+        "deploy": true
+      },
+      "minContextWindow": 1000000,
+      "model": "group-qwen3.8-max",
+      "categories": [
+        "Flagship"
+      ],
+      "group": true,
+      "capabilities": [
+        "Reasoning",
+        "VU",
+        "TG"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen3.8原生视觉语言系列Max模型，是通义千问迄今能力最强的旗舰模型，拥有2.4万亿参数，采用MoE架构，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.7系列显著提升。",
+      "latestOnlineAt": "2026-09-01T09:00:33.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen3.8-Max",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Image",
+              "Text",
+              "Video"
+            ]
+          },
+          "applyType": 0,
+          "builtInToolMultiPrices": [
+            {
+              "supportedApi": "Responses API",
+              "name": "code_interpreter",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-code-interpreter",
+              "type": "code_interpreter",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_extractor",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_extractor",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "i2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/image-search",
+              "type": "i2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "48",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "t2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search-image",
+              "type": "t2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "24",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Completions API",
+              "name": "pdf_parsing",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/pdf-understanding",
+              "type": "pdf_parsing",
+              "prices": [
+                {
+                  "priceUnit": "每页",
+                  "price": "0.02",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_fetch",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_fetch",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search_anthropic",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            }
+          ],
+          "updateAt": "2026-08-02T04:14:32.000+00:00",
+          "description": "2.4万亿参数MoE旗舰，编程与办公能力全面跃升，可自主编程十数天交付完整项目。胜任法律、金融、设计等数百种专业任务，一次对话端到端交付生产级成果。原生视觉理解贯穿规划、执行与验证全流程，支持超长文档与长视频的深度语义解析。长程任务中自主规划与闭环迭代，持续进化。",
+          "aliyunRecommend": true,
+          "collectionTag": "qwen3.8",
+          "features": [
+            "cache",
+            "function-calling",
+            "model-experience",
+            "prefix-completion",
+            "structured-outputs",
+            "web-search",
+            "batch"
+          ],
+          "modelInfo": {
+            "contextWindow": 1000000,
+            "maxInputTokens": 991808,
+            "maxReasoningTokens": 262144,
+            "reasoningMaxInputTokens": 983616,
+            "maxOutputTokens": 131072,
+            "reasoningMaxOutputTokens": 131072
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": false,
+            "dpo": false,
+            "inference": true,
+            "workflow": false,
+            "cpt": false,
+            "managedAgents": true,
+            "experience": true,
+            "displayQpmLimit": true,
+            "deploy": true,
+            "sellingByQpm": false,
+            "workflowText": true,
+            "experienceV2": true,
+            "eval": true,
+            "experienceUpcoming": false,
+            "appV2": true,
+            "tokenMetering": true,
+            "appV1": true,
+            "autoTPM": true
+          },
+          "model": "qwen3.8-max",
+          "prices": [
+            {
+              "priceUnit": "每百万tokens",
+              "price": "12",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token",
+              "type": "input_token",
+              "priceName": "输入"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "36",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "output_token",
+              "type": "output_token",
+              "priceName": "输出"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "1.5",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache",
+              "type": "input_token_cache",
+              "priceName": "输入（缓存命中）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "6",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_batch",
+              "type": "input_token_batch",
+              "priceName": "输入（Batch File）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "18",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "output_token_batch",
+              "type": "output_token_batch",
+              "priceName": "输出（Batch File）"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "15",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache_creation_5m",
+              "type": "input_token_cache_creation_5m",
+              "priceName": "5分钟显式缓存创建"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "1",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "input_token_cache_read",
+              "type": "input_token_cache_read",
+              "priceName": "显式缓存命中"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "12",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "discount": 0.5,
+              "ntmAmountType": "input_token_batch",
+              "type": "input_token_batch_chat",
+              "priceName": "输入（Batch Chat)"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "36",
+              "ntmItemCode": "sfm_inference_public_cn",
+              "timeBand": "standard",
+              "discount": 0.5,
+              "ntmAmountType": "output_token_batch",
+              "type": "output_token_batch_chat",
+              "priceName": "输出（Batch Chat)"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "usage_limit": 500000,
+              "usage_limit_field": "total_tokens",
+              "usage_limit_period": 6,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "Reasoning",
+            "VU",
+            "TG"
+          ],
+          "activationStatus": 0,
+          "modelAlias": "qwen3.8-max",
+          "versionTag": "MAJOR",
+          "shortDescription": "2.4万亿参数MoE旗舰，编程与办公能力全面跃升，可自主编程十数天交付完整项目。胜任法律、金融、设计等数百种专业任务，一次对话端到端交付生产级成果。原生视觉理解贯穿规划、执行与验证全流程，支持超长文档与长视频的深度语义解析。长程任务中自主规划与闭环迭代，持续进化。",
+          "maxOutputTokens": 131072,
+          "latestOnlineAt": "2026-08-02T04:14:32.000+00:00",
+          "tags": [],
+          "license": {},
+          "contextWindow": 1000000,
+          "maxInputTokens": 991808,
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen3.8-Max",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+          "needApply": false,
+          "category": "Flagship"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-10-21T09:32:15.000+00:00",
+      "description": "Qwen-Audio-3.1-TTS-Flash是面向实时交互场景的高性能语音合成大模型，支持多种语言和方言，支持流式语音合成。该模型具有free-style指令遵循能力和细粒度标签控制能力，可更灵活地控制情绪、语气、角色、语速、音量等表达方式。同时，模型在声音复刻场景中，对含有噪声、混响的参考音频具有更强的鲁棒性，提升了音质、清晰度和整体表现力。Flash 版本重点优化实时合成体验，适用于语音助手、实时对话、智能客服等低延迟交互场景。",
+      "aliyunRecommend": false,
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 0,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {},
+      "minContextWindow": 0,
+      "model": "group-qwen-audio-3.1-tts",
+      "categories": [
+        "Audio"
+      ],
+      "group": true,
+      "capabilities": [
+        "TTS"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen-Audio-3.1-TTS-Flash是面向实时交互场景的高性能语音合成大模型，支持多种语言和方言，支持流式语音合成。该模型具有free-style指令遵循能力和细粒度标签控制能力，可更灵活地控制情绪、语气、角色、语速、音量等表达方式。同时，模型在声音复刻场景中，对含有噪声、混响的参考音频具有更强的鲁棒性，提升了音质、清晰度和整体表现力。Flash 版本重点优化实时合成体验，适用于语音助手、实时对话、智能客服等低延迟交互场景。",
+      "latestOnlineAt": "2026-10-21T09:32:15.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen-Audio-3.1-TTS",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/realtime-tts-user-guide",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Audio"
+            ],
+            "request_modality": [
+              "Text"
+            ]
+          },
+          "applyType": 0,
+          "updateAt": "2026-09-18T11:12:09.000+00:00",
+          "description": "Qwen-Audio-3.1-TTS-Flash是面向实时交互场景的高性能语音合成大模型，支持多种语言和方言。该模型具有free-style指令遵循能力和细粒度标签控制能力，可更灵活地控制情绪、语气、角色、语速、音量等表达方式。同时，模型在声音复刻场景中，对于噪声、混响等复杂声学条件下具备更强鲁棒性，提升了音质、清晰度和整体表现力。Flash 版本重点优化实时合成体验，适用于语音助手、实时对话、智能客服等低延迟交互场景。",
+          "aliyunRecommend": false,
+          "features": [],
+          "modelInfo": {},
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "fineTune": false,
+            "experienceV2": true,
+            "eval": false,
+            "inference": true,
+            "tokenMetering": true,
+            "autoTPM": false,
+            "experience": false,
+            "displayQpmLimit": true,
+            "deploy": false
+          },
+          "model": "qwen-audio-3.1-tts-flash",
+          "prices": [
+            {
+              "priceUnit": "每百万tokens",
+              "price": "1.5",
+              "ntmItemCode": "sfm_inferenceFunAudio_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "tts_input_token",
+              "type": "tts_input_token",
+              "priceName": "输入"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "12",
+              "ntmItemCode": "sfm_inferenceFunAudio_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "tts_output_token",
+              "type": "tts_output_token",
+              "priceName": "输出"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 1,
+              "count_limit": 3,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "TTS"
+          ],
+          "activationStatus": 0,
+          "versionTag": "MAJOR",
+          "shortDescription": "Qwen-Audio-3.1-TTS-Flash是面向实时交互场景的高性能语音合成大模型，支持多种语言和方言。该模型具有free-style指令遵循能力和细粒度标签控制能力，可更灵活地控制情绪、语气、角色、语速、音量等表达方式。同时，模型在声音复刻场景中，对于噪声、混响等复杂声学条件下具备更强鲁棒性，提升了音质、清晰度和整体表现力。Flash 版本重点优化实时合成体验，适用于语音助手、实时对话、智能客服等低延迟交互场景。",
+          "latestOnlineAt": "2026-09-18T11:12:09.000+00:00",
+          "tags": [],
+          "license": {},
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen-Audio-3.1-TTS-Flash",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/realtime-tts-user-guide",
+          "needApply": false,
+          "category": "Audio"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-09-10T14:40:01.000+00:00",
+      "description": "Qwen-Audio-3.1-ASR是一款支持短语音高效识别的大模型，面向高质量、多语种及文化内容转写场景。模型支持多语种与多地区中文方言识别，同时针对中文古诗词的韵律、节奏与文言表达进行优化。具备上下文增强、标点预测与文本规范化能力。",
+      "aliyunRecommend": false,
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 0,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {},
+      "minContextWindow": 0,
+      "model": "group-qwen-audio-3.1-asr",
+      "categories": [
+        "Audio"
+      ],
+      "group": true,
+      "capabilities": [
+        "ASR",
+        "Realtime-ASR"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen-Audio-3.1-ASR是一款支持短语音高效识别的大模型，面向高质量、多语种及文化内容转写场景。模型支持多语种与多地区中文方言识别，同时针对中文古诗词的韵律、节奏与文言表达进行优化。具备上下文增强、标点预测与文本规范化能力。",
+      "latestOnlineAt": "2026-09-10T14:40:01.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen-Audio-3.1-ASR",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/real-time-speech-recognition-user-guide",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Audio"
+            ]
+          },
+          "applyType": 0,
+          "updateAt": "2026-09-10T14:32:20.000+00:00",
+          "description": "Qwen-Audio-3.1-ASR-Flash是一款支持短语音高效识别的大模型，面向高质量、多语种及文化内容转写场景。模型支持多语种与多地区中文方言识别，同时针对中文古诗词的韵律、节奏与文言表达进行优化。具备上下文增强、标点预测与文本规范化能力。同时该版本支持多种方言 ASR/AST 可控输出。原生转写润色能力及工业级多人对话分角色转写能力。\n",
+          "aliyunRecommend": false,
+          "features": [],
+          "modelInfo": {},
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "fineTune": false,
+            "experienceV2": true,
+            "eval": false,
+            "inference": true,
+            "tokenMetering": true,
+            "autoTPM": false,
+            "experience": false,
+            "displayQpmLimit": true,
+            "deploy": false
+          },
+          "model": "qwen-audio-3.1-asr-flash",
+          "prices": [
+            {
+              "priceUnit": "每百万tokens",
+              "price": "0.8",
+              "ntmItemCode": "sfm_inferenceFunAudio_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "asr_input_token",
+              "type": "asr_input_token",
+              "priceName": "输入"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "2.7",
+              "ntmItemCode": "sfm_inferenceFunAudio_public_cn",
+              "timeBand": "standard",
+              "ntmAmountType": "asr_output_token",
+              "type": "asr_output_token",
+              "priceName": "输出"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 1,
+              "count_limit": 10,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "ASR"
+          ],
+          "activationStatus": 0,
+          "versionTag": "MAJOR",
+          "shortDescription": "Qwen-Audio-3.1-ASR-Flash是一款支持短语音高效识别的大模型，面向高质量、多语种及文化内容转写场景。模型支持多语种与多地区中文方言识别，同时针对中文古诗词的韵律、节奏与文言表达进行优化。具备上下文增强、标点预测与文本规范化能力。同时该版本支持多种方言 ASR/AST 可控输出。原生转写润色能力及工业级多人对话分角色转写能力。\n",
+          "latestOnlineAt": "2026-09-10T14:32:20.000+00:00",
+          "tags": [],
+          "license": {},
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen-Audio-3.1-ASR-Flash",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/non-realtime-speech-recognition-user-guide",
+          "needApply": false,
+          "category": "Audio"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-06-01T13:45:59.000+00:00",
+      "description": "Qwen3.7系列中高性价比Plus模型，在强大文本能力的基础上全面升级了视觉-语言能力，同时保持了在编码、工具使用和生产力工作流方面的完整智能体能力。其核心特色为多模态交互混合智能体能力，能够感知真实世界场景、读取屏幕并操作 GUI、基于视觉参考生成代码、端到端导航移动应用。",
+      "aliyunRecommend": false,
+      "collectionTag": "qwen3.7",
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 1000000,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {
+        "fineTune": true,
+        "eval": true,
+        "experience": true,
+        "deploy": true
+      },
+      "minContextWindow": 1000000,
+      "model": "group-qwen3.7-plus",
+      "categories": [
+        "Flagship"
+      ],
+      "group": true,
+      "capabilities": [
+        "TG",
+        "Reasoning",
+        "VU"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen3.7系列中高性价比Plus模型，在强大文本能力的基础上全面升级了视觉-语言能力，同时保持了在编码、工具使用和生产力工作流方面的完整智能体能力。其核心特色为多模态交互混合智能体能力，能够感知真实世界场景、读取屏幕并操作 GUI、基于视觉参考生成代码、端到端导航移动应用。",
+      "latestOnlineAt": "2026-06-01T13:45:59.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen3.7-Plus",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Image",
+              "Text",
+              "Video"
+            ]
+          },
+          "applyType": 0,
+          "builtInToolMultiPrices": [
+            {
+              "supportedApi": "Responses API",
+              "name": "code_interpreter",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-code-interpreter",
+              "type": "code_interpreter",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "i2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/image-search",
+              "type": "i2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "48",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "t2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search-image",
+              "type": "t2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "24",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_extractor",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_extractor",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search_anthropic",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_fetch",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_fetch",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            }
+          ],
+          "updateAt": "2026-06-01T13:45:59.000+00:00",
+          "description": "Qwen3.7系列中高性价比Plus模型，在强大文本能力的基础上全面升级了视觉-语言能力，同时保持了在编码、工具使用和生产力工作流方面的完整智能体能力。其核心特色为多模态交互混合智能体能力，能够感知真实世界场景、读取屏幕并操作 GUI、基于视觉参考生成代码、端到端导航移动应用。本版本为2026年5月26日快照。",
+          "aliyunRecommend": false,
+          "collectionTag": "qwen3.7",
+          "features": [
+            "cache",
+            "function-calling",
+            "model-experience",
+            "prefix-completion",
+            "web-search",
+            "structured-outputs"
+          ],
+          "modelInfo": {
+            "contextWindow": 1000000,
+            "maxInputTokens": 991808,
+            "maxReasoningTokens": 262144,
+            "reasoningMaxInputTokens": 983616,
+            "maxOutputTokens": 131072,
+            "reasoningMaxOutputTokens": 131072
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": true,
+            "fineTune": true,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "cpt": false,
+            "experience": true,
+            "displayQpmLimit": true,
+            "deploy": true,
+            "sellingByQpm": false,
+            "experienceV2": false,
+            "eval": true,
+            "experienceUpcoming": false,
+            "tokenMetering": true
+          },
+          "model": "qwen3.7-plus-2026-05-26",
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 6,
+              "usage_limit": 1000000,
+              "usage_limit_field": "total_tokens",
+              "count_limit": 60,
+              "usage_limit_period": 60,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "multiPrices": [
+            {
+              "rangeStart": 0,
+              "rangeName": "输入<=256k",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "2",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "8",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "0.4",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_input_token_cache",
+                  "type": "input_token_cache",
+                  "priceName": "输入（缓存命中）"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "2.5",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_input_token_cache_creation_5m",
+                  "type": "input_token_cache_creation_5m",
+                  "priceName": "5分钟显式缓存创建"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "0.2",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_input_token_cache_read",
+                  "type": "input_token_cache_read",
+                  "priceName": "显式缓存命中"
+                }
+              ],
+              "rangeEnd": 262144
+            },
+            {
+              "rangeStart": 262144,
+              "rangeName": "256k<输入<=1m",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "6",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "24",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "1.2",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token_cache",
+                  "type": "input_token_cache",
+                  "priceName": "输入（缓存命中）"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "7.5",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token_cache_creation_5m",
+                  "type": "input_token_cache_creation_5m",
+                  "priceName": "5分钟显式缓存创建"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "0.6",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token_cache_read",
+                  "type": "input_token_cache_read",
+                  "priceName": "显式缓存命中"
+                }
+              ],
+              "rangeEnd": 1000000
+            }
+          ],
+          "capabilities": [
+            "TG",
+            "Reasoning",
+            "VU"
+          ],
+          "activationStatus": 0,
+          "modelAlias": "qwen3.7-plus-0526",
+          "versionTag": "SNAPSHOT",
+          "shortDescription": "Qwen3.7系列中高性价比Plus模型，在强大文本能力的基础上全面升级了视觉-语言能力，同时保持了在编码、工具使用和生产力工作流方面的完整智能体能力。其核心特色为多模态交互混合智能体能力，能够感知真实世界场景、读取屏幕并操作 GUI、基于视觉参考生成代码、端到端导航移动应用。本版本为2026年5月26日快照。",
+          "maxOutputTokens": 131072,
+          "latestOnlineAt": "2026-06-01T13:45:59.000+00:00",
+          "tags": [],
+          "license": {},
+          "contextWindow": 1000000,
+          "maxInputTokens": 991808,
+          "trainingTypes": {
+            "sft": [
+              "full"
+            ]
+          },
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen3.7-Plus-2026-05-26",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-reference",
+          "needApply": false,
+          "category": "Flagship"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-04-01T11:56:11.000+00:00",
+      "description": "Qwen3.6原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.5系列显著提升。模型在Agentic coding、前端编程、Vibe coding等代码能力、多模态万物识别、OCR、物体定位等能力上显著增强。",
+      "aliyunRecommend": false,
+      "collectionTag": "qwen3.6",
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 1000000,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {
+        "fineTune": true,
+        "eval": true,
+        "experience": true,
+        "deploy": true
+      },
+      "minContextWindow": 1000000,
+      "model": "group-qwen3.6-plus",
+      "categories": [
+        "Flagship"
+      ],
+      "group": true,
+      "capabilities": [
+        "Reasoning",
+        "VU",
+        "TG"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen3.6原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.5系列显著提升。模型在Agentic coding、前端编程、Vibe coding等代码能力、多模态万物识别、OCR、物体定位等能力上显著增强。",
+      "latestOnlineAt": "2026-04-01T11:56:11.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen3.6-Plus",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Image",
+              "Text",
+              "Video"
+            ]
+          },
+          "applyType": 0,
+          "builtInToolMultiPrices": [
+            {
+              "supportedApi": "Responses API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "code_interpreter",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-code-interpreter",
+              "type": "code_interpreter",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_extractor",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_extractor",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "i2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/image-search",
+              "type": "i2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "48",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "t2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search-image",
+              "type": "t2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "24",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search_anthropic",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Anthropic API",
+              "name": "web_fetch",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_fetch",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            }
+          ],
+          "updateAt": "2026-04-01T11:56:11.000+00:00",
+          "description": "Qwen3.6原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.5系列显著提升。模型在Agentic coding、前端编程、Vibe coding等代码能力、多模态万物识别、OCR、物体定位等能力上显著增强。该版本为2026年4月2日快照。",
+          "aliyunRecommend": false,
+          "collectionTag": "qwen3.6",
+          "features": [
+            "function-calling",
+            "model-experience",
+            "prefix-completion",
+            "structured-outputs",
+            "web-search",
+            "fine-tuning"
+          ],
+          "modelInfo": {
+            "contextWindow": 1000000,
+            "maxInputTokens": 991808,
+            "maxReasoningTokens": 81920,
+            "reasoningMaxInputTokens": 983616,
+            "maxOutputTokens": 65536,
+            "reasoningMaxOutputTokens": 65536
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": true,
+            "fineTune": true,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "cpt": true,
+            "experience": true,
+            "displayQpmLimit": true,
+            "deploy": true,
+            "sellingByQpm": false,
+            "experienceV2": false,
+            "eval": true,
+            "experienceUpcoming": false,
+            "tokenMetering": true
+          },
+          "model": "qwen3.6-plus-2026-04-02",
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 6,
+              "usage_limit": 500000,
+              "usage_limit_field": "total_tokens",
+              "count_limit": 60,
+              "usage_limit_period": 30,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "multiPrices": [
+            {
+              "rangeStart": 0,
+              "rangeName": "输入<=256k",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "2",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "12",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-256k_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                }
+              ],
+              "rangeEnd": 262144
+            },
+            {
+              "rangeStart": 262144,
+              "rangeName": "256k<输入<=1m",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "8",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "48",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                }
+              ],
+              "rangeEnd": 1000000
+            }
+          ],
+          "capabilities": [
+            "VU",
+            "TG",
+            "Reasoning"
+          ],
+          "activationStatus": 0,
+          "modelAlias": "qwen3.5-plus-0215",
+          "versionTag": "SNAPSHOT",
+          "shortDescription": "Qwen3.6原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果相较3.5系列显著提升。模型在Agentic coding、前端编程、Vibe coding等代码能力、多模态万物识别、OCR、物体定位等能力上显著增强。该版本为2026年4月2日快照。",
+          "maxOutputTokens": 65536,
+          "latestOnlineAt": "2026-04-01T11:56:11.000+00:00",
+          "tags": [],
+          "license": {},
+          "contextWindow": 1000000,
+          "maxInputTokens": 991808,
+          "trainingTypes": {
+            "sft": [
+              "full"
+            ],
+            "cpt": [
+              "full"
+            ]
+          },
+          "offlineInfo": {},
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen3.6-Plus-2026-04-02",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-reference",
+          "needApply": false,
+          "category": "Flagship"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-04-23T02:01:59.000+00:00",
+      "description": "Qwen3.5原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果在纯文本与多模态方面相较3系列均实现飞跃式进步。",
+      "aliyunRecommend": false,
+      "collectionTag": "qwen3.5",
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 1000000,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {
+        "fineTune": true,
+        "eval": true,
+        "experience": true,
+        "deploy": true
+      },
+      "minContextWindow": 1000000,
+      "model": "group-qwen3.5-plus",
+      "categories": [
+        "Flagship"
+      ],
+      "group": true,
+      "capabilities": [
+        "TG",
+        "Reasoning",
+        "VU"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "Qwen3.5原生视觉语言系列Plus模型，展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果在纯文本与多模态方面相较3系列均实现飞跃式进步。",
+      "latestOnlineAt": "2026-04-23T02:01:59.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen3.5-Plus",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-via-openai-chat-completions",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Text",
+              "Image",
+              "Video"
+            ]
+          },
+          "applyType": 0,
+          "builtInToolMultiPrices": [
+            {
+              "supportedApi": "Responses API",
+              "name": "web_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search",
+              "type": "web_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "4",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "web_extractor",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-extractor",
+              "type": "web_extractor",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "code_interpreter",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-code-interpreter",
+              "type": "code_interpreter",
+              "prices": [
+                {
+                  "priceUnit": "",
+                  "price": "0",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "t2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/web-search-image",
+              "type": "t2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "24",
+                  "currency": "CNY"
+                }
+              ]
+            },
+            {
+              "supportedApi": "Responses API",
+              "name": "i2i_search",
+              "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/image-search",
+              "type": "i2i_search",
+              "prices": [
+                {
+                  "priceUnit": "千次调用",
+                  "price": "48",
+                  "currency": "CNY"
+                }
+              ]
+            }
+          ],
+          "updateAt": "2026-02-15T09:17:16.000+00:00",
+          "description": "Qwen3.5原生视觉语言系列Plus模型，基于混合架构设计，融合了线性注意力机制与稀疏混合专家模型，实现了更高的推理效率。在多项任务评测中，3.5系列均展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果在纯文本与多模态方面相较3系列均实现飞跃式进步。该版本为2026年2月15日快照。",
+          "aliyunRecommend": false,
+          "collectionTag": "qwen3.5",
+          "features": [
+            "model-experience",
+            "function-calling",
+            "structured-outputs",
+            "web-search",
+            "prefix-completion"
+          ],
+          "modelInfo": {
+            "contextWindow": 1000000,
+            "maxInputTokens": 991808,
+            "maxReasoningTokens": 81920,
+            "reasoningMaxInputTokens": 983616,
+            "maxOutputTokens": 65536,
+            "reasoningMaxOutputTokens": 65536
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": true,
+            "fineTune": true,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "workflow": true,
+            "cpt": false,
+            "experience": true,
+            "displayQpmLimit": true,
+            "deploy": true,
+            "sellingByQpm": false,
+            "workflowText": true,
+            "experienceV2": false,
+            "eval": true,
+            "experienceUpcoming": false,
+            "appV2": true,
+            "tokenMetering": true,
+            "appV1": true,
+            "workflowMultimodal": true
+          },
+          "model": "qwen3.5-plus-2026-02-15",
+          "iconUrl": "",
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 1,
+              "usage_limit": 500000,
+              "usage_limit_field": "total_tokens",
+              "count_limit": 10,
+              "usage_limit_period": 30,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "multiPrices": [
+            {
+              "rangeStart": 0,
+              "rangeName": "输入<=128k",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "0.8",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-128k_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "4.8",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_0-128k_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                }
+              ],
+              "rangeEnd": 131072
+            },
+            {
+              "rangeStart": 131072,
+              "rangeName": "128k<输入<=256k",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "2",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_128k-256k_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "12",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_128k-256k_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                }
+              ],
+              "rangeEnd": 262144
+            },
+            {
+              "rangeStart": 262144,
+              "rangeName": "256k<输入<=1m",
+              "prices": [
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "4",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_input_token",
+                  "type": "input_token",
+                  "priceName": "输入"
+                },
+                {
+                  "priceUnit": "每百万tokens",
+                  "price": "24",
+                  "ntmItemCode": "sfm_inference_public_cn",
+                  "timeBand": "standard",
+                  "ntmAmountType": "context_256k-1m_output_token",
+                  "type": "output_token",
+                  "priceName": "输出"
+                }
+              ],
+              "rangeEnd": 1000000
+            }
+          ],
+          "capabilities": [
+            "Reasoning",
+            "VU",
+            "TG"
+          ],
+          "activationStatus": 0,
+          "modelAlias": "qwen3.5-plus-0215",
+          "versionTag": "SNAPSHOT",
+          "shortDescription": "Qwen3.5原生视觉语言系列Plus模型，基于混合架构设计，融合了线性注意力机制与稀疏混合专家模型，实现了更高的推理效率。在多项任务评测中，3.5系列均展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果在纯文本与多模态方面相较3系列均实现飞跃式进步。该版本为2026年2月15日快照。",
+          "maxOutputTokens": 65536,
+          "latestOnlineAt": "2026-02-15T09:17:16.000+00:00",
+          "tags": [],
+          "license": {},
+          "contextWindow": 1000000,
+          "maxInputTokens": 991808,
+          "trainingTypes": {
+            "sft": [
+              "full"
+            ]
+          },
+          "offlineInfo": {
+            "inference": {
+              "announceUrl": "https://www.aliyun.com/notice/118728",
+              "offlineTime": "2027-01-19 10:00:00"
+            }
+          },
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen3.5-Plus-2026-02-15",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/qwen-api-reference",
+          "needApply": false,
+          "category": "Flagship"
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2025-11-27T05:44:15.000+00:00",
+      "description": "千问voice-enrollment模型是千问语音模型的声音复刻系列模型，仅需5s以上的音频，即可迅速复刻高相似度声音。结合qwen3-tts-vc-realtime模型使用，可将一个人的声音高保真复刻，输出11个语种的语音。且合成音频可以根据文本自适应调节语气，对复杂文本合成也有较好的处理能力。",
+      "aliyunRecommend": false,
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 0,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {},
+      "minContextWindow": 0,
+      "model": "group-qwen-voice-enrollment",
+      "categories": [],
+      "group": true,
+      "capabilities": [
+        "TTS"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "千问voice-enrollment模型是千问语音模型的声音复刻系列模型，仅需5s以上的音频，即可迅速复刻高相似度声音。结合qwen3-tts-vc-realtime模型使用，可将一个人的声音高保真复刻，输出11个语种的语音。且合成音频可以根据文本自适应调节语气，对复杂文本合成也有较好的处理能力。",
+      "latestOnlineAt": "2025-11-27T05:44:15.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen-声音复刻",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/voice-cloning-user-guide",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Text"
+            ],
+            "request_modality": [
+              "Audio"
+            ]
+          },
+          "applyType": 0,
+          "updateAt": "2025-11-27T05:44:15.000+00:00",
+          "description": "千问voice-enrollment模型是千问语音模型的声音复刻系列模型，仅需5s以上的音频，即可迅速复刻高相似度声音。结合qwen3-tts-vc-realtime模型使用，可将一个人的声音高保真复刻，输出10个语种的语音。且合成音频可以根据文本自适应调节语气，对复杂文本合成也有较好的处理能力。",
+          "aliyunRecommend": false,
+          "features": [],
+          "modelInfo": {},
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": false,
+            "fineTune": false,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "cpt": false,
+            "checkpointImport": false,
+            "experience": false,
+            "displayQpmLimit": true,
+            "deploy": false,
+            "sellingByQpm": false,
+            "tokenizer": false,
+            "experienceV2": false,
+            "eval": false,
+            "experienceUpcoming": false
+          },
+          "model": "qwen-voice-enrollment",
+          "prices": [
+            {
+              "priceUnit": "次",
+              "price": "0.01",
+              "timeBand": "standard",
+              "ntmAmountType": "voice_enrollment_count",
+              "type": "tts_vc_model",
+              "priceName": "声音复刻及声音设计"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 1,
+              "count_limit": 3,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "TTS"
+          ],
+          "activationStatus": 0,
+          "modelAlias": "qwen-voice-enrollment",
+          "versionTag": "MAJOR",
+          "shortDescription": "千问voice-enrollment模型是千问语音模型的声音复刻系列模型，仅需5s以上的音频，即可迅速复刻高相似度声音。结合qwen3-tts-vc-realtime模型使用，可将一个人的声音高保真复刻，输出10个语种的语音。且合成音频可以根据文本自适应调节语气，对复杂文本合成也有较好的处理能力。",
+          "latestOnlineAt": "2025-11-27T05:44:15.000+00:00",
+          "tags": [],
+          "license": {},
+          "offlineInfo": {
+            "inference": {
+              "announceUrl": ""
+            }
+          },
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen-Voice-Enrollment",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/voice-cloning-user-guide",
+          "needApply": false
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2026-01-21T03:39:38.000+00:00",
+      "description": "基于Qwen-VL底座训练的统一多模态向量模型，支持文本、图片、视频单模态/混合模态输入，输出统一表征向量，适用于跨模态检索、图搜、视频检索、图像聚类、复杂多模态信息检索、打标等场景。",
+      "aliyunRecommend": false,
+      "modelInfo": {},
+      "provider": "qwen-domain-model",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 0,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i4/O1CN01jUX90V26sRbiy5V5L_!!6000000007717-55-tps-40-40.svg",
+      "supports": {
+        "experience": true
+      },
+      "minContextWindow": 0,
+      "model": "group-qwen-vl-embedding",
+      "categories": [],
+      "group": true,
+      "capabilities": [
+        "ME"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "基于Qwen-VL底座训练的统一多模态向量模型，支持文本、图片、视频单模态/混合模态输入，输出统一表征向量，适用于跨模态检索、图搜、视频检索、图像聚类、复杂多模态信息检索、打标等场景。",
+      "latestOnlineAt": "2026-01-21T03:39:38.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Qwen-VL-Embedding",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/embedding",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [],
+            "request_modality": [
+              "Text",
+              "Image"
+            ]
+          },
+          "applyType": 0,
+          "updateAt": "2026-01-21T03:39:38.000+00:00",
+          "description": "基于Qwen3-VL底座训练的统一多模态向量模型，支持文本、图片、视频单模态/混合模态输入，输出统一表征向量，适用于跨模态检索、图搜、视频检索、图像聚类、复杂多模态信息检索、打标等场景",
+          "aliyunRecommend": false,
+          "features": [
+            "model-experience"
+          ],
+          "modelInfo": {
+            "maxInputTokens": 32000
+          },
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": false,
+            "fineTune": false,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "cpt": false,
+            "checkpointImport": false,
+            "experience": true,
+            "displayQpmLimit": true,
+            "deploy": false,
+            "sellingByQpm": false,
+            "tokenizer": false,
+            "experienceV2": true,
+            "eval": false,
+            "experienceUpcoming": false,
+            "tokenMetering": true
+          },
+          "model": "qwen3-vl-embedding",
+          "prices": [
+            {
+              "priceUnit": "每百万tokens",
+              "price": "1.8",
+              "timeBand": "standard",
+              "ntmAmountType": "embedding_image_token",
+              "type": "embedding_image_token",
+              "priceName": "图片输入"
+            },
+            {
+              "priceUnit": "每百万tokens",
+              "price": "0.7",
+              "timeBand": "standard",
+              "ntmAmountType": "|embedding_text_token|embedding_token|text_total_tokens|",
+              "type": "embedding_token",
+              "priceName": "文本输入"
+            }
+          ],
+          "qpmInfo": {
+            "model-default-actual": {
+              "count_limit_period": 1,
+              "usage_limit": 120000,
+              "usage_limit_field": "total_usage",
+              "count_limit": 40,
+              "usage_limit_period": 6,
+              "type": "model-default"
+            }
+          },
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "ME"
+          ],
+          "activationStatus": 0,
+          "versionTag": "MAJOR",
+          "shortDescription": "基于Qwen3-VL底座训练的统一多模态向量模型，支持文本、图片、视频单模态/混合模态输入，输出统一表征向量，适用于跨模态检索、图搜、视频检索、图像聚类、复杂多模态信息检索、打标等场景",
+          "latestOnlineAt": "2026-01-21T03:39:38.000+00:00",
+          "tags": [],
+          "license": {},
+          "maxInputTokens": 32000,
+          "offlineInfo": {},
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Qwen3-VL-Embedding",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/embedding",
+          "needApply": false
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    },
+    {
+      "applyType": 0,
+      "updateAt": "2025-03-20T09:14:08.000+00:00",
+      "description": "提供高效的文字转语音服务。该技术具备推理速度快、合成效果卓越、读音精准、韵律自然、声音还原度高以及表现力强等优点。此外，用户可以选择开启字级别和音素级别的时间戳，用于生成字幕或驱动数字人的嘴型。",
+      "aliyunRecommend": false,
+      "modelInfo": {},
+      "provider": "qwen",
+      "permissions": {},
+      "quota": {},
+      "scope": "PUBLIC",
+      "maxContextWindow": 0,
+      "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+      "supports": {},
+      "minContextWindow": 0,
+      "model": "group-sambert",
+      "categories": [],
+      "group": true,
+      "capabilities": [
+        "TTS"
+      ],
+      "activationStatus": 0,
+      "shortDescription": "提供高效的文字转语音服务。该技术具备推理速度快、合成效果卓越、读音精准、韵律自然、声音还原度高以及表现力强等优点。此外，用户可以选择开启字级别和音素级别的时间戳，用于生成字幕或驱动数字人的嘴型。",
+      "latestOnlineAt": "2025-03-20T09:14:08.000+00:00",
+      "license": {},
+      "inferenceSpeeds": [],
+      "inferenceProvider": "aliyun-bailian",
+      "name": "Sambert语音合成",
+      "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/sambert-speech-synthesis",
+      "needApply": false,
+      "items": [
+        {
+          "inferenceMetadata": {
+            "response_modality": [
+              "Audio"
+            ],
+            "request_modality": [
+              "Text"
+            ]
+          },
+          "applyType": 0,
+          "updateAt": "2025-03-18T02:17:01.000+00:00",
+          "description": "提供SAMBERT+NSFGAN深度神经网络算法与传统领域知识深度结合的文字转语音服务，兼具读音准确，韵律自然，声音还原度高，表现力强的特点。",
+          "aliyunRecommend": false,
+          "features": [],
+          "modelInfo": {},
+          "provider": "qwen",
+          "permissions": {
+            "inference": true
+          },
+          "quota": {},
+          "scope": "PUBLIC",
+          "providerIconUrl": "https://img.alicdn.com/imgextra/i2/O1CN0117jcJ81NSCCOQHyGH_!!6000000001568-55-tps-40-40.svg",
+          "supports": {
+            "sft": false,
+            "app": false,
+            "dpo": false,
+            "inference": true,
+            "cpt": false,
+            "checkpointImport": false,
+            "experience": false,
+            "displayQpmLimit": false,
+            "deploy": false,
+            "sellingByQpm": false,
+            "tokenizer": false,
+            "experienceV2": false,
+            "eval": false,
+            "experienceUpcoming": false
+          },
+          "model": "sambert-zhiyue-v1",
+          "prices": [
+            {
+              "priceUnit": "每万字符",
+              "price": "1",
+              "timeBand": "standard",
+              "ntmAmountType": "audio_tts",
+              "type": "tts_text_number",
+              "priceName": "Sambert 语音合成"
+            }
+          ],
+          "serviceSites": [
+            "asia-pacific-china"
+          ],
+          "priceTimeBands": [
+            "standard"
+          ],
+          "capabilities": [
+            "TTS"
+          ],
+          "activationStatus": 0,
+          "versionTag": "MAJOR",
+          "shortDescription": "提供SAMBERT+NSFGAN深度神经网络算法与传统领域知识深度结合的文字转语音服务，兼具读音准确，韵律自然，声音还原度高，表现力强的特点。",
+          "latestOnlineAt": "2025-03-18T02:17:01.000+00:00",
+          "tags": [],
+          "license": {},
+          "inferenceProvider": "aliyun-bailian",
+          "name": "Sambert语音合成-知悦",
+          "docUrl": "https://docs.bailian.console.aliyun.com/zh/model-studio/sambert-speech-synthesis",
+          "needApply": false
+        }
+      ],
+      "providers": [
+        "qwen"
+      ]
+    }
+  ]
+}
