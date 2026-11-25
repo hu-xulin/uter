@@ -17,9 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import {
+  createTable,
   getCoreRowModel,
-  useReactTable,
-  type ColumnFiltersState,
+  type TableState,
 } from '@tanstack/react-table'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -41,20 +41,31 @@ const filters = [
 ]
 
 function Fixture(props: { collapsibleOnMobile?: boolean }) {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
-    { id: 'status', value: ['enabled'] },
-  ])
-  const table = useReactTable({
-    data: rows,
-    columns: [
-      { accessorKey: 'name' },
-      { accessorKey: 'model' },
-      { accessorKey: 'status' },
-    ],
-    getCoreRowModel: getCoreRowModel(),
-    state: { columnFilters },
-    onColumnFiltersChange: setColumnFilters,
-  })
+  // createTable (from table-core) has no memoization hazard; manage the
+  // controlled state explicitly instead of using useReactTable.
+  const [table] = useState(() =>
+    createTable({
+      data: rows,
+      columns: [
+        { accessorKey: 'name' },
+        { accessorKey: 'model' },
+        { accessorKey: 'status' },
+      ],
+      getCoreRowModel: getCoreRowModel(),
+      state: {} as TableState,
+      onStateChange: () => {},
+      renderFallbackValue: null,
+    })
+  )
+  const [state, setState] = useState<TableState>(() => ({
+    ...table.initialState,
+    columnFilters: [{ id: 'status', value: ['enabled'] }],
+  }))
+  table.setOptions((prev) => ({
+    ...prev,
+    state,
+    onStateChange: (updater) => setState(updater),
+  }))
   return (
     <DataTableToolbar
       table={table}
