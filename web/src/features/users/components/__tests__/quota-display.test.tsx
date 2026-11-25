@@ -24,11 +24,7 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table'
+import { createTable, flexRender, getCoreRowModel } from '@tanstack/react-table'
 import {
   act,
   cleanup,
@@ -71,7 +67,7 @@ function QuotaTable(props: { remaining: number; used: number }) {
       column.id ?? ('accessorKey' in column ? String(column.accessorKey) : '')
     )
   )
-  const table = useReactTable({
+  const table = createTable({
     columns,
     data: [
       {
@@ -86,6 +82,9 @@ function QuotaTable(props: { remaining: number; used: number }) {
         group: 'default',
       } as User,
     ],
+    state: { columnPinning: { left: [], right: [] } },
+    onStateChange: () => {},
+    renderFallbackValue: null,
     getCoreRowModel: getCoreRowModel(),
   })
   return (
