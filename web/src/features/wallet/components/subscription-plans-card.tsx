@@ -124,6 +124,16 @@ export function SubscriptionPlansCard({
     useState('subscription_first')
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  // 剩余天数/是否过期依赖当前时间：在渲染期读 Date.now() 会让组件不纯，
+  // 改为挂载时取一次、之后每分钟推进的秒级时间戳。
+  const [nowSeconds, setNowSeconds] = useState(() => Date.now() / 1000)
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setNowSeconds(Date.now() / 1000),
+      60_000
+    )
+    return () => window.clearInterval(timer)
+  }, [])
 
   const [purchaseOpen, setPurchaseOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<PlanRecord | null>(null)
@@ -236,8 +246,7 @@ export function SubscriptionPlansCard({
   const getRemainingDays = (sub: UserSubscriptionRecord) => {
     const endTime = sub?.subscription?.end_time || 0
     if (!endTime) return 0
-    const now = Date.now() / 1000
-    return Math.max(0, Math.ceil((endTime - now) / 86400))
+    return Math.max(0, Math.ceil((endTime - nowSeconds) / 86400))
   }
 
   const getUsagePercent = (sub: UserSubscriptionRecord) => {
@@ -418,8 +427,7 @@ export function SubscriptionPlansCard({
                     planTitleMap.get(subscription?.plan_id) || ''
                   const remainDays = getRemainingDays(sub)
                   const usagePercent = getUsagePercent(sub)
-                  const now = Date.now() / 1000
-                  const isExpired = (subscription?.end_time || 0) < now
+                  const isExpired = (subscription?.end_time || 0) < nowSeconds
                   const isCancelled = subscription?.status === 'cancelled'
                   const isActive =
                     subscription?.status === 'active' && !isExpired
