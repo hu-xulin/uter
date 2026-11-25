@@ -35,7 +35,8 @@ import {
   verifyEvidenceManifest,
   verifyFinalReportBindings,
 } from '../runtime/evidence-engine/manifest.mjs';
-import { strictCard, checkUapSelf } from '../tools/final-acceptance-gate.mjs';
+import { strictCard, checkUapSelf, checkRequirements } from '../tools/final-acceptance-gate.mjs';
+import { extractRequirements } from '../tools/requirement-matrix.mjs';
 
 // 完全确定性的注入身份：不读取真实 git，保证隔离用例与仓库状态无关。
 const HEAD = 'a'.repeat(40);
@@ -119,6 +120,52 @@ function strictCardFor(name, card) {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 }
+
+test('requirement gate matches the live registry-derived ID set without a frozen count', () => {
+  const expected = extractRequirements().requirements;
+  assert.ok(expected.length > 0, 'registered specifications must declare requirements');
+  const rows = expected.map((r) => ({
+    requirement_id: r.requirement_id,
+    status: 'NOT_VERIFIED',
+    status_reason: 'No current behavior evidence',
+  }));
+  const dir = freshDir();
+  try {
+    writeReport(dir, 'REQUIREMENT-TRACEABILITY-MATRIX.json', { requirements: rows });
+    writeReport(dir, 'REQUIREMENT-VERIFICATION-RESULTS.json', validReport());
+    const valid = checkRequirements({ reportsDir: dir, expectedRequirements: expected });
+    assert.equal(valid.status, 'PASS', valid.problems.join(' | '));
+
+    const missing = checkRequirements({
+      reportsDir: dir,
+      expectedRequirements: expected,
+    });
+    assert.equal(missing.status, 'PASS', 'control remains valid before mutation');
+
+    const missingRows = rows.slice(1);
+    writeReport(dir, 'REQUIREMENT-TRACEABILITY-MATRIX.json', { requirements: missingRows });
+    const missingResult = checkRequirements({ reportsDir: dir, expectedRequirements: expected });
+    assert.equal(missingResult.status, 'FAIL');
+    assert.ok(missingResult.problems.some((p) => /registered specification requirements/.test(p)));
+
+    const sameCountWrongIds = rows.slice();
+    sameCountWrongIds[0] = { ...sameCountWrongIds[0], requirement_id: 'UAP-99-999-REQ-999' };
+    writeReport(dir, 'REQUIREMENT-TRACEABILITY-MATRIX.json', { requirements: sameCountWrongIds });
+    const wrongIdResult = checkRequirements({ reportsDir: dir, expectedRequirements: expected });
+    assert.equal(wrongIdResult.status, 'FAIL');
+    assert.ok(wrongIdResult.details.registry_catalog.missing_ids.length > 0);
+    assert.ok(wrongIdResult.details.registry_catalog.unexpected_ids.length > 0);
+
+    writeReport(dir, 'REQUIREMENT-TRACEABILITY-MATRIX.json', {
+      requirements: [...rows, rows[0]],
+    });
+    const duplicateResult = checkRequirements({ reportsDir: dir, expectedRequirements: expected });
+    assert.equal(duplicateResult.status, 'FAIL');
+    assert.ok(duplicateResult.details.registry_catalog.duplicate_ids.length > 0);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 /** 断言「被拒绝」：ok=false 或 problems 非空 或 status 非 PASS。 */
 function assertRejected(label, result) {
