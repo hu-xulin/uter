@@ -34,7 +34,7 @@ function Textarea({
 }) {
   const derivedAriaLabel =
     props['aria-label'] ??
-    (props['aria-labelledby']
+    (props['aria-labelledby'] || props.id
       ? undefined
       : typeof props.placeholder === 'string'
         ? props.placeholder
