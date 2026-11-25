@@ -41,10 +41,11 @@ import {
   useMemo,
   useRef,
   useState,
+  type FormEvent,
   type MouseEvent,
   type ReactNode,
 } from 'react'
-import { useForm, type Control } from 'react-hook-form'
+import { useForm, useWatch, type Control } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -378,7 +379,10 @@ export function CostOptimizationSection(props: Props) {
     form.reset(buildFormDefaults(props.defaultValues))
   }, [props.defaultValues, form])
 
-  const values = form.watch()
+  const values = useWatch({
+    control: form.control,
+    compute: (current) => current,
+  })
 
   // 支付网关风格：把降本分类水平排列成可切换的卡片，避免长列表堆叠。
   const [activeGroup, setActiveGroup] = useState(0)
@@ -422,6 +426,10 @@ export function CostOptimizationSection(props: Props) {
     form.reset(buildFormDefaults(maskSecretFields(nextBaseline)))
   }
 
+  const submitForm = (event?: FormEvent<HTMLFormElement>) => {
+    void form.handleSubmit(onSubmit)(event)
+  }
+
   return (
     <SettingsSection title={t('Cost Optimization')}>
       <p className='text-muted-foreground text-sm'>
@@ -430,9 +438,9 @@ export function CostOptimizationSection(props: Props) {
         )}
       </p>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm onSubmit={submitForm}>
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={() => submitForm()}
             isSaving={updateOption.isPending}
           />
           {/* 分类水平排列：支付网关风格的横向可切换卡片 */}
