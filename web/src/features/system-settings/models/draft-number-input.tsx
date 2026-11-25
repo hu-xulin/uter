@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import {
-  useEffect,
   useState,
   type ChangeEvent,
   type FocusEvent,
@@ -65,12 +64,13 @@ export function DraftNumberInput({
 }: DraftNumberInputProps) {
   const [draft, setDraft] = useState(() => formatNumberDraft(value))
   const [focused, setFocused] = useState(false)
+  const [prevValue, setPrevValue] = useState(value)
 
-  useEffect(() => {
-    if (!focused) {
-      setDraft(formatNumberDraft(value))
-    }
-  }, [focused, value])
+  // Follow external value changes only while the field is not being edited.
+  if (prevValue !== value) {
+    setPrevValue(value)
+    if (!focused) setDraft(formatNumberDraft(value))
+  }
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextDraft = event.target.value
