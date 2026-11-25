@@ -89,7 +89,8 @@ export function AccessTokensCard() {
     [catalog]
   )
   const atLimit = !!list && !!catalog && list.items.length >= catalog.max_tokens
-  const now = Date.now()
+  // Stable clock snapshot for this render pass, kept out of the render body.
+  const [now] = useState(() => Date.now())
 
   const confirmRevoke = async () => {
     const target = revokeTarget
