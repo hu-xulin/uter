@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { type FormEvent, useEffect, useMemo, useRef } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -143,7 +143,10 @@ export function MonitoringSettingsSection({
     baselineSerializedRef.current = serialized
   }, [defaultValues])
 
-  const perfMetricsEnabled = form.watch('perf_metrics_setting.enabled')
+  const perfMetricsEnabled = useWatch({
+    control: form.control,
+    name: 'perf_metrics_setting.enabled',
+  })
 
   const onSubmit = async (values: MonitoringFormValues) => {
     const normalized = normalizeFormValues(values)
@@ -167,12 +170,16 @@ export function MonitoringSettingsSection({
     baselineSerializedRef.current = JSON.stringify(normalized)
   }
 
+  const submitForm = (event?: FormEvent<HTMLFormElement>) => {
+    void form.handleSubmit(onSubmit)(event)
+  }
+
   return (
     <SettingsSection title={t('Model performance metrics')}>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm onSubmit={submitForm}>
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={() => submitForm()}
             isSaving={updateOption.isPending}
           />
           <p className='text-muted-foreground text-sm'>
