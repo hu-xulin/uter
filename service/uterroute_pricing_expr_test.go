@@ -508,3 +508,31 @@ func TestUterRouteAdaptTaskExprFailsClosedOnTaskModels(t *testing.T) {
 		t.Errorf("header probe should pass through untouched for chat models (ok=%v): %s", ok, adapted)
 	}
 }
+
+// TestUterRoutePerImagePrice 锁定 xxapi.ai 图片模型的官方单价解析：
+// fixed() 是每张价格，必须与 image_count 同时出现才算可确认的按张计费。
+func TestUterRoutePerImagePrice(t *testing.T) {
+	cases := []struct {
+		name string
+		expr string
+		want float64
+		ok   bool
+	}{
+		{"standard", `tier("standard", fixed(0.05)) * image_count`, 0.05, true},
+		{"base", `tier("base", fixed(0.2)) * image_count`, 0.2, true},
+		{"no image count", `tier("base", fixed(0.2))`, 0, false},
+		{"no fixed price", `tier("base", image_count * 0.2)`, 0, false},
+		{"zero fixed price", `tier("base", fixed(0)) * image_count`, 0, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, ok := uterRoutePerImagePrice(tc.expr)
+			if ok != tc.ok {
+				t.Fatalf("ok = %v, want %v", ok, tc.ok)
+			}
+			if tc.ok && !nearlyEqualSync(got, tc.want) {
+				t.Errorf("price = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
