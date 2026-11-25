@@ -132,11 +132,15 @@ export function CheckinCalendarCard({
   // 「今天」以服务端为准。签到日由后端按服务器时区判定，浏览器本地日期在
   // 跨时区（容器 UTC / 用户在 UTC+8）时可能差一天，此时日历会把今天的高亮
   // 和奖励落在错误的格子上——用户看到的就是「签到了但今天没记上」。
+  // 本地「今天」在挂载时取一次：服务端日期优先，只有在缺失时才回退到
+  // 浏览器日期，避免在渲染期调用 new Date() 造成组件不纯。
+  const [fallbackToday] = useState(() => new Date())
+  const serverToday = checkinData?.stats?.today
   const todayString = useMemo(() => {
-    if (checkinData?.stats?.today) return checkinData.stats.today
-    const d = new Date()
+    if (serverToday) return serverToday
+    const d = fallbackToday
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-  }, [checkinData?.stats?.today])
+  }, [serverToday, fallbackToday])
 
   const checkedToday = checkinData?.stats?.checked_in_today === true
   const todayAward = checkinRecordsMap[todayString]
