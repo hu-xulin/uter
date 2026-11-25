@@ -43,10 +43,21 @@ export function TwoFADisableDialog(props: TwoFADisableDialogProps) {
   const security = useAccountSecurity()
   const cancel = security.cancel
 
-  useEffect(() => {
+  const [prevResetKey, setPrevResetKey] = useState({
+    open: props.open,
+    sessionKey: security.sessionKey,
+  })
+  if (
+    prevResetKey.open !== props.open ||
+    prevResetKey.sessionKey !== security.sessionKey
+  ) {
+    setPrevResetKey({ open: props.open, sessionKey: security.sessionKey })
     setConfirmed(false)
+  }
+
+  useEffect(() => {
     if (!props.open) cancel()
-  }, [props.open, security.sessionKey, cancel])
+  }, [props.open, cancel])
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
