@@ -26,14 +26,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { Reorder } from 'motion/react'
-import {
-  useState,
-  useMemo,
-  useEffect,
-  useCallback,
-  memo,
-  type ReactNode,
-} from 'react'
+import { useState, useMemo, useCallback, memo, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { AutoGroupOrderItem } from '@/components/auto-group-order-item'
@@ -492,24 +485,28 @@ function GroupPricingTable({
   const [rows, setRows] = useState<GroupPricingRow[]>(() =>
     buildGroupPricingRows(groupRatio, userUsableGroups, topupGroupRatio)
   )
+  const [sourceSignature, setSourceSignature] = useState(() =>
+    sourceGroupPricingSignature(groupRatio, userUsableGroups, topupGroupRatio)
+  )
 
-  useEffect(() => {
-    const incomingSignature = sourceGroupPricingSignature(
-      groupRatio,
-      userUsableGroups,
-      topupGroupRatio
-    )
-    setRows((currentRows) => {
-      if (groupPricingSignature(currentRows) === incomingSignature) {
-        return currentRows
-      }
-      return buildGroupPricingRows(
-        groupRatio,
-        userUsableGroups,
-        topupGroupRatio
+  // Rebuild the editable rows only when the incoming source values change,
+  // leaving local row edits intact. Done during render so it stays in sync
+  // without a cascading effect.
+  const incomingSignature = sourceGroupPricingSignature(
+    groupRatio,
+    userUsableGroups,
+    topupGroupRatio
+  )
+  if (sourceSignature !== incomingSignature) {
+    setSourceSignature(incomingSignature)
+    // Skip rebuilding when the local rows already serialize to the incoming
+    // values (e.g. an edit that was just echoed back by the parent).
+    if (groupPricingSignature(rows) !== incomingSignature) {
+      setRows(
+        buildGroupPricingRows(groupRatio, userUsableGroups, topupGroupRatio)
       )
-    })
-  }, [groupRatio, userUsableGroups, topupGroupRatio])
+    }
+  }
 
   const emitRows = useCallback(
     (nextRows: GroupPricingRow[]) => {
@@ -1166,17 +1163,18 @@ function GroupOverrideDialog({
   const { t } = useTranslation()
   const [targetGroup, setTargetGroup] = useState<string | null>(null)
   const [ratio, setRatio] = useState('')
+  const [source, setSource] = useState({ open, editData })
 
-  useEffect(() => {
+  if (source.open !== open || source.editData !== editData) {
+    setSource({ open, editData })
     if (!open) {
       setTargetGroup(null)
       setRatio('')
-      return
+    } else {
+      setTargetGroup(editData?.targetGroup ?? null)
+      setRatio(editData ? String(editData.ratio) : '')
     }
-
-    setTargetGroup(editData?.targetGroup ?? null)
-    setRatio(editData ? String(editData.ratio) : '')
-  }, [editData, open])
+  }
 
   const baseRatio = targetGroup ? baseRatioByName.get(targetGroup) : undefined
 
