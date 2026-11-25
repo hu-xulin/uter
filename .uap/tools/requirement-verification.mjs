@@ -522,7 +522,7 @@ function writeCoverageSummary(out, rows) {
     '',
     '## 复现命令',
     '',
-    `- `node .uap/tools/requirement-verification.mjs`（真实运行，写出 RESULTS + 全 ${rows.length} 条严格 MATRIX + 本摘要）`,
+    '- `node .uap/tools/requirement-verification.mjs`（真实运行，写出 RESULTS + 全 ' + rows.length + ' 条严格 MATRIX + 本摘要）',
     '- `node .uap/tools/requirement-verification.mjs --print-states`（从矩阵重算并打印诚实 `states:` 行）',
     '- `node .uap/tools/requirement-verification.mjs --dry-run`（单元/负向测试用，不执行命令、不写文件）',
     '',
@@ -554,7 +554,7 @@ export async function verifyRequirements({ batches = null, dryRun = false, execu
   const existing = readJSON(RESULTS, null); // read BEFORE overwrite (honest legacy audit)
   const audit = auditLegacyEngine(existing, base, covMap);
 
-  // Bounded set of REAL behaviour suite runs (never a 538-command matrix).
+  // Bounded set of REAL behaviour suite runs (never one command per registered requirement).
   const shouldExecute = executeProbes && !dryRun;
   const behaviorRuns = await runBehaviorProbes(registry.behavior_probes || [], { dryRun: !shouldExecute });
 
