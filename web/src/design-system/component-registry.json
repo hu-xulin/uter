@@ -17,11 +17,7 @@
       "category": "disclosure",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -39,12 +35,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-overlay.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -55,12 +51,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -78,12 +69,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-overlay.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -94,11 +85,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -117,9 +104,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/form-label-tier.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/form-label-tier.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -132,45 +117,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-AVATAR",
-      "name": "Avatar",
-      "file": "src/components/ui/avatar.tsx",
-      "category": "data-display",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -190,8 +137,40 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/lib/__tests__/avatar.test.ts"
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-AVATAR",
+      "name": "Avatar",
+      "file": "src/components/ui/avatar.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/lib/__tests__/avatar.test.ts"],
           "browserTests": [],
           "manualReview": []
         }
@@ -204,9 +183,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -225,9 +202,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/component-metrics.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/component-metrics.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -240,11 +215,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -262,12 +233,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -278,11 +249,7 @@
       "category": "action",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -300,12 +267,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -316,11 +283,7 @@
       "category": "action",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -356,11 +319,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -378,12 +337,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-remaining.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -394,9 +353,73 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/component-metrics.test.tsx"],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CAROUSEL",
+      "name": "Carousel",
+      "file": "src/components/ui/carousel.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-advanced.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-CHART",
+      "name": "Chart",
+      "file": "src/components/ui/chart.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -416,84 +439,10 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/component-metrics.test.tsx"
+            "src/components/ui/__tests__/component-contracts-advanced.test.tsx"
           ],
           "browserTests": [],
           "manualReview": []
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-CAROUSEL",
-      "name": "Carousel",
-      "file": "src/components/ui/carousel.tsx",
-      "category": "navigation",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-CHART",
-      "name": "Chart",
-      "file": "src/components/ui/chart.tsx",
-      "category": "data-display",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
         }
       }
     },
@@ -504,11 +453,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -526,12 +471,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -542,11 +487,7 @@
       "category": "disclosure",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -564,12 +505,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -580,11 +521,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -602,12 +539,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-remaining.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -618,11 +555,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -657,11 +590,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -679,12 +608,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -695,12 +624,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -718,12 +642,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -734,12 +658,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -775,9 +694,7 @@
       "category": "utility",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -795,12 +712,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-advanced.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -811,9 +728,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -831,12 +746,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -847,12 +762,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -871,9 +781,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/portal-container.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/portal-container.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -886,12 +794,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -909,12 +812,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-overlay.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -925,47 +828,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-FIELD",
-      "name": "Field",
-      "file": "src/components/ui/field.tsx",
-      "category": "form",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -985,8 +848,41 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/label.test.tsx"
+            "src/components/ui/__tests__/component-contracts-remaining.test.tsx",
+            "src/components/ui/__tests__/empty-typography.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-FIELD",
+      "name": "Field",
+      "file": "src/components/ui/field.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/label.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -999,9 +895,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1020,9 +914,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/form-label-tier.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/form-label-tier.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1035,9 +927,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1073,12 +963,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1096,12 +981,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-overlay.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1112,45 +997,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-INPUT_GROUP",
-      "name": "InputGroup",
-      "file": "src/components/ui/input-group.tsx",
-      "category": "form",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1170,8 +1017,40 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/input-group.test.tsx"
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-INPUT_GROUP",
+      "name": "InputGroup",
+      "file": "src/components/ui/input-group.tsx",
+      "category": "form",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/input-group.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1184,11 +1063,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1206,12 +1081,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1222,11 +1097,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1262,9 +1133,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1282,12 +1151,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1298,9 +1167,7 @@
       "category": "data-display",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1318,12 +1185,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1334,9 +1201,7 @@
       "category": "form",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1371,9 +1236,7 @@
       "category": "content",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1408,49 +1271,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-NATIVE_SELECT",
-      "name": "NativeSelect",
-      "file": "src/components/ui/native-select.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1470,7 +1291,7 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/form-label-tier.test.tsx"
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
           ],
           "browserTests": [],
           "manualReview": []
@@ -1478,17 +1299,13 @@
       }
     },
     {
-      "id": "UTER-CMP-NAVIGATION_MENU",
-      "name": "NavigationMenu",
-      "file": "src/components/ui/navigation-menu.tsx",
-      "category": "navigation",
+      "id": "UTER-CMP-NATIVE_SELECT",
+      "name": "NativeSelect",
+      "file": "src/components/ui/native-select.tsx",
+      "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1506,12 +1323,44 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/form-label-tier.test.tsx"],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-NAVIGATION_MENU",
+      "name": "NavigationMenu",
+      "file": "src/components/ui/navigation-menu.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
         }
       }
     },
@@ -1522,11 +1371,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1560,12 +1405,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1583,12 +1423,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-overlay.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1599,11 +1439,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1621,12 +1457,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1637,121 +1473,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-RESIZABLE",
-      "name": "Resizable",
-      "file": "src/components/ui/resizable.tsx",
-      "category": "layout",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SCROLL_AREA",
-      "name": "ScrollArea",
-      "file": "src/components/ui/scroll-area.tsx",
-      "category": "layout",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SECRET_FILE_INPUT",
-      "name": "SecretFileInput",
-      "file": "src/components/ui/secret-file-input.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1771,8 +1493,108 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/secret-file-input.test.tsx"
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-RESIZABLE",
+      "name": "Resizable",
+      "file": "src/components/ui/resizable.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SCROLL_AREA",
+      "name": "ScrollArea",
+      "file": "src/components/ui/scroll-area.tsx",
+      "category": "layout",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SECRET_FILE_INPUT",
+      "name": "SecretFileInput",
+      "file": "src/components/ui/secret-file-input.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/secret-file-input.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1785,87 +1607,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SECRET_TEXTAREA",
-      "name": "SecretTextarea",
-      "file": "src/components/ui/secret-textarea.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SELECT",
-      "name": "Select",
-      "file": "src/components/ui/select.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1885,8 +1627,74 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/portal-container.test.tsx"
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SECRET_TEXTAREA",
+      "name": "SecretTextarea",
+      "file": "src/components/ui/secret-textarea.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SELECT",
+      "name": "Select",
+      "file": "src/components/ui/select.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/portal-container.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1899,9 +1707,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -1919,12 +1725,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -1935,12 +1741,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -1959,9 +1760,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/combobox.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/combobox.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -1974,11 +1773,7 @@
       "category": "navigation",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2012,11 +1807,7 @@
       "category": "feedback",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
+        "states": ["default", "loading", "error"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2034,12 +1825,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -2050,199 +1841,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SONNER",
-      "name": "Sonner",
-      "file": "src/components/ui/sonner.tsx",
-      "category": "feedback",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SPINNER",
-      "name": "Spinner",
-      "file": "src/components/ui/spinner.tsx",
-      "category": "feedback",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "loading",
-          "error"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-SWITCH",
-      "name": "Switch",
-      "file": "src/components/ui/switch.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-TABLE",
-      "name": "Table",
-      "file": "src/components/ui/table.tsx",
-      "category": "data-display",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default"
-        ],
-        "accessibility": {
-          "accessibleName": "NOT_APPLICABLE",
-          "keyboard": "NOT_APPLICABLE",
-          "focusVisible": "NOT_APPLICABLE",
-          "stateExposure": "NOT_APPLICABLE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "NOT_APPLICABLE"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-TABS",
-      "name": "Tabs",
-      "file": "src/components/ui/tabs.tsx",
-      "category": "navigation",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2262,8 +1861,176 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/component-metrics.test.tsx"
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
           ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SONNER",
+      "name": "Sonner",
+      "file": "src/components/ui/sonner.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "loading", "error"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-advanced.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SPINNER",
+      "name": "Spinner",
+      "file": "src/components/ui/spinner.tsx",
+      "category": "feedback",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "loading", "error"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-display.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-SWITCH",
+      "name": "Switch",
+      "file": "src/components/ui/switch.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TABLE",
+      "name": "Table",
+      "file": "src/components/ui/table.tsx",
+      "category": "data-display",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default"],
+        "accessibility": {
+          "accessibleName": "NOT_APPLICABLE",
+          "keyboard": "NOT_APPLICABLE",
+          "focusVisible": "NOT_APPLICABLE",
+          "stateExposure": "NOT_APPLICABLE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "NOT_APPLICABLE"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-structure.test.tsx"
+          ],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TABS",
+      "name": "Tabs",
+      "file": "src/components/ui/tabs.tsx",
+      "category": "navigation",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/component-metrics.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -2276,11 +2043,7 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2299,9 +2062,7 @@
         },
         "evidence": {
           "status": "VERIFIED",
-          "tests": [
-            "src/components/ui/__tests__/form-label-tier.test.tsx"
-          ],
+          "tests": ["src/components/ui/__tests__/form-label-tier.test.tsx"],
           "browserTests": [],
           "manualReview": []
         }
@@ -2314,9 +2075,7 @@
       "category": "layout",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default"
-        ],
+        "states": ["default"],
         "accessibility": {
           "accessibleName": "NOT_APPLICABLE",
           "keyboard": "NOT_APPLICABLE",
@@ -2334,12 +2093,12 @@
           "allowArbitraryValues": false
         },
         "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
+          "status": "VERIFIED",
+          "tests": [
+            "src/components/ui/__tests__/component-contracts-remaining.test.tsx"
+          ],
           "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
+          "manualReview": []
         }
       }
     },
@@ -2350,11 +2109,39 @@
       "category": "input",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
+        "states": ["default", "focus-visible", "disabled"],
+        "accessibility": {
+          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
+          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
+          "focusVisible": "REQUIRED",
+          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
+          "focusManagement": "NOT_APPLICABLE"
+        },
+        "responsive": {
+          "mustSupportNarrowViewport": true,
+          "overflow": "MUST_BE_DEFINED",
+          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
+        },
+        "tokens": {
+          "mustUseSemanticTokens": true,
+          "allowArbitraryValues": false
+        },
+        "evidence": {
+          "status": "VERIFIED",
+          "tests": ["src/components/ui/__tests__/toggle-group.test.tsx"],
+          "browserTests": [],
+          "manualReview": []
+        }
+      }
+    },
+    {
+      "id": "UTER-CMP-TOGGLE",
+      "name": "Toggle",
+      "file": "src/components/ui/toggle.tsx",
+      "category": "input",
+      "status": "ACTIVE",
+      "contract": {
+        "states": ["default", "focus-visible", "disabled"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
@@ -2374,48 +2161,10 @@
         "evidence": {
           "status": "VERIFIED",
           "tests": [
-            "src/components/ui/__tests__/toggle-group.test.tsx"
+            "src/components/ui/__tests__/component-contracts-interactive.test.tsx"
           ],
           "browserTests": [],
           "manualReview": []
-        }
-      }
-    },
-    {
-      "id": "UTER-CMP-TOGGLE",
-      "name": "Toggle",
-      "file": "src/components/ui/toggle.tsx",
-      "category": "input",
-      "status": "ACTIVE",
-      "contract": {
-        "states": [
-          "default",
-          "focus-visible",
-          "disabled"
-        ],
-        "accessibility": {
-          "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
-          "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
-          "focusVisible": "REQUIRED",
-          "stateExposure": "NATIVE_ARIA_OR_DATA_STATE",
-          "focusManagement": "NOT_APPLICABLE"
-        },
-        "responsive": {
-          "mustSupportNarrowViewport": true,
-          "overflow": "MUST_BE_DEFINED",
-          "touchTarget": "WCAG_2_2_TARGET_SIZE_OR_APPROVED_EXCEPTION"
-        },
-        "tokens": {
-          "mustUseSemanticTokens": true,
-          "allowArbitraryValues": false
-        },
-        "evidence": {
-          "status": "PARTIAL",
-          "tests": [],
-          "browserTests": [],
-          "manualReview": [
-            "该组件尚无直接单元测试文件，证据待补"
-          ]
         }
       }
     },
@@ -2426,12 +2175,7 @@
       "category": "overlay",
       "status": "ACTIVE",
       "contract": {
-        "states": [
-          "closed",
-          "open",
-          "focus-visible",
-          "keyboard-interaction"
-        ],
+        "states": ["closed", "open", "focus-visible", "keyboard-interaction"],
         "accessibility": {
           "accessibleName": "REQUIRED_WHEN_INTERACTIVE",
           "keyboard": "NATIVE_OR_PRIMITIVE_KEYBOARD_BEHAVIOR",
