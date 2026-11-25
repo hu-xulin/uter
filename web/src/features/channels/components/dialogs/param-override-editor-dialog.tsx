@@ -29,7 +29,6 @@ import {
   type DragEvent,
   type KeyboardEvent,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react'
@@ -1171,39 +1170,37 @@ export function ParamOverrideEditorDialog(
   const [templatePresetKey, setTemplatePresetKey] =
     useState('operations_default')
 
-  // Initialize state when dialog opens
-  useEffect(() => {
-    if (!props.open) return
-    const state = parseInitialState(props.value)
-    setEditMode(state.editMode)
-    setVisualMode(state.visualMode)
-    setLegacyValue(state.legacyValue)
-    setOperations(state.operations)
-    setJsonText(state.jsonText)
-    setJsonError(state.jsonError)
-    setOperationSearch('')
-    setSelectedOperationId(state.operations[0]?.id || '')
-    setExpandedConditions({})
-    setDraggedOperationId('')
-    setDragOverOperationId('')
-    setDragOverPosition('before')
-    if (state.visualMode === 'legacy') {
-      setTemplatePresetKey('legacy_default')
-    } else {
-      setTemplatePresetKey('operations_default')
+  // Initialize state when dialog opens：按 open/value 的变化在渲染期填入，
+  // 不需要 effect 再触发一次渲染。
+  const initKey = props.open ? JSON.stringify(props.value) : null
+  const [lastInitKey, setLastInitKey] = useState<string | null>(null)
+  if (initKey !== lastInitKey) {
+    setLastInitKey(initKey)
+    if (initKey !== null) {
+      const state = parseInitialState(props.value)
+      setEditMode(state.editMode)
+      setVisualMode(state.visualMode)
+      setLegacyValue(state.legacyValue)
+      setOperations(state.operations)
+      setJsonText(state.jsonText)
+      setJsonError(state.jsonError)
+      setOperationSearch('')
+      setSelectedOperationId(state.operations[0]?.id || '')
+      setExpandedConditions({})
+      setDraggedOperationId('')
+      setDragOverOperationId('')
+      setDragOverPosition('before')
+      setTemplatePresetKey(
+        state.visualMode === 'legacy' ? 'legacy_default' : 'operations_default'
+      )
     }
-  }, [props.open, props.value])
+  }
 
-  // Keep selectedOperationId valid
-  useEffect(() => {
-    if (operations.length === 0) {
-      setSelectedOperationId('')
-      return
-    }
-    if (!operations.some((o) => o.id === selectedOperationId)) {
-      setSelectedOperationId(operations[0].id)
-    }
-  }, [operations, selectedOperationId])
+  // 选中项失效时改用第一个操作，直接在渲染期派生，不再用 effect 回写 state。
+  const activeOperationId =
+    operations.find((operation) => operation.id === selectedOperationId)?.id ??
+    operations[0]?.id ??
+    ''
 
   // Template preset options filtered by group
   const templatePresetOptions = useMemo(
@@ -1240,13 +1237,13 @@ export function ParamOverrideEditorDialog(
   }, [operationSearch, operations])
 
   const selectedOperation = useMemo(
-    () => operations.find((o) => o.id === selectedOperationId),
-    [operations, selectedOperationId]
+    () => operations.find((o) => o.id === activeOperationId),
+    [operations, activeOperationId]
   )
 
   const selectedOperationIndex = useMemo(
-    () => operations.findIndex((o) => o.id === selectedOperationId),
-    [operations, selectedOperationId]
+    () => operations.findIndex((o) => o.id === activeOperationId),
+    [operations, activeOperationId]
   )
 
   const returnErrorDraft = useMemo(() => {
@@ -1939,7 +1936,7 @@ export function ParamOverrideEditorDialog(
                         const index = operations.findIndex(
                           (o) => o.id === operation.id
                         )
-                        const isActive = operation.id === selectedOperationId
+                        const isActive = operation.id === activeOperationId
                         const isDragging = operation.id === draggedOperationId
                         const isDropTarget =
                           operation.id === dragOverOperationId &&
