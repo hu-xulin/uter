@@ -132,6 +132,12 @@ export type SidebarNode = {
   children?: SidebarNode[]
   defaultOpen?: boolean
   noIndex?: boolean
+  /**
+   * A folder with no landing MDX of its own (the Images group). Its header
+   * is a pure disclosure control — clicking expands/collapses the children
+   * instead of navigating, and the header never takes the selected state.
+   */
+  toggleOnly?: boolean
 }
 
 /** A label in one locale, falling back through the supported pair. */
@@ -161,9 +167,14 @@ function chapterChildren(locale: DocsLocaleCode): SidebarNode[] {
 }
 
 /**
- * The API reference: two category shelves from `nav.json`, interleaved
- * with the flat single-page groups from `_nav.json` at the position of
- * their earliest member. A faithful port of `docs-web`'s `apiChildren`.
+ * The API reference: protocol groups (audio, chat, …) and flat endpoint
+ * pages from `_nav.json`, drawn directly under the API reference section.
+ *
+ * `nav.json` still groups those protocols under an "AI Model APIs" shelf;
+ * that intermediate level is intentionally flattened here — the reader
+ * sees "音频 / 聊天 / …" one click below "API 参考", and each group still
+ * expands to its OpenAI/Gemini variants. Ordering comes from `_nav.json`,
+ * the same source the sidebar and the landing-page cards use.
  */
 function apiChildren(
   locale: DocsLocaleCode,
@@ -187,59 +198,49 @@ function apiChildren(
     return at < 0 ? Number.MAX_SAFE_INTEGER : at
   }
 
-  return (source.categories ?? [])
-    .map((category) => {
-      const entries: { pos: number; node: SidebarNode }[] = []
+  const entries: { pos: number; node: SidebarNode }[] = []
 
-      for (const group of category.groups ?? []) {
-        const positions = [
-          orderOf(group.id),
-          ...group.pages.map((page) => orderOf(page.id)),
-        ]
-        entries.push({
-          pos: Math.min(...positions),
-          node: {
-            title: text(group.label, locale, group.id),
-            url: `${apiRoot}/${group.id}`,
-            noIndex: true,
-            defaultOpen: false,
-            children: group.pages.map((page) => ({
-              title: text(page.label, locale, page.id),
-              url: `${apiRoot}/${page.id}`,
-            })),
-          },
-        })
-      }
+  for (const category of source.categories ?? []) {
+    for (const group of category.groups ?? []) {
+      const positions = [
+        orderOf(group.id),
+        ...group.pages.map((page) => orderOf(page.id)),
+      ]
+      // Groups with no landing MDX (Images) get a toggle-only header: it
+      // expands/collapses in place rather than navigating to a broken page
+      // or double-selecting the first child. Ordering still keys off the
+      // group id, so keep the canonical URL as the identity.
+      const toggleOnly = GROUP_WITHOUT_PAGE[group.id] !== undefined
+      entries.push({
+        pos: Math.min(...positions),
+        node: {
+          title: text(group.label, locale, group.id),
+          url: `${apiRoot}/${group.id}`,
+          ...(toggleOnly ? { toggleOnly: true } : {}),
+          noIndex: true,
+          defaultOpen: false,
+          children: group.pages.map((page) => ({
+            title: text(page.label, locale, page.id),
+            url: `${apiRoot}/${page.id}`,
+          })),
+        },
+      })
+    }
+  }
 
-      for (const item of nav) {
-        if (item.id === 'index') continue
-        if (hidden.has(item.id)) continue
-        if (groupIds.has(item.id)) continue // declared above, as a group
-        if (pageIds.has(item.id)) continue // a member of one of those groups
-        // An entry without a category belongs to the AI-model shelf.
-        if (
-          (item.category === 'management' ? 'management' : 'ai-model') !==
-          category.id
-        ) {
-          continue
-        }
-        entries.push({
-          pos: orderOf(item.id),
-          node: { title: item.title, url: `${apiRoot}/${item.id}` },
-        })
-      }
-
-      entries.sort((a, b) => a.pos - b.pos)
-
-      return {
-        title: text(category.label, locale, category.id),
-        url: apiRoot,
-        noIndex: true,
-        defaultOpen: category.open ?? false,
-        children: entries.map((entry) => entry.node),
-      }
+  for (const item of nav) {
+    if (item.id === 'index') continue
+    if (hidden.has(item.id)) continue
+    if (groupIds.has(item.id)) continue // declared above, as a group
+    if (pageIds.has(item.id)) continue // a member of one of those groups
+    entries.push({
+      pos: orderOf(item.id),
+      node: { title: item.title, url: `${apiRoot}/${item.id}` },
     })
-    .filter((category) => category.children.length > 0)
+  }
+
+  entries.sort((a, b) => a.pos - b.pos)
+  return entries.map((entry) => entry.node)
 }
 
 /** A generated section (`_nav.json`), used flat by the AI-app catalog. */
@@ -315,6 +316,196 @@ export const MODEL_TESTING_PAGE_PATH = 'guide/wiki/model-testing'
 
 /** The user guide's path under a locale root. */
 export const NATIVE_USER_GUIDE_PATH = USER_GUIDE_PATH
+
+/** Host paths of the two catalog sections (peers of the guide). */
+export const API_PATH = 'api'
+export const APPS_PATH = 'apps'
+
+/**
+ * One card of an API/AI-app catalog landing page. `id` is locale-neutral and
+ * is the last path segment of the card's target URL; `title`/`description`
+ * are the reader's language. `description` doubles as the card's one-line
+ * teaser, so no separate fetch of the search index is needed.
+ */
+export type CatalogCard = {
+  /** Locale-neutral slug used as the card's link target. */
+  id: string
+  title: string
+  /** One-line teaser shown under the card title. */
+  description: string
+}
+
+/**
+ * API groups that have no page of their own in `docs-content` — only their
+ * child pages exist. Their catalog card links to the first child instead of
+ * a page that does not resolve (which would bounce back to the landing).
+ */
+const GROUP_WITHOUT_PAGE: Record<string, string> = {
+  'ai-model-images': 'ai-model-images-openai',
+}
+
+/**
+ * API endpoints that have no group landing page of their own. They sit at
+ * the same outline level as the protocol groups, so the catalog shows them
+ * as cards too — with a title/teaser pair instead of a child-variant list.
+ */
+const STANDALONE_API_CARDS: Record<
+  string,
+  { title: Localized; description: Localized }
+> = {
+  'ai-model-moderations': {
+    title: {
+      zh: '审查（Moderations）',
+      'zh-TW': '審查（Moderations）',
+      en: 'Moderations',
+      fr: 'Modération',
+      ru: 'Модерация',
+      ja: 'モデレーション',
+      vi: 'Kiểm duyệt',
+    },
+    description: {
+      zh: '原生OpenAI格式',
+      'zh-TW': '原生OpenAI格式',
+      en: 'Native OpenAI Format',
+      fr: 'Format OpenAI natif',
+      ru: 'Нативный формат OpenAI',
+      ja: 'ネイティブ OpenAI 形式',
+      vi: 'Định dạng Native OpenAI',
+    },
+  },
+  'ai-model-realtime': {
+    title: {
+      zh: '实时语音（Realtime）',
+      'zh-TW': '即時語音（Realtime）',
+      en: 'Realtime',
+      fr: 'Temps réel',
+      ru: 'Реальное время',
+      ja: 'リアルタイム',
+      vi: 'Thời gian thực',
+    },
+    description: {
+      zh: '原生OpenAI格式',
+      'zh-TW': '原生OpenAI格式',
+      en: 'Native OpenAI Format',
+      fr: 'Format OpenAI natif',
+      ru: 'Нативный формат OpenAI',
+      ja: 'ネイティブ OpenAI 形式',
+      vi: 'Định dạng Native OpenAI',
+    },
+  },
+  'ai-model-rerank': {
+    title: {
+      zh: '重排序（Rerank）',
+      'zh-TW': '重新排序（Rerank）',
+      en: 'Rerank',
+      fr: 'Re-classement',
+      ru: 'Переранжирование',
+      ja: '再ランキング',
+      vi: 'Xếp hạng lại',
+    },
+    description: {
+      zh: '文档重排序',
+      'zh-TW': '文件重新排序',
+      en: 'Document Reranking',
+      fr: 'Re-classement de documents',
+      ru: 'Переранжирование документов',
+      ja: 'ドキュメント再ランキング',
+      vi: 'Tái xếp hạng tài liệu',
+    },
+  },
+}
+
+/** `_nav.json` app titles carry a marketing subtitle after a dash. */
+const APP_TITLE_SEPARATOR = /\s+[-—–]\s+/
+
+function shortAppTitle(title: string): string {
+  return title.split(APP_TITLE_SEPARATOR)[0] || title
+}
+
+/**
+ * Cards for a catalog section's synthesised index page.
+ *
+ * The API card set is the protocol-level groups (audio, chat, …) — one
+ * level only, never the OpenAI/Gemini variants beneath them — because the
+ * group is the unit a reader chooses from. Titles come from `nav.json`'s
+ * group labels: unlike `_nav.json`, those are correct in every locale.
+ * An API group's one-liner is the list of variants it contains — e.g. the
+ * audio card reads "原生OpenAI格式、原生Gemini格式" — taken from the child
+ * page labels in `nav.json`, so it is always localized and always in sync
+ * with the subtree the reader will find after clicking the card.
+ *
+ * Standalone endpoints without a group landing page (moderations, realtime,
+ * rerank) are promoted to the same card level, with an explicit localized
+ * one-liner. Card order follows `_nav.json`, matching the sidebar.
+ *
+ * The AI-app set is flat, so its cards are the `_nav.json` entries, whose
+ * own `description` is already the one-line teaser. Their marketing subtitle
+ * after a dash is dropped from the title so the card reads "AionUi" rather
+ * than "AionUi - Free Open-Source Desktop Office Agent".
+ */
+export function catalogCards(
+  locale: DocsLocaleCode,
+  section: 'api' | 'apps'
+): CatalogCard[] {
+  if (section === 'api') {
+    const source = MANIFEST.sections.find((s) => s.id === 'api')?.children
+    const groups =
+      source?.source === 'navigation'
+        ? (source.categories ?? []).flatMap((category) => category.groups ?? [])
+        : []
+    const groupCards = groups.map((group) => {
+      const linkId = GROUP_WITHOUT_PAGE[group.id] ?? group.id
+      const variants = (group.pages ?? []).map((page) =>
+        text(page.label, locale, page.id)
+      )
+      return {
+        id: linkId,
+        title: text(group.label, locale, group.id),
+        description: variants.join(locale === 'en' ? ', ' : '、'),
+      }
+    })
+    const nav = SECTION_NAV.api[locale] ?? []
+    const standaloneCards = nav
+      .filter((item) => STANDALONE_API_CARDS[item.id])
+      .map((item) => {
+        const card = STANDALONE_API_CARDS[item.id]
+        return {
+          id: item.id,
+          title: text(card.title, locale, item.id),
+          description: text(card.description, locale, item.id),
+        }
+      })
+    // Same order as the sidebar: the nav file is the source of the outline,
+    // and a group takes the position of its first real page.
+    const orderOf = (id: string): number => {
+      const at = nav.findIndex((item) => item.id === id)
+      return at < 0 ? Number.MAX_SAFE_INTEGER : at
+    }
+    return [...groupCards, ...standaloneCards].sort(
+      (a, b) => orderOf(a.id) - orderOf(b.id)
+    )
+  }
+  return (SECTION_NAV.apps[locale] ?? [])
+    .filter((item) => item.id !== 'index')
+    .map((item) => ({
+      id: item.id,
+      title: shortAppTitle(item.title),
+      description: item.description ?? '',
+    }))
+}
+
+/** A catalog section's own title and blurb, in the reader's language. */
+export function catalogIdentity(
+  locale: DocsLocaleCode,
+  section: 'api' | 'apps'
+): { title: string; description: string } {
+  const entry = MANIFEST.sections.find((s) => s.id === section)
+  if (!entry) throw new Error(`docs nav: missing section ${section}`)
+  return {
+    title: text(entry.label, locale, section),
+    description: entry.summary ? text(entry.summary, locale, section) : '',
+  }
+}
 
 /**
  * Map a host page path (the part after `/docs/<locale>/`) to the doc it
