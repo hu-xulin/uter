@@ -24,7 +24,7 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router'
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { createTable, getCoreRowModel } from '@tanstack/react-table'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, expect, it, vi } from 'vitest'
@@ -35,10 +35,13 @@ import { CommonLogsFilterBar } from '../common-logs-filter-bar'
 import { UsageLogsProvider } from '../usage-logs-provider'
 
 function FilterFixture() {
-  const table = useReactTable({
+  const table = createTable({
     data: [],
     columns: [],
     getCoreRowModel: getCoreRowModel(),
+    state: {},
+    onStateChange: () => {},
+    renderFallbackValue: null,
   })
   return (
     <UsageLogsProvider>
@@ -99,8 +102,6 @@ it('hides retired Manage and Login types from the filter dropdown entirely', asy
     'Error',
     'Refund',
   ]) {
-    expect(
-      screen.getByRole('option', { name: label })
-    ).toBeVisible()
+    expect(screen.getByRole('option', { name: label })).toBeVisible()
   }
 })
