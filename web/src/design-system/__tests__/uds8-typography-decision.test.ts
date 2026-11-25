@@ -56,7 +56,7 @@ const markdown = readFileSync(
 )
 
 function tokenValue(name: string): string | undefined {
-  return new RegExp(`--text-${name}:\\s*([^;]+);`) .exec(typography)?.[1]?.trim()
+  return new RegExp(`--text-${name}:\\s*([^;]+);`).exec(typography)?.[1]?.trim()
 }
 
 describe('UDS 8.0.0 字号校对决定锁定（6 处 15px → 16px）', () => {
@@ -110,8 +110,12 @@ describe('连续正文只用 body-long（text-long 16/26）', () => {
       expect(src, `${name} 的正文容器必须是 text-long`).toMatch(
         /text-long text-fg-secondary|max-w-\[72ch\] text-long/
       )
-      expect(src, `${name} 的 <p> 必须是 text-long`).toMatch(/\[&_p\]:text-long/)
-      expect(src, `${name} 的 <li> 必须是 text-long`).toMatch(/\[&_li\]:text-long/)
+      expect(src, `${name} 的 <p> 必须是 text-long`).toMatch(
+        /\[&_p\]:text-long/
+      )
+      expect(src, `${name} 的 <li> 必须是 text-long`).toMatch(
+        /\[&_li\]:text-long/
+      )
       expect(src, `${name} 不得把 <p>/<li> 压回 text-base`).not.toMatch(
         /\[&_(?:p|li)\]:text-base/
       )
