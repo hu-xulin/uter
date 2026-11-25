@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import type { z } from 'zod'
@@ -95,9 +95,9 @@ export function SignUpForm({
     },
   })
 
-  const emailValue = form.watch('email')
-  const passwordValue = form.watch('password')
-  const usernameValue = form.watch('username')
+  const emailValue = useWatch({ control: form.control, name: 'email' })
+  const passwordValue = useWatch({ control: form.control, name: 'password' })
+  const usernameValue = useWatch({ control: form.control, name: 'username' })
   const emailVerificationRequired = !!status?.email_verification
   const hasUserAgreement = Boolean(status?.user_agreement_enabled)
   const hasPrivacyPolicy = Boolean(status?.privacy_policy_enabled)
@@ -132,13 +132,12 @@ export function SignUpForm({
     ? (passwordPolicyResult as string)
     : 'Password must include at least two of the following: letters, numbers, and special characters.'
 
-  useEffect(() => {
-    if (requiresLegalConsent) {
-      setAgreedToLegal(false)
-    } else {
-      setAgreedToLegal(true)
-    }
-  }, [requiresLegalConsent])
+  const [prevRequiresConsent, setPrevRequiresConsent] =
+    useState(requiresLegalConsent)
+  if (prevRequiresConsent !== requiresLegalConsent) {
+    setPrevRequiresConsent(requiresLegalConsent)
+    setAgreedToLegal(!requiresLegalConsent)
+  }
 
   useEffect(() => {
     const aff = new URLSearchParams(window.location.search).get('aff')?.trim()
