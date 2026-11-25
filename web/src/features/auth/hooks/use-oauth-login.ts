@@ -48,21 +48,27 @@ export function useOAuthLogin(
   status: SystemStatus | null,
   redirectTo?: string
 ) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isLoading, setIsLoading] = useState(false)
-  const [githubButtonText, setGithubButtonText] = useState('')
+  const [githubButtonText, setGithubButtonText] = useState(() =>
+    t('Continue with GitHub')
+  )
+  const [lastLanguage, setLastLanguage] = useState(i18n.language)
+  if (lastLanguage !== i18n.language) {
+    setLastLanguage(i18n.language)
+    setGithubButtonText(t('Continue with GitHub'))
+  }
   const [githubButtonDisabled, setGithubButtonDisabled] = useState(false)
   const githubTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
-    setGithubButtonText(t('Continue with GitHub'))
-
-    return () => {
+  useEffect(
+    () => () => {
       if (githubTimeoutRef.current) {
         clearTimeout(githubTimeoutRef.current)
       }
-    }
-  }, [t])
+    },
+    []
+  )
 
   const resetSession = async () => {
     const response = await logout()
