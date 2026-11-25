@@ -43,11 +43,72 @@ const specEntries = [];
 }
 
 const reqs = matrix.requirements || [];
+function deriveExpectedRequirementIds() {
+  const ids = [];
+  for (const spec of specEntries) {
+    if (!spec.file) throw new Error(`${spec.id}: registry file path missing`);
+    const source = readText(spec.file);
+    for (const [heading, tag] of [['强制性要求', 'REQ'], ['验收条件', 'ACC']]) {
+      const parts = source.split(new RegExp(`^## ${heading}\\s*/**
+ * UAP §1.11 — 独立验收路径（independent verification）。
+ *
+ * 本文件刻意 **不 import 任何 UAP 运行时模块**：不调用
+ * runtime/status-engine/computeFinalStatus，不调用 tools/report-generator，
+ * 也不调用任何 validators。它直接从磁盘读取规范、追踪矩阵、证据与最终状态，
+ * 用一套独立实现重新计算并交叉核验。
+ *
+ * 因此 UAP 自身验证器即使在逻辑上有缺陷，也无法让这里的断言变绿；反之，
+ * 若本文件发现不一致，即为真实缺陷，不得通过修改状态字段消除。
+ */
+import { describe, test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = fileURLToPath(new URL('../..', import.meta.url));
+const abs = (p) => path.join(ROOT, p);
+const readJSON = (p) => JSON.parse(fs.readFileSync(abs(p), 'utf8'));
+const readText = (p) => fs.readFileSync(abs(p), 'utf8');
+const exists = (p) => fs.existsSync(abs(p));
+
+const matrix = readJSON('.uap/reports/REQUIREMENT-TRACEABILITY-MATRIX.json');
+const finalStatus = readJSON('.uap/reports/FINAL-STATUS.json');
+const registryText = readText('.uap/config/specification-registry.yaml');
+
+// 独立解析注册表：只取 "- id:" 与紧随其后的 "file:"，不依赖 UAP 的 YAML 解析器。
+const specEntries = [];
+{
+  const lines = registryText.split('\n');
+  for (let i = 0; i < lines.length; i += 1) {
+    const m = /^\s*-\s*id:\s*(UAP-\d{2}-\d{3})\s*$/.exec(lines[i]);
+    if (!m) continue;
+    let file = null;
+    for (let j = i + 1; j < Math.min(i + 6, lines.length); j += 1) {
+      const f = /^\s*file:\s*(\S+)\s*$/.exec(lines[j]);
+      if (f) { file = f[1]; break; }
+      if (/^\s*-\s*id:/.test(lines[j])) break;
+    }
+    specEntries.push({ id: m[1], file });
+  }
+}
+
+, 'm'));
+      const body = (parts[1] || '').split(/^## /m)[0];
+      const items = body.split(/\r?\n/).filter((line) => /^\d+\.\s+/.test(line));
+      items.forEach((_, index) => ids.push(`${spec.id}-${tag}-${String(index + 1).padStart(3, '0')}`));
+    }
+  }
+  return ids;
+}
+const expectedRequirementIds = deriveExpectedRequirementIds();
+
 const sha256re = /^[a-f0-9]{64}$/;
 
 describe('独立验收：规范与追踪矩阵（不依赖 UAP 自身实现）', () => {
-  test('注册表中恰有 32 项规范，文件真实存在且非空、含标准编号', () => {
-    assert.equal(specEntries.length, 32, '注册表规范数量');
+  test('注册表中的全部规范文件真实存在且非空、含标准编号', () => {
+    assert.ok(specEntries.length > 0, '注册表必须包含规范');
+    assert.equal(new Set(specEntries.map((s) => s.id)).size, specEntries.length, '注册表规范 ID 必须唯一');
     const missing = specEntries.filter((s) => !s.file || !exists(s.file));
     assert.deepEqual(missing, [], `缺失规范文件: ${missing.map((s) => s.id).join(',')}`);
     const bad = specEntries.filter((s) => {
@@ -57,7 +118,11 @@ describe('独立验收：规范与追踪矩阵（不依赖 UAP 自身实现）',
     assert.deepEqual(bad.map((s) => s.id), [], '规范文件过小或缺标准编号');
   });
 
-  test('538 条要求的 ID 唯一、符合 id_policy、归属正确、原文哈希为 sha256', () => {
+  test('注册表派生的全部要求 ID 唯一、符合 id_policy、归属正确、原文哈希为 sha256', () => {
+    assert.ok(expectedRequirementIds.length > 0, '注册规范必须声明要求');
+    assert.equal(new Set(expectedRequirementIds).size, expectedRequirementIds.length, '注册表派生的要求 ID 必须唯一');
+    assert.equal(reqs.length, expectedRequirementIds.length, '矩阵行数必须等于当前注册规范派生的要求数');
+    assert.deepEqual(reqs.map((r) => r.requirement_id).sort(), [...expectedRequirementIds].sort(), '矩阵 ID 必须精确匹配当前注册规范');
     assert.equal(reqs.length, finalStatus.status_engine.counts.requirements_total);
     // 矩阵 id_policy: "<spec-id>-REQ|ACC-<ordinal>"，REQ=强制要求，ACC=验收准则。
     // 指令 3.1 的 REQ 格式是「推荐」而非唯一；硬约束是稳定、唯一、可归属。
