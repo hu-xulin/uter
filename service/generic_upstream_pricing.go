@@ -346,15 +346,17 @@ func genericChannelPricingRecords(
 	return records
 }
 
-// genericExpressionInternalPricing mirrors an executable upstream expression
-// as the channel's default sale price. Unsupported rules never become a flat
-// approximation.
-func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr string, factor float64) {
-	if official == nil || factor <= 0 {
-		return
+// upstreamExpressionTier converts one executable upstream billing expression
+// into the single price tier Uter can display. factor is the upstream group
+// multiplier (1 for the official list price). An expression whose price shape
+// is unknown returns ok=false so callers keep the price empty instead of
+// inventing a flat approximation.
+func upstreamExpressionTier(expr string, factor float64, rangeName string) (model.ChannelPricingTier, bool) {
+	if factor <= 0 || strings.TrimSpace(expr) == "" {
+		return model.ChannelPricingTier{}, false
 	}
 	if units, ok := uterRouteOfficialUnitPrices(expr); ok {
-		tier := model.ChannelPricingTier{RangeName: "channel", Unit: "per_1m_token"}
+		tier := model.ChannelPricingTier{RangeName: rangeName, Unit: "per_1m_token"}
 		input := units.Input * factor
 		tier.InputPerMillionUSD = model.MoneyFromFloatPtr(&input)
 		if units.OutputPresent {
@@ -369,17 +371,37 @@ func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr 
 			createCache := units.CreateCache * factor
 			tier.CreateCachePerMillionUSD = model.MoneyFromFloatPtr(&createCache)
 		}
-		official.ChannelPrice = &tier
-		return
+		return tier, true
 	}
 	if units, ok := uterRouteDurationUnitPrices(expr); ok {
 		perSecond := units.Input * factor
-		official.ChannelPrice = &model.ChannelPricingTier{
-			RangeName: "channel", Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(&perSecond),
-		}
+		return model.ChannelPricingTier{
+			RangeName: rangeName, Unit: "per_second", PerUnitUSD: model.MoneyFromFloatPtr(&perSecond),
+		}, true
+	}
+	if perImage, ok := uterRoutePerImagePrice(expr); ok {
+		amount := perImage * factor
+		return model.ChannelPricingTier{
+			RangeName: rangeName, Unit: "per_image", PerUnitUSD: model.MoneyFromFloatPtr(&amount),
+		}, true
+	}
+	return model.ChannelPricingTier{}, false
+}
+
+// setChannelPriceFromExpression records the upstream quote after the billing
+// group multiplier. The official tier stays untouched for audit.
+func setChannelPriceFromExpression(official *model.ChannelOfficialPricing, expr string, factor float64) {
+	if official == nil {
+		return
+	}
+	if tier, ok := upstreamExpressionTier(expr, factor, "channel"); ok {
+		official.ChannelPrice = &tier
 	}
 }
 
+// genericExpressionInternalPricing mirrors an executable upstream expression
+// as the channel's default sale price. Unsupported rules never become a flat
+// approximation.
 func genericExpressionInternalPricing(entry GenericPricingEntry, updatedAt int64) string {
 	expr := NormalizeUpstreamExpression(entry.BillingExpr)
 	if !expr.Executable {
@@ -415,7 +437,15 @@ func genericOfficialPricing(entry GenericPricingEntry, fetchedAt int64, quotaPer
 		view.ExpressionStatus = expr.Status
 		view.ExpressionError = expr.Error
 		if expr.Executable {
-			setChannelPriceFromExpression(&view, expr.Raw, 1)
+			// The official list price and the undiscounted upstream quote are
+			// the same number here. A later group-ratio application replaces
+			// ChannelPrice while Tiers remain the auditable official basis.
+			if tier, ok := upstreamExpressionTier(expr.Raw, 1, "base"); ok {
+				view.Tiers = []model.ChannelPricingTier{tier}
+				channelTier := tier
+				channelTier.RangeName = "channel"
+				view.ChannelPrice = &channelTier
+			}
 		}
 		if !expr.Executable {
 			view.NeedsReview = true
