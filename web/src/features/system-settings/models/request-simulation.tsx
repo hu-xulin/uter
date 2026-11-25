@@ -104,12 +104,17 @@ export function RequestSimulation(props: RequestSimulationProps) {
   const [headers, setHeaders] = useState('{}')
   const [timeMode, setTimeMode] = useState('current')
   const [fixedTime, setFixedTime] = useState(() => new Date().toISOString())
+  // A stable reference date for the "current time" branch; reading the clock
+  // during render would be an impure operation.
+  const [currentDate] = useState(() => new Date())
   const liveTime = useBillingTime(
     props.expression,
     open && timeMode === 'current'
   )
 
-  const result = useMemo(() => {
+  // Computed during render: `liveTime` comes from useSyncExternalStore, so a
+  // manual useMemo here cannot stay memoized and only adds overhead.
+  const result = (() => {
     if (!open) return null
     let requestBody: unknown
     let requestHeaders: unknown
@@ -142,7 +147,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
         inputError: 'Request headers must be a JSON object with string values.',
       }
     }
-    let now = liveTime === undefined ? new Date() : new Date(liveTime)
+    let now = liveTime === undefined ? currentDate : new Date(liveTime)
     if (timeMode === 'fixed') {
       if (
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
@@ -180,19 +185,7 @@ export function RequestSimulation(props: RequestSimulationProps) {
         headers: requestHeaders as Record<string, string>,
       },
     })
-  }, [
-    open,
-    imageCount,
-    body,
-    headers,
-    timeMode,
-    fixedTime,
-    liveTime,
-    props.expression,
-    props.tokens,
-    usage,
-    props.usageSchema,
-  ])
+  })()
 
   let error = ''
   if (result && 'inputError' in result) error = t(result.inputError)
