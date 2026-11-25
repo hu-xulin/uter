@@ -130,4 +130,72 @@ describe('docs sidebar user-guide folder disclosure', () => {
     expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
     expect(arrow).toHaveAttribute('aria-expanded', 'false')
   })
+
+  it('toggles by clicking the section title itself, not just the arrow', async () => {
+    await renderShell()
+    const title = screen.getByRole('link', { name: '用户指南' })
+    expect(title).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
+
+    // First click navigates to the guide landing and expands the subtree.
+    await userEvent.click(title)
+    expect(await screen.findByRole('link', { name: '登录' })).toBeVisible()
+    expect(title).toHaveAttribute('aria-expanded', 'true')
+
+    // Second click collapses it again even though the section stays active.
+    await userEvent.click(title)
+    expect(screen.queryByRole('link', { name: '登录' })).toBeNull()
+    expect(title).toHaveAttribute('aria-expanded', 'false')
+  })
+})
+
+describe('docs sidebar API reference hierarchy', () => {
+  it('has no AI-model-interface middle layer — groups sit directly under API', async () => {
+    await renderShell()
+    expect(screen.queryByRole('link', { name: 'AI 模型接口' })).toBeNull()
+    // The protocol groups are always visible after expanding API reference.
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Expand API 参考' })
+    )
+    for (const group of ['音频（Audio）', '聊天（Chat）', '视频（Videos）']) {
+      expect(await screen.findByRole('link', { name: group })).toBeVisible()
+    }
+    // The next level (OpenAI/Gemini variants) is still nested, not promoted.
+    expect(screen.queryByRole('link', { name: '原生OpenAI格式' })).toBeNull()
+  })
+})
+
+describe('docs sidebar nested folder disclosure', () => {
+  it('toggles a nested group by clicking its heading and exposes aria-expanded', async () => {
+    await renderShell()
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Expand API 参考' })
+    )
+
+    const heading = '视频（Videos）'
+    const child = '即梦格式' // Unique to this group, so the assertion is exact.
+    expect(screen.getByRole('link', { name: heading })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    )
+    expect(screen.queryByRole('link', { name: child })).toBeNull()
+
+    // Clicking the heading text expands the nested subtree without needing
+    // the chevron, even though this group is not a top-level section.
+    await userEvent.click(screen.getByRole('link', { name: heading }))
+    expect(await screen.findByRole('link', { name: child })).toBeVisible()
+    expect(screen.getByRole('link', { name: heading })).toHaveAttribute(
+      'aria-expanded',
+      'true'
+    )
+
+    // Clicking the same heading again collapses it; navigation to the group's
+    // landing page must not fight the explicit collapse.
+    await userEvent.click(screen.getByRole('link', { name: heading }))
+    expect(screen.queryByRole('link', { name: child })).toBeNull()
+    expect(screen.getByRole('link', { name: heading })).toHaveAttribute(
+      'aria-expanded',
+      'false'
+    )
+  })
 })
