@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -30,15 +30,17 @@ import { useSubscriptions } from '../subscriptions-provider'
 export function ResetSubscriptionsDialog() {
   const { t } = useTranslation()
   const { open, setOpen, currentRow, triggerRefresh } = useSubscriptions()
-  const [advanceResetTime, setAdvanceResetTime] = useState(true)
-  const [resetting, setResetting] = useState(false)
   const isOpen = open === 'reset-subscriptions'
+  const [advanceResetTime, setAdvanceResetTime] = useState(true)
+  const [wasOpen, setWasOpen] = useState(isOpen)
+  const [resetting, setResetting] = useState(false)
   const plan = currentRow?.plan
   const planLabel = plan?.title || (plan?.id ? `#${plan.id}` : '-')
 
-  useEffect(() => {
+  if (isOpen !== wasOpen) {
+    setWasOpen(isOpen)
     if (isOpen) setAdvanceResetTime(true)
-  }, [isOpen])
+  }
 
   const handleConfirm = async () => {
     if (!plan?.id) return
