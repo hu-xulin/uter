@@ -25,9 +25,10 @@ import {
   RouterProvider,
 } from '@tanstack/react-router'
 import {
+  createTable,
   flexRender,
   getCoreRowModel,
-  useReactTable,
+  type TableState,
 } from '@tanstack/react-table'
 import {
   act,
@@ -39,6 +40,7 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createInstance } from 'i18next'
+import { useState } from 'react'
 import { I18nextProvider } from 'react-i18next'
 import { Toaster, toast } from 'sonner'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
@@ -113,11 +115,24 @@ function QuotaTable(props: { apiKey: ApiKey }) {
   const columns = useApiKeysColumns(now).filter(
     (column) => column.id === 'quota'
   )
-  const table = useReactTable({
+  const [table] = useState(() =>
+    createTable({
+      columns,
+      data: [props.apiKey],
+      getCoreRowModel: getCoreRowModel(),
+      state: {} as TableState,
+      onStateChange: () => {},
+      renderFallbackValue: null,
+    })
+  )
+  const [state, setState] = useState<TableState>(() => table.initialState)
+  table.setOptions((prev) => ({
+    ...prev,
     columns,
     data: [props.apiKey],
-    getCoreRowModel: getCoreRowModel(),
-  })
+    state,
+    onStateChange: (updater) => setState(updater),
+  }))
   return (
     <table>
       <thead>
