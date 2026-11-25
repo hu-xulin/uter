@@ -18,8 +18,9 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
+  createTable,
   getCoreRowModel,
-  useReactTable,
+  type TableState,
   type VisibilityState,
 } from '@tanstack/react-table'
 import { render, screen, within, waitFor } from '@testing-library/react'
@@ -63,12 +64,25 @@ function Fixture(props: {
 }) {
   const columns = useCommonLogsColumns(props.admin ?? true, false)
   const context = useUsageLogsContext()
-  const table = useReactTable({
+  // Use the headless core API: the React wrapper hook is not memoization-safe.
+  const table = createTable({
     data: props.logs ?? [log],
     columns,
     getCoreRowModel: getCoreRowModel(),
-    state: { columnVisibility: props.visibility ?? {} },
+    state: {} as TableState,
+    onStateChange: () => {},
+    renderFallbackValue: null,
   })
+  // The core API needs a fully resolved state, unlike the React wrapper which
+  // merges the table's initialState for us.
+  table.setOptions((previous) => ({
+    ...previous,
+    state: {
+      ...table.initialState,
+      ...previous.state,
+      columnVisibility: props.visibility ?? {},
+    },
+  }))
   return (
     <>
       <button type='button' onClick={() => context.setSensitiveVisible(false)}>
