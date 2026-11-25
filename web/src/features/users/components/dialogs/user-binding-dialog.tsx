@@ -195,15 +195,25 @@ export function UserBindingDialog(props: Props) {
     }
   }, [props.userId, t])
 
-  useEffect(() => {
-    if (props.open && props.userId) {
+  // 打开抽屉或切换用户时在渲染期复位视图状态；数据加载交给 effect。
+  const loadIdentity = props.open && props.userId ? String(props.userId) : null
+  const [lastLoadIdentity, setLastLoadIdentity] = useState<string | null>(null)
+  if (loadIdentity !== lastLoadIdentity) {
+    setLastLoadIdentity(loadIdentity)
+    if (loadIdentity) {
       setShowBoundOnly(true)
-      fetchData()
     } else {
       setUser(null)
       setOauthBindings([])
     }
-  }, [props.open, props.userId, fetchData])
+  }
+
+  useEffect(() => {
+    if (!loadIdentity) return
+    void (async () => {
+      await fetchData()
+    })()
+  }, [loadIdentity, fetchData])
 
   const allBindings = useMemo<BindingItem[]>(() => {
     const items: BindingItem[] = []
