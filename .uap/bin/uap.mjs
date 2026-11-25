@@ -584,10 +584,38 @@ async function cmdTest({ flags, positional }) {
     // ceiling; a genuine timeout still propagates as a failure.
     timeoutMs: 900000,
   });
+  // Keep compact, non-secret failure identity even when the TAP output is
+  // longer than stdout_tail. This lets CI name failed tests without storing
+  // raw assertion messages or silently treating a truncated tail as clean.
+  const tapLines = r.stdout.split(/\\r?\\n/);
+  const failedTests = [];
+  for (let i = 0; i < tapLines.length; i++) {
+    const match = /^\\s*not ok (\\d+)(?:\\s*-\\s*(.*))?$/.exec(tapLines[i]);
+    if (!match) continue;
+    const context = tapLines.slice(i + 1, i + 20);
+    const failureType = context
+      .map((line) => /failureType:\\s*['"]?([^'"]+)/.exec(line)?.[1])
+      .find(Boolean) ?? null;
+    const errorLine = context.find((line) => /\\berror:/.test(line));
+    const errorClass = errorLine
+      ? /error:\\s*['"]?([A-Za-z_$][\\w.$]*)/.exec(errorLine)?.[1] ?? null
+      : null;
+    const code = context
+      .map((line) => /^\\s*code:\\s*['"]?([^'"]+)/.exec(line)?.[1])
+      .find(Boolean) ?? null;
+    failedTests.push({
+      index: Number(match[1]),
+      name: match[2]?.trim() || null,
+      failure_type: failureType,
+      error_class: errorClass,
+      code,
+    });
+  }
   const data = bindExecution({
     generated_at: nowISO(), mode: flags.has('all') ? 'all' : 'selected',
     test_files: files.map((f) => relToRoot(f)), command: r.command,
     exit_code: r.exit_code, timed_out: r.timed_out, duration_ms: r.duration_ms,
+    failed_tests: failedTests,
     // Preserve enough TAP context to diagnose nested suite failures from CI
     // artifacts/logs; the previous 3 KB tail often retained only the parent
     // suite summary and discarded the failing assertion itself.
