@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect, useMemo, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -99,16 +99,24 @@ export function GrokSettingsCard(props: Props) {
     defaultValues: formDefaults,
   })
 
-  const baselineRef = useRef<FlatGrokDefaults>(props.defaultValues)
-  const baselineSerializedRef = useRef<string>(
+  const [baseline, setBaseline] = useState(props.defaultValues)
+  const [baselineSerialized, setBaselineSerialized] = useState(() =>
     JSON.stringify(props.defaultValues)
   )
+  const [prevDefaults, setPrevDefaults] = useState(props.defaultValues)
+
+  // Adopt incoming defaults during render so the submit handler reads plain
+  // state instead of a mutable ref.
+  if (prevDefaults !== props.defaultValues) {
+    setPrevDefaults(props.defaultValues)
+    const serialized = JSON.stringify(props.defaultValues)
+    if (serialized !== baselineSerialized) {
+      setBaseline(props.defaultValues)
+      setBaselineSerialized(serialized)
+    }
+  }
 
   useEffect(() => {
-    const serialized = JSON.stringify(props.defaultValues)
-    if (serialized === baselineSerializedRef.current) return
-    baselineRef.current = props.defaultValues
-    baselineSerializedRef.current = serialized
     form.reset(buildFormDefaults(props.defaultValues))
   }, [props.defaultValues, form])
 
@@ -116,7 +124,7 @@ export function GrokSettingsCard(props: Props) {
     const normalized = normalizeFormValues(values)
     const changedKeys = (
       Object.keys(normalized) as Array<keyof FlatGrokDefaults>
-    ).filter((key) => normalized[key] !== baselineRef.current[key])
+    ).filter((key) => normalized[key] !== baseline[key])
 
     if (changedKeys.length === 0) {
       toast.info(t('No changes to save'))
@@ -130,12 +138,15 @@ export function GrokSettingsCard(props: Props) {
       })
     }
 
-    baselineRef.current = normalized
-    baselineSerializedRef.current = JSON.stringify(normalized)
+    setBaseline(normalized)
+    setBaselineSerialized(JSON.stringify(normalized))
     form.reset(buildFormDefaults(normalized))
   }
 
-  const enabled = form.watch('grok.violation_deduction_enabled')
+  const enabled = useWatch({
+    control: form.control,
+    name: 'grok.violation_deduction_enabled',
+  })
 
   return (
     <SettingsSection title={t('Grok Settings')}>
