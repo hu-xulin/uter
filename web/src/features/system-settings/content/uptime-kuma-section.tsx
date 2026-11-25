@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, Trash2, Save } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -93,8 +93,35 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
   const uptimeKumaSchema = createUptimeKumaSchema(t)
-  const [groups, setGroups] = useState<UptimeKumaGroup[]>([])
+  const parseGroups = (raw: string): UptimeKumaGroup[] => {
+    try {
+      const parsed = JSON.parse(raw || '[]')
+      if (Array.isArray(parsed)) {
+        return parsed.map((item, idx) => ({
+          ...item,
+          id: item.id || idx + 1,
+        }))
+      }
+    } catch {}
+    return []
+  }
+
+  const [groups, setGroups] = useState<UptimeKumaGroup[]>(() =>
+    parseGroups(data)
+  )
+  const [prevData, setPrevData] = useState(data)
   const [isEnabled, setIsEnabled] = useState(enabled)
+  const [prevEnabled, setPrevEnabled] = useState(enabled)
+
+  if (data !== prevData) {
+    setPrevData(data)
+    setGroups(parseGroups(data))
+  }
+
+  if (enabled !== prevEnabled) {
+    setPrevEnabled(enabled)
+    setIsEnabled(enabled)
+  }
   const [hasChanges, setHasChanges] = useState(false)
   const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [showDialog, setShowDialog] = useState(false)
@@ -110,26 +137,6 @@ export function UptimeKumaSection({ enabled, data }: UptimeKumaSectionProps) {
       slug: '',
     },
   })
-
-  useEffect(() => {
-    try {
-      const parsed = JSON.parse(data || '[]')
-      if (Array.isArray(parsed)) {
-        setGroups(
-          parsed.map((item, idx) => ({
-            ...item,
-            id: item.id || idx + 1,
-          }))
-        )
-      }
-    } catch {
-      setGroups([])
-    }
-  }, [data])
-
-  useEffect(() => {
-    setIsEnabled(enabled)
-  }, [enabled])
 
   const handleToggleEnabled = async (checked: boolean) => {
     try {
