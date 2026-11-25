@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMemo, useRef, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { type FormEvent, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import * as z from 'zod'
@@ -246,8 +246,26 @@ export function ChannelHealthSection({
     baselineRef.current = normalizeDefaults(defaultValues)
   }, [defaultValues])
 
-  const autoDisableStatusCodes = form.watch('AutomaticDisableStatusCodes')
-  const channelTestMode = form.watch('monitor_setting.channel_test_mode')
+  const autoDisableStatusCodes = useWatch({
+    control: form.control,
+    name: 'AutomaticDisableStatusCodes',
+  })
+  const channelTestMode = useWatch({
+    control: form.control,
+    name: 'monitor_setting.channel_test_mode',
+  })
+  const autoDisableChannelEnabled = useWatch({
+    control: form.control,
+    name: 'AutomaticDisableChannelEnabled',
+  })
+  const autoEnableChannelEnabled = useWatch({
+    control: form.control,
+    name: 'AutomaticEnableChannelEnabled',
+  })
+  const autoTestChannelEnabled = useWatch({
+    control: form.control,
+    name: 'monitor_setting.auto_test_channel_enabled',
+  })
   let channelTestModeDescription: string
   switch (channelTestMode) {
     case 'auto_ban_only':
@@ -270,33 +288,44 @@ export function ChannelHealthSection({
     [autoDisableStatusCodes]
   )
 
-  const onSubmit = async (values: ChannelHealthFormValues) => {
-    const normalized = normalizeFormValues(values)
-    const updates = (
-      Object.keys(normalized) as Array<keyof NormalizedChannelHealthValues>
-    ).filter((key) => normalized[key] !== baselineRef.current[key])
+  const onSubmit = useCallback(
+    async (values: ChannelHealthFormValues) => {
+      const normalized = normalizeFormValues(values)
+      const updates = (
+        Object.keys(normalized) as Array<keyof NormalizedChannelHealthValues>
+      ).filter((key) => normalized[key] !== baselineRef.current[key])
 
-    if (updates.length === 0) {
-      toast.info(t('No changes to save'))
-      return
-    }
+      if (updates.length === 0) {
+        toast.info(t('No changes to save'))
+        return
+      }
 
-    try {
-      await updateOption.mutateAsync(
-        Object.fromEntries(updates.map((key) => [key, String(normalized[key])]))
-      )
-      baselineRef.current = normalized
-    } catch (error) {
-      handleServerError(error)
-    }
-  }
+      try {
+        await updateOption.mutateAsync(
+          Object.fromEntries(
+            updates.map((key) => [key, String(normalized[key])])
+          )
+        )
+        baselineRef.current = normalized
+      } catch (error) {
+        handleServerError(error)
+      }
+    },
+    [t, updateOption]
+  )
+  const submit = useCallback(
+    (event?: FormEvent<HTMLFormElement>) => {
+      void form.handleSubmit(onSubmit)(event)
+    },
+    [form, onSubmit]
+  )
 
   return (
     <SettingsSection title={t('Channel health')}>
       <div className='text-muted-foreground space-y-1 text-sm'>
         <p>{t('Source: global settings. Changes take effect after saving.')}</p>
         <p>
-          {form.watch('AutomaticDisableChannelEnabled')
+          {autoDisableChannelEnabled
             ? t(
                 'Channels must also enable Auto Ban before automatic disabling can take effect.'
               )
@@ -304,19 +333,18 @@ export function ChannelHealthSection({
                 'With these settings, automatic disabling is off for all channels.'
               )}
         </p>
-        {form.watch('AutomaticEnableChannelEnabled') &&
-          !form.watch('monitor_setting.auto_test_channel_enabled') && (
-            <p>
-              {t(
-                'Scheduled recovery is off. Bulk channel tests can still re-enable automatically disabled channels.'
-              )}
-            </p>
-          )}
+        {autoEnableChannelEnabled && !autoTestChannelEnabled && (
+          <p>
+            {t(
+              'Scheduled recovery is off. Bulk channel tests can still re-enable automatically disabled channels.'
+            )}
+          </p>
+        )}
       </div>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)}>
+        <SettingsForm onSubmit={submit}>
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={submit}
             isSaving={form.formState.isSubmitting}
           />
 
