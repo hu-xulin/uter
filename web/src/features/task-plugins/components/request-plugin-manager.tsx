@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -73,14 +73,13 @@ export function RequestPluginManager() {
     queryKey: ['task-plugin-options'],
     queryFn: getTaskPluginOptions,
   })
-  useEffect(() => {
-    if (instancesQuery.data && !synced) {
-      setInstancesText(
-        JSON.stringify(instancesQuery.data as RequestPluginInstance[], null, 2)
-      )
-      setSynced(true)
-    }
-  }, [instancesQuery.data, synced])
+  // 查询结果首次到达时把 JSON 灌进编辑器；用渲染期调整代替 effect 同步。
+  if (instancesQuery.data && !synced) {
+    setSynced(true)
+    setInstancesText(
+      JSON.stringify(instancesQuery.data as RequestPluginInstance[], null, 2)
+    )
+  }
 
   const instances = useMemo(() => {
     try {
