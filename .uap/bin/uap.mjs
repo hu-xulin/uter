@@ -587,21 +587,21 @@ async function cmdTest({ flags, positional }) {
   // Keep compact, non-secret failure identity even when the TAP output is
   // longer than stdout_tail. This lets CI name failed tests without storing
   // raw assertion messages or silently treating a truncated tail as clean.
-  const tapLines = r.stdout.split(/\\r?\\n/);
+  const tapLines = r.stdout.split(/\r?\n/);
   const failedTests = [];
   for (let i = 0; i < tapLines.length; i++) {
-    const match = /^\\s*not ok (\\d+)(?:\\s*-\\s*(.*))?$/.exec(tapLines[i]);
+    const match = /^\s*not ok (\d+)(?:\s*-\s*(.*))?$/.exec(tapLines[i]);
     if (!match) continue;
     const context = tapLines.slice(i + 1, i + 20);
     const failureType = context
-      .map((line) => /failureType:\\s*['"]?([^'"]+)/.exec(line)?.[1])
+      .map((line) => /failureType:\s*['"]?([^'"]+)/.exec(line)?.[1])
       .find(Boolean) ?? null;
-    const errorLine = context.find((line) => /\\berror:/.test(line));
+    const errorLine = context.find((line) => /\berror:/.test(line));
     const errorClass = errorLine
-      ? /error:\\s*['"]?([A-Za-z_$][\\w.$]*)/.exec(errorLine)?.[1] ?? null
+      ? /error:\s*['"]?([A-Za-z_$][\w.$]*)/.exec(errorLine)?.[1] ?? null
       : null;
     const code = context
-      .map((line) => /^\\s*code:\\s*['"]?([^'"]+)/.exec(line)?.[1])
+      .map((line) => /^\s*code:\s*['"]?([^'"]+)/.exec(line)?.[1])
       .find(Boolean) ?? null;
     failedTests.push({
       index: Number(match[1]),
