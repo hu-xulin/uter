@@ -22,12 +22,12 @@
  * requirement-verification engine consumes these DISTINCT `REQ_ASSERT ... PASS`
  * strings as the per-requirement `required_output` assertions.
  *
- * Every requirement_id is validated against the real 538-row traceability
- * matrix on startup; an unknown/duplicate id is a hard error (no silent skip).
+ * Every requirement_id is validated against the current registry-derived
+ * requirement catalog on startup; an unknown/duplicate id is a hard error (no silent skip).
  * Each id is bound to AT MOST ONE assertion in this suite.
  *
  * `process.exitCode === 0` means only "the suite ran to completion"; it does
- * NOT mean all 538 requirements are VERIFIED.
+ * NOT mean all registered requirements are VERIFIED.
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -54,10 +54,10 @@ import * as orchestratorEngine from '../runtime/orchestrator/index.mjs';
 import * as statusEngineEngine from '../runtime/status-engine/index.mjs';
 import { executorResult, validatorResult, assertExecutorResult, ContractError } from '../runtime/_lib/contract.mjs';
 import { redact } from '../runtime/_lib/util.mjs';
+import { extractRequirements } from './requirement-matrix.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-const MATRIX = path.join(ROOT, '.uap', 'reports', 'REQUIREMENT-TRACEABILITY-MATRIX.json');
 
 /* --------------------------------------------------------------- utilities */
 const readJSON = (p) => JSON.parse(fs.readFileSync(p, 'utf8'));
@@ -80,8 +80,11 @@ const probeTaskInput = (extra = {}) => ({
 let knownIdsCache = null;
 export function loadKnownIds() {
   if (knownIdsCache) return knownIdsCache;
-  const matrix = readJSON(MATRIX);
-  knownIdsCache = new Set((matrix.requirements || []).map((r) => r.requirement_id));
+  const requirements = extractRequirements().requirements;
+  const ids = requirements.map((r) => r.requirement_id);
+  if (ids.length === 0) throw new Error('requirement-behavior-suite: registered specification catalog contains no requirements (fail-closed)');
+  if (new Set(ids).size !== ids.length) throw new Error('requirement-behavior-suite: registered specification catalog contains duplicate requirement IDs (fail-closed)');
+  knownIdsCache = new Set(ids);
   return knownIdsCache;
 }
 
@@ -807,9 +810,9 @@ export const CHECKS = Object.freeze([
   },
   {
     id: 'UAP-00-001-REQ-010', group: 'node',
-    behavior: '配置/规范/代码/验证结果可追溯：honesty「矩阵 538 条完整性」真实 ok',
-    verify: (ctx) => commandAssertion(ctx, 'honesty', '矩阵完整性：538 条、ID 唯一、每个 VERIFIED 都有证据与真实结果', 'not ok',
-      'node --test requirement-honesty: 矩阵完整性 538 条、ID 唯一 (match by name)'),
+    behavior: '配置/规范/代码/验证结果可追溯：honesty「注册规范派生的矩阵完整性」真实 ok',
+    verify: (ctx) => commandAssertion(ctx, 'honesty', '矩阵完整性：注册规范派生的全部 ID 唯一、每个 VERIFIED 都有证据与真实结果', 'not ok',
+      'node --test requirement-honesty: 注册规范派生的矩阵完整性 (match by name)'),
   },
 
   // ---- H. runtime engines (REAL sync engine calls; group 'engines' is NOT a
@@ -1343,13 +1346,13 @@ export const CHECKS = Object.freeze([
 /** All requirement ids bound by this suite (each appears exactly once). */
 export const REQUIREMENT_IDS = Object.freeze(CHECKS.map((c) => c.id));
 
-/** Fail-closed startup validation: every bound id must exist in the real 538-row
- *  matrix, and no id may be bound twice. An injected/renamed id is a hard error. */
+/** Fail-closed startup validation: every bound id must exist in the current registry-derived
+ *  requirement catalog, and no id may be bound twice. An injected/renamed id is a hard error. */
 function validateCheckIds() {
   const known = loadKnownIds();
   const seen = new Set();
   for (const c of CHECKS) {
-    if (!known.has(c.id)) throw new Error(`requirement-behavior-suite: bound id ${c.id} does NOT exist in ${MATRIX} (fail-closed)`);
+    if (!known.has(c.id)) throw new Error(`requirement-behavior-suite: bound id ${c.id} does NOT exist in the current registered specification catalog (fail-closed)`);
     if (seen.has(c.id)) throw new Error(`requirement-behavior-suite: id ${c.id} bound more than once (shared assertion, fail-closed)`);
     seen.add(c.id);
   }
@@ -1417,7 +1420,7 @@ if (isMain) {
     const passed = out.lines.length;
     const missing = out.checks.filter((c) => !c.pass);
     console.log(`SUITE_INFO completed: ${out.executed} real behavior assertions attempted, ${passed} REQ_ASSERT PASS lines emitted, ${missing.length} not asserted this run.`);
-    console.log('SUITE_INFO exit_code 0 means ONLY "the suite ran to completion". It does NOT mean all 538 requirements are VERIFIED.');
+    console.log(\`SUITE_INFO exit_code 0 means ONLY "the suite ran to completion". It does NOT mean all \${loadKnownIds().size} registered requirements are VERIFIED.\`);
     console.log('SUITE_INFO every PASS line came from a REAL execution + assertion (runtime return-value check, or a real go/node test PASS marker observed in real stdout). Failed/throws/absent assertions emit NO PASS line (fail-closed).');
     if (missing.length) {
       console.log(`SUITE_INFO NOT asserted (no PASS line): ${missing.map((c) => `${c.requirement_id}[${c.detail.split(':')[0]}]`).join(', ')}`);
