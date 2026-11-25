@@ -98,38 +98,45 @@ export function RedemptionsMutateDrawer({
   const [createdCodes, setCreatedCodes] = useState<RedemptionExportData | null>(
     null
   )
+  const getLoadKey = () => {
+    if (!open) return 'closed'
+    if (isUpdate && redemptionId !== undefined) return `load:${redemptionId}`
+    return 'create'
+  }
+  const loadKey = getLoadKey()
+  const getInitialLoadState = () => {
+    if (loadKey === 'closed') return 'idle' as const
+    if (loadKey === 'create') return 'ready' as const
+    return 'loading' as const
+  }
+  const initialLoadState = getInitialLoadState()
   const [redemptionLoadState, setRedemptionLoadState] = useState<
     'idle' | 'loading' | 'ready' | 'error'
-  >('idle')
+  >(initialLoadState)
   const [loadedRedemption, setLoadedRedemption] = useState<Redemption | null>(
     null
   )
+  const [prevLoadKey, setPrevLoadKey] = useState(loadKey)
+
+  if (loadKey !== prevLoadKey) {
+    setPrevLoadKey(loadKey)
+    setRedemptionLoadState(initialLoadState)
+    setLoadedRedemption(null)
+  }
 
   const form = useForm<RedemptionFormValues>({
     resolver: zodResolver(getRedemptionFormSchema(t)),
     defaultValues: REDEMPTION_FORM_DEFAULT_VALUES,
   })
 
-  // Load existing data when updating
+  // Load existing data when updating. State resets happen during render via
+  // loadKey; this effect only syncs the form and fetches external data.
   useEffect(() => {
-    if (!open) {
-      setRedemptionLoadState('idle')
-      setLoadedRedemption(null)
-      return
-    }
-
-    if (!isUpdate || redemptionId === undefined) {
-      form.reset(REDEMPTION_FORM_DEFAULT_VALUES)
-      setRedemptionLoadState('ready')
-      setLoadedRedemption(null)
-      return
-    }
+    if (!open) return
+    form.reset(REDEMPTION_FORM_DEFAULT_VALUES)
+    if (!isUpdate || redemptionId === undefined) return
 
     let ignoreResult = false
-
-    form.reset(REDEMPTION_FORM_DEFAULT_VALUES)
-    setRedemptionLoadState('loading')
-    setLoadedRedemption(null)
 
     void getRedemption(redemptionId)
       .then((result) => {
