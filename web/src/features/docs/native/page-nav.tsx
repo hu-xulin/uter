@@ -55,7 +55,7 @@ export function PageNavCardContent({
           <ArrowRight className='size-4.5 shrink-0 transition-transform group-hover:translate-x-0.5' />
         )}
       </span>
-      <span className='text-base text-fg-primary truncate font-medium'>
+      <span className='text-fg-primary truncate text-base font-medium'>
         {title}
       </span>
     </>
