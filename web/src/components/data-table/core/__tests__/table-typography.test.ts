@@ -43,7 +43,8 @@ describe('READABLE_TABLE_CLASS', () => {
     expect(READABLE_TABLE_CLASS).not.toMatch(/text-base/)
     expect(READABLE_TABLE_CLASS).not.toMatch(/\[\d+px\]/)
     // 只有 text-sm 一种字号类，避免 twMerge 冲突导致某个选择器被覆盖。
-    const sizeTokens = READABLE_TABLE_CLASS.match(/text-(xs|sm|base|lg|2xs|dense)\b/g) || []
+    const sizeTokens =
+      READABLE_TABLE_CLASS.match(/text-(xs|sm|base|lg|2xs|dense)\b/g) || []
     expect([...new Set(sizeTokens)]).toEqual(['text-sm'])
   })
 })
