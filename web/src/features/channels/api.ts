@@ -1481,6 +1481,27 @@ export async function fetchChannelUpstreamConsoleCatalog(
   return requireServerSuccess(res.data).data as UpstreamConsoleCatalog
 }
 
+/**
+ * Persist console-login credentials on an existing channel row so the create
+ * wizard's later steps (cross-check, upstream discovery) can log in before the
+ * whole channel is saved. The password is encrypted server-side; a blank
+ * password keeps the stored one. Only the console block of settings changes.
+ */
+export async function saveChannelUpstreamConsoleCredentials(
+  channelId: number,
+  credentials: { login_url: string; username: string; password?: string }
+): Promise<{ id: number; configured: boolean }> {
+  const res = await api.post(
+    `/api/channel/${channelId}/upstream_console/credentials`,
+    credentials,
+    channelActionConfig()
+  )
+  return (requireServerSuccess(res.data).data ?? {}) as {
+    id: number
+    configured: boolean
+  }
+}
+
 export async function syncChannelUpstreamPrices(
   channelId: number
 ): Promise<ChannelUpstreamPriceSync> {
