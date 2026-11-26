@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { withCjkTermBreaks } from '@/lib/cjk-term-breaks'
 import { cn } from '@/lib/utils'
 
 import { TruncatedCell } from '../core/truncated-cell'
@@ -189,7 +190,7 @@ function StaticDataTableRow<TData>({
 
   return (
     <TableRow className={getRowClassName?.(row, index)}>
-      {columns.map((column) => (
+      {columns.map((column, columnIndex) => (
         <TableCell
           key={column.id}
           className={cn(
@@ -197,7 +198,7 @@ function StaticDataTableRow<TData>({
             getStaticCellClassName(column, row, index)
           )}
         >
-          {renderStaticCellContent(column, row, index)}
+          {renderStaticCellContent(column, row, index, columnIndex === 0)}
         </TableCell>
       ))}
     </TableRow>
@@ -207,10 +208,13 @@ function StaticDataTableRow<TData>({
 function renderStaticCellContent<TData>(
   column: StaticDataTableColumn<TData>,
   row: TData,
-  index: number
+  index: number,
+  isFirstColumn: boolean
 ) {
-  const content = column.cell?.(row, index)
-  const textContent = getPrimitiveTextContent(content)
+  const rawContent = column.cell?.(row, index)
+  const textContent = getPrimitiveTextContent(rawContent)
+  // 首列纯文本在词边界加 wbr；自定义渲染器保持原样。
+  const content = isFirstColumn ? withCjkTermBreaks(rawContent) : rawContent
 
   if (!textContent) return content
 

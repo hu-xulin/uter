@@ -25,6 +25,7 @@ import {
 import * as React from 'react'
 
 import { TableCell, TableRow } from '@/components/ui/table'
+import { withCjkTermBreaks } from '@/lib/cjk-term-breaks'
 import { cn } from '@/lib/utils'
 
 import { TruncatedCell } from './truncated-cell'
@@ -68,8 +69,10 @@ function DataTableRowInner<TData>({
       className={className}
       {...rowProps}
     >
-      {row.getVisibleCells().map((cell) => {
-        const renderedCell = renderCellContent(cell)
+      {row.getVisibleCells().map((cell, index) => {
+        // 首列中文术语在词边界加 <wbr>，配合 CSS `word-break: keep-all`
+        // 让换行只发生在词与词之间（如「个人|信息」而非「个人信|息」）。
+        const renderedCell = renderCellContent(cell, index === 0)
 
         return (
           <TableCell
@@ -124,9 +127,16 @@ export function DataTableRow<TData>(props: DataTableRowProps<TData>) {
   )
 }
 
-function renderCellContent<TData>(cell: Cell<TData, unknown>) {
-  const content = flexRender(cell.column.columnDef.cell, cell.getContext())
-  const textContent = getPrimitiveTextContent(content)
+function renderCellContent<TData>(
+  cell: Cell<TData, unknown>,
+  isFirstColumn: boolean
+) {
+  const rawContent = flexRender(cell.column.columnDef.cell, cell.getContext())
+  // tooltip 文案用变换前的原文：wbr 是 Fragment 数组，不能被 getPrimitiveTextContent 识别。
+  const textContent = getPrimitiveTextContent(rawContent)
+  // 只对首列的纯文本/原生元素插入构词断点；自定义列渲染器原样保留，
+  // Tooltip / 徽标等封装不受影响。
+  const content = isFirstColumn ? withCjkTermBreaks(rawContent) : rawContent
 
   if (!textContent) {
     return { content, isPrimitive: false }

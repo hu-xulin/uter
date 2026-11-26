@@ -390,7 +390,9 @@ export function OrganizationPage() {
         {t('Organization Management')}
       </SectionPageLayout.Title>
       <SectionPageLayout.Content>
-        <div className='flex flex-col gap-6'>
+        {/* 内容宽度与钱包页对齐：PersonalPageLayout 用 mx-auto w-full max-w-7xl
+            约束内容，组织页此前缺少该约束，宽屏下会比钱包页更宽。 */}
+        <div className='mx-auto flex w-full max-w-7xl flex-col gap-6'>
           {canViewBudget && (
             <LoadErrorCard
               message={dataError}

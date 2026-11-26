@@ -106,7 +106,13 @@ export function PublicHeader(props: PublicHeaderProps) {
   const user = auth.user
   const isAuthenticated = !!user
   const brandName = localizedBrandName(i18n.language)
-  const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  // useTopNavLinks 返回的 title 已经过 t() 本地化；这里不能再次 t()，否则
+  // 中文界面会把「首页」再当翻译键查找，产生 missingKey 控制台告警。
+  // 仅外部传入的静态 navLinks 仍按 i18n key 处理。
+  const links =
+    dynamicLinks.length > 0
+      ? dynamicLinks
+      : navLinks.map((link) => ({ ...link, title: t(link.title) }))
 
   let logoContent: ReactNode = (
     <HeaderLogo
@@ -191,7 +197,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         }
         setAuthPromptSecondsLeft(AUTH_PROMPT_SECONDS)
         setAuthPromptTarget({
-          title: t(link.title),
+          title: link.title,
           href: link.href,
         })
         return
@@ -201,7 +207,7 @@ export function PublicHeader(props: PublicHeaderProps) {
         setMobileOpen(false)
       }
     },
-    [t]
+    []
   )
 
   return (
@@ -264,7 +270,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     <a
                       key={`${link.title}:${link.href}`}
                       href={link.href}
-                      title={t(link.title)}
+                      title={link.title}
                       {...fullPageAnchorProps(link.href)}
                       aria-disabled={link.disabled}
                       tabIndex={link.disabled ? -1 : undefined}
@@ -274,7 +280,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                         link.disabled && 'pointer-events-none opacity-50'
                       )}
                     >
-                      {t(link.title)}
+                      {link.title}
                     </a>
                   )
                 }
@@ -282,7 +288,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   <Link
                     key={`${link.title}:${link.href}`}
                     to={link.href}
-                    title={t(link.title)}
+                    title={link.title}
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
                     className={cn(
@@ -293,7 +299,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                       link.disabled && 'pointer-events-none opacity-50'
                     )}
                   >
-                    {t(link.title)}
+                    {link.title}
                   </Link>
                 )
               })}
@@ -408,7 +414,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                     className={linkClassName}
                     style={transitionStyle}
                   >
-                    {t(link.title)}
+                    {link.title}
                   </a>
                 )
               }
@@ -421,7 +427,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                   className={linkClassName}
                   style={transitionStyle}
                 >
-                  {t(link.title)}
+                  {link.title}
                 </Link>
               )
             })}
