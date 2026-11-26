@@ -124,6 +124,14 @@ func uterapiBaseURL() string {
 	if value := strings.TrimSpace(uterapiBaseURLForTest); value != "" {
 		return value
 	}
+	// System Settings → Channels stores the API address separately from the
+	// console login URL. Prefer that explicit API address (the primary source
+	// for model/price discovery), then fall back to the legacy operational
+	// endpoint option for deployments that have not migrated yet. The console
+	// login URL is never used here.
+	if value := strings.TrimSpace(service.SubscriptionChannelProviderCredentials().APIURL); value != "" {
+		return value
+	}
 	return service.UterAPIUpstreamBaseURL()
 }
 
@@ -221,6 +229,19 @@ func CreateUterAPIChannels(c *gin.Context) {
 			UpstreamModelUpdateAutoSyncEnabled: true,
 		}
 		channel.SetOtherSettings(channelSettings)
+		// Uter.api 专用创建端点必须和通用 AddChannel 一样继承系统设置
+		// 「优特订阅」里的控制台登录信息。这里只补 console 块：BaseURL 已由
+		// 托管上游地址确定、Key 已由 slot 确定，凭据里的同名值不能覆盖它们。
+		// 密码只在服务端以加密信封写入 OtherSettings，绝不回传浏览器。
+		mergedSettings, credErr := mergeConsoleCredentialsIntoSettings(
+			channel.OtherSettings, credentials.LoginURL, credentials.Username, credentials.Password,
+		)
+		if credErr != nil {
+			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": credErr.Error()})
+			lastErr = credErr.Error()
+			continue
+		}
+		channel.OtherSettings = mergedSettings
 		if err := validateChannel(&channel, true); err != nil {
 			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": err.Error()})
 			lastErr = err.Error()
@@ -288,8 +309,11 @@ func CreateUterAPIChannels(c *gin.Context) {
 			))
 		} else {
 			model.UpdateChannelStatus(channel.Id, "", common.ChannelStatusEnabled, "pricing_verified")
-			channelSettings.PricingMode = dto.ChannelPricingModeScopedActive
-			if raw, marshalErr := common.Marshal(channelSettings); marshalErr == nil {
+			// 基于落库时的 settings 升级定价模式，而不是用最初的 channelSettings
+			// 重新序列化，否则会抹掉上一步继承的 upstream_console 凭据块。
+			updatedSettings := channel.GetOtherSettings()
+			updatedSettings.PricingMode = dto.ChannelPricingModeScopedActive
+			if raw, marshalErr := common.Marshal(updatedSettings); marshalErr == nil {
 				if err := model.DB.Model(&model.Channel{}).Where("id = ?", channel.Id).
 					Update("settings", string(raw)).Error; err != nil {
 					common.SysError(common.LogText(

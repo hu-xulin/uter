@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 
 import { SettingsPage } from '../components/settings-page'
-import type { ChannelProviderSettings } from '../types'
+import { defaultChannelProviderSettings } from './channel-provider-settings-defaults'
 import { applyChannelProviderMaskView } from './channel-provider-settings-form'
 import {
   CHANNEL_DEFAULT_SECTION,
@@ -27,22 +27,6 @@ import {
   getChannelSectionMeta,
 } from './section-registry.tsx'
 import { useChannelCredentialDisclosure } from './use-channel-credential-disclosure'
-
-const defaultChannelProviderSettings: ChannelProviderSettings = {
-  ChannelProviderCredentialMasks: '{}',
-  'channel_provider.featured.login_url': '',
-  'channel_provider.featured.username': '',
-  'channel_provider.featured.password': '',
-  'channel_provider.featured.api_key': '',
-  'channel_provider.bailian.login_url': '',
-  'channel_provider.bailian.username': '',
-  'channel_provider.bailian.password': '',
-  'channel_provider.bailian.api_key': '',
-  'channel_provider.subscription.login_url': '',
-  'channel_provider.subscription.username': '',
-  'channel_provider.subscription.password': '',
-  'channel_provider.subscription.api_key': '',
-}
 
 export function ChannelSettings() {
   const disclosure = useChannelCredentialDisclosure()

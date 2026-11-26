@@ -73,6 +73,7 @@ import {
   formatRelativeTime,
   formatResponseTime,
   getBalanceVariant,
+  getChannelDisplayBranding,
   getChannelTypeIcon,
   getChannelTypeLabel,
   getResponseTimeConfig,
@@ -80,7 +81,6 @@ import {
   parseModelsList,
   parseGroupsList,
   parseChannelSettings,
-  parseChannelOtherSettings,
   channelsQueryKeys,
   handleUpdateChannelField,
   handleUpdateTagField,
@@ -88,7 +88,6 @@ import {
   isTagAggregateRow,
   type TagRow,
 } from '../lib'
-import { isAdvancedCustomLikeChannelType } from '../lib/advanced-custom'
 import { parseUpstreamUpdateMeta } from '../lib/upstream-update-utils'
 import type { Channel } from '../types'
 import { ChannelRowActionsLayoutContext } from './channel-row-actions-context'
@@ -824,21 +823,12 @@ export function useChannelsColumns(
           const type = row.getValue('type') as number
           const typeNameKey = getChannelTypeLabel(type)
           const channel = row.original as Channel
-          // Advanced Custom may override the type label and logo with the
-          // per-channel display_name / logo.
-          const advancedCustomDisplay = isAdvancedCustomLikeChannelType(type)
-            ? parseChannelOtherSettings(channel.settings)?.advanced_custom
-            : undefined
-          const customDisplayName =
-            advancedCustomDisplay?.display_name?.trim() || ''
-          // In dark mode prefer the dedicated dark-theme logo (the white-stroke
-          // SVG the user provided); otherwise use the light logo. No CSS filter
-          // is applied — we render the exact SVG for each theme.
+          // A per-channel display name / logo may override the built-in type
+          // label/icon. Both the generic branding editor (all types) and the
+          // Advanced Custom editor (type 58) are consumed by this helper.
           const isDark = resolvedTheme === 'dark'
-          const customLogo =
-            (isDark
-              ? advancedCustomDisplay?.logo_dark?.trim()
-              : advancedCustomDisplay?.logo?.trim()) || ''
+          const { displayName: customDisplayName, logo: customLogo } =
+            getChannelDisplayBranding(channel.settings, isDark)
           const typeName = customDisplayName || t(typeNameKey)
           const iconName = getChannelTypeIcon(type)
           const isMultiKey = isMultiKeyChannel(channel)
@@ -880,6 +870,8 @@ export function useChannelsColumns(
                   pluginKey={
                     parseChannelSettings(channel.setting)?.task_plugin_key
                   }
+                  customLogo={customLogo}
+                  customDisplayName={customDisplayName}
                 />
               ) : (
                 <TooltipProvider delay={300}>

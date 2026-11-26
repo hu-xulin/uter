@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { useSecureVerification } from '@/features/auth/secure-verification'
+import { revealChannelProviderCredential } from '@/features/system-settings/api'
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 import { createServerError } from '@/lib/server-error-message'
@@ -98,5 +99,54 @@ export function useChannelKeyDisclosure(
 
   const channelKey =
     open && disclosedKey?.channelId === channelId ? disclosedKey.key : null
-  return { channelKey, isChannelKeyLoading, handleRevealKey, verification }
+
+  // 揭示 System Settings → Channels 里保存的单个凭证。proof 绑定到具体
+  // option key，和渠道密钥揭示共用同一个验证对话框与并发锁，避免两个
+  // step-up 流程同时弹框。
+  const handleRevealProviderCredential = useCallback(
+    async (optionKey: string): Promise<string | null> => {
+      if (!open || !optionKey || operation.current) return null
+      const current = new AbortController()
+      operation.current = current
+      try {
+        const proof = await requestVerification({
+          scope: 'channel.credential.read',
+          context: { option_key: optionKey },
+          title: t('Verify to view upstream credential'),
+          description: t(
+            'Use your password, Passkey or 2FA to confirm your identity before revealing this credential.'
+          ),
+        })
+        if (!proof || operation.current !== current) return null
+        const res = await revealChannelProviderCredential(
+          optionKey,
+          proof.proof_token,
+          current.signal
+        )
+        if (operation.current !== current) return null
+        if (!res.success) {
+          throw createServerError(res, t('Failed to reveal credential'))
+        }
+        return res.data?.value ?? ''
+      } catch (error) {
+        if (operation.current === current && !current.signal.aborted) {
+          handleServerError(AuthOperationError.from(error))
+        }
+        return null
+      } finally {
+        if (operation.current === current) {
+          operation.current = null
+        }
+      }
+    },
+    [open, requestVerification, t]
+  )
+
+  return {
+    channelKey,
+    isChannelKeyLoading,
+    handleRevealKey,
+    handleRevealProviderCredential,
+    verification,
+  }
 }

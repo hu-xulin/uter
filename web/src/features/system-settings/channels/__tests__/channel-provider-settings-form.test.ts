@@ -157,7 +157,13 @@ describe('applyChannelProviderMaskView', () => {
   // authoritative option keys instead of trusting the stale metadata.
   it('recovers saved keys when credential_slots metadata lost their ids', () => {
     const staleMetadata = JSON.stringify([
-      { id: 'slot-stale', group: '', label: '', mode: 'single', strategy: 'random' },
+      {
+        id: 'slot-stale',
+        group: '',
+        label: '',
+        mode: 'single',
+        strategy: 'random',
+      },
     ])
     const savedSlots = [
       { id: 'slot-kiro', group: 'Claude-kiro' },
@@ -175,7 +181,7 @@ describe('applyChannelProviderMaskView', () => {
       },
       ...savedSlots.map((slot) => ({
         key: `channel_provider.subscription.slot_${slot.id}_api_key`,
-        value: `sk-${slot.group.replace(/\W/g, '')}****key`,
+        value: `sk-${slot.group.replaceAll(/\W/g, '')}****key`,
       })),
     ]
 

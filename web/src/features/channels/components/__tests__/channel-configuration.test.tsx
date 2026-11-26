@@ -422,6 +422,44 @@ test.each([
   }
 )
 
+test.each([
+  { name: 'OpenAI', type: 1 },
+  { name: 'AWS', type: 33 },
+  { name: 'Uter Route', type: 64 },
+  { name: 'Alibaba Bailian', type: 17 },
+  { name: 'Uter.api', type: 65 },
+])(
+  'editing a $name channel keeps the API key placeholder limited to the saved key mask',
+  async ({ type }) => {
+    editingChannel.type = type
+    editingChannel.masked_key = 'sk-w************JHuu'
+    const user = userEvent.setup()
+    render(<ConfigurationHarness currentRow={editingChannel} />)
+    await enterEditingWizard(user)
+
+    const keyInput = screen.getByRole('textbox', { name: 'API Key *' })
+    expect(keyInput).toHaveValue('')
+    expect(keyInput).toHaveAttribute('placeholder', 'sk-w************JHuu')
+    expect(keyInput.getAttribute('placeholder')).not.toContain(
+      'Leave empty to keep existing key'
+    )
+  }
+)
+
+test('editing without a saved key uses a key-only placeholder', async () => {
+  const user = userEvent.setup()
+  render(<ConfigurationHarness currentRow={editingChannel} />)
+  await enterEditingWizard(user)
+
+  const keyInput = screen.getByRole('textbox', { name: 'API Key *' })
+  expect(keyInput).toHaveValue('')
+  expect(keyInput).toHaveAttribute(
+    'placeholder',
+    'Enter API key for this channel'
+  )
+  expect(keyInput.getAttribute('placeholder')).not.toContain('Leave empty')
+})
+
 test('an unavailable default URL endpoint keeps the fallback placeholder and allows saving a custom address', async () => {
   const onInternalServerError = vi.fn()
   client = createAppQueryClient(onInternalServerError)

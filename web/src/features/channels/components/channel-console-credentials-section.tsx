@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { useMutation } from '@tanstack/react-query'
-import { Eye, Globe2, RefreshCw, Save } from 'lucide-react'
+import { Eye, Globe2, RefreshCw, Save, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -54,6 +54,11 @@ type Props = {
   savingCredentials?: boolean
   /** 后端已存密码标记：用星号占位展示，绝不回填真实密码。 */
   hasStoredPassword?: boolean
+  /** 托管渠道从系统设置自动填入控制台地址 / 用户名 / 密码的入口。 */
+  onAutoFill?: () => Promise<void> | void
+  autoFilling?: boolean
+  /** 非托管渠道不展示自动获取按钮。 */
+  showAutoFill?: boolean
 }
 
 /**
@@ -116,6 +121,22 @@ export function ChannelConsoleCredentialsSection(props: Props) {
               )}
             </p>
           </div>
+          {props.showAutoFill && props.onAutoFill ? (
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              className='shrink-0'
+              disabled={props.sensitiveLocked || props.autoFilling === true}
+              data-testid='console-autofill-button'
+              onClick={() => void props.onAutoFill?.()}
+            >
+              <Sparkles className='mr-2 h-4 w-4' aria-hidden='true' />
+              {props.autoFilling === true
+                ? t('Fetching...')
+                : t('Auto fill from settings')}
+            </Button>
+          ) : null}
         </div>
 
         <FormField
@@ -263,17 +284,21 @@ function CrossCheckResult(props: {
   const { catalog } = props
 
   if (catalog.status !== 'success') {
+    let message = t(
+      'Console login failed. Using API Key + Base URL as the source of truth.'
+    )
+    if (catalog.status === 'not_configured') {
+      message = t(
+        'Console login not configured. Using API Key + Base URL as the source of truth.'
+      )
+    } else if (catalog.status === 'unsupported') {
+      message = t(
+        'Alibaba Bailian console uses Alibaba Cloud account login, which is not compatible with this console-login protocol. Use API Key + workspace endpoint as the source of truth.'
+      )
+    }
     return (
       <Alert className='mt-4'>
-        <AlertDescription>
-          {catalog.status === 'not_configured'
-            ? t(
-                'Console login not configured. Using API Key + Base URL as the source of truth.'
-              )
-            : t(
-                'Console login failed. Using API Key + Base URL as the source of truth.'
-              )}
-        </AlertDescription>
+        <AlertDescription>{message}</AlertDescription>
       </Alert>
     )
   }

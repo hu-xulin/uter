@@ -381,7 +381,15 @@ func securityVerificationPolicy(scope string, state model.UserVerificationState)
 		methods = append(methods, VerificationMethodPasskey)
 	}
 	switch scope {
-	case VerificationScopeChannelKeyRead, VerificationScopeChannelCredentialRead, VerificationScopeSystemSecretRead, VerificationScopeUserSecretRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
+	case VerificationScopeChannelKeyRead, VerificationScopeChannelCredentialRead, VerificationScopeSystemSecretRead, VerificationScopeUserSecretRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete:
+		// 登录密码是 step-up 的常规因子，与 2FA / Passkey 并列展示。
+		// 未开通强因子的账号因此仍能揭示系统设置密钥；密码登录被禁用或
+		// 账号本身没有密码时不提供该选项，不降低任何现有安全保证。
+		// 登录 scope 刻意排除：登录密码本身不能充当登录后的额外验证因子。
+		if state.HasPassword && common.PasswordLoginEnabled {
+			methods = append(methods, VerificationMethodPassword)
+		}
+	case VerificationScopeLogin:
 	case VerificationScopeTwoFADisable, VerificationScopeTwoFABackupCodes:
 		if !state.HasTwoFA {
 			return nil, model.ErrTwoFANotEnabled

@@ -200,6 +200,53 @@ describe('channel console credentials section', () => {
     )
   })
 
+  test('explains why the Alibaba Bailian console login is unsupported', async () => {
+    const user = userEvent.setup()
+    vi.spyOn(api, 'get').mockResolvedValueOnce({
+      data: {
+        success: true,
+        data: {
+          status: 'unsupported',
+          login_succeeded: false,
+          fallback_primary: true,
+          models: [],
+          prices: [],
+          warnings: [
+            'Alibaba Bailian console uses Alibaba Cloud account login, which is not compatible with this console-login protocol. Use API Key + workspace endpoint as the source of truth.',
+          ],
+        },
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+    })
+    render(
+      <Harness
+        values={{
+          console_login_url:
+            'https://bailian.console.aliyun.com/cn-beijing/model/market',
+          console_username: 'admin',
+        }}
+      />
+    )
+    await user.click(
+      screen.getByRole('button', { name: /Fetch & cross-check/ })
+    )
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          /Alibaba Bailian console uses Alibaba Cloud account login/
+        )
+      ).toBeInTheDocument()
+    )
+    expect(
+      screen.getByText(
+        /Use API Key \+ workspace endpoint as the source of truth/
+      )
+    ).toBeInTheDocument()
+  })
+
   test('shows console prices on demand for cross-checking', async () => {
     const user = userEvent.setup()
     vi.spyOn(api, 'get').mockResolvedValueOnce({

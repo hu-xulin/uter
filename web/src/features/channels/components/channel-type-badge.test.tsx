@@ -105,3 +105,23 @@ test('unbound task channels use a neutral icon while regular providers keep thei
   rerender(<ChannelTypeLogo type={1} />)
   expect(screen.getByTestId('OpenAI.Color')).toBeInTheDocument()
 })
+
+test('task plugin channel renders the configured branding logo/name over the plugin mark', () => {
+  vi.mocked(getTaskPluginOptions).mockResolvedValue([
+    { key: 'incho', name: 'Incho AI', icon: 'text:IA', models: [] },
+  ])
+  render(
+    <QueryClientProvider client={client}>
+      <TaskPluginChannelBadge
+        pluginKey='incho'
+        customLogo='data:image/png;base64,CUSTOM'
+        customDisplayName='我的任务渠道'
+      />
+    </QueryClientProvider>
+  )
+  const img = document.querySelector('img')
+  expect(img).not.toBeNull()
+  expect(img).toHaveAttribute('src', 'data:image/png;base64,CUSTOM')
+  expect(screen.getByText('我的任务渠道')).toBeInTheDocument()
+  expect(screen.queryByTestId('PluginIcon')).not.toBeInTheDocument()
+})

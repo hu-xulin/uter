@@ -35,7 +35,8 @@ type MaskView = Partial<Record<ChannelProviderCredentialGroup, MaskGroup>>
  */
 export function readChannelProviderKeyMask(
   options: SystemOption[] | undefined,
-  group: ChannelProviderCredentialGroup
+  group: ChannelProviderCredentialGroup,
+  field: 'api_key' | 'password' = 'api_key'
 ): string[] {
   const encoded = options?.find(
     (option) => option.key === 'ChannelProviderCredentialMasks'
@@ -50,9 +51,9 @@ export function readChannelProviderKeyMask(
   }
   if (!view || typeof view !== 'object' || Array.isArray(view)) return []
 
-  const apiKey = (view as MaskView)[group]?.api_key
-  if (typeof apiKey !== 'string' || apiKey.trim() === '') return []
-  return apiKey
+  const secret = (view as MaskView)[group]?.[field]
+  if (typeof secret !== 'string' || secret.trim() === '') return []
+  return secret
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)

@@ -227,6 +227,41 @@ export function parseChannelOtherSettings(
   }
 }
 
+/**
+ * Effective per-channel display branding (name + logo) rendered instead of the
+ * built-in channel-type label/icon.
+ *
+ * Two editors write into `settings`, and they are mutually exclusive by type:
+ *  - `branding`          — every channel type except Advanced Custom (58)
+ *  - `advanced_custom`   — Advanced Custom channels (type 58) only
+ *
+ * The channels list previously read only `advanced_custom` and only for type
+ * 58, so a logo configured through the generic branding editor (e.g. type 64)
+ * was persisted but never displayed. Reading both sources here makes the
+ * configured logo effective for every channel type.
+ *
+ * Priority, first non-empty wins so a generic branding value is never shadowed
+ * by a stale advanced_custom value:
+ *   display name: branding.display_name -> advanced_custom.display_name
+ *   light logo:   branding.logo         -> advanced_custom.logo
+ *   dark logo:    branding.logo_dark    -> advanced_custom.logo_dark -> light logo
+ */
+export function getChannelDisplayBranding(
+  settings: string | null | undefined,
+  isDark: boolean
+): { displayName: string; logo: string } {
+  const parsed = parseChannelOtherSettings(settings)
+  const branding = parsed?.branding
+  const advanced = parsed?.advanced_custom
+  const displayName =
+    branding?.display_name?.trim() || advanced?.display_name?.trim() || ''
+  const lightLogo = branding?.logo?.trim() || advanced?.logo?.trim() || ''
+  const darkLogo =
+    branding?.logo_dark?.trim() || advanced?.logo_dark?.trim() || ''
+  const logo = (isDark && darkLogo ? darkLogo : lightLogo) || ''
+  return { displayName, logo }
+}
+
 // ============================================================================
 // Balance Formatting
 // ============================================================================

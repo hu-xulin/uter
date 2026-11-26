@@ -525,6 +525,14 @@ func TestNormalizeBailianChannelBaseURL(t *testing.T) {
 	}
 }
 
+func TestValidateChannelRejectsBailianConsoleURLAsBaseURL(t *testing.T) {
+	base := "https://bailian.console.aliyun.com/cn-beijing/model/market"
+	channel := &model.Channel{Type: constant.ChannelTypeAli, BaseURL: &base}
+	err := validateChannel(channel, false)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "workspace endpoint")
+}
+
 func TestValidateChannelStripsBailianCompatiblePath(t *testing.T) {
 	base := "https://dashscope.aliyuncs.com/compatible-mode/v1"
 	channel := &model.Channel{Type: constant.ChannelTypeAli, BaseURL: &base}

@@ -73,7 +73,12 @@ export function ChannelTypeLogo(props: {
   )
 }
 
-export function TaskPluginChannelBadge(props: { pluginKey?: string }) {
+export function TaskPluginChannelBadge(props: {
+  pluginKey?: string
+  /** Per-channel branding overrides the plugin icon/label when configured. */
+  customLogo?: string
+  customDisplayName?: string
+}) {
   const { t } = useTranslation()
   const user = useAuthStore((s) => s.auth.user)
   const canBind = hasPermission(
@@ -88,9 +93,11 @@ export function TaskPluginChannelBadge(props: { pluginKey?: string }) {
     staleTime: 60 * 1000,
   })
   const plugin = query.data?.find((item) => item.key === props.pluginKey)
-  const label = plugin?.name || props.pluginKey || t('Task Plugin')
+  const pluginLabel = plugin?.name || props.pluginKey || t('Task Plugin')
+  const label = props.customDisplayName || pluginLabel
   const iconInput =
     plugin ?? (props.pluginKey ? { key: props.pluginKey } : undefined)
+  const customLogo = props.customLogo?.trim() || ''
 
   return (
     <div
@@ -103,11 +110,20 @@ export function TaskPluginChannelBadge(props: { pluginKey?: string }) {
     >
       <ProviderBadge
         iconNode={
-          <ChannelTypeLogo
-            type={CHANNEL_TYPE_TASK_PLUGIN}
-            plugin={iconInput}
-            size={18}
-          />
+          customLogo ? (
+            <img
+              src={customLogo}
+              alt=''
+              aria-hidden='true'
+              className='size-4 rounded-full object-cover'
+            />
+          ) : (
+            <ChannelTypeLogo
+              type={CHANNEL_TYPE_TASK_PLUGIN}
+              plugin={iconInput}
+              size={18}
+            />
+          )
         }
         label={label}
         colorText={false}

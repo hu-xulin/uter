@@ -22,6 +22,7 @@ import { requireServerSuccess } from '@/lib/server-error-message'
 
 import type { PriorityMove, PriorityOrder } from './lib/channel-priority-order'
 import type { InferenceStatus } from './lib/inference-status'
+import { sortModelsByVersionDesc } from './lib/model-version-sort'
 import type {
   AddChannelRequest,
   BatchDeleteParams,
@@ -46,6 +47,20 @@ import type {
   SearchChannelsResponse,
   TagOperationParams,
 } from './types'
+
+/**
+ * Upstream catalogs return models in their own order (often alphabetical),
+ * which buries the newest versions and dated releases deep in the picker.
+ * Sort the fetched list newest-first at the source so every caller — channel
+ * create, edit and the fetch dialogs — offers the latest models up front.
+ * Locally supplied lists (e.g. a channel's existing models) are untouched.
+ */
+function withNewestModelsFirst(
+  response: FetchModelsResponse
+): FetchModelsResponse {
+  if (!response.data) return response
+  return { ...response, data: sortModelsByVersionDesc(response.data) }
+}
 
 type ChannelUpdatePayload = Partial<Channel> & {
   mode?: AddChannelRequest['mode']
@@ -420,7 +435,7 @@ export async function fetchUpstreamModels(
     `/api/channel/fetch_models/${id}`,
     channelActionConfig()
   )
-  return res.data
+  return withNewestModelsFirst(res.data)
 }
 
 export async function getChannelModelPricing(
@@ -801,7 +816,7 @@ export async function fetchModels(data: {
     data,
     channelActionConfig()
   )
-  return res.data
+  return withNewestModelsFirst(res.data)
 }
 
 /**
@@ -1472,7 +1487,7 @@ export type UpstreamConsolePrice = {
 }
 
 export type UpstreamConsoleCatalog = {
-  status: 'success' | 'not_configured' | 'login_failed'
+  status: 'success' | 'not_configured' | 'login_failed' | 'unsupported'
   login_succeeded: boolean
   fallback_primary: boolean
   models: string[]

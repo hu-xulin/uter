@@ -231,6 +231,13 @@ import {
   supportsChannelPluginExtensions,
   supportsNewAPIUpstream,
 } from '../../lib/channel-plugin-extensions'
+import {
+  channelProviderGroupForTarget,
+  channelProviderSecretOptionKey,
+  readChannelProviderConnection,
+  resolveProviderAPIKeySources,
+  shouldUseProviderLoginURLAsBaseURL,
+} from '../../lib/channel-provider-prefill'
 import { shouldBlockSubmitForPricing } from '../../lib/channel-submit-guard'
 import { getChannelTypeConfig } from '../../lib/channel-type-config'
 import {
@@ -239,7 +246,10 @@ import {
   type CredentialKeyMode,
   type CredentialSlot,
 } from '../../lib/credential-slots'
-import { summarizeSelectedPricingReadiness } from '../../lib/pricing-readiness'
+import {
+  filterModelsWithBillablePrice,
+  summarizeSelectedPricingReadiness,
+} from '../../lib/pricing-readiness'
 import {
   collectInvalidStatusCodeEntries,
   collectNewDisallowedStatusCodeRedirects,
@@ -325,6 +335,17 @@ const createEmptyModelMappingGuardrail = (): ModelMappingGuardrail => ({
 
 const formatModelNames = (models: string[]): string =>
   models.map((model) => `"${model}"`).join(', ')
+
+// The form type a confirmed provider selection will write. Uter.api / Uter Route
+// are rejected while editing, so they keep the current type here.
+function channelTypeForProviderTarget(
+  target: ChannelProviderTarget,
+  currentType: number
+): number {
+  if (target.kind === 'builtin') return target.type
+  if (target.kind === 'plugin') return CHANNEL_TYPE_TASK_PLUGIN
+  return currentType
+}
 
 const MODEL_MAPPING_PREVIEW_FALLBACK: Array<{
   source: string
@@ -612,10 +633,13 @@ export function ChannelMutateDrawer({
     providerTarget?.kind === 'uterapi' ||
     isBailianTarget ||
     isUterRouteCredentialTarget
-  // 系统设置里三类托管渠道已存 key 的逐行掩码（浏览器拿不到明文）。用于在
-  // 新建时提示「留空将使用系统设置中的 key」，明文由服务端按组补齐。
+  // 系统设置里三类托管渠道已存的连接信息（登录地址/用户名/API 地址）与 key
+  // 掩码（浏览器拿不到明文）。新建态用于「留空将使用系统设置中的 key」提示；
+  // 编辑态同样需要它：连接区与控制台区的「从系统设置自动填入」按钮在此读取
+  // 已存连接信息。若仅因编辑态禁用查询，按钮点击会拿到空 options 并误报
+  // 「系统设置仍在加载中」。掩码提示本身已各自用 !isEditing 门控，不会误显。
   const systemOptionsQuery = useSystemOptions(
-    open && !isEditing && isProviderManagedCredentialTarget
+    open && isProviderManagedCredentialTarget
   )
   const subscriptionKeyMask = useMemo(
     () => readSubscriptionKeyMask(systemOptionsQuery.data?.data),
@@ -647,6 +671,13 @@ export function ChannelMutateDrawer({
   })
   const autoDiscoverySignatureRef = useRef('')
   const autoProvisionChannelRef = useRef<number | null>(null)
+  // Editing keeps the saved-settings discovery path until the operator
+  // confirms a different provider on the picker. Remember the type loaded from
+  // the channel so merely opening/closing the drawer never changes that path.
+  const initialLoadedTypeRef = useRef<number | null>(null)
+  const [editedProviderTypeChanged, setEditedProviderTypeChanged] =
+    useState(false)
+  const editedTypeDiscoveryRef = useRef<number | null>(null)
   const [pendingErrorFocus, setPendingErrorFocus] = useState<string | null>(
     null
   )
@@ -740,8 +771,13 @@ export function ChannelMutateDrawer({
 
   const { copyToClipboard } = useCopyToClipboard()
 
-  const { channelKey, isChannelKeyLoading, handleRevealKey, verification } =
-    useChannelKeyDisclosure(open, channelId)
+  const {
+    channelKey,
+    isChannelKeyLoading,
+    handleRevealKey,
+    handleRevealProviderCredential,
+    verification,
+  } = useChannelKeyDisclosure(open, channelId)
 
   // 后端下发的逐行脱敏密钥：默认即可展示星号，无需二次验证（与 API 密钥列表一致）。
   const maskedKey = channelData?.data?.masked_key ?? null
@@ -1112,6 +1148,11 @@ export function ChannelMutateDrawer({
       pricingReadinessQuery.data,
     ]
   )
+  // Only hide fetched models once the price catalogue has actually answered;
+  // before that an empty row set means "not loaded", not "no prices exist".
+  const pricingDataReady = usesUterApiPreviewReadiness
+    ? uterapiPreviewReadinessQuery.isSuccess
+    : pricingReadinessQuery.isSuccess
   const pricingReadiness = useMemo(
     () =>
       summarizeSelectedPricingReadiness(
@@ -1306,6 +1347,17 @@ export function ChannelMutateDrawer({
           form.setValue('name', label ? t(label) : `#${target.type}`)
         }
       }
+      if (isEditing) {
+        const nextType = channelTypeForProviderTarget(
+          target,
+          form.getValues('type')
+        )
+        const typeChanged =
+          initialLoadedTypeRef.current !== null &&
+          nextType !== initialLoadedTypeRef.current
+        setEditedProviderTypeChanged(typeChanged)
+        if (typeChanged) editedTypeDiscoveryRef.current = null
+      }
       setProviderTarget(target)
       setChoosingProvider(false)
       setShowDraftPricing(false)
@@ -1490,6 +1542,9 @@ export function ChannelMutateDrawer({
       setConfigurationSection('connection')
       setShowDraftPricing(false)
       setPendingErrorFocus(null)
+      initialLoadedTypeRef.current = null
+      setEditedProviderTypeChanged(false)
+      editedTypeDiscoveryRef.current = null
       return
     }
     if (isEditing && channelData?.data) {
@@ -1525,6 +1580,9 @@ export function ChannelMutateDrawer({
         setConfigurationSection('connection')
         setShowDraftPricing(false)
         setPendingErrorFocus(null)
+        initialLoadedTypeRef.current = defaults.type
+        setEditedProviderTypeChanged(false)
+        editedTypeDiscoveryRef.current = null
       }
       // Store initial values for comparison
       initialModelsRef.current = parseModelsString(
@@ -1742,11 +1800,181 @@ export function ChannelMutateDrawer({
     }
   }, [form, effectiveChannelId, createDraftChannel, t])
 
+  // 三类托管渠道在 System Settings → Channels 里各有一个分组。按钮触发时
+  // 明文连接信息直接填入，密钥走绑定 option key 的 step-up 揭示后填入。
+  // 编辑态同样展示按钮：编辑时 providerTarget 由落库类型还原，用户可主动
+  // 一键补齐系统设置里的连接信息；不自动覆盖任何已填字段。
+  const providerGroup = useMemo(
+    () => channelProviderGroupForTarget(providerTarget),
+    [providerTarget]
+  )
+  const providerPasswordMask = useMemo(
+    () =>
+      providerGroup
+        ? readChannelProviderKeyMask(
+            systemOptionsQuery.data?.data,
+            providerGroup,
+            'password'
+          )
+        : [],
+    [providerGroup, systemOptionsQuery.data]
+  )
+  const [autoFillingCredentials, setAutoFillingCredentials] = useState(false)
+  const [autoFillingConsole, setAutoFillingConsole] = useState(false)
+
+  const handleAutoFillCredentials = useCallback(async () => {
+    if (!providerGroup || sensitiveLocked || autoFillingCredentials) return
+    const options = systemOptionsQuery.data?.data
+    if (!options) {
+      toast.error(t('System settings are still loading'))
+      return
+    }
+    const connection = readChannelProviderConnection(options, providerGroup)
+    const apiKeySources = resolveProviderAPIKeySources(options, providerGroup)
+    if (
+      !connection.apiUrl &&
+      !connection.loginUrl &&
+      apiKeySources.length === 0
+    ) {
+      toast.error(
+        t('No saved credentials for this provider in System Settings')
+      )
+      return
+    }
+    setAutoFillingCredentials(true)
+    try {
+      // 只有独立的 API 地址能填进 base_url（用于获取模型/价格）；控制台
+      // 登录地址绝不当作 API 地址。保留 shouldUseProviderLoginURLAsBaseURL
+      // 调用以兼容既有契约，但它对三类托管渠道恒为 false。
+      if (
+        connection.apiUrl &&
+        !shouldUseProviderLoginURLAsBaseURL(providerGroup)
+      ) {
+        form.setValue('base_url', connection.apiUrl, {
+          shouldDirty: true,
+          shouldValidate: true,
+        })
+      }
+      // 没有已存密钥时只填明文，不弹无意义的验证对话框。
+      if (apiKeySources.length === 0) {
+        toast.success(t('Credentials filled from System Settings'))
+        return
+      }
+      if (providerTarget?.kind === 'uterapi') {
+        // 订阅的每个上游分组各存一把密钥；proof 绑定单 key，逐个揭示后
+        // 生成一条带分组的凭证槽位，否则服务端 SlotForGroup 匹配不到。
+        const filled: CredentialSlot[] = []
+        for (const source of apiKeySources) {
+          const revealed = await handleRevealProviderCredential(
+            source.optionKey
+          )
+          if (revealed === null) return
+          if (!revealed.trim()) continue
+          const mode: CredentialKeyMode =
+            source.mode === 'batch' || source.mode === 'multi_to_single'
+              ? source.mode
+              : 'single'
+          filled.push({
+            ...createCredentialSlot(
+              source.group ? `Uter.api-${source.group}` : '',
+              mode
+            ),
+            keysText: revealed,
+          })
+        }
+        if (filled.length > 0) setCredentialSlots(filled)
+      } else {
+        // Uter Route / 百炼不区分上游分组：只揭示第一条并填入主 key。
+        const revealed = await handleRevealProviderCredential(
+          apiKeySources[0].optionKey
+        )
+        if (revealed === null) return
+        if (revealed.trim()) {
+          form.setValue('key', revealed, { shouldDirty: true })
+        }
+      }
+      toast.success(t('Credentials filled from System Settings'))
+    } finally {
+      setAutoFillingCredentials(false)
+    }
+  }, [
+    providerGroup,
+    providerTarget,
+    sensitiveLocked,
+    autoFillingCredentials,
+    systemOptionsQuery.data,
+    form,
+    handleRevealProviderCredential,
+    t,
+  ])
+
+  const handleAutoFillConsole = useCallback(async () => {
+    if (!providerGroup || sensitiveLocked || autoFillingConsole) return
+    const options = systemOptionsQuery.data?.data
+    if (!options) {
+      toast.error(t('System settings are still loading'))
+      return
+    }
+    const connection = readChannelProviderConnection(options, providerGroup)
+    if (
+      !connection.loginUrl &&
+      !connection.username &&
+      providerPasswordMask.length === 0
+    ) {
+      toast.error(
+        t('No saved credentials for this provider in System Settings')
+      )
+      return
+    }
+    setAutoFillingConsole(true)
+    try {
+      if (connection.loginUrl) {
+        form.setValue('console_login_url', connection.loginUrl, {
+          shouldDirty: true,
+        })
+      }
+      if (connection.username) {
+        form.setValue('console_username', connection.username, {
+          shouldDirty: true,
+        })
+      }
+      // 没有已存密码时只填明文，不弹无意义的验证对话框。
+      if (providerPasswordMask.length === 0) {
+        toast.success(t('Console credentials filled from System Settings'))
+        return
+      }
+      // 控制台密码单独走一次 step-up（proof 绑定 password option key）。
+      const revealed = await handleRevealProviderCredential(
+        channelProviderSecretOptionKey(providerGroup, 'password')
+      )
+      if (revealed === null) return
+      if (revealed.trim()) {
+        form.setValue('console_password', revealed, { shouldDirty: true })
+      }
+      toast.success(t('Console credentials filled from System Settings'))
+    } finally {
+      setAutoFillingConsole(false)
+    }
+  }, [
+    providerGroup,
+    sensitiveLocked,
+    autoFillingConsole,
+    providerPasswordMask,
+    systemOptionsQuery.data,
+    form,
+    handleRevealProviderCredential,
+    t,
+  ])
+
   // Ordinary edits use the saved channel. Advanced Custom retains its existing
-  // preview path, which reuses the saved credential on the server.
+  // preview path, and a provider reselected on the picker switches to preview
+  // as well: the form now carries a new type that the saved channel cannot
+  // discover. Both preview paths reuse the saved credential via channel_id.
   const previewModels =
     !isEditing ||
-    (isAdvancedCustomLikeChannelType(currentType) && canEditSensitive)
+    (canEditSensitive &&
+      (isAdvancedCustomLikeChannelType(currentType) ||
+        editedProviderTypeChanged))
   const canDiscoverModels = previewModels ? canEditSensitive : canOperateChannel
   const previewKey = isEditing ? undefined : currentKey
   const previewRequest = useMemo<ChannelModelDiscoveryRequest>(
@@ -1777,16 +2005,30 @@ export function ChannelMutateDrawer({
     () => ({ kind: 'saved', channelId: channelId || 0 }),
     [channelId]
   )
+  const canDiscoverWithCurrentRequest =
+    open &&
+    canDiscoverModels &&
+    MODEL_FETCHABLE_TYPES.has(currentType) &&
+    (!isEditing || Boolean(channelData?.data))
   const discovery = useChannelModelDiscovery({
-    enabled:
-      open &&
-      canDiscoverModels &&
-      MODEL_FETCHABLE_TYPES.has(currentType) &&
-      (!isEditing || Boolean(channelData?.data)),
+    enabled: canDiscoverWithCurrentRequest,
     request: previewModels ? previewRequest : savedRequest,
   })
-  const upstreamModelList =
-    discovery.status === 'success' ? discovery.models : NO_UPSTREAM_MODELS
+  const upstreamModelList = useMemo(() => {
+    if (discovery.status !== 'success') return NO_UPSTREAM_MODELS
+    if (!pricingDataReady) return discovery.models
+    return filterModelsWithBillablePrice(
+      pricingRows,
+      discovery.models,
+      currentModelMapping
+    )
+  }, [
+    discovery.status,
+    discovery.models,
+    pricingDataReady,
+    pricingRows,
+    currentModelMapping,
+  ])
   // 与「全部复制」保持同一语义：没有可执行的动作就禁用。
   // 上游模型已全部选中时，「全部选择」不再产生任何变化。
   const allUpstreamModelsSelected =
@@ -1881,11 +2123,30 @@ export function ChannelMutateDrawer({
     t,
   ])
 
+  const discoveryFetchModels = discovery.fetch
+  // Editing used to discover models only on an explicit click. Once the
+  // operator confirms a different provider, the model step must refetch once
+  // with the new type so the list reflects the newly selected model.
+  useEffect(() => {
+    if (!isEditing || !editedProviderTypeChanged) return
+    if (configurationSection !== 'models') return
+    if (!canDiscoverWithCurrentRequest) return
+    if (editedTypeDiscoveryRef.current === currentType) return
+    editedTypeDiscoveryRef.current = currentType
+    void discoveryFetchModels()
+  }, [
+    isEditing,
+    editedProviderTypeChanged,
+    configurationSection,
+    canDiscoverWithCurrentRequest,
+    currentType,
+    discoveryFetchModels,
+  ])
+
   // Creating a channel runs the upstream pipeline automatically: discover the
   // catalogue, create the disabled draft, sync and verify prices. Only the
   // credentials stay manual. Tests drive each step explicitly.
   const autoProvisionRuntime = process.env.NODE_ENV !== 'test'
-  const discoveryFetchModels = discovery.fetch
   useEffect(() => {
     if (!autoProvisionRuntime || !canAutoProvision) return
     if (configurationSection !== 'models') return
@@ -1914,9 +2175,6 @@ export function ChannelMutateDrawer({
     const discovered = discovery.models
     const run = async () => {
       try {
-        if (currentModelsArray.length === 0) {
-          updateModels(discovered)
-        }
         const result = await runChannelAutoProvision({
           createDraft: createDraftChannel,
           syncPrices: syncChannelUpstreamPrices,
@@ -1930,10 +2188,26 @@ export function ChannelMutateDrawer({
               priceCount: 0,
             }),
         })
+        // Only models with a billable price may enter the selection list. A
+        // failed pricing lookup is fail-closed: no model is offered instead of
+        // letting the operator pick one every relay call would reject.
+        const pricedResponse = await getChannelModelPricing(
+          result.channelId
+        ).catch(() => null)
+        const pricedModels = pricedResponse?.success
+          ? filterModelsWithBillablePrice(
+              pricedResponse.data?.items ?? [],
+              discovered,
+              form.getValues('model_mapping')
+            )
+          : []
+        if (currentModelsArray.length === 0) {
+          updateModels(pricedModels)
+        }
         autoProvisionChannelRef.current = result.channelId
         setAutoProvision({
           models: 'done',
-          modelsCount: discovered.length,
+          modelsCount: pricedModels.length,
           prices: 'done',
           priceCount: result.written,
           verification: result.verification,
@@ -1966,6 +2240,7 @@ export function ChannelMutateDrawer({
     createDraftChannel,
     updateModels,
     queryClient,
+    form,
     t,
   ])
 
@@ -4604,12 +4879,12 @@ export function ChannelMutateDrawer({
                   </Alert>
                 )}
                 {discovery.status === 'success' &&
-                  discovery.models.length === 0 && (
+                  upstreamModelList.length === 0 && (
                     <EmptyState
                       className='min-h-0 p-3'
                       title={t('No models returned by the upstream')}
                       description={t(
-                        'You can add models manually or try fetching again.'
+                        'Models without a usable price are hidden.'
                       )}
                       action={
                         <Button
@@ -4624,10 +4899,10 @@ export function ChannelMutateDrawer({
                     />
                   )}
                 {discovery.status === 'success' &&
-                  discovery.models.length > 0 && (
+                  upstreamModelList.length > 0 && (
                     <div className='space-y-3'>
                       <UpstreamModelSelection
-                        models={discovery.models}
+                        models={upstreamModelList}
                         selected={currentModelsArray}
                         existingModels={
                           isEditing
@@ -4842,6 +5117,23 @@ export function ChannelMutateDrawer({
   const connectionSection = (
     <div className='scroll-mt-4'>
       <ChannelApiAccessSection>
+        {providerGroup && (
+          <div className='mb-4 flex justify-end'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              disabled={sensitiveLocked || autoFillingCredentials === true}
+              data-testid='credentials-autofill-button'
+              onClick={() => void handleAutoFillCredentials()}
+            >
+              <Sparkles className='mr-2 h-4 w-4' aria-hidden='true' />
+              {autoFillingCredentials === true
+                ? t('Fetching...')
+                : t('Auto fill from settings')}
+            </Button>
+          </div>
+        )}
         {CHANNEL_TYPE_WARNINGS[currentType] && (
           <Alert>
             <AlertDescription>
@@ -4868,6 +5160,9 @@ export function ChannelMutateDrawer({
           hasStoredPassword={consoleHasPassword}
           onSaveCredentials={handleSaveConsoleCredentials}
           savingCredentials={savingConsoleCredentials}
+          showAutoFill={Boolean(providerGroup)}
+          onAutoFill={handleAutoFillConsole}
+          autoFilling={autoFillingConsole}
         />
 
         <div className='border-border/60 bg-muted/10 rounded-lg border p-4'>
@@ -5893,12 +6188,13 @@ export function ChannelMutateDrawer({
                       )
                     }
                     if (isEditing) {
-                      // 用后端下发的逐行掩码串作为占位提示：编辑态即可看到
-                      // 已存密钥的星号形态（与 API 密钥一致），但 value 仍为空，
-                      // 避免掩码串被当成新 key 写回后端。
+                      // 输入框只承载密钥本身：有已存密钥时显示逐行掩码，
+                      // 没有时显示正常的密钥格式提示。「留空以保留现有密钥」
+                      // 属于说明文案，统一只在输入框下方展示，避免与字段
+                      // 说明重复，也避免看起来像可填写内容。
                       keyPlaceholder = maskedKeyLines.length
-                        ? `${maskedKeyLines.join('\n')}\n${t('Leave empty to keep existing key')}`
-                        : t('Leave empty to keep existing key')
+                        ? maskedKeyLines.join('\n')
+                        : t(getKeyPromptForType(currentType))
                     } else if (
                       currentType === 33 &&
                       awsKeyType === 'api_key' &&

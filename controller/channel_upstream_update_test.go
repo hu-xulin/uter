@@ -737,6 +737,50 @@ func TestFetchModelsUterAPIUsesConfiguredUpstreamWhenFormBaseURLIsEmpty(t *testi
 	require.Equal(t, "/v1/models", <-requests)
 }
 
+func TestFetchBailianModelsNeverFallsBackToBuiltInCatalogue(t *testing.T) {
+	db := setupModelListControllerTestDB(t)
+	require.NoError(t, db.Create(&model.Model{
+		ModelName: "builtin-model-must-not-appear",
+		Status:    common.ChannelStatusEnabled,
+	}).Error)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	baseURL := server.URL
+	channel := &model.Channel{
+		Type:    constant.ChannelTypeAli,
+		Key:     "bailian-key",
+		BaseURL: &baseURL,
+	}
+	models, err := fetchChannelUpstreamModelIDs(channel)
+	require.Error(t, err, "a failed workspace discovery must surface instead of returning the 294-model built-in catalog")
+	require.Nil(t, models)
+}
+
+func TestFetchBailianModelsUsesWorkspaceModelList(t *testing.T) {
+	requests := make(chan string, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests <- r.URL.Path
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"data":[{"id":"qwen-plus"},{"id":"qwen-max"}]}`))
+	}))
+	defer server.Close()
+
+	baseURL := server.URL
+	channel := &model.Channel{
+		Type:    constant.ChannelTypeAli,
+		Key:     "bailian-key",
+		BaseURL: &baseURL,
+	}
+	models, err := fetchChannelUpstreamModelIDs(channel)
+	require.NoError(t, err)
+	require.Equal(t, []string{"qwen-plus", "qwen-max"}, models)
+	require.Equal(t, "/compatible-mode/v1/models", <-requests)
+}
+
 func TestResolveUterRouteModelFallbackUsesBuiltInCatalogue(t *testing.T) {
 	snapshot := &service.UpstreamSnapshot{
 		Models: []service.UpstreamModelRecord{

@@ -31,6 +31,10 @@ function readValues(
     username: settings[`channel_provider.${prefix}.username`] ?? '',
     password: settings[`channel_provider.${prefix}.password`] ?? '',
     apiKey: settings[`channel_provider.${prefix}.api_key`] ?? '',
+    apiUrl: settings[`channel_provider.${prefix}.api_url`] ?? '',
+    accessKeyId: settings[`channel_provider.${prefix}.access_key_id`] ?? '',
+    accessKeySecret:
+      settings[`channel_provider.${prefix}.access_key_secret`] ?? '',
     slots: readChannelProviderCredentialSlots(settings, prefix),
   }
 }

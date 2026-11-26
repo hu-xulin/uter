@@ -41,6 +41,10 @@ const (
 	channelUpstreamModelUpdateNotifyMaxFailedChannelIDs   = 10
 )
 
+// ErrBailianWorkspaceEndpointRequired is returned when a Bailian channel still
+// points at the web console instead of the workspace-scoped Model Studio API.
+var ErrBailianWorkspaceEndpointRequired = errors.New("Bailian workspace endpoint is required")
+
 var channelUpstreamModelUpdateSelectFields = []string{
 	"id",
 	"name",
@@ -426,7 +430,53 @@ func resolveUterRouteModelFallback(liveErr error, snapshot *service.UpstreamSnap
 // with models Uter already knows. The live result always wins when present.
 func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	names, err := fetchChannelUpstreamModelIDsFromUpstream(channel)
+	// Bailian is workspace-scoped: the built-in Uter catalogue spans every
+	// vendor/region and produced the misleading 294-model list when a console
+	// URL or a throttled workspace endpoint was used. Surface the real result
+	// (including its error) so operators can correct the workspace endpoint.
+	if channel != nil && channel.Type == constant.ChannelTypeAli {
+		if err != nil || len(names) == 0 {
+			// A saved RAM AccessKey is the unattended, region-scoped source of
+			// truth when the API-key based workspace request is unavailable.
+			// Never substitute the built-in catalogue here.
+			if akNames, akErr := fetchBailianAKModelIDs(channel); akErr == nil && len(akNames) > 0 {
+				return akNames, nil
+			}
+		}
+		if err != nil {
+			return nil, err
+		}
+		return names, nil
+	}
 	return resolveCatalogModelFallback(names, err, model.BuiltinCatalogModelNames())
+}
+
+// fetchBailianAKModelIDs discovers region-scoped models with the RAM
+// AccessKey pair saved in System Settings → Channels → Uter Bailian. The
+// console login URL is read only as a region hint and never used as an API
+// endpoint; a missing region or invalid credential fails closed.
+func fetchBailianAKModelIDs(channel *model.Channel) ([]string, error) {
+	if channel == nil {
+		return nil, errors.New("Bailian channel is required")
+	}
+	credentials := service.BailianChannelProviderCredentials()
+	if err := service.ValidateBailianAccessKey(
+		credentials.AccessKeyID, credentials.AccessKeySecret,
+	); err != nil {
+		return nil, err
+	}
+	_, region, workspaceScoped := service.ParseBailianWorkspace(channel.GetBaseURL())
+	if !workspaceScoped || region == service.BailianRegionUnspecified {
+		region = service.BailianRegionFromConsoleURL(credentials.LoginURL)
+	}
+	if region == service.BailianRegionUnspecified {
+		return nil, service.ErrBailianRegionUnknown
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
+	defer cancel()
+	return service.ListBailianOpenAPIModels(
+		ctx, region, credentials.AccessKeyID, credentials.AccessKeySecret,
+	)
 }
 
 // resolveCatalogModelFallback keeps the live discovery result when it exists,
@@ -483,6 +533,12 @@ func fetchChannelUpstreamModelIDsFromUpstream(channel *model.Channel) ([]string,
 	}
 	if channel.Type == constant.ChannelTypeAli {
 		baseURL = normalizeBailianChannelBaseURL(baseURL)
+		if service.IsBailianConsoleURL(baseURL) {
+			return nil, fmt.Errorf(
+				"%w: use the workspace endpoint built from region and workspace ID (https://<workspace>.<region>.maas.aliyuncs.com)",
+				ErrBailianWorkspaceEndpointRequired,
+			)
+		}
 	}
 
 	if channel.Type == constant.ChannelTypeOllama {

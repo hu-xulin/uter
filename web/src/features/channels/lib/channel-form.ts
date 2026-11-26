@@ -647,6 +647,21 @@ export function transformChannelToFormDefaults(
       }
       if (parsed.advanced_custom) {
         advancedCustom = stringifyAdvancedCustomConfig(parsed.advanced_custom)
+        // Advanced Custom (type 58) stores its branding inside advanced_custom,
+        // not in `branding`. Mirror the display fields into the branding form
+        // fields so the drawer header (which watches branding_*) renders the
+        // configured logo/name. The generic branding editor is hidden for type
+        // 58, so this mirror never competes with a separate branding value;
+        // buildSettingJSON still writes branding only for non-58 types.
+        const acBranding = parsed.advanced_custom as {
+          display_name?: string
+          logo?: string
+          logo_dark?: string
+        }
+        brandingDisplayName =
+          brandingDisplayName || acBranding.display_name || ''
+        brandingLogo = brandingLogo || acBranding.logo || ''
+        brandingLogoDark = brandingLogoDark || acBranding.logo_dark || ''
       }
       if (parsed.plugin_config) {
         pluginConfig = JSON.stringify(parsed.plugin_config, null, 2)

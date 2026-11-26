@@ -324,6 +324,50 @@ func TestCreateUterAPIChannelsExplicitKeyWinsOverSystemSettings(t *testing.T) {
 	assert.Equal(t, "claude-operator-key", created.Key)
 }
 
+// 系统设置「优特订阅」里的控制台登录信息必须在新建 Uter.api 渠道时落库；
+// 密码只能以加密信封保存，不能回显，也不能破坏渠道级定价设置。
+func TestCreateUterAPIChannelsFillsConsoleCredentialsFromSystemSettings(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+	initConsoleTestSecrets(t)
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderSubscriptionLoginURLOption: "https://console.example.com",
+		service.ChannelProviderSubscriptionUsernameOption: "subscription-user",
+		service.ChannelProviderSubscriptionPasswordOption: "subscription-password",
+	})
+
+	recorder := runUterAPICreate(t, `{"slots":[
+		{"name":"Uter.api-console","group":"Claude-max","keys":["claude-key"]}
+	],"group":"default"}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	assert.Contains(t, recorder.Body.String(), `"created":1`)
+
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "Uter.api-console" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+
+	var settings map[string]any
+	require.NoError(t, common.UnmarshalJsonStr(created.OtherSettings, &settings))
+	console, ok := settings["upstream_console"].(map[string]any)
+	require.True(t, ok, "created channel must inherit console credentials")
+	assert.Equal(t, "https://console.example.com", console["login_url"])
+	assert.Equal(t, "subscription-user", console["username"])
+	assert.NotContains(t, console, "password")
+	encrypted, ok := console["password_encrypted"].(string)
+	require.True(t, ok, "password must be persisted only as an encrypted envelope")
+	plain, err := common.DecryptSecret(encrypted)
+	require.NoError(t, err)
+	assert.Equal(t, "subscription-password", plain)
+	assert.Equal(t, dto.ChannelPricingModeScopedActive, created.GetOtherSettings().PricingMode)
+}
+
 // 系统设置没配 key 且 slot 也没带 key 时不能凭空创建渠道。
 func TestCreateUterAPIChannelsNoKeyNoCreate(t *testing.T) {
 	setupUterAPIRecipeDB(t)
