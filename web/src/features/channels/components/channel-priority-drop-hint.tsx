@@ -82,7 +82,7 @@ export function ChannelPriorityDropHint(props: {
             : t('Release to insert a new priority tier')}
         </span>
       </Badge>
-      <p className='text-muted-foreground mt-2 text-sm'>{detail}</p>
+      <p className='text-muted-foreground mt-2 pl-7.5 text-sm'>{detail}</p>
     </div>,
     props.container
   )
