@@ -25,6 +25,29 @@ func RegisterScheduledSystemTasks() {
 	service.RegisterSystemTaskHandler(midjourneyRefundRecoveryHandler{})
 	service.RegisterSystemTaskHandler(midjourneyRefundOutboxHandler{})
 	service.RegisterSystemTaskHandler(systemTaskCleanupHandler{})
+	service.RegisterSystemTaskHandler(upstreamMonitorHandler{})
+}
+
+// upstreamMonitorHandler runs the scheduled probe sweep for all enabled
+// upstream monitor tasks. Per-task intervals are enforced inside the runner,
+// so the framework-level interval is a fixed one-minute scan cadence.
+type upstreamMonitorHandler struct{}
+
+func (upstreamMonitorHandler) Type() string { return model.SystemTaskTypeUpstreamMonitor }
+
+func (upstreamMonitorHandler) Enabled() bool { return true }
+
+func (upstreamMonitorHandler) Interval() time.Duration { return time.Minute }
+
+func (upstreamMonitorHandler) NewPayload() any { return nil }
+
+func (upstreamMonitorHandler) Run(ctx context.Context, task *model.SystemTask, runnerID string) {
+	summary, err := service.RunScheduledUpstreamMonitor(ctx)
+	if err != nil {
+		finishSystemTaskHandler(task, runnerID, model.SystemTaskStatusFailed, nil, err)
+		return
+	}
+	finishSystemTaskHandler(task, runnerID, model.SystemTaskStatusSucceeded, summary, nil)
 }
 
 // systemTaskCleanupHandler removes the finished system task rows the

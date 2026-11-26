@@ -242,6 +242,18 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	"POST /api/upstream/uterroute/sync":            accessTokenScopeRule("option:write"),
 	"GET /api/upstream/uterroute/snapshot":         accessTokenScopeRule("option:read"),
 	"GET /api/upstream/uterroute/endpoint":         accessTokenScopeRule("option:read"),
+	// router/api-router.go: /api/upstream-monitor is RootAuth-only (reads and
+	// writes upstream credentials/reports), so no personal access token scope
+	// can stand in for the Root session.
+	"GET /api/upstream-monitor":             accessTokenSessionRule,
+	"GET /api/upstream-monitor/:id":         accessTokenSessionRule,
+	"POST /api/upstream-monitor":            accessTokenSessionRule,
+	"POST /api/upstream-monitor/models":     accessTokenSessionRule,
+	"PUT /api/upstream-monitor/:id":         accessTokenSessionRule,
+	"DELETE /api/upstream-monitor/:id":      accessTokenSessionRule,
+	"POST /api/upstream-monitor/:id/run":    accessTokenSessionRule,
+	"GET /api/upstream-monitor/:id/reports": accessTokenSessionRule,
+	"GET /api/upstream-monitor/reports/:id": accessTokenSessionRule,
 
 	// router/api-router.go: /api/performance, /api/system-task, /api/system-info
 	"GET /api/performance/stats":                   accessTokenScopeRule("ops:read"),

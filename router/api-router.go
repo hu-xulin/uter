@@ -352,6 +352,19 @@ func SetApiRouter(router *gin.Engine) {
 			upstreamRoute.GET("/uterroute/snapshot", controller.GetUterRouteUpstreamSnapshot)
 			upstreamRoute.GET("/uterroute/endpoint", controller.GetUterRouteEndpoint)
 		}
+		upstreamMonitorRoute := apiRouter.Group("/upstream-monitor")
+		upstreamMonitorRoute.Use(middleware.RootAuth())
+		{
+			upstreamMonitorRoute.GET("", controller.GetUpstreamMonitorTasks)
+			upstreamMonitorRoute.POST("/models", controller.FetchUpstreamMonitorModels)
+			upstreamMonitorRoute.GET("/:id", controller.GetUpstreamMonitorTask)
+			upstreamMonitorRoute.POST("", controller.CreateUpstreamMonitorTask)
+			upstreamMonitorRoute.PUT("/:id", controller.UpdateUpstreamMonitorTask)
+			upstreamMonitorRoute.DELETE("/:id", controller.DeleteUpstreamMonitorTask)
+			upstreamMonitorRoute.POST("/:id/run", controller.RunUpstreamMonitorNow)
+			upstreamMonitorRoute.GET("/:id/reports", controller.GetUpstreamMonitorReports)
+			upstreamMonitorRoute.GET("/reports/:id", controller.GetUpstreamMonitorReport)
+		}
 		requestPluginRoute := apiRouter.Group("/request_plugin")
 		requestPluginRoute.Use(middleware.RootAuth())
 		{
