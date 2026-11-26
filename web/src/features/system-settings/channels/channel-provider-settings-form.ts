@@ -23,6 +23,11 @@ import type {
   SystemOption,
   UpdateOptionRequest,
 } from '../types'
+import {
+  buildChannelProviderCredentialSlotUpdates,
+  channelProviderSlotAPIKeyOption,
+  type ChannelProviderCredentialSlot,
+} from './channel-provider-credential-slots'
 
 export type ChannelProviderPrefix = 'featured' | 'bailian' | 'subscription'
 
@@ -31,9 +36,12 @@ export type ChannelProviderFormValues = {
   username: string
   password: string
   apiKey: string
+  slots: ChannelProviderCredentialSlot[]
 }
 
-const OPTION_SUFFIX: Record<keyof ChannelProviderFormValues, string> = {
+type ChannelProviderBaseField = 'loginUrl' | 'username' | 'password' | 'apiKey'
+
+const OPTION_SUFFIX: Record<ChannelProviderBaseField, string> = {
   loginUrl: 'login_url',
   username: 'username',
   password: 'password',
@@ -42,14 +50,20 @@ const OPTION_SUFFIX: Record<keyof ChannelProviderFormValues, string> = {
 
 export function channelProviderOptionKey(
   prefix: ChannelProviderPrefix,
-  field: keyof ChannelProviderFormValues
+  field: ChannelProviderBaseField
 ) {
   return `channel_provider.${prefix}.${OPTION_SUFFIX[field]}`
+}
+
+type ChannelProviderSlotMask = {
+  id?: string
+  api_key?: string
 }
 
 type ChannelProviderMaskGroup = {
   password?: string
   api_key?: string
+  slots?: ChannelProviderSlotMask[]
 }
 
 type ChannelProviderMaskView = Partial<
@@ -84,6 +98,24 @@ export function applyChannelProviderMaskView(
 
   const parsed = view as ChannelProviderMaskView
   const next = { ...settings }
+
+  // getOptionValue only keeps keys declared in defaultSettings, so the dynamic
+  // per-provider credential-slot keys never survive it. Without the metadata
+  // option, readChannelProviderCredentialSlots() returns [] after every save
+  // refetch and useResetForm wipes the operator's groups. Restore the metadata
+  // verbatim from the raw options here (this resolver is the only channel
+  // settings hook that sees them). Slot API keys are deliberately NOT copied
+  // from raw: they are set from the derived mask view below, so plaintext
+  // credentials never reach the form state.
+  const rawByKey = new Map(raw?.map((option) => [option.key, option.value]))
+  for (const prefix of ['featured', 'bailian', 'subscription'] as const) {
+    const metadataKey = `channel_provider.${prefix}.credential_slots`
+    const metadata = rawByKey.get(metadataKey)
+    if (typeof metadata === 'string' && metadata) {
+      next[metadataKey] = metadata
+    }
+  }
+
   for (const prefix of ['featured', 'bailian', 'subscription'] as const) {
     const group = parsed[prefix]
     if (!group || typeof group !== 'object') continue
@@ -92,6 +124,17 @@ export function applyChannelProviderMaskView(
     }
     if (typeof group.api_key === 'string') {
       next[`channel_provider.${prefix}.api_key`] = group.api_key
+    }
+    for (const slot of group.slots ?? []) {
+      if (
+        !slot ||
+        typeof slot.id !== 'string' ||
+        typeof slot.api_key !== 'string'
+      ) {
+        continue
+      }
+      const optionKey = channelProviderSlotAPIKeyOption(prefix, slot.id)
+      if (optionKey) next[optionKey] = slot.api_key
     }
   }
   return next
@@ -111,7 +154,7 @@ export function buildChannelProviderUpdates(
   defaults: ChannelProviderFormValues
 ): UpdateOptionRequest[] {
   const updates: UpdateOptionRequest[] = []
-  const fields: (keyof ChannelProviderFormValues)[] = [
+  const fields: ChannelProviderBaseField[] = [
     'loginUrl',
     'username',
     'password',
@@ -132,5 +175,12 @@ export function buildChannelProviderUpdates(
     })
   }
 
+  updates.push(
+    ...buildChannelProviderCredentialSlotUpdates(
+      prefix,
+      values.slots ?? [],
+      defaults.slots ?? []
+    )
+  )
   return updates
 }

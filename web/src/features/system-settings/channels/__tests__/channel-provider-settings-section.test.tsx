@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createInstance, type i18n } from 'i18next'
 import { useState } from 'react'
 import { I18nextProvider } from 'react-i18next'
@@ -34,6 +35,18 @@ vi.mock('../../hooks/use-update-option', () => ({
   useUpdateOption: () => ({
     mutateAsync: vi.fn().mockResolvedValue(undefined),
     isPending: false,
+  }),
+}))
+
+vi.mock('../../../channels/api', () => ({
+  getUterAPIPricingGroups: vi.fn().mockResolvedValue({
+    success: true,
+    data: {
+      groups: [
+        { key: 'claude-economy', name: 'Claude Code · 经济' },
+        { key: 'claude-standard', name: 'Claude Code · 标准' },
+      ],
+    },
   }),
 }))
 
@@ -67,6 +80,7 @@ function Fixture(props: { prefix: ChannelProviderPrefix }) {
               username: '',
               password: 'abcd****wxyz',
               apiKey: 'key1****aaaa\nkey2****bbbb',
+              slots: [],
             }}
             disclosure={disclosure}
           />
@@ -94,14 +108,15 @@ describe('ChannelProviderSettingsSection credential inputs', () => {
   ]
 
   it.each(prefixes)(
-    '%s renders API Key as a multiline textarea (one key per line)',
+    '%s renders only grouped key fields, with no standalone API Key field',
     async (prefix) => {
       render(<Fixture prefix={prefix} />)
-      const apiKey = await screen.findByLabelText('API Key')
-      // SecretTextarea wraps a <textarea>; its read-only display shows the
-      // per-line backend mask with the newline preserved.
-      expect(apiKey.tagName).toBe('TEXTAREA')
-      expect((apiKey as HTMLTextAreaElement).value).toContain('\n')
+      // The standalone "API Key" textarea duplicated the grouped slots below
+      // it and has been removed for every provider (featured/bailian/
+      // subscription share this section).
+      expect(screen.queryByLabelText('API Key')).toBeNull()
+      const groupedKey = await screen.findByLabelText('API keys 1')
+      expect(groupedKey.tagName).toBe('TEXTAREA')
     }
   )
 
@@ -114,33 +129,43 @@ describe('ChannelProviderSettingsSection credential inputs', () => {
     }
   )
 
-  it.each([
-    [
-      'featured',
-      'Saved Uter Route API keys, one per line; used when creating Uter Route channels.',
-    ],
-    [
-      'bailian',
-      'Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.',
-    ],
-    [
-      'subscription',
-      'Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.',
-    ],
-  ] as const)('%s explains which saved key it stores', async (prefix, hint) => {
-    render(<Fixture prefix={prefix} />)
-    expect(await screen.findByText(hint)).toBeVisible()
-  })
-
-  it.each(['featured', 'bailian', 'subscription'] as const)(
-    '%s shows the credential group and key format',
+  it.each(prefixes)(
+    '%s renders grouped key slot controls with mode and keys',
     async (prefix) => {
       render(<Fixture prefix={prefix} />)
-      expect(
-        await screen.findByText(
-          /Credential group: .+\. Key format: multi-line, one key per line; a single key occupies one line\./
-        )
-      ).toBeVisible()
+      expect(await screen.findByText('Grouped API keys')).toBeVisible()
+      expect(screen.getByLabelText('Key group 1')).toBeInTheDocument()
+      expect(screen.getByLabelText('Add Mode 1')).toBeInTheDocument()
+      expect(screen.getByLabelText('API keys 1')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Add group' })).toBeVisible()
     }
   )
+
+  it('subscription offers the upstream pricing groups in the key slot', async () => {
+    const user = userEvent.setup()
+    render(<Fixture prefix='subscription' />)
+    const groupSelect = await screen.findByRole('combobox', {
+      name: 'Key group 1',
+    })
+    await user.click(groupSelect)
+    expect(
+      await screen.findByRole('option', { name: 'Claude Code · 经济' })
+    ).toBeVisible()
+    expect(screen.getByText('Claude Code · 标准')).toBeVisible()
+  })
+
+  it('reveals the rotation strategy only for multi-key mode', async () => {
+    const user = userEvent.setup()
+    render(<Fixture prefix='bailian' />)
+    expect(screen.queryByLabelText('Rotation strategy 1')).toBeNull()
+    await user.click(screen.getByLabelText('Add Mode 1'))
+    await user.click(
+      await screen.findByRole('option', {
+        name: 'Multi-Key Mode (multiple keys, one channel)',
+      })
+    )
+    expect(
+      await screen.findByLabelText('Rotation strategy 1')
+    ).toBeInTheDocument()
+  })
 })

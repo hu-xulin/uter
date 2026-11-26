@@ -233,6 +233,12 @@ import {
 } from '../../lib/channel-plugin-extensions'
 import { shouldBlockSubmitForPricing } from '../../lib/channel-submit-guard'
 import { getChannelTypeConfig } from '../../lib/channel-type-config'
+import {
+  buildCredentialSlots,
+  createCredentialSlot,
+  type CredentialKeyMode,
+  type CredentialSlot,
+} from '../../lib/credential-slots'
 import { summarizeSelectedPricingReadiness } from '../../lib/pricing-readiness'
 import {
   collectInvalidStatusCodeEntries,
@@ -467,6 +473,16 @@ function splitKeyLines(raw: string): string[] {
   ]
 }
 
+function credentialModeDescriptionKey(mode: CredentialKeyMode): string {
+  if (mode === 'batch') {
+    return 'One key per line, each key creates one channel'
+  }
+  if (mode === 'multi_to_single') {
+    return 'All keys on separate lines share one channel'
+  }
+  return 'Only the first key is used for a single-key channel'
+}
+
 type AutoProvisionStep = 'idle' | 'running' | 'done' | 'error'
 type AutoProvisionState = {
   models: AutoProvisionStep
@@ -582,8 +598,12 @@ export function ChannelMutateDrawer({
   const managedCredentialsRef = useRef(false)
   managedCredentialsRef.current =
     providerTarget?.kind === 'uterapi' && !isEditing
+  // One row per upstream group. Each row carries its own key mode so a single
+  // submission can create channels for several groups with different keys.
+  const [credentialSlots, setCredentialSlots] = useState<CredentialSlot[]>([
+    createCredentialSlot(),
+  ])
   const [uterapiGroupName, setUterapiGroupName] = useState('')
-  const [uterapiKeysText, setUterapiKeysText] = useState('')
   const isBailianTarget =
     providerTarget?.kind === 'builtin' &&
     providerTarget.type === CHANNEL_TYPE_ALI
@@ -826,11 +846,10 @@ export function ChannelMutateDrawer({
       ),
     [uterapiGroupsQuery.data]
   )
-  const selectedUterapiGroup =
-    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)
+  const selectedUterapiGroup = uterapiGroupSlots.find(
+    (slot) => slot.name === uterapiGroupName
+  )
   const selectedUterapiGroupKey = selectedUterapiGroup?.group ?? ''
-  const selectedUterapiGroupLabel =
-    selectedUterapiGroup?.label ?? t('Choose a group')
   const isUterRouteTarget = providerTarget?.kind === 'uterroute'
   const isBailianProvider = currentType === 17
   const uterRouteEndpointQuery = useQuery({
@@ -1205,7 +1224,6 @@ export function ChannelMutateDrawer({
         // so clear its transient error now that managed mode is active.
         form.clearErrors(['key', 'base_url'])
         setUterapiGroupName('')
-        setUterapiKeysText('')
         setProviderTarget(target)
         setChoosingProvider(false)
         setShowDraftPricing(false)
@@ -2441,20 +2459,31 @@ export function ChannelMutateDrawer({
       if (!isEditing && (!providerTarget || !canEditSensitive)) return
 
       if (!isEditing && providerTarget?.kind === 'uterapi') {
-        const slot = uterapiGroupSlots.find(
-          (candidate) => candidate.name === uterapiGroupName
+        const built = buildCredentialSlots(
+          credentialSlots,
+          (groupName) =>
+            uterapiGroupSlots.find(
+              (candidate) => candidate.name === groupName
+            ) ?? null,
+          subscriptionKeyMask.length > 0
         )
-        const keys = splitKeyLines(uterapiKeysText)
-        // keys 为空是合法的：服务端会用系统设置里的优特订阅 key 补齐（明文
-        // 不下发浏览器）。只有两边都没有 key 时才阻止提交。
-        if (!slot || (keys.length === 0 && subscriptionKeyMask.length === 0)) {
-          toast.error(t('Choose a group and enter at least one API key'))
+        // A row with no key may still fall back to the saved server key. Only
+        // block when no group was chosen at all, or a row has neither a key nor
+        // a saved fallback.
+        if (built.empty || built.hasMissingKey) {
+          toast.error(
+            built.empty
+              ? t('Choose a group and enter at least one API key')
+              : t(
+                  'Enter an API key for every group, or leave it empty to use the saved key'
+                )
+          )
           setConfigurationSection('connection')
           return
         }
         try {
           const response = await createUterAPIChannels({
-            slots: [{ name: slot.name, group: slot.group, keys }],
+            slots: built.slots,
             group: (data.group ?? []).join(',') || 'default',
             models: data.models ?? '',
             model_mapping: data.model_mapping ?? '',
@@ -2662,8 +2691,7 @@ export function ChannelMutateDrawer({
       effectiveChannelId,
       pricingReadinessQuery.data,
       pricingRows,
-      uterapiGroupName,
-      uterapiKeysText,
+      credentialSlots,
       subscriptionKeyMask,
       uterapiGroupSlots,
       openAdvancedBlock,
@@ -5611,7 +5639,7 @@ export function ChannelMutateDrawer({
             )}
 
             <ChannelAuthSection>
-              {!isEditing && (
+              {!isEditing && providerTarget?.kind !== 'uterapi' && (
                 <FormField
                   control={form.control}
                   name='multi_key_mode'
@@ -5660,71 +5688,192 @@ export function ChannelMutateDrawer({
                 <div className='space-y-4'>
                   <p className='text-muted-foreground text-sm'>
                     {t(
-                      'One channel per creation. Choose the group this key belongs to, then paste its key (one per line).'
+                      'Add one row per group. Each group can use a different key mode; every key is entered on its own line below.'
                     )}
                   </p>
-                  <div className='space-y-2'>
-                    <Label>{t('Group')}</Label>
-                    <Select
-                      value={uterapiGroupName}
-                      onValueChange={(value) =>
-                        setUterapiGroupName(value ?? '')
-                      }
-                      items={uterapiGroupSlots.map((slot) => ({
-                        value: slot.name,
-                        label: slot.label,
-                      }))}
-                    >
-                      <SelectTrigger aria-label={t('Group')}>
-                        <SelectValue placeholder={t('Choose a group')} />
-                      </SelectTrigger>
-                      <SelectContent alignItemWithTrigger={false}>
-                        <SelectGroup>
-                          {uterapiGroupSlots.map((slot) => (
-                            <SelectItem key={slot.name} value={slot.name}>
-                              {slot.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className='space-y-2'>
-                    <Label>{t('API keys')}</Label>
-                    <p className='text-muted-foreground text-sm'>
-                      {t(
-                        'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
-                        { group: selectedUterapiGroupLabel }
-                      )}
-                    </p>
-                    <Textarea
-                      aria-label={t('API keys')}
-                      rows={3}
-                      value={uterapiKeysText}
-                      onChange={(event) => {
-                        const value = event.target.value
-                        setUterapiKeysText(value)
-                        // The Uter.api flow submits from uterapiKeysText, not
-                        // the form field. Mirror the first key so upstream
-                        // model fetch and connection validation, which read
-                        // form.key, see the real credential instead of
-                        // flagging a missing key.
-                        form.setValue('key', splitKeyLines(value)[0] ?? '', {
-                          shouldValidate: true,
-                          shouldDirty: true,
-                        })
-                      }}
-                      placeholder={t('One key per line')}
-                    />
-                    {renderManagedKeyHint(
-                      t(
-                        'Selected group: {{group}}. Leave empty to use the saved Uter.api subscription keys below.',
-                        { group: selectedUterapiGroupLabel }
-                      ),
-                      subscriptionKeyMask,
-                      'uterapi-subscription-key-hint'
-                    )}
-                  </div>
+                  {credentialSlots.map((slot, index) => {
+                    const groupLabel =
+                      uterapiGroupSlots.find(
+                        (candidate) => candidate.name === slot.groupName
+                      )?.label ?? t('Choose a group')
+                    return (
+                      <section
+                        key={slot.id}
+                        className='space-y-3 rounded-lg border p-4'
+                        aria-label={t('Group {{index}}', { index: index + 1 })}
+                      >
+                        {credentialSlots.length > 1 && (
+                          <div className='flex justify-end'>
+                            <Button
+                              type='button'
+                              variant='ghost'
+                              size='sm'
+                              onClick={() =>
+                                setCredentialSlots((current) =>
+                                  current.filter((row) => row.id !== slot.id)
+                                )
+                              }
+                            >
+                              {t('Remove')}
+                            </Button>
+                          </div>
+                        )}
+                        <div className='space-y-2'>
+                          <Label>
+                            {index === 0
+                              ? t('Group')
+                              : t('Group {{index}}', { index: index + 1 })}
+                          </Label>
+                          <Select
+                            value={slot.groupName}
+                            onValueChange={(value) => {
+                              const groupName = value ?? ''
+                              setCredentialSlots((current) =>
+                                current.map((row) =>
+                                  row.id === slot.id
+                                    ? { ...row, groupName }
+                                    : row
+                                )
+                              )
+                              if (index === 0) setUterapiGroupName(groupName)
+                            }}
+                            items={uterapiGroupSlots.map((candidate) => ({
+                              value: candidate.name,
+                              label: candidate.label,
+                            }))}
+                          >
+                            <SelectTrigger
+                              aria-label={
+                                index === 0
+                                  ? t('Group')
+                                  : t('Group {{index}}', { index: index + 1 })
+                              }
+                            >
+                              <SelectValue placeholder={t('Choose a group')} />
+                            </SelectTrigger>
+                            <SelectContent alignItemWithTrigger={false}>
+                              <SelectGroup>
+                                {uterapiGroupSlots.map((candidate) => (
+                                  <SelectItem
+                                    key={candidate.name}
+                                    value={candidate.name}
+                                  >
+                                    {candidate.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className='space-y-2'>
+                          <Label>{t('Add Mode')}</Label>
+                          <Select
+                            value={slot.mode}
+                            onValueChange={(value) =>
+                              setCredentialSlots((current) =>
+                                current.map((row) =>
+                                  row.id === slot.id
+                                    ? {
+                                        ...row,
+                                        mode: value as CredentialKeyMode,
+                                      }
+                                    : row
+                                )
+                              )
+                            }
+                            items={ADD_MODE_OPTIONS.map((option) => ({
+                              value: option.value,
+                              label: t(option.label),
+                            }))}
+                          >
+                            <SelectTrigger
+                              aria-label={
+                                index === 0
+                                  ? t('Add Mode')
+                                  : t('Add Mode {{index}}', {
+                                      index: index + 1,
+                                    })
+                              }
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent alignItemWithTrigger={false}>
+                              <SelectGroup>
+                                {ADD_MODE_OPTIONS.map((option) => (
+                                  <SelectItem
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {t(option.label)}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className='space-y-2'>
+                          <Label>{t('API keys')}</Label>
+                          <p className='text-muted-foreground text-sm'>
+                            {t(credentialModeDescriptionKey(slot.mode))}
+                          </p>
+                          <Textarea
+                            aria-label={
+                              index === 0
+                                ? t('API keys')
+                                : t('API keys {{index}}', { index: index + 1 })
+                            }
+                            rows={3}
+                            value={slot.keysText}
+                            onChange={(event) => {
+                              const value = event.target.value
+                              setCredentialSlots((current) =>
+                                current.map((row) =>
+                                  row.id === slot.id
+                                    ? { ...row, keysText: value }
+                                    : row
+                                )
+                              )
+                              if (index === 0) {
+                                // Model fetch / connection validation read
+                                // form.key, so mirror the first key of row 1.
+                                form.setValue(
+                                  'key',
+                                  splitKeyLines(value)[0] ?? '',
+                                  {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                  }
+                                )
+                              }
+                            }}
+                            placeholder={t('One key per line')}
+                          />
+                          {index === 0 &&
+                            renderManagedKeyHint(
+                              t(
+                                'Selected group: {{group}}. Leave empty to use the saved Uter.api subscription keys below.',
+                                { group: groupLabel }
+                              ),
+                              subscriptionKeyMask,
+                              'uterapi-subscription-key-hint'
+                            )}
+                        </div>
+                      </section>
+                    )
+                  })}
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    onClick={() =>
+                      setCredentialSlots((current) => [
+                        ...current,
+                        createCredentialSlot(),
+                      ])
+                    }
+                  >
+                    {t('Add group')}
+                  </Button>
                 </div>
               )}
               {/* 编辑态走 PUT 更新，凭据按普通渠道字段保存；只有新建托管渠道
@@ -5830,7 +5979,8 @@ export function ChannelMutateDrawer({
                                 )}
                               </span>
                             )}
-                            {!isEditing && isUterRouteCredentialTarget &&
+                            {!isEditing &&
+                              isUterRouteCredentialTarget &&
                               renderManagedKeyHint(
                                 t(
                                   'Leave empty to use the Uter Route key saved in System Settings'
@@ -5838,7 +5988,8 @@ export function ChannelMutateDrawer({
                                 featuredKeyMask,
                                 'uterroute-saved-key-hint'
                               )}
-                            {!isEditing && isBailianTarget &&
+                            {!isEditing &&
+                              isBailianTarget &&
                               renderManagedKeyHint(
                                 t(
                                   'Leave empty to use the Alibaba Bailian key saved in System Settings'
@@ -6168,9 +6319,7 @@ export function ChannelMutateDrawer({
       >
         {hintText}
         <span className='mt-1 block font-mono whitespace-pre-line'>
-          {masks
-            .map((mask, index) => `${index + 1}. ${mask}`)
-            .join('\n')}
+          {masks.map((mask, index) => `${index + 1}. ${mask}`).join('\n')}
         </span>
       </span>
     )
@@ -6297,11 +6446,6 @@ export function ChannelMutateDrawer({
     },
   ]
 
-  const selectedUterapiSlot = uterapiGroupSlots.find(
-    (slot) => slot.name === uterapiGroupName
-  )
-  const uterapiKeyCount = splitKeyLines(uterapiKeysText).length
-
   const visibleReviewRows =
     !isEditing && (isUterApiTarget || isUterRouteTarget)
       ? reviewRows.filter((row) => row.label !== t('Base URL'))
@@ -6332,29 +6476,42 @@ export function ChannelMutateDrawer({
       {!isEditing && isUterApiTarget ? (
         <section className='space-y-3 rounded-lg border p-4'>
           <div className='space-y-1'>
-            <p className='font-medium'>{t('Channel to create')}</p>
+            <p className='font-medium'>{t('Channels to create')}</p>
             <p className='text-muted-foreground text-sm'>
-              {t(
-                'Only this group becomes a channel; run the flow again for another group.'
-              )}
+              {t('Every group below becomes a channel using its own key mode.')}
             </p>
           </div>
-          <div className='flex items-center justify-between gap-2 text-sm'>
-            <span className='font-medium'>
-              {selectedUterapiSlot
-                ? selectedUterapiSlot.label
-                : t('No group chosen')}
-            </span>
-            {uterapiKeyCount > 0 ? (
-              <Badge variant='secondary'>
-                {t('{{count}} keys', { count: uterapiKeyCount })}
-              </Badge>
-            ) : (
-              <span className='text-muted-foreground text-xs'>
-                {t('No key yet')}
-              </span>
-            )}
-          </div>
+          {credentialSlots.map((slot, index) => {
+            const label =
+              uterapiGroupSlots.find(
+                (candidate) => candidate.name === slot.groupName
+              )?.label ?? t('No group chosen')
+            const count = splitKeyLines(slot.keysText).length
+            return (
+              <div
+                key={slot.id}
+                className='flex items-center justify-between gap-2 text-sm'
+              >
+                <span className='font-medium'>
+                  {t('Group {{index}}', { index: index + 1 })}: {label}
+                </span>
+                <span className='flex items-center gap-2'>
+                  <span className='text-muted-foreground text-xs'>
+                    {t(credentialModeDescriptionKey(slot.mode))}
+                  </span>
+                  {count > 0 ? (
+                    <Badge variant='secondary'>
+                      {t('{{count}} keys', { count })}
+                    </Badge>
+                  ) : (
+                    <span className='text-muted-foreground text-xs'>
+                      {t('No key yet')}
+                    </span>
+                  )}
+                </span>
+              </div>
+            )
+          })}
           <p className='text-muted-foreground text-sm'>
             {t(
               'Models, prices and billing rules are fetched automatically when you create.'

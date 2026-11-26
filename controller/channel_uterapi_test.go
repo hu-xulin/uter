@@ -343,3 +343,40 @@ func TestCreateUterAPIChannelsNoKeyNoCreate(t *testing.T) {
 		assert.NotEqual(t, "Uter.api-nokey", ch.Name)
 	}
 }
+
+func TestResolveUterAPICreateSlotsUsesSavedGroupMode(t *testing.T) {
+	credentials := service.ChannelProviderCredentials{
+		APIKey: "legacy-key",
+		Slots: []service.ChannelProviderCredentialSlot{
+			{
+				ID:       "slot-economy",
+				Group:    "Claude-max",
+				Mode:     "batch",
+				Strategy: "random",
+				Keys:     []string{"claude-one", "claude-two"},
+			},
+			{
+				ID:       "slot-codex",
+				Group:    "Codex Pro",
+				Mode:     "multi_to_single",
+				Strategy: "polling",
+				Keys:     []string{"codex-one", "codex-two"},
+			},
+		},
+	}
+
+	resolved := resolveUterAPICreateSlots([]uterapiKeySlot{
+		{Name: "Economy", Group: "Claude-max", Keys: []string{}},
+		{Name: "Codex", Group: "Codex Pro", Keys: []string{}},
+	}, credentials)
+
+	require.Equal(t, []resolvedUterapiSlot{
+		{Name: "Economy 1", Group: "Claude-max", Keys: []string{"claude-one"}, Mode: "single"},
+		{Name: "Economy 2", Group: "Claude-max", Keys: []string{"claude-two"}, Mode: "single"},
+		{
+			Name: "Codex", Group: "Codex Pro",
+			Keys: []string{"codex-one", "codex-two"},
+			Mode: "multi_to_single", Strategy: constant.MultiKeyModePolling,
+		},
+	}, resolved)
+}

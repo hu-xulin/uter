@@ -51,6 +51,72 @@ type uterapiCreateRequest struct {
 	ModelMapping string           `json:"model_mapping"`
 }
 
+// resolvedUterapiSlot is a submission slot after system-settings fallback and
+// Add Mode expansion. The create wizard already expands explicit rows; saved
+// grouped credentials are expanded here because the browser only sees masks.
+type resolvedUterapiSlot struct {
+	Name     string
+	Group    string
+	Keys     []string
+	Mode     string
+	Strategy constant.MultiKeyMode
+}
+
+func resolveUterAPICreateSlots(
+	submitted []uterapiKeySlot,
+	credentials service.ChannelProviderCredentials,
+) []resolvedUterapiSlot {
+	resolved := make([]resolvedUterapiSlot, 0, len(submitted))
+	for _, slot := range submitted {
+		name := strings.TrimSpace(slot.Name)
+		upstreamGroup := strings.TrimSpace(slot.Group)
+		if name == "" {
+			continue
+		}
+		keys := normalizeUterAPIKeys(slot.Keys)
+		mode := "multi_to_single"
+		strategy := constant.MultiKeyModePolling
+		if len(keys) == 0 {
+			if saved, ok := credentials.SlotForGroup(upstreamGroup); ok {
+				keys = normalizeUterAPIKeys(saved.Keys)
+				mode = saved.Mode
+				strategy = constant.MultiKeyMode(saved.Strategy)
+			} else {
+				keys = normalizeUterAPIKeys(strings.Split(credentials.APIKey, "\n"))
+			}
+		}
+		if len(keys) == 0 {
+			continue
+		}
+		if mode == "batch" {
+			for index, key := range keys {
+				slotName := name
+				if len(keys) > 1 {
+					slotName = fmt.Sprintf("%s %d", name, index+1)
+				}
+				resolved = append(resolved, resolvedUterapiSlot{
+					Name: slotName, Group: upstreamGroup, Keys: []string{key}, Mode: "single",
+				})
+			}
+			continue
+		}
+		if mode == "single" {
+			resolved = append(resolved, resolvedUterapiSlot{
+				Name: name, Group: upstreamGroup, Keys: keys[:1], Mode: "single",
+			})
+			continue
+		}
+		if strategy != constant.MultiKeyModeRandom && strategy != constant.MultiKeyModePolling {
+			strategy = constant.MultiKeyModePolling
+		}
+		resolved = append(resolved, resolvedUterapiSlot{
+			Name: name, Group: upstreamGroup, Keys: keys,
+			Mode: "multi_to_single", Strategy: strategy,
+		})
+	}
+	return resolved
+}
+
 // uterapiBaseURLForTest lets tests point the single-group creation at a mock.
 var uterapiBaseURLForTest string
 
@@ -85,27 +151,20 @@ func CreateUterAPIChannels(c *gin.Context) {
 		common.ApiErrorMsg(c, "Uter.api upstream endpoint is not configured")
 		return
 	}
-	// 优特订阅（Uter.api）也复用系统设置里的订阅 API Key：浏览器只拿到掩码，
-	// 无法把明文填进输入框，因此由服务端在 slot 没带 key 时用明文补齐。与通用
-	// AddChannel 的 applyChannelProviderCredentials 同一真源（subscription 组），
-	// 操作者显式填的 key 始终优先。多行 key 按行拆分，一行一个。
-	fallbackKeys := normalizeUterAPIKeys(strings.Split(
-		service.SubscriptionChannelProviderCredentials().APIKey, "\n",
-	))
+	// 优特订阅（Uter.api）也复用系统设置里的订阅密钥槽位：浏览器只拿到掩码，
+	// 无法把明文填进输入框，因此由服务端在 slot 没带 key 时按分组补齐，并沿用
+	// 该槽位保存的添加模式。与通用 AddChannel 使用同一真源（subscription 组），
+	// 操作者显式填的 key 始终优先。
+	credentials := service.SubscriptionChannelProviderCredentials()
+	resolvedSlots := resolveUterAPICreateSlots(req.Slots, credentials)
 
-	results := make([]gin.H, 0, len(req.Slots))
+	results := make([]gin.H, 0, len(resolvedSlots))
 	created := 0
 	lastErr := ""
-	for _, slot := range req.Slots {
-		name := strings.TrimSpace(slot.Name)
-		keys := normalizeUterAPIKeys(slot.Keys)
-		if len(keys) == 0 {
-			keys = fallbackKeys
-		}
-		if name == "" || len(keys) == 0 {
-			continue
-		}
-		upstreamGroup := strings.TrimSpace(slot.Group)
+	for _, slot := range resolvedSlots {
+		name := slot.Name
+		keys := slot.Keys
+		upstreamGroup := slot.Group
 		discovered, usableKeys, discoveryErr := discoverUterAPIModels(c.Request.Context(), keys)
 		if len(usableKeys) == 0 {
 			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": common.LogText("model discovery failed: %s", discoveryErr)})
@@ -145,7 +204,11 @@ func CreateUterAPIChannels(c *gin.Context) {
 		if len(usableKeys) > 1 {
 			channel.ChannelInfo.IsMultiKey = true
 			channel.ChannelInfo.MultiKeySize = len(usableKeys)
-			channel.ChannelInfo.MultiKeyMode = constant.MultiKeyModePolling
+			channel.ChannelInfo.MultiKeyMode = slot.Strategy
+			if channel.ChannelInfo.MultiKeyMode != constant.MultiKeyModeRandom &&
+				channel.ChannelInfo.MultiKeyMode != constant.MultiKeyModePolling {
+				channel.ChannelInfo.MultiKeyMode = constant.MultiKeyModePolling
+			}
 		}
 		channelSettings := dto.ChannelOtherSettings{
 			// 新建渠道从落库第一刻起就声明为渠道独立定价待验证状态，

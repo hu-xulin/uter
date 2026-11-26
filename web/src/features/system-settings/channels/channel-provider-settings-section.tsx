@@ -17,8 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import type { ReactNode } from 'react'
-import { useForm } from 'react-hook-form'
+import { useQuery } from '@tanstack/react-query'
+import { type ReactNode, useCallback, useMemo, useState } from 'react'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
@@ -33,16 +34,39 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { SecretInput } from '@/components/ui/secret-input'
 import { SecretTextarea } from '@/components/ui/secret-textarea'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { isMaskedSecret, maskMultilineSecret, maskSecret } from '@/lib/secret'
 
+import {
+  getUterAPIPricingGroups,
+  type UterAPIPricingGroup,
+} from '../../channels/api'
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
 import { useResetForm } from '../hooks/use-reset-form'
 import { useUpdateOption } from '../hooks/use-update-option'
+import {
+  CHANNEL_PROVIDER_CREDENTIAL_MODES,
+  CHANNEL_PROVIDER_CREDENTIAL_STRATEGIES,
+  channelProviderSlotAPIKeyOption,
+  createChannelProviderCredentialSlot,
+  maskChannelProviderCredentialSlots,
+  type ChannelProviderCredentialMode,
+  type ChannelProviderCredentialSlot,
+  type ChannelProviderCredentialStrategy,
+} from './channel-provider-credential-slots'
 import {
   buildChannelProviderUpdates,
   channelProviderOptionKey,
@@ -51,21 +75,22 @@ import {
 } from './channel-provider-settings-form'
 import type { ChannelCredentialDisclosure } from './use-channel-credential-disclosure'
 
+const credentialSlotSchema = z.object({
+  slotId: z.string(),
+  group: z.string(),
+  label: z.string(),
+  mode: z.enum(['single', 'batch', 'multi_to_single']),
+  strategy: z.enum(['random', 'polling']),
+  apiKey: z.string(),
+})
+
 const schema = z.object({
   loginUrl: z.string(),
   username: z.string(),
   password: z.string(),
   apiKey: z.string(),
+  slots: z.array(credentialSlotSchema),
 })
-
-const API_KEY_DESCRIPTION_KEYS: Record<ChannelProviderPrefix, string> = {
-  featured:
-    'Saved Uter Route API keys, one per line; used when creating Uter Route channels.',
-  bailian:
-    'Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.',
-  subscription:
-    'Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.',
-}
 
 type ChannelProviderSettingsSectionProps = {
   title: string
@@ -85,30 +110,79 @@ export function ChannelProviderSettingsSection(
 ) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
+  // Each option write invalidates ['system-options'] and refetches. Without
+  // pausing, useResetForm replaces the operator's in-progress values with the
+  // server's partially-written snapshot after every write, so saved fields
+  // appear cleared even though the backend stored them correctly.
+  const [isSaving, setIsSaving] = useState(false)
+  const [defaultSlot] = useState(() => createChannelProviderCredentialSlot())
+  const initialValues = useMemo<ChannelProviderFormValues>(
+    () => ({
+      ...props.values,
+      slots:
+        props.values.slots?.length > 0 ? props.values.slots : [defaultSlot],
+    }),
+    [props.values, defaultSlot]
+  )
   const form = useForm<ChannelProviderFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: props.values,
+    defaultValues: initialValues,
+  })
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: 'slots',
   })
 
-  useResetForm(form, props.values)
+  useResetForm(form, initialValues)
+
+  const isSubscription = props.prefix === 'subscription'
+  const groupsQuery = useQuery({
+    queryKey: ['uterapi-pricing-groups'],
+    queryFn: async () => {
+      const response = await getUterAPIPricingGroups()
+      return (response.data?.groups ?? []) as UterAPIPricingGroup[]
+    },
+    enabled: isSubscription,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+    meta: { errorToast: false },
+  })
+  const groupOptions = useMemo(
+    () =>
+      (groupsQuery.data ?? []).map((group) => ({
+        value: group.key,
+        label: group.name || group.key,
+      })),
+    [groupsQuery.data]
+  )
+  const watchedSlots = useWatch({ control: form.control, name: 'slots' })
 
   const onSubmit = async (values: ChannelProviderFormValues) => {
     const updates = buildChannelProviderUpdates(
       props.prefix,
       values,
-      props.values
+      props.values.slots?.length > 0 ? props.values : initialValues
     )
     for (const update of updates) {
       await updateOption.mutateAsync(update)
     }
-    form.reset({
+    const resetValues = {
       ...values,
       password: displaySecret(values.password),
       // API Key 一行一个，保存后按行掩码展示，与创建渠道时的多行形态一致。
       apiKey: displaySecret(values.apiKey, true),
-    })
+      slots: maskChannelProviderCredentialSlots(values.slots, (value) =>
+        displaySecret(value, true)
+      ),
+    }
+    form.reset(resetValues)
     props.disclosure.hide(channelProviderOptionKey(props.prefix, 'password'))
     props.disclosure.hide(channelProviderOptionKey(props.prefix, 'apiKey'))
+    for (const slot of values.slots) {
+      props.disclosure.hide(
+        channelProviderSlotAPIKeyOption(props.prefix, slot.slotId)
+      )
+    }
   }
 
   const renderCredentialField = (
@@ -198,6 +272,19 @@ export function ChannelProviderSettingsSection(
     )
   }
 
+  const updateSlot = (
+    index: number,
+    patch: Partial<ChannelProviderCredentialSlot>
+  ) => {
+    const current = form.getValues(`slots.${index}`)
+    if (!current) return
+    form.setValue(
+      `slots.${index}`,
+      { ...current, ...patch },
+      { shouldDirty: true, shouldValidate: true }
+    )
+  }
+
   return (
     <SettingsSection title={t(props.title)}>
       <p className='text-muted-foreground text-sm'>{t(props.description)}</p>
@@ -265,19 +352,204 @@ export function ChannelProviderSettingsSection(
             t('Enter new password to update'),
             t('Leave blank to keep the existing password.')
           )}
-          {renderCredentialField(
-            'apiKey',
-            t('API Key'),
-            t('One key per line'),
-            t(API_KEY_DESCRIPTION_KEYS[props.prefix]),
-            true,
-            <p className='text-muted-foreground text-sm'>
-              {t(
-                'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
-                { group: props.title }
-              )}
-            </p>
-          )}
+
+          <div className='space-y-4'>
+            <div className='space-y-1'>
+              <h3 className='font-medium'>{t('Grouped API keys')}</h3>
+              <p className='text-muted-foreground text-sm'>
+                {t(
+                  'Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.'
+                )}
+              </p>
+            </div>
+            {fields.map((field, index) => {
+              const slot =
+                watchedSlots[index] ?? (field as ChannelProviderCredentialSlot)
+              const optionKey = channelProviderSlotAPIKeyOption(
+                props.prefix,
+                slot.slotId
+              )
+              const revealedValue = props.disclosure.revealed[optionKey]
+              const isRevealed = revealedValue !== undefined
+              const isPending = props.disclosure.pendingKey === optionKey
+              return (
+                <section
+                  key={field.id}
+                  className='space-y-3 rounded-lg border p-4'
+                  aria-label={t('Group {{index}}', { index: index + 1 })}
+                >
+                  <div className='flex items-center justify-between gap-2'>
+                    <span className='font-medium'>
+                      {t('Group {{index}}', { index: index + 1 })}
+                    </span>
+                    {fields.length > 1 && (
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => remove(index)}
+                      >
+                        {t('Remove')}
+                      </Button>
+                    )}
+                  </div>
+
+                  <div className='space-y-2'>
+                    <Label>{t('Key group')}</Label>
+                    {isSubscription && groupOptions.length > 0 ? (
+                      <Select
+                        value={slot.group}
+                        onValueChange={(value) =>
+                          updateSlot(index, { group: value ?? '' })
+                        }
+                        items={groupOptions}
+                      >
+                        <SelectTrigger
+                          aria-label={t('Key group {{index}}', {
+                            index: index + 1,
+                          })}
+                        >
+                          <SelectValue placeholder={t('Choose a group')} />
+                        </SelectTrigger>
+                        <SelectContent alignItemWithTrigger={false}>
+                          <SelectGroup>
+                            {groupOptions.map((group) => (
+                              <SelectItem key={group.value} value={group.value}>
+                                {group.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        value={slot.group}
+                        onChange={(event) =>
+                          updateSlot(index, { group: event.target.value })
+                        }
+                        placeholder={
+                          isSubscription ? t('Choose a group') : 'default'
+                        }
+                        aria-label={t('Key group {{index}}', {
+                          index: index + 1,
+                        })}
+                      />
+                    )}
+                    <p className='text-muted-foreground text-sm'>
+                      {t(
+                        'Saved keys are masked. Type new keys to replace them.'
+                      )}
+                    </p>
+                  </div>
+
+                  <div className='space-y-2'>
+                    <Label>{t('Add Mode')}</Label>
+                    <Select
+                      value={slot.mode}
+                      onValueChange={(value) =>
+                        updateSlot(index, {
+                          mode: value as ChannelProviderCredentialMode,
+                        })
+                      }
+                      items={CHANNEL_PROVIDER_CREDENTIAL_MODES.map(
+                        (option) => ({
+                          value: option.value,
+                          label: t(option.label),
+                        })
+                      )}
+                    >
+                      <SelectTrigger
+                        aria-label={t('Add Mode {{index}}', {
+                          index: index + 1,
+                        })}
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent alignItemWithTrigger={false}>
+                        <SelectGroup>
+                          {CHANNEL_PROVIDER_CREDENTIAL_MODES.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {t(option.label)}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {slot.mode === 'multi_to_single' && (
+                    <div className='space-y-2'>
+                      <Label>{t('Rotation strategy')}</Label>
+                      <Select
+                        value={slot.strategy}
+                        onValueChange={(value) =>
+                          updateSlot(index, {
+                            strategy:
+                              value as ChannelProviderCredentialStrategy,
+                          })
+                        }
+                        items={CHANNEL_PROVIDER_CREDENTIAL_STRATEGIES.map(
+                          (option) => ({
+                            value: option.value,
+                            label: t(option.label),
+                          })
+                        )}
+                      >
+                        <SelectTrigger
+                          aria-label={t('Rotation strategy {{index}}', {
+                            index: index + 1,
+                          })}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent alignItemWithTrigger={false}>
+                          <SelectGroup>
+                            {CHANNEL_PROVIDER_CREDENTIAL_STRATEGIES.map(
+                              (option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {t(option.label)}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <div className='space-y-2'>
+                    <Label>{t('API keys')}</Label>
+                    <SecretTextarea
+                      aria-label={t('API keys {{index}}', { index: index + 1 })}
+                      value={slot.apiKey}
+                      onChange={(value) => updateSlot(index, { apiKey: value })}
+                      placeholder={t('One key per line')}
+                      rows={3}
+                      revealedValue={revealedValue ?? null}
+                      isRevealing={isPending}
+                      onReveal={() => {
+                        if (isRevealed) props.disclosure.hide(optionKey)
+                        else void props.disclosure.reveal(optionKey)
+                      }}
+                      onHide={() => props.disclosure.hide(optionKey)}
+                    />
+                  </div>
+                </section>
+              )
+            })}
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              disabled={fields.length >= 20}
+              onClick={() => append(createChannelProviderCredentialSlot())}
+            >
+              {t('Add group')}
+            </Button>
+          </div>
         </SettingsForm>
       </Form>
     </SettingsSection>

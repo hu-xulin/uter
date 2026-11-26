@@ -867,9 +867,15 @@ func AddChannel(c *gin.Context) {
 		(addChannelRequest.Channel.BaseURL == nil || strings.TrimSpace(*addChannelRequest.Channel.BaseURL) == "")
 	// 优特精选/优特百炼/优特订阅的连接信息由系统设置在服务端补齐；浏览器提交不携带明文，
 	// 也不需要经过页面验证展开。必须先于校验和落库执行，确保补全后的值参与校验。
-	if err := applyChannelProviderCredentials(addChannelRequest.Channel); err != nil {
+	// 如果 key 来自某个按「密钥种类」保存的槽位，则该槽位的添加模式一并生效。
+	credentialFill, err := applyChannelProviderCredentialsDetailed(addChannelRequest.Channel)
+	if err != nil {
 		common.ApiError(c, err)
 		return
+	}
+	if credentialFill.UsedSavedKey && credentialFill.Mode != "" {
+		addChannelRequest.Mode = credentialFill.Mode
+		addChannelRequest.MultiKeyMode = credentialFill.MultiKeyMode
 	}
 	// 使用统一的校验函数
 	if err := validateChannel(addChannelRequest.Channel, true); err != nil {
@@ -1217,6 +1223,7 @@ func DeleteChannelBatch(c *gin.Context) {
 
 type PatchChannel struct {
 	model.Channel
+	Mode         string  `json:"mode"`
 	MultiKeyMode *string `json:"multi_key_mode"`
 	KeyMode      *string `json:"key_mode"` // 多key模式下密钥覆盖或者追加
 }
@@ -1339,6 +1346,31 @@ func UpdateChannel(c *gin.Context) {
 
 	// Always copy the original ChannelInfo so that fields like IsMultiKey and MultiKeySize are retained.
 	channel.ChannelInfo = originChannel.ChannelInfo
+
+	// The create wizard creates its draft before the operator has finished
+	// choosing credentials, then keeps updating the same row. Re-apply the
+	// selected Add Mode on every draft update so switching from single key to
+	// multi-key (or back) is persisted before PublishChannelDraft runs.
+	if originChannel.GetOtherSettings().Draft && channel.Mode != "" {
+		rawKey := channel.Key
+		if strings.TrimSpace(rawKey) == "" {
+			rawKey = originChannel.Key
+		}
+		var strategy constant.MultiKeyMode
+		if channel.MultiKeyMode != nil {
+			strategy = constant.MultiKeyMode(*channel.MultiKeyMode)
+		}
+		if err := normalizeDraftCredentialMode(
+			&channel.ChannelInfo,
+			&rawKey,
+			channel.Mode,
+			strategy,
+		); err != nil {
+			common.ApiErrorMsg(c, err.Error())
+			return
+		}
+		channel.Key = rawKey
+	}
 
 	if channelHasSensitiveChanges(&channel, originChannel, requestData) &&
 		!authz.Can(c.GetInt("id"), c.GetInt("role"), authz.ChannelSensitiveWrite) {

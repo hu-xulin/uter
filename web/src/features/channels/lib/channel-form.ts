@@ -979,6 +979,23 @@ function normalizeBaseUrl(value: string | undefined): string {
 /**
  * Transform form data to API payload for creating channel
  */
+/**
+ * Draft-backed wizards create their channel before the operator finishes the
+ * credential section. Include the final Add Mode in the last draft update so
+ * the backend can set IsMultiKey before PublishChannelDraft runs.
+ */
+export function buildDraftCredentialUpdateFields(formData: ChannelFormValues): {
+  mode: 'single' | 'batch' | 'multi_to_single'
+  multi_key_mode?: 'random' | 'polling'
+} {
+  const mode = formData.multi_key_mode || 'single'
+  return {
+    mode,
+    multi_key_mode:
+      mode === 'multi_to_single' ? formData.multi_key_type : undefined,
+  }
+}
+
 export function transformFormDataToCreatePayload(formData: ChannelFormValues): {
   mode: 'single' | 'batch' | 'multi_to_single'
   multi_key_mode?: 'random' | 'polling'

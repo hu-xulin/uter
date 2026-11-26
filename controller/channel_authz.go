@@ -146,5 +146,6 @@ var channelNonSensitiveFields = map[string]struct{}{
 	"tag":                 {},
 	"remark":              {},
 	"channel_info":        {},
+	"mode":                {},
 	"multi_key_mode":      {},
 }

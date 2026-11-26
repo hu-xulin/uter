@@ -41,6 +41,11 @@ func InitOptionMap() {
 	common.OptionMap["ImageUploadPermission"] = strconv.Itoa(common.ImageUploadPermission)
 	common.OptionMap["ImageDownloadPermission"] = strconv.Itoa(common.ImageDownloadPermission)
 	common.OptionMap["PasswordLoginEnabled"] = strconv.FormatBool(common.PasswordLoginEnabled)
+	// 管理员账号配置项：供外部自动化读取后登录使用，与 users 表里的 Root 凭据
+	// 相互独立。AdminPassword 以 password 结尾，读取时由 IsSecretOptionKey 自动
+	// 掩码，前端走统一的验证揭示流程。
+	common.OptionMap["AdminAccount"] = ""
+	common.OptionMap["AdminPassword"] = ""
 	common.OptionMap["PasswordRegisterEnabled"] = strconv.FormatBool(common.PasswordRegisterEnabled)
 	common.OptionMap["EmailCodeLoginEnabled"] = strconv.FormatBool(common.EmailCodeLoginEnabled)
 	common.OptionMap["EmailVerificationEnabled"] = strconv.FormatBool(common.EmailVerificationEnabled)

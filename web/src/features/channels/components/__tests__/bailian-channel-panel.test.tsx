@@ -41,7 +41,9 @@ let client: QueryClient
 let status: unknown
 let coverage: unknown
 
-function renderPanel(opts: { channelId?: number | null; baseUrl?: string } = {}) {
+function renderPanel(
+  opts: { channelId?: number | null; baseUrl?: string } = {}
+) {
   client = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   })
@@ -121,9 +123,7 @@ test('百炼面板 Sync channel catalog 触发 refresh 并提示成功', async (
   } as never)
   renderPanel({ channelId: 88 })
 
-  await user.click(
-    screen.getByRole('button', { name: 'Sync channel catalog' })
-  )
+  await user.click(screen.getByRole('button', { name: 'Sync channel catalog' }))
 
   await waitFor(() =>
     expect(postSpy).toHaveBeenCalledWith(
@@ -160,9 +160,7 @@ test('百炼面板 refresh 失败时提示错误 toast', async () => {
   vi.spyOn(api, 'post').mockRejectedValue(new Error('catalog refresh down'))
   renderPanel({ channelId: 88 })
 
-  await user.click(
-    screen.getByRole('button', { name: 'Sync channel catalog' })
-  )
+  await user.click(screen.getByRole('button', { name: 'Sync channel catalog' }))
 
   await waitFor(() =>
     expect(toast.error).toHaveBeenCalledWith('catalog refresh down')

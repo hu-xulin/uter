@@ -225,3 +225,53 @@ func TestApplyChannelProviderCredentialsIgnoresOtherChannelTypes(t *testing.T) {
 		require.Empty(t, channel.Key)
 	}
 }
+
+func TestBuildChannelProviderMaskViewValueMasksGroupedSlots(t *testing.T) {
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderCredentialSlotsOptionKey(service.ChannelProviderSubscriptionPrefix): `[{"id":"slot-claude","group":"claude-economy","mode":"multi_to_single","strategy":"polling"}]`,
+		"channel_provider.subscription.slot_slot-claude_api_key":                                   "first-key-1234\nsecond-key-9876",
+	})
+
+	var view struct {
+		Subscription struct {
+			APIKey string `json:"api_key"`
+			Slots  []struct {
+				ID     string `json:"id"`
+				APIKey string `json:"api_key"`
+			} `json:"slots"`
+		} `json:"subscription"`
+	}
+	require.NoError(t, json.Unmarshal([]byte(buildChannelProviderMaskViewValue()), &view))
+	require.Len(t, view.Subscription.Slots, 1)
+	require.Equal(t, "slot-claude", view.Subscription.Slots[0].ID)
+	require.Equal(t, "firs******1234\nseco*******9876", view.Subscription.Slots[0].APIKey)
+}
+
+func TestApplyChannelProviderCredentialsUsesGroupedSlotMode(t *testing.T) {
+	initConsoleTestSecrets(t)
+	cases := []struct {
+		name        string
+		channelType int
+		prefix      string
+	}{
+		{"Uter Route", constant.ChannelTypeUterRoute, service.ChannelProviderFeaturedPrefix},
+		{"Alibaba Bailian", constant.ChannelTypeAli, service.ChannelProviderBailianPrefix},
+		{"Uter.api", constant.ChannelTypeUterAPI, service.ChannelProviderSubscriptionPrefix},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			setChannelProviderOptionsForTest(t, map[string]string{
+				service.ChannelProviderCredentialSlotsOptionKey(tc.prefix): `[{"id":"slot-economy","group":"claude-economy","mode":"multi_to_single","strategy":"polling"}]`,
+				tc.prefix + ".slot_slot-economy_api_key":                   "key-one\nkey-two",
+				tc.prefix + ".api_key":                                     "legacy-key",
+			})
+			channel := &model.Channel{Type: tc.channelType, Group: "default"}
+			fill, err := applyChannelProviderCredentialsDetailed(channel)
+			require.NoError(t, err)
+			require.True(t, fill.UsedSavedKey)
+			require.Equal(t, "multi_to_single", fill.Mode)
+			require.Equal(t, constant.MultiKeyModePolling, fill.MultiKeyMode)
+			require.Equal(t, "key-one\nkey-two", channel.Key)
+		})
+	}
+}

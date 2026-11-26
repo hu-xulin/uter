@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { ChannelProviderSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
+import { readChannelProviderCredentialSlots } from './channel-provider-credential-slots'
 import { ChannelProviderSettingsSection } from './channel-provider-settings-section'
 import type { ChannelCredentialDisclosure } from './use-channel-credential-disclosure'
 
@@ -30,6 +31,7 @@ function readValues(
     username: settings[`channel_provider.${prefix}.username`] ?? '',
     password: settings[`channel_provider.${prefix}.password`] ?? '',
     apiKey: settings[`channel_provider.${prefix}.api_key`] ?? '',
+    slots: readChannelProviderCredentialSlots(settings, prefix),
   }
 }
 

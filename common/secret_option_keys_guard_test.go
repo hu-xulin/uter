@@ -64,6 +64,8 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 		"TurnstileSecretKey",
 		"IonetApiKey",
 		"ModelDescriptionTranslateApiKey",
+		// 管理员账号配置项（供 WorkBuddy 读取后登录），密码必须掩码并支持验证揭示。
+		"AdminPassword",
 
 		// 降本配置
 		"costopt_setting.semantic_cache_embed_api_key",
@@ -83,6 +85,7 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 	mustStayPublic := []string{
 		"TurnstileSiteKey",
 		"StripePublishableKey",
+		"AdminAccount",
 	}
 	for _, key := range mustStayPublic {
 		if IsSecretOptionKey(key) {
@@ -144,5 +147,19 @@ func TestDeploymentRegistrySecretKey(t *testing.T) {
 
 	if DeploymentRegistrySecretOptionKey(validID) != "deployment."+validID+".registry_secret" {
 		t.Errorf("DeploymentRegistrySecretOptionKey 格式不符合约定")
+	}
+}
+
+// TestAdminPasswordSecretLifecycle 保护管理员密码配置项的完整生命周期：
+// 读取时掩码、验证后可揭示，账号名则保持明文可核对。
+func TestAdminPasswordSecretLifecycle(t *testing.T) {
+	if !IsSecretOptionKey("AdminPassword") {
+		t.Error("AdminPassword 必须以掩码形式下发")
+	}
+	if !IsSystemSecretReadKey("AdminPassword") {
+		t.Error("AdminPassword 必须支持二次验证后揭示")
+	}
+	if IsSecretOptionKey("AdminAccount") {
+		t.Error("AdminAccount 是公开账号名，不应被掩码")
 	}
 }

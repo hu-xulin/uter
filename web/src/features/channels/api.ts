@@ -47,6 +47,11 @@ import type {
   TagOperationParams,
 } from './types'
 
+type ChannelUpdatePayload = Partial<Channel> & {
+  mode?: AddChannelRequest['mode']
+  multi_key_mode?: AddChannelRequest['multi_key_mode']
+}
+
 const channelActionConfig = (
   config: ApiRequestConfig = {}
 ): ApiRequestConfig => ({
@@ -300,7 +305,7 @@ export async function getUterAPIPricePreview(
  */
 export async function updateChannel(
   id: number,
-  data: Partial<Channel>
+  data: ChannelUpdatePayload
 ): Promise<{ success: boolean; message?: string; data?: Channel }> {
   const res = await api.put(
     '/api/channel/',

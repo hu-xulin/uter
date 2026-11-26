@@ -22,13 +22,13 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
 import { useAuthStore } from '@/stores/auth-store'
 
+import { WizardHarness } from './wizard-harness'
 import {
   makeEditingChannel,
   setupWizardApiMocks,
   wizardOriginalAuth,
   type WizardMockState,
 } from './wizard-harness-data'
-import { WizardHarness } from './wizard-harness'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -84,7 +84,9 @@ test('百炼创建向导展示六步，Fetch models 显示百炼专属面板', a
       'Sync the upstream catalog, model metadata and reference prices before choosing models.'
     )
   ).toBeVisible()
-  expect(screen.queryByRole('button', { name: /Sync model information/ })).toBeNull()
+  expect(
+    screen.queryByRole('button', { name: /Sync model information/ })
+  ).toBeNull()
 })
 
 test('百炼创建态显示凭证分组、密钥形式与逐行掩码', async () => {
@@ -126,6 +128,29 @@ test('百炼无 key 时不自动创建草稿', async () => {
     expect.anything(),
     expect.anything()
   )
+})
+
+test('百炼创建态支持三种密钥添加模式', async () => {
+  const user = userEvent.setup()
+  await pickBailian(user)
+
+  await user.click(screen.getByRole('combobox', { name: 'Add Mode' }))
+  for (const option of [
+    'Single Key',
+    'Batch Add (one key per line)',
+    'Multi-Key Mode (multiple keys, one channel)',
+  ]) {
+    expect(await screen.findByRole('option', { name: option })).toBeVisible()
+  }
+  await user.click(
+    await screen.findByRole('option', {
+      name: 'Multi-Key Mode (multiple keys, one channel)',
+    })
+  )
+
+  expect(
+    await screen.findByRole('combobox', { name: 'Multi-Key Strategy' })
+  ).toBeVisible()
 })
 
 // ── 手动同步：refresh / apply ───────────────────────────────────

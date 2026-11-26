@@ -366,6 +366,68 @@ func TestCreateChannelDraftMultiKeyModeIsPersisted(t *testing.T) {
 	assert.True(t, channel.GetOtherSettings().Draft)
 }
 
+// Catalog-backed wizards create their draft before the operator finishes the
+// credential section. The final save therefore has to apply the selected Add
+// Mode to the existing draft; otherwise publishing keeps IsMultiKey=false and
+// the multi-line key becomes one invalid Authorization header.
+func TestUpdateDraftChannelAppliesSelectedKeyMode(t *testing.T) {
+	setupModelListControllerTestDB(t)
+
+	createBody := []byte(`{"type":65,"name":"mode switch draft","base_url":"https://dreamrouter.ai","key":"key-a\nkey-b","models":"m-a","mode":"single"}`)
+	createRecorder := httptest.NewRecorder()
+	createCtx, _ := gin.CreateTestContext(createRecorder)
+	createCtx.Request = httptest.NewRequest(http.MethodPost, "/api/channel/draft", bytes.NewReader(createBody))
+	createCtx.Request.Header.Set("Content-Type", "application/json")
+	CreateChannelDraft(createCtx)
+	require.Equal(t, http.StatusOK, createRecorder.Code, createRecorder.Body.String())
+
+	var created struct {
+		Data struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(createRecorder.Body.Bytes(), &created))
+	require.Positive(t, created.Data.ID)
+
+	update := func(body string) *httptest.ResponseRecorder {
+		recorder := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(recorder)
+		ctx.Set("id", 1)
+		ctx.Set("role", int(common.RoleRootUser))
+		ctx.Request = httptest.NewRequest(
+			http.MethodPut,
+			"/api/channel/",
+			bytes.NewBufferString(body),
+		)
+		ctx.Request.Header.Set("Content-Type", "application/json")
+		UpdateChannel(ctx)
+		return recorder
+	}
+
+	recorder := update(`{"id":` + strconv.Itoa(created.Data.ID) + `,"key":"key-a\nkey-b","mode":"multi_to_single","multi_key_mode":"polling"}`)
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	var response struct {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+	require.NoError(t, common.Unmarshal(recorder.Body.Bytes(), &response))
+	require.True(t, response.Success, response.Message)
+
+	channel, err := model.GetChannelById(created.Data.ID, true)
+	require.NoError(t, err)
+	assert.True(t, channel.ChannelInfo.IsMultiKey)
+	assert.Equal(t, 2, channel.ChannelInfo.MultiKeySize)
+	assert.Equal(t, "polling", string(channel.ChannelInfo.MultiKeyMode))
+
+	recorder = update(`{"id":` + strconv.Itoa(created.Data.ID) + `,"mode":"single"}`)
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	channel, err = model.GetChannelById(created.Data.ID, true)
+	require.NoError(t, err)
+	assert.False(t, channel.ChannelInfo.IsMultiKey)
+	assert.Zero(t, channel.ChannelInfo.MultiKeySize)
+	assert.Equal(t, "key-a", channel.Key)
+}
+
 // Abandoned drafts used to be hidden from the management list by a hard
 // settings.draft filter. They became unmanageable ghosts: operators could see
 // a deleted channel "turn into" a disabled one but could not find it to clean

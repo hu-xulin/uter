@@ -138,7 +138,10 @@ describe('channel console credentials section', () => {
     })
     expect(save).toBeInTheDocument()
     expect(crossCheck).toBeInTheDocument()
-    expect(save.compareDocumentPosition(crossCheck) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(
+      save.compareDocumentPosition(crossCheck) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
     await user.click(save)
     expect(onSaveCredentials).toHaveBeenCalledTimes(1)
   })
@@ -149,10 +152,16 @@ describe('channel console credentials section', () => {
       console_username: 'admin',
     }
     const { unmount } = render(<Harness values={values} />)
-    expect(screen.queryByRole('button', { name: /Save credentials/ })).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: /Save credentials/ })
+    ).toBeNull()
     unmount()
-    render(<Harness values={values} onSaveCredentials={() => {}} savingCredentials />)
-    expect(screen.getByRole('button', { name: /Save credentials/ })).toBeDisabled()
+    render(
+      <Harness values={values} onSaveCredentials={() => {}} savingCredentials />
+    )
+    expect(
+      screen.getByRole('button', { name: /Save credentials/ })
+    ).toBeDisabled()
   })
 
   test('shows API Key fallback message when backend reports not_configured', async () => {

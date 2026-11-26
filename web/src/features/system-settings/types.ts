@@ -219,6 +219,8 @@ export type AuthSettings = {
   'passkey.allow_insecure_origin': boolean
   'passkey.user_verification': 'required' | 'preferred' | 'discouraged'
   'passkey.attachment_preference': '' | 'platform' | 'cross-platform'
+  AdminAccount: string
+  AdminPassword: string
 }
 
 export type ContentSettings = {
@@ -248,22 +250,12 @@ export type ContentSettings = {
   ModelDescriptionTranslateLocales: string
 }
 
-export type ChannelProviderSettings = {
-  /** Derived view: per-line masks for saved secret values. */
-  ChannelProviderCredentialMasks: string
-  'channel_provider.featured.login_url': string
-  'channel_provider.featured.username': string
-  'channel_provider.featured.password': string
-  'channel_provider.featured.api_key': string
-  'channel_provider.bailian.login_url': string
-  'channel_provider.bailian.username': string
-  'channel_provider.bailian.password': string
-  'channel_provider.bailian.api_key': string
-  'channel_provider.subscription.login_url': string
-  'channel_provider.subscription.username': string
-  'channel_provider.subscription.password': string
-  'channel_provider.subscription.api_key': string
-}
+/**
+ * Channel provider options are keyed dynamically: the base connection fields
+ * plus any number of grouped credential slots. The derived mask view is stored
+ * under the same string-value map.
+ */
+export type ChannelProviderSettings = Record<string, string>
 
 export type ModelSettings = {
   'global.pass_through_request_enabled': boolean

@@ -32,6 +32,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { createChannel, publishChannelDraft, updateChannel } from '../api'
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants'
 import {
+  buildDraftCredentialUpdateFields,
   invalidatePricingQueries,
   transformFormDataToCreatePayload,
   transformFormDataToUpdatePayload,
@@ -118,7 +119,14 @@ export function useChannelMutateForm(props: UseChannelMutateFormParams) {
             delete payload[field]
           }
         }
-        const response = await updateChannel(draftID, payload)
+        // The draft row is created before the operator finishes choosing an
+        // Add Mode. Carry the final mode into the last draft update so the
+        // backend can set IsMultiKey before publish; relying on the create-time
+        // value leaves multi-key drafts published as single-key channels.
+        const response = await updateChannel(draftID, {
+          ...payload,
+          ...buildDraftCredentialUpdateFields(data),
+        })
         if (!response.success) {
           throw createServerError(response, t(ERROR_MESSAGES.UPDATE_FAILED))
         }

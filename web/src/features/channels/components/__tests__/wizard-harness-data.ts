@@ -44,7 +44,10 @@ export type WizardMockOverrides = {
   /** Bailian catalogue coverage; defaults to no coverage block. */
   bailianCoverage?: unknown
   /** Channel provider credential masks returned by GET /api/option/. */
-  providerCredentialMasks?: Record<string, { password?: string; api_key?: string }>
+  providerCredentialMasks?: Record<
+    string,
+    { password?: string; api_key?: string }
+  >
   /** Extra GET URLs handled by the caller, or an error to throw. */
   extraGet?: (url: string, config?: unknown) => unknown | undefined
 }
@@ -113,7 +116,7 @@ export function setupWizardApiMocks(
   const editingRow =
     overrides.editingRow === undefined
       ? undefined
-      : overrides.editingRow ?? undefined
+      : (overrides.editingRow ?? undefined)
   const currentRow =
     editingRow ??
     channelSchema.parse({

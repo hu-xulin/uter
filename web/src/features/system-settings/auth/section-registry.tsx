@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { AuthSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
+import { AdminAccountSection } from './admin-account-section'
 import { BasicAuthSection } from './basic-auth-section'
 import { BotProtectionSection } from './bot-protection-section'
 import { CustomOAuthSection } from './custom-oauth/custom-oauth-section'
@@ -123,6 +124,18 @@ const AUTH_SECTIONS = [
     titleKey: 'Custom OAuth',
     build: (settings: AuthSettings) => (
       <CustomOAuthSection serverAddress={settings.ServerAddress} />
+    ),
+  },
+  {
+    id: 'admin-account',
+    titleKey: 'Admin Account',
+    build: (settings: AuthSettings) => (
+      <AdminAccountSection
+        defaultValues={{
+          AdminAccount: settings.AdminAccount,
+          AdminPassword: settings.AdminPassword,
+        }}
+      />
     ),
   },
 ] as const

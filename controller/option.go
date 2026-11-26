@@ -124,9 +124,14 @@ func buildSMTPAccountsViewValue() string {
 // → Channels. Option-level masking hides the newlines of a multiline API key;
 // this view keeps one mask per saved line so operators can verify every key.
 func buildChannelProviderMaskViewValue() string {
+	type slotCredentialMask struct {
+		ID     string `json:"id"`
+		APIKey string `json:"api_key"`
+	}
 	type credentialMasks struct {
-		Password string `json:"password"`
-		APIKey   string `json:"api_key"`
+		Password string               `json:"password"`
+		APIKey   string               `json:"api_key"`
+		Slots    []slotCredentialMask `json:"slots,omitempty"`
 	}
 	type providerMasks struct {
 		Featured     credentialMasks `json:"featured"`
@@ -143,10 +148,26 @@ func buildChannelProviderMaskViewValue() string {
 		{service.ChannelProviderBailianPrefix, &view.Bailian},
 		{service.ChannelProviderSubscriptionPrefix, &view.Subscription},
 	} {
-		*group.target = credentialMasks{
+		groupValue := credentialMasks{
 			Password: common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".password"])),
 			APIKey:   common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".api_key"])),
 		}
+		slotMetadata := service.ParseChannelProviderCredentialSlotMetadata(
+			common.Interface2String(
+				common.OptionMap[service.ChannelProviderCredentialSlotsOptionKey(group.prefix)],
+			),
+		)
+		for _, slot := range slotMetadata {
+			optionKey, valid := service.ChannelProviderSlotAPIKeyOption(group.prefix, slot.ID)
+			if !valid {
+				continue
+			}
+			groupValue.Slots = append(groupValue.Slots, slotCredentialMask{
+				ID:     slot.ID,
+				APIKey: common.MaskMultilineSecret(common.Interface2String(common.OptionMap[optionKey])),
+			})
+		}
+		*group.target = groupValue
 	}
 	encoded, err := common.Marshal(view)
 	if err != nil {

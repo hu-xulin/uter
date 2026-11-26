@@ -20,12 +20,12 @@ import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 
 import { SettingsPage } from '../components/settings-page'
 import type { ChannelProviderSettings } from '../types'
+import { applyChannelProviderMaskView } from './channel-provider-settings-form'
 import {
   CHANNEL_DEFAULT_SECTION,
   getChannelSectionContent,
   getChannelSectionMeta,
 } from './section-registry.tsx'
-import { applyChannelProviderMaskView } from './channel-provider-settings-form'
 import { useChannelCredentialDisclosure } from './use-channel-credential-disclosure'
 
 const defaultChannelProviderSettings: ChannelProviderSettings = {

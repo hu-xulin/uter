@@ -18,13 +18,14 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
+import type { ChannelProviderSettings } from '../../types'
+import { readChannelProviderCredentialSlots } from '../channel-provider-credential-slots'
 import {
   applyChannelProviderMaskView,
   buildChannelProviderUpdates,
   channelProviderOptionKey,
   type ChannelProviderFormValues,
 } from '../channel-provider-settings-form'
-import type { ChannelProviderSettings } from '../../types'
 
 const baseSettings: ChannelProviderSettings = {
   ChannelProviderCredentialMasks: '{}',
@@ -40,6 +41,7 @@ const baseSettings: ChannelProviderSettings = {
   'channel_provider.subscription.username': '',
   'channel_provider.subscription.password': '',
   'channel_provider.subscription.api_key': '',
+  'channel_provider.subscription.credential_slots': '[]',
 }
 
 const masked: ChannelProviderFormValues = {
@@ -47,6 +49,7 @@ const masked: ChannelProviderFormValues = {
   username: 'operator',
   password: 'abcd****wxyz',
   apiKey: 'key1\nkey2',
+  slots: [],
 }
 
 describe('applyChannelProviderMaskView', () => {
@@ -76,6 +79,59 @@ describe('applyChannelProviderMaskView', () => {
       ])
     ).toBe(baseSettings)
   })
+
+  // Regression: getOptionValue only keeps keys declared in defaultSettings, so
+  // the dynamic credential_slots key is dropped before this resolver runs.
+  // After a save refetch that made useResetForm wipe the operator's groups,
+  // the slots looked "completely cleared" for every managed provider.
+  it.each(['featured', 'bailian', 'subscription'] as const)(
+    '%s restores saved credential slots after getOptionValue dropped them',
+    (prefix) => {
+      const slotId = `slot-${prefix}`
+      const metadata = JSON.stringify([
+        {
+          id: slotId,
+          group: 'claude-standard',
+          label: 'Claude Standard',
+          mode: 'multi_to_single',
+          strategy: 'polling',
+        },
+      ])
+      // What SettingsPage passes in: slot keys were filtered out of settings
+      // by getOptionValue, but are still present in the raw option list.
+      const settingsAfterFilter: ChannelProviderSettings = {
+        ...baseSettings,
+        [`channel_provider.${prefix}.credential_slots`]: '',
+      }
+      const raw = [
+        { key: `channel_provider.${prefix}.credential_slots`, value: metadata },
+        {
+          key: 'ChannelProviderCredentialMasks',
+          value: JSON.stringify({
+            [prefix]: {
+              password: '',
+              api_key: '',
+              slots: [{ id: slotId, api_key: 'key1****aaaa\nkey2****bbbb' }],
+            },
+          }),
+        },
+      ]
+
+      const resolved = applyChannelProviderMaskView(settingsAfterFilter, raw)
+      const slots = readChannelProviderCredentialSlots(resolved, prefix)
+
+      expect(slots).toHaveLength(1)
+      expect(slots[0]).toMatchObject({
+        slotId,
+        group: 'claude-standard',
+        mode: 'multi_to_single',
+        strategy: 'polling',
+        apiKey: 'key1****aaaa\nkey2****bbbb',
+      })
+      // Plaintext from the raw slot key must never leak into form state.
+      expect(JSON.stringify(slots)).not.toContain('sk-plaintext')
+    }
+  )
 })
 
 describe('buildChannelProviderUpdates', () => {
@@ -89,6 +145,7 @@ describe('buildChannelProviderUpdates', () => {
       username: 'new-operator',
       password: 'new-password',
       apiKey: 'line-one\nline-two',
+      slots: [],
     }
 
     expect(buildChannelProviderUpdates('featured', values, masked)).toEqual([

@@ -40,9 +40,25 @@ func RevealChannelProviderCredential(c *gin.Context) {
 // and the server resolves them before validation and persistence. Operator-
 // entered values win; saved values only fill empty fields. All three groups
 // share this contract.
+type channelProviderCredentialFill struct {
+	UsedSavedKey bool
+	Mode         string
+	MultiKeyMode constant.MultiKeyMode
+}
+
 func applyChannelProviderCredentials(channel *model.Channel) error {
+	_, err := applyChannelProviderCredentialsDetailed(channel)
+	return err
+}
+
+// applyChannelProviderCredentialsDetailed is the same create-time fill used by
+// AddChannel, but also reports the Add Mode declared by the saved group slot.
+// Explicit operator input always wins: a saved mode is only suggested when the
+// key itself came from System Settings.
+func applyChannelProviderCredentialsDetailed(channel *model.Channel) (channelProviderCredentialFill, error) {
+	fill := channelProviderCredentialFill{}
 	if channel == nil {
-		return nil
+		return fill, nil
 	}
 	var credentials service.ChannelProviderCredentials
 	switch channel.Type {
@@ -53,17 +69,36 @@ func applyChannelProviderCredentials(channel *model.Channel) error {
 	case constant.ChannelTypeUterAPI:
 		credentials = service.SubscriptionChannelProviderCredentials()
 	default:
-		return nil
+		return fill, nil
 	}
 	if credentials.LoginURL != "" && (channel.BaseURL == nil || strings.TrimSpace(*channel.BaseURL) == "") {
 		baseURL := credentials.LoginURL
 		channel.BaseURL = &baseURL
 	}
-	if credentials.APIKey != "" && strings.TrimSpace(channel.Key) == "" {
-		channel.Key = credentials.APIKey
+	if strings.TrimSpace(channel.Key) == "" {
+		// 分组槽位是用户显式按「密钥种类」保存的新结构，优先于旧的单一
+		// API Key；只有没有可用槽位时才回退旧值，避免旧值抢先占住 key
+		// 导致分组模式永远不生效。
+		if slot, ok := credentials.SlotForGroup(channel.Group); ok && len(slot.Keys) > 0 {
+			switch slot.Mode {
+			case "batch":
+				channel.Key = strings.Join(slot.Keys, "\n")
+				fill.Mode = "batch"
+			case "multi_to_single":
+				channel.Key = strings.Join(slot.Keys, "\n")
+				fill.Mode = "multi_to_single"
+				fill.MultiKeyMode = constant.MultiKeyMode(slot.Strategy)
+			default:
+				channel.Key = slot.Keys[0]
+			}
+			fill.UsedSavedKey = true
+		} else if credentials.APIKey != "" {
+			channel.Key = credentials.APIKey
+			fill.UsedSavedKey = true
+		}
 	}
 	if credentials.LoginURL == "" && credentials.Username == "" && credentials.Password == "" {
-		return nil
+		return fill, nil
 	}
 
 	// System settings are defaults only. Values explicitly supplied by the
@@ -89,7 +124,7 @@ func applyChannelProviderCredentials(channel *model.Channel) error {
 			if typed != "" {
 				var existing upstreamConsoleEnvelope
 				if err := json.Unmarshal([]byte(typed), &existing); err != nil {
-					return err
+					return fill, err
 				}
 				if existing.LoginURL != "" {
 					loginURL = existing.LoginURL
@@ -108,8 +143,8 @@ func applyChannelProviderCredentials(channel *model.Channel) error {
 
 	merged, err := mergeConsoleCredentialsIntoSettings(channel.OtherSettings, loginURL, username, password)
 	if err != nil {
-		return err
+		return fill, err
 	}
 	channel.OtherSettings = merged
-	return nil
+	return fill, nil
 }

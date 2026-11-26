@@ -16,7 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
@@ -24,13 +30,13 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { CHANNEL_TYPE_UTER_ROUTE } from '../../constants'
+import { WizardHarness } from './wizard-harness'
 import {
   makeEditingChannel,
   setupWizardApiMocks,
   wizardOriginalAuth,
   type WizardMockState,
 } from './wizard-harness-data'
-import { WizardHarness } from './wizard-harness'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -75,8 +81,12 @@ test('Uter Route 创建向导的六步中，Fetch models 显示专属面板而�
   expect(screen.getAllByRole('tab')).toHaveLength(6)
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
   // The catalogue panel owns model discovery for this provider.
-  expect(await screen.findByRole('button', { name: /Sync Uter Route catalog/ })).toBeVisible()
-  expect(screen.queryByRole('button', { name: /Sync model information/ })).toBeNull()
+  expect(
+    await screen.findByRole('button', { name: /Sync Uter Route catalog/ })
+  ).toBeVisible()
+  expect(
+    screen.queryByRole('button', { name: /Sync model information/ })
+  ).toBeNull()
 })
 
 test('Uter Route 创建态显示凭证分组、密钥形式与逐行掩码', async () => {
@@ -132,6 +142,48 @@ test('Uter Route 无草稿时提供手动 Prepare draft channel，点击触发�
     expect(mocks.postSpy).toHaveBeenCalledWith(
       '/api/channel/draft',
       expect.objectContaining({ type: CHANNEL_TYPE_UTER_ROUTE }),
+      expect.anything()
+    )
+  )
+})
+
+test('Uter Route 创建态可选择多密钥模式并写入草稿', async () => {
+  const user = userEvent.setup()
+  mocks = setupWizardApiMocks({
+    // No draft exists so the models step creates one from the current form.
+    uterRouteSnapshot: { synced: false },
+  })
+  mocks.postSpy.mockResolvedValue({
+    data: { success: true, data: { id: 77 } },
+  } as never)
+
+  await pickUterRoute(user)
+  await user.click(screen.getByRole('combobox', { name: 'Add Mode' }))
+  await user.click(
+    await screen.findByRole('option', {
+      name: 'Multi-Key Mode (multiple keys, one channel)',
+    })
+  )
+  await user.click(screen.getByRole('combobox', { name: 'Multi-Key Strategy' }))
+  await user.click(await screen.findByRole('option', { name: 'Polling' }))
+  fireEvent.change(
+    screen.getByPlaceholderText('Enter one key per line for batch creation'),
+    { target: { value: 'route-key-a\nroute-key-b' } }
+  )
+
+  await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
+  await user.click(
+    await screen.findByRole('button', { name: 'Prepare draft channel' })
+  )
+
+  await waitFor(() =>
+    expect(mocks.postSpy).toHaveBeenCalledWith(
+      '/api/channel/draft',
+      expect.objectContaining({
+        type: CHANNEL_TYPE_UTER_ROUTE,
+        mode: 'multi_to_single',
+        multi_key_mode: 'polling',
+      }),
       expect.anything()
     )
   )
@@ -195,9 +247,7 @@ test('Uter Route 编辑态目录同步失败时展示错误 toast', async () => 
   await user.click(
     await screen.findByRole('button', { name: /Sync Uter Route catalog/ })
   )
-  await waitFor(() =>
-    expect(toast.error).toHaveBeenCalledWith('catalog down')
-  )
+  await waitFor(() => expect(toast.error).toHaveBeenCalledWith('catalog down'))
 })
 
 test('Uter Route 编辑态切换折扣组按新组重新同步', async () => {
@@ -246,7 +296,9 @@ test('Uter Route 编辑态切换折扣组按新组重新同步', async () => {
   await screen.findByDisplayValue('Uter Route existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
 
-  await user.click(await screen.findByRole('combobox', { name: 'Discount group' }))
+  await user.click(
+    await screen.findByRole('combobox', { name: 'Discount group' })
+  )
   await user.click(await screen.findByRole('option', { name: 'vip' }))
 
   await waitFor(() =>
@@ -264,9 +316,9 @@ test('Uter Route endpoint 查询失败时仍可进入向导', async () => {
   mocks = setupWizardApiMocks({ uterRouteEndpoint: null })
   await pickUterRoute(user)
 
-  expect(screen.getByRole('button', { name: 'Change provider' })).toHaveTextContent(
-    'Uter Route'
-  )
+  expect(
+    screen.getByRole('button', { name: 'Change provider' })
+  ).toHaveTextContent('Uter Route')
   expect(screen.getAllByRole('tab')).toHaveLength(6)
 })
 

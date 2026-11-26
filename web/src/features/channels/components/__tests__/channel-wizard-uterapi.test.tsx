@@ -16,7 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'sonner'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
@@ -24,13 +30,13 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { CHANNEL_TYPE_UTER_API } from '../../constants'
+import { WizardHarness } from './wizard-harness'
 import {
   makeEditingChannel,
   setupWizardApiMocks,
   wizardOriginalAuth,
   type WizardMockState,
 } from './wizard-harness-data'
-import { WizardHarness } from './wizard-harness'
 
 vi.mock('sonner', () => ({
   toast: {
@@ -66,7 +72,10 @@ async function pickUterApi(user: ReturnType<typeof userEvent.setup>) {
   )
 }
 
-async function pickGroup(user: ReturnType<typeof userEvent.setup>, name: string) {
+async function pickGroup(
+  user: ReturnType<typeof userEvent.setup>,
+  name: string
+) {
   await user.click(screen.getByRole('combobox', { name: 'Group' }))
   await user.click(await screen.findByRole('option', { name }))
 }
@@ -97,6 +106,14 @@ test('Uter.api 创建向导展示全部六步且每一步都可切换', async ()
   }
 })
 
+test('Uter.api 单个分组卡片只显示分组字段，不重复显示分组标题', async () => {
+  const user = userEvent.setup()
+  await pickUterApi(user)
+
+  expect(screen.queryByText('Group 1')).not.toBeInTheDocument()
+  expect(screen.getByText('Group', { exact: true })).toBeVisible()
+})
+
 // ── 创建态：提交前置校验（未选分组 / 无密钥） ───────────────────
 
 test('Uter.api 未选分组直接创建：报错并跳回连接步骤，不发请求', async () => {
@@ -120,6 +137,7 @@ test('Uter.api 未选分组直接创建：报错并跳回连接步骤，不发�
 
 test('Uter.api 选了分组但密钥为空：报错且不发请求', async () => {
   const user = userEvent.setup()
+  mocks = setupWizardApiMocks({ providerCredentialMasks: {} })
   await pickUterApi(user)
   await pickGroup(user, 'Claude Standard')
 
@@ -128,7 +146,7 @@ test('Uter.api 选了分组但密钥为空：报错且不发请求', async () =>
 
   await waitFor(() =>
     expect(toast.error).toHaveBeenCalledWith(
-      'Choose a group and enter at least one API key'
+      'Enter an API key for every group, or leave it empty to use the saved key'
     )
   )
   expect(mocks.postSpy).not.toHaveBeenCalled()
@@ -136,6 +154,7 @@ test('Uter.api 选了分组但密钥为空：报错且不发请求', async () =>
 
 test('Uter.api 密钥仅含空白行：视为无密钥，不发请求', async () => {
   const user = userEvent.setup()
+  mocks = setupWizardApiMocks({ providerCredentialMasks: {} })
   await pickUterApi(user)
   await pickGroup(user, 'Claude Standard')
   typeKeys('   \n\t\n  ')
@@ -145,7 +164,7 @@ test('Uter.api 密钥仅含空白行：视为无密钥，不发请求', async ()
 
   await waitFor(() =>
     expect(toast.error).toHaveBeenCalledWith(
-      'Choose a group and enter at least one API key'
+      'Enter an API key for every group, or leave it empty to use the saved key'
     )
   )
   expect(mocks.postSpy).not.toHaveBeenCalled()
@@ -153,29 +172,101 @@ test('Uter.api 密钥仅含空白行：视为无密钥，不发请求', async ()
 
 // ── 创建态：密钥去重与单分组提交载荷 ────────────────────────────
 
-test('Uter.api 多密钥去重后只提交选中分组的一个 slot', async () => {
+async function pickMode(
+  user: ReturnType<typeof userEvent.setup>,
+  name: string,
+  index = 1
+) {
+  const label = index === 1 ? 'Add Mode' : `Add Mode ${index}`
+  await user.click(screen.getByRole('combobox', { name: label }))
+  await user.click(await screen.findByRole('option', { name }))
+}
+
+test('Uter.api 单密钥模式只提交第一行 key', async () => {
   const user = userEvent.setup()
   await pickUterApi(user)
   await pickGroup(user, 'Claude Standard')
-  typeKeys('sk-a\n\nsk-b\nsk-a\n  sk-c  \n')
+  typeKeys('sk-a\nsk-b')
 
   await user.click(screen.getByRole('tab', { name: /Other settings/ }))
-  expect(screen.getByText('3 keys')).toBeVisible()
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
 
   await waitFor(() => expect(mocks.postSpy).toHaveBeenCalledTimes(1))
   const [url, payload] = mocks.postSpy.mock.calls[0]
   expect(url).toBe('/api/channel/uterapi')
-  expect(payload).toMatchObject({
-    slots: [
-      {
-        name: 'Uter.api-Claude-max',
-        group: 'Claude-max',
-        keys: ['sk-a', 'sk-b', 'sk-c'],
-      },
-    ],
-    group: 'default',
-  })
+  expect(payload.slots).toEqual([
+    { name: 'Uter.api-Claude-max', group: 'Claude-max', keys: ['sk-a'] },
+  ])
+})
+
+test('Uter.api 批量模式每个 key 建一个渠道并去重', async () => {
+  const user = userEvent.setup()
+  await pickUterApi(user)
+  await pickGroup(user, 'Claude Standard')
+  await pickMode(user, 'Batch Add (one key per line)')
+  typeKeys('sk-a\n\nsk-b\nsk-a\n  sk-c  \n')
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  await user.click(screen.getByRole('button', { name: 'Create Channel' }))
+
+  await waitFor(() => expect(mocks.postSpy).toHaveBeenCalledTimes(1))
+  const [, payload] = mocks.postSpy.mock.calls[0]
+  expect(payload.slots).toEqual([
+    { name: 'Uter.api-Claude-max 1', group: 'Claude-max', keys: ['sk-a'] },
+    { name: 'Uter.api-Claude-max 2', group: 'Claude-max', keys: ['sk-b'] },
+    { name: 'Uter.api-Claude-max 3', group: 'Claude-max', keys: ['sk-c'] },
+  ])
+})
+
+test('Uter.api 多密钥模式把去重后的 key 放在同一个渠道', async () => {
+  const user = userEvent.setup()
+  await pickUterApi(user)
+  await pickGroup(user, 'Claude Standard')
+  await pickMode(user, 'Multi-Key Mode (multiple keys, one channel)')
+  typeKeys('sk-a\n\nsk-b\nsk-a\n  sk-c  \n')
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  await user.click(screen.getByRole('button', { name: 'Create Channel' }))
+
+  await waitFor(() => expect(mocks.postSpy).toHaveBeenCalledTimes(1))
+  const [, payload] = mocks.postSpy.mock.calls[0]
+  expect(payload.slots).toEqual([
+    {
+      name: 'Uter.api-Claude-max',
+      group: 'Claude-max',
+      keys: ['sk-a', 'sk-b', 'sk-c'],
+    },
+  ])
+})
+
+test('Uter.api 不同分组可使用不同密钥模式一次提交', async () => {
+  const user = userEvent.setup()
+  await pickUterApi(user)
+  await pickGroup(user, 'Claude Standard')
+  await pickMode(user, 'Multi-Key Mode (multiple keys, one channel)')
+  typeKeys('sk-a\nsk-b')
+
+  await user.click(screen.getByRole('button', { name: 'Add group' }))
+  await user.click(screen.getByRole('combobox', { name: 'Group 2' }))
+  await user.click(
+    await screen.findByRole('option', { name: 'Claude Economy' })
+  )
+  await pickMode(user, 'Single Key', 2)
+  await user.type(screen.getByLabelText('API keys 2'), 'sk-c')
+
+  await user.click(screen.getByRole('tab', { name: /Other settings/ }))
+  await user.click(screen.getByRole('button', { name: 'Create Channel' }))
+
+  await waitFor(() => expect(mocks.postSpy).toHaveBeenCalledTimes(1))
+  const [, payload] = mocks.postSpy.mock.calls[0]
+  expect(payload.slots).toEqual([
+    {
+      name: 'Uter.api-Claude-max',
+      group: 'Claude-max',
+      keys: ['sk-a', 'sk-b'],
+    },
+    { name: 'Uter.api-Claude-kiro', group: 'Claude-kiro', keys: ['sk-c'] },
+  ])
 })
 
 // ── 创建态：提交成功 / 部分价格失败 / 服务端异常 / created=0 ─────
@@ -266,7 +357,9 @@ test('Uter.api created=0：服务端业务失败不误报成功、抽屉保持�
     )
   )
   expect(toast.success).not.toHaveBeenCalled()
-  expect(screen.getByRole('tab', { name: /Other settings/ })).toBeInTheDocument()
+  expect(
+    screen.getByRole('tab', { name: /Other settings/ })
+  ).toBeInTheDocument()
 })
 
 // ── 分组查询失败 / 空目录 ──────────────────────────────────────
@@ -277,9 +370,7 @@ test('Uter.api 分组列表为空：分组下拉无可选项且无法创建', as
   await pickUterApi(user)
 
   await user.click(screen.getByRole('combobox', { name: 'Group' }))
-  await waitFor(() =>
-    expect(screen.queryAllByRole('option')).toHaveLength(0)
-  )
+  await waitFor(() => expect(screen.queryAllByRole('option')).toHaveLength(0))
   await user.click(screen.getByRole('tab', { name: /Other settings/ }))
   await user.click(screen.getByRole('button', { name: 'Create Channel' }))
   await waitFor(() =>

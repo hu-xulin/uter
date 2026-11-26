@@ -28,6 +28,66 @@ type channelDraftRequest struct {
 	MultiKeyMode constant.MultiKeyMode `json:"multi_key_mode"`
 }
 
+// normalizeDraftCredentialMode keeps a create-wizard draft's key shape and
+// ChannelInfo in sync with the selected Add Mode. Catalog-backed drafts publish
+// exactly one channel, so "batch" keys are rotated inside that channel instead
+// of being sent as a single newline-joined Authorization header. "single" keeps
+// only the first key, which also repairs a draft that was previously in a
+// multi-key mode.
+func normalizeDraftCredentialMode(
+	info *model.ChannelInfo,
+	key *string,
+	mode string,
+	strategy constant.MultiKeyMode,
+) error {
+	cleanKeys := make([]string, 0)
+	for _, rawKey := range strings.Split(*key, "\n") {
+		trimmed := strings.TrimSpace(rawKey)
+		if trimmed == "" {
+			continue
+		}
+		cleanKeys = append(cleanKeys, trimmed)
+	}
+
+	if mode == "single" || mode == "" {
+		info.IsMultiKey = false
+		info.MultiKeySize = 0
+		info.MultiKeyStatusList = nil
+		info.MultiKeyDisabledReason = nil
+		info.MultiKeyDisabledTime = nil
+		info.MultiKeyPollingIndex = 0
+		if len(cleanKeys) > 0 {
+			*key = cleanKeys[0]
+		}
+		return nil
+	}
+
+	if mode != "batch" && mode != "multi_to_single" {
+		return nil
+	}
+	if len(cleanKeys) == 0 {
+		return fmt.Errorf("Channel key cannot be empty")
+	}
+
+	info.IsMultiKey = true
+	info.MultiKeySize = len(cleanKeys)
+	info.MultiKeyStatusList = nil
+	info.MultiKeyDisabledReason = nil
+	info.MultiKeyDisabledTime = nil
+	info.MultiKeyPollingIndex = 0
+	if mode == "batch" {
+		info.MultiKeyMode = constant.MultiKeyModePolling
+	} else {
+		info.MultiKeyMode = strategy
+		if info.MultiKeyMode != constant.MultiKeyModeRandom &&
+			info.MultiKeyMode != constant.MultiKeyModePolling {
+			info.MultiKeyMode = constant.MultiKeyModeRandom
+		}
+	}
+	*key = strings.Join(cleanKeys, "\n")
+	return nil
+}
+
 // CreateChannelDraft creates a disabled, hidden channel so the create wizard
 // can configure channel-scoped prices before the operator presses Create.
 // Pricing rows use this real channel ID; the final save updates the row and
@@ -52,6 +112,31 @@ func CreateChannelDraft(c *gin.Context) {
 	}
 	baseURL := strings.TrimSpace(req.BaseURL)
 
+	// The create wizard creates its channel before the final AddChannel call,
+	// so system-settings credentials must be filled here as well. Otherwise the
+	// draft has no key and the final save cannot know the saved key's Add Mode.
+	if strings.TrimSpace(req.Key) == "" || baseURL == "" {
+		providerChannel := &model.Channel{
+			Type:    req.Type,
+			Key:     req.Key,
+			Group:   group,
+			BaseURL: &baseURL,
+		}
+		credentialFill, err := applyChannelProviderCredentialsDetailed(providerChannel)
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		req.Key = providerChannel.Key
+		if providerChannel.BaseURL != nil {
+			baseURL = strings.TrimSpace(*providerChannel.BaseURL)
+		}
+		if credentialFill.UsedSavedKey && credentialFill.Mode != "" {
+			req.Mode = credentialFill.Mode
+			req.MultiKeyMode = credentialFill.MultiKeyMode
+		}
+	}
+
 	// The create wizard persists the channel as a draft first, then finishes
 	// configuration through UpdateChannel. The direct-create path (AddChannel)
 	// derives multi-key state from mode; the draft path must do the same,
@@ -60,27 +145,14 @@ func CreateChannelDraft(c *gin.Context) {
 	// rejects. Normalise the key here so the draft is correct from creation.
 	channelInfo := model.ChannelInfo{}
 	key := strings.TrimSpace(req.Key)
-	if req.Mode == "multi_to_single" {
-		cleanKeys := make([]string, 0)
-		for _, rawKey := range strings.Split(req.Key, "\n") {
-			trimmed := strings.TrimSpace(rawKey)
-			if trimmed == "" {
-				continue
-			}
-			cleanKeys = append(cleanKeys, trimmed)
-		}
-		if len(cleanKeys) == 0 {
-			common.ApiErrorMsg(c, "Channel key cannot be empty")
-			return
-		}
-		channelInfo.IsMultiKey = true
-		channelInfo.MultiKeyMode = req.MultiKeyMode
-		if channelInfo.MultiKeyMode != constant.MultiKeyModeRandom &&
-			channelInfo.MultiKeyMode != constant.MultiKeyModePolling {
-			channelInfo.MultiKeyMode = constant.MultiKeyModeRandom
-		}
-		channelInfo.MultiKeySize = len(cleanKeys)
-		key = strings.Join(cleanKeys, "\n")
+	if err := normalizeDraftCredentialMode(
+		&channelInfo,
+		&key,
+		req.Mode,
+		req.MultiKeyMode,
+	); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
 	}
 
 	other := dto.ChannelOtherSettings{

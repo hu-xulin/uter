@@ -1930,8 +1930,8 @@ test('Uter.api create uses six steps and creates one chosen group at a time', as
   ).toBeVisible()
 
   await user.click(screen.getByRole('tab', { name: /Other settings/ }))
-  expect(screen.getByText('Channel to create')).toBeVisible()
-  expect(screen.getByText('No group chosen')).toBeVisible()
+  expect(screen.getByText('Channels to create')).toBeVisible()
+  expect(screen.getByText(/Group 1:\s*No group chosen/)).toBeVisible()
   expect(screen.getByText('No key yet')).toBeVisible()
   expect(screen.queryByText('Key groups')).toBeNull()
 })
@@ -1955,11 +1955,10 @@ test('Uter.api fetch-prices step shows the selected group official and channel p
   await user.click(
     await screen.findByRole('option', { name: 'Claude Standard' })
   )
-  expect(
-    await screen.findByText(
-      /Credential group: Claude Standard\. Key format: multi-line, one key per line; a single key occupies one line\./
-    )
-  ).toBeVisible()
+  const selectedGroupHint = await screen.findByText(
+    /Selected group: Claude Standard\. Leave empty to use the saved Uter\.api subscription keys below\./
+  )
+  expect(selectedGroupHint).toBeVisible()
   const savedKeyHint = await screen.findByTestId(
     'uterapi-subscription-key-hint'
   )
