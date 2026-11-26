@@ -93,10 +93,7 @@ export function DeploymentSecretDisclosureProvider({
         )
         if (operation.current !== current) return
         if (!response.success) {
-          throw createServerError(
-            response,
-            t('Failed to reveal secret')
-          )
+          throw createServerError(response, t('Failed to reveal secret'))
         }
         setRevealed((previous) => ({
           ...previous,

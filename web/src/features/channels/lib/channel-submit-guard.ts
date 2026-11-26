@@ -33,8 +33,8 @@ export function isSavingNewConsoleCredentials(
 ): boolean {
   return Boolean(
     data.console_login_url?.trim() &&
-      data.console_username?.trim() &&
-      data.console_password
+    data.console_username?.trim() &&
+    data.console_password
   )
 }
 

@@ -26,6 +26,24 @@
     // Complete brand-icon library per the design contract: icons are rendered
     // by key from the full set; unused entries stay for future channels
     "src/assets/brand-icons/**/*.{ts,tsx}",
+    // Barrel / facade modules are intentional public API surfaces: re-exports
+    // stay available to callers importing via the barrel even when the
+    // implementation is currently consumed directly from its source module.
+    // Entry exports are excluded from Knip's unused-export report by default,
+    // while every implementation file they import is still checked.
+    "src/**/index.ts",
+    // Non-index facade modules with the same contract (auth API, query-params
+    // re-export, auth/org types, audio-clip type) — re-export only.
+    "src/lib/api.ts",
+    "src/stores/auth-store.ts",
+    "src/features/auth/types.ts",
+    "src/features/usage-logs/lib/utils.ts",
+    "src/features/usage-logs/components/dialogs/audio-preview-dialog.tsx",
+    "src/features/organization/api.ts",
+    // System-settings secret-input module is a public component surface: the
+    // Input/FileInput variants are consumed across sections, while the paired
+    // Textarea variant stays in the exported API for symmetric future use.
+    "src/features/system-settings/components/verified-secret-input.tsx",
   ],
   "ignore": [
     // Vendor protocol-capability plugin bundles served from /plugins/** and

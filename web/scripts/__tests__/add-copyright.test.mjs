@@ -21,9 +21,12 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
 import { afterEach, describe, expect, it } from 'vitest'
 
-const scriptPath = fileURLToPath(new URL('../add-copyright.mjs', import.meta.url))
+const scriptPath = fileURLToPath(
+  new URL('../add-copyright.mjs', import.meta.url)
+)
 const canonicalHeader = `/*
 Copyright (C) 2023-2026 Uter.ai
 

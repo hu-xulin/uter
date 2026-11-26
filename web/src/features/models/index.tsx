@@ -36,8 +36,8 @@ import { ModelsPrimaryButtons } from './components/models-primary-buttons'
 import { ModelsProvider, useModels } from './components/models-provider'
 import { ModelsTable } from './components/models-table'
 import { VendorsTable } from './components/vendors-table'
-import { useModelDeploymentSettings } from './hooks/use-model-deployment-settings'
 import { DeploymentSecretDisclosureProvider } from './hooks/use-deployment-secret-disclosure'
+import { useModelDeploymentSettings } from './hooks/use-model-deployment-settings'
 import { deploymentsQueryKeys } from './lib'
 import {
   type ModelsSectionId,

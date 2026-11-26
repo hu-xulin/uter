@@ -45,7 +45,9 @@ describe('isAuthoritativeChannelQuote', () => {
 
   test('ratio 推算与官方价回落都不是权威渠道价', () => {
     // 这两条正是历史上"修一个错就掉到另一个"的 fallback 来源。
-    expect(isAuthoritativeChannelQuote(quote('DERIVED_FROM_RATIOS'))).toBe(false)
+    expect(isAuthoritativeChannelQuote(quote('DERIVED_FROM_RATIOS'))).toBe(
+      false
+    )
     expect(isAuthoritativeChannelQuote(quote('OFFICIAL_REFERENCE'))).toBe(false)
     expect(isAuthoritativeChannelQuote(quote('official_reference'))).toBe(false)
   })
@@ -104,7 +106,10 @@ describe('canDisplayChannelPrice', () => {
 
   test('无报价行不展示', () => {
     expect(
-      canDisplayChannelPrice({ pricing_status: 'configured', upstream_quote: undefined })
+      canDisplayChannelPrice({
+        pricing_status: 'configured',
+        upstream_quote: undefined,
+      })
     ).toBe(false)
   })
 })

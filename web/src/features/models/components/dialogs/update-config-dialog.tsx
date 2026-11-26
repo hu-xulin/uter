@@ -47,8 +47,8 @@ import { isMaskedSecret } from '@/lib/secret'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getDeployment, updateDeployment } from '../../api'
-import { VerifiedDeploymentSecretInput } from '../verified-deployment-secret-input'
 import { deploymentsQueryKeys } from '../../lib'
+import { VerifiedDeploymentSecretInput } from '../verified-deployment-secret-input'
 
 const schema = z.object({
   image_url: z.string().optional(),

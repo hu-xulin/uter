@@ -672,7 +672,8 @@ export function ChannelModelPricingSection(
                       {t(item.upstream_quote.price_basis)}
                     </Badge>
                   ) : null}
-                  {canDisplayChannelPrice(item) && item.upstream_quote?.discount_ratio ? (
+                  {canDisplayChannelPrice(item) &&
+                  item.upstream_quote?.discount_ratio ? (
                     <Badge
                       variant='secondary'
                       className='ml-1 font-normal'
@@ -683,7 +684,8 @@ export function ChannelModelPricingSection(
                     </Badge>
                   ) : null}
                 </span>
-                {canDisplayChannelPrice(item) && (item.upstream_quote?.tiers?.length ?? 0) > 1 ? (
+                {canDisplayChannelPrice(item) &&
+                (item.upstream_quote?.tiers?.length ?? 0) > 1 ? (
                   <details className='w-full'>
                     <summary className='text-muted-foreground cursor-pointer text-sm'>
                       {t('Upstream channel price tiers ({{count}})', {

@@ -37,10 +37,11 @@ export function VerifiedDeploymentSecretInput({
   value,
   onChange,
   ...props
-}: VerifiedDeploymentProps & Omit<SecretInputProps, 'value' | 'onChange'> & {
-  value?: string | null
-  onChange?: (value: string) => void
-}) {
+}: VerifiedDeploymentProps &
+  Omit<SecretInputProps, 'value' | 'onChange'> & {
+    value?: string | null
+    onChange?: (value: string) => void
+  }) {
   const disclosure = useDeploymentSecretDisclosure()
   const hasId = deploymentId !== null && deploymentId !== undefined
   const safeValue = value ?? ''
@@ -58,9 +59,7 @@ export function VerifiedDeploymentSecretInput({
           ? () => void disclosure.reveal(deploymentId)
           : undefined
       }
-      onHide={
-        hasId ? () => disclosure.hide(deploymentId) : undefined
-      }
+      onHide={hasId ? () => disclosure.hide(deploymentId) : undefined}
       isRevealing={Boolean(
         hasId && disclosure.pendingId === String(deploymentId)
       )}
