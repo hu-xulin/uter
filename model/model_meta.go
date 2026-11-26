@@ -215,6 +215,27 @@ func GetSquareHiddenModelNames(names []string) (map[string]struct{}, error) {
 	return hidden, nil
 }
 
+// GetRankingExcludedModelNames 返回被明确排除出公开排行的模型名。
+// 排行可见策略与定价广场可见策略刻意解耦：metadata status=0 只表示不在广场展示，
+// 不代表真实调用流量不应进入排行；只有 status<0 的显式排除记录才从排行过滤。
+func GetRankingExcludedModelNames(names []string) (map[string]struct{}, error) {
+	excluded := make(map[string]struct{})
+	if len(names) == 0 {
+		return excluded, nil
+	}
+	var metadata []Model
+	if err := DB.Find(&metadata).Error; err != nil {
+		return nil, err
+	}
+	resolved := resolveModelMetadata(metadata, names)
+	for _, name := range names {
+		if policy := resolved[name]; policy != nil && policy.Status < 0 {
+			excluded[name] = struct{}{}
+		}
+	}
+	return excluded, nil
+}
+
 // GetConfiguredModelChannels includes disabled channels and reads no credentials.
 func GetConfiguredModelChannels() (map[string][]int, error) {
 	var channels []Channel

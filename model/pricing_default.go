@@ -13,7 +13,10 @@ import (
 // 运营在管理页改图标/简介也反映不到定价页。中文名（百度/腾讯/阿里巴巴…）会让
 // 命名体系一分为二，因此这里只认英文名。
 var defaultVendorRules = map[string]string{
-	"gpt":      "OpenAI",
+	"gpt": "OpenAI",
+	// gpt-oss 是 OpenAI 开源权重系列；显式登记避免只靠 "gpt" 宽泛词命中。
+	// groq-gpt-oss-120b 里的 groq 是渠道前缀，不改变家族归属。
+	"gpt-oss":  "OpenAI",
 	"dall-e":   "OpenAI",
 	"whisper":  "OpenAI",
 	"o1":       "OpenAI",
@@ -26,6 +29,9 @@ var defaultVendorRules = map[string]string{
 	"chatglm":  "Z.AI",
 	"glm-":     "Z.AI",
 	"qwen":     "Alibaba",
+	// qwen3 是通义千问第三代系列；显式登记避免只靠 "qwen" 宽泛词命中。
+	// sf-qwen3-8b 里的 sf 是 SiliconFlow 渠道前缀，不改变家族归属。
+	"qwen3":    "Alibaba",
 	"deepseek": "DeepSeek",
 	"abab":     "MiniMax",
 	"minimax":  "MiniMax",

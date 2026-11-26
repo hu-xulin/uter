@@ -1,22 +1,4 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { runInNewContext } from 'node:vm'
 
@@ -25,9 +7,12 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { getLobeIcon, getLobeIconNames } from '../lobe-icon'
 
-vi.mock('@lobehub/icons/es/Mistral/components/Color.js', () => {
-  throw new Error('Icon chunk unavailable')
-})
+vi.mock(
+  '../../../node_modules/@lobehub/icons/es/Mistral/components/Color.mjs',
+  () => {
+    throw new Error('Icon chunk unavailable')
+  }
+)
 
 describe('Lobe icons', () => {
   it.each([
@@ -50,19 +35,52 @@ describe('Lobe icons', () => {
     ) as { webpackInclude: RegExp }
     const separator = root.includes('\\') ? '\\' : '/'
     const files = [
-      'OpenAI/components/Mono.js',
-      'Claude/components/Color.js',
-      'Gemini/components/Color.js',
-      'Gemma/components/Simple.js',
-      'LobeHub/components/Morden.js',
+      'OpenAI/components/Mono.mjs',
+      'Claude/components/Color.mjs',
+      'Gemini/components/Color.mjs',
+      'Gemma/components/Simple.mjs',
+      'LobeHub/components/Morden.mjs',
       'OpenAI/index.js',
       'OpenAI/components/Mono.d.ts',
-      'OpenAI/components/Unknown.js',
+      'OpenAI/components/Unknown.mjs',
     ]
     const included = files.filter((file) =>
       webpackInclude.test(root + file.replaceAll('/', separator))
     )
     expect(included).toEqual(files.slice(0, 5))
+  })
+
+  // The lazy import path is coupled to the installed package's real files.
+  // A mistaken extension change (`.mjs` -> `.js`) silently makes every icon
+  // chunk fail to load and leaves channel/provider/model/vendor logos showing
+  // only the grey initial placeholder, so assert the resolved files exist.
+  it('resolves each lazy icon variant to a file shipped by the installed package', () => {
+    const source = readFileSync(
+      resolve(import.meta.dirname, '../lobe-icon.tsx'),
+      'utf8'
+    )
+    const importPath = source.match(
+      /`(\.\.\/\.\.\/node_modules\/@lobehub\/icons\/es\/\$\{baseKey\}\/components\/\$\{variant\}\.[^`]+)`/
+    )
+    expect(importPath).not.toBeNull()
+    const template = importPath?.[1] ?? ''
+    const variants = [
+      ['Claude', 'Color'],
+      ['OpenAI', 'Mono'],
+      ['Gemini', 'Color'],
+      ['Gemma', 'Simple'],
+      ['LobeHub', 'Morden'],
+    ] as const
+    for (const [baseKey, variant] of variants) {
+      const relativePath = template
+        .replace('${baseKey}', baseKey)
+        .replace('${variant}', variant)
+      const absolutePath = resolve(import.meta.dirname, '../', relativePath)
+      expect(
+        existsSync(absolutePath),
+        `${baseKey}/${variant} must resolve to a real file: ${absolutePath}`
+      ).toBe(true)
+    }
   })
 
   it('loads a named variant with its configured size and accessibility props', async () => {

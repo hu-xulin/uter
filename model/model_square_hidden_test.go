@@ -52,3 +52,32 @@ func TestGetSquareHiddenModelNames(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, empty)
 }
+
+// TestGetRankingExcludedModelNames 固定排行与定价广场解耦后的可见策略：
+// status=0 的模型仍参与排行，只有显式 status<0 的记录才被排除。
+func TestGetRankingExcludedModelNames(t *testing.T) {
+	previous := DB
+	DB = newSquareHiddenTestDB(t)
+	t.Cleanup(func() { DB = previous })
+
+	require.NoError(t, (&Model{ModelName: "rank-disabled-but-ranked", NameRule: NameRuleExact, Status: 0}).Insert())
+	require.NoError(t, (&Model{ModelName: "rank-excluded", NameRule: NameRuleExact, Status: -1}).Insert())
+	require.NoError(t, (&Model{ModelName: "rank-excluded-prefix-", NameRule: NameRulePrefix, Status: -1}).Insert())
+
+	excluded, err := GetRankingExcludedModelNames([]string{
+		"rank-disabled-but-ranked",
+		"rank-excluded",
+		"rank-excluded-prefix-snapshot",
+		"rank-uncatalogued",
+	})
+	require.NoError(t, err)
+	require.Len(t, excluded, 2)
+	require.Contains(t, excluded, "rank-excluded")
+	require.Contains(t, excluded, "rank-excluded-prefix-snapshot")
+	require.NotContains(t, excluded, "rank-disabled-but-ranked")
+	require.NotContains(t, excluded, "rank-uncatalogued")
+
+	empty, err := GetRankingExcludedModelNames(nil)
+	require.NoError(t, err)
+	require.Empty(t, empty)
+}

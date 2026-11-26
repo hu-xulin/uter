@@ -1,24 +1,6 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
 import { useTranslation } from 'react-i18next'
 
-import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
+import { colorIconName, getLobeIcon } from '@/lib/lobe-icon'
 
 import { formatTokens } from '../lib/format'
 import type { ModelRanking } from '../types'
@@ -83,7 +65,7 @@ function ModelList(props: {
             {row.rank}.
           </span>
           <span className='shrink-0'>
-            {getLobeIcon(monoIconName(row.vendor_icon), compact ? 20 : 22)}
+            {getLobeIcon(colorIconName(row.model_icon), compact ? 20 : 22)}
           </span>
           <div className='min-w-0 flex-1'>
             <ModelLink
@@ -103,10 +85,7 @@ function ModelList(props: {
                   : 'text-muted-foreground truncate text-sm italic'
               }
             >
-              by{' '}
-              <VendorLink vendor={row.vendor}>
-                {row.vendor.toLowerCase()}
-              </VendorLink>
+              by <VendorLink vendor={row.vendor}>{row.vendor}</VendorLink>
             </p>
           </div>
           <div className='shrink-0 text-right'>

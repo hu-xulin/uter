@@ -1,21 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
 // ----------------------------------------------------------------------------
 // Rankings types
 // ----------------------------------------------------------------------------
@@ -45,6 +27,8 @@ export type ModelRanking = {
   model_name: string
   vendor: string
   vendor_icon?: string
+  /** Model's own product logo key. Vendor company logos are never used here. */
+  model_icon?: string
   category: RankingCategoryId
   /** Total tokens routed through this model in the period. */
   total_tokens: number
@@ -71,6 +55,8 @@ export type RankingMover = {
   model_name: string
   vendor: string
   vendor_icon?: string
+  /** Model's own product logo key. Vendor company logos are never used here. */
+  model_icon?: string
   /** Positive = climbed, negative = dropped. */
   rank_delta: number
   current_rank: number

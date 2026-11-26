@@ -5,6 +5,7 @@ import (
 	"math"
 	"slices"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,6 +20,13 @@ const (
 	rankingMoverLimit       = 6
 	rankingOthersLabel      = "Others"
 	rankingUnknownVendor    = "Unknown"
+	rankingFallbackVendor   = "Uter"
+	rankingFallbackIcon     = "Uter"
+	rankingQwenVendor       = "Qwen"
+	// OpenAI has no .Color glyph; its .Avatar paints a solid brand background.
+	// Rankings use the transparent Mono glyph so the model logo sits cleanly on
+	// both light and dark cards.
+	rankingOpenAIIcon = "OpenAI.Mono"
 )
 
 type RankingsResponse struct {
@@ -36,6 +44,7 @@ type RankedModel struct {
 	ModelName    string  `json:"model_name"`
 	Vendor       string  `json:"vendor"`
 	VendorIcon   string  `json:"vendor_icon,omitempty"`
+	ModelIcon    string  `json:"model_icon,omitempty"`
 	Category     string  `json:"category"`
 	TotalTokens  int64   `json:"total_tokens"`
 	Share        float64 `json:"share"`
@@ -57,6 +66,7 @@ type RankingMover struct {
 	ModelName   string  `json:"model_name"`
 	Vendor      string  `json:"vendor"`
 	VendorIcon  string  `json:"vendor_icon,omitempty"`
+	ModelIcon   string  `json:"model_icon,omitempty"`
 	RankDelta   int     `json:"rank_delta"`
 	CurrentRank int     `json:"current_rank"`
 	GrowthPct   float64 `json:"growth_pct"`
@@ -118,6 +128,8 @@ type rankingCacheItem struct {
 type rankingModelMeta struct {
 	vendor     string
 	vendorIcon string
+	// modelIcon is the model's own product logo, never the vendor company logo.
+	modelIcon string
 }
 
 type vendorAggregate struct {
@@ -199,10 +211,10 @@ func buildRankingsSnapshot(config rankingPeriodConfig, now time.Time) (*Rankings
 		}
 	}
 
-	// Models hidden from the pricing square must not surface anywhere on the
-	// public rankings page. Drop them before any rank, share or bucket is
-	// computed so their traffic cannot leak into the "Others" bucket either.
-	hiddenModels, err := model.GetSquareHiddenModelNames(
+	// 排行可见策略与定价广场可见策略刻意解耦：status=0 仅表示广场不展示，
+	// 实际调用流量仍应进入排行；只有显式排除（status<0）的模型才在排名、
+	// 占比与分桶计算前过滤，避免其流量泄漏到「其它」聚合项。
+	hiddenModels, err := model.GetRankingExcludedModelNames(
 		rankingModelNames(currentTotals, previousTotals, currentBuckets),
 	)
 	if err != nil {
@@ -255,12 +267,21 @@ func buildRankingModelMeta() map[string]rankingModelMeta {
 
 	meta := make(map[string]rankingModelMeta)
 	for _, pricing := range model.GetPricing() {
-		item := rankingModelMeta{vendor: rankingUnknownVendor}
+		item := rankingModelMeta{}
 		if vendor, ok := vendorByID[pricing.VendorID]; ok {
 			item.vendor = vendor.Name
 			item.vendorIcon = vendor.Icon
 		} else if pricing.OwnerBy != "" {
 			item.vendor = pricing.OwnerBy
+		}
+		if isUnknownRankingVendor(item.vendor) {
+			item.vendor, _ = resolveRankingModelIdentity(pricing.ModelName)
+		}
+		// pricing.Icon is the model's own product logo. A vendor company logo
+		// must never be copied here: ranking model rows render a model logo.
+		item.modelIcon = rankingModelIconKey(pricing.Icon)
+		if item.modelIcon == "" {
+			_, item.modelIcon = resolveRankingModelIdentity(pricing.ModelName)
 		}
 		meta[pricing.ModelName] = item
 	}
@@ -268,10 +289,67 @@ func buildRankingModelMeta() map[string]rankingModelMeta {
 }
 
 func modelMeta(modelName string, meta map[string]rankingModelMeta) rankingModelMeta {
-	if item, ok := meta[modelName]; ok && item.vendor != "" {
-		return item
+	item, ok := meta[modelName]
+	if !ok {
+		item = rankingModelMeta{}
 	}
-	return rankingModelMeta{vendor: rankingUnknownVendor}
+	if isUnknownRankingVendor(item.vendor) || item.modelIcon == "" {
+		derivedVendor, derivedIcon := resolveRankingModelIdentity(modelName)
+		if isUnknownRankingVendor(item.vendor) {
+			item.vendor = derivedVendor
+		}
+		if item.modelIcon == "" {
+			item.modelIcon = derivedIcon
+		}
+	}
+	if item.vendor == "" {
+		item.vendor = rankingFallbackVendor
+	}
+	return item
+}
+
+// rankingModelIconKey keeps the model's own product logo while preferring a
+// transparent rendering for OpenAI. Other brands keep their normal color or
+// avatar variant.
+func rankingModelIconKey(icon string) string {
+	trimmed := strings.TrimSpace(icon)
+	if trimmed == "" {
+		return ""
+	}
+	base, _, _ := strings.Cut(trimmed, ".")
+	if strings.EqualFold(base, "OpenAI") {
+		return rankingOpenAIIcon
+	}
+	return model.NormalizeColorIconKey(trimmed)
+}
+
+// resolveRankingModelIdentity derives a vendor and the model's own product
+// logo from its name when catalog metadata is missing. Routing prefixes such
+// as `groq-` and `sf-` are deliberately ignored: the product keyword (`gpt`,
+// `qwen`) identifies the model family the operator recognises.
+func resolveRankingModelIdentity(modelName string) (string, string) {
+	derived, ok := model.DeriveMetadataValuesFromKeywords(modelName)
+	vendor := rankingFallbackVendor
+	if ok && derived.Vendor != "" {
+		vendor = derived.Vendor
+	}
+	lower := strings.ToLower(modelName)
+	if strings.Contains(lower, "qwen") || strings.Contains(lower, "qwq-") || strings.Contains(lower, "qvq-") {
+		vendor = rankingQwenVendor
+	}
+	icon := ""
+	if ok {
+		icon = rankingModelIconKey(derived.Icon)
+	}
+	if icon == "" {
+		icon = rankingModelIconKey(rankingFallbackIcon)
+	}
+	return vendor, icon
+}
+
+func isUnknownRankingVendor(name string) bool {
+	trimmed := strings.TrimSpace(name)
+	return trimmed == "" || strings.EqualFold(trimmed, rankingUnknownVendor)
 }
 
 func buildRankedModels(totals []model.RankingQuotaTotal, totalTokens int64, previousRanks map[string]int, previousTokens map[string]int64, meta map[string]rankingModelMeta, showGrowth bool) []RankedModel {
@@ -293,6 +371,7 @@ func buildRankedModels(totals []model.RankingQuotaTotal, totalTokens int64, prev
 			ModelName:    item.ModelName,
 			Vendor:       modelMeta.vendor,
 			VendorIcon:   modelMeta.vendorIcon,
+			ModelIcon:    modelMeta.modelIcon,
 			Category:     "all",
 			TotalTokens:  item.TotalTokens,
 			Share:        rankingShare(item.TotalTokens, totalTokens),
@@ -353,8 +432,8 @@ func buildRankedVendors(currentTotals []model.RankingQuotaTotal, previousTotals 
 
 func ensureVendorAggregate(aggregates map[string]*vendorAggregate, meta rankingModelMeta) *vendorAggregate {
 	name := meta.vendor
-	if name == "" {
-		name = rankingUnknownVendor
+	if isUnknownRankingVendor(name) {
+		name = rankingFallbackVendor
 	}
 	agg, ok := aggregates[name]
 	if !ok {
@@ -500,6 +579,7 @@ func buildRankingMovers(models []RankedModel) ([]RankingMover, []RankingMover) {
 			ModelName:   item.ModelName,
 			Vendor:      item.Vendor,
 			VendorIcon:  item.VendorIcon,
+			ModelIcon:   item.ModelIcon,
 			RankDelta:   delta,
 			CurrentRank: item.Rank,
 			GrowthPct:   item.GrowthPct,

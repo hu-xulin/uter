@@ -1,21 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
 /**
  * LobeHub Icon Loader
  * Dynamically load and render icons from @lobehub/icons
@@ -165,7 +147,9 @@ function iconHasVariant(baseKey: string, variant: string): boolean {
  * background + monochrome glyph) fall back to it so every model renders a
  * recognizable colored logo instead of a flat currentColor silhouette. Names
  * that already target a variant, and brands without any variant, are returned
- * untouched.
+ * untouched. An explicit `.Mono` key is also preserved: some surfaces (the
+ * rankings leaderboard) intentionally use the transparent glyph rather than
+ * Avatar's solid brand background.
  *
  * A missing icon key stays missing: the caller renders the same placeholder
  * `getLobeIcon` would render for an empty key.
@@ -177,8 +161,11 @@ export function colorIconName(iconName: string | undefined | null): string {
     .filter((segment) => segment !== '')
   if (segments.length === 0) return ''
   const [baseKey, ...rest] = segments
-  // Already a color rendering (brand glyph or brand-background avatar).
-  if (rest[0] === 'Color' || rest[0] === 'Avatar') return segments.join('.')
+  // Already an explicit rendering: color glyph, brand-background avatar, or
+  // transparent mono glyph.
+  if (rest[0] === 'Color' || rest[0] === 'Avatar' || rest[0] === 'Mono') {
+    return segments.join('.')
+  }
   if (iconHasVariant(baseKey, 'Color')) {
     return [baseKey, 'Color', ...rest].join('.')
   }
@@ -284,10 +271,15 @@ export function getLobeIcon(
     // directory entry for `@lobehub/icons/es`, which blocks a bare-specifier
     // dynamic context in Rspack. Rspack applies webpackInclude before
     // normalizing Windows path separators.
+    //
+    // `@lobehub/icons` publishes ES modules as `.mjs` only (no `.js` under
+    // `es/`). Both the webpackInclude filter and this template must keep the
+    // `.mjs` extension: a `.js` mismatch makes Rspack skip every chunk and
+    // every channel/provider/model/vendor logo degrades to the initial circle.
     IconComponent = lazy(() =>
       import(
-        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.js$/ */
-        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.js`
+        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.mjs$/ */
+        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.mjs`
       ).catch(() => ({
         default: (props: Record<string, unknown>) =>
           renderLobeIconFallback(

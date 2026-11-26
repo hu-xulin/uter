@@ -1,21 +1,3 @@
-/*
-Copyright (C) 2023-2026 Uter.ai
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@uter.ai
-*/
 type ModelProvider = {
   readonly name: string
   readonly icon: string
@@ -58,6 +40,10 @@ const MODEL_PROVIDER_RULES: readonly ModelProviderRule[] = [
       'openai/',
       'openai.',
       'gpt-',
+      // gpt-oss 是 OpenAI 开源的权重系列（gpt-oss-120b / gpt-oss-20b）。
+      // 显式登记，避免该系列只靠 'gpt-' 宽泛词命中；路由前缀
+      // groq-gpt-oss-120b 中的 groq 是渠道名，不改变家族归属。
+      'gpt-oss',
       'chatgpt-',
       'codex-',
       'dall-e-',
@@ -106,7 +92,17 @@ const MODEL_PROVIDER_RULES: readonly ModelProviderRule[] = [
   {
     name: 'Qwen',
     icon: 'Qwen.Color',
-    keywords: ['qwen', 'qwq-', 'qvq-', 'tongyi', 'gte-'],
+    keywords: [
+      'qwen',
+      // qwen3 是通义千问第三代系列（qwen3-8b / qwen3-235b 等）。显式登记，
+      // 避免只靠 'qwen' 宽泛词命中；sf-qwen3-8b 中的 sf 是 SiliconFlow
+      // 渠道前缀，不改变家族归属。
+      'qwen3',
+      'qwq-',
+      'qvq-',
+      'tongyi',
+      'gte-',
+    ],
     pattern: /(?:^|[/.:])(?:text-embedding-v\d+|gui-plus|z-image)(?:$|[-_.:])/,
   },
   { name: 'Wan', icon: 'Wan', pattern: /(?:^|[/.:])wan(?:x?\d|[-_])/ },
@@ -221,6 +217,18 @@ const MODEL_PROVIDER_RULES: readonly ModelProviderRule[] = [
   { name: 'Suno', icon: 'Suno', keywords: ['suno'] },
   { name: 'Jimeng', icon: 'Jimeng.Color', keywords: ['jimeng'] },
 ]
+
+/**
+ * 返回某品牌规则登记的关键词（只读副本），供识别规则审计与回归使用。
+ */
+export function getModelProviderKeywords(
+  providerName: string
+): readonly string[] {
+  const rule = MODEL_PROVIDER_RULES.find(
+    (candidate) => candidate.name === providerName
+  )
+  return [...(rule?.keywords ?? [])]
+}
 
 export function resolveModelProvider(modelName: string): ModelProvider | null {
   const model = modelName.trim().toLowerCase()
