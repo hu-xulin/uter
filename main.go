@@ -70,8 +70,8 @@ var embeddedNativeDocsPaths = []string{
 	"web/dist/docs-search/ja.json",
 	"web/dist/docs-search/ru.json",
 	"web/dist/docs-search/vi.json",
-	"web/dist/user-guide/zh/auth/light/01-login.webp",
-	"web/dist/user-guide/en/auth/light/01-login.webp",
+	"web/dist/user-guide/zh/auth/light/02-email-code.webp",
+	"web/dist/user-guide/en/auth/light/02-email-code.webp",
 }
 
 // missingNativeDocsAssets 返回未随二进制嵌入的原生文档静态产物路径。
