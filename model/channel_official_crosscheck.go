@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 // This file implements the channel-agnostic official-price cross-check. Every
@@ -157,18 +158,28 @@ func crossCheckOfficialPrice(
 		return "", true
 	}
 	tier := view.Tiers[0]
+	// The baseline is expressed in USD. Convert a non-USD official tier into
+	// USD with Uter's configured exchange rate before any comparison. A
+	// currency we cannot convert is not a proven disagreement: park it for
+	// review rather than silently comparing incompatible amounts.
+	factor, ok := officialCurrencyToUSD(view)
+	if !ok {
+		// No reliable currency basis: treat as "no comparable reference" and
+		// skip, consistent with the no-baseline rule.
+		return "", true
+	}
 	unit := strings.ToLower(strings.TrimSpace(view.Unit))
 	perCallView := unit == "per_call" || unit == "per_image" || unit == "per_minute" ||
 		(tier.InputPerMillionUSD == nil && tier.PerUnitUSD != nil)
 	if perCallView || (row.PerCall > 0 && tier.InputPerMillionUSD == nil) {
-		// The two sources are only comparable in the same unit. A model whose
-		// synchronized pricing is token-based (e.g. gpt-image-2 publishes a
-		// token expression) and whose upstream catalogue publishes a per-image
-		// fixed price has no common basis here; that is not a disagreement.
+		// Only currency differences are convertible here. A per-image fixed
+		// price and a per-token expression have no common unit; that remains a
+		// skip, not a disagreement.
 		if row.PerCall <= 0 {
 			return "", true
 		}
-		if tier.PerUnitUSD == nil || !officialMoneyEqual(tier.PerUnitUSD, row.PerCall) {
+		equal, converted := officialMoneyEqualUSD(tier.PerUnitUSD, row.PerCall, factor)
+		if !converted || !equal {
 			return "official per-call price disagrees with Uter synchronized pricing", false
 		}
 		return "", true
@@ -177,7 +188,8 @@ func crossCheckOfficialPrice(
 		if row.PerSecond <= 0 {
 			return "", true
 		}
-		if tier.PerUnitUSD == nil || !officialMoneyEqual(tier.PerUnitUSD, row.PerSecond) {
+		equal, converted := officialMoneyEqualUSD(tier.PerUnitUSD, row.PerSecond, factor)
+		if !converted || !equal {
 			return "official per-second price disagrees with Uter synchronized pricing", false
 		}
 		return "", true
@@ -185,22 +197,70 @@ func crossCheckOfficialPrice(
 	if row.Input <= 0 {
 		return "", true
 	}
-	if !officialMoneyEqual(tier.InputPerMillionUSD, row.Input) {
+	if equal, _ := officialMoneyEqualUSD(tier.InputPerMillionUSD, row.Input, factor); !equal {
 		return "official input price disagrees with Uter synchronized pricing", false
 	}
-	if tier.OutputPerMillionUSD != nil && row.Output > 0 &&
-		!officialMoneyEqual(tier.OutputPerMillionUSD, row.Output) {
-		return "official output price disagrees with Uter synchronized pricing", false
+	if tier.OutputPerMillionUSD != nil && row.Output > 0 {
+		if equal, _ := officialMoneyEqualUSD(tier.OutputPerMillionUSD, row.Output, factor); !equal {
+			return "official output price disagrees with Uter synchronized pricing", false
+		}
 	}
-	if tier.CachePerMillionUSD != nil && row.Cache > 0 &&
-		!officialMoneyEqual(tier.CachePerMillionUSD, row.Cache) {
-		return "official cache price disagrees with Uter synchronized pricing", false
+	if tier.CachePerMillionUSD != nil && row.Cache > 0 {
+		if equal, _ := officialMoneyEqualUSD(tier.CachePerMillionUSD, row.Cache, factor); !equal {
+			return "official cache price disagrees with Uter synchronized pricing", false
+		}
 	}
-	if tier.CreateCachePerMillionUSD != nil && row.CreateCache > 0 &&
-		!officialMoneyEqual(tier.CreateCachePerMillionUSD, row.CreateCache) {
-		return "official cache-write price disagrees with Uter synchronized pricing", false
+	if tier.CreateCachePerMillionUSD != nil && row.CreateCache > 0 {
+		if equal, _ := officialMoneyEqualUSD(tier.CreateCachePerMillionUSD, row.CreateCache, factor); !equal {
+			return "official cache-write price disagrees with Uter synchronized pricing", false
+		}
 	}
 	return "", true
+}
+
+// officialCurrencyToUSD returns the multiplier that converts an official tier
+// amount into USD, using Uter's auto-updated USD/CNY rate (A = USDExchangeRate,
+// the read-only "USD Exchange Rate" field refreshed from market data every 10
+// minutes; the payment price B = A + adjustment is deliberately NOT used here
+// because official prices must be compared at market rates). The tier fields
+// are named ...USD, but Bailian-style sources may still publish CNY amounts;
+// NormalizedCurrency records the currency those amounts are actually in. When
+// the currency is USD (or absent) no conversion is applied. The global is read
+// on every check, so a refreshed rate takes effect on the next sync without a
+// restart. ok=false means there is no trustworthy basis for comparison
+// (unknown currency, or a broken exchange-rate setting); the caller skips the
+// row instead of flagging a false disagreement.
+func officialCurrencyToUSD(view ChannelOfficialPricing) (factor float64, ok bool) {
+	currency := strings.ToUpper(strings.TrimSpace(view.NormalizedCurrency))
+	if currency == "" {
+		// Fall back to the source currency only when no normalized currency was
+		// recorded at all; a normalized value is authoritative.
+		currency = strings.ToUpper(strings.TrimSpace(view.SourceCurrency))
+	}
+	switch currency {
+	case "", "USD":
+		return 1, true
+	case "CNY", "RMB":
+		rate := operation_setting.USDExchangeRate
+		if rate <= 0 || math.IsNaN(rate) || math.IsInf(rate, 0) {
+			return 0, false
+		}
+		return 1 / rate, true
+	default:
+		// No known conversion for this currency: skip, do not mislabel.
+		return 0, false
+	}
+}
+
+// officialMoneyEqualUSD compares a tier amount against a USD baseline after
+// converting the tier's currency into USD. A failed conversion is reported to
+// the caller via ok=false so the row can be parked for review instead of being
+// silently compared in the wrong currency.
+func officialMoneyEqualUSD(amount *Money, expectedUSD float64, factor float64) (equal, ok bool) {
+	if amount == nil {
+		return expectedUSD == 0, true
+	}
+	return officialMoneyEqual(amount, expectedUSD/factor), true
 }
 
 // officialMoneyEqual compares an optional money amount with a plain float

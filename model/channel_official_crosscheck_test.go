@@ -6,6 +6,7 @@ import (
 
 	"github.com/glebarez/sqlite"
 	"github.com/stretchr/testify/require"
+	"github.com/uter-ai/uter/setting/operation_setting"
 	"gorm.io/gorm"
 )
 
@@ -210,4 +211,90 @@ func TestApplyOfficialCrossCheckWithFixedRequestPrice(t *testing.T) {
 	}}
 	applyOfficialCrossCheck(records)
 	require.Equal(t, "keep-me", records[0].InternalPricing)
+}
+
+func TestCrossCheckOfficialPriceConvertsCNYWithExchangeRate(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 7.25
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	baseline := map[string]synchronizedOfficialPrice{
+		"cny:model": {Input: 10, Output: 50},
+	}
+	// 上游以人民币发布：72.5 CNY/M = 10 USD/M @ 7.25。
+	view := ChannelOfficialPricing{
+		Unit:               "per_1m_token",
+		SourceCurrency:     "CNY",
+		NormalizedCurrency: "CNY",
+		Tiers: []ChannelPricingTier{{
+			InputPerMillionUSD:  moneyFromFloat(72.5),
+			OutputPerMillionUSD: moneyFromFloat(362.5),
+		}},
+	}
+	reason, ok := crossCheckOfficialPrice(view, "cny-model", baseline)
+	require.True(t, ok, "CNY price equal after conversion must pass; got %q", reason)
+
+	// 自动汇率刷新后，下一次交叉核验必须立即使用新汇率，不读启动缓存。
+	operation_setting.USDExchangeRate = 8
+	reason, ok = crossCheckOfficialPrice(view, "cny-model", baseline)
+	require.False(t, ok, "freshly synced rate must be used on the next check")
+	require.Contains(t, reason, "input price")
+	operation_setting.USDExchangeRate = 7.25
+
+	// 换算后仍不一致 → 待核。
+	view.Tiers[0].InputPerMillionUSD = moneyFromFloat(80)
+	reason, ok = crossCheckOfficialPrice(view, "cny-model", baseline)
+	require.False(t, ok)
+	require.Contains(t, reason, "input price")
+}
+
+func TestCrossCheckOfficialPriceSkipsUnknownCurrency(t *testing.T) {
+	baseline := map[string]synchronizedOfficialPrice{
+		"weird:model": {Input: 10},
+	}
+	view := ChannelOfficialPricing{
+		Unit:               "per_1m_token",
+		NormalizedCurrency: "JPY",
+		Tiers: []ChannelPricingTier{{
+			InputPerMillionUSD: moneyFromFloat(1500),
+		}},
+	}
+	reason, ok := crossCheckOfficialPrice(view, "weird-model", baseline)
+	require.True(t, ok, "unconvertible currency must skip, not flag; got %q", reason)
+	require.Empty(t, reason)
+}
+
+func TestCrossCheckOfficialPricePartialDimensionsPassWhenSharedPricesMatch(t *testing.T) {
+	baseline := map[string]synchronizedOfficialPrice{
+		"partial:dims": {Input: 10, Output: 50, Cache: 2.5, CreateCache: 12.5},
+	}
+	// 一个来源有 input/output/cache/cache-write，另一个只有 input/output：
+	// 只要 input/output 相同即算通过，缺失的维度不参与比对。
+	view := ChannelOfficialPricing{Unit: "per_1m_token", Tiers: []ChannelPricingTier{{
+		InputPerMillionUSD:  moneyFromFloat(10),
+		OutputPerMillionUSD: moneyFromFloat(50),
+	}}}
+	reason, ok := crossCheckOfficialPrice(view, "partial-dims", baseline)
+	require.True(t, ok, "shared input/output match must pass when one side lacks cache; got %q", reason)
+	require.Empty(t, reason)
+
+	// 反向：基准侧缺缓存，渠道侧有缓存，同样只比 input/output。
+	baselineSlim := map[string]synchronizedOfficialPrice{
+		"partial:dims": {Input: 10, Output: 50},
+	}
+	fullView := ChannelOfficialPricing{Unit: "per_1m_token", Tiers: []ChannelPricingTier{{
+		InputPerMillionUSD:       moneyFromFloat(10),
+		OutputPerMillionUSD:      moneyFromFloat(50),
+		CachePerMillionUSD:       moneyFromFloat(2.5),
+		CreateCachePerMillionUSD: moneyFromFloat(12.5),
+	}}}
+	reason, ok = crossCheckOfficialPrice(fullView, "partial-dims", baselineSlim)
+	require.True(t, ok, "shared input/output match must pass when baseline lacks cache; got %q", reason)
+	require.Empty(t, reason)
+
+	// 共享维度不一致仍然必须拦截。
+	fullView.Tiers[0].OutputPerMillionUSD = moneyFromFloat(60)
+	reason, ok = crossCheckOfficialPrice(fullView, "partial-dims", baselineSlim)
+	require.False(t, ok, "mismatched shared output must fail")
+	require.Contains(t, reason, "output price")
 }

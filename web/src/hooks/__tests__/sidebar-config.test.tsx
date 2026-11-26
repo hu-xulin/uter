@@ -280,3 +280,23 @@ describe('audit log sidebar entry', () => {
     expect(titles).toContain('Audit Logs')
   })
 })
+
+describe('admin sidebar order', () => {
+  it('lists channel, model, monitor, user, subscription, redemption, plugin, request, info and settings in that order', () => {
+    const { result } = sidebarFor()
+    const admin = result.current.find((group) => group.id === 'admin')
+    expect(admin).toBeDefined()
+    expect(admin?.items.map((item) => item.url)).toEqual([
+      '/channels',
+      '/models/metadata',
+      '/upstream-monitor',
+      '/users',
+      '/subscriptions',
+      '/redemption-codes',
+      '/task-plugins',
+      '/request-processing',
+      '/system-info',
+      '/system-settings/site',
+    ])
+  })
+})

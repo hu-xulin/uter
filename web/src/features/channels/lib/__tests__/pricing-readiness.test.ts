@@ -19,7 +19,10 @@ For commercial licensing, please contact support@uter.ai
 import { expect, test } from 'vitest'
 
 import type { ChannelModelPricingRecord } from '../../types'
-import { summarizeSelectedPricingReadiness } from '../pricing-readiness'
+import {
+  filterModelsWithBillablePrice,
+  summarizeSelectedPricingReadiness,
+} from '../pricing-readiness'
 
 function record(
   modelName: string,
@@ -359,4 +362,39 @@ test('a two-way mapping cycle is still rejected (no invented match)', () => {
   )
   expect(summary.configured).toBe(0)
   expect(summary.missing).toEqual(['model-a (missing)'])
+})
+
+test('the upstream picker keeps only models with a configured sale price', () => {
+  const offered = filterModelsWithBillablePrice(
+    [
+      record('billable', 'configured'),
+      record('review', 'needs_review'),
+      record('official', 'official_only'),
+    ],
+    ['billable', 'review', 'official', 'no-row']
+  )
+
+  expect(offered).toEqual(['billable'])
+})
+
+test('the upstream picker matches redirect aliases by billing identity', () => {
+  const offered = filterModelsWithBillablePrice(
+    [record('alias-model', 'configured')],
+    ['upstream-model', 'other-model'],
+    JSON.stringify({ 'alias-model': 'upstream-model' })
+  )
+
+  expect(offered).toEqual(['upstream-model'])
+})
+
+test('a review-only duplicate hides an otherwise configured upstream model', () => {
+  const offered = filterModelsWithBillablePrice(
+    [
+      record('model-a', 'configured', 'primary'),
+      record('model-a', 'needs_review', 'secondary'),
+    ],
+    ['model-a']
+  )
+
+  expect(offered).toEqual([])
 })

@@ -110,3 +110,59 @@ test('advanced custom channels keep their own display editor', () => {
   )
   expect(settings).not.toHaveProperty('branding')
 })
+
+test('advanced custom branding is mirrored into form fields for the drawer header', () => {
+  // type 58 的 logo 存在 settings.advanced_custom.*，抽屉头部只读 branding_*
+  // 表单字段。回填时把 advanced_custom 的展示字段镜像过去，头部才能显示 logo。
+  const channel = channelSchema.parse({
+    id: 58,
+    name: 'Custom',
+    type: 58,
+    base_url: 'https://custom.example',
+    key: '',
+    models: 'gpt-5',
+    setting: '',
+    other: '',
+    remark: '',
+    status: 1,
+    created_time: 1,
+    test_time: 0,
+    response_time: 0,
+    balance_updated_time: 0,
+    settings: JSON.stringify({
+      advanced_custom: {
+        display_name: '自定义显示名',
+        logo: 'https://cdn.example/custom-light.svg',
+        logo_dark: 'https://cdn.example/custom-dark.svg',
+        advanced_routes: [
+          {
+            incoming_path: '/v1/models',
+            upstream_path: '/v1/models',
+            converter: 'none',
+          },
+        ],
+      },
+    }),
+  })
+  const defaults = transformChannelToFormDefaults(channel)
+  expect(defaults.branding_display_name).toBe('自定义显示名')
+  expect(defaults.branding_logo).toBe('https://cdn.example/custom-light.svg')
+  expect(defaults.branding_logo_dark).toBe(
+    'https://cdn.example/custom-dark.svg'
+  )
+
+  // 保存仍只写 advanced_custom，不产生重复的 branding 键。
+  const form = channelFormSchema.parse({
+    ...defaults,
+    key: 'test-key',
+  })
+  const settings = JSON.parse(
+    transformFormDataToCreatePayload(form).channel.settings ?? '{}'
+  )
+  expect(settings).not.toHaveProperty('branding')
+  expect(settings.advanced_custom).toMatchObject({
+    display_name: '自定义显示名',
+    logo: 'https://cdn.example/custom-light.svg',
+    logo_dark: 'https://cdn.example/custom-dark.svg',
+  })
+})

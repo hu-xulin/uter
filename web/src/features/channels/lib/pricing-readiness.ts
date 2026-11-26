@@ -110,6 +110,36 @@ function billingIdentity(
  * name share one billing identity, so a redirected model is not reported as
  * missing when its catalogue row exists under the other name.
  */
+/**
+ * Keep only upstream models the channel can actually bill. This is the
+ * discovery-list counterpart of `summarizeSelectedPricingReadiness`: a model
+ * with no price row, an official-only row or a needs-review row must never be
+ * offered for selection, otherwise the operator can select a model that every
+ * relay call rejects at settlement time.
+ *
+ * Redirect aliases share a billing identity with their upstream name, so the
+ * filter matches the same identity the readiness summary uses.
+ */
+export function filterModelsWithBillablePrice(
+  records: ChannelModelPricingRecord[],
+  models: string[],
+  modelMapping?: string
+): string[] {
+  const mapping = parseReadinessMapping(modelMapping)
+  const configured = new Set<string>()
+  const blocked = new Set<string>()
+  for (const record of records) {
+    const identity = billingIdentity(record.model_name, mapping)
+    if (isConfigured(record.pricing_status)) configured.add(identity)
+    else blocked.add(identity)
+  }
+  for (const identity of blocked) configured.delete(identity)
+  return models.filter((model) => {
+    const trimmed = model.trim()
+    return Boolean(trimmed) && configured.has(billingIdentity(trimmed, mapping))
+  })
+}
+
 export function summarizeSelectedPricingReadiness(
   records: ChannelModelPricingRecord[],
   selectedModels: string[],

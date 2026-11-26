@@ -1150,19 +1150,31 @@ func TestLoadChannelInternalPricesAbsolutePriceWinsOverExpressionRow(t *testing.
 }
 
 func TestCanonicalModelTagClassifiesSixCategories(t *testing.T) {
-	modalities := func(raw string) *Model { return &Model{InputModalities: raw} }
+	// models.dev semantics: modalities.output decides what a model GENERATES;
+	// modalities.input only describes what it accepts. A vision chat model
+	// (text+image in, text out) is a Text model, not an Image generator.
+	withModalities := func(input, output string) *Model {
+		return &Model{InputModalities: input, OutputModalities: output}
+	}
 	cases := []struct {
 		name      string
 		model     *Model
 		endpoints []constant.EndpointType
 		want      string
 	}{
-		{"qwen4-max", nil, nil, "Text"},
-		{"gpt-4o", modalities("text,image"), nil, "Image"},
-		{"wan3.0-video", nil, nil, "Video"},
-		{"qwen3-tts-flash", nil, nil, "Audio"},
+		{"qwen4-max", withModalities("text", "text"), nil, "Text"},
+		// Vision understanding must NOT be tagged as image generation.
+		{"gpt-4o", withModalities("text,image", "text"), nil, "Text"},
+		{"claude-opus-4-6", withModalities("text,image,file", "text"), nil, "Text"},
+		// Actual image generators have image in the output modality.
+		{"gpt-image-1", withModalities("text", "image"), nil, "Image"},
+		{"wan3.0-video", withModalities("text,image", "video"), nil, "Video"},
+		{"qwen3-tts-flash", withModalities("text", "audio"), nil, "Audio"},
 		{"qwen3.7-text-embedding", nil, nil, "Embedding"},
 		{"qwen3.5-omni-plus", nil, nil, "Omni"},
+		{"qwen3-coder-plus", withModalities("text", "text"), nil, "Code"},
+		// Unsynced model without modality data falls back to legacy names.
+		{"un-synced-image-model", &Model{}, nil, "Image"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1606,7 +1618,9 @@ func TestSelectChannelPricingRowIdentityIsolation(t *testing.T) {
 }
 
 func TestCanonicalModelCategoryUsesApiReferenceGroups(t *testing.T) {
-	withModalities := func(raw string) *Model { return &Model{InputModalities: raw} }
+	withModalities := func(input, output string) *Model {
+		return &Model{InputModalities: input, OutputModalities: output}
+	}
 	cases := []struct {
 		name      string
 		model     *Model
@@ -1625,8 +1639,14 @@ func TestCanonicalModelCategoryUsesApiReferenceGroups(t *testing.T) {
 		{"gpt-4o-completion", nil, nil, ModelCategoryCompletions},
 		{"text", nil, nil, ModelCategoryChat},
 		{"unknown-xyz", nil, nil, ModelCategoryModel},
-		{"by-modality", withModalities("audio"), nil, ModelCategoryAudio},
+		{"by-modality", &Model{InputModalities: "audio"}, nil, ModelCategoryAudio},
 		{"by-endpoint", nil, []constant.EndpointType{constant.EndpointTypeEmbeddings}, ModelCategoryEmbeddings},
+		// models.dev output modality drives generation categories.
+		{"vision-stays-chat", withModalities("text,image,file", "text"), nil, ModelCategoryChat},
+		{"image-generator", withModalities("text", "image"), nil, ModelCategoryImage},
+		{"video-generator", withModalities("text,image", "video"), nil, ModelCategoryVideo},
+		{"audio-generator", withModalities("text", "audio"), nil, ModelCategoryAudio},
+		{"code-model", withModalities("text", "text"), nil, ModelCategoryCode},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {

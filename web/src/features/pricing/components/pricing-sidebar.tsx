@@ -27,6 +27,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible'
+import { useTheme } from '@/context/theme-provider'
 import { Heading } from '@/design-system'
 import { ChannelTypeLogo } from '@/features/channels/components/channel-type-badge'
 import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
@@ -44,7 +45,12 @@ import {
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
 import { orderVendorsByModelCount } from '../lib/vendor-order'
-import type { PricingFacetModels, PricingModel, PricingVendor } from '../types'
+import type {
+  PricingChannel,
+  PricingFacetModels,
+  PricingModel,
+  PricingVendor,
+} from '../types'
 
 type FilterOption = {
   value: string
@@ -82,6 +88,8 @@ export interface PricingSidebarProps {
   channels: string[]
   /** 渠道名 → 渠道类型，用于复用创建渠道时的 ChannelTypeLogo。 */
   channelTypes?: Record<string, number>
+  /** 渠道名 → branding 白名单，自定义 logo 优先于 ChannelTypeLogo。 */
+  channelBrandings?: Record<string, PricingChannel>
   models: PricingModel[]
   facetModels: PricingFacetModels
   hasActiveFilters: boolean
@@ -194,6 +202,8 @@ function FilterSection(props: FilterSectionProps) {
 
 export function PricingSidebar(props: PricingSidebarProps) {
   const { t } = useTranslation()
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   const quotaTypeLabels = getQuotaTypeLabels(t)
   const endpointTypeLabels = getEndpointTypeLabels(t)
 
@@ -280,6 +290,23 @@ export function PricingSidebar(props: PricingSidebarProps) {
     ),
   }
   const channelMarkOf = (channel: string): ReactNode => {
+    // 渠道自定义 logo（branding 白名单）优先于类型图标：与渠道列表页一致，
+    // 暗色模式优先 logo_dark，缺失时回退 logo。data URL 与 http(s) URL 均支持。
+    const branding = props.channelBrandings?.[channel]
+    const customLogo = branding
+      ? (isDark
+          ? branding.logo_dark?.trim() || branding.logo?.trim()
+          : branding.logo?.trim()) || ''
+      : ''
+    if (customLogo) {
+      return (
+        <img
+          src={customLogo}
+          alt=''
+          className='size-3.5 shrink-0 rounded-sm object-contain'
+        />
+      )
+    }
     const channelType = props.channelTypes?.[channel]
     if (channelType !== undefined) {
       return <ChannelTypeLogo type={channelType} size={14} />
@@ -354,7 +381,7 @@ export function PricingSidebar(props: PricingSidebarProps) {
     ...quotaTypeOptions,
   ]
 
-  // The "Model Tags" section lists the ten API-reference capability groups.
+  // The "Model Tags" section lists the API-reference capability groups.
   // Counts use the tag facet (every active filter except this section) so the
   // numbers reflect what a click would actually show.
   const categoryLabels = getModelCategoryLabels(t)

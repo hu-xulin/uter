@@ -197,6 +197,10 @@ export type PricingFacetModels = {
 export type PricingChannel = {
   name: string
   type: number
+  /** Per-channel branding whitelist from channels.settings (never raw settings). */
+  display_name?: string
+  logo?: string
+  logo_dark?: string
 }
 
 export type PricingData = {

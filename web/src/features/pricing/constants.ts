@@ -111,7 +111,7 @@ export function getEndpointTypeLabels(
 
 /**
  * Model capability groups for the sidebar's "Model Tags" filter. Values mirror
- * the backend category constants and the API reference's ten groups, so a
+ * the backend category constants and the API reference's capability groups, so a
  * model classified on the server lands in the same bucket a reader finds in
  * the API reference.
  */
@@ -119,6 +119,7 @@ export const MODEL_CATEGORIES = {
   ALL: 'all',
   AUDIO: 'audio',
   CHAT: 'chat',
+  CODE: 'code',
   COMPLETIONS: 'completions',
   EMBEDDINGS: 'embeddings',
   IMAGE: 'image',
@@ -135,7 +136,7 @@ export type ModelCategoryOption =
 export const MODEL_CATEGORY_VALUES: ModelCategoryOption[] =
   Object.values(MODEL_CATEGORIES)
 
-/** Labels for the ten API-reference capability groups. */
+/** Labels for the API-reference capability groups. */
 export function getModelCategoryLabels(
   t: TFunction
 ): Record<ModelCategoryOption, string> {
@@ -143,6 +144,7 @@ export function getModelCategoryLabels(
     [MODEL_CATEGORIES.ALL]: t('All Tags'),
     [MODEL_CATEGORIES.AUDIO]: t('Audio'),
     [MODEL_CATEGORIES.CHAT]: t('Chat'),
+    [MODEL_CATEGORIES.CODE]: t('Code'),
     [MODEL_CATEGORIES.COMPLETIONS]: t('Completions'),
     [MODEL_CATEGORIES.EMBEDDINGS]: t('Embeddings'),
     [MODEL_CATEGORIES.IMAGE]: t('Image'),

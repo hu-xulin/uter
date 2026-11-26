@@ -47,6 +47,7 @@ import { cn } from '@/lib/utils'
 
 import { getSortLabels, type SortOption, type ViewMode } from '../constants'
 import type {
+  PricingChannel,
   PricingFacetModels,
   PricingModel,
   PricingVendor,
@@ -93,6 +94,7 @@ export interface PricingToolbarProps {
   vendors: PricingVendor[]
   channels: string[]
   channelTypes?: Record<string, number>
+  channelBrandings?: Record<string, PricingChannel>
   models: PricingModel[]
   facetModels: PricingFacetModels
   hasActiveFilters: boolean
@@ -258,6 +260,7 @@ export function PricingToolbar(props: PricingToolbarProps) {
               vendors={props.vendors}
               channels={props.channels}
               channelTypes={props.channelTypes ?? {}}
+              channelBrandings={props.channelBrandings ?? {}}
               models={props.models}
               facetModels={props.facetModels}
               hasActiveFilters={props.hasActiveFilters}

@@ -93,7 +93,11 @@ const CANONICAL_ICON_KEYS: Record<string, string> = {
   MiniMax: 'Minimax',
   Moonshot: 'Moonshot',
   OpenAI: 'OpenAI',
-  StepFun: 'StepFun',
+  // The installed @lobehub/icons registry spells this id `Stepfun` (lower-case
+  // f). ICON_METADATA is case-sensitive, so the display name `StepFun` cannot
+  // be reused as the icon key — it silently degrades every StepFun vendor chip
+  // and sidebar icon to the letter fallback even when the vendor has an icon.
+  StepFun: 'Stepfun',
   Tencent: 'Tencent',
   'Z.AI': 'ZAI',
   // Xiaomi and Unisound have no icon in @lobehub/icons; the shared letter

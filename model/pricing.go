@@ -141,9 +141,14 @@ type PricingVendor struct {
 // PricingChannel is the pricing page's channel filter metadata. Type is the
 // channel type number, so the console renders the same ChannelTypeLogo used by
 // channel creation instead of guessing from the models that channel serves.
+// The branding fields are a strict whitelist copied from channels.settings —
+// never expose the raw settings (they carry upstream console credentials).
 type PricingChannel struct {
-	Name string `json:"name"`
-	Type int    `json:"type"`
+	Name        string `json:"name"`
+	Type        int    `json:"type"`
+	DisplayName string `json:"display_name,omitempty"`
+	Logo        string `json:"logo,omitempty"`
+	LogoDark    string `json:"logo_dark,omitempty"`
 }
 
 var (
@@ -280,6 +285,74 @@ func loadPricingAdvancedCustomConfigs(enableAbilities []AbilityWithChannel) map[
 		}
 	}
 	return configs
+}
+
+// loadPricingChannelBrandings reads the branding whitelist for the channel IDs
+// that back the pricing catalogue. Like loadPricingAdvancedCustomConfigs it
+// runs inside updatePricing while updatePricingLock is held, and nests
+// channelSyncLock.RLock (global lock order updatePricingLock -> channelSyncLock).
+//
+// It deliberately parses only the "branding" key via a dedicated struct and
+// never calls Channel.GetOtherSettings(): that method mutates + saves the
+// channel when JSON is malformed, which a read-only pricing build must not do.
+// Only display_name / logo / logo_dark leave this function; the full settings
+// blob (upstream console credentials, plugin config, etc.) never does.
+func loadPricingChannelBrandings(needed map[int]struct{}) map[int]*dto.ChannelBranding {
+	if len(needed) == 0 {
+		return nil
+	}
+
+	parse := func(channel *Channel) *dto.ChannelBranding {
+		if channel == nil || strings.TrimSpace(channel.OtherSettings) == "" {
+			return nil
+		}
+		// Decode only the branding key; other settings keys are ignored.
+		var wrapper struct {
+			Branding *dto.ChannelBranding `json:"branding"`
+		}
+		if err := common.UnmarshalJsonStr(channel.OtherSettings, &wrapper); err != nil || wrapper.Branding == nil {
+			return nil
+		}
+		branding := wrapper.Branding
+		branding.DisplayName = strings.TrimSpace(branding.DisplayName)
+		branding.Logo = strings.TrimSpace(branding.Logo)
+		branding.LogoDark = strings.TrimSpace(branding.LogoDark)
+		if branding.DisplayName == "" && branding.Logo == "" && branding.LogoDark == "" {
+			return nil
+		}
+		return branding
+	}
+
+	brandings := make(map[int]*dto.ChannelBranding, len(needed))
+	if common.MemoryCacheEnabled {
+		channelSyncLock.RLock()
+		defer channelSyncLock.RUnlock()
+		for channelID := range needed {
+			if branding := parse(channelsIDM[channelID]); branding != nil {
+				brandings[channelID] = branding
+			}
+		}
+		return brandings
+	}
+
+	// Cache disabled: fall back to a single batched query instead of N lookups.
+	var channels []Channel
+	if err := DB.Select("id", "settings").Where("id IN ?", func() []int {
+		ids := make([]int, 0, len(needed))
+		for channelID := range needed {
+			ids = append(ids, channelID)
+		}
+		return ids
+	}()).Find(&channels).Error; err != nil {
+		common.SysLog(common.LogText("load pricing channel branding error: %v", err))
+		return brandings
+	}
+	for i := range channels {
+		if branding := parse(&channels[i]); branding != nil {
+			brandings[channels[i].Id] = branding
+		}
+	}
+	return brandings
 }
 
 func appendPricingEndpoint(endpoints []string, endpoint string) []string {
@@ -623,41 +696,147 @@ func applyChannelPriceDisplay(pricing *Pricing, entry PricingChannelPrice) bool 
 	return true
 }
 
-// canonicalModelTag classifies a model into the catalog's six model
-// categories. The catalog shows one primary category per model so the tag
-// filter stays stable instead of exposing arbitrary provider tags.
-func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointType) string {
+// modelCatalogSignals is the shared, structured view of a model used by both
+// classification functions below. It follows models.dev's model schema: the
+// authoritative capability signal is the modality pair (what a model accepts
+// and what it produces), with the model name, tags and endpoints as fallback
+// signals for catalog entries that have not been synced yet.
+//
+// The old classifiers concatenated every signal into one lowercase haystack
+// and tested substrings. That produced systematic mislabels: a text-output
+// vision model such as gpt-4o (input=text,image / output=text) was tagged
+// "Image" merely because it *accepts* images. models.dev distinguishes these
+// cases with modalities.input vs modalities.output, and so do we now.
+type modelCatalogSignals struct {
+	inputModalities  map[string]struct{}
+	outputModalities map[string]struct{}
+	// legacyHaystack holds only name/tag/endpoint signals. It is used when the
+	// modality pair is absent, and deliberately excludes modality strings:
+	// an unsynced vision model must not be labelled Image just because its
+	// name or tags mention image capabilities.
+	legacyHaystack string
+}
+
+func splitModalitySet(raw string) map[string]struct{} {
+	set := make(map[string]struct{})
+	for _, part := range strings.Split(strings.ToLower(raw), ",") {
+		if modality := strings.TrimSpace(part); modality != "" {
+			set[modality] = struct{}{}
+		}
+	}
+	return set
+}
+
+func (s modelCatalogSignals) hasInput(modality string) bool {
+	_, ok := s.inputModalities[modality]
+	return ok
+}
+
+func (s modelCatalogSignals) hasOutput(modality string) bool {
+	_, ok := s.outputModalities[modality]
+	return ok
+}
+
+func (s modelCatalogSignals) hasAnyOutput(modalities ...string) bool {
+	for _, modality := range modalities {
+		if s.hasOutput(modality) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s modelCatalogSignals) hasLegacy(words ...string) bool {
+	for _, word := range words {
+		if strings.Contains(s.legacyHaystack, word) {
+			return true
+		}
+	}
+	return false
+}
+
+// hasModalityData reports whether models.dev supplied a usable modality pair.
+// When it did not, callers fall back to the legacy name/tag/endpoint heuristics
+// so unsynced catalog entries keep their previous classification.
+func (s modelCatalogSignals) hasModalityData() bool {
+	return len(s.inputModalities) > 0 || len(s.outputModalities) > 0
+}
+
+func readModelCatalogSignals(name string, meta *Model, endpoints []constant.EndpointType) modelCatalogSignals {
+	signals := modelCatalogSignals{}
 	parts := []string{strings.ToLower(strings.TrimSpace(name))}
 	for _, endpoint := range endpoints {
 		parts = append(parts, strings.ToLower(string(endpoint)))
 	}
 	if meta != nil {
-		parts = append(parts,
-			strings.ToLower(meta.InputModalities),
-			strings.ToLower(meta.OutputModalities),
-			strings.ToLower(meta.Tags),
-		)
+		signals.inputModalities = splitModalitySet(meta.InputModalities)
+		signals.outputModalities = splitModalitySet(meta.OutputModalities)
+		// Tags are name-like capability hints (e.g. "coding", "reasoning"),
+		// not a modality declaration, so they belong in the legacy signal.
+		parts = append(parts, strings.ToLower(meta.Tags))
 	}
-	haystack := strings.Join(parts, " ")
+	signals.legacyHaystack = strings.ToLower(strings.TrimSpace(strings.Join(parts, " ")))
+	return signals
+}
 
-	has := func(words ...string) bool {
-		for _, word := range words {
-			if strings.Contains(haystack, word) {
-				return true
-			}
-		}
-		return false
-	}
-	switch {
-	case has("omni", "realtime", "s2s", "speech-to-speech"):
-		return "Omni"
-	case has("embedding", "embeddings", "rerank", "vector"):
+// canonicalModelTag classifies a model into the catalog's model categories.
+// The catalog shows one primary category per model so the tag filter stays
+// stable instead of exposing arbitrary provider tags.
+//
+// Classification order follows models.dev semantics:
+//  1. what the model PRODUCES (output modalities) decides image/video/audio
+//     generation labels — a model that merely accepts images is not an image
+//     model;
+//  2. non-modality capabilities (embedding, rerank, realtime/omni, code) use
+//     name/tag/endpoint signals, which models.dev expresses as family and
+//     description rather than a modality;
+//  3. unsynced entries fall back to the legacy keyword heuristics.
+func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointType) string {
+	s := readModelCatalogSignals(name, meta, endpoints)
+
+	// Capabilities that modalities cannot express come first, so an
+	// "omni embedding" or "code chat" name cannot be hidden by output=text.
+	if s.hasLegacy("embedding", "embeddings", "rerank", "re-rank", "vector") ||
+		s.hasLegacy(string(constant.EndpointTypeEmbeddings)) {
 		return "Embedding"
-	case has("video", "sora", "veo", "kling", "seedance"):
+	}
+	if s.hasLegacy("realtime", "omni", "s2s", "speech-to-speech") {
+		return "Omni"
+	}
+
+	if s.hasModalityData() {
+		// Output modality is authoritative for generation classes. A model
+		// with output=text,image is an image generator; output=text with
+		// image in the input is a text model with vision understanding.
+		switch {
+		case s.hasOutput("video"):
+			return "Video"
+		case s.hasOutput("image"):
+			return "Image"
+		case s.hasOutput("audio"):
+			return "Audio"
+		case s.hasLegacy("code", "coding", "coder", "codestral", "starcoder", "copilot"):
+			return "Code"
+		case len(s.outputModalities) == 0 && s.hasInput("audio"):
+			// Partially synced entry (input only): an audio-only model is a
+			// speech model, preserving the pre-migration behaviour.
+			return "Audio"
+		default:
+			return "Text"
+		}
+	}
+
+	// Legacy fallback for entries without models.dev modality data.
+	switch {
+	case s.hasLegacy("video", "sora", "veo", "kling", "seedance"):
 		return "Video"
-	case has("tts", "asr", "audio", "speech", "transcription", "voice"):
+	case s.hasLegacy("dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx"):
+		return "Image"
+	case s.hasLegacy("tts", "asr", "audio", "speech", "transcription", "voice"):
 		return "Audio"
-	case has("image", "dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx"):
+	case s.hasLegacy("code", "coding", "coder", "codestral", "starcoder", "copilot"):
+		return "Code"
+	case s.hasLegacy("image"):
 		return "Image"
 	default:
 		return "Text"
@@ -670,6 +849,7 @@ func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointTy
 const (
 	ModelCategoryAudio       = "audio"
 	ModelCategoryChat        = "chat"
+	ModelCategoryCode        = "code"
 	ModelCategoryCompletions = "completions"
 	ModelCategoryEmbeddings  = "embeddings"
 	ModelCategoryImage       = "image"
@@ -680,54 +860,74 @@ const (
 	ModelCategoryVideo       = "video"
 )
 
-// canonicalModelCategory classifies a model into exactly one of the ten API
-// reference groups. It is deliberately distinct from canonicalModelTag: tags
+// canonicalModelCategory classifies a model into exactly one of the sidebar's
+// capability groups. It is deliberately distinct from canonicalModelTag: tags
 // drive capability badges on cards, while this category drives the sidebar's
-// "Model Tags" filter. Check order puts the specific modalities first (realtime,
-// moderation, rerank, embeddings, audio, image, video, completions) so a name
-// like "qwen3.7-text-embedding" is not mistaken for a chat model; plain text
-// models fall back to chat, and unrecognizable entries to "model".
+// "Model Tags" filter.
+//
+// As with canonicalModelTag, models.dev's output modality is authoritative for
+// generation classes: output=image is an image model whether or not its name
+// contains "chat", and a vision model with output=text stays in chat/text.
+// Capabilities modalities cannot express (realtime, moderation, rerank,
+// embeddings, code, completions) keep their name/tag/endpoint signals.
 func canonicalModelCategory(name string, meta *Model, endpoints []constant.EndpointType) string {
-	parts := []string{strings.ToLower(strings.TrimSpace(name))}
-	for _, endpoint := range endpoints {
-		parts = append(parts, strings.ToLower(string(endpoint)))
-	}
-	if meta != nil {
-		parts = append(parts,
-			strings.ToLower(meta.InputModalities),
-			strings.ToLower(meta.OutputModalities),
-			strings.ToLower(meta.Tags),
-		)
-	}
-	haystack := strings.Join(parts, " ")
-	has := func(words ...string) bool {
-		for _, word := range words {
-			if strings.Contains(haystack, word) {
-				return true
-			}
-		}
-		return false
-	}
+	s := readModelCatalogSignals(name, meta, endpoints)
+
+	// Non-modality capabilities first: a "re-rank" or "embedding" model must
+	// not be pulled into chat just because it also outputs text.
 	switch {
-	case has("realtime", "omni", "s2s", "speech-to-speech"):
+	case s.hasLegacy("realtime", "omni", "s2s", "speech-to-speech"):
 		return ModelCategoryRealtime
-	case has("moderation", "censor", "content-filter"):
+	case s.hasLegacy("moderation", "censor", "content-filter"):
 		return ModelCategoryModeration
-	case has("rerank", "re-rank", "jina-rerank"):
+	case s.hasLegacy("rerank", "re-rank", "jina-rerank"):
 		return ModelCategoryRerank
-	case has("embedding", "embeddings", "vector"):
+	case s.hasLegacy("embedding", "embeddings", "vector") ||
+		s.hasLegacy(string(constant.EndpointTypeEmbeddings)):
 		return ModelCategoryEmbeddings
-	case has("tts", "asr", "audio", "speech", "transcription", "voice"):
+	}
+
+	if s.hasModalityData() {
+		switch {
+		case s.hasOutput("video"):
+			return ModelCategoryVideo
+		case s.hasOutput("image"):
+			return ModelCategoryImage
+		case s.hasOutput("audio"):
+			return ModelCategoryAudio
+		case s.hasLegacy("code", "coding", "coder", "codestral", "starcoder", "copilot"):
+			return ModelCategoryCode
+		case s.hasLegacy("completion", "completions", "instruct"):
+			return ModelCategoryCompletions
+		case len(s.outputModalities) == 0 && s.hasInput("audio"):
+			// Partially synced entry (input only): an audio-only model is a
+			// speech model, preserving the pre-migration behaviour.
+			return ModelCategoryAudio
+		default:
+			// Text output (possibly with multimodal input) is a chat model.
+			return ModelCategoryChat
+		}
+	}
+
+	// Legacy fallback for entries without models.dev modality data.
+	switch {
+	case s.hasLegacy("tts", "asr", "audio", "speech", "transcription", "voice"):
 		return ModelCategoryAudio
-	case has("image", "dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx-image"):
+	case s.hasLegacy("dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx-image"):
 		return ModelCategoryImage
-	case has("video", "sora", "veo", "kling", "seedance", "jimeng", "pixverse", "happyhorse"):
+	case s.hasLegacy("video", "sora", "veo", "kling", "seedance", "jimeng", "pixverse", "happyhorse"):
 		return ModelCategoryVideo
-	case has("completion", "completions", "instruct"):
+	case s.hasLegacy("image"):
+		// Generic image token, kept before the chat-name fallback so an
+		// unsynced "gpt-image-1" is not swallowed by the "gpt" chat hint.
+		return ModelCategoryImage
+	case s.hasLegacy("code", "coding", "coder", "codestral", "starcoder", "copilot"):
+		return ModelCategoryCode
+	case s.hasLegacy("completion", "completions", "instruct"):
 		return ModelCategoryCompletions
-	case has("chat", "gpt", "claude", "gemini", "llama", "qwen", "deepseek", "chatgpt"):
+	case s.hasLegacy("chat", "gpt", "claude", "gemini", "llama", "qwen", "deepseek", "chatgpt"):
 		return ModelCategoryChat
-	case has("text"):
+	case s.hasLegacy("text"):
 		return ModelCategoryChat
 	default:
 		return ModelCategoryModel
@@ -907,6 +1107,10 @@ func updatePricing() {
 	modelGroupsMap := make(map[string]*types.Set[string])
 	modelChannelsMap := make(map[string]*types.Set[string])
 	channelTypeByName := make(map[string]int)
+	// channelIDByName keeps the ID of the winning ability for each channel name
+	// (same "smallest type wins" rule) so its branding can be attached below.
+	channelIDByName := make(map[string]int)
+	neededBrandingIDs := make(map[int]struct{})
 
 	for _, ability := range enableAbilities {
 		groups, ok := modelGroupsMap[ability.Model]
@@ -928,8 +1132,13 @@ func updatePricing() {
 		channels.Add(channelName)
 		if existing, ok := channelTypeByName[channelName]; !ok || ability.ChannelType < existing {
 			channelTypeByName[channelName] = ability.ChannelType
+			channelIDByName[channelName] = ability.ChannelId
 		}
+		neededBrandingIDs[ability.ChannelId] = struct{}{}
 	}
+	// Only an explicit branding whitelist reaches the public pricing API;
+	// the raw channel settings (credentials, plugin config) are never exposed.
+	channelBrandings := loadPricingChannelBrandings(neededBrandingIDs)
 
 	pricingChannelsList = make([]PricingChannel, 0, len(channelTypeByName))
 	channelNames := make([]string, 0, len(channelTypeByName))
@@ -938,7 +1147,13 @@ func updatePricing() {
 	}
 	slices.Sort(channelNames)
 	for _, name := range channelNames {
-		pricingChannelsList = append(pricingChannelsList, PricingChannel{Name: name, Type: channelTypeByName[name]})
+		item := PricingChannel{Name: name, Type: channelTypeByName[name]}
+		if branding := channelBrandings[channelIDByName[name]]; branding != nil {
+			item.DisplayName = branding.DisplayName
+			item.Logo = branding.Logo
+			item.LogoDark = branding.LogoDark
+		}
+		pricingChannelsList = append(pricingChannelsList, item)
 	}
 
 	// A batch redirect publishes request aliases instead of the raw upstream

@@ -18,6 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
+import { getLobeIconNames } from '../../../lib/lobe-icon'
 import {
   canonicalVendorIcon,
   canonicalVendorName,
@@ -50,7 +51,7 @@ describe('vendor normalization', () => {
   it('derives the same logo key from the canonical vendor', () => {
     expect(canonicalVendorIcon('Z.AI', 'Z.AI')).toBe('ZAI')
     expect(canonicalVendorIcon('MiniMax', 'MiniMax')).toBe('Minimax')
-    expect(canonicalVendorIcon('stepfun', '')).toBe('StepFun')
+    expect(canonicalVendorIcon('stepfun', '')).toBe('Stepfun')
     expect(canonicalVendorIcon('antdigital', '')).toBe('AntGroup')
     expect(canonicalVendorIcon('qwen', 'Qwen')).toBe('Alibaba')
     // No guaranteed brand glyph: both channels fall back to the shared letter.
@@ -58,5 +59,46 @@ describe('vendor normalization', () => {
     expect(canonicalVendorIcon('unisound', '')).toBe('')
     // Unknown vendors keep their configured icon.
     expect(canonicalVendorIcon('Custom Vendor', 'custom')).toBe('custom')
+  })
+
+  it('resolves every canonical vendor logo key against the installed icon registry', () => {
+    // Regression guard: a display name may differ from the icon id only by
+    // case (e.g. display "StepFun" vs registry id "Stepfun"). ICON_METADATA is
+    // case-sensitive, so a wrong-case key silently degrades to a letter
+    // fallback even when the operator configured a vendor logo.
+    const available = new Set(getLobeIconNames())
+    const canonicalVendors = [
+      'Alibaba',
+      'Anthropic',
+      'Ant Group',
+      'Baidu',
+      'ByteDance',
+      'DeepSeek',
+      'Google',
+      'Meta',
+      'MiniMax',
+      'Moonshot',
+      'OpenAI',
+      'StepFun',
+      'Tencent',
+      'Z.AI',
+      // Deliberately no brand glyphs; an empty key means letter fallback.
+      'Xiaomi',
+      'Unisound',
+    ]
+    const noGlyph = new Set(['Xiaomi', 'Unisound'])
+
+    for (const vendor of canonicalVendors) {
+      const key = canonicalVendorIcon(vendor, '')
+      if (noGlyph.has(vendor)) {
+        expect(key, `${vendor} should intentionally fall back`).toBe('')
+        continue
+      }
+      expect(key, `${vendor} must resolve to a non-empty icon key`).not.toBe('')
+      expect(
+        available.has(key.split('.')[0]),
+        `${vendor} icon key "${key}" is not present in @lobehub/icons registry`
+      ).toBe(true)
+    }
   })
 })

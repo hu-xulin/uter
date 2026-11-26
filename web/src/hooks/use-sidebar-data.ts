@@ -175,14 +175,14 @@ export function useSidebarData(): SidebarData {
             icon: Box,
           },
           {
+            title: t('Sidebar Monitor'),
+            url: '/upstream-monitor',
+            icon: Activity,
+          },
+          {
             title: t('Users'),
             url: '/users',
             icon: Users,
-          },
-          {
-            title: t('Redemption Codes'),
-            url: '/redemption-codes',
-            icon: Ticket,
           },
           {
             title: t('Subscriptions'),
@@ -190,21 +190,26 @@ export function useSidebarData(): SidebarData {
             icon: CreditCard,
           },
           {
-            title: t('Plugins'),
-            url: '/task-plugins',
-            icon: PlugZap,
-            requiredRole: ROLE.SUPER_ADMIN,
+            title: t('Redemption Codes'),
+            url: '/redemption-codes',
+            icon: Ticket,
           },
           {
-            title: t('System Info'),
-            url: '/system-info',
-            icon: ServerCog,
+            title: t('Sidebar Channel Plugins'),
+            url: '/task-plugins',
+            icon: PlugZap,
             requiredRole: ROLE.SUPER_ADMIN,
           },
           {
             title: t('Request processing'),
             url: '/request-processing',
             icon: Workflow,
+            requiredRole: ROLE.SUPER_ADMIN,
+          },
+          {
+            title: t('System Info'),
+            url: '/system-info',
+            icon: ServerCog,
             requiredRole: ROLE.SUPER_ADMIN,
           },
           {

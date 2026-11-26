@@ -128,6 +128,15 @@ export function Pricing() {
     [channelMetadata]
   )
 
+  // 渠道自定义 logo（branding 白名单）按展示名索引，供侧栏优先于类型图标渲染。
+  const channelBrandings = useMemo(
+    () =>
+      Object.fromEntries(
+        (channelMetadata ?? []).map((channel) => [channel.name, channel])
+      ),
+    [channelMetadata]
+  )
+
   const availableChannels = useMemo(() => {
     const seen = new Set<string>()
     for (const model of models || []) {
@@ -243,6 +252,7 @@ export function Pricing() {
               vendors={vendors || []}
               channels={availableChannels}
               channelTypes={channelTypes}
+              channelBrandings={channelBrandings}
               models={models || []}
               facetModels={facetModels}
               hasActiveFilters={hasActiveFilters}
@@ -275,6 +285,7 @@ export function Pricing() {
                 vendors={vendors || []}
                 channels={availableChannels}
                 channelTypes={channelTypes}
+                channelBrandings={channelBrandings}
                 models={models || []}
                 facetModels={facetModels}
                 hasActiveFilters={hasActiveFilters}
