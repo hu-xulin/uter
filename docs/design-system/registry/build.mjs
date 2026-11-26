@@ -423,6 +423,25 @@ const exceptionRegistry = {
   resolved_exceptions: [],
 }
 
+// Manually adjudicated exceptions (e.g. EX-005, resolved by the project
+// owner after the 173-group retirement decision) are not derivable from
+// tokens/routes. Keep them across regeneration so running this generator
+// never silently drops a RESOLVED entry that downstream guards assert on.
+{
+  const exceptionPath = join(DS_DIR, 'EXCEPTION-REGISTRY.json')
+  if (existsSync(exceptionPath)) {
+    try {
+      const onDisk = JSON.parse(readFileSync(exceptionPath, 'utf8'))
+      const generatedIds = new Set(exceptionRegistry.items.map((x) => x.id))
+      const manual = (onDisk.items ?? []).filter((x) => !generatedIds.has(x.id))
+      if (manual.length > 0) exceptionRegistry.items.push(...manual)
+    } catch {
+      // A corrupt on-disk registry should not block regeneration; the
+      // generated baseline (EX-001..004) remains authoritative.
+    }
+  }
+}
+
 const registries = {
   'TOKEN-REGISTRY.json': tokenRegistry,
   'COMPONENT-REGISTRY.json': componentRegistry,
