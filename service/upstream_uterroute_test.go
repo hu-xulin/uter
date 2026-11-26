@@ -997,3 +997,29 @@ func TestUterRouteNoDiscountStillKeepsOfficialTierVisible(t *testing.T) {
 		"official tier must be identical whether or not a discount resolves")
 	require.NotNil(t, normalView.ChannelPrice, "resolvable group still produces a channel price")
 }
+
+func TestUterRouteCatalogModelNames(t *testing.T) {
+	snapshot := &UpstreamSnapshot{
+		Models: []UpstreamModelRecord{
+			{UpstreamModelID: "claude-fable-5.1"},
+			{UpstreamModelID: "claude-fable-5-1"}, // separator alias of the row above
+			{UpstreamModelID: "claude-fable-5"},
+			{UpstreamModelID: "  "},
+			{UpstreamModelID: "hidden-model"},
+		},
+		ExcludedModels: []string{"hidden-model"},
+	}
+	got := UterRouteCatalogModelNames(snapshot)
+	require.Equal(t, []string{"claude-fable-5.1", "claude-fable-5"}, got,
+		"separator variants collapse to one canonical spelling and excluded models stay out")
+}
+
+func TestUterRouteCatalogModelNamesNilSnapshot(t *testing.T) {
+	require.Empty(t, UterRouteCatalogModelNames(nil))
+}
+
+func TestNormalizeUterRouteModelKey(t *testing.T) {
+	require.Equal(t, "claude:fable:5:1", normalizeUterRouteModelKey("claude-fable-5.1"))
+	require.Equal(t, normalizeUterRouteModelKey("claude-fable-5.1"), normalizeUterRouteModelKey("claude-fable-5-1"))
+	require.Equal(t, normalizeUterRouteModelKey("GPT-4o"), normalizeUterRouteModelKey("gpt_4o"))
+}

@@ -404,7 +404,49 @@ func normalizeBailianChannelBaseURL(raw string) string {
 	return strings.TrimRight(parsed.String(), "/")
 }
 
+// resolveUterRouteModelFallback returns the built-in synchronized catalogue
+// when the live Uter Route fetch failed or came back empty. It is a pure helper
+// so the fallback contract is testable without network or global option state.
+// When no fallback exists, the original live error is preserved (or a clear
+// "empty" error when the live fetch technically succeeded with no models).
+func resolveUterRouteModelFallback(liveErr error, snapshot *service.UpstreamSnapshot) ([]string, error) {
+	builtIn := normalizeModelNames(service.UterRouteCatalogModelNames(snapshot))
+	if len(builtIn) > 0 {
+		return builtIn, nil
+	}
+	if liveErr != nil {
+		return nil, liveErr
+	}
+	return nil, fmt.Errorf("Uter Route upstream catalogue is empty")
+}
+
+// fetchChannelUpstreamModelIDs discovers models from the channel's upstream.
+// When the upstream is unreachable or returns nothing, every channel type falls
+// back to Uter's built-in catalog so operators can still configure the channel
+// with models Uter already knows. The live result always wins when present.
 func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
+	names, err := fetchChannelUpstreamModelIDsFromUpstream(channel)
+	return resolveCatalogModelFallback(names, err, model.BuiltinCatalogModelNames())
+}
+
+// resolveCatalogModelFallback keeps the live discovery result when it exists,
+// and otherwise uses Uter's built-in catalog. It is a pure helper so the
+// channel-agnostic fallback contract is testable without a live database.
+func resolveCatalogModelFallback(live []string, liveErr error, builtIn []string) ([]string, error) {
+	if liveErr == nil && len(live) > 0 {
+		return live, nil
+	}
+	fallback := service.NormalizeCatalogModelNames(builtIn)
+	if len(fallback) > 0 {
+		return fallback, nil
+	}
+	return live, liveErr
+}
+
+// fetchChannelUpstreamModelIDsFromUpstream performs the channel-type-specific
+// live discovery. It is wrapped by fetchChannelUpstreamModelIDs, which adds the
+// channel-agnostic built-in catalog fallback.
+func fetchChannelUpstreamModelIDsFromUpstream(channel *model.Channel) ([]string, error) {
 	if channel.Type == constant.ChannelTypeTaskPlugin {
 		plugin, ok := jsplugin.DefaultRegistry.Get(channel.GetSetting().TaskPluginKey)
 		if !ok {
@@ -475,14 +517,20 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		defer cancel()
 		snapshot, err := service.FetchUterRouteUpstream(ctx, channel.GetBaseURL())
-		if err != nil {
-			return nil, err
+		if err == nil && snapshot != nil {
+			names := make([]string, 0, len(snapshot.Models))
+			for _, record := range snapshot.Models {
+				names = append(names, record.UpstreamModelID)
+			}
+			names = normalizeModelNames(names)
+			if len(names) > 0 {
+				return names, nil
+			}
 		}
-		names := make([]string, 0, len(snapshot.Models))
-		for _, record := range snapshot.Models {
-			names = append(names, record.UpstreamModelID)
-		}
-		return normalizeModelNames(names), nil
+		// The live catalogue is unreachable or empty. Fall back to the built-in
+		// synchronized snapshot so operators can still discover the models Uter
+		// already knows. Never leak the live error when a usable fallback exists.
+		return resolveUterRouteModelFallback(err, service.LoadUterRouteUpstreamSnapshot())
 	}
 
 	if constant.IsAdvancedCustomChannel(channel.Type) {

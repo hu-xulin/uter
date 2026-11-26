@@ -1126,6 +1126,10 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 	if len(records) == 0 {
 		return 0, nil
 	}
+	// Cross-check every channel's official price against Uter's built-in
+	// synchronized catalogue. Disagreements are marked for review and stripped
+	// of their auto-billing price before anything is persisted.
+	applyOfficialCrossCheck(records)
 	written := 0
 	err := DB.Transaction(func(tx *gorm.DB) error {
 		for _, record := range records {

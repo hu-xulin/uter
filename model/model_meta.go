@@ -687,3 +687,22 @@ func parseModelSyncFilter(syncOfficial string) (value int, ok bool) {
 		return n, true
 	}
 }
+
+// BuiltinCatalogModelNames returns model names from Uter's built-in catalog
+// (the `models` table populated by the metadata sync from models.dev and
+// basellm). It is the channel-agnostic fallback used when an upstream cannot
+// return its model list during channel creation, so operators can still see
+// and select the models Uter already knows. Disabled and soft-deleted rows are
+// excluded, matching the pricing catalog's visibility rule.
+func BuiltinCatalogModelNames() []string {
+	if DB == nil {
+		return nil
+	}
+	var names []string
+	if err := DB.Model(&Model{}).
+		Where("status = ?", common.ChannelStatusEnabled).
+		Pluck("model_name", &names).Error; err != nil {
+		return nil
+	}
+	return names
+}

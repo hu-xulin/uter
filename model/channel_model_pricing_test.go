@@ -1604,3 +1604,33 @@ func TestSelectChannelPricingRowIdentityIsolation(t *testing.T) {
 	assert.Nil(t, row)
 	assert.Equal(t, ChannelPricingReasonIdentityMissing, reason)
 }
+
+func TestCanonicalModelCategoryUsesApiReferenceGroups(t *testing.T) {
+	withModalities := func(raw string) *Model { return &Model{InputModalities: raw} }
+	cases := []struct {
+		name      string
+		model     *Model
+		endpoints []constant.EndpointType
+		want      string
+	}{
+		{"gpt-4o", nil, nil, ModelCategoryChat},
+		{"claude-fable-5-1", nil, nil, ModelCategoryChat},
+		{"qwen3.7-text-embedding", nil, nil, ModelCategoryEmbeddings},
+		{"qwen3-tts-flash", nil, nil, ModelCategoryAudio},
+		{"qwen3.5-omni-plus", nil, nil, ModelCategoryRealtime},
+		{"gpt-image-1", nil, nil, ModelCategoryImage},
+		{"wan3.0-video", nil, nil, ModelCategoryVideo},
+		{"jina-reranker-v2", nil, nil, ModelCategoryRerank},
+		{"text-moderation-stable", nil, nil, ModelCategoryModeration},
+		{"gpt-4o-completion", nil, nil, ModelCategoryCompletions},
+		{"text", nil, nil, ModelCategoryChat},
+		{"unknown-xyz", nil, nil, ModelCategoryModel},
+		{"by-modality", withModalities("audio"), nil, ModelCategoryAudio},
+		{"by-endpoint", nil, []constant.EndpointType{constant.EndpointTypeEmbeddings}, ModelCategoryEmbeddings},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.want, canonicalModelCategory(tc.name, tc.model, tc.endpoints))
+		})
+	}
+}

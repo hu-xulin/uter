@@ -736,3 +736,49 @@ func TestFetchModelsUterAPIUsesConfiguredUpstreamWhenFormBaseURLIsEmpty(t *testi
 	require.JSONEq(t, `{"success":true,"message":"","data":["claude-sonnet","gpt-5"]}`, recorder.Body.String())
 	require.Equal(t, "/v1/models", <-requests)
 }
+
+func TestResolveUterRouteModelFallbackUsesBuiltInCatalogue(t *testing.T) {
+	snapshot := &service.UpstreamSnapshot{
+		Models: []service.UpstreamModelRecord{
+			{UpstreamModelID: "claude-fable-5.1"},
+			{UpstreamModelID: "claude-fable-5-1"},
+			{UpstreamModelID: "gpt-4o"},
+		},
+	}
+	got, err := resolveUterRouteModelFallback(errors.New("upstream unreachable"), snapshot)
+	require.NoError(t, err, "a usable built-in catalogue must suppress the live error")
+	require.Equal(t, []string{"claude-fable-5.1", "gpt-4o"}, got)
+}
+
+func TestResolveUterRouteModelFallbackPreservesErrorWhenEmpty(t *testing.T) {
+	liveErr := errors.New("upstream unreachable")
+	_, err := resolveUterRouteModelFallback(liveErr, nil)
+	require.ErrorIs(t, err, liveErr, "when no built-in catalogue exists the live error must surface")
+
+	_, err = resolveUterRouteModelFallback(nil, &service.UpstreamSnapshot{})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "empty")
+}
+
+func TestResolveCatalogModelFallbackAppliesToAllChannels(t *testing.T) {
+	// 上游成功且有模型 → 主路径为准。
+	live := []string{"upstream-only"}
+	got, err := resolveCatalogModelFallback(live, nil, []string{"built-in"})
+	require.NoError(t, err)
+	require.Equal(t, live, got)
+
+	// 上游返回空 → 内置资料补全。
+	got, err = resolveCatalogModelFallback([]string{}, nil, []string{"claude-fable-5.1", "claude-fable-5-1"})
+	require.NoError(t, err)
+	require.Equal(t, []string{"claude-fable-5.1"}, got, "separator variants collapse")
+
+	// 上游报错但内置资料可用 → 回退且不泄露错误。
+	liveErr := errors.New("upstream unreachable")
+	got, err = resolveCatalogModelFallback(nil, liveErr, []string{"built-in"})
+	require.NoError(t, err)
+	require.Equal(t, []string{"built-in"}, got)
+
+	// 两者都没有 → 保留原始错误。
+	_, err = resolveCatalogModelFallback(nil, liveErr, nil)
+	require.ErrorIs(t, err, liveErr)
+}

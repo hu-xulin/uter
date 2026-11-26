@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 	"sync"
 	"time"
@@ -26,7 +27,10 @@ type UterRouteUpstreamSyncStatus struct {
 	Reviews     int       `json:"reviews"`
 	DueChannels int       `json:"due_channels"`
 	Changes     int       `json:"changes"`
-	Errors      []string  `json:"errors,omitempty"`
+	// Repriced counts models whose sale price was recalculated from the
+	// channel's configured pricing rule after an official/channel price change.
+	Repriced int      `json:"repriced"`
+	Errors   []string `json:"errors,omitempty"`
 }
 
 var uterRouteUpstreamSyncMu sync.Mutex
@@ -200,6 +204,7 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 				RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), 0, 0, 0, 0, "", recordErr, model.ChannelSyncTypePrices)
 				continue
 			}
+			before := channelOfficialPriceSnapshot(channel.Id)
 			count, upsertErr := model.UpsertChannelOfficialPricing(records)
 			if upsertErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, upsertErr))
@@ -207,7 +212,15 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 				continue
 			}
 			written += count
-			RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), len(records), count, 0, 0, "", nil, model.ChannelSyncTypePrices)
+			// An official or channel price change must flow through to the sale
+			// price using the rule configured in the pricing step. Only the
+			// models whose reference price actually moved are repriced, and the
+			// rule never overwrites a hand-edited price.
+			after := channelOfficialPriceSnapshot(channel.Id)
+			changed := channelOfficialPriceChanged(before, after, channel.GetModels())
+			repriced := repriceChangedChannel(channel.Id, changed, due.schedule)
+			status.Repriced += repriced
+			RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), len(records), count, repriced, 0, "", nil, model.ChannelSyncTypePrices)
 			AutoVerifyChannelPricing(channel.Id)
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
@@ -216,9 +229,6 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 				state.ChannelSyncAt = now.Unix()
 			}
 		}
-		// Automatic updates only refresh upstream catalog/price data. Sale
-		// prices are configured explicitly in the pricing step and must never
-		// be re-derived or overwritten by the scheduler.
 		states.Channels[fmt.Sprintf("%d", channel.Id)] = state
 	}
 	saveUterRouteChannelSyncState(states)
@@ -268,6 +278,105 @@ func LoadUterRouteUpstreamSyncStatus() *UterRouteUpstreamSyncStatus {
 		return nil
 	}
 	return &status
+}
+
+// channelOfficialPricePoint is the per-model reference used to decide whether
+// an upstream sync actually changed a price. Both the undiscounted official
+// tier and the discounted channel tier are captured, so a change in either the
+// official price or the channel quote triggers a sale-price recalculation.
+type channelOfficialPricePoint struct {
+	official float64
+	channel  float64
+}
+
+// officialTierPrimaryUSD extracts the primary USD amount of one official tier.
+func officialTierPrimaryUSD(tier *model.ChannelPricingTier) float64 {
+	if tier == nil {
+		return 0
+	}
+	if tier.InputPerMillionUSD != nil && tier.InputPerMillionUSD.Float64() > 0 {
+		return tier.InputPerMillionUSD.Float64()
+	}
+	if tier.PerUnitUSD != nil && tier.PerUnitUSD.Float64() > 0 {
+		return tier.PerUnitUSD.Float64()
+	}
+	return 0
+}
+
+// channelOfficialPriceSnapshot reads the current official + channel prices for
+// every model of one channel. It is the "before" half of change detection.
+func channelOfficialPriceSnapshot(channelID int) map[string]channelOfficialPricePoint {
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return nil
+	}
+	out := make(map[string]channelOfficialPricePoint, len(rows))
+	for _, row := range rows {
+		var view model.ChannelOfficialPricing
+		if common.UnmarshalJsonStr(row.NormalizedPricing, &view) != nil || len(view.Tiers) == 0 {
+			continue
+		}
+		out[row.ModelName] = channelOfficialPricePoint{
+			official: officialTierPrimaryUSD(&view.Tiers[0]),
+			channel:  officialTierPrimaryUSD(view.ChannelPrice),
+		}
+	}
+	return out
+}
+
+// channelOfficialPriceChanged reports whether the official or channel price of
+// any tracked model moved. A new model is a change too: it needs an initial
+// sale price from the configured rule. Only models the channel actually serves
+// are compared, so removing a price row from the upstream does not reprice an
+// unrelated model.
+func channelOfficialPriceChanged(
+	before, after map[string]channelOfficialPricePoint,
+	served []string,
+) []string {
+	changed := make([]string, 0)
+	seen := make(map[string]bool, len(after))
+	for _, name := range served {
+		name = strings.TrimSpace(name)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		now, exists := after[name]
+		if !exists {
+			continue
+		}
+		was, existed := before[name]
+		if !existed || math.Abs(now.official-was.official) > 1e-12 ||
+			math.Abs(now.channel-was.channel) > 1e-12 {
+			changed = append(changed, name)
+		}
+	}
+	return changed
+}
+
+// repriceChangedChannel applies the channel's configured batch pricing rule to
+// the models whose official/channel price changed. It never overwrites a
+// hand-edited price (OverwriteManual stays false) and is a no-op when no rule
+// is configured or ApplyOnSync is off. Returns the number of rows repriced.
+func repriceChangedChannel(channelID int, changed []string, schedule ChannelPricingSchedule) int {
+	if len(changed) == 0 || !schedule.ApplyOnSync {
+		return 0
+	}
+	mode := strings.TrimSpace(schedule.Mode)
+	if mode == "" || mode == BatchPricingModeNone {
+		return 0
+	}
+	result, err := ApplyChannelBatchPricingWithOptions(channelID, BatchPricingOptions{
+		Models: changed,
+		Basis:  schedule.Basis,
+		Mode:   mode,
+		Value:  schedule.Value,
+	})
+	if err != nil {
+		common.SysError(common.LogText("apply scheduled pricing after upstream sync failed: channel_id=%d error=%v", channelID, err))
+		return 0
+	}
+	return result.Updated
 }
 
 // mergeChannelModelNames returns upstream models the channel does not list

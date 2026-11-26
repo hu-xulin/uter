@@ -994,6 +994,92 @@ func LoadUterRouteUpstreamSnapshot() *UpstreamSnapshot {
 	return &snapshot
 }
 
+// NormalizeCatalogModelNames de-duplicates model names after separator
+// normalization, keeping the first spelling of each model. It is the shared
+// helper for catalog fallbacks across all channel types: "claude-fable-5.1"
+// and "claude-fable-5-1" are one model, not two look-alike choices.
+func NormalizeCatalogModelNames(names []string) []string {
+	seen := make(map[string]struct{}, len(names))
+	out := make([]string, 0, len(names))
+	for _, name := range names {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		key := normalizeUterRouteModelKey(name)
+		if _, dup := seen[key]; dup {
+			continue
+		}
+		seen[key] = struct{}{}
+		out = append(out, name)
+	}
+	return out
+}
+
+// UterRouteCatalogModelNames returns the model IDs from an isolated snapshot.
+// It is the built-in fallback catalogue used when the live upstream catalogue
+// cannot be reached (or returns nothing) during channel model discovery, so an
+// operator can still see and select the models Uter already knows about.
+//
+// Excluded models (hidden on the upstream pricing page) are kept out, matching
+// the live branch which prunes vendor-less entries before they reach the
+// selection step. The result is de-duplicated after separator normalization:
+// "claude-fable-5.1" and "claude-fable-5-1" are the same model to Uter, so a
+// single canonical spelling is emitted instead of two look-alike rows.
+func UterRouteCatalogModelNames(snapshot *UpstreamSnapshot) []string {
+	if snapshot == nil {
+		return nil
+	}
+	excluded := make(map[string]struct{}, len(snapshot.ExcludedModels))
+	for _, name := range snapshot.ExcludedModels {
+		excluded[normalizeUterRouteModelKey(name)] = struct{}{}
+	}
+	seen := make(map[string]struct{}, len(snapshot.Models))
+	names := make([]string, 0, len(snapshot.Models))
+	for _, record := range snapshot.Models {
+		name := strings.TrimSpace(record.UpstreamModelID)
+		if name == "" {
+			continue
+		}
+		key := normalizeUterRouteModelKey(name)
+		if _, drop := excluded[key]; drop {
+			continue
+		}
+		if _, dup := seen[key]; dup {
+			continue
+		}
+		seen[key] = struct{}{}
+		names = append(names, name)
+	}
+	return names
+}
+
+// normalizeUterRouteModelKey folds every common model-name separator into one
+// boundary so version spellings such as "claude-fable-5.1" and
+// "claude-fable-5-1" compare equal. Case is ignored.
+func normalizeUterRouteModelKey(name string) string {
+	var b strings.Builder
+	b.Grow(len(name))
+	prevSep := false
+	for i := 0; i < len(name); i++ {
+		c := name[i]
+		switch {
+		case c >= 'A' && c <= 'Z':
+			b.WriteByte(c + ('a' - 'A'))
+			prevSep = false
+		case c == '-' || c == '_' || c == '.' || c == '/' || c == '|' || c == ' ' || c == '\\':
+			if !prevSep {
+				b.WriteByte(':')
+				prevSep = true
+			}
+		default:
+			b.WriteByte(c)
+			prevSep = false
+		}
+	}
+	return strings.Trim(b.String(), ":")
+}
+
 // UpstreamPriceChange records one detected change between two snapshots.
 // Kind is price_changed, model_added, or model_removed.
 type UpstreamPriceChange struct {
