@@ -322,6 +322,14 @@ func TestOrgAdminMayAssignRole(t *testing.T) {
 }
 
 func TestOrganizationMemberWriteQueryRejectsFormerOwner(t *testing.T) {
+	// updateOrganizationMemberFields -> IncrementUserAuthVersionWithTx 会发布
+	// Redis fence。测试进程未初始化 common.RDB，若沿用默认的 RedisEnabled=true
+	// 会对 nil client 解引用而 panic，导致这条回归用例从未真正执行。按 controller
+	// 包既有惯例隔离该全局量，让「前 owner 无法完成陈旧管理写」的权限断言真正生效。
+	previousRedis := common.RedisEnabled
+	common.RedisEnabled = false
+	t.Cleanup(func() { common.RedisEnabled = previousRedis })
+
 	previousDB := model.DB
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
