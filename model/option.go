@@ -80,14 +80,17 @@ func InitOptionMap() {
 	common.OptionMap["channel_provider.featured.username"] = ""
 	common.OptionMap["channel_provider.featured.password"] = ""
 	common.OptionMap["channel_provider.featured.api_key"] = ""
+	common.OptionMap["channel_provider.featured.api_url"] = ""
 	common.OptionMap["channel_provider.bailian.login_url"] = ""
 	common.OptionMap["channel_provider.bailian.username"] = ""
 	common.OptionMap["channel_provider.bailian.password"] = ""
 	common.OptionMap["channel_provider.bailian.api_key"] = ""
+	common.OptionMap["channel_provider.bailian.api_url"] = ""
 	common.OptionMap["channel_provider.subscription.login_url"] = ""
 	common.OptionMap["channel_provider.subscription.username"] = ""
 	common.OptionMap["channel_provider.subscription.password"] = ""
 	common.OptionMap["channel_provider.subscription.api_key"] = ""
+	common.OptionMap["channel_provider.subscription.api_url"] = ""
 	common.OptionMap["EmailDomainRestrictionEnabled"] = strconv.FormatBool(common.EmailDomainRestrictionEnabled)
 	common.OptionMap[operation_setting.SystemTaskRetentionDaysOptionKey] = strconv.Itoa(operation_setting.GetSystemTaskSetting().RetentionDays)
 	common.OptionMap["EmailAliasRestrictionEnabled"] = strconv.FormatBool(common.EmailAliasRestrictionEnabled)

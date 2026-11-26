@@ -427,6 +427,8 @@ func migrateDB() error {
 		&AuthzRole{},
 		&UserAccessToken{},
 		&EmailQuotaUsage{},
+		&UpstreamMonitorTask{},
+		&UpstreamMonitorReport{},
 	)
 	if err != nil {
 		return err
