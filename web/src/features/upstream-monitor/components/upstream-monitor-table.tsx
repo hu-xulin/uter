@@ -38,7 +38,10 @@ import {
   listUpstreamMonitorTasks,
   runUpstreamMonitorNow,
 } from '../api'
-import { upstreamMonitorQueryKeys } from '../lib/upstream-monitor-actions'
+import {
+  formatMonitorScore,
+  upstreamMonitorQueryKeys,
+} from '../lib/upstream-monitor-actions'
 import type { UpstreamMonitorTask, UpstreamVerdict } from '../types'
 
 type UpstreamMonitorTableProps = {
@@ -145,10 +148,7 @@ export function UpstreamMonitorTable(props: UpstreamMonitorTableProps) {
     {
       id: 'score',
       header: t('Score'),
-      // 0 is a legitimate score (a run completed with zero points). Only a
-      // task that never ran has no score to show.
-      cell: (task) =>
-        task.last_run_at > 0 ? `${task.last_score}/100` : '—',
+      cell: (task) => formatMonitorScore(task.last_score, task.last_run_at),
     },
     {
       id: 'interval',

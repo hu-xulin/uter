@@ -30,3 +30,18 @@ export const upstreamMonitorQueryKeys = {
   report: (id: number) =>
     [...upstreamMonitorQueryKeys.all, 'report', id] as const,
 }
+
+/**
+ * Format a monitor task's score for the task table.
+ *
+ * A score of 0 is a legitimate result: a run completed and every probed model
+ * scored zero. Only a task that has never run (last_run_at === 0) has no score
+ * to display. Using `score > 0` here used to hide real 0-score runs as "—",
+ * which made a failed run look like it had never been executed.
+ */
+export function formatMonitorScore(
+  lastScore: number,
+  lastRunAt: number
+): string {
+  return lastRunAt > 0 ? `${lastScore}/100` : '—'
+}
