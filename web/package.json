@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "rsbuild dev",
-    "build": "node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
-    "build:check": "node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && tsgo -b && rm -rf dist && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
+    "build": "node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && node scripts/clean-dist.mjs && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
+    "build:check": "node scripts/generate-docs-search-index.mjs && node scripts/generate-docs-sitemap.mjs && tsgo -b && node scripts/clean-dist.mjs && UTER_SKIP_PUBLIC_COPY=1 rsbuild build && cp -R public/. dist/",
     "docs:search-index": "node scripts/generate-docs-search-index.mjs",
     "docs:sitemap": "node scripts/generate-docs-sitemap.mjs",
     "docs:assets:check": "node scripts/resolve-docs-screenshots.mjs --check",
