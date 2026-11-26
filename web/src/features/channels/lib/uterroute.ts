@@ -16,7 +16,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /**
  * Uter Route detection never hardcodes a supplier host: the admin console asks
  * the backend for the configured endpoint and compares hostnames here.

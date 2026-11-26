@@ -12,11 +12,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program. If not see <https://www.gnu.org/licenses/>.
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-
 /* 智能客服挂件样式（UTER UDS 8.0.0 语义 Token）。
    颜色 / 字号 / 圆角 / 阴影全部取自设计系统变量，切换浅深主题或主题预设时自动一致。
    原本散落在组件里的内联 style 已集中到此文件，减少内联样式数量、便于审计与维护。
