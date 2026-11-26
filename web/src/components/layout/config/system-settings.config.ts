@@ -75,12 +75,12 @@ function getSystemSettingsNavGroups(t: TFunction): NavGroup[] {
           items: getBillingSectionNavItems(t),
         },
         {
-          title: t('Channels'),
+          title: t('Channel Management'),
           icon: Server,
           items: getChannelSectionNavItems(t),
         },
         {
-          title: t('Models'),
+          title: t('Model management'),
           icon: Box,
           items: getModelsSectionNavItems(t),
         },
@@ -100,7 +100,7 @@ function getSystemSettingsNavGroups(t: TFunction): NavGroup[] {
           items: getContentSectionNavItems(t),
         },
         {
-          title: t('Operations'),
+          title: t('Operations Management'),
           icon: Wrench,
           items: getOperationsSectionNavItems(t),
         },
