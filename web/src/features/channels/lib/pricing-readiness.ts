@@ -17,7 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { ChannelModelPricingRecord } from '../types'
-import { resolveMappingTargetChain } from './model-mapping-validation'
+import { resolveBillingIdentity } from './model-mapping-validation'
 
 export interface SelectedPricingReadiness {
   /** Number of models the operator selected for this channel. */
@@ -80,18 +80,17 @@ function parseReadinessMapping(
 /**
  * The identity a name bills under. A redirect alias and its upstream name are
  * the same billable model: the catalogue row may still be keyed by the upstream
- * name while the channel publishes the alias, or vice versa. Resolving both
- * sides to the chain tail lets readiness match them instead of reporting a
- * configured model as "(missing)". A cycle resolves to empty and falls back
- * to the trimmed name so a broken mapping never invents a match.
+ * name while the channel publishes the alias, or vice versa. The mapping can
+ * be authored in either direction (see `resolveBillingIdentity`), so both
+ * sides are normalized through the undirected component rather than a
+ * one-way chain. A broken/self mapping falls back to the trimmed name and can
+ * never invent a match.
  */
 function billingIdentity(
   name: string,
   mapping: Record<string, string> | null
 ): string {
-  const trimmed = name.trim()
-  if (!mapping) return trimmed
-  return resolveMappingTargetChain(trimmed, mapping) || trimmed
+  return resolveBillingIdentity(name, mapping)
 }
 
 /**

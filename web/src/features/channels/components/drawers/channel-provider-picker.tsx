@@ -171,12 +171,12 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         // Keep legacy Zhipu available when editing existing channels.
         if (props.isCreating && option.value === 16) continue
         if (props.isCreating && option.value === 7) continue
-        // Uter.api has a dedicated card with its group/key setup; the plain
-        // built-in entry would duplicate it during creation.
-        if (props.isCreating && option.value === CHANNEL_TYPE_NEW_API) continue
-        if (props.isCreating && option.value === CHANNEL_TYPE_UTER_ROUTE) {
-          continue
-        }
+        // Uter.api / Uter Route have dedicated cards. Keep the plain built-in
+        // entries hidden in both create and edit so the provider list is
+        // identical on both paths; otherwise editing would expose a duplicate
+        // built-in card that can overwrite the managed target.
+        if (option.value === CHANNEL_TYPE_NEW_API) continue
+        if (option.value === CHANNEL_TYPE_UTER_ROUTE) continue
         if (replacedTypes.has(option.value)) continue
         const isCustom = option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
         const isGateway =
@@ -213,11 +213,15 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         })
       }
     }
+    // Uter.api / Uter Route cards are shown on both create and edit so the
+    // provider step is identical. On edit, selecting the already-current card
+    // just advances the wizard; switching to a different provider is blocked
+    // by selectProvider.
     if (
-      props.isCreating &&
       filter !== 'plugin' &&
       filter !== 'builtin' &&
-      filter !== 'gateway'
+      filter !== 'gateway' &&
+      filter !== 'custom'
     ) {
       entries.push({
         id: 'uterapi',
@@ -268,6 +272,10 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
     currentProviderId = `builtin:${props.currentProvider.type}`
   } else if (props.currentProvider?.kind === 'plugin') {
     currentProviderId = `plugin:${props.currentProvider.key}`
+  } else if (props.currentProvider?.kind === 'uterapi') {
+    currentProviderId = 'uterapi'
+  } else if (props.currentProvider?.kind === 'uterroute') {
+    currentProviderId = 'uterroute'
   }
 
   return (

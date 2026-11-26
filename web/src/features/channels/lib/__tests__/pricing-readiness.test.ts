@@ -246,3 +246,117 @@ test('all 12 reported names become billable under a batch -dr mapping', () => {
   expect(summary.missing).toEqual([])
   expect(summary.blocking).toEqual([])
 })
+
+const CLAUDE_12 = [
+  'claude-haiku-4-5',
+  'claude-haiku-4-5-20251001',
+  'claude-haiku-5-5',
+  'claude-opus-4-5',
+  'claude-opus-4-6',
+  'claude-opus-4-7',
+  'claude-opus-4-8',
+  'claude-opus-5',
+  'claude-opus-5-5',
+  'claude-sonnet-4-6',
+  'claude-sonnet-5',
+  'claude-sonnet-5-5',
+]
+
+test('all 12 -xc0 aliases in the Uter.api wizard are billable from preview rows', () => {
+  // The reported bug: the wizard selects -xc0 request names while the read-only
+  // price preview still contains upstream names. Readiness must resolve both
+  // sides through model_mapping and report 12/12 configured.
+  const aliases = CLAUDE_12.map((name) => `${name}-xc0`)
+  const mapping = JSON.stringify(
+    Object.fromEntries(aliases.map((alias, index) => [alias, CLAUDE_12[index]]))
+  )
+  const summary = summarizeSelectedPricingReadiness(
+    CLAUDE_12.map((name) => record(name, 'configured', 'uterapi')),
+    aliases,
+    mapping
+  )
+
+  expect(summary.selected).toBe(12)
+  expect(summary.configured).toBe(12)
+  expect(summary.missing).toEqual([])
+  expect(summary.blocking).toEqual([])
+})
+
+// --- bidirectional mapping direction ---------------------------------------
+// Batch "add suffix" can write model_mapping in either direction depending on
+// the dialog choice:
+//   alias -> upstream : {"claude-x-xc0": "claude-x"}   ("create aliases")
+//   upstream -> alias : {"claude-x": "claude-x-xc0"}   ("change upstream name")
+// Readiness is shared by every channel type, so both directions must match a
+// price row keyed by either the alias or the upstream name.
+
+test.each([
+  ['alias to upstream', (n: string, a: string) => [a, n] as const],
+  ['upstream to alias', (n: string, a: string) => [n, a] as const],
+])(
+  '12 -xc0 models are billable when mapping is %s (alias selected, upstream-keyed rows)',
+  (_label, pair) => {
+    const aliases = CLAUDE_12.map((name) => `${name}-xc0`)
+    const mapping = JSON.stringify(
+      Object.fromEntries(CLAUDE_12.map((name, i) => pair(name, aliases[i])))
+    )
+    const summary = summarizeSelectedPricingReadiness(
+      CLAUDE_12.map((name) => record(name, 'configured')),
+      aliases,
+      mapping
+    )
+    expect(summary.configured).toBe(12)
+    expect(summary.missing).toEqual([])
+  }
+)
+
+test.each([
+  ['alias to upstream', (n: string, a: string) => [a, n] as const],
+  ['upstream to alias', (n: string, a: string) => [n, a] as const],
+])(
+  '12 -xc0 models are billable when mapping is %s (upstream selected, alias-keyed rows)',
+  (_label, pair) => {
+    const aliases = CLAUDE_12.map((name) => `${name}-xc0`)
+    const mapping = JSON.stringify(
+      Object.fromEntries(CLAUDE_12.map((name, i) => pair(name, aliases[i])))
+    )
+    const summary = summarizeSelectedPricingReadiness(
+      aliases.map((alias) => record(alias, 'configured')),
+      CLAUDE_12,
+      mapping
+    )
+    expect(summary.configured).toBe(12)
+    expect(summary.missing).toEqual([])
+  }
+)
+
+test('a mixed-direction mapping still groups alias and upstream into one identity', () => {
+  // Operators sometimes hand-edit part of the JSON. Every pair, in whichever
+  // direction, must still unify the two names.
+  const mapping = JSON.stringify({
+    'claude-opus-4-6-xc0': 'claude-opus-4-6',
+    'claude-sonnet-5': 'claude-sonnet-5-xc0',
+  })
+  const summary = summarizeSelectedPricingReadiness(
+    [
+      record('claude-opus-4-6', 'configured'),
+      record('claude-sonnet-5-xc0', 'configured'),
+    ],
+    ['claude-opus-4-6-xc0', 'claude-sonnet-5'],
+    mapping
+  )
+  expect(summary.configured).toBe(2)
+  expect(summary.missing).toEqual([])
+})
+
+test('a two-way mapping cycle is still rejected (no invented match)', () => {
+  // {"a":"b","b":"a"} is a real cycle, not two independent one-way aliases.
+  // It must not collapse the two names into one billable identity.
+  const summary = summarizeSelectedPricingReadiness(
+    [record('model-b', 'configured')],
+    ['model-a'],
+    JSON.stringify({ 'model-a': 'model-b', 'model-b': 'model-a' })
+  )
+  expect(summary.configured).toBe(0)
+  expect(summary.missing).toEqual(['model-a (missing)'])
+})

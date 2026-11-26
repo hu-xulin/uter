@@ -245,6 +245,10 @@ export type UterAPIKeySlot = {
 export async function createUterAPIChannels(payload: {
   slots: UterAPIKeySlot[]
   group?: string
+  /** Request names selected in the wizard, including redirect aliases. */
+  models?: string
+  /** Redirect mapping that turns those aliases into upstream model names. */
+  model_mapping?: string
 }): Promise<UterAPICreateResult> {
   const res = await api.post(
     '/api/channel/uterapi',

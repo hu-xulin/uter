@@ -71,6 +71,10 @@ type ChannelPricingPanelProps = {
   showSchedule?: boolean
   // Creation flow: only the price configuration controls, no audits/history.
   configureOnly?: boolean
+  /** Current channel redirects; pricing rows are shown under published aliases only. */
+  modelMapping?: string
+  /** Models currently published by the channel, used to resolve active aliases. */
+  publishedModels?: string[]
 }
 
 const MODEL_CATEGORY_LABELS: Record<string, string> = {
@@ -738,7 +742,11 @@ export function ChannelPricingPanel(props: ChannelPricingPanelProps) {
       ) : null}
 
       {!disabled && props.channelId != null ? (
-        <ChannelModelPricingSection channelId={props.channelId} />
+        <ChannelModelPricingSection
+          channelId={props.channelId}
+          modelMapping={props.modelMapping}
+          publishedModels={props.publishedModels}
+        />
       ) : null}
 
       <section className='space-y-3 rounded-lg border p-3'>

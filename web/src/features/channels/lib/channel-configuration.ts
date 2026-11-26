@@ -20,6 +20,9 @@ import type { FieldErrors, FieldPath } from 'react-hook-form'
 
 import {
   CHANNEL_TYPE_OLLAMA,
+  CHANNEL_TYPE_TASK_PLUGIN,
+  CHANNEL_TYPE_UTER_API,
+  CHANNEL_TYPE_UTER_ROUTE,
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   MODEL_FETCHABLE_TYPES,
   OPENAI_FIELD_PASSTHROUGH_TYPES,
@@ -33,6 +36,31 @@ export type ChannelProviderTarget =
   | { kind: 'plugin'; key: string }
   | { kind: 'uterapi' }
   | { kind: 'uterroute' }
+
+/**
+ * 把已落库的渠道类型还原为“创建态供应商选择器”使用的 target。
+ *
+ * 创建时 target 由选择器给出：内置类型 -> builtin，任务插件 -> plugin，
+ * Uter.api -> uterapi，Uter Route -> uterroute。编辑时如果只按 channel.type
+ * 反推成 builtin，就会把 64/65 这类特殊渠道识别成普通内置渠道，导致编辑态
+ * 与创建态走不同的界面分支。编辑与创建共用这一函数，保证任何渠道类型在两条
+ * 路径上得到完全相同的 target。
+ */
+export function providerTargetFromChannelType(
+  type: number,
+  taskPluginKey?: string
+): ChannelProviderTarget {
+  if (type === CHANNEL_TYPE_TASK_PLUGIN) {
+    return { kind: 'plugin', key: taskPluginKey || '' }
+  }
+  if (type === CHANNEL_TYPE_UTER_API) {
+    return { kind: 'uterapi' }
+  }
+  if (type === CHANNEL_TYPE_UTER_ROUTE) {
+    return { kind: 'uterroute' }
+  }
+  return { kind: 'builtin', type }
+}
 
 export type ChannelConfigurationSection =
   | 'connection'

@@ -206,6 +206,118 @@ export function resolveMappingTargetChain(
 }
 
 /**
+ * Canonical identity a model bills under, independent of which way its
+ * redirect mapping is written.
+ *
+ * model_mapping may be authored in either direction:
+ *   { "claude-x-xc0": "claude-x" }  (alias -> upstream, "create aliases")
+ *   { "claude-x": "claude-x-xc0" }  (upstream -> alias, "change upstream name")
+ * Both describe the same billable model. `resolveMappingTargetChain` only
+ * follows keys to values, so matching code that assumes one direction reports
+ * the other as `(missing)`. This helper treats every mapping pair as an
+ * undirected edge and resolves the whole connected component to a stable
+ * representative, so any member (alias or upstream) normalizes to the same
+ * identity regardless of direction, chain length or entry order.
+ *
+ * A cycle or self-map is not authoritative; it resolves to the name itself so
+ * a broken mapping can never invent a match. Names are trimmed so whitespace
+ * in a hand-edited mapping cannot split one identity into two.
+ */
+export function resolveBillingIdentity(
+  name: string,
+  mapping: Record<string, string> | null
+): string {
+  const start = name.trim()
+  if (!start || !mapping) return start
+
+  const neighbours = new Map<string, Set<string>>()
+  const link = (a: string, b: string) => {
+    if (!a || !b || a === b) return
+    let set = neighbours.get(a)
+    if (!set) neighbours.set(a, (set = new Set()))
+    set.add(b)
+  }
+  for (const [rawFrom, rawTo] of Object.entries(mapping)) {
+    if (typeof rawTo !== 'string') continue
+    const from = rawFrom.trim()
+    const to = rawTo.trim()
+    link(from, to)
+    link(to, from)
+  }
+
+  // Walk the whole component. Collect its members instead of returning the
+  // first chain tail: a component may be entered from any side or chain node.
+  const component = new Set<string>()
+  const queue = [start]
+  while (queue.length > 0) {
+    const current = queue.shift() as string
+    if (component.has(current)) continue
+    component.add(current)
+    for (const next of neighbours.get(current) ?? []) {
+      if (!component.has(next)) queue.push(next)
+    }
+  }
+  if (component.size <= 1) return start
+
+  // Fail closed on cycles. A two-way authored mapping is a single edge and is
+  // fine; a cycle (a->b->a) has no authoritative tail. Walking the directed
+  // chain from every member must terminate — if any does not, treat the whole
+  // component as broken and keep the literal name instead of inventing a
+  // match.
+  for (const member of component) {
+    const seen = new Set<string>()
+    let current = member
+    while (current && typeof mapping[current] === 'string') {
+      if (seen.has(current)) return start
+      seen.add(current)
+      current = mapping[current].trim()
+    }
+  }
+
+  // A stable representative: the lexicographically smallest member. Every
+  // alias and upstream name in this component resolves to the same value,
+  // independent of mapping direction or JSON key order.
+  let representative = start
+  for (const member of component) {
+    if (member < representative) representative = member
+  }
+  return representative
+}
+
+/**
+ * Normalize a redirect mapping into canonical `{ requestName: upstreamName }`
+ * pairs, accepting either authored direction. The channel's model list is the
+ * authority on which side is the request name users actually call: of each
+ * mapping pair, the member published in `requestNames` (and only that member)
+ * is the request name. Pairs with neither or both members published are
+ * ambiguous and skipped rather than guessed.
+ */
+export function canonicalRedirectPairs(
+  mapping: Record<string, string>,
+  requestNames: readonly string[]
+): Array<{ request: string; upstream: string }> {
+  const published = new Set(
+    requestNames.map((name) => name.trim()).filter(Boolean)
+  )
+  const pairs: Array<{ request: string; upstream: string }> = []
+  for (const [rawFrom, rawTo] of Object.entries(mapping)) {
+    if (typeof rawTo !== 'string') continue
+    const from = rawFrom.trim()
+    const to = rawTo.trim()
+    if (!from || !to || from === to) continue
+    const fromPublished = published.has(from)
+    const toPublished = published.has(to)
+    if (fromPublished === toPublished) continue
+    pairs.push(
+      fromPublished
+        ? { request: from, upstream: to }
+        : { request: to, upstream: from }
+    )
+  }
+  return pairs
+}
+
+/**
  * Preview saved pricing rows under the request aliases created by an unsaved
  * batch redirect. Saved rows are keyed by upstream names; a redirect publishes
  * aliases in the channel model list. Without this remap the wizard shows every
@@ -224,20 +336,21 @@ export function remapPricingRowsForPreview<T extends { model_name: string }>(
   } catch {
     return rows
   }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return rows
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+    return rows
   const mapping = parsed as Record<string, string>
-  if (Object.values(mapping).some((value) => typeof value !== 'string')) return rows
+  if (Object.values(mapping).some((value) => typeof value !== 'string'))
+    return rows
 
-  const selected = new Set(selectedModels.map((model) => model.trim()))
+  // The selected models are the request names users call. Use them to decide
+  // which side of each mapping pair is the alias, so both `{alias:upstream}`
+  // and `{upstream:alias}` authoring directions remap the same way.
+  const pairs = canonicalRedirectPairs(mapping, selectedModels)
   const aliasesByUpstream = new Map<string, string[]>()
-  for (const source of Object.keys(mapping)) {
-    const alias = source.trim()
-    if (!alias || !selected.has(alias)) continue
-    const target = resolveMappingTargetChain(alias, mapping)
-    if (!target || target === alias) continue
-    const aliases = aliasesByUpstream.get(target) ?? []
-    if (!aliases.includes(alias)) aliases.push(alias)
-    aliasesByUpstream.set(target, aliases)
+  for (const { request, upstream } of pairs) {
+    const aliases = aliasesByUpstream.get(upstream) ?? []
+    if (!aliases.includes(request)) aliases.push(request)
+    aliasesByUpstream.set(upstream, aliases)
   }
   if (aliasesByUpstream.size === 0) return rows
 
@@ -259,6 +372,97 @@ export function remapPricingRowsForPreview<T extends { model_name: string }>(
     }
   }
   return remapped
+}
+
+/**
+ * Restrict saved pricing rows to the request aliases a channel actually
+ * publishes. A redirected mapping creates two names for one upstream model;
+ * showing both makes the pricing section count 170 models when only 85 are
+ * served. Upstream rows are expanded under every published alias, and rows for
+ * names with no published alias are omitted so the header and list agree.
+ *
+ * A missing, malformed or alias-free mapping keeps the original rows so
+ * channels without redirects do not lose their pricing view.
+ */
+export function filterPricingRowsToPublishedAliases<
+  T extends {
+    model_name: string
+    provider?: string
+    region?: string
+    deployment_id?: string
+  },
+>(rows: T[], modelMapping: string | undefined, publishedModels: string[]): T[] {
+  if (!modelMapping?.trim()) return rows
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(modelMapping)
+  } catch {
+    return rows
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return rows
+  }
+  if (Object.values(parsed).some((value) => typeof value !== 'string')) {
+    return rows
+  }
+
+  const mapping: Record<string, string> = {}
+  for (const [rawAlias, rawTarget] of Object.entries(parsed)) {
+    const alias = rawAlias.trim()
+    const target = rawTarget.trim()
+    if (alias && target) mapping[alias] = target
+  }
+
+  const published = new Set(
+    publishedModels.map((model) => model.trim()).filter(Boolean)
+  )
+  // publishedModels are the request names users actually call. They decide
+  // which member of each mapping pair is the alias, so both authoring
+  // directions ({alias:upstream} and {upstream:alias}) behave identically.
+  const pairs = canonicalRedirectPairs(mapping, publishedModels)
+  if (pairs.length === 0) return rows
+
+  const visibleAliases = published.size
+    ? pairs
+        .filter((pair) => published.has(pair.request))
+        .map((pair) => pair.request)
+    : pairs.map((pair) => pair.request)
+
+  const visibleAliasSet = new Set(visibleAliases)
+  const visibleAliasesByUpstream = new Map<string, string[]>()
+  for (const alias of visibleAliases) {
+    const pair = pairs.find((item) => item.request === alias)
+    if (!pair) continue
+    const aliases = visibleAliasesByUpstream.get(pair.upstream) ?? []
+    if (!aliases.includes(alias)) aliases.push(alias)
+    visibleAliasesByUpstream.set(pair.upstream, aliases)
+  }
+
+  const seen = new Set<string>()
+  const visible: T[] = []
+  const add = (row: T, modelName: string) => {
+    const identity = [
+      modelName,
+      row.provider ?? '',
+      row.region ?? '',
+      row.deployment_id ?? '',
+    ].join('\u0000')
+    if (seen.has(identity)) return
+    seen.add(identity)
+    visible.push({ ...row, model_name: modelName })
+  }
+
+  for (const row of rows) {
+    const name = row.model_name.trim()
+    const aliases = visibleAliasesByUpstream.get(name)
+    if (aliases?.length) {
+      for (const alias of aliases) add(row, alias)
+      continue
+    }
+    if (visibleAliasSet.has(name)) add(row, name)
+  }
+  return visible
 }
 
 /**

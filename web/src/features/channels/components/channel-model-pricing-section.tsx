@@ -46,6 +46,7 @@ import {
   setChannelModelPricing,
 } from '../api'
 import { canDisplayChannelPrice } from '../lib/channel-price-display'
+import { filterPricingRowsToPublishedAliases } from '../lib/model-mapping-validation'
 import type {
   ChannelInternalPricingView,
   ChannelModelPricingRecord,
@@ -144,6 +145,8 @@ function statusVariant(
 
 type ChannelModelPricingSectionProps = {
   channelId: number
+  modelMapping?: string
+  publishedModels?: string[]
 }
 
 function pricingRuleLabel(
@@ -201,9 +204,18 @@ export function ChannelModelPricingSection(
     meta: { errorToast: false },
   })
 
-  const items = useMemo(
+  const savedItems = useMemo(
     () => listQuery.data?.data?.items ?? [],
     [listQuery.data]
+  )
+  const items = useMemo(
+    () =>
+      filterPricingRowsToPublishedAliases(
+        savedItems,
+        props.modelMapping,
+        props.publishedModels ?? []
+      ),
+    [savedItems, props.modelMapping, props.publishedModels]
   )
   const summary = useMemo(() => {
     // Count models, not rows: a mis-synced channel can hold several provider

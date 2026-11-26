@@ -148,6 +148,7 @@ import {
   getChannelUpstreamReconciliation,
   getGroups,
   getPrefillGroups,
+  getUterAPIPricePreview,
   getUterAPIPricingGroups,
   getTaskPluginOptions,
   getUterRouteEndpoint,
@@ -218,6 +219,7 @@ import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
 import {
   getChannelConfigurationSection,
   getChannelConfigurationState,
+  providerTargetFromChannelType,
   type ChannelConfigurationStatus,
   type ChannelConfigurationSection,
   type ChannelProviderTarget,
@@ -523,7 +525,8 @@ export function ChannelMutateDrawer({
     useState<ChannelConnectionInfo | null>(null)
 
   const isEditing = Boolean(currentRow)
-  const requestedSide = isEditing ? 'left' : 'right'
+  // 创建与编辑共用同一套向导，抽屉也必须从同一侧滑入。
+  const requestedSide = 'right'
   const [drawerSide, setDrawerSide] = useState<'left' | 'right'>(requestedSide)
   // The parent clears currentRow as soon as closing starts. Keep the last
   // open direction until the next opening, including the entire exit animation.
@@ -623,8 +626,12 @@ export function ChannelMutateDrawer({
   )
   const redirectPanelActive =
     redirectPanelOpen && viewportWide && redirectPanelPlacement !== null
+  // 编辑与创建走完全相同的流程：先确认供应商，再进入六步骤向导。
+  // 无敏感字段写入权限的编辑者直接进入只读配置，避免被禁用选项卡住。
   const showProviderPicker =
-    choosingProvider && (!isEditing || Boolean(providerTarget))
+    choosingProvider &&
+    (!isEditing || Boolean(providerTarget)) &&
+    (canEditSensitive || !isEditing)
   const providerControlRef = useRef<HTMLButtonElement>(null)
   const previousProviderPicker = useRef(false)
   useEffect(() => {
@@ -684,6 +691,26 @@ export function ChannelMutateDrawer({
 
   const { channelKey, isChannelKeyLoading, handleRevealKey, verification } =
     useChannelKeyDisclosure(open, channelId)
+
+  // 后端下发的逐行脱敏密钥：默认即可展示星号，无需二次验证（与 API 密钥列表一致）。
+  const maskedKey = channelData?.data?.masked_key ?? null
+  const maskedKeyLines = maskedKey
+    ? maskedKey.split('\n').map((line) => line.trim()).filter(Boolean)
+    : []
+
+  // 后端脱敏后只在 settings 里保留 has_password 标记，用它显示"已存密码"星号。
+  const consoleHasPassword = (() => {
+    const raw = channelData?.data?.settings
+    if (!raw) return false
+    try {
+      const parsed = JSON.parse(raw) as {
+        upstream_console?: { has_password?: boolean }
+      }
+      return parsed.upstream_console?.has_password === true
+    } catch {
+      return false
+    }
+  })()
 
   // Check if this is a multi-key channel
   const isMultiKeyChannel =
@@ -765,6 +792,8 @@ export function ChannelMutateDrawer({
       ),
     [uterapiGroupsQuery.data]
   )
+  const selectedUterapiGroupKey =
+    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ?? ''
   const isUterRouteTarget = providerTarget?.kind === 'uterroute'
   const isBailianProvider = currentType === 17
   const uterRouteEndpointQuery = useQuery({
@@ -896,7 +925,7 @@ export function ChannelMutateDrawer({
   }, [applyConnectionInfo, t])
 
   useEffect(() => {
-    if (!open || isEditing || showProviderPicker) {
+    if (!open || showProviderPicker || (isEditing && !canEditSensitive)) {
       setClipboardConnectionInfo(null)
       return
     }
@@ -919,7 +948,7 @@ export function ChannelMutateDrawer({
     return () => {
       cancelled = true
     }
-  }, [isEditing, open, showProviderPicker])
+  }, [canEditSensitive, isEditing, open, showProviderPicker])
 
   // Helper computed values
   const isBatchMode =
@@ -992,8 +1021,13 @@ export function ChannelMutateDrawer({
     [currentModels]
   )
 
+  // Uter.api creation has no saved channel yet: its prices are a read-only
+  // catalogue preview. Readiness must use those rows, otherwise every redirect
+  // alias is reported as (missing) before the channel exists.
+  const usesUterApiPreviewReadiness =
+    isUterApiTarget && !isEditing && effectiveChannelId == null
   // Shares the panel's cache key so the readiness summary and the inline
-  // pre-submit check see the same rows the operator just edited.
+  // preview table see the same rows the operator just fetched.
   const pricingReadinessQuery = useQuery({
     queryKey: ['channel-model-pricing', effectiveChannelId],
     queryFn: () => getChannelModelPricing(effectiveChannelId ?? 0),
@@ -1001,9 +1035,26 @@ export function ChannelMutateDrawer({
     retry: false,
     meta: { errorToast: false },
   })
+  const uterapiPreviewReadinessQuery = useQuery({
+    queryKey: ['uterapi-price-preview', selectedUterapiGroupKey],
+    queryFn: () => getUterAPIPricePreview(selectedUterapiGroupKey),
+    enabled:
+      open &&
+      usesUterApiPreviewReadiness &&
+      selectedUterapiGroupKey.trim() !== '',
+    retry: false,
+    meta: { errorToast: false },
+  })
   const pricingRows = useMemo(
-    () => pricingReadinessQuery.data?.data?.items ?? [],
-    [pricingReadinessQuery.data]
+    () =>
+      usesUterApiPreviewReadiness
+        ? (uterapiPreviewReadinessQuery.data?.data?.items ?? [])
+        : (pricingReadinessQuery.data?.data?.items ?? []),
+    [
+      usesUterApiPreviewReadiness,
+      uterapiPreviewReadinessQuery.data,
+      pricingReadinessQuery.data,
+    ]
   )
   const pricingReadiness = useMemo(
     () =>
@@ -1402,14 +1453,20 @@ export function ChannelMutateDrawer({
         channelId: channelData.data.id,
         snapshot: JSON.stringify(form.getValues()),
       }
+      // 编辑态与创建态共用同一映射：创建时 target 由供应商选择器给出，
+      // 编辑时按落库类型还原。否则 64/65 等类型会被当成普通 builtin，
+      // 使编辑态走与创建态不同的界面分支（1256 即是 Uter Route type 65）。
       setProviderTarget(
-        defaults.type === CHANNEL_TYPE_TASK_PLUGIN
-          ? { kind: 'plugin', key: defaults.task_plugin_key || '' }
-          : { kind: 'builtin', type: defaults.type }
+        providerTargetFromChannelType(
+          defaults.type,
+          defaults.task_plugin_key || ''
+        )
       )
       if (isNewChannel) {
         setModelConfiguration(null)
-        setChoosingProvider(false)
+        // 与创建渠道一致：加载完已有配置后先停在供应商确认页，
+        // 用户确认当前供应商（或改选）后才进入六步骤向导。
+        setChoosingProvider(true)
         setConfigurationSection('connection')
         setShowDraftPricing(false)
         setPendingErrorFocus(null)
@@ -2360,6 +2417,8 @@ export function ChannelMutateDrawer({
           const response = await createUterAPIChannels({
             slots: [{ name: slot.name, group: slot.group, keys }],
             group: (data.group ?? []).join(',') || 'default',
+            models: data.models ?? '',
+            model_mapping: data.model_mapping ?? '',
           })
           const created = response.data?.created ?? 0
           // The create endpoint answers with a business-level ApiError
@@ -3457,7 +3516,6 @@ export function ChannelMutateDrawer({
               </FormItem>
             )}
           />
-          {isEditing ? brandingEditor : null}
         </div>
 
         {!isEditing && (
@@ -4737,6 +4795,7 @@ export function ChannelMutateDrawer({
           channelId={effectiveChannelId}
           sensitiveLocked={sensitiveLocked}
           primaryModels={upstreamModelList}
+          hasStoredPassword={consoleHasPassword}
           onSaveCredentials={handleSaveConsoleCredentials}
           savingCredentials={savingConsoleCredentials}
         />
@@ -5612,14 +5671,21 @@ export function ChannelMutateDrawer({
                   </div>
                 </div>
               )}
-              {providerTarget?.kind !== 'uterapi' && (
+              {/* 编辑态走 PUT 更新，凭据按普通渠道字段保存；只有新建托管渠道
+                  才用分组 + 密钥槽输入，所以这里必须用 !isEditing 保护。 */}
+              {(isEditing || providerTarget?.kind !== 'uterapi') && (
                 <FormField
                   control={form.control}
                   name='key'
                   render={({ field }) => {
                     let keyPlaceholder = t(getKeyPromptForType(currentType))
                     if (isEditing) {
-                      keyPlaceholder = t('Leave empty to keep existing key')
+                      // 用后端下发的逐行掩码串作为占位提示：编辑态即可看到
+                      // 已存密钥的星号形态（与 API 密钥一致），但 value 仍为空，
+                      // 避免掩码串被当成新 key 写回后端。
+                      keyPlaceholder = maskedKeyLines.length
+                        ? `${maskedKeyLines.join('\n')}\n${t('Leave empty to keep existing key')}`
+                        : t('Leave empty to keep existing key')
                     } else if (
                       currentType === 33 &&
                       awsKeyType === 'api_key' &&
@@ -5698,7 +5764,7 @@ export function ChannelMutateDrawer({
                             )}
                           </span>
                         </FormDescription>
-                        {isEditing && canRevealChannelKey && (
+                        {isEditing && maskedKeyLines.length > 0 && (
                           <div className='border-border/60 mt-4 flex flex-col gap-3 border-y border-dashed py-4'>
                             <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
                               <div>
@@ -5706,12 +5772,16 @@ export function ChannelMutateDrawer({
                                   {t('Current key')}
                                 </p>
                                 <p className='text-muted-foreground text-sm'>
-                                  {t(
-                                    'Verification required to reveal the saved key.'
-                                  )}
+                                  {canRevealChannelKey
+                                    ? t(
+                                        'Click a key to verify and reveal its full value.'
+                                      )
+                                    : t(
+                                        'Verification required to reveal the saved key.'
+                                      )}
                                 </p>
                               </div>
-                              <div className='flex items-center gap-2'>
+                              {canRevealChannelKey && (
                                 <Button
                                   type='button'
                                   variant='outline'
@@ -5729,23 +5799,16 @@ export function ChannelMutateDrawer({
                                   )}
                                   {t('Reveal key')}
                                 </Button>
-                                <Button
-                                  type='button'
-                                  variant='ghost'
-                                  size='sm'
-                                  onClick={async () => {
-                                    if (channelKey) {
-                                      await copyToClipboard(channelKey)
-                                    }
-                                  }}
-                                  disabled={!channelKey}
-                                >
-                                  <Copy className='mr-2 h-4.5 w-4.5' />
-                                  {t('Copy')}
-                                </Button>
-                              </div>
+                              )}
                             </div>
-                            <ChannelKeyDisplay value={channelKey} />
+                            <ChannelKeyDisplay
+                              maskedValue={maskedKey}
+                              fullValue={channelKey}
+                              onReveal={handleRevealKey}
+                              isLoading={
+                                isChannelKeyLoading || verification.isActive
+                              }
+                            />
                           </div>
                         )}
                         <FormMessage />
@@ -5996,10 +6059,6 @@ export function ChannelMutateDrawer({
     return undefined
   }
 
-  const selectedUterapiGroupKey =
-    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ??
-    ''
-
   const pricingFetchSection = (
     <div className='space-y-4'>
       {pricingFetchBase}
@@ -6206,7 +6265,17 @@ export function ChannelMutateDrawer({
   )
 
   let pricingSection: ReactNode
-  if (effectiveChannelId || showDraftPricing) {
+  if (usesUterApiPreviewReadiness) {
+    pricingSection = (
+      <div className='space-y-3'>
+        <PricingReadinessSummary
+          readiness={pricingReadiness}
+          blocked={pricingSubmitBlocked}
+        />
+        <UterApiPricePreview group={selectedUterapiGroupKey} enabled={open} />
+      </div>
+    )
+  } else if (effectiveChannelId || showDraftPricing) {
     pricingSection = (
       <div className='space-y-3'>
         <PricingReadinessSummary
@@ -6218,6 +6287,12 @@ export function ChannelMutateDrawer({
           baseUrl={form.watch('base_url') ?? ''}
           onCreateDraft={isEditing ? undefined : createDraftChannel}
           configureOnly
+          modelMapping={reviewMapping}
+          publishedModels={
+            Array.isArray(reviewModels)
+              ? reviewModels
+              : parseModelsString(reviewModels || '')
+          }
         />
       </div>
     )
@@ -6350,7 +6425,7 @@ export function ChannelMutateDrawer({
         review={reviewSection}
         other={
           <>
-            {!isEditing ? brandingEditor : null}
+            {brandingEditor}
             <div
               role='group'
               aria-label={t('Channel Extra Settings')}
@@ -6513,7 +6588,7 @@ export function ChannelMutateDrawer({
                       </Button>
                     )}
                 </div>
-                {!isEditing && !showProviderPicker && (
+                {!showProviderPicker && canEditSensitive && (
                   <Button
                     type='button'
                     variant='outline'
@@ -6584,7 +6659,7 @@ export function ChannelMutateDrawer({
             </Alert>
           )}
 
-          {!isEditing && !showProviderPicker && clipboardConnectionInfo && (
+          {!showProviderPicker && clipboardConnectionInfo && (
             <Alert>
               <AlertDescription className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                 <span>{t('Connection info detected in clipboard')}</span>
