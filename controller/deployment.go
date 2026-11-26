@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/pkg/ionet"
@@ -128,6 +129,52 @@ func requireContainerID(c *gin.Context) (string, bool) {
 		return "", false
 	}
 	return containerID, true
+}
+
+// RevealDeploymentRegistrySecret 在 step-up 中间件验证通过后返回某个部署的
+// 镜像仓库凭据明文。中间件已把证明绑定到该部署 ID，这里再按同一 ID 取值，
+// 每次揭示都写入管理审计。
+func RevealDeploymentRegistrySecret(c *gin.Context) {
+	deploymentID, ok := requireDeploymentID(c)
+	if !ok {
+		return
+	}
+	if !common.IsValidDeploymentID(deploymentID) {
+		common.ApiErrorT(c, "The action details are invalid.")
+		return
+	}
+	optionKey := common.DeploymentRegistrySecretOptionKey(deploymentID)
+	value := strings.TrimSpace(common.Interface2String(common.GetOption(optionKey)))
+	recordManageAudit(c, "deployment.registry_secret.reveal", map[string]any{
+		"deployment_id": deploymentID,
+	})
+	common.ApiSuccess(c, gin.H{"deployment_id": deploymentID, "value": value})
+}
+
+// deploymentRegistrySecretView 返回部署镜像仓库凭据的展示视图。上游 ionet
+// 查询不回传该凭据，明文只在创建/更新时按部署 ID 落到 options 表；读取时
+// 一律给掩码，浏览器拿不到明文，核对时走验证后揭示端点。
+func deploymentRegistrySecretView(deploymentID string) (masked string, configured bool) {
+	if deploymentID == "" || !common.IsValidDeploymentID(deploymentID) {
+		return "", false
+	}
+	value := strings.TrimSpace(common.Interface2String(common.GetOption(common.DeploymentRegistrySecretOptionKey(deploymentID))))
+	if value == "" {
+		return "", false
+	}
+	return common.MaskSecretValue(value), true
+}
+
+// saveDeploymentRegistrySecret 在创建/更新部署后保存凭据明文。掩码串表示
+// 前端未修改，必须保留库中原值，避免用星号覆盖真实密钥。
+func saveDeploymentRegistrySecret(deploymentID, secret string) {
+	secret = strings.TrimSpace(secret)
+	if deploymentID == "" || secret == "" || !common.IsValidDeploymentID(deploymentID) || common.IsMaskedSecret(secret) {
+		return
+	}
+	if err := model.UpdateOption(common.DeploymentRegistrySecretOptionKey(deploymentID), secret); err != nil {
+		common.SysError(common.LogText("failed to save deployment registry secret for %s: %v", deploymentID, err))
+	}
 }
 
 func mapIoNetDeployment(d ionet.Deployment) map[string]any {
@@ -334,6 +381,10 @@ func GetDeployment(c *gin.Context) {
 		"container_config":          details.ContainerConfig,
 	}
 
+	registryMasked, registryConfigured := deploymentRegistrySecretView(deploymentID)
+	data["registry_secret_masked"] = registryMasked
+	data["registry_secret_configured"] = registryConfigured
+
 	common.ApiSuccess(c, data)
 }
 
@@ -415,6 +466,8 @@ func UpdateDeployment(c *gin.Context) {
 		return
 	}
 
+	saveDeploymentRegistrySecret(deploymentID, req.RegistrySecret)
+
 	data := gin.H{
 		"status":        resp.Status,
 		"deployment_id": resp.DeploymentID,
@@ -478,6 +531,11 @@ func DeleteDeployment(c *gin.Context) {
 		return
 	}
 
+	// 部署已删除，清理本地保存的镜像仓库凭据，避免孤立数据残留。
+	if err := model.DeleteOption(common.DeploymentRegistrySecretOptionKey(deploymentID)); err != nil {
+		common.SysError(common.LogText("failed to clean up deployment registry secret for %s: %v", deploymentID, err))
+	}
+
 	data := gin.H{
 		"status":        resp.Status,
 		"deployment_id": resp.DeploymentID,
@@ -503,6 +561,8 @@ func CreateDeployment(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+
+	saveDeploymentRegistrySecret(resp.DeploymentID, req.RegistryConfig.RegistrySecret)
 
 	data := gin.H{
 		"deployment_id": resp.DeploymentID,

@@ -220,6 +220,10 @@ var accessTokenVerificationScopes = map[string]string{
 	VerificationScopeChannelKeyRead: AccessTokenScopeOf(authz.ChannelSecretView),
 	// A PAT must not reveal saved upstream console credentials in clear.
 	VerificationScopeChannelCredentialRead: "",
+	// Saved payment/OAuth keys must not be turned into a key dump by a PAT.
+	VerificationScopeSystemSecretRead: "",
+	// A PAT must not reveal the owner's webhook/Gotify credentials in clear.
+	VerificationScopeUserSecretRead: "",
 	// A PAT cannot read API keys in clear: that is the credential a PAT already
 	// is, so exposing another one would widen a stolen token into a full key dump.
 	VerificationScopeTokenKeyRead:          "",

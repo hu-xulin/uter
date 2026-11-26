@@ -30,3 +30,44 @@ func TestTokenKeyReadScopeDeniesAccessTokens(t *testing.T) {
 	assert.True(t, listed)
 	assert.Empty(t, scope)
 }
+
+func TestSecretReadScopesBindExactFieldAndDenyAccessTokens(t *testing.T) {
+	systemProof, err := BindVerificationOperation(VerificationOperation{
+		Scope:   VerificationScopeSystemSecretRead,
+		Context: []byte(`{"option_key":"StripeWebhookSecret"}`),
+	})
+	require.NoError(t, err)
+	otherSystemProof, err := BindVerificationOperation(VerificationOperation{
+		Scope:   VerificationScopeSystemSecretRead,
+		Context: []byte(`{"option_key":"CreemWebhookSecret"}`),
+	})
+	require.NoError(t, err)
+	assert.NotEqual(t, systemProof.ContextHash, otherSystemProof.ContextHash)
+
+	_, err = BindVerificationOperation(VerificationOperation{
+		Scope:   VerificationScopeSystemSecretRead,
+		Context: []byte(`{"option_key":"SMTPAccounts"}`),
+	})
+	assert.ErrorIs(t, err, ErrVerificationContextInvalid)
+
+	userProof, err := BindVerificationOperation(VerificationOperation{
+		Scope:   VerificationScopeUserSecretRead,
+		Context: []byte(`{"secret_key":"webhook_secret"}`),
+	})
+	require.NoError(t, err)
+	otherUserProof, err := BindVerificationOperation(VerificationOperation{
+		Scope:   VerificationScopeUserSecretRead,
+		Context: []byte(`{"secret_key":"gotify_token"}`),
+	})
+	require.NoError(t, err)
+	assert.NotEqual(t, userProof.ContextHash, otherUserProof.ContextHash)
+
+	for _, scope := range []string{
+		VerificationScopeSystemSecretRead,
+		VerificationScopeUserSecretRead,
+	} {
+		tokenScope, listed := AccessTokenVerificationScope(scope)
+		assert.True(t, listed)
+		assert.Empty(t, tokenScope)
+	}
+}

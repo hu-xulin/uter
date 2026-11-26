@@ -679,6 +679,54 @@ func GetSelf(c *gin.Context) {
 	return
 }
 
+// maskSelfUserSettings masks the current user's notification credentials in
+// the settings JSON. The browser can tell that a value is configured and verify
+// its first/last characters, but never receives the plaintext from GetSelf.
+func maskSelfUserSettings(raw string) string {
+	var settings map[string]any
+	if common.UnmarshalJsonStr(raw, &settings) != nil || settings == nil {
+		return raw
+	}
+	for _, key := range []string{"webhook_secret", "gotify_token"} {
+		value, ok := settings[key].(string)
+		if ok && value != "" {
+			settings[key] = common.MaskSecretValue(value)
+		}
+	}
+	encoded, err := common.Marshal(settings)
+	if err != nil {
+		return raw
+	}
+	return string(encoded)
+}
+
+// RevealUserSecret returns one saved notification credential after the step-up
+// middleware validates a proof bound to this exact settings field.
+func RevealUserSecret(c *gin.Context) {
+	secretKey := strings.TrimSpace(c.Param("key"))
+	if !service.IsUserSecretKey(secretKey) {
+		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	user, err := model.GetSelfUserById(c.GetInt("id"))
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	settings := user.GetSetting()
+	value := ""
+	switch secretKey {
+	case "webhook_secret":
+		value = settings.WebhookSecret
+	case "gotify_token":
+		value = settings.GotifyToken
+	}
+	recordUserSecurityAudit(c, user.Id, "user.secret.reveal", map[string]any{
+		"key": secretKey,
+	})
+	common.ApiSuccess(c, gin.H{"key": secretKey, "value": value})
+}
+
 // buildSelfUserData is the single safe dashboard-user DTO used by GetSelf,
 // login and refresh. It intentionally excludes password, management PAT and
 // administrator-only remarks.
@@ -720,7 +768,7 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"aff_history_quota": user.AffHistoryQuota,
 		"inviter_id":        user.InviterId,
 		"linux_do_id":       user.LinuxDOId,
-		"setting":           user.Setting,
+		"setting":           maskSelfUserSettings(user.Setting),
 		"stripe_customer":   user.StripeCustomer,
 		"sidebar_modules":   userSetting.SidebarModules, // 正确提取sidebar_modules字段
 		"organization_id":   user.OrganizationId,
@@ -1681,6 +1729,7 @@ func UpdateUserSetting(c *gin.Context) {
 	// 新值，要把这里暂存的原值放回去——否则每次保存设置都会把签名密钥
 	// 静默清空（DEF-7）。
 	storedWebhookSecret := settings.WebhookSecret
+	storedGotifyToken := settings.GotifyToken
 	settings.WebhookUrl, settings.WebhookSecret = "", ""
 	settings.NotificationEmail = ""
 	settings.BarkUrl = ""
@@ -1691,9 +1740,10 @@ func UpdateUserSetting(c *gin.Context) {
 		// 请求未携带 webhook_secret 时保留原值（DEF-7）：HMAC 密钥是可选
 		// 凭据，表单为隐藏/掩码展示，用户改其它字段不应顺带把它清空。
 		// 显式提交空串（指针非 nil 且值为空）视为用户主动移除密钥。
-		if req.WebhookSecret != nil {
+		if req.WebhookSecret != nil && !common.IsMaskedSecret(*req.WebhookSecret) {
 			settings.WebhookSecret = *req.WebhookSecret
 		} else {
+			// 表单提交的是后端掩码串时表示「未改密钥」，保留库中原值。
 			settings.WebhookSecret = storedWebhookSecret
 		}
 	case dto.NotifyTypeEmail:
@@ -1702,7 +1752,11 @@ func UpdateUserSetting(c *gin.Context) {
 		settings.BarkUrl = req.BarkUrl
 	case dto.NotifyTypeGotify:
 		settings.GotifyUrl = req.GotifyUrl
-		settings.GotifyToken = req.GotifyToken
+		if req.GotifyToken != "" && !common.IsMaskedSecret(req.GotifyToken) {
+			settings.GotifyToken = req.GotifyToken
+		} else {
+			settings.GotifyToken = storedGotifyToken
+		}
 		// Gotify优先级范围0-10，超出范围则使用默认值5
 		if req.GotifyPriority < 0 || req.GotifyPriority > 10 {
 			settings.GotifyPriority = 5

@@ -21,10 +21,10 @@ import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
-import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Heading } from '@/design-system'
@@ -42,6 +42,7 @@ import {
 import { handleServerError } from '@/lib/handle-server-error'
 import type { NumberInputValue } from '@/lib/number-input'
 import { ROLE } from '@/lib/roles'
+import { isMaskedSecret } from '@/lib/secret'
 
 import { updateUserSettings } from '../../api'
 import {
@@ -49,6 +50,7 @@ import {
   DEFAULT_QUOTA_WARNING_THRESHOLD,
   NOTIFICATION_METHODS,
 } from '../../constants'
+import { useUserSecretDisclosure } from '../../hooks/use-user-secret-disclosure'
 import { normalizeUserSettings } from '../../lib/user-settings'
 import type { UserProfile, NotifyType } from '../../types'
 
@@ -93,6 +95,7 @@ export function NotificationTab({
   quotaRemindThreshold,
 }: NotificationTabProps) {
   const { t } = useTranslation()
+  const secretDisclosure = useUserSecretDisclosure()
   const role = profile?.role ?? 0
   const isAdmin = role >= ROLE.ADMIN
   const [loading, setLoading] = useState(false)
@@ -117,6 +120,21 @@ export function NotificationTab({
       setSettings((prev) => ({ ...prev, [field]: value }))
     },
     []
+  )
+
+  const userSecretProps = useCallback(
+    (secretKey: 'webhook_secret' | 'gotify_token') => {
+      const current = settings[secretKey]
+      return {
+        revealedValue: secretDisclosure.revealed[secretKey] ?? null,
+        onReveal: isMaskedSecret(current)
+          ? () => void secretDisclosure.reveal(secretKey)
+          : undefined,
+        onHide: () => secretDisclosure.hide(secretKey),
+        isRevealing: secretDisclosure.pendingKey === secretKey,
+      }
+    },
+    [settings, secretDisclosure]
   )
 
   if (prevProfile !== profile) {
@@ -265,13 +283,12 @@ export function NotificationTab({
                 <Label htmlFor='webhookSecret' tier='field'>
                   {t('Webhook Secret')}
                 </Label>
-                <PasswordInput
+                <SecretInput
                   id='webhookSecret'
                   value={settings.webhook_secret}
-                  onChange={(e) =>
-                    updateField('webhook_secret', e.target.value)
-                  }
+                  onChange={(value) => updateField('webhook_secret', value)}
                   placeholder={t('Enter secret key')}
+                  {...userSecretProps('webhook_secret')}
                 />
               </div>
             </>
@@ -320,11 +337,12 @@ export function NotificationTab({
                 <Label htmlFor='gotifyToken' tier='field'>
                   {t('Gotify Application Token')}
                 </Label>
-                <PasswordInput
+                <SecretInput
                   id='gotifyToken'
                   value={settings.gotify_token}
-                  onChange={(e) => updateField('gotify_token', e.target.value)}
+                  onChange={(value) => updateField('gotify_token', value)}
                   placeholder={t('Enter application token')}
+                  {...userSecretProps('gotify_token')}
                 />
                 <p className='text-muted-foreground text-sm'>
                   {t('Token obtained from your Gotify application')}

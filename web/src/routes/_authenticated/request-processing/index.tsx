@@ -35,7 +35,7 @@ export const Route = createFileRoute('/_authenticated/request-processing/')({
 function RequestProcessingPage() {
   const { t } = useTranslation()
   return (
-    <div className='p-4'>
+    <div className='mx-auto w-full max-w-7xl p-4'>
       <SettingsSection title={t('Request processing')}>
         <p className='text-muted-foreground text-sm'>
           {t(

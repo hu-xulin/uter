@@ -498,6 +498,20 @@ func UpdateOptionsBulk(values map[string]string) error {
 	return nil
 }
 
+// DeleteOption 从数据库与内存中移除一个 option。用于删除实体时清理其
+// 私有凭据（如部署的镜像仓库密钥），避免孤立数据长期残留。
+// 与 UpdateOption 一样先落库再改内存：DB 失败时不触碰 OptionMap。
+func DeleteOption(key string) error {
+	defer BumpSyncTopic(SyncTopicOptions)
+	if err := DB.Where("key = ?", key).Delete(&Option{}).Error; err != nil {
+		return err
+	}
+	common.OptionMapRWMutex.Lock()
+	delete(common.OptionMap, key)
+	common.OptionMapRWMutex.Unlock()
+	return nil
+}
+
 func updateOptionMap(key string, value string) (err error) {
 	if key == retiredThemeOptionKey || key == legacyAccessTokenRetireAtKey {
 		common.OptionMapRWMutex.Lock()

@@ -14,6 +14,7 @@ import (
 	"github.com/uter-ai/uter/constant"
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
+	"github.com/uter-ai/uter/service"
 )
 
 func setupUterAPIRecipeDB(t *testing.T) {
@@ -239,4 +240,106 @@ func TestCreateUterAPIChannelsPersistsXC0RedirectAlias(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus)
+}
+
+// slot 没带 key 时，服务端用系统设置里的优特订阅 key 补齐。浏览器只拿到
+// 掩码，明文补齐必须在服务端完成；operator 显式填的 key 始终优先。
+func TestCreateUterAPIChannelsFillsKeyFromSystemSettings(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderSubscriptionAPIKeyOption: "claude-stored-key",
+	})
+
+	// keys 完全省略，模拟前端提示「留空则使用系统设置中的 key」后的提交。
+	recorder := runUterAPICreate(t, `{"slots":[
+		{"name":"Uter.api-auto","group":"Claude-max","keys":[]}
+	],"group":"default"}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	assert.Contains(t, recorder.Body.String(), `"created":1`)
+
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "Uter.api-auto" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+	assert.Equal(t, "claude-stored-key", created.Key)
+	assert.Equal(t, "claude-a", created.Models)
+}
+
+// 多行订阅 key 按行拆分；不可用的行被 discovery 过滤，只留可用 key。
+func TestCreateUterAPIChannelsFillsMultilineKeysFromSystemSettings(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderSubscriptionAPIKeyOption: "bad-key\nclaude-stored-key",
+	})
+
+	recorder := runUterAPICreate(t, `{"slots":[
+		{"name":"Uter.api-auto-multi","group":"Claude-max"}
+	],"group":"default"}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	assert.Contains(t, recorder.Body.String(), `"created":1`)
+
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "Uter.api-auto-multi" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+	assert.Equal(t, "claude-stored-key", created.Key)
+}
+
+// operator 在向导里显式填的 key 必须压过系统设置，不被覆盖。
+func TestCreateUterAPIChannelsExplicitKeyWinsOverSystemSettings(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderSubscriptionAPIKeyOption: "claude-stored-key",
+	})
+
+	recorder := runUterAPICreate(t, `{"slots":[
+		{"name":"Uter.api-explicit","group":"Claude-max","keys":["claude-operator-key"]}
+	],"group":"default"}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "Uter.api-explicit" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+	assert.Equal(t, "claude-operator-key", created.Key)
+}
+
+// 系统设置没配 key 且 slot 也没带 key 时不能凭空创建渠道。
+func TestCreateUterAPIChannelsNoKeyNoCreate(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+	setChannelProviderOptionsForTest(t, map[string]string{
+		service.ChannelProviderSubscriptionAPIKeyOption: "",
+	})
+
+	recorder := runUterAPICreate(t, `{"slots":[
+		{"name":"Uter.api-nokey","group":"Claude-max"}
+	],"group":"default"}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	for _, ch := range all {
+		assert.NotEqual(t, "Uter.api-nokey", ch.Name)
+	}
 }

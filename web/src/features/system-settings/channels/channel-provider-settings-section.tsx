@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -33,8 +34,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { SecretInput } from '@/components/ui/secret-input'
+import { SecretTextarea } from '@/components/ui/secret-textarea'
 import { Textarea } from '@/components/ui/textarea'
-import { isMaskedSecret, maskSecret } from '@/lib/secret'
+import { isMaskedSecret, maskMultilineSecret, maskSecret } from '@/lib/secret'
 
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
@@ -56,6 +58,15 @@ const schema = z.object({
   apiKey: z.string(),
 })
 
+const API_KEY_DESCRIPTION_KEYS: Record<ChannelProviderPrefix, string> = {
+  featured:
+    'Saved Uter Route API keys, one per line; used when creating Uter Route channels.',
+  bailian:
+    'Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.',
+  subscription:
+    'Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.',
+}
+
 type ChannelProviderSettingsSectionProps = {
   title: string
   description: string
@@ -64,8 +75,9 @@ type ChannelProviderSettingsSectionProps = {
   disclosure: ChannelCredentialDisclosure
 }
 
-function displaySecret(value: string) {
-  return isMaskedSecret(value) ? value : maskSecret(value)
+function displaySecret(value: string, multiline = false) {
+  if (isMaskedSecret(value)) return value
+  return multiline ? maskMultilineSecret(value) : maskSecret(value)
 }
 
 export function ChannelProviderSettingsSection(
@@ -92,7 +104,8 @@ export function ChannelProviderSettingsSection(
     form.reset({
       ...values,
       password: displaySecret(values.password),
-      apiKey: displaySecret(values.apiKey),
+      // API Key 一行一个，保存后按行掩码展示，与创建渠道时的多行形态一致。
+      apiKey: displaySecret(values.apiKey, true),
     })
     props.disclosure.hide(channelProviderOptionKey(props.prefix, 'password'))
     props.disclosure.hide(channelProviderOptionKey(props.prefix, 'apiKey'))
@@ -102,7 +115,9 @@ export function ChannelProviderSettingsSection(
     field: 'password' | 'apiKey',
     label: string,
     placeholder: string,
-    description: string
+    description: string,
+    multiline = false,
+    hint?: ReactNode
   ) => {
     const optionKey = channelProviderOptionKey(props.prefix, field)
     const revealedValue = props.disclosure.revealed[optionKey]
@@ -125,12 +140,25 @@ export function ChannelProviderSettingsSection(
             <div className='flex flex-col gap-2'>
               <div className='flex gap-2'>
                 <FormControl>
-                  <SecretInput
-                    value={String(formField.value ?? '')}
-                    onChange={formField.onChange}
-                    placeholder={placeholder}
-                    autoComplete='new-password'
-                  />
+                  {multiline ? (
+                    // API Key 与创建渠道时一致：一行一个 key。服务端的掩码、
+                    // 保存与自动填充都按多行处理，这里必须用多行组件承载，
+                    // 否则换行被单行 input 吞掉，自动读取时拿到的是被压平的
+                    // 单个字符串，而不是原本的一行一个 key。
+                    <SecretTextarea
+                      value={String(formField.value ?? '')}
+                      onChange={formField.onChange}
+                      placeholder={placeholder}
+                      rows={4}
+                    />
+                  ) : (
+                    <SecretInput
+                      value={String(formField.value ?? '')}
+                      onChange={formField.onChange}
+                      placeholder={placeholder}
+                      autoComplete='new-password'
+                    />
+                  )}
                 </FormControl>
                 <Button
                   type='button'
@@ -161,6 +189,7 @@ export function ChannelProviderSettingsSection(
                 />
               ) : null}
             </div>
+            {hint}
             <FormDescription>{description}</FormDescription>
             <FormMessage />
           </FormItem>
@@ -239,8 +268,15 @@ export function ChannelProviderSettingsSection(
           {renderCredentialField(
             'apiKey',
             t('API Key'),
-            t('Enter new API key to update'),
-            t('Leave blank to keep the existing API key.')
+            t('One key per line'),
+            t(API_KEY_DESCRIPTION_KEYS[props.prefix]),
+            true,
+            <p className='text-muted-foreground text-sm'>
+              {t(
+                'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
+                { group: props.title }
+              )}
+            </p>
           )}
         </SettingsForm>
       </Form>

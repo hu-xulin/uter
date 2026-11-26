@@ -14,13 +14,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Textarea } from '@/components/ui/textarea'
+import { isMaskedSecret } from '@/lib/secret'
 import { cn } from '@/lib/utils'
 
-type SecretTextareaProps = Omit<
+export type SecretTextareaProps = Omit<
   React.ComponentProps<'textarea'>,
   'value' | 'onChange' | 'children'
 > & {
@@ -34,6 +36,14 @@ type SecretTextareaProps = Omit<
   onChange: (value: string) => void
   /** 是否用等宽字形渲染（默认 **开**），与 `SecretInput` 同义。 */
   mono?: boolean
+  /** 验证通过后取回的明文。未传或 null 时展示后端掩码串。 */
+  revealedValue?: string | null
+  /** 已配置值的验证揭示入口；未传时不渲染眼睛按钮。 */
+  onReveal?: () => void
+  /** 重新聚焦或关闭明文时清除临时明文，避免它进入表单状态。 */
+  onHide?: () => void
+  /** 正在完成二次验证并获取明文。 */
+  isRevealing?: boolean
 }
 
 /**
@@ -57,12 +67,16 @@ export function SecretTextarea({
   name,
   rows = 4,
   mono = true,
+  revealedValue,
+  onReveal,
+  onHide,
+  isRevealing,
   onBlur,
   ...rest
 }: SecretTextareaProps) {
+  const { t } = useTranslation()
   const [editing, setEditing] = React.useState(false)
   const [draft, setDraft] = React.useState('')
-  const [revealed, setRevealed] = React.useState(false)
   // 进入编辑态那一刻的「原值」，用于失焦回填。
   const originalRef = React.useRef(value)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
@@ -73,6 +87,13 @@ export function SecretTextarea({
   }, [value, editing])
 
   const isBlank = value.trim() === ''
+  const display = editing
+    ? draft
+    : revealedValue != null
+      ? revealedValue
+      : value
+  const canReveal = Boolean(onReveal && isMaskedSecret(value))
+  const isUncovered = revealedValue != null
 
   return (
     <div className={cn('relative', className)}>
@@ -86,13 +107,13 @@ export function SecretTextarea({
         readOnly={!editing}
         mono={mono}
         placeholder={isBlank ? (placeholder ?? '') : undefined}
-        value={editing ? draft : value}
+        value={display}
         onFocus={() => {
           if (disabled) return
+          onHide?.()
           originalRef.current = value
           setEditing(true)
           setDraft('')
-          setRevealed(false)
           requestAnimationFrame(() => textareaRef.current?.focus())
         }}
         onChange={(e) => {
@@ -113,15 +134,27 @@ export function SecretTextarea({
         }}
         className={cn('pr-9', editing && 'border-ring')}
       />
-      {!editing && !isBlank && (
+      {!editing && !isBlank && canReveal && (
         <button
           type='button'
           tabIndex={-1}
-          onClick={() => setRevealed((v) => !v)}
-          aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-          className='text-muted-foreground hover:text-foreground absolute top-3 right-2 size-5'
+          disabled={isRevealing}
+          onClick={() => {
+            if (isUncovered) onHide?.()
+            else onReveal?.()
+          }}
+          aria-label={
+            isRevealing
+              ? t('Revealing...')
+              : isUncovered
+                ? t('Hide secret')
+                : t('Reveal secret')
+          }
+          className='text-muted-foreground hover:text-foreground absolute top-3 right-2 size-5 disabled:opacity-60'
         >
-          {revealed ? (
+          {isRevealing ? (
+            <Loader2 className='size-4 animate-spin' />
+          ) : isUncovered ? (
             <EyeOff className='size-4' />
           ) : (
             <Eye className='size-4' />

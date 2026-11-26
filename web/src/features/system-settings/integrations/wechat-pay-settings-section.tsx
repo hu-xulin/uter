@@ -30,9 +30,11 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretFileInput } from '@/components/ui/secret-file-input'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import {
+  VerifiedSecretFileInput as SecretFileInput,
+  VerifiedSecretInput as SecretInput,
+} from '@/features/system-settings/components/verified-secret-input'
 
 import {
   SettingsSwitchContent,
@@ -147,6 +149,7 @@ export function WechatPaySettingsSection() {
                 <FormLabel>{t('APIv3 Key')}</FormLabel>
                 <FormControl>
                   <SecretInput
+                    optionKey='WechatPayApiV3Key'
                     value={String(field.value ?? '')}
                     onChange={field.onChange}
                     placeholder='32-byte APIv3 key'
@@ -189,6 +192,7 @@ export function WechatPaySettingsSection() {
                 </FormLabel>
                 <FormControl>
                   <SecretFileInput
+                    optionKey='WechatPayPrivateKey'
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
@@ -215,6 +219,7 @@ export function WechatPaySettingsSection() {
                 </FormLabel>
                 <FormControl>
                   <SecretFileInput
+                    optionKey='WechatPayPublicKey'
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY']}

@@ -43,6 +43,8 @@ export type WizardMockOverrides = {
   bailianStatus?: unknown
   /** Bailian catalogue coverage; defaults to no coverage block. */
   bailianCoverage?: unknown
+  /** Channel provider credential masks returned by GET /api/option/. */
+  providerCredentialMasks?: Record<string, { password?: string; api_key?: string }>
   /** Extra GET URLs handled by the caller, or an error to throw. */
   extraGet?: (url: string, config?: unknown) => unknown | undefined
 }
@@ -143,6 +145,25 @@ export function setupWizardApiMocks(
     const extra = overrides.extraGet?.(url, config)
     if (extra !== undefined) return { data: { success: true, data: extra } }
 
+    if (url === '/api/option/') {
+      return {
+        data: {
+          success: true,
+          data: [
+            {
+              key: 'ChannelProviderCredentialMasks',
+              value: JSON.stringify(
+                overrides.providerCredentialMasks ?? {
+                  featured: { api_key: 'route-key****one\nroute-key****two' },
+                  bailian: { api_key: 'bailian-key****one' },
+                  subscription: { api_key: 'sub-key****one' },
+                }
+              ),
+            },
+          ],
+        },
+      }
+    }
     if (url === '/api/upstream/uterroute/endpoint') {
       const endpoint = overrides.uterRouteEndpoint
       if (endpoint === null) throw new Error('endpoint unavailable')

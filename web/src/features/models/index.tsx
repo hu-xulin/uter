@@ -37,6 +37,7 @@ import { ModelsProvider, useModels } from './components/models-provider'
 import { ModelsTable } from './components/models-table'
 import { VendorsTable } from './components/vendors-table'
 import { useModelDeploymentSettings } from './hooks/use-model-deployment-settings'
+import { DeploymentSecretDisclosureProvider } from './hooks/use-deployment-secret-disclosure'
 import { deploymentsQueryKeys } from './lib'
 import {
   type ModelsSectionId,
@@ -193,8 +194,10 @@ function DeploymentsSection() {
 
 export function Models() {
   return (
-    <ModelsProvider>
-      <ModelsContent />
-    </ModelsProvider>
+    <DeploymentSecretDisclosureProvider>
+      <ModelsProvider>
+        <ModelsContent />
+      </ModelsProvider>
+    </DeploymentSecretDisclosureProvider>
   )
 }

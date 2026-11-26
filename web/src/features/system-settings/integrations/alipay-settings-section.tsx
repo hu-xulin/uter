@@ -33,8 +33,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretFileInput } from '@/components/ui/secret-file-input'
 import { Switch } from '@/components/ui/switch'
+import { VerifiedSecretFileInput as SecretFileInput } from '@/features/system-settings/components/verified-secret-input'
 
 import { getAlipayCallbackDiagnostics, type AlipayCallbackEvent } from '../api'
 import {
@@ -148,6 +148,7 @@ export function AlipaySettingsSection() {
                 <FormLabel>{t('Application Private Key')}</FormLabel>
                 <FormControl>
                   <SecretFileInput
+                    optionKey='AlipayPrivateKey'
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     expectedPemType={['PRIVATE KEY', 'RSA PRIVATE KEY']}
@@ -173,6 +174,7 @@ export function AlipaySettingsSection() {
                 <FormLabel>{t('Alipay Public Key')}</FormLabel>
                 <FormControl>
                   <SecretFileInput
+                    optionKey='AlipayPublicKey'
                     value={field.value ?? ''}
                     onChange={field.onChange}
                     expectedPemType={['PUBLIC KEY', 'RSA PUBLIC KEY']}

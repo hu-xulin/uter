@@ -384,6 +384,27 @@ export async function getDeployment(id: string | number): Promise<{
 }
 
 /**
+ * 取回某个部署已保存的镜像仓库凭据明文。调用方必须先完成绑定到该部署 ID
+ * 的二次验证；GET /api/deployments/:id 只返回掩码串。
+ */
+export async function revealDeploymentRegistrySecret(
+  deploymentId: string | number,
+  proofToken: string,
+  signal?: AbortSignal
+): Promise<{
+  success: boolean
+  message?: string
+  data?: { deployment_id?: string; value?: string }
+}> {
+  const res = await api.post(
+    `/api/deployments/${encodeURIComponent(String(deploymentId))}/registry-secret/reveal`,
+    undefined,
+    { headers: { 'X-Security-Proof': proofToken }, signal }
+  )
+  return res.data
+}
+
+/**
  * List deployment containers
  */
 export async function listDeploymentContainers(

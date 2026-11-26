@@ -51,6 +51,8 @@ export type SecurityProofScope =
   | 'admin.user.create'
   | 'admin.user.update'
   | 'token.key.read'
+  | 'system.secret.read'
+  | 'user.secret.read'
 
 /** The administrative account actions guarded by the `admin.user.manage` scope. */
 export type AdminUserManageAction = 'disable' | 'enable' | 'promote' | 'demote'
@@ -58,6 +60,8 @@ export type AdminUserManageAction = 'disable' | 'enable' | 'promote' | 'demote'
 export type VerificationOperation =
   | { scope: 'channel.key.read'; context: { channel_id: number } }
   | { scope: 'channel.credential.read'; context: { option_key: string } }
+  | { scope: 'system.secret.read'; context: { option_key: string } }
+  | { scope: 'user.secret.read'; context: { secret_key: string } }
   | {
       scope: 'account.binding.bind'
       context: { provider: string; email?: string; code?: string }
@@ -95,6 +99,8 @@ export type VerificationOperation =
         SecurityProofScope,
         | 'channel.key.read'
         | 'channel.credential.read'
+        | 'system.secret.read'
+        | 'user.secret.read'
         | 'account.binding.bind'
         | 'account.binding.unbind'
         | 'admin.user.manage'

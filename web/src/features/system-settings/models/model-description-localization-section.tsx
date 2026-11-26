@@ -50,8 +50,8 @@ import {
   Form,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { isMaskedSecret } from '@/lib/secret'
 
 import {

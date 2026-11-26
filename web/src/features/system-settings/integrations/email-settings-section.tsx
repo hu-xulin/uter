@@ -35,8 +35,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { getCurrencyDisplay, getCurrencyLabel } from '@/lib/currency'
 import { parseQuotaFromDollars, quotaUnitsToDollars } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
@@ -403,6 +403,7 @@ export function EmailSettingsSection({
                     <FormLabel>{t('Resend API key')}</FormLabel>
                     <FormControl>
                       <SecretInput
+                        optionKey='ResendApiKey'
                         value={field.value ?? ''}
                         onChange={field.onChange}
                         placeholder={t('Enter new token to update')}
@@ -713,6 +714,7 @@ export function EmailSettingsSection({
                               </FormLabel>
                               <FormControl>
                                 <SecretInput
+                                  optionKey={`SMTPAccounts.${index}.token`}
                                   value={field.value ?? ''}
                                   onChange={field.onChange}
                                   disabled={isSaving}

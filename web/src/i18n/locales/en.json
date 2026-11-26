@@ -8758,7 +8758,6 @@
     "Login URL": "Login URL",
     "Enter login URL": "Enter login URL",
     "The login URL is saved as the channel base URL when a new channel omits it.": "The login URL is saved as the channel base URL when a new channel omits it.",
-    "Enter username": "Enter username",
     "Username used to sign in to the upstream console.": "Username used to sign in to the upstream console.",
     "Enter new password to update": "Enter new password to update",
     "Leave blank to keep the existing password.": "Leave blank to keep the existing password.",
@@ -8772,6 +8771,20 @@
     "Revealing...": "Revealing...",
     "Save channel provider settings": "Save channel provider settings",
     "Used when creating Alibaba Bailian channels; saved values fill empty connection fields on the server.": "Used when creating Alibaba Bailian channels; saved values fill empty connection fields on the server.",
-    "Used when creating Uter.api channels; saved values fill empty connection fields on the server.": "Used when creating Uter.api channels; saved values fill empty connection fields on the server."
+    "Used when creating Uter.api channels; saved values fill empty connection fields on the server.": "Used when creating Uter.api channels; saved values fill empty connection fields on the server.",
+    "Leave empty to use the subscription key saved in System Settings": "Leave empty to use the subscription key saved in System Settings",
+    "Verify to view saved secret": "Verify to view saved secret",
+    "Use Passkey or 2FA to confirm your identity before revealing this saved value.": "Use Passkey or 2FA to confirm your identity before revealing this saved value.",
+    "Failed to reveal secret": "Failed to reveal secret",
+    "Reveal secret": "Reveal secret",
+    "Hide secret": "Hide secret",
+    "Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.": "Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.",
+    "Selected group: {{group}}. Leave empty to use the saved Uter.api subscription keys below.": "Selected group: {{group}}. Leave empty to use the saved Uter.api subscription keys below.",
+    "Enter API key, one per line, or leave empty to use the saved key": "Enter API key, one per line, or leave empty to use the saved key",
+    "Leave empty to use the Uter Route key saved in System Settings": "Leave empty to use the Uter Route key saved in System Settings",
+    "Leave empty to use the Alibaba Bailian key saved in System Settings": "Leave empty to use the Alibaba Bailian key saved in System Settings",
+    "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "Saved Uter Route API keys, one per line; used when creating Uter Route channels.",
+    "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.",
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels."
   }
 }

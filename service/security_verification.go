@@ -25,6 +25,14 @@ const (
 	VerificationMethodSession              = "session"
 	VerificationScopeChannelKeyRead        = "channel.key.read"
 	VerificationScopeChannelCredentialRead = "channel.credential.read"
+	// VerificationScopeSystemSecretRead covers every masked option value in
+	// System Settings. The proof is bound to one option key so revealing one
+	// payment secret cannot unlock another field with the same step-up.
+	VerificationScopeSystemSecretRead = "system.secret.read"
+	// VerificationScopeUserSecretRead covers the current user's notification
+	// credentials (webhook HMAC secret, Gotify token). Each proof is bound to
+	// one field so the two secrets cannot be swapped by replaying a proof.
+	VerificationScopeUserSecretRead = "user.secret.read"
 	// VerificationScopeTokenKeyRead guards disclosing an API key in clear. The
 	// scope binds no parameters: the frontend asks for one proof and reuses it
 	// for the single and batch reads it then performs, and the controller still
@@ -60,6 +68,17 @@ const (
 // status or role. Quota adjustments are not gated and deletion has its own scope.
 var adminUserManageActions = []string{"disable", "enable", "promote", "demote"}
 
+// IsUserSecretKey lists the current user's settings fields that are masked on
+// read and can be disclosed only after a step-up proof.
+func IsUserSecretKey(key string) bool {
+	switch key {
+	case "webhook_secret", "gotify_token":
+		return true
+	default:
+		return false
+	}
+}
+
 var (
 	ErrVerificationFailed         = errors.New("Verification failed. Please try again.")
 	ErrVerificationUnavailable    = errors.New("This verification method is currently unavailable.")
@@ -85,6 +104,17 @@ type ChannelKeyReadContext struct {
 // credential key, so a proof for one field cannot reveal another.
 type ChannelCredentialReadContext struct {
 	OptionKey string `json:"option_key"`
+}
+
+// SystemSecretReadContext binds a step-up proof to one masked option key.
+// Keeping the same field name as the channel credential context makes the
+// frontend proof request identical while retaining a distinct scope.
+type SystemSecretReadContext struct {
+	OptionKey string `json:"option_key"`
+}
+
+type UserSecretReadContext struct {
+	SecretKey string `json:"secret_key"`
 }
 
 type AccountBindingContext struct {
@@ -188,6 +218,20 @@ func BindVerificationOperation(operation VerificationOperation) (VerificationBin
 		var context ChannelCredentialReadContext
 		if len(fields) != 1 || common.Unmarshal(fields["option_key"], &context.OptionKey) != nil ||
 			!IsChannelProviderSecretOptionKey(context.OptionKey) {
+			return VerificationBinding{}, ErrVerificationContextInvalid
+		}
+		normalized = context
+	case VerificationScopeSystemSecretRead:
+		var context SystemSecretReadContext
+		if len(fields) != 1 || common.Unmarshal(fields["option_key"], &context.OptionKey) != nil ||
+			!common.IsSystemSecretReadKey(context.OptionKey) {
+			return VerificationBinding{}, ErrVerificationContextInvalid
+		}
+		normalized = context
+	case VerificationScopeUserSecretRead:
+		var context UserSecretReadContext
+		if len(fields) != 1 || common.Unmarshal(fields["secret_key"], &context.SecretKey) != nil ||
+			!IsUserSecretKey(context.SecretKey) {
 			return VerificationBinding{}, ErrVerificationContextInvalid
 		}
 		normalized = context
@@ -337,7 +381,7 @@ func securityVerificationPolicy(scope string, state model.UserVerificationState)
 		methods = append(methods, VerificationMethodPasskey)
 	}
 	switch scope {
-	case VerificationScopeChannelKeyRead, VerificationScopeChannelCredentialRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
+	case VerificationScopeChannelKeyRead, VerificationScopeChannelCredentialRead, VerificationScopeSystemSecretRead, VerificationScopeUserSecretRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
 	case VerificationScopeTwoFADisable, VerificationScopeTwoFABackupCodes:
 		if !state.HasTwoFA {
 			return nil, model.ErrTwoFANotEnabled

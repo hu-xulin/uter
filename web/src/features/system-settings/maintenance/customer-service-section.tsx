@@ -17,7 +17,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -29,11 +28,12 @@ import { Form, FormControl, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { api } from '@/lib/api'
-import { maskSecret } from '@/lib/secret'
+import { isMaskedSecret } from '@/lib/secret'
 
 import { SettingsForm } from '../components/settings-form-layout'
 import { SettingsPageFormActions } from '../components/settings-page-context'
 import { SettingsSection } from '../components/settings-section'
+import { VerifiedSecretInput } from '../components/verified-secret-input'
 import { useUpdateOption } from '../hooks/use-update-option'
 
 /**
@@ -358,21 +358,18 @@ function AdminTokenField({
   const updateOption = useUpdateOption()
   const [token, setToken] = useState('')
   const [configured, setConfigured] = useState(defaultConfigured)
-  const [revealed, setRevealed] = useState(false)
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState('')
 
   useEffect(() => {
     let alive = true
     api
-      .get<{ success: boolean; data: { token: string } }>(
-        '/api/customer-service/admin-token'
-      )
+      .get<{
+        success: boolean
+        data: { token: string; configured?: boolean }
+      }>('/api/customer-service/admin-token')
       .then((r) => {
-        if (alive && r.data?.success && r.data.data?.token) {
-          setToken(r.data.data.token)
-          setConfigured(true)
-        }
+        if (!alive || !r.data?.success) return
+        setToken(r.data.data?.token ?? '')
+        setConfigured(Boolean(r.data.data?.configured || r.data.data?.token))
       })
       .catch(() => {})
     return () => {
@@ -380,28 +377,15 @@ function AdminTokenField({
     }
   }, [])
 
-  const beginEdit = () => {
-    setDraft('')
-    setEditing(true)
-    setRevealed(false)
-  }
-  const commitEdit = () => {
-    // 聚焦后未输入任何内容就失焦：还原为已保存令牌，避免把已保存令牌误清成空。
-    if (draft.trim() === '') {
-      setEditing(false)
-      return
-    }
-    setToken(draft)
-    setEditing(false)
-  }
   const save = async () => {
-    const v = (editing ? draft : token).trim()
+    const v = token.trim()
     if (!v) {
       toast.error(t('Token cannot be empty'))
       return
     }
-    // 形态校验先于写库：填密码/随手字符串时立即拦住，避免「保存成功但读取恒 401」。
-    if (!looksLikeUterCSAdminToken(v)) {
+    // 掩码串表示「未改动」：由后端保留原令牌，不能按明文做形态校验，
+    // 也不能把掩码当成新令牌写回。
+    if (!isMaskedSecret(v) && !looksLikeUterCSAdminToken(v)) {
       toast.error(
         t(
           'This is not a uter-cs admin token. Use the three-part login token or a service token of at least 32 characters; the admin password is not a token.'
@@ -414,24 +398,12 @@ function AdminTokenField({
         key: 'CustomerServiceAdminToken',
         value: v,
       })
-      setToken(v)
       setConfigured(true)
-      setEditing(false)
       toast.success(t('Admin token saved'))
       onSaved?.()
     } catch {
       // 错误已由拦截器提示
     }
-  }
-
-  let displayValue: string
-  let inputType: string
-  if (editing) {
-    displayValue = draft
-    inputType = revealed ? 'text' : 'password'
-  } else {
-    displayValue = revealed ? token : maskSecret(token)
-    inputType = 'text'
   }
 
   return (
@@ -450,45 +422,20 @@ function AdminTokenField({
       </p>
       <div className='flex flex-col gap-2 sm:flex-row'>
         <div className='relative flex-1'>
-          <Input
-            type={inputType}
-            autoComplete='new-password'
+          <VerifiedSecretInput
+            optionKey='CustomerServiceAdminToken'
+            value={token}
+            onChange={setToken}
             placeholder='Bearer …'
-            value={displayValue}
             disabled={updateOption.isPending}
             mono
-            onFocus={beginEdit}
-            onChange={(e) => {
-              if (editing) setDraft(e.target.value)
-            }}
-            onBlur={commitEdit}
-            className='pr-9'
           />
-          {!editing && token && (
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon-xs'
-              tabIndex={-1}
-              onClick={() => setRevealed((v) => !v)}
-              aria-label={revealed ? 'Hide token' : 'Reveal token'}
-              className='text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2'
-            >
-              {revealed ? (
-                <EyeOff className='size-4' />
-              ) : (
-                <Eye className='size-4' />
-              )}
-            </Button>
-          )}
         </div>
         <Button
           type='button'
           className='shrink-0'
           onClick={save}
-          disabled={
-            updateOption.isPending || (editing ? !draft.trim() : !token.trim())
-          }
+          disabled={updateOption.isPending || !token.trim()}
         >
           {t('Save token')}
         </Button>
@@ -500,20 +447,16 @@ function AdminTokenField({
 /**
  * 大模型配置面板里「敏感字段」的输入框（api_key / backup_api_key 等）。
  *
- * 展示规则与同页 AdminTokenField、全局 SecretInput 一致：
- * - **展示态**（默认）：显示 `maskSecret(real)`（前4 + 中间星号 + 后4），绝不把明文密钥直接
- *   渲染进输入框；眼睛按钮可临时查看完整明文。
- * - **编辑态**（点击后）：清空并聚焦，允许输入新明文（password 类型，避免旁观者看到）。
- * - **失焦未输入**：退出编辑态、回填回「掩码后的真实值」，**不改动** `value`（即 config 中
- *   保存的真实密钥原样保留，不会被掩码串覆盖）；只有真正键入内容时才把新明文写回 `value`。
+ * 展示规则与全站密钥字段一致：
+ * - **展示态**：直接显示后端下发的掩码串；眼睛按钮触发二次验证后按字段名揭示明文。
+ * - **编辑态**：清空并聚焦，允许输入新明文（password 类型，避免旁观者看到）。
+ * - **失焦未输入**：还原为后端掩码串，不把掩码当成新密钥写回。
  *
- * 关键点：`value` 始终是「真实明文」（后端下发、或用户本次输入的新明文），掩码仅用于展示；
- * 渲染层不要把掩码串写回 `value`，否则保存时 PUT 会把掩码串当新密钥、覆盖真实密钥——这正是
- * 此前「保存后密钥失效」的根因。与 SecretInput 的区别在于：本字段的掩码由前端本地完成
- * （GET /api/customer-service/deploy/llm 按要求返回明文，由前端负责脱敏展示），而 config 仍
- * 持有真实值用于保存。
+ * 后端 GET /api/customer-service/deploy/llm 已改为只返回掩码；保存时后端把未修改的
+ * 掩码字段回填为缓存中的明文，避免一次普通保存把上游密钥覆盖成星号。
  */
 function MaskedConfigField({
+  name,
   labelKey,
   descriptionKey,
   placeholderKey,
@@ -521,6 +464,7 @@ function MaskedConfigField({
   onChange,
   disabled,
 }: {
+  name: string
   labelKey: string
   descriptionKey?: string
   placeholderKey?: string
@@ -529,30 +473,6 @@ function MaskedConfigField({
   disabled?: boolean
 }) {
   const { t } = useTranslation()
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState('')
-  const [revealed, setRevealed] = useState(false)
-
-  const isBlank = value.trim() === ''
-
-  // 展示态显示掩码串（前4后4）；编辑态显示正在输入的明文草稿；
-  // 展示态且眼睛已点时显示真实明文（用户主动查看）。
-  let display: string
-  if (editing) {
-    display = draft
-  } else if (revealed) {
-    display = value
-  } else {
-    display = maskSecret(value)
-  }
-
-  // 编辑态用 password（避免旁观者看到新密钥），其余展示态用 text 呈现掩码串。
-  let inputType: string
-  if (editing) {
-    inputType = revealed ? 'text' : 'password'
-  } else {
-    inputType = 'text'
-  }
 
   return (
     <FormItem className='flex flex-col gap-1.5'>
@@ -561,52 +481,14 @@ function MaskedConfigField({
         <p className='text-muted-foreground text-sm'>{t(descriptionKey)}</p>
       )}
       <FormControl>
-        <div className='relative'>
-          <Input
-            type={inputType}
-            autoComplete='new-password'
-            readOnly={!editing}
-            mono
-            placeholder={isBlank ? (placeholderKey ?? '') : undefined}
-            value={display}
-            onFocus={() => {
-              if (disabled) return
-              setDraft('')
-              setEditing(true)
-              setRevealed(false)
-            }}
-            onChange={(e) => {
-              // 仅在编辑态回写：真实明文写入 value（config），用于后续保存。
-              if (!editing) return
-              setDraft(e.target.value)
-              onChange(e.target.value)
-            }}
-            onBlur={() => {
-              // 失焦即退出编辑态；未输入则不调用 onChange，真实值保持不动。
-              setEditing(false)
-              setDraft('')
-            }}
-            disabled={disabled}
-            className='pr-9'
-          />
-          {!editing && !isBlank && (
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon-xs'
-              tabIndex={-1}
-              onClick={() => setRevealed((v) => !v)}
-              aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-              className='text-muted-foreground absolute top-1/2 right-1.5 -translate-y-1/2'
-            >
-              {revealed ? (
-                <EyeOff className='size-4' />
-              ) : (
-                <Eye className='size-4' />
-              )}
-            </Button>
-          )}
-        </div>
+        <VerifiedSecretInput
+          optionKey={`CustomerServiceLLMConfig.${name}`}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholderKey ? t(placeholderKey) : undefined}
+          disabled={disabled}
+          mono
+        />
       </FormControl>
     </FormItem>
   )
@@ -789,6 +671,7 @@ function ModelConfigPanel({ reloadSignal = 0 }: { reloadSignal?: number }) {
             field.sensitive ? (
               <MaskedConfigField
                 key={field.key}
+                name={field.key}
                 labelKey={field.labelKey}
                 descriptionKey={field.descriptionKey}
                 placeholderKey={field.placeholderKey}

@@ -36,7 +36,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretInput } from '@/components/ui/secret-input'
 import {
   Select,
   SelectContent,
@@ -47,6 +46,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 
 import {
   SettingsForm,

@@ -44,7 +44,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretInput } from '@/components/ui/secret-input'
 import {
   Select,
   SelectContent,
@@ -56,6 +55,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { formatUserId } from '@/lib/format'
 import { handleServerError } from '@/lib/handle-server-error'
 import { isMaskedSecret, maskSecret } from '@/lib/secret'
@@ -1661,6 +1661,7 @@ export function PaymentSettingsSection({
                             </FormLabel>
                             <FormControl>
                               <SecretInput
+                                optionKey='payment_setting.epay_merchant_private_key'
                                 value={field.value ?? ''}
                                 onChange={field.onChange}
                                 placeholder={t('Enter new key to update')}
@@ -1730,6 +1731,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Epay secret key')}</FormLabel>
                         <FormControl>
                           <SecretInput
+                            optionKey='EpayKey'
                             value={field.value ?? ''}
                             onChange={field.onChange}
                             placeholder={t('Enter new key to update')}
@@ -1801,6 +1803,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('API secret')}</FormLabel>
                         <FormControl>
                           <SecretInput
+                            optionKey='StripeApiSecret'
                             value={field.value ?? ''}
                             onChange={field.onChange}
                             placeholder={t('sk_xxx or rk_xxx')}
@@ -1822,6 +1825,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Webhook secret')}</FormLabel>
                         <FormControl>
                           <SecretInput
+                            optionKey='StripeWebhookSecret'
                             value={field.value ?? ''}
                             onChange={field.onChange}
                             placeholder={t('whsec_xxx')}
@@ -1972,6 +1976,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('API Key')}</FormLabel>
                         <FormControl>
                           <SecretInput
+                            optionKey='CreemApiKey'
                             value={field.value ?? ''}
                             onChange={field.onChange}
                             placeholder={t('Enter Creem API key')}
@@ -1993,6 +1998,7 @@ export function PaymentSettingsSection({
                         <FormLabel>{t('Webhook Secret')}</FormLabel>
                         <FormControl>
                           <SecretInput
+                            optionKey='CreemWebhookSecret'
                             value={field.value ?? ''}
                             onChange={field.onChange}
                             placeholder={t('Enter webhook secret')}

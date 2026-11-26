@@ -172,11 +172,43 @@ func readCachedLLMConfig() map[string]any {
 	return m
 }
 
+func isCustomerServiceSecretField(key string) bool {
+	lower := strings.ToLower(key)
+	for _, suffix := range []string{"api_key", "secret", "token", "password"} {
+		if strings.HasSuffix(lower, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
+// maskCustomerServiceLLMConfig 只脱敏下发视图，缓存仍保留明文用于验证后揭示
+// 以及保存时回填未修改的字段。
+func maskCustomerServiceLLMConfig(llm map[string]any) map[string]any {
+	if llm == nil {
+		return nil
+	}
+	masked := make(map[string]any, len(llm))
+	for key, value := range llm {
+		text, ok := value.(string)
+		if ok && text != "" && isCustomerServiceSecretField(key) {
+			if common.IsMaskedSecret(text) {
+				masked[key] = text
+			} else {
+				masked[key] = common.MaskSecretValue(text)
+			}
+			continue
+		}
+		masked[key] = value
+	}
+	return masked
+}
+
 // GetCustomerServiceLLMConfig 拉取 uter-cs 当前的大模型配置（llm 段）下发前端。
 //
 // 只回传 llm 段本身（provider/base/model/.../api_key 等），不回传整份 deploy 配置，
-// 前端也不需要其它段。api_key 等敏感字段原样下发——本接口本身受 AdminAuth 保护，
-// 调用者已是 Uter 管理员，与在 uter-cs 后台看配置同级。
+// 前端也不需要其它段。api_key 等敏感字段只下发掩码；完整值必须走统一的验证揭示
+// 接口，证明绑定到 CustomerServiceLLMConfig.<字段名>。
 //
 // 容错优先级：
 //  1. 令牌已配置且实时拉取成功 → 返回实时配置（fromCache:false），并刷新缓存；
@@ -199,7 +231,7 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{
 					"success": true,
 					"data": gin.H{
-						"llm":       cached,
+						"llm":       maskCustomerServiceLLMConfig(cached),
 						"fromCache": true,
 						"stale":     true,
 						"message":   "无法连接智能客服，展示上次缓存的配置：" + err.Error(),
@@ -218,7 +250,7 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{
 					"success": true,
 					"data": gin.H{
-						"llm":       cached,
+						"llm":       maskCustomerServiceLLMConfig(cached),
 						"fromCache": true,
 						"stale":     true,
 						"message":   proxyErrorMsg("读取配置", status, string(raw)),
@@ -246,7 +278,7 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 				c.JSON(http.StatusOK, gin.H{
 					"success": true,
 					"data": gin.H{
-						"llm":       cached,
+						"llm":       maskCustomerServiceLLMConfig(cached),
 						"fromCache": true,
 						"stale":     true,
 						"message":   "智能客服返回的配置无法解析，展示上次缓存：" + err.Error(),
@@ -267,7 +299,10 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 		cacheLLMConfig(parsed.Config.LLM)
 		c.JSON(http.StatusOK, gin.H{
 			"success": true,
-			"data":    gin.H{"llm": parsed.Config.LLM, "fromCache": false},
+			"data": gin.H{
+				"llm":       maskCustomerServiceLLMConfig(parsed.Config.LLM),
+				"fromCache": false,
+			},
 		})
 		return
 	}
@@ -287,15 +322,18 @@ func GetCustomerServiceLLMConfig(c *gin.Context) {
 	})
 }
 
-// GetCustomerServiceAdminToken 仅回显当前存储的 uter-cs 管理员令牌，供前端以「与密钥
-// 一致的掩码规则」展示在输入框里。接口本身受 AdminAuth 保护，仅管理员可见。
+// GetCustomerServiceAdminToken 返回当前存储的 uter-cs 管理员令牌掩码。
 //
-// 安全边界：令牌只返回给已登录的 Uter 管理员（与同页 API Key 的展示等级一致），绝不
-// 出现在 /api/status 等对外接口；GET /api/option/ 也已将其排除在批量选项之外。
+// 安全边界：明文不进入浏览器。需要核对完整值时，前端走统一的
+// system.secret.read 验证揭示接口，证明绑定到 CustomerServiceAdminToken；
+// 接口本身受 AdminAuth 保护。
 func GetCustomerServiceAdminToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"data":    gin.H{"token": common.CustomerServiceAdminToken},
+		"data": gin.H{
+			"token":      common.MaskSecretValue(common.CustomerServiceAdminToken),
+			"configured": strings.TrimSpace(common.CustomerServiceAdminToken) != "",
+		},
 	})
 }
 
@@ -329,6 +367,21 @@ func UpdateCustomerServiceLLMConfig(c *gin.Context) {
 			"message": "请求体必须是 JSON 对象：" + err.Error(),
 		})
 		return
+	}
+	// 掩码串表示「未修改」：用缓存中的明文回填，避免一次普通保存把上游密钥
+	// 覆盖成星号。缓存不存在时剔除该字段，同样不能把掩码写回上游。
+	if cached := readCachedLLMConfig(); cached != nil {
+		for key, value := range payload {
+			text, ok := value.(string)
+			if !ok || !isCustomerServiceSecretField(key) || !common.IsMaskedSecret(text) {
+				continue
+			}
+			if original, found := cached[key]; found {
+				payload[key] = original
+			} else {
+				delete(payload, key)
+			}
+		}
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {

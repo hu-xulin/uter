@@ -40,6 +40,22 @@ export function maskSecret(value: string): string {
 }
 
 /**
+ * 多行密钥掩码：一行一个 key 时逐行应用 {@link maskSecret}，保留行结构。
+ *
+ * 与后端 common.MaskMultilineSecret 等价。API Key 支持一行一个 key，若在
+ * 「保存后重新展示」时用单值 maskSecret，整段换行会被压成一行掩码，行数与
+ * 每个 key 的前后 4 位核对信息全部丢失。逐行掩码让展示与创建渠道时一致。
+ */
+export function maskMultilineSecret(value: string): string {
+  if (!value) return ''
+  if (!value.includes('\n')) return maskSecret(value)
+  return value
+    .split('\n')
+    .map((line) => maskSecret(line.replace(/\r$/, '')))
+    .join('\n')
+}
+
+/**
  * 判断一个值是否是掩码串（含 `*`），即「后端下发的展示值」而不是真实密钥。
  *
  * 用途：保存前拦截。若把掩码串当新值提交，真实密钥会被 `abcd****wxyz`

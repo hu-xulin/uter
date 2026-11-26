@@ -105,3 +105,44 @@ func TestSecretOptionKeySuffixFallbackExhaustive(t *testing.T) {
 		}
 	}
 }
+
+// TestDeploymentRegistrySecretKey 守卫部署镜像仓库凭据的键约定：
+// 必须以 secret 后缀被掩码、必须从 option 列表剔除、只能解析出合法部署 ID。
+func TestDeploymentRegistrySecretKey(t *testing.T) {
+	validID := "dep-abc123"
+	key := DeploymentRegistrySecretOptionKey(validID)
+
+	if !IsSecretOptionKey(key) {
+		t.Errorf("IsSecretOptionKey(%q) = false，部署凭据会在 GET /api/option/ 明文下发", key)
+	}
+	if !IsExcludedOptionKey(key) {
+		t.Errorf("IsExcludedOptionKey(%q) = false，部署凭据会出现在系统设置选项列表", key)
+	}
+	if !IsSystemSecretReadKey(key) {
+		t.Errorf("IsSystemSecretReadKey(%q) = false，部署凭据无法验证后揭示", key)
+	}
+
+	gotID, ok := ParseDeploymentRegistrySecretKey(key)
+	if !ok || gotID != validID {
+		t.Errorf("ParseDeploymentRegistrySecretKey(%q) = (%q, %v), want (%q, true)", key, gotID, ok, validID)
+	}
+
+	// 非法 ID：空、含路径分隔符、含点，都不能伪装成凭据键。
+	for _, bad := range []string{
+		DeploymentRegistrySecretOptionKey(""),
+		DeploymentRegistrySecretOptionKey("a/b"),
+		DeploymentRegistrySecretOptionKey("a.b"),
+		"deployment.dep.other_secret",
+	} {
+		if _, ok := ParseDeploymentRegistrySecretKey(bad); ok {
+			t.Errorf("ParseDeploymentRegistrySecretKey(%q) = true, want false", bad)
+		}
+		if IsSystemSecretReadKey(bad) {
+			t.Errorf("IsSystemSecretReadKey(%q) = true, 非法键不应可揭示", bad)
+		}
+	}
+
+	if DeploymentRegistrySecretOptionKey(validID) != "deployment."+validID+".registry_secret" {
+		t.Errorf("DeploymentRegistrySecretOptionKey 格式不符合约定")
+	}
+}

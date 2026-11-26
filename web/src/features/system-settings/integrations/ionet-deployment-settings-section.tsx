@@ -35,9 +35,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { testDeploymentConnectionWithKey } from '@/features/models/api'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { isMaskedSecret, maskSecret } from '@/lib/secret'
 
 import {
@@ -185,6 +185,7 @@ export function IoNetDeploymentSettingsSection({
                     <div className='flex gap-2'>
                       <FormControl>
                         <SecretInput
+                          optionKey='IONetApiKey'
                           value={field.value ?? ''}
                           onChange={field.onChange}
                           placeholder={t('Enter API Key')}

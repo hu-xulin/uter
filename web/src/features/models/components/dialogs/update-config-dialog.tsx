@@ -27,7 +27,6 @@ import { z } from 'zod'
 
 import { Dialog } from '@/components/dialog'
 import { JsonCodeEditor } from '@/components/json-code-editor'
-import { PasswordInput } from '@/components/password-input'
 import { Button } from '@/components/ui/button'
 import {
   Collapsible,
@@ -44,9 +43,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { handleServerError } from '@/lib/handle-server-error'
+import { isMaskedSecret } from '@/lib/secret'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getDeployment, updateDeployment } from '../../api'
+import { VerifiedDeploymentSecretInput } from '../verified-deployment-secret-input'
 import { deploymentsQueryKeys } from '../../lib'
 
 const schema = z.object({
@@ -150,7 +151,10 @@ export function UpdateConfigDialog({
       args: '',
       command: '',
       registry_username: '',
-      registry_secret: '',
+      registry_secret:
+        typeof details.registry_secret_masked === 'string'
+          ? details.registry_secret_masked
+          : '',
       env_json: Object.keys(envVars).length
         ? JSON.stringify(envVars, null, 2)
         : '',
@@ -191,7 +195,11 @@ export function UpdateConfigDialog({
             ? values.traffic_port
             : undefined,
         registry_username: values.registry_username?.trim() || undefined,
-        registry_secret: values.registry_secret?.trim() || undefined,
+        // 掩码串表示管理员没有修改凭据，后端会保留库中原值。
+        ...(values.registry_secret?.trim() &&
+        !isMaskedSecret(values.registry_secret.trim())
+          ? { registry_secret: values.registry_secret.trim() }
+          : {}),
         command: values.command?.trim() || undefined,
         ...(entrypoint?.length ? { entrypoint } : {}),
         ...(args?.length ? { args } : {}),
@@ -377,7 +385,11 @@ export function UpdateConfigDialog({
                         <FormItem>
                           <FormLabel>{t('Registry secret')}</FormLabel>
                           <FormControl>
-                            <PasswordInput autoComplete='off' {...field} />
+                            <VerifiedDeploymentSecretInput
+                              autoComplete='off'
+                              deploymentId={deploymentId}
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

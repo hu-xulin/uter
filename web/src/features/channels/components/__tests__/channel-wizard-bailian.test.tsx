@@ -87,6 +87,22 @@ test('百炼创建向导展示六步，Fetch models 显示百炼专属面板', a
   expect(screen.queryByRole('button', { name: /Sync model information/ })).toBeNull()
 })
 
+test('百炼创建态显示凭证分组、密钥形式与逐行掩码', async () => {
+  const user = userEvent.setup()
+  await pickBailian(user)
+
+  expect(
+    await screen.findByText(
+      /Credential group: Uter Bailian\. Key format: multi-line, one key per line; a single key occupies one line\./
+    )
+  ).toBeVisible()
+  const hint = await screen.findByTestId('bailian-saved-key-hint')
+  expect(hint.textContent).toContain(
+    'Leave empty to use the Alibaba Bailian key saved in System Settings'
+  )
+  expect(hint.textContent).toContain('1. bailian-key****one')
+})
+
 test('百炼 Fetch prices 步骤展示官方目录来源文案', async () => {
   const user = userEvent.setup()
   await pickBailian(user)

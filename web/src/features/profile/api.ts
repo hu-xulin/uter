@@ -73,6 +73,29 @@ export function changeAccountPassword(
   )
 }
 
+export type RevealUserSecretResponse = {
+  success: boolean
+  message: string
+  data?: { key: string; value: string }
+}
+
+/** 完成二次验证后取回单个已保存的通知凭据明文。 */
+export async function revealUserSecret(
+  secretKey: string,
+  proofToken: string,
+  signal?: AbortSignal
+) {
+  const res = await api.post<RevealUserSecretResponse>(
+    `/api/user/self/secret/${encodeURIComponent(secretKey)}/reveal`,
+    undefined,
+    {
+      headers: { 'X-Security-Proof': proofToken },
+      signal,
+    }
+  )
+  return res.data
+}
+
 /**
  * Update user settings
  */

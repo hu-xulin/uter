@@ -19,7 +19,10 @@ For commercial licensing, please contact support@uter.ai
 
 package common
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 // 明确登记为「需要掩码」的选项键。
 //
@@ -191,6 +194,110 @@ var excludedOptionKeys = map[string]struct{}{
 
 // IsExcludedOptionKey 判断某个 option key 是否应整条从选项列表中剔除。
 func IsExcludedOptionKey(key string) bool {
-	_, ok := excludedOptionKeys[key]
+	if _, ok := excludedOptionKeys[key]; ok {
+		return true
+	}
+	// 部署的镜像仓库凭据只在部署详情接口按 ID 展示，不属于系统设置选项，
+	// 不能出现在 GET /api/option/ 列表中（否则会连部署 ID 一起暴露）。
+	// 整个 deployment. 前缀一律剔除，包括不合法的伪装键。
+	if strings.HasPrefix(key, deploymentRegistrySecretKeyPrefix) {
+		return true
+	}
+	return false
+}
+
+// IsRevealableSecretOptionKey 判断某个 option key 是否允许通过验证后揭示接口
+// 返回明文。聚合体（如 CustomerServiceLLMConfig、SMTPAccounts）没有单一
+// 可核对的字段，整条剔除后也不能绕过剔除规则重新取回。
+func IsRevealableSecretOptionKey(key string) bool {
+	return IsSecretOptionKey(key) && !IsExcludedOptionKey(key)
+}
+
+const smtpAccountTokenKeyPrefix = "SMTPAccounts."
+const smtpAccountTokenKeySuffix = ".token"
+const customerServiceConfigKeyPrefix = "CustomerServiceLLMConfig."
+const deploymentRegistrySecretKeyPrefix = "deployment."
+const deploymentRegistrySecretKeySuffix = ".registry_secret"
+
+// DeploymentRegistrySecretOptionKey 返回某个部署的镜像仓库凭据在 options 表中的键。
+// 部署详情由上游 ionet 托管，上游查询不回传该凭据；Uter 在创建/更新时
+// 按部署 ID 单独保存明文，才能展示掩码并在验证后揭示。
+func DeploymentRegistrySecretOptionKey(deploymentID string) string {
+	return deploymentRegistrySecretKeyPrefix + deploymentID + deploymentRegistrySecretKeySuffix
+}
+
+// IsValidDeploymentID 校验部署 ID 能否安全用作凭据 option key 的一段。
+// 部署 ID 来自上游，禁止包含路径分隔符与点，避免构造出伪装成其它凭据键的键。
+func IsValidDeploymentID(id string) bool {
+	return id != "" && !strings.ContainsAny(id, "/\\.")
+}
+
+// ParseDeploymentRegistrySecretKey 解析部署镜像仓库凭据键，返回部署 ID。
+// 只接受非空、不含路径分隔符的部署 ID，避免把任意 option key 伪装成凭据键揭示。
+func ParseDeploymentRegistrySecretKey(key string) (string, bool) {
+	if !strings.HasPrefix(key, deploymentRegistrySecretKeyPrefix) || !strings.HasSuffix(key, deploymentRegistrySecretKeySuffix) {
+		return "", false
+	}
+	id := strings.TrimSuffix(strings.TrimPrefix(key, deploymentRegistrySecretKeyPrefix), deploymentRegistrySecretKeySuffix)
+	if !IsValidDeploymentID(id) {
+		return "", false
+	}
+	return id, true
+}
+
+// ParseSMTPAccountTokenKey 解析聚合配置中的单个 SMTP 账号密码键。
+// SMTPAccounts 本体整条剔除，但单个账号密码仍需要「验证后揭示」，否则
+// 管理员只能看到掩码却无法核对已保存的凭据。
+func ParseSMTPAccountTokenKey(key string) (int, bool) {
+	if !strings.HasPrefix(key, smtpAccountTokenKeyPrefix) || !strings.HasSuffix(key, smtpAccountTokenKeySuffix) {
+		return 0, false
+	}
+	middle := strings.TrimSuffix(strings.TrimPrefix(key, smtpAccountTokenKeyPrefix), smtpAccountTokenKeySuffix)
+	index, err := strconv.Atoi(middle)
+	if err != nil || index < 0 {
+		return 0, false
+	}
+	return index, true
+}
+
+// ParseCustomerServiceConfigSecretKey 解析智能客服大模型配置中的单个敏感字段。
+// 只有明确属于凭据语义的字段名才允许揭示，避免把普通配置项一并暴露。
+func ParseCustomerServiceConfigSecretKey(key string) (string, bool) {
+	if !strings.HasPrefix(key, customerServiceConfigKeyPrefix) {
+		return "", false
+	}
+	field := strings.TrimPrefix(key, customerServiceConfigKeyPrefix)
+	if field == "" || strings.ContainsAny(field, "/\\") {
+		return "", false
+	}
+	lower := strings.ToLower(field)
+	for _, suffix := range []string{"api_key", "secret", "token", "password"} {
+		if strings.HasSuffix(lower, suffix) {
+			return field, true
+		}
+	}
+	return "", false
+}
+
+// IsSystemSecretReadKey 判断验证揭示接口的目标是否合法：单个 option 密钥、
+// SMTPAccounts 聚合体中的一个账号密码项、智能客服配置中的一个敏感字段，
+// 或某个部署的镜像仓库凭据。
+func IsSystemSecretReadKey(key string) bool {
+	// deployment. 前缀的键必须严格匹配单个部署的凭据键。通用后缀规则会把
+	// deployment.x.y_secret 之类伪装键也判为密钥，揭示接口必须只放行合法键。
+	if strings.HasPrefix(key, deploymentRegistrySecretKeyPrefix) {
+		_, ok := ParseDeploymentRegistrySecretKey(key)
+		return ok
+	}
+	if IsRevealableSecretOptionKey(key) {
+		return true
+	}
+	if _, ok := ParseSMTPAccountTokenKey(key); ok {
+		return true
+	}
+	if _, ok := ParseDeploymentRegistrySecretKey(key); ok {
+		return true
+	}
+	_, ok := ParseCustomerServiceConfigSecretKey(key)
 	return ok
 }

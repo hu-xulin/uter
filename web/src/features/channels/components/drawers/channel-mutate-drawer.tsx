@@ -113,6 +113,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useTheme } from '@/context/theme-provider'
 import { SecureVerificationDialog } from '@/features/auth/secure-verification'
 import { ChannelKeyDisplay } from '@/features/channels/components/channel-key-display'
+import { useSystemOptions } from '@/features/system-settings/hooks/use-system-options'
 import { useOptionalNumberField } from '@/features/system-settings/utils/numeric-field'
 import { PluginIcon } from '@/features/task-plugins/components/plugin-icon'
 import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard'
@@ -164,6 +165,7 @@ import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   CHANNEL_STATUS_LABELS,
   CHANNEL_TYPES,
+  CHANNEL_TYPE_ALI,
   CHANNEL_TYPE_NEW_API,
   CHANNEL_TYPE_UTER_ROUTE,
   CHANNEL_TYPE_OLLAMA,
@@ -236,6 +238,10 @@ import {
   collectInvalidStatusCodeEntries,
   collectNewDisallowedStatusCodeRedirects,
 } from '../../lib/status-code-risk-guard'
+import {
+  readChannelProviderKeyMask,
+  readSubscriptionKeyMask,
+} from '../../lib/subscription-credential-mask'
 import {
   assessBaseUrlTrust,
   nextTaskPluginBaseUrl,
@@ -578,6 +584,31 @@ export function ChannelMutateDrawer({
     providerTarget?.kind === 'uterapi' && !isEditing
   const [uterapiGroupName, setUterapiGroupName] = useState('')
   const [uterapiKeysText, setUterapiKeysText] = useState('')
+  const isBailianTarget =
+    providerTarget?.kind === 'builtin' &&
+    providerTarget.type === CHANNEL_TYPE_ALI
+  const isUterRouteCredentialTarget = providerTarget?.kind === 'uterroute'
+  const isProviderManagedCredentialTarget =
+    providerTarget?.kind === 'uterapi' ||
+    isBailianTarget ||
+    isUterRouteCredentialTarget
+  // 系统设置里三类托管渠道已存 key 的逐行掩码（浏览器拿不到明文）。用于在
+  // 新建时提示「留空将使用系统设置中的 key」，明文由服务端按组补齐。
+  const systemOptionsQuery = useSystemOptions(
+    open && !isEditing && isProviderManagedCredentialTarget
+  )
+  const subscriptionKeyMask = useMemo(
+    () => readSubscriptionKeyMask(systemOptionsQuery.data?.data),
+    [systemOptionsQuery.data]
+  )
+  const featuredKeyMask = useMemo(
+    () => readChannelProviderKeyMask(systemOptionsQuery.data?.data, 'featured'),
+    [systemOptionsQuery.data]
+  )
+  const bailianKeyMask = useMemo(
+    () => readChannelProviderKeyMask(systemOptionsQuery.data?.data, 'bailian'),
+    [systemOptionsQuery.data]
+  )
   const [choosingProvider, setChoosingProvider] = useState(true)
   const [pluginSettingsOpen, setPluginSettingsOpen] = useState(false)
   const [configurationSection, setConfigurationSection] =
@@ -695,7 +726,10 @@ export function ChannelMutateDrawer({
   // 后端下发的逐行脱敏密钥：默认即可展示星号，无需二次验证（与 API 密钥列表一致）。
   const maskedKey = channelData?.data?.masked_key ?? null
   const maskedKeyLines = maskedKey
-    ? maskedKey.split('\n').map((line) => line.trim()).filter(Boolean)
+    ? maskedKey
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean)
     : []
 
   // 后端脱敏后只在 settings 里保留 has_password 标记，用它显示"已存密码"星号。
@@ -792,8 +826,11 @@ export function ChannelMutateDrawer({
       ),
     [uterapiGroupsQuery.data]
   )
-  const selectedUterapiGroupKey =
-    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)?.group ?? ''
+  const selectedUterapiGroup =
+    uterapiGroupSlots.find((slot) => slot.name === uterapiGroupName)
+  const selectedUterapiGroupKey = selectedUterapiGroup?.group ?? ''
+  const selectedUterapiGroupLabel =
+    selectedUterapiGroup?.label ?? t('Choose a group')
   const isUterRouteTarget = providerTarget?.kind === 'uterroute'
   const isBailianProvider = currentType === 17
   const uterRouteEndpointQuery = useQuery({
@@ -2408,7 +2445,9 @@ export function ChannelMutateDrawer({
           (candidate) => candidate.name === uterapiGroupName
         )
         const keys = splitKeyLines(uterapiKeysText)
-        if (!slot || keys.length === 0) {
+        // keys 为空是合法的：服务端会用系统设置里的优特订阅 key 补齐（明文
+        // 不下发浏览器）。只有两边都没有 key 时才阻止提交。
+        if (!slot || (keys.length === 0 && subscriptionKeyMask.length === 0)) {
           toast.error(t('Choose a group and enter at least one API key'))
           setConfigurationSection('connection')
           return
@@ -2426,7 +2465,9 @@ export function ChannelMutateDrawer({
           // config opts out of the global business-error toast. Surface it here
           // so a zero-create result is never reported as success.
           if (response.success === false || created === 0) {
-            toast.error(response.message || t('Failed to create the Uter.api channel'))
+            toast.error(
+              response.message || t('Failed to create the Uter.api channel')
+            )
             return
           }
           const pricingIssues = (response.data?.channels ?? []).filter(
@@ -2623,6 +2664,7 @@ export function ChannelMutateDrawer({
       pricingRows,
       uterapiGroupName,
       uterapiKeysText,
+      subscriptionKeyMask,
       uterapiGroupSlots,
       openAdvancedBlock,
       t,
@@ -5649,6 +5691,12 @@ export function ChannelMutateDrawer({
                   </div>
                   <div className='space-y-2'>
                     <Label>{t('API keys')}</Label>
+                    <p className='text-muted-foreground text-sm'>
+                      {t(
+                        'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
+                        { group: selectedUterapiGroupLabel }
+                      )}
+                    </p>
                     <Textarea
                       aria-label={t('API keys')}
                       rows={3}
@@ -5668,6 +5716,14 @@ export function ChannelMutateDrawer({
                       }}
                       placeholder={t('One key per line')}
                     />
+                    {renderManagedKeyHint(
+                      t(
+                        'Selected group: {{group}}. Leave empty to use the saved Uter.api subscription keys below.',
+                        { group: selectedUterapiGroupLabel }
+                      ),
+                      subscriptionKeyMask,
+                      'uterapi-subscription-key-hint'
+                    )}
                   </div>
                 </div>
               )}
@@ -5679,6 +5735,14 @@ export function ChannelMutateDrawer({
                   name='key'
                   render={({ field }) => {
                     let keyPlaceholder = t(getKeyPromptForType(currentType))
+                    if (
+                      !isEditing &&
+                      (isUterRouteCredentialTarget || isBailianTarget)
+                    ) {
+                      keyPlaceholder = t(
+                        'Enter API key, one per line, or leave empty to use the saved key'
+                      )
+                    }
                     if (isEditing) {
                       // 用后端下发的逐行掩码串作为占位提示：编辑态即可看到
                       // 已存密钥的星号形态（与 API 密钥一致），但 value 仍为空，
@@ -5750,6 +5814,38 @@ export function ChannelMutateDrawer({
                         <FormDescription>
                           <span className='flex flex-col gap-2'>
                             <span>{keyDescription}</span>
+                            {!isEditing && isUterRouteCredentialTarget && (
+                              <span className='text-muted-foreground block text-sm'>
+                                {t(
+                                  'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
+                                  { group: t('Uter Select') }
+                                )}
+                              </span>
+                            )}
+                            {!isEditing && isBailianTarget && (
+                              <span className='text-muted-foreground block text-sm'>
+                                {t(
+                                  'Credential group: {{group}}. Key format: multi-line, one key per line; a single key occupies one line.',
+                                  { group: t('Uter Bailian') }
+                                )}
+                              </span>
+                            )}
+                            {!isEditing && isUterRouteCredentialTarget &&
+                              renderManagedKeyHint(
+                                t(
+                                  'Leave empty to use the Uter Route key saved in System Settings'
+                                ),
+                                featuredKeyMask,
+                                'uterroute-saved-key-hint'
+                              )}
+                            {!isEditing && isBailianTarget &&
+                              renderManagedKeyHint(
+                                t(
+                                  'Leave empty to use the Alibaba Bailian key saved in System Settings'
+                                ),
+                                bailianKeyMask,
+                                'bailian-saved-key-hint'
+                              )}
                             {!isEditing && isBatchMode && (
                               <Button
                                 type='button'
@@ -6057,6 +6153,27 @@ export function ChannelMutateDrawer({
       }
     }
     return undefined
+  }
+
+  function renderManagedKeyHint(
+    hintText: string,
+    masks: string[],
+    testId: string
+  ): ReactNode {
+    if (masks.length === 0) return null
+    return (
+      <span
+        className='text-muted-foreground block text-sm'
+        data-testid={testId}
+      >
+        {hintText}
+        <span className='mt-1 block font-mono whitespace-pre-line'>
+          {masks
+            .map((mask, index) => `${index + 1}. ${mask}`)
+            .join('\n')}
+        </span>
+      </span>
+    )
   }
 
   const pricingFetchSection = (

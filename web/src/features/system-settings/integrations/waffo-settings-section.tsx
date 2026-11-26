@@ -28,10 +28,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { SecretFileInput } from '@/components/ui/secret-file-input'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Separator } from '@/components/ui/separator'
 import { Heading } from '@/design-system'
+import {
+  VerifiedSecretFileInput as SecretFileInput,
+  VerifiedSecretInput as SecretInput,
+} from '@/features/system-settings/components/verified-secret-input'
 
 import { SettingsSwitchField } from '../components/settings-form-layout'
 
@@ -181,6 +183,7 @@ export function WaffoSettingsSection({
           <div className='grid gap-1.5'>
             <Label>{t('API Key (Production)')}</Label>
             <SecretInput
+              optionKey='WaffoApiKey'
               value={values.WaffoApiKey}
               onChange={(v) => onValueChange('WaffoApiKey', v)}
             />
@@ -188,6 +191,7 @@ export function WaffoSettingsSection({
           <div className='grid gap-1.5'>
             <Label>{t('API Key (Sandbox)')}</Label>
             <SecretInput
+              optionKey='WaffoSandboxApiKey'
               value={values.WaffoSandboxApiKey}
               onChange={(v) => onValueChange('WaffoSandboxApiKey', v)}
             />

@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
 import {
@@ -214,6 +214,35 @@ describe('UDS8 结构与数据组件契约', () => {
     expect(input.readOnly).toBe(true)
     expect(input.value).toBe('abcd****wxyz')
     expect(input.type).toBe('text')
+  })
+
+  test('SecretInput 只在提供验证揭示入口时显示眼睛并展示验证后的明文', () => {
+    const onReveal = vi.fn()
+    const { rerender } = render(
+      <SecretInput value='abcd****wxyz' onChange={vi.fn()} />
+    )
+    expect(screen.queryByRole('button')).toBeNull()
+
+    rerender(
+      <SecretInput
+        value='abcd****wxyz'
+        onChange={vi.fn()}
+        onReveal={onReveal}
+      />
+    )
+    fireEvent.click(screen.getByRole('button'))
+    expect(onReveal).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <SecretInput
+        value='abcd****wxyz'
+        onChange={vi.fn()}
+        onReveal={onReveal}
+        revealedValue='full-secret-value'
+      />
+    )
+    const input = document.querySelector('input') as HTMLInputElement
+    expect(input.value).toBe('full-secret-value')
   })
 
   test('SecretTextarea 展示态只读并呈现后端掩码串', () => {

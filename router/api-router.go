@@ -169,6 +169,7 @@ func SetApiRouter(router *gin.Engine) {
 				selfRoute.POST("/waffo-pancake/pay", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.RequestWaffoPancakePay)
 				selfRoute.POST("/aff_transfer", middleware.UserCriticalRateLimit("aff-transfer"), controller.TransferAffQuota)
 				selfRoute.PUT("/setting", controller.UpdateUserSetting)
+				selfRoute.POST("/secret/:key/reveal", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.UserSecretSecureVerificationRequired(), controller.RevealUserSecret)
 
 				// 2FA routes
 				selfRoute.GET("/2fa/status", controller.Get2FAStatus)
@@ -302,6 +303,7 @@ func SetApiRouter(router *gin.Engine) {
 			optionRoute.POST("/model_pricing/preview", controller.PreviewModelPricing)
 			optionRoute.POST("/payment_compliance", controller.ConfirmPaymentCompliance)
 			optionRoute.POST("/channel-provider/:key/reveal", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.ChannelProviderCredentialSecureVerificationRequired(), controller.RevealChannelProviderCredential)
+			optionRoute.POST("/:key/secret/reveal", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.SystemSecretSecureVerificationRequired(), controller.RevealSystemSecret)
 			optionRoute.GET("/channel_affinity_cache", controller.GetChannelAffinityCacheStats)
 			optionRoute.DELETE("/channel_affinity_cache", controller.ClearChannelAffinityCache)
 			optionRoute.POST("/rest_model_ratio", controller.ResetModelRatio)
@@ -532,6 +534,7 @@ func SetApiRouter(router *gin.Engine) {
 			deploymentsRoute.POST("/", controller.CreateDeployment)
 
 			deploymentsRoute.GET("/:id", controller.GetDeployment)
+			deploymentsRoute.POST("/:id/registry-secret/reveal", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.DeploymentRegistrySecretSecureVerificationRequired(), controller.RevealDeploymentRegistrySecret)
 			deploymentsRoute.GET("/:id/logs", controller.GetDeploymentLogs)
 			deploymentsRoute.GET("/:id/containers", controller.ListDeploymentContainers)
 			deploymentsRoute.GET("/:id/containers/:container_id", controller.GetContainerDetails)

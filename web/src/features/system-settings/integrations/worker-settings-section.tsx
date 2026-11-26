@@ -31,8 +31,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { isMaskedSecret, maskSecret } from '@/lib/secret'
 
 import {
@@ -158,6 +158,7 @@ export function WorkerSettingsSection({
                 <FormLabel>{t('Worker Access Key')}</FormLabel>
                 <FormControl>
                   <SecretInput
+                    optionKey='WorkerValidKey'
                     value={String(field.value ?? '')}
                     onChange={field.onChange}
                     placeholder={t('Enter new key to update')}

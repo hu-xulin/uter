@@ -85,12 +85,23 @@ func CreateUterAPIChannels(c *gin.Context) {
 		common.ApiErrorMsg(c, "Uter.api upstream endpoint is not configured")
 		return
 	}
+	// 优特订阅（Uter.api）也复用系统设置里的订阅 API Key：浏览器只拿到掩码，
+	// 无法把明文填进输入框，因此由服务端在 slot 没带 key 时用明文补齐。与通用
+	// AddChannel 的 applyChannelProviderCredentials 同一真源（subscription 组），
+	// 操作者显式填的 key 始终优先。多行 key 按行拆分，一行一个。
+	fallbackKeys := normalizeUterAPIKeys(strings.Split(
+		service.SubscriptionChannelProviderCredentials().APIKey, "\n",
+	))
+
 	results := make([]gin.H, 0, len(req.Slots))
 	created := 0
 	lastErr := ""
 	for _, slot := range req.Slots {
 		name := strings.TrimSpace(slot.Name)
 		keys := normalizeUterAPIKeys(slot.Keys)
+		if len(keys) == 0 {
+			keys = fallbackKeys
+		}
 		if name == "" || len(keys) == 0 {
 			continue
 		}

@@ -49,6 +49,10 @@ export const CHANNEL_TYPE_TASK_PLUGIN = 61
 // Standard channel numbers adopt new-api's numbering as-is (OLLAMA/SUB2API/
 // VLLM/SGLang).
 export const CHANNEL_TYPE_OLLAMA = 4
+// Alibaba Bailian (type 17) has a dedicated configuration panel and official
+// catalog sync, so the picker treats it as a custom channel rather than a
+// plain built-in provider.
+export const CHANNEL_TYPE_ALI = 17
 export const CHANNEL_TYPE_SUB2API = 59
 export const CHANNEL_TYPE_VLLM = 62
 export const CHANNEL_TYPE_SGLANG = 63

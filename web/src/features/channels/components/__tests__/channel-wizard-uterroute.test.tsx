@@ -79,6 +79,23 @@ test('Uter Route 创建向导的六步中，Fetch models 显示专属面板而�
   expect(screen.queryByRole('button', { name: /Sync model information/ })).toBeNull()
 })
 
+test('Uter Route 创建态显示凭证分组、密钥形式与逐行掩码', async () => {
+  const user = userEvent.setup()
+  await pickUterRoute(user)
+
+  expect(
+    await screen.findByText(
+      /Credential group: Uter Select\. Key format: multi-line, one key per line; a single key occupies one line\./
+    )
+  ).toBeVisible()
+  const hint = await screen.findByTestId('uterroute-saved-key-hint')
+  expect(hint.textContent).toContain(
+    'Leave empty to use the Uter Route key saved in System Settings'
+  )
+  expect(hint.textContent).toContain('1. route-key****one')
+  expect(hint.textContent).toContain('2. route-key****two')
+})
+
 test('Uter Route Fetch prices 步骤展示定价目录来源文案', async () => {
   const user = userEvent.setup()
   await pickUterRoute(user)

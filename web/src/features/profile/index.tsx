@@ -26,6 +26,7 @@ import { PersonalPageLayout } from './components/personal-page-layout'
 import { ProfileSettingsCard } from './components/profile-settings-card'
 import { SidebarModulesCard } from './components/sidebar-modules-card'
 import { useProfile } from './hooks'
+import { UserSecretDisclosureProvider } from './hooks/use-user-secret-disclosure'
 
 export function Profile() {
   const { t } = useTranslation()
@@ -39,23 +40,25 @@ export function Profile() {
   const quotaRemindThreshold = status?.quota_remind_threshold ?? 0
 
   return (
-    <PersonalPageLayout
-      title={t('Settings')}
-      profile={profile}
-      loading={loading}
-    >
-      <ProfileSettingsCard
+    <UserSecretDisclosureProvider>
+      <PersonalPageLayout
+        title={t('Settings')}
         profile={profile}
         loading={loading}
-        onProfileUpdate={refreshProfile}
-        quotaRemindEnabled={quotaRemindEnabled}
-        quotaRemindThreshold={quotaRemindThreshold}
-      />
-      <LanguagePreferencesCard
-        profile={profile}
-        onProfileUpdate={refreshProfile}
-      />
-      {canConfigureSidebar && <SidebarModulesCard />}
-    </PersonalPageLayout>
+      >
+        <ProfileSettingsCard
+          profile={profile}
+          loading={loading}
+          onProfileUpdate={refreshProfile}
+          quotaRemindEnabled={quotaRemindEnabled}
+          quotaRemindThreshold={quotaRemindThreshold}
+        />
+        <LanguagePreferencesCard
+          profile={profile}
+          onProfileUpdate={refreshProfile}
+        />
+        {canConfigureSidebar && <SidebarModulesCard />}
+      </PersonalPageLayout>
+    </UserSecretDisclosureProvider>
   )
 }

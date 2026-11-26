@@ -18,7 +18,7 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
-import { isMaskedSecret, maskSecret } from './secret'
+import { isMaskedSecret, maskMultilineSecret, maskSecret } from './secret'
 
 /**
  * 掩码规则必须与后端 common.MaskSecretValue 完全一致，
@@ -87,5 +87,43 @@ describe('isMaskedSecret', () => {
     expect(isMaskedSecret(maskSecret('sk-real-secret-key-value-123456'))).toBe(
       true
     )
+  })
+})
+
+describe('maskMultilineSecret', () => {
+  it('masks each line and keeps the line structure (one key per line)', () => {
+    const input =
+      'sk-key-one-aaaabbbb\nsk-key-two-ccccdddd\nsk-key-three-eeeeffff'
+    const masked = maskMultilineSecret(input)
+    expect(masked.split('\n')).toHaveLength(3)
+    expect(masked.split('\n')[0]).toBe(maskSecret('sk-key-one-aaaabbbb'))
+    expect(masked.split('\n')[1]).toBe(maskSecret('sk-key-two-ccccdddd'))
+    expect(masked.split('\n')[2]).toBe(maskSecret('sk-key-three-eeeeffff'))
+  })
+
+  it('normalizes CRLF like the backend MaskMultilineSecret', () => {
+    expect(maskMultilineSecret('abcdefghij\r\nklmnopqrst')).toBe(
+      `${maskSecret('abcdefghij')}\n${maskSecret('klmnopqrst')}`
+    )
+  })
+
+  it('delegates single-line values to maskSecret', () => {
+    expect(maskMultilineSecret('sk-single-key-1234')).toBe(
+      maskSecret('sk-single-key-1234')
+    )
+  })
+
+  it('keeps blank lines intact so saved key positions are visible', () => {
+    expect(maskMultilineSecret('abcdefghij\n\nklmnopqrst')).toBe(
+      `${maskSecret('abcdefghij')}\n\n${maskSecret('klmnopqrst')}`
+    )
+  })
+
+  it('never leaks plaintext of any line', () => {
+    for (const line of maskMultilineSecret(
+      'sk-key-one-aaaabbbb\nsk-key-two-ccccdddd'
+    ).split('\n')) {
+      expect(isMaskedSecret(line)).toBe(true)
+    }
   })
 })

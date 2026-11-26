@@ -44,6 +44,7 @@ import type { TaskPluginOption } from '../../api'
 import {
   CHANNEL_PROVIDER_PRESENTATION,
   CHANNEL_TYPE_UTER,
+  CHANNEL_TYPE_ALI,
   CHANNEL_TYPE_OPTIONS,
   CHANNEL_TYPE_TASK_PLUGIN,
   CHANNEL_TYPE_NEW_API,
@@ -85,6 +86,35 @@ function providerChannelType(target: ChannelProviderTarget): number | null {
   if (target.kind === 'uterapi') return CHANNEL_TYPE_NEW_API
   if (target.kind === 'uterroute') return CHANNEL_TYPE_UTER_ROUTE
   return null
+}
+
+// Types shown under the Custom tab. Bailian (17) has its own configuration
+// panel and official catalog sync; Advanced Custom (58) is the generic custom
+// protocol channel. Both are still ordinary built-in channel types on the
+// server, so only the picker categorises them here.
+const CUSTOM_BUILTIN_TYPES: ReadonlySet<number> = new Set([
+  CHANNEL_TYPE_ALI,
+  CHANNEL_TYPE_ADVANCED_CUSTOM,
+])
+
+function isCustomProviderTarget(target: ChannelProviderTarget): boolean {
+  return (
+    target.kind === 'uterapi' ||
+    target.kind === 'uterroute' ||
+    (target.kind === 'builtin' && CUSTOM_BUILTIN_TYPES.has(target.type))
+  )
+}
+
+function providerBadgeLabel(
+  isCurrent: boolean,
+  hasPlugin: boolean,
+  target: ChannelProviderTarget,
+  translate: (key: string) => string
+): string {
+  if (isCurrent) return translate('Current')
+  if (hasPlugin) return translate('Plugin')
+  if (isCustomProviderTarget(target)) return translate('Custom')
+  return translate('Built-in')
 }
 
 function providerOptionAriaLabel(
@@ -178,7 +208,7 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
         if (option.value === CHANNEL_TYPE_NEW_API) continue
         if (option.value === CHANNEL_TYPE_UTER_ROUTE) continue
         if (replacedTypes.has(option.value)) continue
-        const isCustom = option.value === CHANNEL_TYPE_ADVANCED_CUSTOM
+        const isCustom = CUSTOM_BUILTIN_TYPES.has(option.value)
         const isGateway =
           option.value === CHANNEL_TYPE_UTER || option.value === 59
         if (filter === 'gateway' && !isGateway) continue
@@ -216,13 +246,9 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
     // Uter.api / Uter Route cards are shown on both create and edit so the
     // provider step is identical. On edit, selecting the already-current card
     // just advances the wizard; switching to a different provider is blocked
-    // by selectProvider.
-    if (
-      filter !== 'plugin' &&
-      filter !== 'builtin' &&
-      filter !== 'gateway' &&
-      filter !== 'custom'
-    ) {
+    // by selectProvider. They are custom Uter-managed channels (type 64/65),
+    // not built-in provider types, so they belong to the Custom tab.
+    if (filter !== 'plugin' && filter !== 'builtin' && filter !== 'gateway') {
       entries.push({
         id: 'uterapi',
         label: 'Uter.api',
@@ -438,9 +464,12 @@ export function ChannelProviderPicker(props: ChannelProviderPickerProps) {
                         }
                         className='shrink-0 rounded-md px-1.5 py-0 text-xs font-normal'
                       >
-                        {option.id === currentProviderId && t('Current')}
-                        {option.id !== currentProviderId &&
-                          (option.plugin ? t('Plugin') : t('Built-in'))}
+                        {providerBadgeLabel(
+                          option.id === currentProviderId,
+                          Boolean(option.plugin),
+                          option.target,
+                          t
+                        )}
                       </Badge>
                       {option.extensionNames && (
                         <span

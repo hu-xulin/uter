@@ -16,13 +16,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import * as React from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Input } from '@/components/ui/input'
+import { isMaskedSecret } from '@/lib/secret'
 import { cn } from '@/lib/utils'
 
-type SecretInputProps = Omit<
+export type SecretInputProps = Omit<
   React.ComponentProps<'input'>,
   'value' | 'onChange' | 'type' | 'children'
 > & {
@@ -41,6 +43,14 @@ type SecretInputProps = Omit<
    * 前后各 4 位的核对也更容易。极少数场景（例如把密钥当说明文字展示）可显式关掉。
    */
   mono?: boolean
+  /** 验证通过后取回的明文。未传或 null 时展示后端掩码串。 */
+  revealedValue?: string | null
+  /** 已配置值的验证揭示入口；未传时不渲染眼睛按钮。 */
+  onReveal?: () => void
+  /** 重新聚焦或关闭明文时清除临时明文，避免它进入表单状态。 */
+  onHide?: () => void
+  /** 正在完成二次验证并获取明文。 */
+  isRevealing?: boolean
 }
 
 /**
@@ -64,12 +74,16 @@ export function SecretInput({
   className,
   name,
   mono = true,
+  revealedValue,
+  onReveal,
+  onHide,
+  isRevealing,
   onBlur,
   ...rest
 }: SecretInputProps) {
+  const { t } = useTranslation()
   const [editing, setEditing] = React.useState(false)
   const [draft, setDraft] = React.useState('')
-  const [revealed, setRevealed] = React.useState(false)
   // 进入编辑态那一刻的「原值」，用于失焦回填。
   const originalRef = React.useRef(value)
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -85,7 +99,13 @@ export function SecretInput({
   // 前端不再二次掩码，否则会对掩码串再掩一层，出现 `sk-a************6789` 这种
   // 「掩码的掩码」，既前后不一致也对不上核对。
   // （真实明文只在本地编辑态、revealed 时出现，不来自后端。）
-  const display = editing ? draft : value
+  const display = editing
+    ? draft
+    : revealedValue != null
+      ? revealedValue
+      : value
+  const canReveal = Boolean(onReveal && isMaskedSecret(value))
+  const isUncovered = revealedValue != null
 
   return (
     <div className={cn('relative', className)}>
@@ -95,7 +115,7 @@ export function SecretInput({
         {...rest}
         // 展示态用 text 呈现掩码串（可读、可核对前4后4）；编辑态用 password
         // 避免新输入的密钥被旁观者看到。两者都不允许把掩码串当成输入值。
-        type={editing ? (revealed ? 'text' : 'password') : 'text'}
+        type={editing ? 'password' : 'text'}
         disabled={disabled}
         autoComplete='new-password'
         readOnly={!editing}
@@ -104,10 +124,10 @@ export function SecretInput({
         value={editing ? draft : display}
         onFocus={() => {
           if (disabled) return
+          onHide?.()
           originalRef.current = value
           setEditing(true)
           setDraft('')
-          setRevealed(false)
           // 让光标落在输入框末尾，便于直接追加编辑。
           requestAnimationFrame(() => inputRef.current?.focus())
         }}
@@ -128,15 +148,27 @@ export function SecretInput({
         }}
         className={cn('pr-9', editing && 'border-ring')}
       />
-      {!editing && !isBlank && (
+      {!editing && !isBlank && canReveal && (
         <button
           type='button'
           tabIndex={-1}
-          onClick={() => setRevealed((v) => !v)}
-          aria-label={revealed ? 'Hide secret' : 'Reveal secret'}
-          className='text-muted-foreground hover:text-foreground absolute top-1/2 right-2 size-5 -translate-y-1/2'
+          disabled={isRevealing}
+          onClick={() => {
+            if (isUncovered) onHide?.()
+            else onReveal?.()
+          }}
+          aria-label={
+            isRevealing
+              ? t('Revealing...')
+              : isUncovered
+                ? t('Hide secret')
+                : t('Reveal secret')
+          }
+          className='text-muted-foreground hover:text-foreground absolute top-1/2 right-2 size-5 -translate-y-1/2 disabled:opacity-60'
         >
-          {revealed ? (
+          {isRevealing ? (
+            <Loader2 className='size-4 animate-spin' />
+          ) : isUncovered ? (
             <EyeOff className='size-4' />
           ) : (
             <Eye className='size-4' />

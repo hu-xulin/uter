@@ -71,6 +71,32 @@ export async function revealChannelProviderCredential(
   return res.data
 }
 
+export type RevealSystemSecretResponse = {
+  success: boolean
+  message: string
+  data?: { key: string; value: string }
+}
+
+/**
+ * 取回单个已保存的系统设置密钥明文。调用方必须先完成绑定到同一 option key
+ * 的二次验证；GET /api/option/ 永远只返回掩码串。
+ */
+export async function revealSystemSecret(
+  optionKey: string,
+  proofToken: string,
+  signal?: AbortSignal
+) {
+  const res = await api.post<RevealSystemSecretResponse>(
+    `/api/option/${encodeURIComponent(optionKey)}/secret/reveal`,
+    undefined,
+    {
+      headers: { 'X-Security-Proof': proofToken },
+      signal,
+    }
+  )
+  return res.data
+}
+
 export type SyncExchangeRateResponse = {
   success: boolean
   message: string

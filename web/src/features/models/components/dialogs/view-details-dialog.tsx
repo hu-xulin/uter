@@ -52,6 +52,7 @@ import { handleServerError } from '@/lib/handle-server-error'
 import { requireServerSuccess } from '@/lib/server-error-message'
 
 import { getDeployment, listDeploymentContainers } from '../../api'
+import { VerifiedDeploymentSecretInput } from '../verified-deployment-secret-input'
 
 export function ViewDetailsDialog({
   open,
@@ -250,6 +251,20 @@ export function ViewDetailsDialog({
                     </span>
                   ))}
                 </div>
+              </div>
+            ) : null}
+
+            {details?.registry_secret_configured ? (
+              <div className='rounded-lg border p-3'>
+                <div className='text-muted-foreground mb-2 text-xs'>
+                  {t('Registry secret')}
+                </div>
+                <VerifiedDeploymentSecretInput
+                  deploymentId={deploymentId}
+                  value={String(details?.registry_secret_masked ?? '')}
+                  readOnly
+                  aria-label={t('Registry secret')}
+                />
               </div>
             ) : null}
 

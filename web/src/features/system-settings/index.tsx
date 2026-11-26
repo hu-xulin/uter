@@ -18,6 +18,12 @@ For commercial licensing, please contact support@uter.ai
 */
 import { Outlet } from '@tanstack/react-router'
 
+import { SystemSecretDisclosureProvider } from './hooks/use-system-secret-disclosure'
+
 export function SystemSettings() {
-  return <Outlet />
+  return (
+    <SystemSecretDisclosureProvider>
+      <Outlet />
+    </SystemSecretDisclosureProvider>
+  )
 }

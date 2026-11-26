@@ -173,6 +173,23 @@ beforeEach(() => {
     },
   })
   vi.spyOn(api, 'get').mockImplementation(async (url, config) => {
+    if (url === '/api/option/') {
+      return {
+        data: {
+          success: true,
+          data: [
+            {
+              key: 'ChannelProviderCredentialMasks',
+              value: JSON.stringify({
+                featured: { api_key: 'route-key****one\nroute-key****two' },
+                bailian: { api_key: 'bailian-key****one' },
+                subscription: { api_key: 'sub-key****one' },
+              }),
+            },
+          ],
+        },
+      }
+    }
     if (url === '/api/channel/uterapi/price-preview') {
       const group =
         (config?.params as { group?: string } | undefined)?.group ?? ''
@@ -1938,6 +1955,18 @@ test('Uter.api fetch-prices step shows the selected group official and channel p
   await user.click(
     await screen.findByRole('option', { name: 'Claude Standard' })
   )
+  expect(
+    await screen.findByText(
+      /Credential group: Claude Standard\. Key format: multi-line, one key per line; a single key occupies one line\./
+    )
+  ).toBeVisible()
+  const savedKeyHint = await screen.findByTestId(
+    'uterapi-subscription-key-hint'
+  )
+  expect(savedKeyHint.textContent).toContain(
+    'Selected group: Claude Standard. Leave empty to use the saved Uter.api subscription keys below.'
+  )
+  expect(savedKeyHint.textContent).toContain('1. sub-key****one')
   await user.click(screen.getByRole('tab', { name: /Fetch prices/ }))
   expect(await screen.findByText('claude-preview')).toBeVisible()
   expect(screen.getByText('$10.0000 / $50.0000')).toBeVisible()

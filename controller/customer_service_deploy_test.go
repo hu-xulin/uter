@@ -192,7 +192,9 @@ func TestGetCustomerServiceLLMConfig_HappyPath(t *testing.T) {
 	require.NoError(t, common.Unmarshal(resp.Body.Bytes(), &body))
 	assert.True(t, body.Success)
 	assert.Equal(t, "deepseek-ai/DeepSeek-V3", body.Data.LLM["model"])
-	assert.Equal(t, "sk-secret", body.Data.LLM["api_key"])
+	// 下发视图只给掩码，明文仍留在服务端缓存中供验证后揭示与保存回填。
+	assert.Equal(t, common.MaskSecretValue("sk-secret"), body.Data.LLM["api_key"])
+	assert.Equal(t, "sk-secret", readCachedLLMConfig()["api_key"])
 	// 必须带上 admin 令牌转发，否则 uter-cs 会 401。
 	assert.Equal(t, "Bearer test-cs-token", m.gotToken)
 	assert.Contains(t, m.calls, "GET /api/deploy/config")

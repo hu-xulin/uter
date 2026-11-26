@@ -66,9 +66,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { SecretInput } from '@/components/ui/secret-input'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
+import { VerifiedSecretInput as SecretInput } from '@/features/system-settings/components/verified-secret-input'
 import { maskSecret } from '@/lib/secret'
 import { cn } from '@/lib/utils'
 
@@ -312,6 +312,7 @@ function OptimizationField(props: {
         } else if (def.secret) {
           control = (
             <SecretInput
+              optionKey={def.name}
               value={String(field.value ?? '')}
               onChange={field.onChange}
               disabled={inputDisabled}

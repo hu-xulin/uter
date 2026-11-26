@@ -549,11 +549,20 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(within(tabs).getAllByRole('tab')).toHaveLength(5)
   await user.click(within(tabs).getByRole('tab', { name: 'Custom' }))
   const panel = screen.getByRole('tabpanel', { name: 'Custom' })
-  // Advanced Custom (58) is the only custom category entry; the deprecated
-  // type 8 is gone.
-  expect(within(panel).getAllByRole('option')).toHaveLength(1)
+  // Alibaba Bailian (17) and the Uter-managed gateways (64/65) join
+  // Advanced Custom (58) under Custom. The deprecated type 8 is gone.
+  expect(within(panel).getAllByRole('option')).toHaveLength(4)
+  expect(
+    within(panel).getByRole('option', { name: 'Ali Type #17' })
+  ).toBeVisible()
   expect(
     within(panel).getByRole('option', { name: 'Advanced Custom Type #58' })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', { name: 'Uter.api Type #64' })
+  ).toBeVisible()
+  expect(
+    within(panel).getByRole('option', { name: 'Uter Route Type #65' })
   ).toBeVisible()
   expect(
     within(panel).queryByRole('option', { name: /Plugin/ })
@@ -563,6 +572,15 @@ test('custom providers have their own tab and keep the search when switching cat
   expect(screen.getByRole('option', { name: 'OpenAI Type #1' })).toBeVisible()
   expect(
     screen.queryByRole('option', { name: 'Advanced Custom Type #58' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Ali Type #17' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Uter.api Type #64' })
+  ).not.toBeInTheDocument()
+  expect(
+    screen.queryByRole('option', { name: 'Uter Route Type #65' })
   ).not.toBeInTheDocument()
   await user.type(screen.getByRole('combobox'), '58')
   expect(screen.queryByRole('option')).not.toBeInTheDocument()
@@ -845,6 +863,38 @@ test('creation shows distinct numbers for Uter and Uter.api', async () => {
   const uterApi = screen.getByRole('option', { name: /Uter\.api/ })
   expect(within(uterApi).getByText('Type #64')).toBeVisible()
   expect(within(uterApi).queryByText('Type #60')).not.toBeInTheDocument()
+})
+
+test('custom category cards are badged as Custom, not Built-in', async () => {
+  const user = userEvent.setup()
+  render(
+    <ChannelProviderPicker
+      isCreating
+      plugins={[]}
+      canBindPlugin={false}
+      loading={false}
+      failed={false}
+      disabled={false}
+      onRetry={vi.fn()}
+      onSelect={vi.fn()}
+    />
+  )
+
+  await user.click(screen.getByRole('tab', { name: 'Custom' }))
+  for (const name of [
+    'Ali Type #17',
+    'Advanced Custom Type #58',
+    'Uter.api Type #64',
+    'Uter Route Type #65',
+  ]) {
+    const card = screen.getByRole('option', { name })
+    expect(within(card).getByText('Custom')).toBeVisible()
+    expect(within(card).queryByText('Built-in')).not.toBeInTheDocument()
+  }
+
+  await user.click(screen.getByRole('tab', { name: 'Built-in' }))
+  const openAi = screen.getByRole('option', { name: 'OpenAI Type #1' })
+  expect(within(openAi).getByText('Built-in')).toBeVisible()
 })
 
 test('an empty plugin filter reports that no plugins can be bound', async () => {

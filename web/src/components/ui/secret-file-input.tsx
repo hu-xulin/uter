@@ -17,11 +17,12 @@ License along with this program. If not, see
 
 For commercial licensing, please contact support@uter.ai
 */
-import { Eye, EyeOff, FileKey2, X } from 'lucide-react'
+import { Eye, EyeOff, FileKey2, Loader2, X } from 'lucide-react'
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, buttonVariants } from '@/components/ui/button'
+import { isMaskedSecret } from '@/lib/secret'
 import { cn } from '@/lib/utils'
 
 /** 单个文件的大小上限。PEM 密钥文件通常 1–4 KB，1 MB 足够宽松又能挡住误选。 */
@@ -38,7 +39,7 @@ function isBareKeyBody(text: string) {
   )
 }
 
-type SecretFileInputProps = {
+export type SecretFileInputProps = {
   /** 已保存的值，通常是后端下发的掩码串；也可能是本次刚选文件读到的明文。 */
   value: string
   /** 回传值。只在新文件成功读入或显式清空时调用；绝不回传掩码串。 */
@@ -57,6 +58,14 @@ type SecretFileInputProps = {
   /** 校验/读取失败时把原因交给上层展示（已 i18n 的文案）。 */
   onError?: (message: string) => void
   disabled?: boolean
+  /** 验证通过后取回的明文；未传时只展示后端掩码串。 */
+  revealedValue?: string | null
+  /** 已保存密钥的验证揭示入口；未传时掩码态不显示眼睛按钮。 */
+  onReveal?: () => void
+  /** 关闭明文时清除临时值。 */
+  onHide?: () => void
+  /** 正在完成二次验证并获取明文。 */
+  isRevealing?: boolean
   /** FormControl 会把 id / aria-describedby / aria-invalid 注进来，需透传。 */
   id?: string
   'aria-describedby'?: string
@@ -90,6 +99,10 @@ export function SecretFileInput({
   allowBase64 = false,
   onError,
   disabled,
+  revealedValue,
+  onReveal,
+  onHide,
+  isRevealing,
   id,
   ...aria
 }: SecretFileInputProps) {
@@ -100,9 +113,12 @@ export function SecretFileInput({
   const inputRef = React.useRef<HTMLInputElement>(null)
 
   const isBlank = value.trim() === ''
-  // 掩码串（含 `*`）是后端下发的展示值，没有可展开的明文。
-  const isMasked = value.includes('*')
-  const lineCount = isMasked ? 0 : value.split('\n').length
+  // 掩码串（含 `*`）是后端下发的展示值，明文只能通过验证揭示接口取回。
+  const isMasked = isMaskedSecret(value)
+  const isUncovered = revealedValue != null
+  const displayValue = revealedValue ?? value
+  const lineCount =
+    isMasked && !isUncovered ? 0 : displayValue.split('\n').length
 
   async function handleFile(file: File | undefined) {
     if (!file) return
@@ -178,13 +194,13 @@ export function SecretFileInput({
           </div>
 
           {!isBlank ? (
-            revealed && !isMasked ? (
+            (revealed && !isMasked) || isUncovered ? (
               <pre className='text-muted-foreground text-mono mt-1.5 max-h-28 overflow-auto font-mono leading-[var(--ds-line-mono-dense)] break-all whitespace-pre-wrap'>
-                {value}
+                {displayValue}
               </pre>
             ) : (
               <p className='text-muted-foreground text-mono mt-1.5 truncate font-mono'>
-                {value}
+                {displayValue}
               </p>
             )
           ) : null}
@@ -233,15 +249,27 @@ export function SecretFileInput({
               {chooseLabel}
             </span>
           </div>
-          {!isBlank && !isMasked ? (
+          {!isBlank && (isMasked ? Boolean(onReveal) : true) ? (
             <Button
               type='button'
               variant='ghost'
               size='sm'
-              disabled={disabled}
-              onClick={() => setRevealed((v) => !v)}
+              disabled={disabled || isRevealing}
+              onClick={() => {
+                if (isMasked && onReveal) {
+                  if (isUncovered) onHide?.()
+                  else onReveal()
+                  return
+                }
+                setRevealed((v) => !v)
+              }}
             >
-              {revealed ? (
+              {isRevealing ? (
+                <>
+                  <Loader2 className='size-4.5 animate-spin' />
+                  {t('Revealing...')}
+                </>
+              ) : isUncovered || (!isMasked && revealed) ? (
                 <>
                   <EyeOff className='size-4.5' />
                   {t('Hide')}
@@ -263,6 +291,7 @@ export function SecretFileInput({
               onClick={() => {
                 setFileName('')
                 setRevealed(false)
+                onHide?.()
                 onChange('')
               }}
             >

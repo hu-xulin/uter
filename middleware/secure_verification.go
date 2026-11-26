@@ -57,6 +57,77 @@ func ChannelProviderCredentialSecureVerificationRequired() gin.HandlerFunc {
 	}
 }
 
+// SystemSecretSecureVerificationRequired protects every masked System Settings
+// option value. The route parameter is the exact option key embedded in the
+// proof, so a proof for one field cannot reveal another.
+func SystemSecretSecureVerificationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		optionKey := strings.TrimSpace(c.Param("key"))
+		if !common.IsSystemSecretReadKey(optionKey) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "code": "SECURITY_CONTEXT_INVALID", "message": service.ErrVerificationContextInvalid.Error()})
+			return
+		}
+		context, err := common.Marshal(service.SystemSecretReadContext{OptionKey: optionKey})
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeSystemSecretRead, Context: context}) == nil {
+			return
+		}
+		c.Set("secure_verified", true)
+		c.Next()
+	}
+}
+
+// UserSecretSecureVerificationRequired protects the current user's masked
+// notification credentials. The proof is bound to the exact settings field.
+func UserSecretSecureVerificationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secretKey := strings.TrimSpace(c.Param("key"))
+		if !service.IsUserSecretKey(secretKey) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "code": "SECURITY_CONTEXT_INVALID", "message": service.ErrVerificationContextInvalid.Error()})
+			return
+		}
+		context, err := common.Marshal(service.UserSecretReadContext{SecretKey: secretKey})
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeUserSecretRead, Context: context}) == nil {
+			return
+		}
+		c.Set("secure_verified", true)
+		c.Next()
+	}
+}
+
+// DeploymentRegistrySecretSecureVerificationRequired protects a deployment's
+// saved registry password. It lives on the deployments route (AdminAuth) rather
+// than System Settings (RootAuth), but reuses the system.secret.read scope so
+// the same step-up proof flow works. The proof is bound to the exact deployment
+// ID, so a proof for one deployment cannot reveal another's credential.
+func DeploymentRegistrySecretSecureVerificationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		deploymentID := strings.TrimSpace(c.Param("id"))
+		if !common.IsValidDeploymentID(deploymentID) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "code": "SECURITY_CONTEXT_INVALID", "message": service.ErrVerificationContextInvalid.Error()})
+			return
+		}
+		optionKey := common.DeploymentRegistrySecretOptionKey(deploymentID)
+		context, err := common.Marshal(service.SystemSecretReadContext{OptionKey: optionKey})
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeSystemSecretRead, Context: context}) == nil {
+			return
+		}
+		c.Set("secure_verified", true)
+		c.Next()
+	}
+}
+
 // TokenKeySecureVerificationRequired protects API key disclosure for both the
 // single and batch endpoints. The proof carries no parameters, so one step-up
 // covers the reads a page performs; each controller still checks ownership.

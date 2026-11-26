@@ -155,6 +155,39 @@ func buildChannelProviderMaskViewValue() string {
 	return string(encoded)
 }
 
+// RevealSystemSecret returns one masked option value after the step-up
+// middleware has validated a proof bound to this exact option key. The browser
+// only ever receives masks from GetOptions; plaintext is released here, once
+// per proof, and the access is recorded in the management audit log.
+func RevealSystemSecret(c *gin.Context) {
+	optionKey := strings.TrimSpace(c.Param("key"))
+	if !common.IsSystemSecretReadKey(optionKey) {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "The action details are invalid."})
+		return
+	}
+	value := ""
+	if field, ok := common.ParseCustomerServiceConfigSecretKey(optionKey); ok {
+		if config := readCachedLLMConfig(); config != nil {
+			if raw, found := config[field]; found {
+				value = strings.TrimSpace(common.Interface2String(raw))
+			}
+		}
+	} else if index, ok := common.ParseSMTPAccountTokenKey(optionKey); ok {
+		accounts := common.ParseSMTPAccounts(common.Interface2String(common.OptionMap["SMTPAccounts"]))
+		if index >= len(accounts) {
+			c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "The action details are invalid."})
+			return
+		}
+		value = strings.TrimSpace(accounts[index].Token)
+	} else {
+		value = strings.TrimSpace(common.Interface2String(common.OptionMap[optionKey]))
+	}
+	recordManageAudit(c, "option.secret.reveal", map[string]any{
+		"key": optionKey,
+	})
+	common.ApiSuccess(c, gin.H{"key": optionKey, "value": value})
+}
+
 func GetOptions(c *gin.Context) {
 	var options []*model.Option
 	optionValues := make(map[string]string)
