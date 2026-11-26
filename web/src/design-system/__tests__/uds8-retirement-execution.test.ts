@@ -40,7 +40,9 @@ describe('UDS8 退役执行守卫', () => {
   const theme = readWeb('src/styles/theme.css')
 
   it('CM-06 输入框边框在 Light / Dark 都接入 UDS8 令牌', () => {
-    const matches = theme.match(/--input:\s*var\(--ds-color-border-input\)/g)
+    const matches = theme.match(
+      /--input:\s*var\(\s*--ds-color-border-input\s*\)/g
+    )
     expect(matches).toHaveLength(2)
     expect(theme).not.toContain('#45465f')
     expect(theme).not.toContain('CM-06 ISOLATE')

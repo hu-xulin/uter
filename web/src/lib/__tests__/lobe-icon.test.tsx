@@ -50,14 +50,14 @@ describe('Lobe icons', () => {
     ) as { webpackInclude: RegExp }
     const separator = root.includes('\\') ? '\\' : '/'
     const files = [
-      'OpenAI/components/Mono.mjs',
-      'Claude/components/Color.mjs',
-      'Gemini/components/Color.mjs',
-      'Gemma/components/Simple.mjs',
-      'LobeHub/components/Morden.mjs',
+      'OpenAI/components/Mono.js',
+      'Claude/components/Color.js',
+      'Gemini/components/Color.js',
+      'Gemma/components/Simple.js',
+      'LobeHub/components/Morden.js',
       'OpenAI/index.js',
       'OpenAI/components/Mono.d.ts',
-      'OpenAI/components/Unknown.mjs',
+      'OpenAI/components/Unknown.js',
     ]
     const included = files.filter((file) =>
       webpackInclude.test(root + file.replaceAll('/', separator))

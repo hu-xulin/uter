@@ -144,7 +144,7 @@ describe('④ 15px 派生档清除 —— 6 处改 16px text-base（字号校对
 
   it('翻页导航当前页标题用 text-base（覆盖 /about + /docs 各 1 处）', () => {
     expect(pageNav).toContain(
-      "className='text-base text-fg-primary truncate font-medium'"
+      "className='text-fg-primary truncate text-base font-medium'"
     )
     expect(pageNav).not.toMatch(/text-md\b/)
   })

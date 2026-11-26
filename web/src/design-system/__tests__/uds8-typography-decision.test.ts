@@ -69,7 +69,7 @@ describe('UDS 8.0.0 字号校对决定锁定（6 处 15px → 16px）', () => {
 
   it('决定 #5 / #10：docs 与 about 的 page-nav 标题用 text-base（16px），不回退 text-md', () => {
     expect(pageNav).toMatch(
-      /className='text-base text-fg-primary truncate font-medium'/
+      /className='text-fg-primary truncate text-base font-medium'/
     )
     expect(pageNav).not.toMatch(/text-md/)
   })
