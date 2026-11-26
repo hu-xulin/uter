@@ -75,6 +75,7 @@ function Fixture() {
               username: '',
               password: '',
               apiKey: '',
+              apiUrl: '',
               slots: [],
             }}
             disclosure={disclosure}

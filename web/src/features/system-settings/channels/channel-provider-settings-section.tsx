@@ -89,6 +89,9 @@ const schema = z.object({
   username: z.string(),
   password: z.string(),
   apiKey: z.string(),
+  apiUrl: z.string(),
+  accessKeyId: z.string().optional(),
+  accessKeySecret: z.string().optional(),
   slots: z.array(credentialSlotSchema),
 })
 
@@ -138,6 +141,7 @@ export function ChannelProviderSettingsSection(
   useResetForm(form, initialValues, resetPauseRef)
 
   const isSubscription = props.prefix === 'subscription'
+  const isBailian = props.prefix === 'bailian'
   const groupsQuery = useQuery({
     queryKey: ['uterapi-pricing-groups'],
     queryFn: async () => {
@@ -185,13 +189,28 @@ export function ChannelProviderSettingsSection(
         password: displaySecret(values.password),
         // API Key 一行一个，保存后按行掩码展示，与创建渠道时的多行形态一致。
         apiKey: displaySecret(values.apiKey, true),
+        accessKeyId: displaySecret(values.accessKeyId ?? ''),
+        accessKeySecret: displaySecret(values.accessKeySecret ?? ''),
         slots: maskChannelProviderCredentialSlots(values.slots, (value) =>
           displaySecret(value, true)
         ),
       }
       form.reset(resetValues)
+      // 保存成功后必须解除暂停：否则切换到另一个渠道 section 时，新的
+      // initialValues 会被 useResetForm 永久跳过，上一个渠道的凭证槽（含
+      // slot id）残留并被下一次保存写回，覆盖其它渠道的分组元数据。
+      // 此时 refetch 已完成、form.reset 已写入本渠道掩码，解除是安全的。
+      resetPauseRef.current = false
       props.disclosure.hide(channelProviderOptionKey(props.prefix, 'password'))
       props.disclosure.hide(channelProviderOptionKey(props.prefix, 'apiKey'))
+      if (isBailian) {
+        props.disclosure.hide(
+          channelProviderOptionKey(props.prefix, 'accessKeyId')
+        )
+        props.disclosure.hide(
+          channelProviderOptionKey(props.prefix, 'accessKeySecret')
+        )
+      }
       for (const slot of values.slots) {
         props.disclosure.hide(
           channelProviderSlotAPIKeyOption(props.prefix, slot.slotId)
@@ -204,7 +223,7 @@ export function ChannelProviderSettingsSection(
   }
 
   const renderCredentialField = (
-    field: 'password' | 'apiKey',
+    field: 'password' | 'apiKey' | 'accessKeyId' | 'accessKeySecret',
     label: string,
     placeholder: string,
     description: string,
@@ -336,7 +355,33 @@ export function ChannelProviderSettingsSection(
                 </FormControl>
                 <FormDescription>
                   {t(
-                    'The login URL is saved as the channel base URL when a new channel omits it.'
+                    'Console login URL is used only for WorkBuddy to sign in to the upstream back office. It is NOT used to fetch models or prices.'
+                  )}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='apiUrl'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('API address')}</FormLabel>
+                <FormControl>
+                  <Input
+                    value={String(field.value ?? '')}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    placeholder={t('Enter API address')}
+                    autoComplete='off'
+                    mono
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t(
+                    'API address is used to fetch the model catalogue and prices. Leave empty to keep the channel built-in address. Do not add /v1 or a trailing slash.'
                   )}
                 </FormDescription>
                 <FormMessage />
@@ -373,6 +418,35 @@ export function ChannelProviderSettingsSection(
             t('Enter new password to update'),
             t('Leave blank to keep the existing password.')
           )}
+
+          {isBailian ? (
+            <div className='space-y-4 rounded-lg border p-4'>
+              <div className='space-y-1'>
+                <h3 className='font-medium'>{t('Alibaba Cloud AccessKey')}</h3>
+                <p className='text-muted-foreground text-sm'>
+                  {t(
+                    'Used by Model Studio OpenAPI to list region models without console login. A RAM user needs modelstudio:ListModels permission.'
+                  )}
+                </p>
+              </div>
+              {renderCredentialField(
+                'accessKeyId',
+                t('Access Key ID'),
+                t('Enter Access Key ID'),
+                t(
+                  'The Access Key ID is stored masked and revealed only after verification.'
+                )
+              )}
+              {renderCredentialField(
+                'accessKeySecret',
+                t('Access Key Secret'),
+                t('Enter new Access Key Secret to update'),
+                t(
+                  'Leave blank to keep the existing Access Key Secret. Stored encrypted.'
+                )
+              )}
+            </div>
+          ) : null}
 
           <div className='space-y-4'>
             <div className='space-y-1'>

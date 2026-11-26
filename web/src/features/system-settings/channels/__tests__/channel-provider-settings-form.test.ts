@@ -18,6 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
+import { isMaskedSecret } from '@/lib/secret'
+
 import type { ChannelProviderSettings } from '../../types'
 import { readChannelProviderCredentialSlots } from '../channel-provider-credential-slots'
 import {
@@ -49,6 +51,7 @@ const masked: ChannelProviderFormValues = {
   username: 'operator',
   password: 'abcd****wxyz',
   apiKey: 'key1\nkey2',
+  apiUrl: 'https://api.example.com',
   slots: [],
 }
 
@@ -70,6 +73,21 @@ describe('applyChannelProviderMaskView', () => {
     )
     expect(result['channel_provider.featured.password']).toBe('pass****word')
     expect(result['channel_provider.bailian.api_key']).toBe('')
+  })
+
+  it('restores the derived Bailian AccessKey Secret mask', () => {
+    const view = JSON.stringify({
+      bailian: { access_key_secret: 'UTER****0001' },
+    })
+
+    const result = applyChannelProviderMaskView(baseSettings, [
+      { key: 'ChannelProviderCredentialMasks', value: view },
+    ])
+
+    expect(result['channel_provider.bailian.access_key_secret']).toBe(
+      'UTER****0001'
+    )
+    expect(result['channel_provider.bailian.access_key_id']).toBeUndefined()
   })
 
   it('keeps option-level masks when the derived view is invalid', () => {
@@ -132,6 +150,51 @@ describe('applyChannelProviderMaskView', () => {
       expect(JSON.stringify(slots)).not.toContain('sk-plaintext')
     }
   )
+
+  // Regression: a save bug once overwrote all providers' credential_slots
+  // with a single stale id while the real keys survived under other ids. The
+  // operator saw "no API keys"; recovery must rebuild every slot from the
+  // authoritative option keys instead of trusting the stale metadata.
+  it('recovers saved keys when credential_slots metadata lost their ids', () => {
+    const staleMetadata = JSON.stringify([
+      { id: 'slot-stale', group: '', label: '', mode: 'single', strategy: 'random' },
+    ])
+    const savedSlots = [
+      { id: 'slot-kiro', group: 'Claude-kiro' },
+      { id: 'slot-max', group: 'Claude-max' },
+      { id: 'slot-codex', group: 'Codex Pro' },
+    ]
+    const raw = [
+      {
+        key: 'channel_provider.subscription.credential_slots',
+        value: staleMetadata,
+      },
+      {
+        key: 'ChannelProviderCredentialMasks',
+        value: JSON.stringify({ subscription: { password: '', api_key: '' } }),
+      },
+      ...savedSlots.map((slot) => ({
+        key: `channel_provider.subscription.slot_${slot.id}_api_key`,
+        value: `sk-${slot.group.replace(/\W/g, '')}****key`,
+      })),
+    ]
+
+    const resolved = applyChannelProviderMaskView(baseSettings, raw)
+    const slots = readChannelProviderCredentialSlots(resolved, 'subscription')
+
+    // All recovered keys are present, and the stale metadata entry is kept
+    // rather than dropped so no operator-configured slot is silently lost.
+    const slotIds = slots.map((slot) => slot.slotId)
+    expect(slotIds).toEqual(
+      expect.arrayContaining(savedSlots.map((slot) => slot.id))
+    )
+    expect(slotIds).toContain('slot-stale')
+    for (const slot of slots.filter((item) =>
+      savedSlots.some((saved) => saved.id === item.slotId)
+    )) {
+      expect(isMaskedSecret(slot.apiKey)).toBe(true)
+    }
+  })
 })
 
 describe('buildChannelProviderUpdates', () => {
@@ -145,6 +208,7 @@ describe('buildChannelProviderUpdates', () => {
       username: 'new-operator',
       password: 'new-password',
       apiKey: 'line-one\nline-two',
+      apiUrl: 'https://new-api.example.com',
       slots: [],
     }
 
@@ -156,6 +220,10 @@ describe('buildChannelProviderUpdates', () => {
       { key: 'channel_provider.featured.username', value: 'new-operator' },
       { key: 'channel_provider.featured.password', value: 'new-password' },
       { key: 'channel_provider.featured.api_key', value: 'line-one\nline-two' },
+      {
+        key: 'channel_provider.featured.api_url',
+        value: 'https://new-api.example.com',
+      },
     ])
   })
 
@@ -169,6 +237,33 @@ describe('buildChannelProviderUpdates', () => {
 
     expect(buildChannelProviderUpdates('bailian', values, masked)).toEqual([
       { key: 'channel_provider.bailian.username', value: 'renamed' },
+    ])
+  })
+
+  it('writes the Bailian AccessKey pair and never writes back masks', () => {
+    const defaults: ChannelProviderFormValues = {
+      ...masked,
+      accessKeyId: 'UTER****0001',
+      accessKeySecret: 'UTER****0001',
+    }
+    expect(buildChannelProviderUpdates('bailian', defaults, defaults)).toEqual(
+      []
+    )
+
+    const values: ChannelProviderFormValues = {
+      ...defaults,
+      accessKeyId: 'UTERFAKEID0000002',
+      accessKeySecret: 'UTERFAKESECRET0002',
+    }
+    expect(buildChannelProviderUpdates('bailian', values, defaults)).toEqual([
+      {
+        key: 'channel_provider.bailian.access_key_id',
+        value: 'UTERFAKEID0000002',
+      },
+      {
+        key: 'channel_provider.bailian.access_key_secret',
+        value: 'UTERFAKESECRET0002',
+      },
     ])
   })
 

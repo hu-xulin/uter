@@ -80,6 +80,7 @@ function Fixture(props: { prefix: ChannelProviderPrefix }) {
               username: '',
               password: 'abcd****wxyz',
               apiKey: 'key1****aaaa\nkey2****bbbb',
+              apiUrl: '',
               slots: [],
             }}
             disclosure={disclosure}
@@ -126,6 +127,23 @@ describe('ChannelProviderSettingsSection credential inputs', () => {
       render(<Fixture prefix={prefix} />)
       const password = await screen.findByLabelText('Password')
       expect(password.tagName).toBe('INPUT')
+    }
+  )
+
+  it('bailian renders the Alibaba Cloud AccessKey pair', async () => {
+    render(<Fixture prefix='bailian' />)
+    expect(await screen.findByLabelText('Access Key ID')).toBeInTheDocument()
+    expect(screen.getByLabelText('Access Key Secret')).toBeInTheDocument()
+    expect(screen.getByText('Alibaba Cloud AccessKey')).toBeVisible()
+  })
+
+  it.each(['featured', 'subscription'] as const)(
+    '%s does not render Bailian AccessKey fields',
+    async (prefix) => {
+      render(<Fixture prefix={prefix} />)
+      expect(await screen.findByLabelText('Password')).toBeInTheDocument()
+      expect(screen.queryByLabelText('Access Key ID')).toBeNull()
+      expect(screen.queryByLabelText('Access Key Secret')).toBeNull()
     }
   )
 
