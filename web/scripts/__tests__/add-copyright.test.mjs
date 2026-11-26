@@ -44,7 +44,7 @@ For commercial licensing, please contact support@uter.ai
 */
 `
 
-let root: string | undefined
+let root
 
 function runCheck(source: string) {
   root = mkdtempSync(join(tmpdir(), 'uter-copyright-check-'))

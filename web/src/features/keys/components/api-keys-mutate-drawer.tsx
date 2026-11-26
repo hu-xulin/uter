@@ -224,8 +224,9 @@ export function ApiKeysMutateDrawer({
     if (isUpdate && (!apiKeyFetched || apiKeyFetching)) return false
     if (!isUpdate && statusLoading) return false
     if (initializedTarget === formTarget) return false
-    if (isUpdate)
+    if (isUpdate) {
       return !!(currentRow && apiKeyData?.success && apiKeyData.data)
+    }
     return true
   }
 

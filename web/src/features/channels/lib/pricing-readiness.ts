@@ -68,10 +68,12 @@ function parseReadinessMapping(
   } catch {
     return null
   }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return null
-  if (Object.values(parsed).some((value) => typeof value !== 'string'))
+  }
+  if (Object.values(parsed).some((value) => typeof value !== 'string')) {
     return null
+  }
   return parsed as Record<string, string>
 }
 

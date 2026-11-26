@@ -46,6 +46,16 @@ async function renderCatalog(node: React.ReactElement, locale: DocsLocaleCode) {
   return render(<RouterProvider router={router} />)
 }
 
+function requireRenderedLink(
+  link: HTMLElement | undefined,
+  label: string
+): HTMLElement {
+  if (!link) {
+    throw new Error(label + ' was not rendered')
+  }
+  return link
+}
+
 describe('catalog data (from the nav manifest)', () => {
   it('lists protocol groups and standalone endpoints in sidebar order', () => {
     for (const [locale, expected] of [
@@ -166,7 +176,7 @@ describe('ApiCatalog / AppsCatalog cards', () => {
     )
     expect(chat, 'chat card link').toBeTruthy()
     expect(
-      within(chat!).getByText('聊天（Chat）', { selector: 'span' })
+      within(requireRenderedLink(chat, 'chat card link')).getByText('聊天（Chat）', { selector: 'span' })
     ).toBeTruthy()
   })
 
@@ -185,13 +195,13 @@ describe('ApiCatalog / AppsCatalog cards', () => {
     )
     expect(claude, 'claude-code card link').toBeTruthy()
     expect(
-      within(claude!).getByText('Claude Code', { selector: 'span' })
+      within(requireRenderedLink(claude, 'claude-code card link')).getByText('Claude Code', { selector: 'span' })
     ).toBeTruthy()
     const aion = links.find((a) =>
       (a.getAttribute('href') ?? '').includes('/docs/zh/apps/aionui')
     )
     expect(
-      within(aion!).getByText('AionUi', { selector: 'span' })
+      within(requireRenderedLink(aion, 'aionui card link')).getByText('AionUi', { selector: 'span' })
     ).toBeTruthy()
   })
 
@@ -221,7 +231,7 @@ describe('ApiCatalog / AppsCatalog cards', () => {
         (a.getAttribute('href') ?? '').includes('/docs/zh/api/ai-model-audio')
       )
     expect(
-      within(card!).getByText('原生OpenAI格式、原生Gemini格式')
+      within(requireRenderedLink(card, 'audio card link')).getByText('原生OpenAI格式、原生Gemini格式')
     ).toBeTruthy()
   })
 

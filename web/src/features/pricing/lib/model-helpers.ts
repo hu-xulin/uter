@@ -29,10 +29,11 @@ import type { PricingModel } from '../types'
  * in the payload for billing/schema consumers and flags the stale ones, so
  * only the plaza drops them here.
  */
-export function excludeRedirectedUpstreams<
-  T extends { hidden_by_redirect?: boolean }
->(models: T[]): T[] {
-  return models.filter((model) => !model.hidden_by_redirect)
+export function excludeRedirectedUpstreams<T extends object>(models: T[]): T[] {
+  return models.filter(
+    (model) =>
+      !('hidden_by_redirect' in model && model.hidden_by_redirect === true)
+  )
 }
 
 /**

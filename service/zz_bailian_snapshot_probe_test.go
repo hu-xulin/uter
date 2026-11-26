@@ -1,3 +1,8 @@
+//go:build bailianprobe
+
+// This is an opt-in local data probe, not a deterministic repository test.
+// Run it explicitly with `go test -tags=bailianprobe ./service -run TestZZBailianSnapshotProbe`
+// after placing the dated WorkBuddy snapshot at the documented local path.
 package service
 
 import (
@@ -11,11 +16,11 @@ import (
 type bailianProbeSnapshot struct {
 	Models []struct {
 		Items []struct {
-			Model      string   `json:"model"`
-			Name       string   `json:"name"`
-			Provider   string   `json:"provider"`
-			Features   []string `json:"features"`
-			Prices     []struct {
+			Model    string   `json:"model"`
+			Name     string   `json:"name"`
+			Provider string   `json:"provider"`
+			Features []string `json:"features"`
+			Prices   []struct {
 				Type      string `json:"type"`
 				Price     string `json:"price"`
 				PriceUnit string `json:"priceUnit"`
@@ -45,13 +50,21 @@ func TestZZBailianSnapshotProbe(t *testing.T) {
 	var rows []bailianProbeRow
 	for _, group := range snap.Models {
 		for _, item := range group.Items {
-			bailian := BailianModel{Model: item.Model, Name: item.Name, Provider: item.Provider, Features: item.Features}
+			bailian := BailianModel{
+				Model:    item.Model,
+				Name:     item.Name,
+				Provider: item.Provider,
+				Features: item.Features,
+			}
 			for _, price := range item.Prices {
 				bailian.Prices = append(bailian.Prices, BailianPriceRange{
 					RangeName: "Default",
 					Prices: []BailianPrice{{
-						Type: price.Type, Price: price.Price, PriceUnit: price.PriceUnit,
-						PriceName: price.PriceName, TimeBand: price.TimeBand,
+						Type:      price.Type,
+						Price:     price.Price,
+						PriceUnit: price.PriceUnit,
+						PriceName: price.PriceName,
+						TimeBand:  price.TimeBand,
 					}},
 				})
 			}
