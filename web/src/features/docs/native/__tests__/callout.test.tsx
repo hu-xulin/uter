@@ -84,4 +84,24 @@ describe('Callout (Clerk anatomy + UDS 8.0.0 §21)', () => {
     const rail = container.querySelector('span[aria-hidden="true"]')
     expect(rail?.getAttribute('class')).toContain('bg-(--ds-color-status-info)')
   })
+
+  test('body copy shares the title column instead of aligning under the icon', () => {
+    const { container, getByText } = render(
+      <Callout type='idea'>推荐奖励与充值额度分别记账</Callout>
+    )
+
+    const callout = container.firstElementChild as HTMLElement
+    // 图标独占第一列并跨两行；标题与正文显式同处第二列，因此正文左边缘
+    // 与标题文字左边缘一致，而不是与图标左边缘一致。
+    expect(callout.className).toContain('grid-cols-[auto_1fr]')
+
+    const icon = callout.querySelector('svg')
+    expect(icon?.getAttribute('class')).toContain('row-span-2')
+
+    const title = getByText('Tip')
+    expect(title.className).toContain('col-start-2')
+
+    const body = callout.lastElementChild as HTMLElement
+    expect(body.className).toContain('col-start-2')
+  })
 })

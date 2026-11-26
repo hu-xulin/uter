@@ -101,7 +101,7 @@ function AlertDescription({
     <div
       data-slot='alert-description'
       className={cn(
-        'text-muted-foreground [&_a]:hover:text-foreground text-sm text-balance md:text-pretty [&_p:not(:last-child)]:mb-4',
+        'text-muted-foreground [&_a]:hover:text-foreground text-sm text-balance group-has-[>svg]/alert:col-start-2 md:text-pretty [&_p:not(:last-child)]:mb-4',
         className
       )}
       {...props}

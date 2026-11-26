@@ -145,9 +145,7 @@ describe('catalog data (from the nav manifest)', () => {
       'vi',
     ] as DocsLocaleCode[]) {
       for (const card of catalogCards(locale, 'apps')) {
-        expect(card.title, `${locale}/${card.id}`).not.toMatch(
-          /\s+[-—–]\s+/
-        )
+        expect(card.title, `${locale}/${card.id}`).not.toMatch(/\s+[-—–]\s+/)
       }
     }
   })
@@ -176,7 +174,10 @@ describe('ApiCatalog / AppsCatalog cards', () => {
     )
     expect(chat, 'chat card link').toBeTruthy()
     expect(
-      within(requireRenderedLink(chat, 'chat card link')).getByText('聊天（Chat）', { selector: 'span' })
+      within(requireRenderedLink(chat, 'chat card link')).getByText(
+        '聊天（Chat）',
+        { selector: 'span' }
+      )
     ).toBeTruthy()
   })
 
@@ -187,22 +188,65 @@ describe('ApiCatalog / AppsCatalog cards', () => {
     )
     const links = screen.getAllByRole('link')
     expect(links.length).toBe(catalogCards('zh', 'apps').length)
-    expect(container.querySelectorAll('svg').length).toBeGreaterThanOrEqual(
-      links.length
-    )
+    // Every app card carries a visual: a real brand logo or an icon fallback.
+    expect(
+      container.querySelectorAll('img[data-app-logo], svg').length
+    ).toBeGreaterThanOrEqual(links.length)
     const claude = links.find((a) =>
       (a.getAttribute('href') ?? '').includes('/docs/zh/apps/claude-code')
     )
     expect(claude, 'claude-code card link').toBeTruthy()
     expect(
-      within(requireRenderedLink(claude, 'claude-code card link')).getByText('Claude Code', { selector: 'span' })
+      within(requireRenderedLink(claude, 'claude-code card link')).getByText(
+        'Claude Code',
+        { selector: 'span' }
+      )
     ).toBeTruthy()
     const aion = links.find((a) =>
       (a.getAttribute('href') ?? '').includes('/docs/zh/apps/aionui')
     )
     expect(
-      within(requireRenderedLink(aion, 'aionui card link')).getByText('AionUi', { selector: 'span' })
+      within(requireRenderedLink(aion, 'aionui card link')).getByText(
+        'AionUi',
+        { selector: 'span' }
+      )
     ).toBeTruthy()
+  })
+
+  it('renders each AI-app card with its real brand logo instead of a generic icon', async () => {
+    const { container } = await renderCatalog(<AppsCatalog locale='zh' />, 'zh')
+    const links = screen.getAllByRole('link')
+    const brandImages = [...container.querySelectorAll('img[data-app-logo]')]
+    expect(brandImages.length).toBe(links.length)
+    expect(
+      brandImages.every((img) =>
+        (img.getAttribute('src') ?? '').startsWith('/apps-assets/logos/')
+      )
+    ).toBe(true)
+    expect(
+      brandImages.some(
+        (img) => img.getAttribute('src') === '/apps-assets/logos/aionui.webp'
+      )
+    ).toBe(true)
+    // Brand logos are decorative next to the visible card title.
+    expect(brandImages.every((img) => img.getAttribute('alt') === '')).toBe(
+      true
+    )
+  })
+
+  it('renders every brand logo as a rounded, uniformly sized rectangle', async () => {
+    const { container } = await renderCatalog(<AppsCatalog locale='zh' />, 'zh')
+    const brandImages = [...container.querySelectorAll('img[data-app-logo]')]
+    expect(brandImages.length).toBeGreaterThan(0)
+    for (const img of brandImages) {
+      const cls = img.getAttribute('class') ?? ''
+      // 统一 32px 展示框（--ds-icon-lg），圆角矩形，等比缩放不变形。
+      expect(cls, img.getAttribute('src') ?? '').toContain(
+        'size-(--ds-icon-lg)'
+      )
+      expect(cls, img.getAttribute('src') ?? '').toContain('rounded-lg')
+      expect(cls, img.getAttribute('src') ?? '').toContain('object-contain')
+    }
   })
 
   it('follows the UI locale for card copy and link prefix', async () => {
@@ -231,7 +275,9 @@ describe('ApiCatalog / AppsCatalog cards', () => {
         (a.getAttribute('href') ?? '').includes('/docs/zh/api/ai-model-audio')
       )
     expect(
-      within(requireRenderedLink(card, 'audio card link')).getByText('原生OpenAI格式、原生Gemini格式')
+      within(requireRenderedLink(card, 'audio card link')).getByText(
+        '原生OpenAI格式、原生Gemini格式'
+      )
     ).toBeTruthy()
   })
 

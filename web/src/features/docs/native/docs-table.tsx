@@ -17,6 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import type { ReactNode } from 'react'
+import * as React from 'react'
+
+import { withCjkTermBreaks } from '@/lib/cjk-term-breaks'
 
 /**
  * MDX table → Clerk-style rounded frame.
@@ -27,13 +30,53 @@ import type { ReactNode } from 'react'
  * inner scroller keeps wide tables reachable without squaring off the corners.
  * Cell typography and dividers stay in `PROSE_CLASSES` (§23: 12/13px, horizontal
  * dividers only).
+ *
+ * 首列（每行第一个 th/td）经 `withCjkTermBreaks` 在中文词边界插入 `<wbr>`，
+ * 配合全局 CSS 的 `word-break: keep-all`，让「个人信息」按「个人|信息」换行，
+ * 而非被 `PROSE_CLASSES` 的 `overflow-wrap: anywhere` 拆成「个人信|息」。
+ * 全局 CSS 的 `overflow-wrap: normal` 已压过 prose 的 anywhere。
  */
 export function DocsTable({ children }: { children?: ReactNode }) {
   return (
     <div className='my-6 overflow-hidden rounded-xl border border-(--ds-color-border-table)'>
       <div className='overflow-x-auto'>
-        <table className='w-full border-collapse text-left'>{children}</table>
+        <table className='w-full border-collapse text-left'>
+          {withFirstColumnTermBreaks(children)}
+        </table>
       </div>
     </div>
   )
+}
+
+/** 递归改写每行第一个 th/td 的内容；只进入原生 HTML 元素，不动自定义组件。 */
+function withFirstColumnTermBreaks(node: ReactNode): ReactNode {
+  // React.Children.map 保留原始 key 与顺序，避免用数组下标当 key。
+  if (Array.isArray(node)) {
+    return React.Children.map(node, (child) => withFirstColumnTermBreaks(child))
+  }
+  if (!React.isValidElement(node) || typeof node.type !== 'string') return node
+
+  const element = node as React.ReactElement<{ children?: ReactNode }>
+  const children = element.props.children
+  if (children === undefined) return element
+
+  // <thead>/<tbody>/<tr>：继续下钻；<tr> 的直接第一个子元素是首列单元格。
+  if (node.type === 'tr') {
+    const cells = React.Children.toArray(children)
+    return React.cloneElement(
+      element,
+      undefined,
+      cells.map((cell, index) => (index === 0 ? withCjkTermBreaks(cell) : cell))
+    )
+  }
+
+  if (node.type === 'thead' || node.type === 'tbody') {
+    return React.cloneElement(
+      element,
+      undefined,
+      withFirstColumnTermBreaks(children)
+    )
+  }
+
+  return element
 }

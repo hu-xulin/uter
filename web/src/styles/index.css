@@ -812,3 +812,32 @@ a {
     font-size: max(1rem, 0.875em);
   }
 }
+
+/* ── 表格首列中文构词断行（用户决定 2026-11-26）──────────────────────
+ * 所有表格（DataTable / DocsTable / 原生 table）的首列按中文词语构成换行：
+ *   ① min-width: 4em —— 首列至少容纳 4 个汉字，短术语（个人信息/匿名化）
+ *      整体成行，不会被挤成「个人信」+「息」。
+ *   ② word-break: keep-all —— 禁止在词内部断字；换行只发生在词边界。
+ *   ③ overflow-wrap: normal —— 复位文档 prose 的 `[overflow-wrap:anywhere]`，
+ *      后者允许在任意汉字间断行，是术语表拆字的根因。
+ * 词边界由 <wbr> 提供（见 lib/cjk-text.ts 的 segmentCjkWords），在表格首列
+ * 的纯文本渲染处插入。checkbox 列不参与：它靠 role=checkbox 排除。
+ * 规则刻意不带 @layer：优先级高于 Tailwind utilities 与 prose 后代选择器。
+ */
+table tr > :is(td, th):first-child:not(:has([role='checkbox'])) {
+  overflow-wrap: normal;
+  min-width: 4em;
+}
+
+/* 用户 18:52 裁决：四字术语（违约程度列）与括号短语必须整体成行，
+ * 不接受 2+2 断行。分词层把这类完整术语包成 data-cjk-nowrap 原子节点。 */
+table tr > :is(td, th):first-child [data-cjk-nowrap] {
+  white-space: nowrap;
+}
+
+/* keep-all 只在已注入词边界 <wbr> 的首列启用：没有断点的长中文若强制
+ * keep-all 会把列撑宽到整串长度，反而破坏布局。有 wbr 时浏览器仅在
+ * 词边界换行，既不拆词也不撑列。 */
+table tr > :is(td, th):first-child:has(wbr) {
+  word-break: keep-all;
+}

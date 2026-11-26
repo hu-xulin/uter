@@ -110,20 +110,26 @@ export function Callout({
   const Icon = tone.icon
 
   return (
-    <div className='relative my-7 rounded-lg border border-(--ds-color-border-default) bg-(--ds-color-surface-base) py-3.5 pr-4 pl-6 text-sm'>
+    <div className='relative my-7 grid grid-cols-[auto_1fr] gap-x-2 rounded-lg border border-(--ds-color-border-default) bg-(--ds-color-surface-base) py-3.5 pr-4 pl-6 text-sm'>
       <span
         aria-hidden='true'
         className={`absolute inset-y-2 left-2 w-0.5 rounded-full ${tone.rail}`}
       />
-      <p className='mb-2 flex items-center gap-x-2'>
-        <Icon aria-hidden='true' className={`size-5 shrink-0 ${tone.accent}`} />
-        <span className={`text-sm font-semibold ${tone.accent}`}>
-          {t(tone.titleKey)}
-        </span>
-      </p>
+      {/* 图标独占第一列并跨两行；标题与正文显式同处第二列，正文左边缘
+          因此与标题文字对齐，而不是与图标左边缘对齐。 */}
+      <Icon
+        aria-hidden='true'
+        className={`row-span-2 mt-px size-5 shrink-0 self-start ${tone.accent}`}
+      />
+      {/* 标题用 span 而非 p：文档 prose 的 `[&_p]:text-long` / `[&_p]:my-2`
+          会把 p 级标题顶到 16/26 并额外加 margin，破坏提示块的 14/22 档位。 */}
+      <span className={`col-start-2 mb-2 text-sm font-semibold ${tone.accent}`}>
+        {t(tone.titleKey)}
+      </span>
       {/* 提示 / 警告正文统一 14/22（`--ds-text-sm`），不跟随文档长文本的
-          16/26；`!` 用于压过 PROSE_CLASSES 的 `[&_p]:text-long`。 */}
-      <div className='text-sm text-(--ds-color-text-secondary) [&_li]:text-sm! [&_ol]:my-1 [&_p]:my-1 [&_p]:text-sm! [&_ul]:my-1'>
+          16/26；`!` 用于压过 PROSE_CLASSES 的 `[&_p]:text-long`。首段去掉
+          上方间距，避免与标题的 mb-2 叠加成 16px 的视觉断层。 */}
+      <div className='col-start-2 text-sm text-(--ds-color-text-secondary) [&_li]:text-sm! [&_ol]:my-1 [&_p]:my-1 [&_p]:text-sm! [&_p:first-child]:mt-0 [&_ul]:my-1'>
         {children}
       </div>
     </div>

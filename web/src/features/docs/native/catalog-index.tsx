@@ -49,11 +49,13 @@ import {
   ArrowDownUp,
   type LucideIcon,
 } from 'lucide-react'
+import { createElement } from 'react'
 
 import { IconBadge } from '@/components/ui/icon-badge'
 import { Heading } from '@/design-system'
 import type { DocsLocaleCode } from '@/lib/docs-link'
 
+import { appLogoPath } from './app-logos'
 import {
   CONTENT_CARD_CLASS,
   CONTENT_CARD_GRID_CLASS,
@@ -187,7 +189,7 @@ function CatalogCardItem({
   locale: DocsLocaleCode
   card: CatalogCard
 }) {
-  const CardIcon = iconFor(section, card.id)
+  const logoPath = section === 'apps' ? appLogoPath(card.id) : undefined
   const root = section === 'api' ? API_PATH : APPS_PATH
   return (
     <li>
@@ -197,13 +199,23 @@ function CatalogCardItem({
         className={CONTENT_CARD_CLASS}
       >
         <span className='flex items-center gap-3'>
-          <IconBadge
-            tone='primary'
-            size='title'
-            className='[&>svg]:size-(--ds-icon-sm)!'
-          >
-            <CardIcon />
-          </IconBadge>
+          {logoPath ? (
+            <img
+              src={logoPath}
+              alt=''
+              aria-hidden='true'
+              data-app-logo={card.id}
+              className='size-(--ds-icon-lg) shrink-0 rounded-lg object-contain'
+            />
+          ) : (
+            <IconBadge
+              tone='primary'
+              size='title'
+              className='[&>svg]:size-(--ds-icon-sm)!'
+            >
+              {createElement(iconFor(section, card.id))}
+            </IconBadge>
+          )}
           <span className={`${CONTENT_CARD_TITLE_CLASS} min-w-0`}>
             {card.title}
           </span>
