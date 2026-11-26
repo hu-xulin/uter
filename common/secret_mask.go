@@ -19,7 +19,10 @@ For commercial licensing, please contact support@uter.ai
 
 package common
 
-import "strings"
+import (
+	"strings"
+	"unicode/utf8"
+)
 
 // 敏感选项键的判定与掩码。
 //
@@ -35,6 +38,11 @@ import "strings"
 //   - 长度 <= 4 → 全部星号（短密钥不暴露任何字符）；
 //   - 4 < 长度 <= 8 → 前 4 位 + 其余星号（长度不足以同时给前后各 4 位，优先前缀）；
 //   - 长度 > 8 → 前 4 位 + 中间星号（最多 12 个）+ 后 4 位。
+//
+// 「位」按 Unicode 码点（rune）计，不按字节。密钥可能被误粘贴上多字节前缀
+// （如中文「密钥sk-...」），按字节切片会在字符中间截断、产出无效 UTF-8，
+// 在界面上显示为 U+FFFD 替换符（「密?****」）。按 rune 截取保证前后各 4 个
+// 字符完整、掩码输出始终是合法 UTF-8。
 const (
 	secretMaskChar = '*'
 	// secretMaskKeepHead/Tail 为掩码时保留的前后字符数。
@@ -49,21 +57,28 @@ func MaskSecretValue(value string) string {
 	if value == "" {
 		return ""
 	}
-	length := len(value)
+	// 用 rune 长度而非字节长度：多字节字符按字节切片会破坏 UTF-8 序列。
+	runes := []rune(value)
+	length := len(runes)
 	if length <= secretMaskKeepHead {
 		return strings.Repeat(string(secretMaskChar), length)
 	}
 	if length <= secretMaskKeepHead+secretMaskKeepTail {
-		return value[:secretMaskKeepHead] +
+		return string(runes[:secretMaskKeepHead]) +
 			strings.Repeat(string(secretMaskChar), length-secretMaskKeepHead)
 	}
 	middle := length - secretMaskKeepHead - secretMaskKeepTail
 	if middle > secretMaskMaxMiddle {
 		middle = secretMaskMaxMiddle
 	}
-	return value[:secretMaskKeepHead] +
+	masked := string(runes[:secretMaskKeepHead]) +
 		strings.Repeat(string(secretMaskChar), middle) +
-		value[length-secretMaskKeepTail:]
+		string(runes[length-secretMaskKeepTail:])
+	// 按 rune 切片后输出必然合法；保留断言以防未来改动退化回字节切片。
+	if !utf8.ValidString(masked) {
+		return strings.Repeat(string(secretMaskChar), length)
+	}
+	return masked
 }
 
 // MaskMultilineSecret 按行掩码多行密钥。

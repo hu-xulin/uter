@@ -136,3 +136,16 @@ test('a channel pricing-engine override round-trips and an empty one is omitted'
     'pricing_engine'
   )
 })
+
+test('channel create payload strips translated label prefixes from pasted keys', () => {
+  const form = channelFormSchema.parse({
+    ...CHANNEL_FORM_DEFAULT_VALUES,
+    name: 'Uter Route',
+    type: 1,
+    key: '密钥sk-TESTONLY-NOT-A-REAL-KEY-END',
+    models: 'gpt-4o',
+  })
+  expect(transformFormDataToCreatePayload(form).channel.key).toBe(
+    'sk-TESTONLY-NOT-A-REAL-KEY-END'
+  )
+})

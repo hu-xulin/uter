@@ -19,7 +19,10 @@ For commercial licensing, please contact support@uter.ai
 
 package common
 
-import "testing"
+import (
+	"testing"
+	"unicode/utf8"
+)
 
 func TestMaskSecretValue(t *testing.T) {
 	cases := []struct {
@@ -47,6 +50,40 @@ func TestMaskSecretValue(t *testing.T) {
 			// 不变量：掩码绝不等于原文（除空串外），否则等于没掩码。
 			if tc.input != "" && got == tc.input {
 				t.Fatalf("mask of %q returned the plaintext", tc.input)
+			}
+		})
+	}
+}
+
+// TestMaskSecretValueMultibyteUTF8 守住多字节字符的掩码安全：真实密钥可能
+// 被误粘贴上中文前缀（如「密钥sk-...」），按字节切片会在字符中间截断，
+// 产出无效 UTF-8（显示为 U+FFFD 替换符）。掩码必须按 Unicode 码点截取，
+// 保证前后各 4 个「字符」完整、输出始终是合法 UTF-8。
+func TestMaskSecretValueMultibyteUTF8(t *testing.T) {
+	cases := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			"chinese prefix keeps four whole runes",
+			"密钥sk-TESTONLY-NOT-A-REAL-KEY-END",
+			"密钥sk" + "************" + "-END",
+		},
+		{
+			"emoji prefix keeps whole runes",
+			"🔑sk-0123456789abcdefwxyz",
+			"🔑sk-" + "************" + "wxyz",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := MaskSecretValue(tc.input)
+			if got != tc.want {
+				t.Fatalf("MaskSecretValue(%q) = %q, want %q", tc.input, got, tc.want)
+			}
+			if !utf8.ValidString(got) {
+				t.Fatalf("mask of %q is not valid UTF-8: %q", tc.input, got)
 			}
 		})
 	}

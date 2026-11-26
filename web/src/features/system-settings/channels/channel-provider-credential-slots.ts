@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { isMaskedSecret } from '@/lib/secret'
+import { isMaskedSecret, sanitizeSecretValue } from '@/lib/secret'
 
 import type { UpdateOptionRequest } from '../types'
 import type { ChannelProviderPrefix } from './channel-provider-settings-form'
@@ -192,7 +192,9 @@ export function buildChannelProviderCredentialSlotUpdates(
     defaults.map((slot) => [slot.slotId, slot.apiKey.trim()])
   )
   for (const slot of values) {
-    const next = String(slot.apiKey ?? '').trim()
+    // 粘贴时可能混入界面翻译标签（如 zh 的 t('Key') = 「密钥」），
+    // 保存前先剥离，避免脏前缀落库后在输入框里显示为乱码掩码。
+    const next = sanitizeSecretValue(String(slot.apiKey ?? ''))
     const previous = oldKeys.get(slot.slotId) ?? ''
     if (!next || next === previous || isMaskedSecret(next)) continue
     const key = channelProviderSlotAPIKeyOption(prefix, slot.slotId)

@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { isMaskedSecret } from '@/lib/secret'
+import { isMaskedSecret, sanitizeSecretValue } from '@/lib/secret'
 
 import type {
   ChannelProviderSettings,
@@ -162,11 +162,14 @@ export function buildChannelProviderUpdates(
   ]
 
   for (const field of fields) {
-    const next = (values[field] ?? '').trim()
+    const secret = field === 'password' || field === 'apiKey'
+    // 密钥粘贴时可能混入界面翻译标签（如 zh 的 t('Key') = 「密钥」）；
+    // 保存前剥离，避免脏前缀落库。非密钥字段（URL/用户名）原样保留。
+    const raw = (values[field] ?? '').trim()
+    const next = secret ? sanitizeSecretValue(raw) : raw
     const previous = (defaults[field] ?? '').trim()
     if (next === previous) continue
 
-    const secret = field === 'password' || field === 'apiKey'
     if (secret && (next === '' || isMaskedSecret(next))) continue
 
     updates.push({

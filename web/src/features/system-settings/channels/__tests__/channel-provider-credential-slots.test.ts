@@ -123,4 +123,26 @@ describe('channel provider credential slots', () => {
       },
     ])
   })
+
+  it('strips a translated label prefix pasted into a credential key before saving', () => {
+    const defaults = [slot({ apiKey: '' })]
+    const values = [
+      slot({
+        apiKey: '密钥sk-TESTONLY-NOT-A-REAL-KEY-END',
+      }),
+    ]
+
+    const updates = buildChannelProviderCredentialSlotUpdates(
+      'subscription',
+      values,
+      defaults
+    )
+
+    expect(updates).toEqual([
+      {
+        key: channelProviderSlotAPIKeyOption('subscription', 'slot-claude'),
+        value: 'sk-TESTONLY-NOT-A-REAL-KEY-END',
+      },
+    ])
+  })
 })

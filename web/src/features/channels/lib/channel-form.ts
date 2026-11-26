@@ -18,6 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { z } from 'zod'
 
+import { sanitizeMultilineSecret } from '@/lib/secret'
+
 import {
   CLAUDE_FIELD_PASSTHROUGH_TYPES,
   CHANNEL_TYPE_NEW_API,
@@ -1008,7 +1010,7 @@ export function transformFormDataToCreatePayload(formData: ChannelFormValues): {
     name: formData.name,
     type: formData.type,
     base_url: normalizeBaseUrl(formData.base_url) || null,
-    key: formData.key,
+    key: sanitizeMultilineSecret(formData.key ?? ''),
     openai_organization: formData.openai_organization || null,
     models: formData.models,
     group: formatGroups(formData.group),
@@ -1077,7 +1079,7 @@ export function transformFormDataToUpdatePayload(
 
   // Only include key if it was changed (not empty)
   if (formData.key && formData.key.trim()) {
-    payload.key = formData.key
+    payload.key = sanitizeMultilineSecret(formData.key)
   }
 
   // Clean up empty strings to null for optional fields

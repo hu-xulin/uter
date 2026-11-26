@@ -25,16 +25,23 @@ For commercial licensing, please contact support@uter.ai
  * - 4 < 长度 <= 8：前 4 个字符 + 其余星号（长度不足以同时显示前后各 4 位，优先保留前缀）。
  * - 长度 > 8：前 4 + 中间星号 + 后 4。
  *
+ * 「字符」按 Unicode 码点计，不是 UTF-16 code unit：用 `str.slice()` 截断会
+ * 拆开 emoji 的代理对，产出孤立代理项（界面显示为 U+FFFD）。`Array.from`
+ * 按码点拆分，与后端 Go 的 `[]rune` 行为一致，保证前后各 4 个完整字符。
+ *
  * 关键：本函数只用于「显示」，绝不返回真实密钥原文（除已展示的前后各 4 位）。
  * 表单保存时务必使用真实值，切勿把掩码串写回后端。
  */
 export function maskSecret(value: string): string {
   if (!value) return ''
-  const len = value.length
+  const chars = [...value]
+  const len = chars.length
   if (len <= 4) return '*'.repeat(len)
-  if (len <= 8) return value.slice(0, 4) + '*'.repeat(len - 4)
-  const head = value.slice(0, 4)
-  const tail = value.slice(-4)
+  if (len <= 8) {
+    return chars.slice(0, 4).join('') + '*'.repeat(len - 4)
+  }
+  const head = chars.slice(0, 4).join('')
+  const tail = chars.slice(-4).join('')
   const middle = '*'.repeat(Math.min(len - 8, 12))
   return head + middle + tail
 }
@@ -52,6 +59,72 @@ export function maskMultilineSecret(value: string): string {
   return value
     .split('\n')
     .map((line) => maskSecret(line.replace(/\r$/, '')))
+    .join('\n')
+}
+
+/**
+ * 已知密钥特征前缀。只有 CJK 标签紧跟这些前缀时才判定为「粘贴时混入的界面
+ * 翻译标签」，避免误伤合法中文密码。
+ */
+const KNOWN_KEY_SIGNATURES = [
+  'sk-',
+  'sk_',
+  'ghp_',
+  'gho_',
+  'ghu_',
+  'ghs_',
+  'ghr_',
+  'github_pat_',
+  'AKIA',
+  'ASIA',
+  'AIza',
+  'xoxb-',
+  'xoxp-',
+  'xoxa-',
+  'xoxs-',
+  'whsec_',
+  'Bearer ',
+]
+
+// 由常量生成前瞻表达式，避免正则与常量列表漂移。
+const KEY_SIGNATURE_LOOKAHEAD = KNOWN_KEY_SIGNATURES.map((signature) =>
+  signature.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')
+).join('|')
+
+/**
+ * 剥离粘贴密钥时混入的界面翻译标签前缀（如 zh 的 `t('Key')` = 「密钥」）。
+ *
+ * 仅当值以 CJK 文本开头、且其后紧跟已知密钥特征时才清洗；掩码串与合法中文
+ * 密码原样返回。调用方应在「保存」前调用本函数，确保脏前缀不落库。
+ */
+export function sanitizeSecretValue(value: string): string {
+  const trimmed = value.trim()
+  if (!trimmed || isMaskedSecret(trimmed)) return trimmed
+
+  // 匹配开头的标签区段（可含 ASCII 字母如 "API"、CJK、分隔标点），其后
+  // 紧跟已知密钥特征。要求区段内至少含一个 CJK 字符，避免误伤纯 ASCII 密钥。
+  const cjk = '\\u3400-\\u9FFF\\uF900-\\uFAFF'
+  const match = trimmed.match(
+    new RegExp(
+      `^((?=[\\s\\S]*[${cjk}])[A-Za-z\\s${cjk}\\u3000-\\u303F：:]+?)(?=(?:${KEY_SIGNATURE_LOOKAHEAD}))`,
+      'iu'
+    )
+  )
+  if (!match || !match[1]) return trimmed
+
+  return trimmed.slice(match[1].length)
+}
+
+/**
+ * 逐行清洗多行密钥。API Key 支持一行一个，粘贴时每行都可能混入翻译前缀。
+ * 结构化凭证（JSON、PEM 等）不含已知密钥特征前缀，本函数对其为 no-op。
+ */
+export function sanitizeMultilineSecret(value: string): string {
+  if (!value) return ''
+  if (!value.includes('\n')) return sanitizeSecretValue(value)
+  return value
+    .split('\n')
+    .map((line) => sanitizeSecretValue(line.replace(/\r$/, '')))
     .join('\n')
 }
 
