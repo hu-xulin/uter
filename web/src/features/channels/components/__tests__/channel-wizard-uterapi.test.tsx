@@ -313,6 +313,9 @@ test('Uter.api 编辑态走 PUT 更新：无分组 UI、保留 Base URL 与 Key 
   })
   mocks = setupWizardApiMocks({ editingRow: row })
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Uter.api existing')
 
   expect(screen.queryByRole('combobox', { name: 'Group' })).toBeNull()

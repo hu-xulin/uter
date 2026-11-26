@@ -56,13 +56,15 @@ function record(
   }
 }
 
-function renderSection() {
+function renderSection(
+  options: { modelMapping?: string; publishedModels?: string[] } = {}
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   return render(
     <QueryClientProvider client={client}>
-      <ChannelModelPricingSection channelId={1233} />
+      <ChannelModelPricingSection channelId={1233} {...options} />
     </QueryClientProvider>
   )
 }
@@ -109,6 +111,56 @@ test('counts unique models, not provider rows, and surfaces the review filter', 
   // assertion only cares that the model is visible again.
   expect(screen.getAllByText('m-a').length).toBeGreaterThan(0)
   expect(screen.getByText('m-b')).toBeInTheDocument()
+})
+
+test('shows only published aliases when the channel uses redirects', async () => {
+  vi.mocked(getChannelModelPricing).mockResolvedValue({
+    success: true,
+    data: {
+      items: [
+        record('MiniMax-H3-Max', 'uterroute', 'configured'),
+        record('MiniMax-H3-Max-dr', 'uterroute', 'configured'),
+        record('Unmapped-Model', 'uterroute', 'configured'),
+      ],
+    },
+  } as never)
+
+  renderSection({
+    modelMapping: '{"MiniMax-H3-Max-dr":"MiniMax-H3-Max"}',
+    publishedModels: ['MiniMax-H3-Max-dr'],
+  })
+
+  await waitFor(() =>
+    expect(screen.getByText(/1 models · 1 configured · 0 review/)).toBeVisible()
+  )
+  expect(screen.getByText('MiniMax-H3-Max-dr')).toBeVisible()
+  expect(screen.queryByText('MiniMax-H3-Max')).not.toBeInTheDocument()
+  expect(screen.queryByText('Unmapped-Model')).not.toBeInTheDocument()
+})
+
+test('applies the same alias-only rule to a different channel mapping', async () => {
+  vi.mocked(getChannelModelPricing).mockResolvedValue({
+    success: true,
+    data: {
+      items: [
+        record('gpt-5-upstream', 'uterroute', 'configured'),
+        record('gpt-5-upstream-dr', 'uterroute', 'configured'),
+        record('claude-upstream-dr', 'uterroute', 'configured'),
+      ],
+    },
+  } as never)
+
+  renderSection({
+    modelMapping: '{"gpt-5-upstream-dr":"gpt-5-upstream"}',
+    publishedModels: ['gpt-5-upstream-dr'],
+  })
+
+  await waitFor(() =>
+    expect(screen.getByText(/1 models · 1 configured · 0 review/)).toBeVisible()
+  )
+  expect(screen.getByText('gpt-5-upstream-dr')).toBeVisible()
+  expect(screen.queryByText('gpt-5-upstream')).not.toBeInTheDocument()
+  expect(screen.queryByText('claude-upstream-dr')).not.toBeInTheDocument()
 })
 
 test('a duplicate configured row cannot hide a model awaiting review', async () => {

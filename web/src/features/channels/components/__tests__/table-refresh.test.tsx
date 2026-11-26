@@ -49,6 +49,7 @@ function channel(name: string): Channel {
     id: 3,
     type: 1,
     key: '',
+    masked_key: '',
     status: 1,
     name,
     created_time: 0,

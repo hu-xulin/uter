@@ -22,7 +22,10 @@ import { excludeRedirectedUpstreams } from '../lib/model-helpers'
 
 describe('excludeRedirectedUpstreams', () => {
   test('keeps the whole catalog when nothing is flagged', () => {
-    const models = [{ model_name: 'gpt-4o' }, { model_name: 'gpt-4o-dr' }]
+    const models: Array<{ model_name: string; hidden_by_redirect?: boolean }> = [
+      { model_name: 'gpt-4o' },
+      { model_name: 'gpt-4o-dr' },
+    ]
     expect(excludeRedirectedUpstreams(models)).toEqual(models)
   })
 

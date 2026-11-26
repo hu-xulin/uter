@@ -34,7 +34,7 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
-import { afterEach, beforeEach, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import { api } from '@/lib/api'
 import { createAppQueryClient } from '@/lib/query-client'
@@ -132,6 +132,19 @@ function ConfigurationHarness(props: {
       </RouterContextProvider>
     </QueryClientProvider>
   )
+}
+
+// 编辑与创建现在走同一条向导：先确认供应商，再进入六步骤。
+// 编辑用例统一先完成这一步，再等待已有渠道表单就绪。
+async function enterEditingWizard(
+  user: ReturnType<typeof userEvent.setup>,
+  savedName = 'Existing channel'
+) {
+  const back = await screen.findByRole('button', {
+    name: 'Back to configuration',
+  })
+  await user.click(back)
+  return screen.findByDisplayValue(savedName)
 }
 
 beforeEach(() => {
@@ -279,8 +292,8 @@ afterEach(() => {
   })
 })
 
-// Editing opens the sheet on the left, so the sheet spans x = 0..900 and the
-// free space for the floating panel is on its right.
+// Creation and editing both open the sheet on the right, so the sheet spans
+// x = 0..900 and the free space for the floating panel is on its right.
 function useWideScreen() {
   Object.defineProperty(window, 'innerWidth', {
     configurable: true,
@@ -373,7 +386,7 @@ test.each([
       .mockResolvedValue({ data: { success: true } })
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     if (type === 45) {
       const addressLabel = screen.getByText('API Base URL')
       for (let click = 0; click < 10; click++) {
@@ -409,7 +422,7 @@ test('an unavailable default URL endpoint keeps the fallback placeholder and all
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const address = screen.getByRole('textbox', { name: 'Base URL' })
   expect(address).toHaveAttribute('placeholder', 'Leave empty to use default')
   expect(address).toHaveValue('https://saved.example')
@@ -428,7 +441,7 @@ test('an unavailable default URL endpoint keeps the fallback placeholder and all
 test('model mapping help opens on click, stays open after pointer exit, and closes without dismissing the channel', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openCreateAdvancedSection(user, 'Routing & Mapping')
   const trigger = screen.getByRole('button', {
     name: 'How model mapping works',
@@ -457,7 +470,7 @@ test('model mapping help supports keyboard activation and wraps long model names
     '{"customer-production-reasoning-model-alias":"provider/region/deployment/production-reasoning-model-version"}'
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openCreateAdvancedSection(user, 'Routing & Mapping')
   const trigger = screen.getByRole('button', {
     name: 'How model mapping works',
@@ -631,7 +644,7 @@ test.each(['Cancel', 'Escape'])(
   async (action) => {
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     await openCreateAdvancedSection(user, 'Routing & Mapping')
     fireEvent.change(screen.getByLabelText('Priority'), {
       target: { value: '8' },
@@ -818,7 +831,7 @@ test.each(['create', 'edit'])(
         target: { value: 'https://channel.example' },
       })
     } else {
-      await screen.findByDisplayValue('Existing channel')
+      await enterEditingWizard(user)
     }
     const extensions = await screen.findByRole('group', {
       name: 'Plugin extensions',
@@ -920,6 +933,7 @@ test('plugin model selection shares the field state, preserves other sources, an
   ]
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
+  await enterEditingWizard(user)
   const extensions = within(
     await screen.findByRole('group', { name: 'Plugin extensions' })
   )
@@ -1002,7 +1016,7 @@ test('retrying extension metadata preserves the editable built-in draft and sele
   })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   expect(await screen.findByText('Failed to load plugins')).toBeVisible()
   expect(
     screen.queryByRole('group', { name: 'Plugin extensions' })
@@ -1245,7 +1259,7 @@ test('quick options and detailed settings share changes across the steps and sav
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const quick = await openCreateQuickOptions(user)
   for (const name of [
     'Pass Through Body',
@@ -1403,7 +1417,7 @@ test('editing opens the shared configuration and omits an unchanged key on updat
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={channel} />)
-  expect(await screen.findByDisplayValue('Existing channel')).toBeVisible()
+  expect(await enterEditingWizard(user)).toBeVisible()
   expect(screen.queryByLabelText('Type *')).not.toBeInTheDocument()
   expect(screen.getByRole('button', { name: 'Change provider' })).toBeVisible()
   expect(screen.getAllByRole('tab')).toHaveLength(6)
@@ -1440,7 +1454,7 @@ test('editing legacy channels retains the full provider list and saves the origi
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Change provider' }))
   expect(
     await screen.findByRole('option', { name: 'Sora Plugin sora' })
@@ -1481,7 +1495,7 @@ test('opening and reselecting an existing plugin preserves its saved configurati
   }
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  expect(await screen.findByDisplayValue('Existing channel')).toBeVisible()
+  expect(await enterEditingWizard(user)).toBeVisible()
   expect(screen.getByDisplayValue('https://saved.example')).toBeVisible()
   // The saved model is preserved in both the picker chip and the per-model
   // routing panel that mirrors the models selected for an existing channel.
@@ -1521,7 +1535,9 @@ test('an unavailable plugin keeps its identifier and binding when other fields a
   const put = vi
     .spyOn(api, 'put')
     .mockResolvedValue({ data: { success: true } })
+  const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
+  await enterEditingWizard(user)
   expect(await screen.findByText('removed-plugin')).toBeVisible()
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'Updated name' },
@@ -1551,7 +1567,7 @@ test('a failed detail request blocks updating until retry loads the saved channe
   expect(screen.getByRole('button', { name: 'Change provider' })).toBeDisabled()
   expect(screen.queryByLabelText('Name *')).not.toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Retry' }))
-  expect(await screen.findByDisplayValue('Existing channel')).toBeVisible()
+  expect(await enterEditingWizard(user)).toBeVisible()
   expect(screen.getByRole('button', { name: 'Update Channel' })).toBeEnabled()
 })
 
@@ -1559,7 +1575,7 @@ test('restoring routing defaults clears the configured indicator for both the bl
   editingChannel = { ...editingChannel, auto_ban: 0 }
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const tab = screen.getByRole('tab', { name: /Other settings/ })
   expect(tab).toHaveAccessibleName(/Configured/)
   const status = within(tab).getByRole('img', { name: 'Configured' })
@@ -1594,7 +1610,7 @@ test('request processing configuration does not mark the network category as con
   }
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openCreateAdvancedSection(user, 'Request & Response')
   expect(
     within(screen.getByRole('group', { name: 'Override Rules' })).queryByRole(
@@ -1626,7 +1642,7 @@ test.each([1, 57, 58, 59, 60])(
     }
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     const otherTab = screen.getByRole('tab', { name: /Other settings/ })
     expect(otherTab).toHaveAccessibleName(/Configured/)
     await openCreateAdvancedSection(user, 'Request & Response')
@@ -1649,7 +1665,7 @@ test.each([
     editingChannel = { ...editingChannel, type }
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     await openCreateAdvancedSection(user, 'Request & Response')
     expect(
       screen.getByRole('switch', { name: 'Enable Responses WebSocket' })
@@ -1666,6 +1682,7 @@ test.each([
 )
 
 test('configuration from fields unsupported by the selected provider stays unmarked', async () => {
+  const user = userEvent.setup()
   editingChannel = {
     ...editingChannel,
     type: 61,
@@ -1675,7 +1692,7 @@ test('configuration from fields unsupported by the selected provider stays unmar
       '{"allow_speed":true,"allow_service_tier":true,"upstream_model_update_check_enabled":true,"ollama_openai_chat":true}',
   }
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   expect(
     screen.getByRole('tab', { name: /Other settings/ })
   ).not.toHaveAccessibleName(/Configured/)
@@ -1700,7 +1717,7 @@ test('an Ollama channel marks a saved OpenAI-compatible chat setting in Request 
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const otherTab = screen.getByRole('tab', { name: /Other settings/ })
   expect(otherTab).toHaveAccessibleName(/Configured/)
   await openCreateAdvancedSection(user, 'Request & Response')
@@ -1729,7 +1746,7 @@ test('a saved upstream TLS verification skip marks Other Settings and turning it
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const otherTab = screen.getByRole('tab', { name: /Other settings/ })
   expect(otherTab).toHaveAccessibleName(/Configured/)
   await user.click(otherTab)
@@ -1754,7 +1771,7 @@ test('turning on the upstream TLS verification skip saves it in the channel sett
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openOtherStep(user)
   const toggle = screen.getByRole('switch', {
     name: 'Skip Upstream TLS Verification',
@@ -1772,7 +1789,7 @@ test('turning on the upstream TLS verification skip saves it in the channel sett
 test('an invalid edit switches categories and replaces configured styling with the field error', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openOtherStep(user)
   fireEvent.change(screen.getByLabelText('Proxy Address'), {
     target: { value: 'invalid-proxy' },
@@ -1809,7 +1826,7 @@ test('ordinary edits discover models with saved settings and keep removed draft 
   const post = vi.spyOn(api, 'post')
   const put = vi.spyOn(api, 'put')
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   fireEvent.change(screen.getByDisplayValue('https://saved.example'), {
     target: { value: 'https://draft.example' },
   })
@@ -1854,7 +1871,7 @@ test('ordinary edits discover models with saved settings and keep removed draft 
 test('select all adds every fetched upstream model and keeps saved models', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
 
   const selectAll = screen.getByRole('button', { name: 'Select All' })
   expect(selectAll).toBeDisabled()
@@ -2049,7 +2066,7 @@ test('create runs six fixed steps and keeps advanced settings on the last step',
 test('advanced settings are visible in the other-settings step', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('tab', { name: /Other settings/ }))
 
   expect(screen.queryByRole('button', { name: 'Advanced settings' })).toBeNull()
@@ -2059,7 +2076,7 @@ test('advanced settings are visible in the other-settings step', async () => {
 test('the review step exposes pricing as a header action', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('tab', { name: /Other settings/ }))
   const openPricing = screen.getByRole('button', { name: 'Open pricing' })
   expect(openPricing).toBeVisible()
@@ -2071,8 +2088,9 @@ test('the review step exposes pricing as a header action', async () => {
 })
 
 test('model configuration replaces the selected-count badge at the right of the model field header', async () => {
+  const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
 
   const models = screen.getByRole('group', { name: 'Models' })
   const input = within(models).getByRole('combobox', {
@@ -2104,7 +2122,7 @@ test('model configuration uses only the current form models and persists changes
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await screen.findByRole('checkbox', { name: 'upstream-model' })
   await user.type(
@@ -2170,7 +2188,7 @@ test.each(['Cancel', 'Close', 'Escape'])(
     editingChannel.models = 'gpt-one,gpt-two'
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     const trigger = screen.getByRole('button', { name: 'Configure Models' })
     trigger.focus()
     await user.keyboard('{Enter}')
@@ -2204,7 +2222,7 @@ test('model configuration keeps unchecked candidates searchable and supports cat
   editingChannel.models = 'gpt-one,gpt-two,manual-model'
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const trigger = screen.getByRole('button', { name: 'Configure Models' })
   await user.click(trigger)
   const dialog = within(
@@ -2290,7 +2308,7 @@ test('advanced custom edits preview draft connection settings with the saved key
     .mockResolvedValue({ data: { success: true, data: ['preview-model'] } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   fireEvent.change(screen.getByDisplayValue('https://saved.example'), {
     target: { value: 'https://draft.example' },
   })
@@ -2338,6 +2356,7 @@ test('an operator without sensitive write permission can discover saved models a
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
+  // 无敏感写入权限按设计跳过供应商确认页，直接进入只读配置。
   await screen.findByDisplayValue('Existing channel')
   expect(screen.getByRole('button', { name: 'Change provider' })).toBeDisabled()
   expect(screen.getByLabelText('API Key *')).toBeDisabled()
@@ -2397,7 +2416,7 @@ test.each([
       .mockResolvedValue({ data: { success: true } })
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     const strategy = screen.getByRole('combobox', {
       name: 'Multi-Key Strategy',
     })
@@ -2417,11 +2436,12 @@ test.each([
 )
 
 test('single-key editing omits the multi-key strategy control and update field', async () => {
+  const user = userEvent.setup()
   const put = vi
     .spyOn(api, 'put')
     .mockResolvedValue({ data: { success: true } })
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   expect(
     screen.queryByRole('combobox', { name: 'Multi-Key Strategy' })
   ).not.toBeInTheDocument()
@@ -2446,7 +2466,7 @@ test.each(['append', 'replace'])(
       .mockResolvedValue({ data: { success: true } })
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     if (mode === 'replace') {
       await user.click(
         screen.getByRole('combobox', { name: 'Key Update Mode' })
@@ -2473,7 +2493,7 @@ test('a failed update retains the draft through a background detail refetch', as
   })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   fireEvent.change(screen.getByLabelText('Name *'), {
     target: { value: 'Unsaved name' },
   })
@@ -2505,10 +2525,10 @@ test('switching edited channels discards a pending model list from the previous 
   })
   const user = userEvent.setup()
   const view = render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   view.rerender(<ConfigurationHarness currentRow={otherChannel} />)
-  await screen.findByDisplayValue('Second channel')
+  await enterEditingWizard(user, 'Second channel')
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   expect(
     await screen.findByRole('checkbox', { name: 'second-model' })
@@ -2523,12 +2543,13 @@ test('switching edited channels discards a pending model list from the previous 
 })
 
 test('an unknown saved type remains editable without selecting a new provider', async () => {
+  const user = userEvent.setup()
   editingChannel = { ...editingChannel, type: 999 }
   const put = vi
     .spyOn(api, 'put')
     .mockResolvedValue({ data: { success: true } })
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  expect(await screen.findByDisplayValue('Existing channel')).toBeVisible()
+  expect(await enterEditingWizard(user)).toBeVisible()
   expect(screen.getByText('#999')).toBeVisible()
   await userEvent.click(screen.getByRole('button', { name: 'Update Channel' }))
   await waitFor(() => expect(put).toHaveBeenCalled())
@@ -2538,7 +2559,7 @@ test('an unknown saved type remains editable without selecting a new provider', 
 test('a background refresh updates untouched values without moving the selected category', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openCreateAdvancedSection(user, 'Routing & Mapping')
   editingChannel = { ...editingChannel, priority: 5 }
   await act(async () => {
@@ -2551,7 +2572,7 @@ test('a background refresh updates untouched values without moving the selected 
   await waitFor(() => expect(screen.getByLabelText('Priority')).toHaveValue(5))
 })
 
-test('closing an edited channel retains its left exit direction after the parent clears the row', async () => {
+test('closing an edited channel retains its right exit direction after the parent clears the row', async () => {
   const animation = deferredResponse<void>()
   const originalGetAnimations = Object.getOwnPropertyDescriptor(
     HTMLElement.prototype,
@@ -2570,15 +2591,15 @@ test('closing an edited channel retains its left exit direction after the parent
     const view = render(
       <ConfigurationHarness currentRow={editingChannel} clearRowOnClose />
     )
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     const drawer = screen.getByRole('dialog')
-    expect(drawer).toHaveAttribute('data-side', 'left')
+    expect(drawer).toHaveAttribute('data-side', 'right')
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     await waitFor(() => expect(drawer).toHaveAttribute('data-ending-style'))
     expect(drawer).toBeInTheDocument()
-    expect(drawer).toHaveAttribute('data-side', 'left')
-    expect(drawer).toHaveClass('left-0')
-    expect(drawer).not.toHaveClass('right-0')
+    expect(drawer).toHaveAttribute('data-side', 'right')
+    expect(drawer).toHaveClass('right-0')
+    expect(drawer).not.toHaveClass('left-0')
     await act(async () => {
       animation.resolve()
     })
@@ -2608,7 +2629,7 @@ test('the model list summarizes redirects, counts them on the last step, and jum
   }
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   expect(screen.getByText('1 model(s) redirected')).toBeVisible()
   const tab = screen.getByRole('tab', { name: /Other settings/ })
   expect(tab).toHaveAccessibleName(/^Other settings\s?1 model mapping\(s\)$/)
@@ -2629,7 +2650,7 @@ test('the model list summarizes redirects, counts them on the last step, and jum
 test('without mappings the model list offers to set up redirects and the last step shows no count', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const tab = screen.getByRole('tab', { name: /Other settings/ })
   expect(tab).toHaveAccessibleName('Other settings')
   expect(screen.queryByText(/model\(s\) redirected/)).not.toBeInTheDocument()
@@ -2647,7 +2668,7 @@ test('mapping guardrail alerts link to the tab that holds the fix', async () => 
   }
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const routingTab = screen.getByRole('tab', { name: /Other settings/ })
   const connectionTab = screen.getByRole('tab', {
     name: /Connect(ion| channel)/,
@@ -2661,7 +2682,7 @@ test('mapping guardrail alerts link to the tab that holds the fix', async () => 
 test('redirecting a model from the model picker publishes it, adds a mapping row, and focuses its upstream field', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Configure Models' }))
   const dialog = within(
     screen.getByRole('dialog', { name: 'Configure Models' })
@@ -2692,7 +2713,7 @@ test('fetched upstream models can be redirected in bulk with the model list sync
   editingChannel.models = 'custom-model,upstream-model'
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await user.click(
     await screen.findByRole('tab', { name: 'Existing Models (1)' })
@@ -2735,7 +2756,7 @@ test('fetched upstream models can be redirected in bulk with the model list sync
 test('a fetched upstream model can be given a request name from its own row', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await screen.findByRole('checkbox', { name: 'upstream-model' })
 
@@ -2760,7 +2781,7 @@ test('on wide screens redirecting a fetched model opens the floating panel besid
   useWideScreen()
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await screen.findByRole('checkbox', { name: 'upstream-model' })
 
@@ -2771,9 +2792,10 @@ test('on wide screens redirecting a fetched model opens the floating panel besid
     name: 'Model redirects',
   })
   const panel = within(panelElement)
+  // 抽屉现在和创建渠道一样从右侧滑入，浮动面板落在抽屉左侧。
   expect(panelElement).toHaveStyle({
     position: 'fixed',
-    left: '916px',
+    left: '16px',
     top: '16px',
     width: '420px',
   })
@@ -2835,7 +2857,7 @@ test.each(['current session', 'saved preference'])(
     }
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
-    await screen.findByDisplayValue('Existing channel')
+    await enterEditingWizard(user)
     await user.click(
       screen.getByRole('button', { name: 'Fetch from Upstream' })
     )
@@ -2910,7 +2932,7 @@ test('redirecting a recognized upstream name opens an empty alias draft without 
   })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await user.click(
     await screen.findByRole('button', { name: 'Redirect gpt-4o-all' })
@@ -2948,7 +2970,7 @@ test('the redirect panel batch action starts empty and only applies explicitly s
   })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
   await user.click(
     await screen.findByRole('tab', { name: 'Existing Models (2)' })
@@ -3006,7 +3028,7 @@ test('on wide screens editing keeps the quick options on the last step like crea
   useWideScreen()
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   // The quick options are no longer a header strip: editing runs the same six
   // steps as creation, so the shortcuts stay on the last step.
   expect(
@@ -3040,7 +3062,7 @@ test('the passthrough quick option confirms before writing the wildcard rule and
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   const quick = await openCreateQuickOptions(user)
   const headers = quick.getByRole('switch', {
     name: 'Pass Through Request Headers',
@@ -3097,7 +3119,7 @@ test('the passthrough quick option confirms before writing the wildcard rule and
 test('the header override passthrough template button confirms before filling the wildcard rule', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openCreateAdvancedSection(user, 'Request & Response')
   const editor = screen.getByLabelText(
     'Request Header Override'
@@ -3145,6 +3167,7 @@ test('a New API channel binds upstream task plugins and publishes their models',
     .mockResolvedValue({ data: { success: true } })
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={channel} />)
+  await enterEditingWizard(user)
   const extensions = within(
     await screen.findByRole('group', { name: 'Plugin extensions' })
   )
@@ -3220,6 +3243,7 @@ test.each([
       .mockResolvedValue({ data: { success: true } })
     const user = userEvent.setup()
     render(<ConfigurationHarness currentRow={editingChannel} />)
+    await enterEditingWizard(user)
     const selector = await screen.findByRole('combobox', { name: 'AWS API' })
     await waitFor(() => expect(selector).toHaveTextContent(shown))
     await user.click(selector)
@@ -3263,7 +3287,7 @@ test('AWS interface selection is disabled without sensitive channel write permis
 test('the Models step hosts the model editor and quick options', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('tab', { name: /Fetch models/i }))
   expect(screen.getByRole('tab', { name: /Fetch models/i })).toHaveAttribute(
     'aria-selected',
@@ -3281,7 +3305,7 @@ test('the Models step shows model sync status, fields, and a scrollable routing 
   ).join(',')
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await user.click(screen.getByRole('tab', { name: /Fetch models/i }))
 
   expect(
@@ -3302,7 +3326,7 @@ test('the Models step shows model sync status, fields, and a scrollable routing 
 test('the review step labels the channel type, status, and group count', async () => {
   const user = userEvent.setup()
   render(<ConfigurationHarness currentRow={editingChannel} />)
-  await screen.findByDisplayValue('Existing channel')
+  await enterEditingWizard(user)
   await openOtherStep(user)
 
   const typeRow = screen.getByText('Channel type').closest('div')
@@ -3315,4 +3339,57 @@ test('the review step labels the channel type, status, and group count', async (
   expect(within(typeRow as HTMLElement).getByText('OpenAI')).toBeVisible()
   expect(within(statusRow as HTMLElement).getByText('Enabled')).toBeVisible()
   expect(within(groupsRow as HTMLElement).getByText('1')).toBeVisible()
+})
+
+describe('创建与编辑渠道的流程一致性', () => {
+  const wizardSteps = [
+    'Connect channel',
+    'Fetch models',
+    'Fetch prices',
+    'Configure prices',
+    'Automatic updates',
+    'Other settings',
+  ]
+
+  test('编辑渠道与创建渠道一样从右侧打开并先经过供应商选择页', async () => {
+    render(<ConfigurationHarness currentRow={editingChannel} />)
+
+    const drawer = screen.getByRole('dialog', { name: 'Edit Channel' })
+    expect(drawer).toHaveAttribute('data-side', 'right')
+    expect(drawer).toHaveClass('right-0')
+    expect(
+      await screen.findByRole('button', { name: 'Back to configuration' })
+    ).toBeVisible()
+    expect(
+      screen.getByRole('tablist', { name: 'Provider source' })
+    ).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: 'Paste Connection Info' })
+    ).not.toBeInTheDocument()
+  })
+
+  test('编辑与创建确认供应商后展示相同的六个步骤', async () => {
+    const user = userEvent.setup()
+
+    render(<ConfigurationHarness />)
+    await user.click(await screen.findByRole('option', { name: /^OpenAI / }))
+    for (const step of wizardSteps) {
+      expect(screen.getByRole('tab', { name: new RegExp(step) })).toBeVisible()
+    }
+    cleanup()
+
+    render(<ConfigurationHarness currentRow={editingChannel} />)
+    await enterEditingWizard(user)
+    for (const step of wizardSteps) {
+      expect(screen.getByRole('tab', { name: new RegExp(step) })).toBeVisible()
+    }
+  })
+
+  test('编辑与创建都在其他设置步骤提供品牌编辑', async () => {
+    const user = userEvent.setup()
+    render(<ConfigurationHarness currentRow={editingChannel} />)
+    await enterEditingWizard(user)
+    await openOtherStep(user)
+    expect(screen.getByLabelText('Channel display name')).toBeVisible()
+  })
 })

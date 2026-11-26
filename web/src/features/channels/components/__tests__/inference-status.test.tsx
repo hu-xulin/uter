@@ -508,6 +508,12 @@ it.each([
         </RouterContextProvider>
       </QueryClientProvider>
     )
+    // 编辑态与创建态流程一致：先停在供应商确认页，需返回配置向导后才能
+    // 看到步骤内容（Configure routes 位于连接步骤）。
+    const user = userEvent.setup()
+    await user.click(
+      await screen.findByRole('button', { name: 'Back to configuration' })
+    )
     expect(await screen.findByDisplayValue('Inference')).toBeInTheDocument()
     expect(
       Boolean(screen.queryByRole('button', { name: 'Configure routes' }))

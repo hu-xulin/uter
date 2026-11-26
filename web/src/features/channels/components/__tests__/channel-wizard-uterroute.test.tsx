@@ -169,6 +169,9 @@ test('Uter Route 编辑态目录同步失败时展示错误 toast', async () => 
   })
   mocks.postSpy.mockRejectedValue(new Error('catalog down'))
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Uter Route existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
 
@@ -220,6 +223,9 @@ test('Uter Route 编辑态切换折扣组按新组重新同步', async () => {
     },
   } as never)
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Uter Route existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
 
@@ -259,6 +265,9 @@ test('Uter Route 编辑态显示专属面板但没有 Prepare draft，且不自�
   })
   mocks = setupWizardApiMocks({ editingRow: row })
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Uter Route existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
 

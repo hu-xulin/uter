@@ -143,6 +143,9 @@ test('百炼编辑态可手动 Sync channel catalog 并写入 refresh 请求', a
     data: { success: true, data: { actual_models: 2 } },
   } as never)
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Bailian existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
 
@@ -172,6 +175,9 @@ test('百炼编辑态不自动触发 catalog apply', async () => {
     data: { success: true, data: {} },
   } as never)
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Bailian existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
   await screen.findByText('Alibaba Bailian')
@@ -192,6 +198,9 @@ test('百炼编辑态可切换 Region 与 Workspace ID', async () => {
   })
   mocks = setupWizardApiMocks({ editingRow: row })
   render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
   await screen.findByDisplayValue('Bailian existing')
   await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
   await screen.findByText('Alibaba Bailian')
