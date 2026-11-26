@@ -3,7 +3,15 @@ package service
 import (
 	"bytes"
 	"context"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -41,7 +49,12 @@ const (
 	ConsoleStatusSuccess       = "success"
 	ConsoleStatusNotConfigured = "not_configured"
 	ConsoleStatusLoginFailed   = "login_failed"
+	// ConsoleStatusUnsupported means the configured site has a different
+	// account protocol. The primary API Key path stays authoritative.
+	ConsoleStatusUnsupported = "unsupported"
 )
+
+const bailianConsoleUnsupportedMessage = "Alibaba Bailian console uses Alibaba Cloud account login, which is not compatible with this console-login protocol. Use API Key + workspace endpoint as the source of truth."
 
 // UpstreamConsoleCatalog is the result of a secondary login-based fetch. It is
 // intentionally read-only: it never mutates channel pricing. Operators compare
@@ -65,10 +78,23 @@ type UpstreamConsolePrice struct {
 	Raw         any     `json:"raw,omitempty"`
 }
 
-type upstreamLoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+type upstreamPasswordEncryption struct {
+	Enabled   bool   `json:"enabled"`
+	KID       string `json:"kid"`
+	PublicKey string `json:"public_key"`
 }
+
+type upstreamPasswordEncryptionResponse struct {
+	Success bool                       `json:"success"`
+	Data    upstreamPasswordEncryption `json:"data"`
+}
+
+const (
+	upstreamEncryptionKeyPath  = "/api/user/login/encryption-key"
+	upstreamPasswordV2Label    = "password-v2"
+	upstreamPasswordV2AesBytes = 32
+	upstreamPasswordV2IVBytes  = 12
+)
 
 // FetchUpstreamConsoleCatalog logs into loginURL (new-api compatible console)
 // with the supplied credentials and reads the model + price catalogue.
@@ -89,6 +115,15 @@ func FetchUpstreamConsoleCatalog(ctx context.Context, loginURL, username, passwo
 	if err != nil {
 		return result, fmt.Errorf("%w: %v", ErrUpstreamConsoleURL, err)
 	}
+	// Alibaba Bailian's website is an Alibaba Cloud account/SSO console, not a
+	// New API console. POST /api/user/login can never succeed there; report the
+	// unsupported protocol instead of mislabelling it as a bad password.
+	if IsBailianConsoleURL(base.String()) {
+		result.Status = ConsoleStatusUnsupported
+		result.Warnings = append(result.Warnings, bailianConsoleUnsupportedMessage)
+		return result, nil
+	}
+
 	// Fail closed: apply the same SSRF policy used for arbitrary user URLs.
 	if err := ValidateSSRFProtectedFetchURL(base.String()); err != nil {
 		result.Status = ConsoleStatusLoginFailed
@@ -149,11 +184,60 @@ func normalizeUpstreamConsoleBaseURL(raw string) (*url.URL, error) {
 	return clean, nil
 }
 
+// fetchUpstreamPasswordEncryption discovers whether the console requires the
+// newer encrypted-login contract. A missing or disabled endpoint keeps the
+// legacy plaintext path, so existing New API-compatible consoles are unaffected.
+func fetchUpstreamPasswordEncryption(ctx context.Context, client *http.Client, base *url.URL) (upstreamPasswordEncryption, error) {
+	endpoint := base.ResolveReference(&url.URL{Path: upstreamEncryptionKeyPath}).String()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return upstreamPasswordEncryption{}, nil
+	}
+	req.Header.Set("Accept", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		return upstreamPasswordEncryption{}, nil
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return upstreamPasswordEncryption{}, nil
+	}
+	body, err := io.ReadAll(io.LimitReader(resp.Body, upstreamConsoleMaxBodyBytes))
+	if err != nil || len(body) == 0 {
+		return upstreamPasswordEncryption{}, nil
+	}
+	var parsed upstreamPasswordEncryptionResponse
+	if err := json.Unmarshal(body, &parsed); err != nil || !parsed.Success || !parsed.Data.Enabled {
+		return upstreamPasswordEncryption{}, nil
+	}
+	if strings.TrimSpace(parsed.Data.KID) == "" || strings.TrimSpace(parsed.Data.PublicKey) == "" {
+		return upstreamPasswordEncryption{}, fmt.Errorf("%w: invalid password encryption key", ErrUpstreamConsoleLogin)
+	}
+	return parsed.Data, nil
+}
+
 // loginUpstreamConsole performs a new-api style JSON login and collects both
-// session cookies and a bearer token. It returns no password-derived error text.
+// session cookies and a bearer token. Consoles that publish an encryption key
+// receive an RSA-OAEP (or hybrid AES-GCM) password envelope instead of plaintext.
+// It returns no password-derived error text.
 func loginUpstreamConsole(ctx context.Context, client *http.Client, base *url.URL, username, password string) ([]*http.Cookie, string, error) {
-	endpoint := base.ResolveReference(&url.URL{Path: "/api/user/login"}).String()
-	payload, err := json.Marshal(upstreamLoginRequest{Username: username, Password: password})
+	encryption, err := fetchUpstreamPasswordEncryption(ctx, client, base)
+	if err != nil {
+		return nil, "", err
+	}
+	loginPayload := map[string]string{"username": username}
+	if encryption.Enabled {
+		encrypted, err := encryptUpstreamPassword(password, encryption.PublicKey, encryption.KID)
+		if err != nil {
+			return nil, "", fmt.Errorf("%w: password encryption error", ErrUpstreamConsoleLogin)
+		}
+		loginPayload["password_encrypted"] = encrypted
+		loginPayload["encryption_key_id"] = encryption.KID
+	} else {
+		loginPayload["password"] = password
+	}
+	endpoint := base.ResolveReference(&url.URL{Path: "/api/user/login", RawQuery: "turnstile="}).String()
+	payload, err := json.Marshal(loginPayload)
 	if err != nil {
 		return nil, "", fmt.Errorf("%w: request encode error", ErrUpstreamConsoleLogin)
 	}
@@ -191,6 +275,61 @@ func loginUpstreamConsole(ctx context.Context, client *http.Client, base *url.UR
 	}
 	token := extractToken(parsed.Data)
 	return resp.Cookies(), token, nil
+}
+
+// encryptUpstreamPassword mirrors the login contract used by newer New API
+// consoles: RSA-OAEP/SHA-256 for short passwords, and a "password-v2" hybrid
+// envelope for passwords longer than the OAEP plaintext limit.
+func encryptUpstreamPassword(password, publicKeyPEM, keyID string) (string, error) {
+	block, _ := pem.Decode([]byte(publicKeyPEM))
+	if block == nil {
+		return "", errors.New("missing PEM block")
+	}
+	parsed, err := x509.ParsePKIXPublicKey(block.Bytes)
+	if err != nil {
+		return "", err
+	}
+	pub, ok := parsed.(*rsa.PublicKey)
+	if !ok {
+		return "", errors.New("not an RSA public key")
+	}
+	plain := []byte(password)
+	if len(plain) <= pub.Size()-66 {
+		encrypted, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, pub, plain, nil)
+		if err != nil {
+			return "", err
+		}
+		return base64.StdEncoding.EncodeToString(encrypted), nil
+	}
+
+	aesKey := make([]byte, upstreamPasswordV2AesBytes)
+	iv := make([]byte, upstreamPasswordV2IVBytes)
+	if _, err := rand.Read(aesKey); err != nil {
+		return "", err
+	}
+	if _, err := rand.Read(iv); err != nil {
+		return "", err
+	}
+	label := []byte(upstreamPasswordV2Label)
+	wrappedKey, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, pub, aesKey, label)
+	if err != nil {
+		return "", err
+	}
+	blockCipher, err := aes.NewCipher(aesKey)
+	if err != nil {
+		return "", err
+	}
+	gcm, err := cipher.NewGCM(blockCipher)
+	if err != nil {
+		return "", err
+	}
+	sealed := gcm.Seal(nil, iv, plain, []byte(upstreamPasswordV2Label+":"+keyID))
+	return strings.Join([]string{
+		upstreamPasswordV2Label,
+		base64.StdEncoding.EncodeToString(wrappedKey),
+		base64.StdEncoding.EncodeToString(iv),
+		base64.StdEncoding.EncodeToString(sealed),
+	}, "."), nil
 }
 
 // extractToken accepts the common new-api login shapes: a bare string token or

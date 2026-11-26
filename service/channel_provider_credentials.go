@@ -17,18 +17,26 @@ const (
 	ChannelProviderBailianPrefix      = "channel_provider.bailian"
 	ChannelProviderSubscriptionPrefix = "channel_provider.subscription"
 
-	ChannelProviderFeaturedLoginURLOption     = ChannelProviderFeaturedPrefix + ".login_url"
-	ChannelProviderFeaturedUsernameOption     = ChannelProviderFeaturedPrefix + ".username"
-	ChannelProviderFeaturedPasswordOption     = ChannelProviderFeaturedPrefix + ".password"
-	ChannelProviderFeaturedAPIKeyOption       = ChannelProviderFeaturedPrefix + ".api_key"
-	ChannelProviderBailianLoginURLOption      = ChannelProviderBailianPrefix + ".login_url"
-	ChannelProviderBailianUsernameOption      = ChannelProviderBailianPrefix + ".username"
-	ChannelProviderBailianPasswordOption      = ChannelProviderBailianPrefix + ".password"
-	ChannelProviderBailianAPIKeyOption        = ChannelProviderBailianPrefix + ".api_key"
-	ChannelProviderSubscriptionLoginURLOption = ChannelProviderSubscriptionPrefix + ".login_url"
-	ChannelProviderSubscriptionUsernameOption = ChannelProviderSubscriptionPrefix + ".username"
-	ChannelProviderSubscriptionPasswordOption = ChannelProviderSubscriptionPrefix + ".password"
-	ChannelProviderSubscriptionAPIKeyOption   = ChannelProviderSubscriptionPrefix + ".api_key"
+	ChannelProviderFeaturedLoginURLOption = ChannelProviderFeaturedPrefix + ".login_url"
+	ChannelProviderFeaturedUsernameOption = ChannelProviderFeaturedPrefix + ".username"
+	ChannelProviderFeaturedPasswordOption = ChannelProviderFeaturedPrefix + ".password"
+	ChannelProviderFeaturedAPIKeyOption   = ChannelProviderFeaturedPrefix + ".api_key"
+	ChannelProviderFeaturedAPIURLOption   = ChannelProviderFeaturedPrefix + ".api_url"
+	ChannelProviderBailianLoginURLOption  = ChannelProviderBailianPrefix + ".login_url"
+	ChannelProviderBailianUsernameOption  = ChannelProviderBailianPrefix + ".username"
+	ChannelProviderBailianPasswordOption  = ChannelProviderBailianPrefix + ".password"
+	ChannelProviderBailianAPIKeyOption    = ChannelProviderBailianPrefix + ".api_key"
+	ChannelProviderBailianAPIURLOption    = ChannelProviderBailianPrefix + ".api_url"
+	// AccessKey ID/Secret authenticate Alibaba Cloud Model Studio OpenAPI
+	// calls. The secret is stored as a common.EncryptSecret envelope and is
+	// never returned to the browser except through step-up verification.
+	ChannelProviderBailianAccessKeyIDOption     = ChannelProviderBailianPrefix + ".access_key_id"
+	ChannelProviderBailianAccessKeySecretOption = ChannelProviderBailianPrefix + ".access_key_secret"
+	ChannelProviderSubscriptionLoginURLOption   = ChannelProviderSubscriptionPrefix + ".login_url"
+	ChannelProviderSubscriptionUsernameOption   = ChannelProviderSubscriptionPrefix + ".username"
+	ChannelProviderSubscriptionPasswordOption   = ChannelProviderSubscriptionPrefix + ".password"
+	ChannelProviderSubscriptionAPIKeyOption     = ChannelProviderSubscriptionPrefix + ".api_key"
+	ChannelProviderSubscriptionAPIURLOption     = ChannelProviderSubscriptionPrefix + ".api_url"
 )
 
 const (
@@ -89,12 +97,14 @@ func normalizeChannelProviderSlotStrategy(strategy string) string {
 // in clear. Login URL and username are deliberately absent: they are not
 // secrets and are supplied by GET /api/option/ in plain.
 var channelProviderSecretOptionKeys = map[string]struct{}{
-	ChannelProviderFeaturedPasswordOption:     {},
-	ChannelProviderFeaturedAPIKeyOption:       {},
-	ChannelProviderBailianPasswordOption:      {},
-	ChannelProviderBailianAPIKeyOption:        {},
-	ChannelProviderSubscriptionPasswordOption: {},
-	ChannelProviderSubscriptionAPIKeyOption:   {},
+	ChannelProviderFeaturedPasswordOption:       {},
+	ChannelProviderFeaturedAPIKeyOption:         {},
+	ChannelProviderBailianPasswordOption:        {},
+	ChannelProviderBailianAPIKeyOption:          {},
+	ChannelProviderBailianAccessKeyIDOption:     {},
+	ChannelProviderBailianAccessKeySecretOption: {},
+	ChannelProviderSubscriptionPasswordOption:   {},
+	ChannelProviderSubscriptionAPIKeyOption:     {},
 }
 
 // IsChannelProviderSecretOptionKey reports whether an option key is a
@@ -125,11 +135,22 @@ func IsChannelProviderSecretOptionKey(key string) bool {
 // Password and API key are plain here because callers are server-side flows;
 // the browser only ever receives masked values unless a proof was approved.
 type ChannelProviderCredentials struct {
+	// LoginURL is ONLY the operator's console sign-in page for WorkBuddy's
+	// secondary cross-check. It is never used to discover models or prices.
 	LoginURL string
 	Username string
 	Password string
 	APIKey   string
-	Slots    []ChannelProviderCredentialSlot
+	// APIURL is the independent endpoint used to fetch the model catalogue and
+	// prices. It is stored per provider as `<prefix>.api_url` and never falls
+	// back to LoginURL: a console login page is not an API endpoint.
+	APIURL string
+	// AccessKeyID/AccessKeySecret are Bailian-only Model Studio OpenAPI
+	// credentials. AccessKeySecret is the decrypted plaintext on the server;
+	// the stored option remains an encrypted envelope.
+	AccessKeyID     string
+	AccessKeySecret string
+	Slots           []ChannelProviderCredentialSlot
 }
 
 // SlotForGroup returns the saved slot whose upstream group/key kind matches the
@@ -195,6 +216,27 @@ func ParseChannelProviderCredentialSlotMetadata(rawValue string) []ChannelProvid
 	return out
 }
 
+// decryptStoredChannelProviderSecret reads a secret option that is stored as
+// an encryption envelope. A corrupt envelope or rotated key fails closed: no
+// plaintext is returned and no error text reaches the caller.
+// DecryptStoredChannelProviderSecret is the controller-facing form of the
+// fail-closed envelope reader used by the derived mask view and reveal APIs.
+func DecryptStoredChannelProviderSecret(raw string) string {
+	return decryptStoredChannelProviderSecret(raw)
+}
+
+func decryptStoredChannelProviderSecret(raw string) string {
+	raw = strings.TrimSpace(raw)
+	if raw == "" || !common.IsSecretEnvelope(raw) {
+		return raw
+	}
+	plain, err := common.DecryptSecret(raw)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(plain)
+}
+
 // GetChannelProviderCredentials reads one provider group from options.
 func GetChannelProviderCredentials(prefix string) ChannelProviderCredentials {
 	credentials := ChannelProviderCredentials{
@@ -202,6 +244,13 @@ func GetChannelProviderCredentials(prefix string) ChannelProviderCredentials {
 		Username: strings.TrimSpace(common.GetOption(prefix + ".username")),
 		Password: strings.TrimSpace(common.GetOption(prefix + ".password")),
 		APIKey:   strings.TrimSpace(common.GetOption(prefix + ".api_key")),
+		APIURL:   strings.TrimSpace(common.GetOption(prefix + ".api_url")),
+	}
+	if prefix == ChannelProviderBailianPrefix {
+		credentials.AccessKeyID = strings.TrimSpace(common.GetOption(ChannelProviderBailianAccessKeyIDOption))
+		credentials.AccessKeySecret = decryptStoredChannelProviderSecret(
+			common.GetOption(ChannelProviderBailianAccessKeySecretOption),
+		)
 	}
 	for _, slot := range ChannelProviderCredentialSlotMetadata(prefix) {
 		optionKey, valid := ChannelProviderSlotAPIKeyOption(prefix, slot.ID)

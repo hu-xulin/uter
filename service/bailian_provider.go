@@ -92,6 +92,26 @@ func ParseBailianWorkspace(baseURL string) (workspaceID string, region BailianRe
 	return "", "", false
 }
 
+// IsBailianConsoleURL reports whether raw points at the Alibaba Cloud Bailian
+// web console. That console uses Alibaba Cloud account/SSO login and a region
+// path such as /cn-beijing/model/market; it is NOT a Model Studio API endpoint
+// and must never be copied into a channel's Base URL.
+func IsBailianConsoleURL(raw string) bool {
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return false
+	}
+	if !strings.Contains(trimmed, "://") {
+		trimmed = "https://" + trimmed
+	}
+	parsed, err := url.Parse(trimmed)
+	if err != nil {
+		return false
+	}
+	host := strings.ToLower(parsed.Hostname())
+	return host == "bailian.console.aliyun.com" || host == "bailian.console.alibabacloud.com"
+}
+
 // BailianRegionOf returns the region a base URL belongs to. An unknown host
 // stays UNKNOWN instead of silently becoming Beijing: a wrong region also picks
 // the wrong currency and price identity.
@@ -589,6 +609,17 @@ func bailianInternalPricing(normalized model.ChannelOfficialPricing) string {
 		}
 		return string(encoded)
 	}
+	if expr := bailianVideoTaskExpression(normalized.ComponentPrices); expr != "" {
+		internal := model.ChannelInternalPricing{
+			Mode: model.ChannelPricingModeTieredExpr, BillingExpr: expr,
+			Source: bailianCatalogSource, UpdatedAt: normalized.FetchedAt,
+		}
+		encoded, err := common.Marshal(internal)
+		if err != nil {
+			return ""
+		}
+		return string(encoded)
+	}
 	tiers := normalized.ChannelPriceTiers
 	if len(tiers) == 0 && normalized.ChannelPrice != nil {
 		tiers = []model.ChannelPricingTier{*normalized.ChannelPrice}
@@ -711,6 +742,116 @@ func bailianImageTaskExpression(components []model.ChannelPricingComponent) stri
 		}
 	}
 	return ""
+}
+
+// bailianVideoResolutionPriceType recognizes the per-second prices that the
+// shipped alibaba task plugin can distinguish with its `seconds` and
+// `resolution` usage facts. Audio/silent variants additionally require the
+// plugin-declared `audio` fact. Other price shapes (for example
+// `video_ratio_pro`, batch variants or models outside the plugin) stay
+// fail-closed instead of guessing a resolution tier.
+func bailianVideoResolutionPriceType(priceType string) bool {
+	_, ok := parseBailianVideoPriceKey(priceType)
+	return ok
+}
+
+type bailianVideoPriceKey struct {
+	resolution string
+	noAudio    bool
+}
+
+func parseBailianVideoPriceKey(priceType string) (bailianVideoPriceKey, bool) {
+	switch strings.ToLower(strings.TrimSpace(priceType)) {
+	case "video_ratio_480p", "480p":
+		return bailianVideoPriceKey{resolution: "480P"}, true
+	case "video_ratio_720p", "720p":
+		return bailianVideoPriceKey{resolution: "720P"}, true
+	case "video_ratio_1080p", "1080p":
+		return bailianVideoPriceKey{resolution: "1080P"}, true
+	case "480p_no_audio":
+		return bailianVideoPriceKey{resolution: "480P", noAudio: true}, true
+	case "720p_no_audio":
+		return bailianVideoPriceKey{resolution: "720P", noAudio: true}, true
+	case "1080p_no_audio":
+		return bailianVideoPriceKey{resolution: "1080P", noAudio: true}, true
+	default:
+		return bailianVideoPriceKey{}, false
+	}
+}
+
+// Keep the allowlist tied to plugins/tasks/alibaba/plugin.js: only these
+// models publish `resolution` (and, for wan2.6-i2v-flash, `audio`) as usage
+// facts. Hardcoding the list avoids pricing an arbitrary upstream model with a
+// usage expression its serving plugin cannot evaluate.
+func bailianSupportsVideoResolutionPricing(modelName string) bool {
+	switch strings.ToLower(strings.TrimSpace(modelName)) {
+	case "wan3.0-video", "wan3.0-video-prime",
+		"wan2.7-t2v", "wan2.7-i2v",
+		"wan2.7-t2v-2026-04-25", "wan2.7-t2v-2026-06-12", "wan2.7-i2v-2026-04-25",
+		"wan2.6-t2v", "wan2.6-t2v-us", "wan2.6-i2v", "wan2.6-i2v-flash", "wan2.6-i2v-us",
+		"wan2.5-t2v-preview", "wan2.5-i2v-preview",
+		"wan2.2-t2v-plus", "wan2.2-i2v-flash", "wan2.2-i2v-plus",
+		"wan2.2-kf2v-flash", "wan2.2-s2v",
+		"wanx2.1-t2v-plus", "wanx2.1-t2v-turbo", "wanx2.1-i2v-plus", "wanx2.1-i2v-turbo":
+		return true
+	default:
+		return false
+	}
+}
+
+func bailianVideoTaskExpression(components []model.ChannelPricingComponent) string {
+	prices := make(map[bailianVideoPriceKey]model.Money, len(components))
+	audioAware := false
+	for _, component := range components {
+		if component.Unit != "per_second" {
+			continue
+		}
+		key, ok := parseBailianVideoPriceKey(component.Type)
+		if !ok {
+			continue
+		}
+		prices[key] = component.USD
+		if key.noAudio {
+			audioAware = true
+		}
+	}
+	if len(prices) == 0 {
+		return ""
+	}
+	resolutions := []string{"1080P", "720P", "480P"}
+	selected := make([]string, 0, len(resolutions))
+	choices := make([]string, 0, len(resolutions))
+	for _, resolution := range resolutions {
+		withAudio, hasAudio := prices[bailianVideoPriceKey{resolution: resolution}]
+		withoutAudio, hasNoAudio := prices[bailianVideoPriceKey{resolution: resolution, noAudio: true}]
+		if !hasAudio && !hasNoAudio {
+			continue
+		}
+		if audioAware {
+			if !hasAudio || !hasNoAudio {
+				// A partial audio/silent matrix cannot be selected safely.
+				return ""
+			}
+			selected = append(selected, resolution)
+			choices = append(choices, fmt.Sprintf(`(u("audio") ? %s : %s)`,
+				formatExprNumber(withAudio), formatExprNumber(withoutAudio)))
+			continue
+		}
+		if hasAudio {
+			selected = append(selected, resolution)
+			choices = append(choices, formatExprNumber(withAudio))
+		}
+	}
+	if len(choices) == 0 {
+		return ""
+	}
+	// Highest published resolution is the conservative default if the usage
+	// vector ever omits the fact; normal traffic always supplies resolution.
+	priceExpr := choices[len(choices)-1]
+	for i := len(choices) - 2; i >= 0; i-- {
+		priceExpr = fmt.Sprintf(`u("resolution") == "%s" ? %s : %s`, selected[i], choices[i], priceExpr)
+	}
+	return fmt.Sprintf(`tier("bailian-video", u("seconds") * (%s))`, priceExpr)
 }
 
 func bailianTierExpression(tiers []model.ChannelPricingTier) string {
@@ -949,7 +1090,18 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	// Track whether the executable 5-minute cache-creation price has been seen
 	// for a tier, so a 1-hour price is skipped regardless of response order.
 	cacheCreation5m := make(map[*model.ChannelPricingTier]bool)
+	// Bailian publishes two cache-HIT prices with different semantics:
+	//   - `input_token_cache`      : implicit/automatic cache hit (the default)
+	//   - `input_token_cache_read` : explicit cache_control hit (auditable only)
+	// They legitimately differ (e.g. qwen3.8-max-0902: 1.5 vs 1 CNY/M). Treating
+	// both as one dimension used to emit "multiple cache read prices" and kill
+	// the channel price for ~20 models. Track which tier already received the
+	// implicit price so the explicit one never conflicts; when a model publishes
+	// only the explicit price, that one remains the executable default.
+	implicitCacheHit := make(map[*model.ChannelPricingTier]bool)
+	implicitThinkingCacheHit := make(map[*model.ChannelPricingTier]bool)
 	audioASR := false
+	supportsVideoResolution := bailianSupportsVideoResolutionPricing(item.Model)
 	for _, capability := range item.Capabilities {
 		lower := strings.ToLower(strings.TrimSpace(capability))
 		if strings.Contains(lower, "asr") || strings.Contains(lower, "speech_recognition") {
@@ -1077,6 +1229,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				priceType == "mt_character_input_token" ||
 				priceType == "embedding_token" || priceType == "translate_audio_input_token" ||
 				priceType == "omni_no_audio_input_token" || priceType == "audio_text_input_token" ||
+				priceType == "tts_input_token" || priceType == "asr_input_token" ||
 				priceType == "omni_input_token":
 				setTokenPrice(&tier.InputPerMillionUSD, usd, "input token")
 				result.Unit = "per_1m_token"
@@ -1085,13 +1238,14 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				priceType == "omni_no_audio_output_token" || priceType == "audio_text_output_token" ||
 				priceType == "omni_output_token" || priceType == "purein_text_output_token" ||
 				priceType == "thinking_purein_text_output_token" ||
+				priceType == "tts_output_token" || priceType == "asr_output_token" ||
 				priceType == "omni_text_output_token":
 				setTokenPrice(&tier.OutputPerMillionUSD, usd, "output token")
 				result.Unit = "per_1m_token"
 			// Vision input is a separate token dimension and the relay reports
 			// image_tokens, so it can be priced exactly with the `img` variable.
 			case priceType == "vision_input_token" || priceType == "translate_vision_input_token" ||
-				priceType == "mt_image_input_token":
+				priceType == "mt_image_input_token" || priceType == "embedding_image_token":
 				setTokenPrice(&tier.ImageInputPerMillionUSD, usd, "image input token")
 			case priceType == "thinking_vision_input_token":
 				setTokenPrice(&tier.ThinkingImageInputPerMillionUSD, usd, "thinking image input token")
@@ -1115,11 +1269,34 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				setTokenPrice(&tier.AudioOutputPerMillionUSD, usd, "audio output token")
 				result.Unit = "per_1m_token"
 			case priceType == "thinking_input_token_cache" ||
-				(priceType == "thinking_input_token_cache_read"):
-				setTokenPrice(&tier.ThinkingCachePerMillionUSD, usd, "thinking cache read")
+				priceType == "thinking_input_token_cache_read":
+				// Implicit thinking hit wins; an explicit hit only fills the
+				// default when no implicit price exists and never conflicts.
+				if priceType == "thinking_input_token_cache" {
+					// Implicit is authoritative: overwrite any explicit value
+					// written first, without a review reason.
+					implicitThinkingCacheHit[tier] = true
+					value := model.MoneyFromFloat(usd)
+					tier.ThinkingCachePerMillionUSD = &value
+				} else if !implicitThinkingCacheHit[tier] && tier.ThinkingCachePerMillionUSD == nil {
+					setTokenPrice(&tier.ThinkingCachePerMillionUSD, usd, "thinking cache read")
+				}
 			case priceType == "input_token_cache" || priceType == "omni_input_token_cache" ||
 				(strings.Contains(priceType, "cache") && strings.Contains(priceType, "read")):
-				setTokenPrice(&tier.CachePerMillionUSD, usd, "cache read")
+				// Implicit/automatic cache hit is the executable default. The
+				// explicit `*_cache_read` price is a distinct, auditable price:
+				// never let it overwrite or conflict with the implicit one, but
+				// use it as the default when the model publishes only that type.
+				isExplicitRead := strings.Contains(priceType, "cache") && strings.Contains(priceType, "read")
+				if !isExplicitRead {
+					// Implicit is authoritative: overwrite any explicit value
+					// written first, without a review reason.
+					implicitCacheHit[tier] = true
+					value := model.MoneyFromFloat(usd)
+					tier.CachePerMillionUSD = &value
+				} else if !implicitCacheHit[tier] && tier.CachePerMillionUSD == nil {
+					setTokenPrice(&tier.CachePerMillionUSD, usd, "cache read")
+				}
 			// Reasoning-mode prices are a variant of the primary input/output price.
 			// They stay visible as components only when they differ, so the standard
 			// price remains the billable tier.
@@ -1132,7 +1309,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			// is one token (the usage_characters convention), so a per-10k-character
 			// price becomes a per-1M-token price. Two different per-call prices on
 			// one model stay review-only instead of silently picking one.
-			case priceType == "cosy_tts_number" || priceType == "tts_vc_model":
+			case priceType == "cosy_tts_number" || priceType == "tts_vc_model" || priceType == "tts_text_number":
 				switch normalizedUnit {
 				case "per_call":
 					addPerUnitPrice(tier, "per_call", usd, price, priceType)
@@ -1158,6 +1335,16 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 					Name: price.PriceName, Type: priceType, Unit: "per_image", USD: model.MoneyFromFloat(usd),
 				})
 				result.Unit = "per_image"
+			case supportsVideoResolution && normalizedUnit == "per_second" && bailianVideoResolutionPriceType(priceType):
+				// The alibaba task plugin supplies `seconds` plus `resolution`
+				// (and `audio` for wan2.6-i2v-flash), so every published tier
+				// can be selected exactly instead of being treated as a
+				// conflicting flat per-second price.
+				result.ComponentPrices = append(result.ComponentPrices, model.ChannelPricingComponent{
+					Name: price.PriceName, Type: priceType, Unit: "per_second", USD: model.MoneyFromFloat(usd),
+				})
+				result.Unit = "per_second"
+				tier.Unit = "per_second"
 			case normalizedUnit == "per_image" || normalizedUnit == "per_second" ||
 				normalizedUnit == "per_minute" || normalizedUnit == "per_call":
 				addPerUnitPrice(tier, normalizedUnit, usd, price, priceType)
@@ -1246,6 +1433,12 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	}
 	if len(item.Prices) == 0 {
 		result.ReviewReasons = append(result.ReviewReasons, "catalog lists no price")
+	}
+	// Some upstream rows parse cleanly but cannot become a billable price at
+	// all (input-only token rows, zero-price call rows, batch-only rows).
+	// Name that condition instead of reporting a silent empty sale price.
+	if len(result.ReviewReasons) == 0 && bailianInternalPricing(result) == "" {
+		result.ReviewReasons = append(result.ReviewReasons, "no executable price can be derived")
 	}
 	result.ReviewReasons = uniqueSortedStrings(result.ReviewReasons)
 	result.NeedsReview = len(result.ReviewReasons) > 0
@@ -1451,4 +1644,26 @@ func LoadBailianSyncStatus() *BailianSyncStatus {
 		return nil
 	}
 	return &status
+}
+
+// UpdateBailianSyncStatus merges a manual catalog refresh/apply into the last
+// sync status. The front-end invalidates `bailian-sync-status` after both
+// actions, so the reported counts must follow those actions instead of staying
+// frozen at the post-create result. A missing or corrupt status starts fresh;
+// fields not supplied by the caller are left untouched.
+func UpdateBailianSyncStatus(channelID int, update func(*BailianSyncStatus)) error {
+	status := LoadBailianSyncStatus()
+	if status == nil || status.ChannelID != channelID || status.Steps == nil {
+		status = &BailianSyncStatus{
+			ChannelID: channelID,
+			StartedAt: time.Now().UTC(),
+			Steps:     map[string]BailianSyncStep{},
+		}
+	}
+	if update != nil {
+		update(status)
+	}
+	status.ChannelID = channelID
+	status.FinishedAt = time.Now().UTC()
+	return SaveBailianSyncStatus(status)
 }

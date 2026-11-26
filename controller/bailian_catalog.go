@@ -60,6 +60,28 @@ func RefreshBailianCatalog(c *gin.Context) {
 		common.ApiErrorMsg(c, err.Error())
 		return
 	}
+	// Keep the status panel in sync with the manual refresh. The UI invalidates
+	// `bailian-sync-status` after this action and reads its counts from there;
+	// without this update the panel kept showing the stale post-create result.
+	channelModels := channel.GetModels()
+	matched := 0
+	for _, model := range channelModels {
+		for _, item := range catalog.Models {
+			if item.Model == model {
+				matched++
+				break
+			}
+		}
+	}
+	_ = service.UpdateBailianSyncStatus(channelID, func(status *service.BailianSyncStatus) {
+		status.ActualModels = len(channelModels)
+		status.CatalogModels = len(catalog.Models)
+		status.MatchedModels = matched
+		status.ReferencePrices = len(catalog.ReferencePrice)
+		status.Steps["fetch_catalog"] = service.BailianSyncStep{
+			Status: "ok", Finished: time.Now().UTC(),
+		}
+	})
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": buildBailianCatalogSummary(catalog)})
 }
 
@@ -161,11 +183,35 @@ func ApplyBailianCatalog(c *gin.Context) {
 		common.SysError("persist bailian channel pricing: " + pricingErr.Error())
 	}
 	go syncLocalizedDescriptions(context.Background(), channel.GetModels())
+	_ = service.UpdateBailianSyncStatus(channel.Id, func(status *service.BailianSyncStatus) {
+		status.MatchedModels = result.MatchedModels
+		status.UnmatchedModels = result.UnmatchedModels
+		status.PricingRecords = pricingRecords
+		if result.Metadata != nil {
+			status.MetadataCreated = len(result.Metadata.CreatedModels)
+			status.MetadataUpdated = len(result.Metadata.UpdatedModels)
+		}
+		status.Steps["apply_metadata"] = service.BailianSyncStep{
+			Status: "ok", Finished: time.Now().UTC(),
+		}
+		status.Steps["apply_prices"] = service.BailianSyncStep{
+			Status:   successOrFailedText(pricingErr),
+			Message:  errorText(pricingErr),
+			Finished: time.Now().UTC(),
+		}
+	})
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
 		"apply":           result,
 		"pricing_records": pricingRecords,
 		"pricing_error":   errorText(pricingErr),
 	}})
+}
+
+func successOrFailedText(err error) string {
+	if err != nil {
+		return "failed"
+	}
+	return "ok"
 }
 
 // GetBailianSyncStatus returns the last automatic post-create sync result.

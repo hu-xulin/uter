@@ -152,6 +152,17 @@ func fetchBailianCatalogFromBase(ctx context.Context, baseURL, apiKey string) (*
 		}
 		var payload bailianModelsResponse
 		if err := common.Unmarshal(body, &payload); err != nil {
+			// A web frontend (console/SPA/login page) answers with HTTP 200
+			// HTML. Naming that case keeps the sync status actionable instead
+			// of surfacing a JSON byte-level decode error.
+			trimmed := strings.TrimSpace(string(body))
+			if strings.HasPrefix(strings.ToLower(trimmed), "<!doctype html") ||
+				strings.HasPrefix(strings.ToLower(trimmed), "<html") {
+				return nil, fmt.Errorf(
+					"bailian catalog endpoint %s returned HTML instead of JSON; check the channel base URL",
+					baseURL,
+				)
+			}
 			return nil, fmt.Errorf("decode bailian catalog: %w", err)
 		}
 		if !payload.Success {
@@ -262,13 +273,36 @@ func normalizeBailianBaseURL(raw string) string {
 	// https://host/api/v1/models, so the compatible suffix must not be part of
 	// the catalog host.
 	raw = strings.TrimSuffix(raw, "/compatible-mode/v1")
-	return strings.TrimRight(raw, "/")
+	raw = strings.TrimRight(raw, "/")
+	// The Model Studio console and the OpenAI-compatible endpoint are web
+	// frontends, not the model catalog API: requesting /api/v1/models on the
+	// console returns the SPA's HTML (HTTP 200), which used to surface as
+	// "decode bailian catalog: invalid character '<'" and left every catalog
+	// statistic at zero. The DashScope host serves the same catalog with the
+	// same key, so normalize console URLs to it before any request is made.
+	if bailianConsoleHost(raw) {
+		return "https://dashscope.aliyuncs.com"
+	}
+	return raw
+}
+
+// bailianConsoleHost reports whether the configured base is the Model Studio
+// web console rather than a catalog API endpoint. It reuses the shared console
+// detector so the catalog sync and the channel "fetch models" guard agree on
+// what counts as a console URL.
+func bailianConsoleHost(raw string) bool {
+	return IsBailianConsoleURL(raw)
 }
 
 // bailianFallbackHosts returns the regional DashScope host that serves the same
-// catalog. Only hosts derived from the configured channel are returned; this
-// is not an arbitrary redirect.
+// public catalog. A workspace endpoint is business-space scoped and must never
+// widen to the public catalog: that fallback was the source of the misleading
+// ~294-model directory. Only hosts derived from the configured channel are
+// returned; this is not an arbitrary redirect.
 func bailianFallbackHosts(baseURL string) []string {
+	if workspaceID, _, ok := ParseBailianWorkspace(baseURL); ok && workspaceID != "" {
+		return nil
+	}
 	host := strings.ToLower(baseURL)
 	switch {
 	case strings.Contains(host, "cn-beijing.maas.aliyuncs.com"),

@@ -23,6 +23,9 @@ func RevealChannelProviderCredential(c *gin.Context) {
 		return
 	}
 	value := strings.TrimSpace(common.GetOption(optionKey))
+	if optionKey == service.ChannelProviderBailianAccessKeySecretOption {
+		value = service.DecryptStoredChannelProviderSecret(value)
+	}
 	recordManageAudit(c, "channel_provider.credential.reveal", map[string]any{
 		"key": optionKey,
 	})
@@ -71,8 +74,36 @@ func applyChannelProviderCredentialsDetailed(channel *model.Channel) (channelPro
 	default:
 		return fill, nil
 	}
-	if credentials.LoginURL != "" && (channel.BaseURL == nil || strings.TrimSpace(*channel.BaseURL) == "") {
-		baseURL := credentials.LoginURL
+	// The console login URL is ONLY for WorkBuddy to sign in to the upstream
+	// back office (secondary cross-check); it is NEVER an API endpoint. Model
+	// and price discovery must use the independent API address stored in
+	// `<provider>.api_url`. This holds for all three managed channels:
+	//   - Uter Route / Uter.api: the console and API may share a host, but the
+	//     operator still declares the API address explicitly, so copies from
+	//     login_url are forbidden.
+	//   - Alibaba Bailian: login_url is bailian.console.aliyun.com (a website),
+	//     while the API must use the workspace host built from region + space
+	//     ID. Copying the console URL made /compatible-mode/v1/models hit the
+	//     SPA and silently return the built-in catalogue instead of the real
+	//     business-space models.
+	// Resolve the API address from explicit sources only. System Settings'
+	// `<provider>.api_url` wins; for the two managed gateways that already
+	// have a dedicated operational endpoint option, fall back to it so
+	// existing deployments keep working after the field split. The console
+	// login URL is NEVER a fallback. Bailian has no such option: its API
+	// address is the workspace endpoint the operator enters in the drawer.
+	apiURL := credentials.APIURL
+	if apiURL == "" {
+		switch channel.Type {
+		case constant.ChannelTypeUterRoute:
+			apiURL = service.UterRouteUpstreamBaseURL()
+		case constant.ChannelTypeUterAPI:
+			apiURL = service.UterAPIUpstreamBaseURL()
+		}
+	}
+	if apiURL != "" &&
+		(channel.BaseURL == nil || strings.TrimSpace(*channel.BaseURL) == "") {
+		baseURL := apiURL
 		channel.BaseURL = &baseURL
 	}
 	if strings.TrimSpace(channel.Key) == "" {

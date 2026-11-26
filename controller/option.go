@@ -36,6 +36,17 @@ var completionRatioMetaOptionKeys = []string{
 	"AudioCompletionRatio",
 }
 
+// prepareOptionValueForStorage encrypts long-lived provider secrets before
+// they reach the general option store. Keeping it separate from the HTTP
+// handler makes the at-rest contract testable without a database.
+func prepareOptionValueForStorage(key, value string) (string, error) {
+	if key != service.ChannelProviderBailianAccessKeySecretOption ||
+		value == "" || common.IsSecretEnvelope(value) {
+		return value, nil
+	}
+	return common.EncryptSecret(value)
+}
+
 func isPaymentComplianceOptionKey(key string) bool {
 	return strings.HasPrefix(key, "payment_setting.compliance_")
 }
@@ -129,9 +140,10 @@ func buildChannelProviderMaskViewValue() string {
 		APIKey string `json:"api_key"`
 	}
 	type credentialMasks struct {
-		Password string               `json:"password"`
-		APIKey   string               `json:"api_key"`
-		Slots    []slotCredentialMask `json:"slots,omitempty"`
+		Password        string               `json:"password"`
+		APIKey          string               `json:"api_key"`
+		AccessKeySecret string               `json:"access_key_secret,omitempty"`
+		Slots           []slotCredentialMask `json:"slots,omitempty"`
 	}
 	type providerMasks struct {
 		Featured     credentialMasks `json:"featured"`
@@ -151,6 +163,12 @@ func buildChannelProviderMaskViewValue() string {
 		groupValue := credentialMasks{
 			Password: common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".password"])),
 			APIKey:   common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".api_key"])),
+		}
+		if group.prefix == service.ChannelProviderBailianPrefix {
+			stored := service.DecryptStoredChannelProviderSecret(
+				common.Interface2String(common.OptionMap[service.ChannelProviderBailianAccessKeySecretOption]),
+			)
+			groupValue.AccessKeySecret = common.MaskSecretValue(stored)
 		}
 		slotMetadata := service.ParseChannelProviderCredentialSlotMetadata(
 			common.Interface2String(
@@ -202,6 +220,9 @@ func RevealSystemSecret(c *gin.Context) {
 		value = strings.TrimSpace(accounts[index].Token)
 	} else {
 		value = strings.TrimSpace(common.Interface2String(common.OptionMap[optionKey]))
+	}
+	if optionKey == service.ChannelProviderBailianAccessKeySecretOption {
+		value = service.DecryptStoredChannelProviderSecret(value)
 	}
 	recordManageAudit(c, "option.secret.reveal", map[string]any{
 		"key": optionKey,
@@ -573,6 +594,15 @@ func UpdateOption(c *gin.Context) {
 		common.ApiSuccess(c, nil)
 		return
 	}
+	// Model Studio access keys are long-lived credentials: encrypt the secret
+	// at rest with the same envelope used by other stored secrets. A saved
+	// envelope stays untouched so re-saving an unchanged form cannot corrupt it.
+	storedValue, encryptErr := prepareOptionValueForStorage(option.Key, option.Value.(string))
+	if encryptErr != nil {
+		common.ApiError(c, encryptErr)
+		return
+	}
+	option.Value = storedValue
 	err = model.UpdateOption(option.Key, option.Value.(string))
 	if err != nil {
 		if errors.Is(err, system_setting.ErrPasskeyRPIDInvalid) {

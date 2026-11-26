@@ -90,11 +90,43 @@ func TestFetchBailianCatalogRejectsNonSuccess(t *testing.T) {
 }
 
 func TestFetchBailianCatalogFallbackHost(t *testing.T) {
+	// A workspace endpoint is business-space scoped. Falling back to the public
+	// DashScope catalog would reintroduce the full ~294 model directory.
+	require.Nil(t, bailianFallbackHosts("https://ws-ssc8bd9i0yuj89n4.cn-beijing.maas.aliyuncs.com"))
 	require.Equal(t, []string{"https://dashscope.aliyuncs.com"},
-		bailianFallbackHosts("https://ws-ssc8bd9i0yuj89n4.cn-beijing.maas.aliyuncs.com"))
+		bailianFallbackHosts("https://dashscope.aliyuncs.com"))
 	require.Equal(t, []string{"https://dashscope-intl.aliyuncs.com"},
 		bailianFallbackHosts("https://dashscope-intl.aliyuncs.com"))
 	require.Nil(t, bailianFallbackHosts("https://example.com"))
+}
+
+func TestNormalizeBailianBaseURLMapsConsoleToCatalogAPI(t *testing.T) {
+	// Operators often paste the Model Studio console URL into the channel base
+	// URL. The console serves the SPA HTML for /api/v1/models; it must be
+	// normalized to the DashScope catalog host so a catalog sync can succeed.
+	cases := map[string]string{
+		"https://bailian.console.aliyun.com":                         "https://dashscope.aliyuncs.com",
+		"https://bailian.console.aliyun.com/":                        "https://dashscope.aliyuncs.com",
+		"https://bailian.console.aliyun.com/cn-beijing/model/market": "https://dashscope.aliyuncs.com",
+		"https://ws-ssc8bd9i0yuj89n4.cn-beijing.maas.aliyuncs.com":   "https://ws-ssc8bd9i0yuj89n4.cn-beijing.maas.aliyuncs.com",
+		"https://dashscope-intl.aliyuncs.com":                        "https://dashscope-intl.aliyuncs.com",
+	}
+	for input, expected := range cases {
+		require.Equal(t, expected, normalizeBailianBaseURL(input), input)
+	}
+}
+
+func TestFetchBailianCatalogRejectsHTMLWithActionableError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+		_, _ = w.Write([]byte("<!DOCTYPE html><html><body>Model Studio console</body></html>"))
+	}))
+	defer server.Close()
+
+	_, err := FetchBailianCatalog(context.Background(), server.URL, "test-key")
+	require.Error(t, err)
+	require.ErrorContains(t, err, "returned HTML instead of JSON")
+	require.NotContains(t, err.Error(), "invalid character '<'")
 }
 
 func TestFetchBailianCatalogRejectsEmptyCatalog(t *testing.T) {

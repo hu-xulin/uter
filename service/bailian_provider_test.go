@@ -14,6 +14,15 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestIsBailianConsoleURL(t *testing.T) {
+	require.True(t, IsBailianConsoleURL("https://bailian.console.aliyun.com/cn-beijing/model/market"))
+	require.True(t, IsBailianConsoleURL("https://bailian.console.aliyun.com/ap-southeast-1/model/market"))
+	require.True(t, IsBailianConsoleURL("bailian.console.aliyun.com"))
+	require.False(t, IsBailianConsoleURL("https://ws-1.cn-beijing.maas.aliyuncs.com"))
+	require.False(t, IsBailianConsoleURL("https://dashscope.aliyuncs.com"))
+	require.False(t, IsBailianConsoleURL(""))
+}
+
 func TestBailianWorkspaceHosts(t *testing.T) {
 	cases := []struct {
 		region BailianRegion
@@ -513,6 +522,237 @@ func TestBailianCacheAndBatchPriceMapping(t *testing.T) {
 	require.NotEmpty(t, internal)
 	assert.Contains(t, internal, `"cache_per_million_usd":0.4`)
 	assert.Contains(t, internal, `"create_cache_per_million_usd":2.5`)
+}
+
+func TestBailianImplicitCacheHitWinsOverExplicitRead(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	cases := []struct {
+		name         string
+		prices       []BailianPrice
+		wantCache    float64
+		wantThinking float64
+		wantExpr     string
+		wantJSON     string
+	}{
+		{
+			name: "explicit read published first",
+			prices: []BailianPrice{
+				{Type: "input_token", Price: "2", PriceUnit: "每百万tokens"},
+				{Type: "output_token", Price: "8", PriceUnit: "每百万tokens"},
+				{Type: "input_token_cache_read", Price: "0.15", PriceUnit: "每百万tokens"},
+				{Type: "input_token_cache", Price: "0.4", PriceUnit: "每百万tokens"},
+				{Type: "thinking_input_token_cache_read", Price: "0.2", PriceUnit: "每百万tokens"},
+				{Type: "thinking_input_token_cache", Price: "0.32", PriceUnit: "每百万tokens"},
+			},
+			wantCache: 0.4, wantThinking: 0.32,
+			wantExpr: `cr * (rt > 0 ? 0.32 : 0.4)`,
+		},
+		{
+			name: "implicit cache published first",
+			prices: []BailianPrice{
+				{Type: "input_token", Price: "2", PriceUnit: "每百万tokens"},
+				{Type: "output_token", Price: "8", PriceUnit: "每百万tokens"},
+				{Type: "input_token_cache", Price: "0.4", PriceUnit: "每百万tokens"},
+				{Type: "input_token_cache_read", Price: "0.1", PriceUnit: "每百万tokens"},
+			},
+			wantCache: 0.4, wantJSON: `"cache_per_million_usd":0.4`,
+		},
+		{
+			name: "explicit read is the only cache price",
+			prices: []BailianPrice{
+				{Type: "input_token", Price: "2", PriceUnit: "每百万tokens"},
+				{Type: "output_token", Price: "8", PriceUnit: "每百万tokens"},
+				{Type: "input_token_cache_read", Price: "0.15", PriceUnit: "每百万tokens"},
+			},
+			wantCache: 0.15, wantJSON: `"cache_per_million_usd":0.15`,
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			item := BailianModel{Model: "qwen-cache-read", Prices: []BailianPriceRange{{
+				RangeName: "Default", Prices: tc.prices,
+			}}}
+			view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+			require.Empty(t, view.ReviewReasons)
+			require.Len(t, view.ChannelPriceTiers, 1)
+			tier := view.ChannelPriceTiers[0]
+			require.NotNil(t, tier.CachePerMillionUSD)
+			assert.InDelta(t, tc.wantCache, tier.CachePerMillionUSD.Float64(), 1e-9)
+			if tc.wantThinking > 0 {
+				require.NotNil(t, tier.ThinkingCachePerMillionUSD)
+				assert.InDelta(t, tc.wantThinking, tier.ThinkingCachePerMillionUSD.Float64(), 1e-9)
+			}
+			rawTypes := make([]string, 0, len(tier.RawComponents))
+			for _, component := range tier.RawComponents {
+				rawTypes = append(rawTypes, component.Type)
+			}
+			assert.Contains(t, rawTypes, "input_token_cache_read", "explicit price stays auditable")
+			internal := bailianInternalPricing(view)
+			require.NotEmpty(t, internal)
+			if tc.wantExpr != "" {
+				var pricing model.ChannelInternalPricing
+				require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+				assert.Contains(t, pricing.BillingExpr, tc.wantExpr)
+			} else {
+				assert.Contains(t, internal, tc.wantJSON)
+			}
+		})
+	}
+}
+
+func TestBailianAudioAndEmbeddingTokenTypesBecomeExecutablePrices(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	cases := []struct {
+		name       string
+		model      string
+		prices     []BailianPrice
+		wantInput  float64
+		wantOutput float64
+		wantImage  float64
+		wantExpr   string
+	}{
+		{
+			name:  "tts tokens",
+			model: "qwen-audio-3.1-tts-flash",
+			prices: []BailianPrice{
+				{Type: "tts_input_token", Price: "1.5", PriceUnit: "每百万tokens"},
+				{Type: "tts_output_token", Price: "12", PriceUnit: "每百万tokens"},
+			},
+			wantInput: 1.5, wantOutput: 12,
+		},
+		{
+			name:  "asr tokens",
+			model: "qwen-audio-3.1-asr-flash",
+			prices: []BailianPrice{
+				{Type: "asr_input_token", Price: "0.8", PriceUnit: "每百万tokens"},
+				{Type: "asr_output_token", Price: "2.7", PriceUnit: "每百万tokens"},
+			},
+			wantInput: 0.8, wantOutput: 2.7,
+		},
+		{
+			name:  "sambert characters",
+			model: "sambert-betty-v1",
+			prices: []BailianPrice{
+				{Type: "tts_text_number", Price: "1", PriceUnit: "每万字符"},
+			},
+			wantInput: 100,
+		},
+		{
+			name:  "vision embedding tokens",
+			model: "tongyi-embedding-vision-flash",
+			prices: []BailianPrice{
+				{Type: "embedding_token", Price: "0.15", PriceUnit: "每百万tokens"},
+				{Type: "embedding_image_token", Price: "0.15", PriceUnit: "每百万tokens"},
+			},
+			wantInput: 0.15, wantImage: 0.15, wantExpr: "img * 0.15",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			item := BailianModel{Model: tc.model, Prices: []BailianPriceRange{{
+				RangeName: "Default", Prices: tc.prices,
+			}}}
+			view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+			require.Empty(t, view.ReviewReasons, view.ReviewReasons)
+			require.Len(t, view.ChannelPriceTiers, 1)
+			tier := view.ChannelPriceTiers[0]
+			require.NotNil(t, tier.InputPerMillionUSD)
+			assert.InDelta(t, tc.wantInput, tier.InputPerMillionUSD.Float64(), 1e-9)
+			if tc.wantOutput > 0 {
+				require.NotNil(t, tier.OutputPerMillionUSD)
+				assert.InDelta(t, tc.wantOutput, tier.OutputPerMillionUSD.Float64(), 1e-9)
+			}
+			if tc.wantImage > 0 {
+				require.NotNil(t, tier.ImageInputPerMillionUSD)
+				assert.InDelta(t, tc.wantImage, tier.ImageInputPerMillionUSD.Float64(), 1e-9)
+			}
+			internal := bailianInternalPricing(view)
+			require.NotEmpty(t, internal)
+			if tc.wantExpr != "" {
+				assert.Contains(t, internal, tc.wantExpr)
+			}
+		})
+	}
+}
+
+func TestBailianVideoResolutionPricesBecomeUsageExpression(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	video := BailianModel{Model: "wan2.7-t2v", Prices: []BailianPriceRange{{
+		RangeName: "Default", Prices: []BailianPrice{
+			{Type: "video_ratio_720p", Price: "0.6", PriceUnit: "每秒"},
+			{Type: "video_ratio_1080p", Price: "1", PriceUnit: "每秒"},
+		},
+	}}}
+	view := bailianOfficialPricing(video, BailianRegionBeijing, 1, 100)
+	require.Empty(t, view.ReviewReasons, view.ReviewReasons)
+	internal := bailianInternalPricing(view)
+	require.NotEmpty(t, internal)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
+	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "1080P" ? 1 : 0.6`)
+	_, err := billingexpr.CompileFromCache(pricing.BillingExpr)
+	require.NoError(t, err)
+
+	audioVideo := BailianModel{Model: "wan2.6-i2v-flash", Prices: []BailianPriceRange{{
+		RangeName: "Default", Prices: []BailianPrice{
+			{Type: "video_ratio_720p", Price: "0.3", PriceUnit: "每秒"},
+			{Type: "video_ratio_1080p", Price: "0.5", PriceUnit: "每秒"},
+			{Type: "720P_no_audio", Price: "0.15", PriceUnit: "每秒"},
+			{Type: "1080P_no_audio", Price: "0.25", PriceUnit: "每秒"},
+		},
+	}}}
+	view = bailianOfficialPricing(audioVideo, BailianRegionBeijing, 1, 100)
+	require.Empty(t, view.ReviewReasons, view.ReviewReasons)
+	internal = bailianInternalPricing(view)
+	require.NotEmpty(t, internal)
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Contains(t, pricing.BillingExpr, `u("audio") ? 0.5 : 0.25`)
+	assert.Contains(t, pricing.BillingExpr, `u("audio") ? 0.3 : 0.15`)
+	_, err = billingexpr.CompileFromCache(pricing.BillingExpr)
+	require.NoError(t, err)
+
+	unsupported := BailianModel{Model: "happyhorse-1.1-t2v", Prices: []BailianPriceRange{{
+		RangeName: "Default", Prices: []BailianPrice{
+			{Type: "video_ratio_720p", Price: "0.9", PriceUnit: "每秒"},
+			{Type: "video_ratio_1080p", Price: "1.2", PriceUnit: "每秒"},
+		},
+	}}}
+	view = bailianOfficialPricing(unsupported, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, view.ReviewReasons, "multiple per-unit prices")
+	assert.Empty(t, bailianInternalPricing(view), "models outside the alibaba task plugin stay review-only")
+}
+
+func TestBailianSilentNonBillableRowsAreFlagged(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 1
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	inputOnly := BailianModel{Model: "decision-model", Prices: []BailianPriceRange{{
+		RangeName: "Default", Prices: []BailianPrice{
+			{Type: "input_token", Price: "0.3", PriceUnit: "每百万tokens"},
+		},
+	}}}
+	view := bailianOfficialPricing(inputOnly, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, view.ReviewReasons, "no executable price can be derived")
+
+	batchOnly := BailianModel{Model: "wan2.6-t2v", Prices: []BailianPriceRange{{
+		RangeName: "Default", Prices: []BailianPrice{
+			{Type: "720P_batch", Price: "0.6", PriceUnit: "每秒"},
+			{Type: "1080P_batch", Price: "1", PriceUnit: "每秒"},
+		},
+	}}}
+	view = bailianOfficialPricing(batchOnly, BailianRegionBeijing, 1, 100)
+	assert.Contains(t, view.ReviewReasons, "no executable price can be derived")
 }
 
 func TestBailianImageDimensionPricesBecomeTaskExpression(t *testing.T) {

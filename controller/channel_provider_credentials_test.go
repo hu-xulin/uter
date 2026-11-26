@@ -30,6 +30,19 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
+func loginURLOptionForType(channelType int) string {
+	switch channelType {
+	case constant.ChannelTypeUterRoute:
+		return service.ChannelProviderFeaturedLoginURLOption
+	case constant.ChannelTypeAli:
+		return service.ChannelProviderBailianLoginURLOption
+	case constant.ChannelTypeUterAPI:
+		return service.ChannelProviderSubscriptionLoginURLOption
+	default:
+		return ""
+	}
+}
+
 func setChannelProviderOptionsForTest(t *testing.T, values map[string]string) {
 	t.Helper()
 	type previousValue struct {
@@ -84,36 +97,55 @@ func TestApplyChannelProviderCredentialsFillsConfiguredGroups(t *testing.T) {
 	cases := []struct {
 		name        string
 		channelType int
+		wantBaseURL string
 		options     map[string]string
 	}{
 		{
-			name:        "Uter Select fills Uter Route",
+			name:        "Uter Select uses the independent API address, not the console login URL",
 			channelType: constant.ChannelTypeUterRoute,
+			wantBaseURL: "https://api.example.com",
 			options: map[string]string{
 				service.ChannelProviderFeaturedLoginURLOption: "https://console.example.com",
+				service.ChannelProviderFeaturedAPIURLOption:   "https://api.example.com",
 				service.ChannelProviderFeaturedUsernameOption: "operator",
 				service.ChannelProviderFeaturedPasswordOption: "upstream-password",
 				service.ChannelProviderFeaturedAPIKeyOption:   "key-one\nkey-two",
 			},
 		},
 		{
-			name:        "Uter Bailian fills Alibaba Bailian",
+			name:        "Uter Bailian uses the workspace API address, not the console login URL",
 			channelType: constant.ChannelTypeAli,
+			wantBaseURL: "https://ws-space.cn-beijing.maas.aliyuncs.com",
 			options: map[string]string{
-				service.ChannelProviderBailianLoginURLOption: "https://console.example.com",
+				service.ChannelProviderBailianLoginURLOption: "https://bailian.console.aliyun.com",
+				service.ChannelProviderBailianAPIURLOption:   "https://ws-space.cn-beijing.maas.aliyuncs.com",
 				service.ChannelProviderBailianUsernameOption: "operator",
 				service.ChannelProviderBailianPasswordOption: "upstream-password",
 				service.ChannelProviderBailianAPIKeyOption:   "key-one\nkey-two",
 			},
 		},
 		{
-			name:        "Uter Subscription fills Uter.api",
+			name:        "Uter Subscription uses the independent API address, not the console login URL",
 			channelType: constant.ChannelTypeUterAPI,
+			wantBaseURL: "https://api.example.com",
 			options: map[string]string{
 				service.ChannelProviderSubscriptionLoginURLOption: "https://console.example.com",
+				service.ChannelProviderSubscriptionAPIURLOption:   "https://api.example.com",
 				service.ChannelProviderSubscriptionUsernameOption: "operator",
 				service.ChannelProviderSubscriptionPasswordOption: "upstream-password",
 				service.ChannelProviderSubscriptionAPIKeyOption:   "key-one\nkey-two",
+			},
+		},
+		{
+			name:        "Console login URL alone never becomes the API base URL (fail closed)",
+			channelType: constant.ChannelTypeUterRoute,
+			wantBaseURL: "",
+			options: map[string]string{
+				service.ChannelProviderFeaturedLoginURLOption: "https://console.example.com",
+				service.ChannelProviderFeaturedUsernameOption: "operator",
+				service.ChannelProviderFeaturedPasswordOption: "upstream-password",
+				// No api_url and no dedicated endpoint option: fail closed.
+				service.UterRouteUpstreamURLOption: "",
 			},
 		},
 	}
@@ -127,15 +159,19 @@ func TestApplyChannelProviderCredentialsFillsConfiguredGroups(t *testing.T) {
 			}
 			require.NoError(t, applyChannelProviderCredentials(channel))
 
-			require.NotNil(t, channel.BaseURL)
-			require.Equal(t, "https://console.example.com", *channel.BaseURL)
-			require.Equal(t, "key-one\nkey-two", channel.Key)
+			if tc.wantBaseURL == "" {
+				require.Nil(t, channel.BaseURL, "console login URL must never become an API endpoint")
+			} else {
+				require.NotNil(t, channel.BaseURL)
+				require.Equal(t, tc.wantBaseURL, *channel.BaseURL)
+			}
 
 			var settings map[string]any
 			require.NoError(t, json.Unmarshal([]byte(channel.OtherSettings), &settings))
 			require.Equal(t, "keep-me", settings["proxy"])
 			console := settings[upstreamConsoleKey].(map[string]any)
-			require.Equal(t, "https://console.example.com", console["login_url"])
+			// The console login URL is stored for the secondary cross-check only.
+			require.Equal(t, tc.options[loginURLOptionForType(tc.channelType)], console["login_url"])
 			require.Equal(t, "operator", console["username"])
 			require.NotContains(t, console, "password")
 			require.NotEmpty(t, console["password_encrypted"])
