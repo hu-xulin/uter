@@ -46,7 +46,7 @@ For commercial licensing, please contact support@uter.ai
 
 let root
 
-function runCheck(source: string) {
+function runCheck(source) {
   root = mkdtempSync(join(tmpdir(), 'uter-copyright-check-'))
   mkdirSync(join(root, 'src'), { recursive: true })
   mkdirSync(join(root, 'scripts'), { recursive: true })

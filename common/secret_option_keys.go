@@ -87,8 +87,15 @@ var secretOptionKeys = map[string]struct{}{
 	"WaffoPublicCert":        {},
 	"WaffoSandboxPublicCert": {},
 
-	// 上游渠道凭据。创梦（UterRoute）账号密码用于每日价格同步登录其
-	// /api/pricing；密码键已随后缀兜底掩码，这里显式登记保持真源唯一。
+	// 系统管理 → 渠道 → 优特精选/优特百炼/优特订阅的登录凭据。
+	// 后缀兜底已经能掩码 password / api_key，这里显式登记使真源唯一，
+	// 并保证以后修改后缀规则不会把这些上游凭据意外明文下发。
+	"channel_provider.featured.password":     {},
+	"channel_provider.featured.api_key":      {},
+	"channel_provider.bailian.password":      {},
+	"channel_provider.bailian.api_key":       {},
+	"channel_provider.subscription.password": {},
+	"channel_provider.subscription.api_key":  {},
 }
 
 // 明确登记为「必须原样下发给浏览器」的公开值。这些键名以 key/token 结尾，

@@ -248,6 +248,23 @@ export type ContentSettings = {
   ModelDescriptionTranslateLocales: string
 }
 
+export type ChannelProviderSettings = {
+  /** Derived view: per-line masks for saved secret values. */
+  ChannelProviderCredentialMasks: string
+  'channel_provider.featured.login_url': string
+  'channel_provider.featured.username': string
+  'channel_provider.featured.password': string
+  'channel_provider.featured.api_key': string
+  'channel_provider.bailian.login_url': string
+  'channel_provider.bailian.username': string
+  'channel_provider.bailian.password': string
+  'channel_provider.bailian.api_key': string
+  'channel_provider.subscription.login_url': string
+  'channel_provider.subscription.username': string
+  'channel_provider.subscription.password': string
+  'channel_provider.subscription.api_key': string
+}
+
 export type ModelSettings = {
   'global.pass_through_request_enabled': boolean
   'global.thinking_model_blacklist': string

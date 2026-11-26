@@ -23,6 +23,7 @@ import {
   CreditCard,
   Layout,
   LayoutTemplate,
+  Server,
   Settings,
   Shield,
   ShieldAlert,
@@ -31,6 +32,7 @@ import {
 
 import { getAuthSectionNavItems } from '@/features/system-settings/auth/section-registry.tsx'
 import { getBillingSectionNavItems } from '@/features/system-settings/billing/section-registry.tsx'
+import { getChannelSectionNavItems } from '@/features/system-settings/channels/section-registry.tsx'
 import { getContentSectionNavItems } from '@/features/system-settings/content/section-registry.tsx'
 import { getModelsSectionNavItems } from '@/features/system-settings/models/section-registry.tsx'
 import { getOperationsSectionNavItems } from '@/features/system-settings/operations/section-registry.tsx'
@@ -71,6 +73,11 @@ function getSystemSettingsNavGroups(t: TFunction): NavGroup[] {
           title: t('Billing & Payment'),
           icon: CreditCard,
           items: getBillingSectionNavItems(t),
+        },
+        {
+          title: t('Channels'),
+          icon: Server,
+          items: getChannelSectionNavItems(t),
         },
         {
           title: t('Models'),

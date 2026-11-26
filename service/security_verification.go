@@ -17,13 +17,14 @@ import (
 )
 
 const (
-	VerificationMethodTwoFA         = "2fa"
-	VerificationMethodPasskey       = "passkey"
-	VerificationMethodPassword      = "password"
-	VerificationMethodEmailCode     = "email_code"
-	VerificationMethodOAuth         = "oauth"
-	VerificationMethodSession       = "session"
-	VerificationScopeChannelKeyRead = "channel.key.read"
+	VerificationMethodTwoFA                = "2fa"
+	VerificationMethodPasskey              = "passkey"
+	VerificationMethodPassword             = "password"
+	VerificationMethodEmailCode            = "email_code"
+	VerificationMethodOAuth                = "oauth"
+	VerificationMethodSession              = "session"
+	VerificationScopeChannelKeyRead        = "channel.key.read"
+	VerificationScopeChannelCredentialRead = "channel.credential.read"
 	// VerificationScopeTokenKeyRead guards disclosing an API key in clear. The
 	// scope binds no parameters: the frontend asks for one proof and reuses it
 	// for the single and batch reads it then performs, and the controller still
@@ -78,6 +79,12 @@ type VerificationOperation struct {
 
 type ChannelKeyReadContext struct {
 	ChannelID int `json:"channel_id"`
+}
+
+// ChannelCredentialReadContext binds a step-up proof to one channel-provider
+// credential key, so a proof for one field cannot reveal another.
+type ChannelCredentialReadContext struct {
+	OptionKey string `json:"option_key"`
 }
 
 type AccountBindingContext struct {
@@ -174,6 +181,13 @@ func BindVerificationOperation(operation VerificationOperation) (VerificationBin
 	case VerificationScopeChannelKeyRead:
 		var context ChannelKeyReadContext
 		if len(fields) != 1 || common.Unmarshal(fields["channel_id"], &context.ChannelID) != nil || context.ChannelID <= 0 {
+			return VerificationBinding{}, ErrVerificationContextInvalid
+		}
+		normalized = context
+	case VerificationScopeChannelCredentialRead:
+		var context ChannelCredentialReadContext
+		if len(fields) != 1 || common.Unmarshal(fields["option_key"], &context.OptionKey) != nil ||
+			!IsChannelProviderSecretOptionKey(context.OptionKey) {
 			return VerificationBinding{}, ErrVerificationContextInvalid
 		}
 		normalized = context
@@ -323,7 +337,7 @@ func securityVerificationPolicy(scope string, state model.UserVerificationState)
 		methods = append(methods, VerificationMethodPasskey)
 	}
 	switch scope {
-	case VerificationScopeChannelKeyRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
+	case VerificationScopeChannelKeyRead, VerificationScopeChannelCredentialRead, VerificationScopeTokenKeyRead, VerificationScopePasskeyDelete, VerificationScopeLogin:
 	case VerificationScopeTwoFADisable, VerificationScopeTwoFABackupCodes:
 		if !state.HasTwoFA {
 			return nil, model.ErrTwoFANotEnabled

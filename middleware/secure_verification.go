@@ -34,6 +34,29 @@ func SecureVerificationRequired() gin.HandlerFunc {
 	}
 }
 
+// ChannelProviderCredentialSecureVerificationRequired protects saved upstream
+// console credentials in System Settings → Channels. The proof is bound to the
+// exact option key from the route so one field cannot unlock another.
+func ChannelProviderCredentialSecureVerificationRequired() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		optionKey := strings.TrimSpace(c.Param("key"))
+		if !service.IsChannelProviderSecretOptionKey(optionKey) {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"success": false, "code": "SECURITY_CONTEXT_INVALID", "message": service.ErrVerificationContextInvalid.Error()})
+			return
+		}
+		context, err := common.Marshal(service.ChannelCredentialReadContext{OptionKey: optionKey})
+		if err != nil {
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		if RequireSecurityProof(c, service.VerificationOperation{Scope: service.VerificationScopeChannelCredentialRead, Context: context}) == nil {
+			return
+		}
+		c.Set("secure_verified", true)
+		c.Next()
+	}
+}
+
 // TokenKeySecureVerificationRequired protects API key disclosure for both the
 // single and batch endpoints. The proof carries no parameters, so one step-up
 // covers the reads a page performs; each controller still checks ownership.

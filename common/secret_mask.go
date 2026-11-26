@@ -66,6 +66,22 @@ func MaskSecretValue(value string) string {
 		value[length-secretMaskKeepTail:]
 }
 
+// MaskMultilineSecret 按行掩码多行密钥。
+//
+// 渠道 API Key 支持一次保存多行凭据；整串掩码会把换行吞进星号里，管理员
+// 只能核对最后一行，无法确认每一行是否填对。逐行复用同一掩码规则后，
+// 展示形态与单行 API Key 完全一致，同时保留行结构。
+func MaskMultilineSecret(value string) string {
+	if !strings.Contains(value, "\n") {
+		return MaskSecretValue(value)
+	}
+	lines := strings.Split(value, "\n")
+	for index, line := range lines {
+		lines[index] = MaskSecretValue(strings.TrimSuffix(line, "\r"))
+	}
+	return strings.Join(lines, "\n")
+}
+
 // IsMaskedSecret 判断 value 是否形如本包生成的掩码串（含 '*'）。
 //
 // 用途：写入时识别「前端把掩码串回传」的情况——此时应视为「未修改」，

@@ -51,7 +51,7 @@ function requireRenderedLink(
   label: string
 ): HTMLElement {
   if (!link) {
-    throw new Error(label + ' was not rendered')
+    throw new Error(`${label} was not rendered`)
   }
   return link
 }

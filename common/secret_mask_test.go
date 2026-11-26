@@ -52,6 +52,17 @@ func TestMaskSecretValue(t *testing.T) {
 	}
 }
 
+func TestMaskMultilineSecret(t *testing.T) {
+	input := "first-key-1234\nshort\nlast-key-9876"
+	want := "firs******1234\nshor*\nlast*****9876"
+	if got := MaskMultilineSecret(input); got != want {
+		t.Fatalf("MaskMultilineSecret(%q) = %q, want %q", input, got, want)
+	}
+	if got := MaskMultilineSecret("single-secret"); got != MaskSecretValue("single-secret") {
+		t.Fatalf("single-line value changed: %q", got)
+	}
+}
+
 func TestIsMaskedSecret(t *testing.T) {
 	if IsMaskedSecret("plain-value") {
 		t.Fatal("plain value must not be treated as masked")

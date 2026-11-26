@@ -69,6 +69,20 @@ func InitOptionMap() {
 	jsplugin.DefaultRegistry.SetDisabledFactoryKeys(nil)
 	common.OptionMap["DataExportEnabled"] = strconv.FormatBool(common.DataExportEnabled)
 	common.OptionMap["ChannelDisableThreshold"] = strconv.FormatFloat(common.ChannelDisableThreshold, 'f', -1, 64)
+	// 系统管理 → 渠道的三组连接配置。必须在此登记默认值，否则保存后只会
+	// 写入 options 表，loadOptionsFromDatabase 找不到默认值就不加载运行时变量。
+	common.OptionMap["channel_provider.featured.login_url"] = ""
+	common.OptionMap["channel_provider.featured.username"] = ""
+	common.OptionMap["channel_provider.featured.password"] = ""
+	common.OptionMap["channel_provider.featured.api_key"] = ""
+	common.OptionMap["channel_provider.bailian.login_url"] = ""
+	common.OptionMap["channel_provider.bailian.username"] = ""
+	common.OptionMap["channel_provider.bailian.password"] = ""
+	common.OptionMap["channel_provider.bailian.api_key"] = ""
+	common.OptionMap["channel_provider.subscription.login_url"] = ""
+	common.OptionMap["channel_provider.subscription.username"] = ""
+	common.OptionMap["channel_provider.subscription.password"] = ""
+	common.OptionMap["channel_provider.subscription.api_key"] = ""
 	common.OptionMap["EmailDomainRestrictionEnabled"] = strconv.FormatBool(common.EmailDomainRestrictionEnabled)
 	common.OptionMap[operation_setting.SystemTaskRetentionDaysOptionKey] = strconv.Itoa(operation_setting.GetSystemTaskSetting().RetentionDays)
 	common.OptionMap["EmailAliasRestrictionEnabled"] = strconv.FormatBool(common.EmailAliasRestrictionEnabled)

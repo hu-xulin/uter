@@ -112,6 +112,9 @@
           "getBillingSectionNavItems",
           "getBillingSectionContent",
           "getBillingSectionMeta",
+          "getChannelSectionNavItems",
+          "getChannelSectionContent",
+          "getChannelSectionMeta",
           "getContentSectionNavItems",
           "getContentSectionContent",
           "getContentSectionMeta",
@@ -230,6 +233,13 @@
       "files": ["**/scripts/**/*.cjs"],
       "rules": {
         "typescript/no-require-imports": "off"
+      }
+    },
+    {
+      "files": ["scripts/uds-comprehensive-audit.ts"],
+      "rules": {
+        "typescript/no-explicit-any": "off",
+        "unicorn/prefer-query-selector": "off"
       }
     }
   ]

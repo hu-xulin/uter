@@ -651,12 +651,12 @@ export function transformChannelToFormDefaults(
       }
       // Console login credentials are a secondary cross-check source. The
       // password is never returned by the backend, so the form starts empty.
-      const console = parsed.upstream_console as
+      const consoleSettings = parsed.upstream_console as
         | { login_url?: string; username?: string }
         | undefined
-      if (console && typeof console === 'object') {
-        consoleLoginUrl = console.login_url || ''
-        consoleUsername = console.username || ''
+      if (consoleSettings && typeof consoleSettings === 'object') {
+        consoleLoginUrl = consoleSettings.login_url || ''
+        consoleUsername = consoleSettings.username || ''
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -957,12 +957,12 @@ function buildSettingsJSON(formData: ChannelFormValues): string {
   const consoleUsername = formData.console_username?.trim() || ''
   const consolePassword = formData.console_password || ''
   if (consoleLoginUrl && consoleUsername) {
-    const console: Record<string, string> = {
+    const consoleCredentials: Record<string, string> = {
       login_url: consoleLoginUrl,
       username: consoleUsername,
     }
-    if (consolePassword) console.password = consolePassword
-    settingsObj.upstream_console = console
+    if (consolePassword) consoleCredentials.password = consolePassword
+    settingsObj.upstream_console = consoleCredentials
   } else {
     delete settingsObj.upstream_console
   }

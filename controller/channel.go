@@ -865,6 +865,12 @@ func AddChannel(c *gin.Context) {
 	baseURLFromPluginDefault := addChannelRequest.Channel != nil &&
 		addChannelRequest.Channel.Type == constant.ChannelTypeTaskPlugin &&
 		(addChannelRequest.Channel.BaseURL == nil || strings.TrimSpace(*addChannelRequest.Channel.BaseURL) == "")
+	// 优特精选/优特百炼/优特订阅的连接信息由系统设置在服务端补齐；浏览器提交不携带明文，
+	// 也不需要经过页面验证展开。必须先于校验和落库执行，确保补全后的值参与校验。
+	if err := applyChannelProviderCredentials(addChannelRequest.Channel); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	// 使用统一的校验函数
 	if err := validateChannel(addChannelRequest.Channel, true); err != nil {
 		common.ApiError(c, err)

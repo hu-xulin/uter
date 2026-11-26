@@ -44,6 +44,33 @@ export async function updateSystemOption(request: UpdateOptionRequest) {
   return res.data
 }
 
+export type RevealChannelProviderCredentialResponse = {
+  success: boolean
+  message: string
+  data?: { key: string; value: string }
+}
+
+/**
+ * Fetch one saved upstream credential after the caller has obtained a proof
+ * bound to this exact option key. The browser never receives these values from
+ * GET /api/option/, which always returns masked values for secret keys.
+ */
+export async function revealChannelProviderCredential(
+  optionKey: string,
+  proofToken: string,
+  signal?: AbortSignal
+) {
+  const res = await api.post<RevealChannelProviderCredentialResponse>(
+    `/api/option/channel-provider/${encodeURIComponent(optionKey)}/reveal`,
+    undefined,
+    {
+      headers: { 'X-Security-Proof': proofToken },
+      signal,
+    }
+  )
+  return res.data
+}
+
 export type SyncExchangeRateResponse = {
   success: boolean
   message: string

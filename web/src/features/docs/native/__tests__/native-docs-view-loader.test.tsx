@@ -9,6 +9,8 @@ version. See <https://www.gnu.org/licenses/>.
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { NativeDocsView } from '../native-docs-view'
+
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
   loadNativeDoc: vi.fn(),
@@ -42,8 +44,6 @@ vi.mock('../docs-shell', () => ({
     <div>{children}</div>
   ),
 }))
-
-import { NativeDocsView } from '../native-docs-view'
 
 afterEach(() => {
   cleanup()

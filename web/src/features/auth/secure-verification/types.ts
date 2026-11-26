@@ -29,6 +29,7 @@ export type VerificationMethod =
   | 'session'
 export type SecurityProofScope =
   | 'channel.key.read'
+  | 'channel.credential.read'
   | 'passkey.register'
   | 'passkey.delete'
   | '2fa.setup'
@@ -56,6 +57,7 @@ export type AdminUserManageAction = 'disable' | 'enable' | 'promote' | 'demote'
 
 export type VerificationOperation =
   | { scope: 'channel.key.read'; context: { channel_id: number } }
+  | { scope: 'channel.credential.read'; context: { option_key: string } }
   | {
       scope: 'account.binding.bind'
       context: { provider: string; email?: string; code?: string }
@@ -92,6 +94,7 @@ export type VerificationOperation =
       scope: Exclude<
         SecurityProofScope,
         | 'channel.key.read'
+        | 'channel.credential.read'
         | 'account.binding.bind'
         | 'account.binding.unbind'
         | 'admin.user.manage'

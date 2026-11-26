@@ -120,6 +120,41 @@ func buildSMTPAccountsViewValue() string {
 	return string(encoded)
 }
 
+// buildChannelProviderMaskViewValue derives per-line masks for System Settings
+// → Channels. Option-level masking hides the newlines of a multiline API key;
+// this view keeps one mask per saved line so operators can verify every key.
+func buildChannelProviderMaskViewValue() string {
+	type credentialMasks struct {
+		Password string `json:"password"`
+		APIKey   string `json:"api_key"`
+	}
+	type providerMasks struct {
+		Featured     credentialMasks `json:"featured"`
+		Bailian      credentialMasks `json:"bailian"`
+		Subscription credentialMasks `json:"subscription"`
+	}
+
+	view := providerMasks{}
+	for _, group := range []struct {
+		prefix string
+		target *credentialMasks
+	}{
+		{service.ChannelProviderFeaturedPrefix, &view.Featured},
+		{service.ChannelProviderBailianPrefix, &view.Bailian},
+		{service.ChannelProviderSubscriptionPrefix, &view.Subscription},
+	} {
+		*group.target = credentialMasks{
+			Password: common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".password"])),
+			APIKey:   common.MaskMultilineSecret(common.Interface2String(common.OptionMap[group.prefix+".api_key"])),
+		}
+	}
+	encoded, err := common.Marshal(view)
+	if err != nil {
+		return "{}"
+	}
+	return string(encoded)
+}
+
 func GetOptions(c *gin.Context) {
 	var options []*model.Option
 	optionValues := make(map[string]string)
@@ -158,6 +193,9 @@ func GetOptions(c *gin.Context) {
 	})
 	options = append(options, &model.Option{
 		Key: "SMTPAccountsView", Value: buildSMTPAccountsViewValue(),
+	})
+	options = append(options, &model.Option{
+		Key: "ChannelProviderCredentialMasks", Value: buildChannelProviderMaskViewValue(),
 	})
 	common.OptionMapRWMutex.Unlock()
 	// Display the same effective expressions used by pricing and settlement,

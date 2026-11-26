@@ -336,11 +336,13 @@ export function remapPricingRowsForPreview<T extends { model_name: string }>(
   } catch {
     return rows
   }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
     return rows
+  }
   const mapping = parsed as Record<string, string>
-  if (Object.values(mapping).some((value) => typeof value !== 'string'))
+  if (Object.values(mapping).some((value) => typeof value !== 'string')) {
     return rows
+  }
 
   // The selected models are the request names users call. Use them to decide
   // which side of each mapping pair is the alias, so both `{alias:upstream}`

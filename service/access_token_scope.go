@@ -218,6 +218,8 @@ func AccessTokenScopeGranted(scopes []string, scope string) bool {
 // obtain it; scopes missing from this table are denied too.
 var accessTokenVerificationScopes = map[string]string{
 	VerificationScopeChannelKeyRead: AccessTokenScopeOf(authz.ChannelSecretView),
+	// A PAT must not reveal saved upstream console credentials in clear.
+	VerificationScopeChannelCredentialRead: "",
 	// A PAT cannot read API keys in clear: that is the credential a PAT already
 	// is, so exposing another one would widen a stolen token into a full key dump.
 	VerificationScopeTokenKeyRead:          "",
