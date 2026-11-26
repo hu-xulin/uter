@@ -204,3 +204,39 @@ func TestCreateUterAPIChannelsSupportsMultipleKeysInSlot(t *testing.T) {
 	assert.Equal(t, 2, created.ChannelInfo.MultiKeySize)
 	assert.Equal(t, "claude-key-1\nclaude-key-2", created.Key)
 }
+
+// 创建接口必须接收向导生成的 -xc0 别名和映射，否则价格在保存后按上游原名
+// 落库，渠道模型却是别名，最终表现为“0 个可计费 / 全部 missing”。
+func TestCreateUterAPIChannelsPersistsXC0RedirectAlias(t *testing.T) {
+	setupUterAPIRecipeDB(t)
+	newUterAPISlotServer(t)
+
+	recorder := runUterAPICreate(t, `{
+		"slots":[{"name":"Uter.api-claude-xc0","group":"Claude-max","keys":["claude-key"]}],
+		"group":"default",
+		"models":"claude-a-xc0",
+		"model_mapping":"{\"claude-a-xc0\":\"claude-a\"}"
+	}`)
+
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	assert.Contains(t, recorder.Body.String(), `"created":1`)
+	assert.Contains(t, recorder.Body.String(), `"pricing_verified":true`)
+
+	all, err := model.GetAllChannels(0, 100, true, false)
+	require.NoError(t, err)
+	var created *model.Channel
+	for _, ch := range all {
+		if ch.Name == "Uter.api-claude-xc0" {
+			created = ch
+		}
+	}
+	require.NotNil(t, created)
+	assert.Equal(t, "claude-a-xc0", created.Models)
+	assert.Equal(t, `{"claude-a-xc0":"claude-a"}`, created.GetModelMapping())
+
+	row, err := model.GetChannelModelPricingFor(model.ChannelPricingIdentity{
+		ChannelId: created.Id, ModelName: "claude-a-xc0",
+	})
+	require.NoError(t, err)
+	assert.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus)
+}

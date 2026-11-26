@@ -107,11 +107,17 @@ func PreviewRecordToPricingRow(record model.ChannelOfficialPricingRecord) model.
 	if pricingSource == "" {
 		pricingSource = "newapi:/api/pricing"
 	}
+	pricingStatus := model.IncomingChannelPricingStatus(record)
+	internalPricing := record.InternalPricing
+	if pricingStatus == model.ChannelPricingStatusNeedsReview {
+		internalPricing = ""
+	}
 	return model.ChannelModelPricing{
 		ChannelId: 0, Provider: "uterapi", ModelName: record.ModelName,
 		Currency: "USD", OfficialPricing: record.OfficialPricing,
 		NormalizedPricing: record.NormalizedPricing,
-		InternalPricing:   record.InternalPricing,
-		PricingSource:     pricingSource, FetchedAt: record.FetchedAt,
+		InternalPricing:   internalPricing,
+		PricingSource:     pricingSource, PricingStatus: pricingStatus,
+		FetchedAt: record.FetchedAt,
 	}
 }

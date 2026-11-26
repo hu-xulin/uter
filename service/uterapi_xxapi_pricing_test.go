@@ -175,6 +175,27 @@ func TestXXAPIUnknownPriceShapeStaysUnpriced(t *testing.T) {
 	require.Nil(t, tier.PerUnitUSD)
 }
 
+// 新建向导只有只读预览价格行。预览行必须带着与落库一致的 configured 状态，
+// 否则计费就绪度会把 12 个本来可计费的模型全部算作 pending。
+func TestPreviewRecordToPricingRowMarksReportedClaudeModelsBillable(t *testing.T) {
+	_, payload := loadXXAPIPricingFixture(t)
+	names := []string{
+		"claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-haiku-5-5",
+		"claude-opus-4-5", "claude-opus-4-6", "claude-opus-4-7", "claude-opus-4-8",
+		"claude-opus-5", "claude-opus-5-5", "claude-sonnet-4-6",
+		"claude-sonnet-5", "claude-sonnet-5-5",
+	}
+	records := GenericChannelPricingRecords(
+		0, names, payload.Data, time.Unix(1_763_900_000, 0), "uterapi",
+	)
+	require.Len(t, records, len(names))
+	for _, record := range records {
+		row := PreviewRecordToPricingRow(record)
+		assert.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus, record.ModelName)
+		assert.NotEmpty(t, row.InternalPricing, record.ModelName)
+	}
+}
+
 // Claude Code · 高级（稳定快速）(Claude-稳定) 与报错里的 12 个 Claude 模型走同一条
 // Uter.api 同步链路。批量重定向后模型列表是别名，目录仍是原名；同步、分组倍率、
 // 汇率换算和采购成本都必须在别名身份上闭环，否则会报零行可计费或成本失真。

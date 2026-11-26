@@ -1021,6 +1021,23 @@ func internalPricingReplaceable(raw string) bool {
 	return autoDerivedInternalSource(pricing.Source)
 }
 
+// IncomingChannelPricingStatus classifies a freshly fetched price row exactly
+// as the persistence layer does. Read-only previews use the same helper so the
+// creation wizard can never report a model as billable when the authoritative
+// sync would keep it in review.
+func IncomingChannelPricingStatus(record ChannelOfficialPricingRecord) string {
+	reviewOnly := officialPricingNeedsReview(record.NormalizedPricing)
+	autoInternal := record.InternalPricing != "" &&
+		autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
+	if reviewOnly && (record.InternalPricing == "" || autoInternal) {
+		return ChannelPricingStatusNeedsReview
+	}
+	if record.InternalPricing != "" {
+		return ChannelPricingStatusConfigured
+	}
+	return ChannelPricingStatusOfficialOnly
+}
+
 // PricingOwnerForSource maps the historical Source label onto the explicit
 // ownership contract. Unknown sources are treated as operator-entered so a
 // sync can never guess that a price is replaceable.
@@ -1188,17 +1205,13 @@ func UpsertChannelOfficialPricing(records []ChannelOfficialPricingRecord) (int, 
 					LastSeenAt:         record.FetchedAt,
 					LifecycleUpdatedAt: now,
 				}
-				reviewOnly := officialPricingNeedsReview(record.NormalizedPricing)
-				autoInternal := record.InternalPricing != "" &&
-					autoDerivedInternalSource(internalPricingSource(record.InternalPricing))
-				if reviewOnly && (record.InternalPricing == "" || autoInternal) {
+				status := IncomingChannelPricingStatus(record)
+				if status == ChannelPricingStatusNeedsReview {
 					// A review-only official record must never auto-enable billing.
 					// An operator/batch price is an explicit decision and stays.
 					row.InternalPricing = ""
-					row.PricingStatus = ChannelPricingStatusNeedsReview
-				} else if row.InternalPricing != "" {
-					row.PricingStatus = ChannelPricingStatusConfigured
 				}
+				row.PricingStatus = status
 				row.PricingVersion = channelPricingVersion(row)
 				if err := tx.Create(&row).Error; err != nil {
 					return err

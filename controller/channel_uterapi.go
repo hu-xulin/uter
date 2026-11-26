@@ -21,6 +21,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -43,9 +44,11 @@ type uterapiKeySlot struct {
 // uterapiCreateRequest carries one entry per upstream billing group. Each group
 // has its own key(s) because uterapi binds a key to exactly one group.
 type uterapiCreateRequest struct {
-	Slots  []uterapiKeySlot `json:"slots"`
-	Group  string           `json:"group"`
-	Status int              `json:"status"`
+	Slots        []uterapiKeySlot `json:"slots"`
+	Group        string           `json:"group"`
+	Status       int              `json:"status"`
+	Models       string           `json:"models"`
+	ModelMapping string           `json:"model_mapping"`
 }
 
 // uterapiBaseURLForTest lets tests point the single-group creation at a mock.
@@ -112,10 +115,21 @@ func CreateUterAPIChannels(c *gin.Context) {
 			lastErr = reason
 			continue
 		}
+		mappingJSON := strings.TrimSpace(req.ModelMapping)
+		servedModels, modelErr := requestedUterAPIModels(req.Models, mappingJSON, models)
+		if modelErr != nil {
+			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": modelErr.Error()})
+			lastErr = modelErr.Error()
+			continue
+		}
 		channel := model.Channel{
 			Type: constant.ChannelTypeUterAPI, Name: name, BaseURL: &base, Key: strings.Join(usableKeys, "\n"),
-			Models: strings.Join(models, ","), Group: group, Status: 0,
+			Models: strings.Join(servedModels, ","), Group: group, Status: 0,
 			CreatedTime: common.GetTimestamp(),
+		}
+		if mappingJSON != "" {
+			mappingValue := mappingJSON
+			channel.ModelMapping = &mappingValue
 		}
 		if len(usableKeys) > 1 {
 			channel.ChannelInfo.IsMultiKey = true
@@ -181,14 +195,14 @@ func CreateUterAPIChannels(c *gin.Context) {
 		}
 		entry := gin.H{
 			"channel_id": channel.Id, "name": name, "type": channel.Type,
-			"base_url": base, "models": models, "pricing_written": written,
+			"base_url": base, "models": servedModels, "pricing_written": written,
 			"group": upstreamGroup, "group_name": groupName, "price_ratio": priceRatio,
 			"keys": len(usableKeys), "status": 0, "pricing_verified": false,
 		}
 		// 价格同步成功也不等于可计费：逐个模型确认存在可计费的渠道级价格后，
 		// 才允许把渠道从禁用切到启用，并把定价模式升级为 ACTIVE。
 		if pricingErr == "" {
-			if missing := unbillableChannelModels(channel.Id, models); len(missing) > 0 {
+			if missing := unbillableChannelModels(channel.Id, servedModels); len(missing) > 0 {
 				pricingErr = common.LogText("pricing verification failed for models: %s", strings.Join(missing, ","))
 			}
 		}
@@ -260,6 +274,76 @@ func normalizeUterAPIKeys(list []string) []string {
 		out = append(out, key)
 	}
 	return out
+}
+
+// resolveUterAPIRequestTail walks a redirect mapping to the upstream model a
+// request name actually calls. A cycle is rejected rather than guessed.
+func resolveUterAPIRequestTail(mapping map[string]string, start string) (string, bool) {
+	current := start
+	visited := map[string]bool{current: true}
+	for {
+		mapped, exists := mapping[current]
+		if !exists || strings.TrimSpace(mapped) == "" {
+			return current, false
+		}
+		mapped = strings.TrimSpace(mapped)
+		if visited[mapped] {
+			if mapped == current {
+				return current, false
+			}
+			return "", true
+		}
+		visited[mapped] = true
+		current = mapped
+	}
+}
+
+// requestedUterAPIModels validates wizard-selected request names against the
+// models the key can actually call. Redirect aliases stay in the channel model
+// list so price rows are keyed by the name relay bills against, but every
+// alias must resolve to an authorized upstream model.
+func requestedUterAPIModels(raw string, mappingJSON string, authorized []string) ([]string, error) {
+	if strings.TrimSpace(raw) == "" {
+		return authorized, nil
+	}
+	mapping := map[string]string{}
+	if strings.TrimSpace(mappingJSON) != "" {
+		if err := common.UnmarshalJsonStr(mappingJSON, &mapping); err != nil {
+			return nil, fmt.Errorf("invalid model mapping: %w", err)
+		}
+		for source, target := range mapping {
+			if strings.TrimSpace(target) == "" {
+				return nil, fmt.Errorf("model mapping target for %q is empty", source)
+			}
+		}
+	}
+	authorizedSet := make(map[string]bool, len(authorized))
+	for _, name := range authorized {
+		authorizedSet[strings.TrimSpace(name)] = true
+	}
+	seen := make(map[string]bool)
+	models := make([]string, 0)
+	for _, name := range strings.FieldsFunc(raw, func(r rune) bool {
+		return r == ',' || r == '\n' || r == '\r' || r == '\t' || r == ' '
+	}) {
+		name = strings.TrimSpace(name)
+		if name == "" || seen[name] {
+			continue
+		}
+		seen[name] = true
+		tail, cyclic := resolveUterAPIRequestTail(mapping, name)
+		if cyclic || tail == "" {
+			return nil, fmt.Errorf("model mapping cycle for %q", name)
+		}
+		if !authorizedSet[tail] {
+			return nil, fmt.Errorf("model %q is not authorized for this group", name)
+		}
+		models = append(models, name)
+	}
+	if len(models) == 0 {
+		return nil, errors.New("no selected model is authorized for this group")
+	}
+	return models, nil
 }
 
 // discoverUterAPIModels returns the models every usable key can call. A failing
