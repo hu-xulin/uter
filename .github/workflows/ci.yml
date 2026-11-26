@@ -23,7 +23,9 @@ jobs:
   # Runtime、32 个验证器与 UAP 自身测试可执行，不能只靠 nightly schedule。
   uap-governance:
     name: UAP runtime, validators and self-tests
-    runs-on: ubuntu-latest
+    # Committed Playwright visual baselines are chromium-darwin; use the arm64
+    # macOS runner instead of generating or accepting unreviewed Linux baselines.
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -50,11 +52,17 @@ jobs:
         run: |
           go install github.com/zricethezav/gitleaks/v8@v8.24.2
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Install isolated E2E system clients
+        run: |
+          command -v sqlite3
+          brew list redis >/dev/null 2>&1 || brew install redis
+          redis-cli --version
+          redis-server --version
       - name: Install H5 browser and frontend dependencies
         working-directory: web
         run: |
           bun install --frozen-lockfile
-          bunx playwright install --with-deps chromium
+          bunx playwright install chromium
       - name: Build real frontend release artifacts for UAP rehearsal
         working-directory: web
         run: bun run build
@@ -291,10 +299,17 @@ jobs:
         id: uap_report
         continue-on-error: true
         run: node .uap/bin/uap.mjs report --final
+      - name: UAP post-audit independent verification
+        if: always() && github.event_name == 'push'
+        id: uap_post_audit_verify
+        continue-on-error: true
+        run: node --test .uap/tests/independent-verification.test.mjs
       - name: Run authoritative UAP final acceptance closure
         if: always() && github.event_name == 'push'
         id: uap_accept
         continue-on-error: true
+        env:
+          UAP_POST_AUDIT_VERIFY_OUTCOME: ${{ steps.uap_post_audit_verify.outcome }}
         run: node .uap/bin/uap.mjs accept
       - name: Publish authoritative UAP final acceptance status
         if: always() && github.event_name == 'push'
@@ -333,6 +348,7 @@ jobs:
           TEST_OUTCOME: ${{ steps.uap_test.outcome }}
           FULL_AUDIT_OUTCOME: ${{ steps.uap_full_audit.outcome }}
           ACCEPTANCE_OUTCOME: ${{ steps.uap_accept.outcome }}
+          UAP_POST_AUDIT_VERIFY_OUTCOME: ${{ steps.uap_post_audit_verify.outcome }}
         run: |
           printf 'backend_build=%s\\nserver=%s\\nbatch=%s\\nbuild=%s\\ndoctor=%s\\nvalidate=%s\\ntest=%s\\nfull_audit=%s\\nfinal_acceptance=%s\\n' "$UAP_BACKEND_BUILD_OUTCOME" "$UAP_SERVER_OUTCOME" "$UAP_BATCH_OUTCOME" "$BUILD_OUTCOME" "$DOCTOR_OUTCOME" "$VALIDATE_OUTCOME" "$TEST_OUTCOME" "$FULL_AUDIT_OUTCOME" "$ACCEPTANCE_OUTCOME"
           if [[ "$ACCEPTANCE_OUTCOME" != "success" ]]; then echo "::warning::Operational UAP gate passed/checked separately; final acceptance remains blocked or unverified."; fi
@@ -344,7 +360,11 @@ jobs:
           test "$VALIDATE_OUTCOME" = success
           test "$TEST_OUTCOME" = success
           test "$FULL_AUDIT_OUTCOME" = success
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then test "$ACCEPTANCE_OUTCOME" = success; fi
+          echo "post_audit_verify=$UAP_POST_AUDIT_VERIFY_OUTCOME"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            test "$UAP_POST_AUDIT_VERIFY_OUTCOME" = success
+            test "$ACCEPTANCE_OUTCOME" = success
+          fi
 
       - name: Upload UAP evidence reports
         if: always()

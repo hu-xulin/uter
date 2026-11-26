@@ -33,6 +33,7 @@ test('UAP evidence-producing steps run even when an earlier gate fails', () => {
     'UAP security negative tests and secret scan',
     'UAP full requirement traceability verification',
     'Regenerate final UAP reports from current execution',
+    'UAP post-audit independent verification',
     'Run authoritative UAP final acceptance closure',
     'Publish authoritative UAP final acceptance status',
     'Enforce UAP governance gate',
@@ -41,6 +42,34 @@ test('UAP evidence-producing steps run even when an earlier gate fails', () => {
   for (const name of names) {
     assert.match(stepBlock(name), /if: always\(\)/, name)
   }
+})
+
+test('visual snapshots run on the platform for which committed baselines exist', () => {
+  const start = workflow.indexOf('  uap-governance:')
+  const end = workflow.indexOf('\n  ueqe-review:', start)
+  assert.notEqual(start, -1)
+  assert.notEqual(end, -1)
+  const job = workflow.slice(start, end)
+  assert.ok(job.includes('runs-on: macos-15'))
+  assert.ok(job.includes('bunx playwright install chromium'))
+  assert.ok(!job.includes('playwright install --with-deps'))
+  const snapshots = join(root, 'web/e2e/visual/public.spec.ts-snapshots')
+  assert.ok(readFileSync(join(snapshots, 'home-desktop-chromium-darwin.png')).length > 0)
+})
+
+test('post-audit independent verification runs after current reports and is required by acceptance', () => {
+  const reportIndex = workflow.indexOf('- name: Regenerate final UAP reports from current execution')
+  const postAuditIndex = workflow.indexOf('- name: UAP post-audit independent verification')
+  const acceptIndex = workflow.indexOf('- name: Run authoritative UAP final acceptance closure')
+  assert.ok(reportIndex >= 0 && postAuditIndex > reportIndex && acceptIndex > postAuditIndex)
+  const postAudit = stepBlock('UAP post-audit independent verification')
+  assert.match(postAudit, /continue-on-error: true/)
+  assert.ok(postAudit.includes('node --test .uap/tests/independent-verification.test.mjs'))
+  const accept = stepBlock('Run authoritative UAP final acceptance closure')
+  assert.ok(accept.includes('UAP_POST_AUDIT_VERIFY_OUTCOME:'))
+  const gate = stepBlock('Enforce UAP governance gate')
+  assert.ok(gate.includes('UAP_POST_AUDIT_VERIFY_OUTCOME:'))
+  assert.ok(gate.includes('test "$UAP_POST_AUDIT_VERIFY_OUTCOME" = success'))
 })
 
 test('isolated server startup is conditional on a successful release binary build', () => {
@@ -59,7 +88,7 @@ test('the final gate fails closed when required UAP prerequisites are skipped', 
   ]) {
     assert.ok(gate.includes(`${name}:`), `${name} must be reported`)
     assert.ok(
-      gate.includes(`test "${name}" = success`),
+      gate.includes(`test "$${name}" = success`),
       `${name} must be required for a passing gate`
     )
   }

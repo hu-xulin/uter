@@ -12,7 +12,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { isUapSelfTestFile, filterSelfTestFiles } from '../runtime/_lib/test-collector.mjs';
+import {
+  isUapSelfTestFile,
+  filterSelfTestFiles,
+  isUapPostAuditTestFile,
+  filterPostAuditTestFiles,
+} from '../runtime/_lib/test-collector.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
@@ -37,6 +42,19 @@ test('fixtures are excluded, real self-tests are kept', () => {
   assert.ok(picked.some((f) => f.endsWith('requirement-behavior-suite.test.mjs')));
   assert.equal(picked.filter((f) => f.split(path.sep).includes('fixtures')).length, 0);
   for (const f of picked) assert.ok(fs.existsSync(f), `collected file missing on disk: ${f}`);
+});
+
+test('current-execution independent verification is post-audit, not a pre-audit self-test', () => {
+  const all = walk(TESTS).filter((f) => f.endsWith('.test.mjs'));
+  const picked = filterSelfTestFiles(all);
+  const postAudit = filterPostAuditTestFiles(all);
+  const independent = '.uap/tests/independent-verification.test.mjs';
+
+  assert.equal(isUapPostAuditTestFile(independent), true);
+  assert.equal(isUapSelfTestFile(independent), false);
+  assert.ok(!picked.some((f) => f.endsWith('independent-verification.test.mjs')));
+  assert.deepEqual(postAudit.map((f) => path.basename(f)), ['independent-verification.test.mjs']);
+  assert.ok(fs.existsSync(path.join(ROOT, independent)));
 });
 
 test('the intentionally failing repair canaries are never collected', () => {

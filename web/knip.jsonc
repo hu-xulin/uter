@@ -46,6 +46,10 @@
     // pruned by dead-code analysis
     "src/design-system/tokens/brand-colors.ts",
   ],
+  // These are operating-system tools used by the isolated business E2E helper,
+  // not npm package binaries. CI installs Redis with Homebrew; macOS provides
+  // sqlite3. Knip continues analyzing the source files that invoke them.
+  "ignoreBinaries": ["sqlite3", "redis-cli"],
   "ignoreDependencies": [
     // Only imported by the parked navigation-progress component (see ignore above)
     "react-top-loading-bar",

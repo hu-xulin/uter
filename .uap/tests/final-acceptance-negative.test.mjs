@@ -380,3 +380,27 @@ test('10. 篡改 evidence 内容（sha256 不匹配）→ verifyEvidenceManifest
     assert.ok(v2.problems.some((p) => /report commit_sha/.test(p)), `应报出 A3 问题：${v2.problems.join(' | ')}`);
   });
 });
+
+test('post-audit independent verification failure blocks the UAP self gate', () => {
+  const previous = process.env.UAP_POST_AUDIT_VERIFY_OUTCOME;
+  const dir = freshDir();
+  try {
+    process.env.UAP_POST_AUDIT_VERIFY_OUTCOME = 'failure';
+    const failed = checkUapSelf(dir, EXEC);
+    assert.ok(
+      failed.problems.some((problem) => problem.includes('post-audit independent verification outcome=failure')),
+      'failed post-audit verification must be surfaced as a gate problem'
+    );
+
+    process.env.UAP_POST_AUDIT_VERIFY_OUTCOME = 'success';
+    const succeeded = checkUapSelf(dir, EXEC);
+    assert.ok(
+      !succeeded.problems.some((problem) => problem.includes('post-audit independent verification outcome=')),
+      'successful post-audit verification must not add a gate problem'
+    );
+  } finally {
+    if (previous === undefined) delete process.env.UAP_POST_AUDIT_VERIFY_OUTCOME;
+    else process.env.UAP_POST_AUDIT_VERIFY_OUTCOME = previous;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});

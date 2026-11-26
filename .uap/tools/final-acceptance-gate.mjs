@@ -517,6 +517,11 @@ export function checkUapSelf(reportsDir = REPORTS, execution = null) {
   const t = report('RUNTIME-TEST-RESULTS.json', reportsDir) || {};
   details.uap_tests = { exit_code: t.exit_code ?? null, status: t.status ?? null };
   if (Number(t.exit_code ?? 1) !== 0) problems.push(`uap: self-test exit_code=${t.exit_code}`);
+  const postAuditOutcome = process.env.UAP_POST_AUDIT_VERIFY_OUTCOME;
+  details.post_audit_independent_verification = postAuditOutcome ?? null;
+  if (postAuditOutcome !== undefined && postAuditOutcome !== 'success') {
+    problems.push(`uap: post-audit independent verification outcome=${postAuditOutcome}`);
+  }
   const v = report('VALIDATION-RESULTS.json', reportsDir) || {};
   details.validators = { total: v.total ?? null, pass: v.pass ?? null, fail: v.fail ?? null, blocked: v.blocked ?? null, exit_code: v.exit_code ?? null };
   if (Number(v.fail ?? 1) !== 0 || Number(v.blocked ?? 1) !== 0) problems.push(`uap: validator fail=${v.fail} blocked=${v.blocked}`);
