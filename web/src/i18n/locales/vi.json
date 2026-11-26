@@ -8746,6 +8746,8 @@
     "Show console prices": "Show console prices",
     "Hide console prices": "Hide console prices",
     "No price rows returned": "No price rows returned",
-    "Console price": "Console price"
+    "Console price": "Console price",
+    "No saved key": "Chưa có khóa được lưu",
+    "Click a key to verify and reveal its full value.": "Nhấn vào một khóa để xác minh và hiển thị giá trị đầy đủ."
   }
 }

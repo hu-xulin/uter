@@ -17,49 +17,118 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
 
 import { ChannelKeyDisplay } from '../channel-key-display'
 
 describe('ChannelKeyDisplay', () => {
-  it('shows only the placeholder before the key is verified', () => {
-    render(<ChannelKeyDisplay value={null} />)
+  it('shows the masked placeholder with no saved key and no reveal affordance', () => {
+    render(
+      <ChannelKeyDisplay
+        maskedValue={null}
+        fullValue={null}
+        onReveal={vi.fn()}
+      />
+    )
 
-    expect(
-      screen.getByPlaceholderText('Hidden — verify to reveal')
-    ).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('No saved key')).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
-  it('masks a single key by default and keeps the full value out of the DOM', () => {
-    render(<ChannelKeyDisplay value='sk-abcdefghijklmnopqrstuvwxyz' />)
+  it('shows the backend masked value by default without revealing plaintext', () => {
+    const onReveal = vi.fn()
+    render(
+      <ChannelKeyDisplay
+        maskedValue='sk-a************wxyz'
+        fullValue={null}
+        onReveal={onReveal}
+      />
+    )
 
     expect(screen.getByText('sk-a************wxyz')).toBeInTheDocument()
+    expect(onReveal).not.toHaveBeenCalled()
     expect(
       screen.queryByText('sk-abcdefghijklmnopqrstuvwxyz')
     ).not.toBeInTheDocument()
-    expect(screen.getAllByRole('button').length).toBeGreaterThan(0)
   })
 
   it('renders one masked display per line for a multi-key channel', () => {
     render(
       <ChannelKeyDisplay
-        value={'sk-aaaa1111\n\nsk-bbbb2222\n  sk-cccc3333  '}
+        maskedValue={'sk-a***1111\nsk-b***2222\nsk-c***3333'}
+        fullValue={null}
+        onReveal={vi.fn()}
       />
     )
 
     expect(screen.getByText('sk-a***1111')).toBeInTheDocument()
     expect(screen.getByText('sk-b***2222')).toBeInTheDocument()
     expect(screen.getByText('sk-c***3333')).toBeInTheDocument()
-    // 空行跳过；三行密钥各自带一个复制按钮。
-    expect(screen.getAllByLabelText('Copy Key')).toHaveLength(3)
-    expect(screen.queryByText('sk-aaaa1111')).not.toBeInTheDocument()
+    expect(
+      screen.getAllByRole('button', { name: 'Copy API key' })
+    ).toHaveLength(3)
+  })
+
+  it('triggers verification when a masked row is clicked before plaintext exists', async () => {
+    const onReveal = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <ChannelKeyDisplay
+        maskedValue='sk-a***1111'
+        fullValue={null}
+        onReveal={onReveal}
+      />
+    )
+
+    await user.click(screen.getByText('sk-a***1111'))
+
+    expect(onReveal).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows the revealed full value once verification returns plaintext', async () => {
+    const user = userEvent.setup()
+    render(
+      <ChannelKeyDisplay
+        maskedValue='sk-a***1111'
+        fullValue='sk-aaaa1111'
+        onReveal={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByText('sk-a***1111'))
+
+    expect(await screen.findByDisplayValue('sk-aaaa1111')).toBeInTheDocument()
+  })
+
+  it('triggers verification when copy is pressed without a revealed value', async () => {
+    const onReveal = vi.fn()
+    const user = userEvent.setup()
+    render(
+      <ChannelKeyDisplay
+        maskedValue='sk-a***1111'
+        fullValue={null}
+        onReveal={onReveal}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Copy API key' }))
+
+    expect(onReveal).toHaveBeenCalledTimes(1)
   })
 
   it('keeps duplicated keys as separate rows', () => {
-    render(<ChannelKeyDisplay value={'sk-aaaa1111\nsk-aaaa1111'} />)
+    render(
+      <ChannelKeyDisplay
+        maskedValue={'sk-a***1111\nsk-a***1111'}
+        fullValue={null}
+        onReveal={vi.fn()}
+      />
+    )
 
     expect(screen.getAllByText('sk-a***1111')).toHaveLength(2)
-    expect(screen.getAllByLabelText('Copy Key')).toHaveLength(2)
+    expect(
+      screen.getAllByRole('button', { name: 'Copy API key' })
+    ).toHaveLength(2)
   })
 })

@@ -52,6 +52,8 @@ type Props = {
   // later steps can log into the upstream channel. Absent in read-only usage.
   onSaveCredentials?: () => Promise<void> | void
   savingCredentials?: boolean
+  /** 后端已存密码标记：用星号占位展示，绝不回填真实密码。 */
+  hasStoredPassword?: boolean
 }
 
 /**
@@ -161,6 +163,13 @@ export function ChannelConsoleCredentialsSection(props: Props) {
                     mono
                     type={showPassword ? 'text' : 'password'}
                     autoComplete='new-password'
+                    // 后端永不回传密码原文；用星号占位表明"已有密码"，
+                    // value 保持为空，留空提交即保留已存密码。
+                    placeholder={
+                      props.hasStoredPassword && !field.value
+                        ? '••••••••••••'
+                        : undefined
+                    }
                     className='pr-10'
                     {...field}
                   />

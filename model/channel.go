@@ -64,6 +64,14 @@ type Channel struct {
 	// BalanceDetail is the last balance query in channel responses; see
 	// GetBalanceDetail.
 	BalanceDetail *ChannelBalanceDetail `json:"balance_detail,omitempty" gorm:"-"`
+
+	// MaskedKey is a display-only, redacted form of Key for the edit drawer.
+	// It mirrors the API-key listing contract: the masked value is safe to send
+	// to the browser so the UI can show a starred placeholder without a
+	// verification step. The plaintext Key stays Omit-ted on read paths. One
+	// line per stored credential, so multi-key channels show one masked row
+	// each. Never accept this field from a write request.
+	MaskedKey string `json:"masked_key,omitempty" gorm:"-"`
 }
 
 const ChannelStatusReasonAllKeysDisabled = "All keys are disabled"

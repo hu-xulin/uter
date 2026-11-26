@@ -482,6 +482,27 @@ func SearchChannels(c *gin.Context) {
 	return
 }
 
+// maskedChannelKey builds a display-only redacted view of a channel key, one
+// line per credential. Plugin credential lines are summarized first so their
+// embedded secrets never reach the browser. The result is safe to hand to the
+// edit drawer for a starred placeholder; revealing plaintext still requires
+// GetChannelKey's security verification.
+func maskedChannelKey(key string) string {
+	if key == "" {
+		return ""
+	}
+	lines := strings.Split(strings.Trim(key, "\n"), "\n")
+	masked := make([]string, 0, len(lines))
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		masked = append(masked, common.MaskSecretValue(jsplugin.RedactCredentialLines(line)))
+	}
+	return strings.Join(masked, "\n")
+}
+
 func GetChannel(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -495,6 +516,15 @@ func GetChannel(c *gin.Context) {
 	}
 	if channel != nil {
 		clearChannelInfo(channel)
+	}
+	// Return a masked key for the edit drawer so it can show a starred
+	// placeholder by default, exactly like the API-key listing. Fetch the
+	// plaintext key in a separate, narrow query and never put it in the
+	// response — revealing it still goes through GetChannelKey + verification.
+	if channel != nil {
+		if full, keyErr := model.GetChannelById(id, true); keyErr == nil && full != nil {
+			channel.MaskedKey = maskedChannelKey(full.Key)
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,

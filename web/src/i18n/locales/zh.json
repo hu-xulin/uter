@@ -8746,6 +8746,8 @@
     "Show console prices": "查看控制台价格",
     "Hide console prices": "收起控制台价格",
     "No price rows returned": "未返回价格记录",
-    "Console price": "控制台价格"
+    "Console price": "控制台价格",
+    "No saved key": "未保存密钥",
+    "Click a key to verify and reveal its full value.": "点击密钥进行验证并展示完整值。"
   }
 }

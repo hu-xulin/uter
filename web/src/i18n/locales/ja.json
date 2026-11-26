@@ -8746,6 +8746,8 @@
     "Show console prices": "Show console prices",
     "Hide console prices": "Hide console prices",
     "No price rows returned": "No price rows returned",
-    "Console price": "Console price"
+    "Console price": "Console price",
+    "No saved key": "保存されたキーはありません",
+    "Click a key to verify and reveal its full value.": "キーをクリックして確認し、完全な値を表示します。"
   }
 }

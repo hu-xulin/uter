@@ -36,6 +36,9 @@ export const channelSchema = z.object({
   id: z.number(),
   type: z.number(),
   key: z.string(),
+  // Display-only redacted key (one masked line per credential). The plaintext
+  // key is never returned here; revealing it requires separate verification.
+  masked_key: z.string().optional().default(''),
   openai_organization: z.string().nullish(),
   test_model: z.string().nullish(),
   status: z.number(), // 1: enabled, 0: manual disabled, 2: auto disabled

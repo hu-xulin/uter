@@ -144,6 +144,7 @@ func TestClearChannelReadOnlyFields(t *testing.T) {
 		UsedQuota:          66,
 		Models:             "gpt-4o",
 		Group:              "default",
+		MaskedKey:          "sk-a***1111",
 	}}
 
 	clearChannelReadOnlyFields(&channel, map[string]any{
@@ -153,6 +154,8 @@ func TestClearChannelReadOnlyFields(t *testing.T) {
 		"balance":              channel.Balance,
 		"balance_updated_time": channel.BalanceUpdatedTime,
 		"used_quota":           channel.UsedQuota,
+		"balance_detail":       channel.BalanceDetail,
+		"masked_key":           channel.MaskedKey,
 		"models":               channel.Models,
 		"group":                channel.Group,
 	})
@@ -163,6 +166,7 @@ func TestClearChannelReadOnlyFields(t *testing.T) {
 	assert.Zero(t, channel.Balance)
 	assert.Zero(t, channel.BalanceUpdatedTime)
 	assert.Zero(t, channel.UsedQuota)
+	assert.Zero(t, channel.MaskedKey)
 	assert.Equal(t, "gpt-4o", channel.Models)
 	assert.Equal(t, "default", channel.Group)
 }
