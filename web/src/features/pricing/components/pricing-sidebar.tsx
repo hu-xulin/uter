@@ -35,12 +35,14 @@ import { cn } from '@/lib/utils'
 import {
   ENDPOINT_TYPES,
   FILTER_ALL,
+  MODEL_CATEGORIES,
+  MODEL_CATEGORY_VALUES,
   QUOTA_TYPES,
   getEndpointTypeLabels,
+  getModelCategoryLabels,
   getQuotaTypeLabels,
 } from '../constants'
 import { hasTaskUsageSchema } from '../lib/dynamic-price'
-import { parseTags } from '../lib/filters'
 import { orderVendorsByModelCount } from '../lib/vendor-order'
 import type { PricingFacetModels, PricingModel, PricingVendor } from '../types'
 
@@ -352,35 +354,29 @@ export function PricingSidebar(props: PricingSidebarProps) {
     ...quotaTypeOptions,
   ]
 
-  const tagDisplay = new Map<string, string>()
-  for (const model of props.facetModels.tag) {
-    for (const tag of parseTags(model.tags)) {
-      const key = tag.toLowerCase()
-      if (!tagDisplay.has(key)) tagDisplay.set(key, key)
-    }
-  }
-  const facetTags = [...tagDisplay.values()].sort((a, b) => a.localeCompare(b))
-  const selectedTagKey =
-    props.tagFilter === FILTER_ALL ? '' : props.tagFilter.toLowerCase()
-  const tagNames =
-    !selectedTagKey || tagDisplay.has(selectedTagKey)
-      ? facetTags
-      : [...facetTags, props.tagFilter]
+  // The "Model Tags" section lists the ten API-reference capability groups.
+  // Counts use the tag facet (every active filter except this section) so the
+  // numbers reflect what a click would actually show.
+  const categoryLabels = getModelCategoryLabels(t)
+  const categoryOptions: FilterOption[] = MODEL_CATEGORY_VALUES.filter(
+    (value) => value !== MODEL_CATEGORIES.ALL
+  )
+    .map((value) => ({
+      value,
+      label: categoryLabels[value],
+      count: countBy(
+        props.facetModels.tag,
+        (model) => model.category?.toLowerCase() === value.toLowerCase()
+      ),
+    }))
+    .filter((option) => option.count > 0 || option.value === props.tagFilter)
   const tagOptions: FilterOption[] = [
     {
       value: FILTER_ALL,
-      label: t('All Tags'),
-      count: tagNames.length,
+      label: categoryLabels[MODEL_CATEGORIES.ALL],
+      count: categoryOptions.length,
     },
-    ...tagNames.map((tag) => ({
-      value: tag,
-      label: t(tag),
-      count: countBy(props.facetModels.tag, (model) =>
-        parseTags(model.tags)
-          .map((item) => item.toLowerCase())
-          .includes(tag.toLowerCase())
-      ),
-    })),
+    ...categoryOptions,
   ]
 
   const endpointTypeOptions: FilterOption[] = Object.entries(endpointTypeLabels)

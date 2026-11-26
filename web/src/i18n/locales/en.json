@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "Grouped API keys",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.",
     "Key group": "Key group",
@@ -17,9 +20,6 @@
     "Group {{index}}": "Group {{index}}",
     "One key per line, each key creates one channel": "One key per line, each key creates one channel",
     "Only the first key is used for a single-key channel": "Only the first key is used for a single-key channel",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "System task history must be kept for at least 1 day",
     "Previous month": "Previous month",
     "Next month": "Next month",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "Leave empty to use the Alibaba Bailian key saved in System Settings",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "Saved Uter Route API keys, one per line; used when creating Uter Route channels.",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels."
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

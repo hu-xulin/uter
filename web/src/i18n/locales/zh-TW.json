@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "分組 API 金鑰",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "每個分組新增一列。每列可使用各自的金鑰模式。已儲存的金鑰以遮罩顯示；輸入新金鑰即可取代。",
     "Key group": "金鑰分組",
@@ -17,9 +20,6 @@
     "Group {{index}}": "群組 {{index}}",
     "One key per line, each key creates one channel": "每行一個金鑰，每個金鑰建立一個頻道",
     "Only the first key is used for a single-key channel": "單一金鑰頻道只使用第一個金鑰",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "系統任務歷史至少需要保留 1 天",
     "Previous month": "上個月",
     "Next month": "下個月",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "留空則使用系統設定中已儲存的 Alibaba Bailian 金鑰",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "已儲存的 Uter Route API 金鑰，每行一個；用於建立 Uter Route 渠道。",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "已儲存的 Alibaba Bailian API 金鑰，每行一個；用於建立 Alibaba Bailian 渠道。",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "已儲存的 Uter.api 訂閱金鑰，每行一個；用於建立 Uter.api 渠道。"
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "已儲存的 Uter.api 訂閱金鑰，每行一個；用於建立 Uter.api 渠道。",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "Clés API groupées",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "Ajoutez une ligne par groupe. Chaque ligne peut utiliser son propre mode de clé. Une clé enregistrée est affichée sous forme masquée ; saisissez de nouvelles clés pour la remplacer.",
     "Key group": "Groupe de clés",
@@ -17,9 +20,6 @@
     "Group {{index}}": "Groupe {{index}}",
     "One key per line, each key creates one channel": "Une clé par ligne, chaque clé crée un canal",
     "Only the first key is used for a single-key channel": "Seule la première clé est utilisée pour un canal à clé unique",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "L'historique des tâches système doit être conservé pendant au moins 1 jour",
     "Previous month": "Mois précédent",
     "Next month": "Mois suivant",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "Laissez vide pour utiliser la clé Alibaba Bailian enregistrée dans les paramètres système",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "Clés API Uter Route enregistrées, une par ligne ; utilisées lors de la création des canaux Uter Route.",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "Clés API Alibaba Bailian enregistrées, une par ligne ; utilisées lors de la création des canaux Alibaba Bailian.",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Clés d'abonnement Uter.api enregistrées, une par ligne ; utilisées lors de la création des canaux Uter.api."
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Clés d'abonnement Uter.api enregistrées, une par ligne ; utilisées lors de la création des canaux Uter.api.",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

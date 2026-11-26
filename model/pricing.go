@@ -34,21 +34,27 @@ type Pricing struct {
 	// Descriptions 是该模型描述的全语种副本，供前端在切换语言时本地切换，
 	// 无需为每种语言重新请求。Description 始终是按访客语言解析后的结果，
 	// 因此只关心单一语言的既有调用方不受影响。
-	Descriptions         map[string]string `json:"descriptions,omitempty"`
-	Icon                 string            `json:"icon,omitempty"`
-	Tags                 string            `json:"tags,omitempty"`
-	VendorID             int               `json:"vendor_id,omitempty"`
-	QuotaType            int               `json:"quota_type"`
-	ModelRatio           float64           `json:"model_ratio"`
-	ModelPrice           float64           `json:"model_price"`
-	OwnerBy              string            `json:"owner_by"`
-	CompletionRatio      float64           `json:"completion_ratio"`
-	CacheRatio           *float64          `json:"cache_ratio,omitempty"`
-	CreateCacheRatio     *float64          `json:"create_cache_ratio,omitempty"`
-	ImageRatio           *float64          `json:"image_ratio,omitempty"`
-	AudioRatio           *float64          `json:"audio_ratio,omitempty"`
-	AudioCompletionRatio *float64          `json:"audio_completion_ratio,omitempty"`
-	EnableGroup          []string          `json:"enable_groups"`
+	Descriptions map[string]string `json:"descriptions,omitempty"`
+	Icon         string            `json:"icon,omitempty"`
+	Tags         string            `json:"tags,omitempty"`
+	// Category is the model's capability class shown by the pricing page's
+	// "Model Tags" filter. It follows the API reference's ten groups
+	// (audio/chat/completions/embeddings/image/model/moderation/realtime/
+	// rerank/video) and is kept separate from Tags so capability badges on the
+	// cards stay intact.
+	Category             string   `json:"category,omitempty"`
+	VendorID             int      `json:"vendor_id,omitempty"`
+	QuotaType            int      `json:"quota_type"`
+	ModelRatio           float64  `json:"model_ratio"`
+	ModelPrice           float64  `json:"model_price"`
+	OwnerBy              string   `json:"owner_by"`
+	CompletionRatio      float64  `json:"completion_ratio"`
+	CacheRatio           *float64 `json:"cache_ratio,omitempty"`
+	CreateCacheRatio     *float64 `json:"create_cache_ratio,omitempty"`
+	ImageRatio           *float64 `json:"image_ratio,omitempty"`
+	AudioRatio           *float64 `json:"audio_ratio,omitempty"`
+	AudioCompletionRatio *float64 `json:"audio_completion_ratio,omitempty"`
+	EnableGroup          []string `json:"enable_groups"`
 	// Channels 是承载该模型的启用渠道展示名（管理-渠道的 name），定价页
 	// 「渠道」筛选直接消费它；空名渠道不会出现在这里。
 	Channels               []string                             `json:"channels,omitempty"`
@@ -658,6 +664,76 @@ func canonicalModelTag(name string, meta *Model, endpoints []constant.EndpointTy
 	}
 }
 
+// Model categories shown by the pricing page's "Model Tags" filter. They mirror
+// the API reference's ten groups so a model classified here lands in the same
+// bucket a reader finds under API reference.
+const (
+	ModelCategoryAudio       = "audio"
+	ModelCategoryChat        = "chat"
+	ModelCategoryCompletions = "completions"
+	ModelCategoryEmbeddings  = "embeddings"
+	ModelCategoryImage       = "image"
+	ModelCategoryModel       = "model"
+	ModelCategoryModeration  = "moderation"
+	ModelCategoryRealtime    = "realtime"
+	ModelCategoryRerank      = "rerank"
+	ModelCategoryVideo       = "video"
+)
+
+// canonicalModelCategory classifies a model into exactly one of the ten API
+// reference groups. It is deliberately distinct from canonicalModelTag: tags
+// drive capability badges on cards, while this category drives the sidebar's
+// "Model Tags" filter. Check order puts the specific modalities first (realtime,
+// moderation, rerank, embeddings, audio, image, video, completions) so a name
+// like "qwen3.7-text-embedding" is not mistaken for a chat model; plain text
+// models fall back to chat, and unrecognizable entries to "model".
+func canonicalModelCategory(name string, meta *Model, endpoints []constant.EndpointType) string {
+	parts := []string{strings.ToLower(strings.TrimSpace(name))}
+	for _, endpoint := range endpoints {
+		parts = append(parts, strings.ToLower(string(endpoint)))
+	}
+	if meta != nil {
+		parts = append(parts,
+			strings.ToLower(meta.InputModalities),
+			strings.ToLower(meta.OutputModalities),
+			strings.ToLower(meta.Tags),
+		)
+	}
+	haystack := strings.Join(parts, " ")
+	has := func(words ...string) bool {
+		for _, word := range words {
+			if strings.Contains(haystack, word) {
+				return true
+			}
+		}
+		return false
+	}
+	switch {
+	case has("realtime", "omni", "s2s", "speech-to-speech"):
+		return ModelCategoryRealtime
+	case has("moderation", "censor", "content-filter"):
+		return ModelCategoryModeration
+	case has("rerank", "re-rank", "jina-rerank"):
+		return ModelCategoryRerank
+	case has("embedding", "embeddings", "vector"):
+		return ModelCategoryEmbeddings
+	case has("tts", "asr", "audio", "speech", "transcription", "voice"):
+		return ModelCategoryAudio
+	case has("image", "dall-e", "dalle", "flux", "stable-diffusion", "seedream", "wanx-image"):
+		return ModelCategoryImage
+	case has("video", "sora", "veo", "kling", "seedance", "jimeng", "pixverse", "happyhorse"):
+		return ModelCategoryVideo
+	case has("completion", "completions", "instruct"):
+		return ModelCategoryCompletions
+	case has("chat", "gpt", "claude", "gemini", "llama", "qwen", "deepseek", "chatgpt"):
+		return ModelCategoryChat
+	case has("text"):
+		return ModelCategoryChat
+	default:
+		return ModelCategoryModel
+	}
+}
+
 // redirectChannelSource is the minimal channel data needed to decide which
 // upstream names a batch redirect replaces on the pricing plaza. Only these
 // two columns are loaded, so channel credentials never enter the pricing path.
@@ -1001,6 +1077,7 @@ func updatePricing() {
 				maps.Copy(pricing.Descriptions, meta.Descriptions)
 			}
 			pricing.Tags = canonicalModelTag(model, meta, modelSupportEndpointTypes[model])
+			pricing.Category = canonicalModelCategory(model, meta, modelSupportEndpointTypes[model])
 			pricing.VendorID = meta.VendorID
 			// 目录规格直接下发给定价页。这些字段由「同步资料」从 models.dev 与
 			// basellm 双源合并写入 models 表，未同步时为 0 / 空，前端据此隐藏对应格子。
@@ -1018,6 +1095,7 @@ func updatePricing() {
 			pricing.Icon = resolvePricingIcon(model, meta, metaMap, aliasView)
 		} else {
 			pricing.Tags = canonicalModelTag(model, nil, modelSupportEndpointTypes[model])
+			pricing.Category = canonicalModelCategory(model, nil, modelSupportEndpointTypes[model])
 			pricing.Icon = resolvePricingIcon(model, nil, metaMap, aliasView)
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)

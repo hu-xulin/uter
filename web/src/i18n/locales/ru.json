@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "Группированные ключи API",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "Добавьте по одной строке на группу. Каждая строка может использовать свой режим ключа. Сохранённый ключ отображается в замаскированном виде; введите новые ключи, чтобы заменить его.",
     "Key group": "Группа ключей",
@@ -17,9 +20,6 @@
     "Group {{index}}": "Группа {{index}}",
     "One key per line, each key creates one channel": "Один ключ в строке — каждый ключ создаёт отдельный канал",
     "Only the first key is used for a single-key channel": "Для канала с одним ключом используется только первый ключ",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "История системных задач должна храниться не менее 1 дня",
     "Previous month": "Предыдущий месяц",
     "Next month": "Следующий месяц",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "Оставьте пустым, чтобы использовать ключ Alibaba Bailian, сохранённый в системных настройках",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "Сохранённые API-ключи Uter Route, по одному в строке; используются при создании каналов Uter Route.",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "Сохранённые API-ключи Alibaba Bailian, по одному в строке; используются при создании каналов Alibaba Bailian.",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Сохранённые ключи подписки Uter.api, по одному в строке; используются при создании каналов Uter.api."
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Сохранённые ключи подписки Uter.api, по одному в строке; используются при создании каналов Uter.api.",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

@@ -81,6 +81,7 @@ describe('pricing controls', () => {
       completion_ratio: 1,
       enable_groups: ['default'],
       tags: 'Chat,chat',
+      category: 'chat',
       supported_endpoint_types: ['openai', 'openai'],
     }
     const models: PricingModel[] = [
@@ -91,6 +92,7 @@ describe('pricing controls', () => {
         model_name: 'image-model',
         quota_type: 1,
         tags: 'chat,Image',
+        category: 'chat',
         supported_endpoint_types: ['image-generation'],
       },
       {
@@ -99,6 +101,7 @@ describe('pricing controls', () => {
         model_name: 'task-model',
         vendor_name: 'Vendor B',
         tags: 'Video',
+        category: 'video',
         supported_endpoint_types: ['openai-video'],
         billing_usage_schema: { seconds: { type: 'number', unit: 'second' } },
       },
@@ -173,6 +176,7 @@ describe('pricing controls', () => {
       completion_ratio: 1,
       enable_groups: ['default'],
       tags: 'Chat',
+      category: 'chat',
       supported_endpoint_types: ['openai'],
       channels: ['优特渠道', '聚合渠道'],
     }
@@ -183,6 +187,7 @@ describe('pricing controls', () => {
         id: 2,
         quota_type: 1,
         tags: 'Image',
+        category: 'image',
         supported_endpoint_types: ['image-generation'],
         channels: ['共享渠道', '代理渠道'],
       },
@@ -191,6 +196,7 @@ describe('pricing controls', () => {
         id: 3,
         vendor_name: 'Vendor B',
         tags: 'Video',
+        category: 'video',
         supported_endpoint_types: ['openai-video'],
         channels: ['内部渠道', '测试渠道'],
         billing_usage_schema: { seconds: { type: 'number', unit: 'second' } },
@@ -347,6 +353,7 @@ describe('pricing controls', () => {
       completion_ratio: 1,
       enable_groups: ['default'],
       tags: 'Chat,Image',
+      category: 'chat',
       supported_endpoint_types: ['openai'],
       channels: ['优特渠道', '聚合渠道'],
     }

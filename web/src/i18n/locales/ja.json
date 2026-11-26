@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "グループ化された API キー",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "グループごとに 1 行追加します。各行は独自のキーモードを使用できます。保存済みのキーはマスク表示されます。新しいキーを入力すると置き換えられます。",
     "Key group": "キーグループ",
@@ -17,9 +20,6 @@
     "Group {{index}}": "グループ {{index}}",
     "One key per line, each key creates one channel": "1行に1つのキー、各キーが1つのチャネルを作成します",
     "Only the first key is used for a single-key channel": "単一キーチャネルでは最初のキーのみが使用されます",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "システムタスクの履歴は少なくとも 1 日保持する必要があります",
     "Previous month": "前の月",
     "Next month": "次の月",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "空欄にするとシステム設定に保存された Alibaba Bailian キーを使用します",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "保存済みの Uter Route API キー（1行に1つ）。Uter Route チャネルの作成に使用されます。",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "保存済みの Alibaba Bailian API キー（1行に1つ）。Alibaba Bailian チャネルの作成に使用されます。",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "保存済みの Uter.api サブスクリプションキー（1行に1つ）。Uter.api チャネルの作成に使用されます。"
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "保存済みの Uter.api サブスクリプションキー（1行に1つ）。Uter.api チャネルの作成に使用されます。",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

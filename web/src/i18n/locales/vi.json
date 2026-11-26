@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Grouped API keys": "Khóa API theo nhóm",
     "Add one row per group. Each row can use its own key mode. A saved key is shown as a mask; type new keys to replace it.": "Thêm một dòng cho mỗi nhóm. Mỗi dòng có thể dùng chế độ khóa riêng. Khóa đã lưu được hiển thị dạng che giấu; nhập khóa mới để thay thế.",
     "Key group": "Nhóm khóa",
@@ -17,9 +20,6 @@
     "Group {{index}}": "Nhóm {{index}}",
     "One key per line, each key creates one channel": "Mỗi dòng một khóa, mỗi khóa tạo một kênh",
     "Only the first key is used for a single-key channel": "Chỉ khóa đầu tiên được dùng cho kênh một khóa",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "System task history must be kept for at least 1 day": "Lịch sử tác vụ hệ thống phải được giữ lại ít nhất 1 ngày",
     "Previous month": "Tháng trước",
     "Next month": "Tháng sau",
@@ -8804,6 +8804,9 @@
     "Leave empty to use the Alibaba Bailian key saved in System Settings": "Để trống để dùng khóa Alibaba Bailian đã lưu trong Cài đặt hệ thống",
     "Saved Uter Route API keys, one per line; used when creating Uter Route channels.": "Các API key Uter Route đã lưu, mỗi dòng một khóa; dùng khi tạo kênh Uter Route.",
     "Saved Alibaba Bailian API keys, one per line; used when creating Alibaba Bailian channels.": "Các API key Alibaba Bailian đã lưu, mỗi dòng một khóa; dùng khi tạo kênh Alibaba Bailian.",
-    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Các khóa đăng ký Uter.api đã lưu, mỗi dòng một khóa; dùng khi tạo kênh Uter.api."
+    "Saved Uter.api subscription keys, one per line; used when creating Uter.api channels.": "Các khóa đăng ký Uter.api đã lưu, mỗi dòng một khóa; dùng khi tạo kênh Uter.api.",
+    "Completions": "Completions",
+    "Moderation": "Moderation",
+    "Realtime": "Realtime"
   }
 }

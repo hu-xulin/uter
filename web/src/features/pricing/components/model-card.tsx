@@ -29,7 +29,7 @@ import {
   officialRequestPriceUSD,
   officialTierVariablePriceUSD,
 } from '@/features/system-settings/models/model-pricing-core'
-import { getLobeIcon, resolveModelIconKey } from '@/lib/lobe-icon'
+import { getLobeIcon } from '@/lib/lobe-icon'
 import { resolveLocalizedText } from '@/lib/localized-text'
 import { cn } from '@/lib/utils'
 import { useSystemConfigStore } from '@/stores/system-config-store'
@@ -48,7 +48,11 @@ import {
   type DynamicPriceEntry,
 } from '../lib/dynamic-price'
 import { parseTags } from '../lib/filters'
-import { getDisplayGroupRatio, isTokenBasedModel } from '../lib/model-helpers'
+import {
+  getDisplayGroupRatio,
+  isTokenBasedModel,
+  pricingModelIconKey,
+} from '../lib/model-helpers'
 import {
   formatOfficialPrice,
   formatOfficialRequestPrice,
@@ -193,9 +197,10 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   )
   const groups = props.model.enable_groups || []
   const endpoints = props.model.supported_endpoint_types || []
-  // 模型卡片只渲染模型自己的产品 logo（彩色）；没有自己的 logo 时显示首字母
-  // 占位，绝不退化为供应商的公司 logo（运营在「模型-供应商」里设置的那个）。
-  const modelIconKey = resolveModelIconKey(props.model.icon)
+  // 模型卡片只渲染模型自己的产品 logo；没有自己的 logo 时显示首字母占位，
+  // 绝不退化为供应商的公司 logo（运营在「模型-供应商」里设置的那个）。
+  // GPT/OpenAI 使用透明底 Mono logo，避免 Avatar 的黑色品牌底。
+  const modelIconKey = pricingModelIconKey(props.model.icon)
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)

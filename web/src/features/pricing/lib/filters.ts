@@ -294,7 +294,9 @@ export function extractAllTags(models: PricingModel[]): string[] {
 }
 
 /**
- * Filter models by tag
+ * Filter models by capability category (the sidebar's "Model Tags" section).
+ * Categories are assigned by the backend and mirror the API reference's ten
+ * groups; capability badges shown on cards still come from `tags`.
  */
 export function filterByTag(
   models: PricingModel[],
@@ -302,10 +304,6 @@ export function filterByTag(
 ): PricingModel[] {
   if (tag === FILTER_ALL) return models
 
-  const tagLower = tag.toLowerCase()
-  return models.filter((m) => {
-    if (!m.tags) return false
-    const modelTags = parseTags(m.tags).map((t) => t.toLowerCase())
-    return modelTags.includes(tagLower)
-  })
+  const category = tag.toLowerCase()
+  return models.filter((m) => m.category?.toLowerCase() === category)
 }

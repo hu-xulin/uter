@@ -121,6 +121,12 @@ export type PricingModel = {
   /** 承载该模型的启用渠道展示名（管理-渠道的 name），用于定价页按渠道筛选。 */
   channels?: string[]
   tags?: string
+  /**
+   * API-reference capability group (audio/chat/completions/embeddings/image/
+   * model/moderation/realtime/rerank/video) assigned by the backend. Drives
+   * the sidebar's "Model Tags" filter independently of capability badges.
+   */
+  category?: string
   supported_endpoint_types?: string[]
   key?: string
   group_ratio?: Record<string, number>

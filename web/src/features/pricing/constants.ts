@@ -110,6 +110,51 @@ export function getEndpointTypeLabels(
 }
 
 /**
+ * Model capability groups for the sidebar's "Model Tags" filter. Values mirror
+ * the backend category constants and the API reference's ten groups, so a
+ * model classified on the server lands in the same bucket a reader finds in
+ * the API reference.
+ */
+export const MODEL_CATEGORIES = {
+  ALL: 'all',
+  AUDIO: 'audio',
+  CHAT: 'chat',
+  COMPLETIONS: 'completions',
+  EMBEDDINGS: 'embeddings',
+  IMAGE: 'image',
+  MODEL: 'model',
+  MODERATION: 'moderation',
+  REALTIME: 'realtime',
+  RERANK: 'rerank',
+  VIDEO: 'video',
+} as const
+
+export type ModelCategoryOption =
+  (typeof MODEL_CATEGORIES)[keyof typeof MODEL_CATEGORIES]
+
+export const MODEL_CATEGORY_VALUES: ModelCategoryOption[] =
+  Object.values(MODEL_CATEGORIES)
+
+/** Labels for the ten API-reference capability groups. */
+export function getModelCategoryLabels(
+  t: TFunction
+): Record<ModelCategoryOption, string> {
+  return {
+    [MODEL_CATEGORIES.ALL]: t('All Tags'),
+    [MODEL_CATEGORIES.AUDIO]: t('Audio'),
+    [MODEL_CATEGORIES.CHAT]: t('Chat'),
+    [MODEL_CATEGORIES.COMPLETIONS]: t('Completions'),
+    [MODEL_CATEGORIES.EMBEDDINGS]: t('Embeddings'),
+    [MODEL_CATEGORIES.IMAGE]: t('Image'),
+    [MODEL_CATEGORIES.MODEL]: t('Model'),
+    [MODEL_CATEGORIES.MODERATION]: t('Moderation'),
+    [MODEL_CATEGORIES.REALTIME]: t('Realtime'),
+    [MODEL_CATEGORIES.RERANK]: t('Rerank'),
+    [MODEL_CATEGORIES.VIDEO]: t('Video'),
+  }
+}
+
+/**
  * Context-window size labels, e.g. `8K`, `200K`, `1M`, `1.1M`, `204.8K`.
  * They describe a model's input limit rather than a capability, so they are
  * hidden from the tag filter and never counted as a tag. The pattern is

@@ -16,6 +16,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { resolveModelIconKey } from '@/lib/lobe-icon'
+
 import { EXCLUDED_GROUPS, FILTER_ALL, QUOTA_TYPE_VALUES } from '../constants'
 import type { PricingModel } from '../types'
 
@@ -34,6 +36,24 @@ export function excludeRedirectedUpstreams<T extends object>(models: T[]): T[] {
     (model) =>
       !('hidden_by_redirect' in model && model.hidden_by_redirect === true)
   )
+}
+
+/**
+ * Resolve the product logo rendered on a pricing card.
+ *
+ * OpenAI ships only an Avatar glyph with a solid brand background, which
+ * reads as a black tile on the pricing page. GPT/OpenAI cards use the
+ * transparent Mono glyph instead, matching the leaderboard. Other models keep
+ * their normal brand-color product logo; an empty key stays empty so the card
+ * renders its initial-letter placeholder.
+ */
+export function pricingModelIconKey(
+  modelIcon: string | undefined | null
+): string {
+  const key = resolveModelIconKey(modelIcon)
+  const base = key.split('.')[0]?.trim().toLowerCase()
+  if (base === 'openai') return 'OpenAI.Mono'
+  return key
 }
 
 /**

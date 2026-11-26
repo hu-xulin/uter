@@ -68,9 +68,13 @@ describe('context size tags', () => {
     expect(tags).not.toContain('200k')
   })
 
-  test('a model tagged only with a size is still reachable and counts as data', () => {
-    const models = [{ tags: '1M' }, { tags: '推理' }] as PricingModel[]
+  test('the sidebar filter uses capability categories, not free-text tags', () => {
+    const models = [
+      { tags: '1M' },
+      { tags: '推理', category: 'chat' },
+    ] as PricingModel[]
     expect(filterByTag(models, 'all')).toHaveLength(2)
-    expect(filterByTag(models, '推理')).toHaveLength(1)
+    expect(filterByTag(models, 'chat')).toHaveLength(1)
+    expect(filterByTag(models, '推理')).toHaveLength(0)
   })
 })
