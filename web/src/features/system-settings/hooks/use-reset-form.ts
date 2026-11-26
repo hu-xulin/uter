@@ -19,6 +19,8 @@ For commercial licensing, please contact support@uter.ai
 import { useEffect, useRef } from 'react'
 import type { DefaultValues, FieldValues, UseFormReturn } from 'react-hook-form'
 
+export type ResetPauseRef = { current: boolean }
+
 /**
  * Reset a react-hook-form instance whenever the provided default values change.
  * Guards against naively resetting on every render by tracking the last
@@ -26,7 +28,8 @@ import type { DefaultValues, FieldValues, UseFormReturn } from 'react-hook-form'
  */
 export function useResetForm<TFieldValues extends FieldValues>(
   form: UseFormReturn<TFieldValues>,
-  values: DefaultValues<TFieldValues> | undefined
+  values: DefaultValues<TFieldValues> | undefined,
+  pauseRef?: ResetPauseRef
 ) {
   const lastSerializedDefaults = useRef<string | null>(null)
 
@@ -38,7 +41,15 @@ export function useResetForm<TFieldValues extends FieldValues>(
       return
     }
 
+    // While the caller is saving, advance the snapshot but do not reset. This
+    // keeps a multi-option save from overwriting its own values with the
+    // server's intermediate snapshots as each write invalidates the query.
+    if (pauseRef?.current) {
+      lastSerializedDefaults.current = serializedDefaults
+      return
+    }
+
     form.reset(values)
     lastSerializedDefaults.current = serializedDefaults
-  }, [values, form])
+  }, [values, form, pauseRef])
 }

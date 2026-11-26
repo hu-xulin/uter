@@ -20,13 +20,13 @@ import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { CHANNEL_DEFAULT_SECTION } from '@/features/system-settings/channels/section-registry.tsx'
 
-export const Route = createFileRoute('/_authenticated/system-settings/channels/')(
-  {
-    beforeLoad: () => {
-      throw redirect({
-        to: '/system-settings/channels/$section',
-        params: { section: CHANNEL_DEFAULT_SECTION },
-      })
-    },
-  }
-)
+export const Route = createFileRoute(
+  '/_authenticated/system-settings/channels/'
+)({
+  beforeLoad: () => {
+    throw redirect({
+      to: '/system-settings/channels/$section',
+      params: { section: CHANNEL_DEFAULT_SECTION },
+    })
+  },
+})

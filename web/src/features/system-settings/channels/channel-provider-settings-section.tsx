@@ -17,8 +17,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { type ReactNode, useCallback, useMemo, useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { type ReactNode, useMemo, useRef, useState } from 'react'
 import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -110,11 +110,13 @@ export function ChannelProviderSettingsSection(
 ) {
   const { t } = useTranslation()
   const updateOption = useUpdateOption()
-  // Each option write invalidates ['system-options'] and refetches. Without
-  // pausing, useResetForm replaces the operator's in-progress values with the
-  // server's partially-written snapshot after every write, so saved fields
-  // appear cleared even though the backend stored them correctly.
-  const [isSaving, setIsSaving] = useState(false)
+  const queryClient = useQueryClient()
+  // Each option write invalidates ['system-options'] and refetches. Once a
+  // save succeeds, keep suppressing default-value resets: the save handler
+  // owns the form state from then on and writes the masked values itself. A
+  // stale refetch queued by an earlier write would otherwise replay the
+  // pre-save snapshot after the handler finishes.
+  const resetPauseRef = useRef(false)
   const [defaultSlot] = useState(() => createChannelProviderCredentialSlot())
   const initialValues = useMemo<ChannelProviderFormValues>(
     () => ({
@@ -133,7 +135,7 @@ export function ChannelProviderSettingsSection(
     name: 'slots',
   })
 
-  useResetForm(form, initialValues)
+  useResetForm(form, initialValues, resetPauseRef)
 
   const isSubscription = props.prefix === 'subscription'
   const groupsQuery = useQuery({
@@ -158,30 +160,46 @@ export function ChannelProviderSettingsSection(
   const watchedSlots = useWatch({ control: form.control, name: 'slots' })
 
   const onSubmit = async (values: ChannelProviderFormValues) => {
-    const updates = buildChannelProviderUpdates(
-      props.prefix,
-      values,
-      props.values.slots?.length > 0 ? props.values : initialValues
-    )
-    for (const update of updates) {
-      await updateOption.mutateAsync(update)
-    }
-    const resetValues = {
-      ...values,
-      password: displaySecret(values.password),
-      // API Key 一行一个，保存后按行掩码展示，与创建渠道时的多行形态一致。
-      apiKey: displaySecret(values.apiKey, true),
-      slots: maskChannelProviderCredentialSlots(values.slots, (value) =>
-        displaySecret(value, true)
-      ),
-    }
-    form.reset(resetValues)
-    props.disclosure.hide(channelProviderOptionKey(props.prefix, 'password'))
-    props.disclosure.hide(channelProviderOptionKey(props.prefix, 'apiKey'))
-    for (const slot of values.slots) {
-      props.disclosure.hide(
-        channelProviderSlotAPIKeyOption(props.prefix, slot.slotId)
+    resetPauseRef.current = true
+    try {
+      const updates = buildChannelProviderUpdates(
+        props.prefix,
+        values,
+        props.values.slots?.length > 0 ? props.values : initialValues
       )
+      for (const update of updates) {
+        await updateOption.mutateAsync(update)
+      }
+      // Every mutation invalidates the same query, so an earlier refetch can
+      // still be in flight with a partially written snapshot. Cancel those
+      // readers before loading the final state; otherwise one of them can
+      // resolve after the pause is released and overwrite the saved form.
+      await queryClient.cancelQueries({ queryKey: ['system-options'] })
+      await queryClient.refetchQueries({
+        queryKey: ['system-options'],
+        type: 'active',
+      })
+
+      const resetValues = {
+        ...values,
+        password: displaySecret(values.password),
+        // API Key 一行一个，保存后按行掩码展示，与创建渠道时的多行形态一致。
+        apiKey: displaySecret(values.apiKey, true),
+        slots: maskChannelProviderCredentialSlots(values.slots, (value) =>
+          displaySecret(value, true)
+        ),
+      }
+      form.reset(resetValues)
+      props.disclosure.hide(channelProviderOptionKey(props.prefix, 'password'))
+      props.disclosure.hide(channelProviderOptionKey(props.prefix, 'apiKey'))
+      for (const slot of values.slots) {
+        props.disclosure.hide(
+          channelProviderSlotAPIKeyOption(props.prefix, slot.slotId)
+        )
+      }
+    } catch (error) {
+      resetPauseRef.current = false
+      throw error
     }
   }
 
@@ -289,9 +307,12 @@ export function ChannelProviderSettingsSection(
     <SettingsSection title={t(props.title)}>
       <p className='text-muted-foreground text-sm'>{t(props.description)}</p>
       <Form {...form}>
-        <SettingsForm onSubmit={form.handleSubmit(onSubmit)} autoComplete='off'>
+        <SettingsForm
+          onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+          autoComplete='off'
+        >
           <SettingsPageFormActions
-            onSave={form.handleSubmit(onSubmit)}
+            onSave={() => void form.handleSubmit(onSubmit)()}
             isSaving={updateOption.isPending}
             isSaveDisabled={!form.formState.isDirty || updateOption.isPending}
             saveLabel='Save channel provider settings'
