@@ -1,0 +1,2112 @@
+{
+  "captured_at": "2026-11-27",
+  "pricing_source": "models.dev",
+  "models": [
+    {
+      "model_name": "gemini-3.5-flash",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.525,
+      "completion_ratio": 6,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6.1-sol",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 1.4 + c * 7 + cr * 0.07 + cc * 1.75) : tier(\"long_context\", p * 2.8 + c * 10.5 + cr * 0.14 + cc * 3.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4.1-flash-1017",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "(hour(\"Asia/Shanghai\") >= 22 || hour(\"Asia/Shanghai\") < 8 ? tier(\"offpeak:Default\", p * 0.1649175412 + c * 0.6596701649 + cr * 0.0032983508) : tier(\"peak:Default\", p * 0.3298350825 + c * 1.3193403298 + cr * 0.0065967016))",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-5-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 2.8 + c * 14 + cr * 0.14 + cc * 3.5 + cc1h * 5.6)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-pro",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0.499875,
+      "completion_ratio": 3.0007501875468865,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.6-flash",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.2625,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "muse-spark-1.1",
+      "icon": "Meta.Color",
+      "quota_type": 0,
+      "model_ratio": 0.4375,
+      "completion_ratio": 3.4,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "kimi-k3.1-pro",
+      "icon": "Kimi.Color",
+      "quota_type": 0,
+      "model_ratio": 1.07035928145,
+      "completion_ratio": 5.230769230697364,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-image-2.1-pro",
+      "icon": "Qwen.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0411676647,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-audio-3.0-realtime-flash",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.123502994,
+      "completion_ratio": 3.000000000404848,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-pro-0813",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0.499875,
+      "completion_ratio": 3.0007501875468865,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-2.5-flash-image",
+      "icon": "Gemini.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0195,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.7-flash",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.2625,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-4-neon",
+      "icon": "Gemini",
+      "quota_type": 0,
+      "model_ratio": 1.05,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "glm-5.2",
+      "icon": "ZAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0.38675,
+      "completion_ratio": 3.512605042016807,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.0-mini",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 1.63875,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen3.8-flash",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.06586826345,
+      "completion_ratio": 3.375000000853977,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-4-6",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-flash-0731",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0.178,
+      "completion_ratio": 2.997752808988764,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "doubao-seedream-4-0-250828",
+      "icon": "Doubao.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.02755,
+      "billing_usage_schema": {
+        "images_above_1_5k": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price (above 1.5K)",
+            "zh": "图片生成单价（1.5K 以上）"
+          }
+        },
+        "images_up_to_1_5k": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price (1.5K and below)",
+            "zh": "图片生成单价（1.5K 及以下）"
+          }
+        },
+        "input_images": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Input image unit price",
+            "zh": "输入图片单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3-pro-image-preview",
+      "icon": "Gemini.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.12,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6-luna",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 0.07 + c * 0.35 + cr * 0.007 + cc * 0.0875) : tier(\"long_context\", p * 0.14 + c * 0.525 + cr * 0.014 + cc * 0.175)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6.2-astra",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 5.6 + c * 28 + cr * 0.28 + cc * 7) : tier(\"long_context\", p * 11.2 + c * 42 + cr * 0.56 + cc * 14)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-image-2.0-pro",
+      "icon": "Qwen.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0648,
+      "billing_usage_schema": {
+        "image_count": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price",
+            "zh": "图片生成单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "MiniMax-H3-Max",
+      "icon": "Minimax.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "has(lower(param(\"metadata.parameters.resolution\")), \"480\") || has(lower(param(\"metadata.resolution\")), \"480\") || has(lower(param(\"size\")), \"480\") ? tier(\"480p\", duration * 0.0270895523) : tier(\"768p\", duration * 0.0410447762)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-fable-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 7 + c * 35 + cr * 0.7 + cc * 8.75 + cc1h * 14)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-fable-5-2",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 5.6 + c * 28 + cr * 0.14 + cc * 7 + cc1h * 11.2)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-nano-banana-2.1",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 0.75 + c * 3.75 + img_o * 15)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "glm-5.1",
+      "icon": "ZAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0.3705,
+      "completion_ratio": 3.5087719298245617,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-image-2",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 4.25 + c * 0 + cr * 1.0625 + img * 6.8 + img_o * 25.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "kimi-k2.5",
+      "icon": "Moonshot.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0.29925,
+      "completion_ratio": 5.6,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-4-argon",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "((month(\"UTC\") == 10 && day(\"UTC\") >= 14) || month(\"UTC\") == 11) ? tier(\"discount\", p * 1.4 + c * 7 + cr * 0.07) : tier(\"peak\", p * 2.8 + c * 14 + cr * 0.14)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6-astra",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 7 + c * 35 + cr * 0.7 + cc * 8.75) : tier(\"long_context\", p * 14 + c * 52.5 + cr * 1.4 + cc * 17.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.5",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 4.9875,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-audio-3.0-realtime-plus",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.4116766467,
+      "completion_ratio": 8.000000000121455,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-audio-3.0-asr-flash",
+      "icon": "Qwen.Color",
+      "quota_type": 2,
+      "model_ratio": 0,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "channel_internal_per_second_usd": 0.0000362275,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-haiku-4-5-20251001",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 0.7 + c * 3.5 + cr * 0.07 + cc * 0.875 + cc1h * 1.4)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-4-5-20251101",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-sonnet-5-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 1.4 + c * 7 + cr * 0.07 + cc * 1.75 + cc1h * 2.8)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-4-hydrogen",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.525,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-5.6-sol",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 2.8 + c * 14 + cr * 0.28 + cc * 3.5) : tier(\"long_context\", p * 5.6 + c * 21 + cr * 0.56 + cc * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6-sol",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 1.4 + c * 7 + cr * 0.14 + cc * 1.75) : tier(\"long_context\", p * 2.8 + c * 10.5 + cr * 0.28 + cc * 3.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "wan3.0-video",
+      "icon": "Wan.Color",
+      "quota_type": 2,
+      "model_ratio": 0,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "billing_usage_schema": {
+        "resolution": {
+          "enum": [
+            "480P",
+            "720P",
+            "1080P"
+          ],
+          "description": {
+            "en": "Output video resolution",
+            "zh": "输出视频分辨率"
+          },
+          "enumLabels": {
+            "1080P": {
+              "en": "1080P",
+              "zh": "1080P"
+            },
+            "480P": {
+              "en": "480P",
+              "zh": "480P"
+            },
+            "720P": {
+              "en": "720P",
+              "zh": "720P"
+            }
+          }
+        },
+        "seconds": {
+          "type": "number",
+          "unit": "second",
+          "description": {
+            "en": "Video generation unit price",
+            "zh": "视频生成单价"
+          }
+        }
+      },
+      "channel_internal_per_second_usd": 0.0494011976,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "MiniMax-M2.5",
+      "icon": "Minimax.Color",
+      "quota_type": 0,
+      "model_ratio": 0.1575,
+      "completion_ratio": 4,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-4-8",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-sonnet-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 1.4 + c * 7 + cr * 0.14 + cc * 1.75 + cc1h * 2.8)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6.2-sol",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 1.4 + c * 7 + cr * 0.07 + cc * 1.75) : tier(\"long_context\", p * 2.8 + c * 10.5 + cr * 0.14 + cc * 3.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "muse-spark-1.2",
+      "icon": "Meta.Color",
+      "quota_type": 0,
+      "model_ratio": 0.4375,
+      "completion_ratio": 3.4,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen3.6-flash",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "p <= 256000 ? tier(\"short\", p * 0.27 + c * 1.61 + cr * 0.03 + cc * 0.34) : tier(\"long\", p * 1.08 + c * 4.29 + cr * 0.11 + cc * 1.34)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.5-ab",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 5.25,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "wan2.7-image-pro",
+      "icon": "Wan.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0648,
+      "billing_usage_schema": {
+        "image_count": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price",
+            "zh": "图片生成单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-4-7",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-sonnet-4-6",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 2.1 + c * 10.5 + cr * 0.21 + cc * 2.625 + cc1h * 4.2)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-1-flash-260910",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "(tier(\"base\", p * 0.24 + c * 0.96 + cr * 0.016)) * (weekday(\"Asia/Shanghai\") == 0 ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") == 6 ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") >= 1 && weekday(\"Asia/Shanghai\") < 6 && (hour(\"Asia/Shanghai\") >= 18 || hour(\"Asia/Shanghai\") < 9) ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") >= 1 && weekday(\"Asia/Shanghai\") < 6 && hour(\"Asia/Shanghai\") >= 12 && hour(\"Asia/Shanghai\") < 14 ? 0.5 : 1)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-5.6-luna",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 0.14 + c * 0.84 + cr * 0.014 + cc * 0.175) : tier(\"long_context\", p * 0.28 + c * 1.26 + cr * 0.028 + cc * 0.35)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "kimi-k2.6",
+      "icon": "Moonshot.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0.48825,
+      "completion_ratio": 4.150537634408602,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-audio-3.1-realtime-flash",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.123502994,
+      "completion_ratio": 3.000000000404848,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "MiniMax-H3",
+      "icon": "Minimax.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "has(lower(param(\"metadata.parameters.resolution\")), \"2k\") || has(lower(param(\"metadata.parameters.resolution\")), \"2048\") || has(lower(param(\"metadata.resolution\")), \"2k\") || has(lower(param(\"metadata.resolution\")), \"2048\") || has(lower(param(\"size\")), \"2k\") || has(lower(param(\"size\")), \"2048\") ? tier(\"2k\", duration * 0.0656716419) : tier(\"768p\", duration * 0.0410447762)",
+      "billing_usage_schema": {
+        "input_images": {
+          "type": "number",
+          "unit": "count",
+          "description": {
+            "en": "Input image unit price",
+            "zh": "输入图片单价"
+          }
+        },
+        "input_video_seconds": {
+          "type": "number",
+          "unit": "second",
+          "description": {
+            "en": "Input video unit price",
+            "zh": "输入视频单价"
+          }
+        },
+        "resolution": {
+          "enum": [
+            "768P",
+            "2K"
+          ],
+          "description": {
+            "en": "Output video resolution",
+            "zh": "输出视频分辨率"
+          }
+        },
+        "seconds": {
+          "type": "number",
+          "unit": "second",
+          "description": {
+            "en": "Video generation unit price",
+            "zh": "视频生成单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-6.1-terra",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 0.7 + c * 3.5 + cr * 0.035 + cc * 0.875) : tier(\"long_context\", p * 1.4 + c * 5.25 + cr * 0.07 + cc * 1.75)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "muse-spark-1.3",
+      "icon": "Meta.Color",
+      "quota_type": 0,
+      "model_ratio": 0.4375,
+      "completion_ratio": 3.4,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen3.7-max",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.889,
+      "completion_ratio": 2.999437570303712,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.0-ab",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 3.45,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4.1-flash",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "(hour(\"Asia/Shanghai\") >= 22 || hour(\"Asia/Shanghai\") < 8 ? tier(\"offpeak:Default\", p * 0.1649175412 + c * 0.6596701649 + cr * 0.0032983508) : tier(\"peak:Default\", p * 0.3298350825 + c * 1.3193403298 + cr * 0.0065967016))",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen3.8-max",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.9880239521,
+      "completion_ratio": 2.9999999999999996,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "wan2.7-image",
+      "icon": "Wan.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0329341317,
+      "billing_usage_schema": {
+        "image_count": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price",
+            "zh": "图片生成单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-haiku-4-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 0.85 + c * 4.25 + cr * 0.085 + cc * 1.0625 + cc1h * 1.7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "doubao-seedream-5-0-260128",
+      "icon": "Doubao.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0336,
+      "billing_usage_schema": {
+        "images_above_1_5k": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price",
+            "zh": "图片生成单价"
+          }
+        },
+        "input_images": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Input image unit price",
+            "zh": "输入图片单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.5-flash-lite",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.105,
+      "completion_ratio": 8.333333333333334,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.8-flash",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.2625,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "glm-5.3",
+      "icon": "ZAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0.38675,
+      "completion_ratio": 3.512605042016807,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "glm-5.3-prime",
+      "icon": "ChatGLM.Color",
+      "quota_type": 0,
+      "model_ratio": 1.31736526945,
+      "completion_ratio": 3.5000000000189773,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-flash-ga-260731",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0.178,
+      "completion_ratio": 2.997752808988764,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "doubao-seedance-2-0-260128",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 3.46275,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "billing_usage_schema": {
+        "resolution": {
+          "enum": [
+            "480p",
+            "720p",
+            "1080p",
+            "4k"
+          ],
+          "description": {
+            "en": "Output video resolution",
+            "zh": "输出视频分辨率"
+          },
+          "enumLabels": {
+            "1080p": {
+              "en": "1080p",
+              "zh": "1080p"
+            },
+            "480p": {
+              "en": "480p",
+              "zh": "480p"
+            },
+            "4k": {
+              "en": "4k",
+              "zh": "4k"
+            },
+            "720p": {
+              "en": "720p",
+              "zh": "720p"
+            }
+          }
+        },
+        "tokens": {
+          "type": "number",
+          "unit": "token",
+          "description": {
+            "en": "Billing token unit price",
+            "zh": "计费 Token 单价"
+          }
+        },
+        "video_input": {
+          "enum": [
+            "none",
+            "video"
+          ],
+          "description": {
+            "en": "Reference video input",
+            "zh": "参考视频输入"
+          },
+          "enumLabels": {
+            "none": {
+              "en": "No reference video",
+              "zh": "无参考视频"
+            },
+            "video": {
+              "en": "With reference video",
+              "zh": "有参考视频"
+            }
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.1-flash-image-preview",
+      "icon": "Gemini.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0755,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-image-2.5-flare",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 4.25 + c * 0 + cr * 1.0625 + img * 6.8 + img_o * 25.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-image-2.5-sunburst",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 4.25 + c * 0 + cr * 1.0625 + img * 6.8 + img_o * 25.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-image-2.6-sunburst",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 4.25 + img * 6.8 + img_o * 25.5 + cr * 1.0625)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-sonnet-4-5-20250929",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 2.1 + c * 10.5 + cr * 0.21 + cc * 2.625 + cc1h * 4.2)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-4-carbon",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "((month(\"UTC\") == 10 && day(\"UTC\") >= 14) || month(\"UTC\") == 11) ? tier(\"discount\", p * 1.4 + c * 7 + cr * 0.07) : tier(\"peak\", p * 2.8 + c * 14 + cr * 0.14)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.0-fast",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 2.63625,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "wan3.0-video-prime",
+      "icon": "Wan.Color",
+      "quota_type": 2,
+      "model_ratio": 0,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "billing_usage_schema": {
+        "resolution": {
+          "enum": [
+            "480P",
+            "720P",
+            "1080P"
+          ],
+          "description": {
+            "en": "Output video resolution",
+            "zh": "输出视频分辨率"
+          },
+          "enumLabels": {
+            "1080P": {
+              "en": "1080P",
+              "zh": "1080P"
+            },
+            "480P": {
+              "en": "480P",
+              "zh": "480P"
+            },
+            "720P": {
+              "en": "720P",
+              "zh": "720P"
+            }
+          }
+        },
+        "seconds": {
+          "type": "number",
+          "unit": "second",
+          "description": {
+            "en": "Video generation unit price",
+            "zh": "视频生成单价"
+          }
+        }
+      },
+      "channel_internal_per_second_usd": 0.0741017964,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "kimi-k3",
+      "icon": "Kimi.Color",
+      "quota_type": 0,
+      "model_ratio": 1.64670658685,
+      "completion_ratio": 4.9999999999392735,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen-audio-3.1-realtime-plus",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.4116766467,
+      "completion_ratio": 8.000000000121455,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "glm-5.2-fast-preview",
+      "icon": "ChatGLM.Color",
+      "quota_type": 0,
+      "model_ratio": 1.31736526945,
+      "completion_ratio": 3.5000000000189773,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-fable-5-1",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 7 + c * 35 + cr * 0.175 + cc * 8.75 + cc1h * 14)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "doubao-seedance-2-5-260628",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 4.9875,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "billing_usage_schema": {
+        "resolution": {
+          "enum": [
+            "480p",
+            "720p",
+            "1080p"
+          ],
+          "description": {
+            "en": "Output video resolution",
+            "zh": "输出视频分辨率"
+          },
+          "enumLabels": {
+            "1080p": {
+              "en": "1080p",
+              "zh": "1080p"
+            },
+            "480p": {
+              "en": "480p",
+              "zh": "480p"
+            },
+            "720p": {
+              "en": "720p",
+              "zh": "720p"
+            }
+          }
+        },
+        "tokens": {
+          "type": "number",
+          "unit": "token",
+          "description": {
+            "en": "Billing token unit price",
+            "zh": "计费 Token 单价"
+          }
+        },
+        "video_input": {
+          "enum": [
+            "none",
+            "video"
+          ],
+          "description": {
+            "en": "Reference video input",
+            "zh": "参考视频输入"
+          },
+          "enumLabels": {
+            "none": {
+              "en": "No reference video",
+              "zh": "无参考视频"
+            },
+            "video": {
+              "en": "With reference video",
+              "zh": "有参考视频"
+            }
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "doubao-seedream-4-5-251128",
+      "icon": "Doubao.Color",
+      "quota_type": 1,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0.0378,
+      "billing_usage_schema": {
+        "images_above_1_5k": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Image generation unit price",
+            "zh": "图片生成单价"
+          }
+        },
+        "input_images": {
+          "type": "number",
+          "unit": "count",
+          "unitLabel": {
+            "en": "image",
+            "fr": "image",
+            "ja": "枚",
+            "ru": "изображение",
+            "vi": "ảnh",
+            "zh": "张",
+            "zh-TW": "張"
+          },
+          "description": {
+            "en": "Input image unit price",
+            "zh": "输入图片单价"
+          }
+        }
+      },
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-5.5",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 3.5 + c * 21 + cr * 0.35) : tier(\"long_context\", p * 7 + c * 31.5 + cr * 0.7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "muse-wonder-1.0",
+      "icon": "Meta.Color",
+      "quota_type": 0,
+      "model_ratio": 1.4,
+      "completion_ratio": 5,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "qwen3.8-max-0902",
+      "icon": "Qwen.Color",
+      "quota_type": 0,
+      "model_ratio": 0.9880239521,
+      "completion_ratio": 2.9999999999999996,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-haiku-5-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 100000 ? tier(\"base\", p * 0.07 + c * 0.35 + cr * 0.007 + cc * 0.0875 + cc1h * 0.14) : tier(\"tier_2\", p * 0.35 + c * 1.75 + cr * 0.035 + cc * 0.4375 + cc1h * 0.7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "deepseek-v4-1-flash-261017",
+      "icon": "DeepSeek.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "(tier(\"base\", p * 0.24 + c * 0.96 + cr * 0.008)) * (weekday(\"Asia/Shanghai\") == 0 ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") == 6 ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") >= 1 && weekday(\"Asia/Shanghai\") < 6 && (hour(\"Asia/Shanghai\") >= 18 || hour(\"Asia/Shanghai\") < 9) ? 0.5 : 1) * (weekday(\"Asia/Shanghai\") >= 1 && weekday(\"Asia/Shanghai\") < 6 && hour(\"Asia/Shanghai\") >= 12 && hour(\"Asia/Shanghai\") < 14 ? 0.5 : 1)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.1-flash-lite",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.0875,
+      "completion_ratio": 6.000000000000001,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-5.6-terra",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 272000 ? tier(\"standard\", p * 1.4 + c * 8.4 + cr * 0.14 + cc * 1.75) : tier(\"long_context\", p * 2.8 + c * 12.6 + cr * 0.28 + cc * 3.5)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "seedance-2.0",
+      "icon": "Doubao.Color",
+      "quota_type": 0,
+      "model_ratio": 3.2775,
+      "completion_ratio": 1,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.1-flash-image",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 0.25 + c * 0.375 + cr * 0.25 + cc * 0.375 + img_o * 60)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gpt-image-2.6-flare",
+      "icon": "OpenAI.Avatar",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 4.25 + img * 6.8 + img_o * 25.5 + cr * 1.0625 + c * 0)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "claude-opus-4-5",
+      "icon": "Claude.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "tier(\"base\", p * 3.5 + c * 17.5 + cr * 0.35 + cc * 4.375 + cc1h * 7)",
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3-flash-preview",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0.175,
+      "completion_ratio": 6.000000000000001,
+      "model_price": 0,
+      "enable_groups": [
+        "default"
+      ]
+    },
+    {
+      "model_name": "gemini-3.1-pro-preview",
+      "icon": "Gemini.Color",
+      "quota_type": 0,
+      "model_ratio": 0,
+      "completion_ratio": 0,
+      "model_price": 0,
+      "billing_mode": "tiered_expr",
+      "billing_expr": "len <= 200000 ? tier(\"standard\", p * 1.4 + c * 8.4 + cr * 0.14 + cc * 1.4) : tier(\"long_context\", p * 2.8 + c * 12.6 + cr * 0.28 + cc * 2.8)",
+      "enable_groups": [
+        "default"
+      ]
+    }
+  ],
+  "official_prices": {
+    "MiniMax-H3": {
+      "official_price_per_second": 0.0746268657
+    },
+    "MiniMax-H3-Max": {
+      "official_price_per_second": 0.0746268657
+    },
+    "MiniMax-M2.5": {
+      "completion_ratio": 4,
+      "model_ratio": 0.15
+    },
+    "claude-fable-5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 5
+    },
+    "claude-fable-5-1": {
+      "cache_ratio": 0.025,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 5
+    },
+    "claude-fable-5-2": {
+      "cache_ratio": 0.025,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 4
+    },
+    "claude-haiku-4-5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.5
+    },
+    "claude-haiku-4-5-20251001": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.5
+    },
+    "claude-haiku-5-5": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.05
+    },
+    "claude-opus-4-5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-4-5-20251101": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-4-6": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-4-7": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-4-8": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2.5
+    },
+    "claude-opus-5-5": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2
+    },
+    "claude-sonnet-4-5-20250929": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1.5
+    },
+    "claude-sonnet-4-6": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1.5
+    },
+    "claude-sonnet-5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "claude-sonnet-5-5": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "deepseek-v4-1-flash-260910": {
+      "cache_ratio": 0.06666666666666667,
+      "completion_ratio": 4,
+      "model_ratio": 0.15
+    },
+    "deepseek-v4-1-flash-261017": {
+      "cache_ratio": 0.03333333333333333,
+      "completion_ratio": 4,
+      "model_ratio": 0.15
+    },
+    "deepseek-v4-flash-0731": {
+      "cache_ratio": 0.033707865169,
+      "completion_ratio": 2.997752808989,
+      "model_ratio": 0.2225
+    },
+    "deepseek-v4-flash-ga-260731": {
+      "cache_ratio": 0.033707865169,
+      "completion_ratio": 2.997752808989,
+      "model_ratio": 0.2225
+    },
+    "deepseek-v4-pro": {
+      "cache_ratio": 0.200300075019,
+      "completion_ratio": 3.000750187547,
+      "create_cache_ratio": 1,
+      "model_ratio": 0.6665
+    },
+    "deepseek-v4-pro-0813": {
+      "cache_ratio": 0.200300075019,
+      "completion_ratio": 3.000750187547,
+      "create_cache_ratio": 1,
+      "model_ratio": 0.6665
+    },
+    "deepseek-v4.1-flash": {
+      "cache_ratio": 0.019999999999999997,
+      "completion_ratio": 4,
+      "model_ratio": 0.07496251874062969
+    },
+    "deepseek-v4.1-flash-1017": {
+      "cache_ratio": 0.019999999999999997,
+      "completion_ratio": 4,
+      "model_ratio": 0.07496251874062969
+    },
+    "doubao-seedance-2-0-260128": {
+      "completion_ratio": 1,
+      "model_ratio": 3.645
+    },
+    "doubao-seedance-2-5-260628": {
+      "completion_ratio": 1,
+      "model_ratio": 5.25
+    },
+    "doubao-seedream-4-0-250828": {
+      "model_price": 0.029
+    },
+    "doubao-seedream-4-5-251128": {
+      "model_price": 0.036
+    },
+    "doubao-seedream-5-0-260128": {
+      "model_price": 0.032
+    },
+    "gemini-2.5-flash-image": {
+      "model_price": 0.039
+    },
+    "gemini-3-flash-preview": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 6,
+      "model_ratio": 0.25
+    },
+    "gemini-3-pro-image-preview": {
+      "model_price": 0.24
+    },
+    "gemini-3.1-flash-image": {
+      "cache_ratio": 1,
+      "completion_ratio": 1.5,
+      "create_cache_ratio": 1.5,
+      "model_ratio": 0.25
+    },
+    "gemini-3.1-flash-image-preview": {
+      "model_price": 0.151
+    },
+    "gemini-3.1-flash-lite": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 6,
+      "model_ratio": 0.125
+    },
+    "gemini-3.1-pro-preview": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 6,
+      "create_cache_ratio": 1,
+      "model_ratio": 1
+    },
+    "gemini-3.5-flash": {
+      "cache_ratio": 0.10000000000000002,
+      "completion_ratio": 6,
+      "model_ratio": 0.75
+    },
+    "gemini-3.5-flash-lite": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 8.333333333333,
+      "model_ratio": 0.15
+    },
+    "gemini-3.6-flash": {
+      "cache_ratio": 0.10000000000000002,
+      "completion_ratio": 5,
+      "model_ratio": 0.375
+    },
+    "gemini-3.7-flash": {
+      "cache_ratio": 0.10000000000000002,
+      "completion_ratio": 5,
+      "model_ratio": 0.375
+    },
+    "gemini-3.8-flash": {
+      "cache_ratio": 0.10000000000000002,
+      "completion_ratio": 5,
+      "model_ratio": 0.375
+    },
+    "gemini-4-argon": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "model_ratio": 1
+    },
+    "gemini-4-carbon": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "model_ratio": 1
+    },
+    "gemini-4-hydrogen": {
+      "cache_ratio": 0.05000000000000001,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.75
+    },
+    "gemini-4-neon": {
+      "cache_ratio": 0.05000000000000001,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1.5
+    },
+    "gemini-nano-banana-2.1": {
+      "completion_ratio": 5,
+      "model_ratio": 0.75
+    },
+    "glm-5.1": {
+      "completion_ratio": 3.5087719298250004,
+      "model_ratio": 0.57
+    },
+    "glm-5.2": {
+      "cache_ratio": 0.100840336134,
+      "completion_ratio": 3.512605042017,
+      "create_cache_ratio": 1.252100840336,
+      "model_ratio": 0.595
+    },
+    "glm-5.2-fast-preview": {
+      "cache_ratio": 0.25,
+      "completion_ratio": 3.4999999999999996,
+      "model_ratio": 1.199400299850075
+    },
+    "glm-5.3": {
+      "cache_ratio": 0.100840336134,
+      "completion_ratio": 3.512605042017,
+      "create_cache_ratio": 1.252100840336,
+      "model_ratio": 0.595
+    },
+    "glm-5.3-prime": {
+      "cache_ratio": 0.25,
+      "completion_ratio": 3.4999999999999996,
+      "model_ratio": 1.199400299850075
+    },
+    "gpt-5.5": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 6,
+      "model_ratio": 2.5
+    },
+    "gpt-5.6-luna": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5.999999999999999,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.1
+    },
+    "gpt-5.6-sol": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 2
+    },
+    "gpt-5.6-terra": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 6,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "gpt-6-astra": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 5
+    },
+    "gpt-6-luna": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.05
+    },
+    "gpt-6-sol": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "gpt-6.1-sol": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "gpt-6.1-terra": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.5
+    },
+    "gpt-6.2-astra": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 4
+    },
+    "gpt-6.2-sol": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 1
+    },
+    "gpt-image-2": {
+      "cache_ratio": 0.25,
+      "model_ratio": 2.5
+    },
+    "gpt-image-2.5-flare": {
+      "cache_ratio": 0.25,
+      "model_ratio": 2.5
+    },
+    "gpt-image-2.5-sunburst": {
+      "cache_ratio": 0.25,
+      "model_ratio": 2.5
+    },
+    "gpt-image-2.6-flare": {
+      "cache_ratio": 0.25,
+      "model_ratio": 2.5
+    },
+    "gpt-image-2.6-sunburst": {
+      "cache_ratio": 0.25,
+      "model_ratio": 2.5
+    },
+    "kimi-k2.5": {
+      "cache_ratio": 0.19298245614,
+      "completion_ratio": 5.6,
+      "create_cache_ratio": 1.245614035088,
+      "model_ratio": 0.285
+    },
+    "kimi-k2.6": {
+      "cache_ratio": 0.246914,
+      "completion_ratio": 4.150537634409,
+      "create_cache_ratio": 1.247311827957,
+      "model_ratio": 0.465
+    },
+    "kimi-k3": {
+      "cache_ratio": 0.09999999999999999,
+      "completion_ratio": 5,
+      "model_ratio": 1.4992503748125938
+    },
+    "kimi-k3.1-pro": {
+      "cache_ratio": 0.1,
+      "completion_ratio": 5.230769230769231,
+      "model_ratio": 0.974512743628186
+    },
+    "muse-spark-1.1": {
+      "cache_ratio": 0.12,
+      "completion_ratio": 3.4,
+      "model_ratio": 0.625
+    },
+    "muse-spark-1.2": {
+      "cache_ratio": 0.12,
+      "completion_ratio": 3.4,
+      "model_ratio": 0.625
+    },
+    "muse-spark-1.3": {
+      "cache_ratio": 0.12,
+      "completion_ratio": 3.4,
+      "model_ratio": 0.625
+    },
+    "muse-wonder-1.0": {
+      "cache_ratio": 0.05,
+      "completion_ratio": 5,
+      "model_ratio": 2
+    },
+    "qwen-audio-3.0-asr-flash": {
+      "official_price_per_second": 0.000032983508245877065
+    },
+    "qwen-audio-3.0-realtime-flash": {
+      "completion_ratio": 3,
+      "model_ratio": 0.11244377811094453
+    },
+    "qwen-audio-3.0-realtime-plus": {
+      "completion_ratio": 8,
+      "model_ratio": 0.37481259370314846
+    },
+    "qwen-audio-3.1-realtime-flash": {
+      "completion_ratio": 3,
+      "model_ratio": 0.11244377811094453
+    },
+    "qwen-audio-3.1-realtime-plus": {
+      "completion_ratio": 8,
+      "model_ratio": 0.37481259370314846
+    },
+    "qwen-image-2.0-pro": {
+      "model_price": 0.072
+    },
+    "qwen-image-2.1-pro": {
+      "model_price": 0.037481259370314844
+    },
+    "qwen3.6-flash": {
+      "cache_ratio": 0.1111111111111111,
+      "completion_ratio": 5.962962962962963,
+      "create_cache_ratio": 1.2592592592592593,
+      "model_ratio": 0.135
+    },
+    "qwen3.7-max": {
+      "cache_ratio": 0.200787401575,
+      "completion_ratio": 2.999437570304,
+      "create_cache_ratio": 1.199662542182,
+      "model_ratio": 0.889
+    },
+    "qwen3.8-flash": {
+      "cache_ratio": 0.125,
+      "completion_ratio": 3.375,
+      "create_cache_ratio": 1.5625,
+      "model_ratio": 0.059970014992503755
+    },
+    "qwen3.8-max": {
+      "cache_ratio": 0.125,
+      "completion_ratio": 3,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.8995502248875562
+    },
+    "qwen3.8-max-0902": {
+      "cache_ratio": 0.125,
+      "completion_ratio": 3,
+      "create_cache_ratio": 1.25,
+      "model_ratio": 0.8995502248875562
+    },
+    "seedance-2.0": {
+      "completion_ratio": 1,
+      "model_ratio": 3.45
+    },
+    "seedance-2.0-ab": {
+      "completion_ratio": 1,
+      "model_ratio": 3.45
+    },
+    "seedance-2.0-fast": {
+      "completion_ratio": 1,
+      "model_ratio": 2.775
+    },
+    "seedance-2.0-mini": {
+      "completion_ratio": 1,
+      "model_ratio": 1.725
+    },
+    "seedance-2.5": {
+      "completion_ratio": 1,
+      "model_ratio": 5.25
+    },
+    "seedance-2.5-ab": {
+      "completion_ratio": 1,
+      "model_ratio": 5.25
+    },
+    "wan2.7-image": {
+      "model_price": 0.029985007496251877
+    },
+    "wan2.7-image-pro": {
+      "model_price": 0.072
+    },
+    "wan3.0-video": {
+      "official_price_per_second": 0.04491017964071856
+    },
+    "wan3.0-video-prime": {
+      "official_price_per_second": 0.06736526946107785
+    }
+  }
+}

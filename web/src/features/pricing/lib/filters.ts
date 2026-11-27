@@ -161,6 +161,76 @@ function getSortPrice(
   return calculateTokenPrice(model, kind, 1)
 }
 
+type ModelNameToken =
+  | { kind: 'text'; value: string }
+  | { kind: 'number'; value: number }
+
+/** Split a model name into alternating text / numeric tokens. */
+function tokenizeModelName(name: string): ModelNameToken[] {
+  const tokens: ModelNameToken[] = []
+  const numeric = /(\d+)/g
+  let cursor = 0
+  let match: RegExpExecArray | null
+  while ((match = numeric.exec(name)) !== null) {
+    if (match.index > cursor) {
+      tokens.push({ kind: 'text', value: name.slice(cursor, match.index) })
+    }
+    tokens.push({ kind: 'number', value: Number(match[0]) })
+    cursor = match.index + match[0].length
+  }
+  if (cursor < name.length) {
+    tokens.push({ kind: 'text', value: name.slice(cursor) })
+  }
+  return tokens
+}
+
+/**
+ * Compare model names the way the pricing cards read them: letters ascend,
+ * version numbers descend, and a more specific version wins over its prefix.
+ *
+ * `gpt-5-5` and `gpt-5.5` tokenize to [gpt-, 5, -, 5] / [gpt-, 5, ., 5], so
+ * both outrank `gpt-5` (a longer token list wins when one is a prefix), and
+ * `gpt-4-8` loses to `gpt-5` because the first numeric token is smaller.
+ */
+function compareModelNames(a: string, b: string): number {
+  const left = tokenizeModelName(a)
+  const right = tokenizeModelName(b)
+  const shared = Math.min(left.length, right.length)
+  for (let i = 0; i < shared; i++) {
+    const x = left[i]
+    const y = right[i]
+    if (x.kind === 'number' && y.kind === 'number') {
+      if (x.value !== y.value) return y.value - x.value
+      continue
+    }
+    if (x.kind === 'text' && y.kind === 'text') {
+      if (x.value === y.value) continue
+      return x.value < y.value ? -1 : 1
+    }
+    // A numeric token sorts ahead of a text token at the same position.
+    return x.kind === 'number' ? -1 : 1
+  }
+  // A more specific name (extra version/date suffix) ranks before its prefix.
+  return right.length - left.length
+}
+
+/**
+ * Pricing-card order: newest release first; models without a release date
+ * (or sharing one) fall back to alphabetical order with larger version
+ * numbers ahead. ISO `YYYY-MM`/`YYYY-MM-DD` strings sort chronologically as
+ * plain strings, so no date parsing is needed.
+ */
+export function compareModelsForCard(a: PricingModel, b: PricingModel): number {
+  const dateA = (a.release_date ?? '').trim()
+  const dateB = (b.release_date ?? '').trim()
+  if (dateA && dateB && dateA !== dateB) {
+    return dateA < dateB ? 1 : -1
+  }
+  if (dateA && !dateB) return -1
+  if (!dateA && dateB) return 1
+  return compareModelNames(a.model_name ?? '', b.model_name ?? '')
+}
+
 /**
  * Sort models by specified option
  */
@@ -190,9 +260,7 @@ export function sortModels(
 
   switch (sortBy) {
     case SORT_OPTIONS.NAME:
-      sorted.sort((a, b) =>
-        (a.model_name || '').localeCompare(b.model_name || '')
-      )
+      sorted.sort(compareModelsForCard)
       break
   }
 
@@ -243,18 +311,29 @@ export function buildFacetModels(
   }
 ): PricingFacetModels {
   const base = { ...filters, sortBy: SORT_OPTIONS.NAME }
+  // Facet sets only feed option counts, not the visible card order. Keep their
+  // enumeration alphabetical so the new release/version card ordering does not
+  // silently reshuffle sidebar filter options.
+  const alphabetical = (rows: PricingModel[]) =>
+    [...rows].sort((a, b) =>
+      (a.model_name || '').localeCompare(b.model_name || '')
+    )
   return {
-    channel: filterAndSortModels(models, { ...base, channel: FILTER_ALL }),
-    vendor: filterAndSortModels(models, { ...base, vendor: FILTER_ALL }),
-    tag: filterAndSortModels(models, { ...base, tag: FILTER_ALL }),
-    quotaType: filterAndSortModels(models, {
-      ...base,
-      quotaType: QUOTA_TYPES.ALL,
-    }),
-    endpointType: filterAndSortModels(models, {
-      ...base,
-      endpointType: ENDPOINT_TYPES.ALL,
-    }),
+    channel: alphabetical(
+      filterAndSortModels(models, { ...base, channel: FILTER_ALL })
+    ),
+    vendor: alphabetical(
+      filterAndSortModels(models, { ...base, vendor: FILTER_ALL })
+    ),
+    tag: alphabetical(
+      filterAndSortModels(models, { ...base, tag: FILTER_ALL })
+    ),
+    quotaType: alphabetical(
+      filterAndSortModels(models, { ...base, quotaType: QUOTA_TYPES.ALL })
+    ),
+    endpointType: alphabetical(
+      filterAndSortModels(models, { ...base, endpointType: ENDPOINT_TYPES.ALL })
+    ),
   }
 }
 

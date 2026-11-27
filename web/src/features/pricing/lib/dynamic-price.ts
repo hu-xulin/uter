@@ -157,6 +157,66 @@ export function hasTaskUsageSchema(model: PricingModel): boolean {
   return Object.keys(model.billing_usage_schema ?? {}).length > 0
 }
 
+const INFERABLE_USAGE_FIELDS = new Set([
+  'duration',
+  'second',
+  'seconds',
+  'video_duration',
+  'audio_duration',
+  'clips',
+  'images',
+  'image_count',
+  'characters',
+])
+
+/**
+ * 部分上游（uterroute）用 tiered_expr + 用量计费，却不下发 billing_usage_schema。
+ * 条件 tier 表达式落到简化解析器会返回空档位，卡片因此把整条公式直接展示出来。
+ * 从 `tier("label", <field> * <number>)` 推断用量字段并补齐 schema，让 task
+ * 解析器还原可读价格档位（如 MiniMax-H3 的 duration 秒价）。
+ *
+ * 两种情形生效：① 完全没有 schema；② 已有 schema 但没有任何 second 用量
+ * 字段、而表达式用 duration/second 乘数。若 schema 已声明 second 字段则保持
+ * 原样（额外补第二个会让 secondsField 产生歧义）。普通 token/请求计费表达式
+ * 原样返回。
+ */
+export function withInferredUsageSchema(model: PricingModel): PricingModel {
+  if (model.billing_mode !== 'tiered_expr' || !model.billing_expr) {
+    return model
+  }
+  const fields = new Set<string>()
+  const tierUsage =
+    /\btier\(\s*(?:"[^"]*"|'[^']*')\s*,\s*([A-Za-z_$][\w$]*)\s*\*/g
+  for (const match of model.billing_expr.matchAll(tierUsage)) {
+    // Only unmistakable task-usage dimensions qualify. Token expressions use
+    // short aliases such as `p` / `c` and must stay on the token parser.
+    if (INFERABLE_USAGE_FIELDS.has(match[1].toLowerCase())) {
+      fields.add(match[1])
+    }
+  }
+  if (fields.size === 0) return model
+  const existing = model.billing_usage_schema ?? {}
+  // 已有 schema 时，只有当它**没有**任何 second 用量字段、而表达式的 tier
+  // 乘数用的是 duration/second 时，才补一个可推断的秒字段。
+  // 注意：secondsField() 要求 schema 中恰好一个 second 字段才能把裸
+  // `duration` 解析成秒价。若 schema 已声明 second 字段（哪怕名字不叫
+  // duration，如 MiniMax-H3 的 `seconds`），补第二个会造成歧义并让解析
+  // 彻底失败——因此这里必须按「是否已有 second 字段」判断，而不是按
+  // 「表达式变量名是否在 schema 中」判断。
+  const hasSecondField = Object.values(existing).some(
+    (definition) => definition.type === 'number' && definition.unit === 'second'
+  )
+  const secondFields = [...fields].filter((field) =>
+    /second|duration|time/i.test(field)
+  )
+  if (hasSecondField || secondFields.length === 0) return model
+  const schema: BillingUsageSchema = { ...existing }
+  for (const field of secondFields) {
+    schema[field] = { type: 'number', unit: 'second' }
+  }
+  return { ...model, billing_usage_schema: schema }
+}
+
 export function isTaskUsagePricingModel(model: PricingModel): boolean {
   return model.billing_mode === 'tiered_expr' && hasTaskUsageSchema(model)
 }
@@ -168,6 +228,22 @@ export function isUnconfiguredTaskUsageModel(model: PricingModel): boolean {
         ? isUnconfiguredTaskUsageModel(withPluginPricing(model, variant))
         : !variant.billing_expr
     )
+  }
+  // 只有「有任务用量 schema、无表达式、且没有任何可用定价」才算未配置。
+  // doubao-seedance-* 带 resolution/video_input schema，但用量字段里的
+  // `tokens`（单位 token）表明它其实按 token 口径计价且 model_ratio 已配置；
+  // 过去仅凭「有 schema + 无表达式」就判未配置，会把这类有价模型显示成
+  // 「尚未配置定价」。纯任务用量（seconds / clips）模型不受此豁免影响。
+  const usesTokenUsage = Object.values(model.billing_usage_schema ?? {}).some(
+    (definition) => definition.type === 'number' && definition.unit === 'token'
+  )
+  if (usesTokenUsage && (model.model_ratio ?? 0) > 0) {
+    return false
+  }
+  // 按秒计费模型（wan3.0-video 等）的定价在 channel_internal_per_second_usd，
+  // 不走 billing_expr；卡片已有 per-second 分支展示，并非「未配置定价」。
+  if ((model.channel_internal_per_second_usd ?? 0) > 0) {
+    return false
   }
   return (
     model.quota_type !== 1 &&
@@ -244,6 +320,7 @@ export function formatTaskUsageUnitPrice(
 export function getDynamicPricingTiers(
   model: PricingModel
 ): DynamicPricingTier[] {
+  model = withInferredUsageSchema(model)
   if (model.billing_plugin_variants?.length) {
     return model.billing_plugin_variants.flatMap((variant) =>
       getDynamicPricingTiers(withPluginPricing(model, variant))
@@ -383,6 +460,7 @@ export function getDynamicPricingSummary(
   model: PricingModel,
   options: DynamicPriceOptions
 ): DynamicPricingSummary | null {
+  model = withInferredUsageSchema(model)
   const variants = model.billing_plugin_variants
   if (variants?.length) {
     const summaries = variants.flatMap((variant) => {

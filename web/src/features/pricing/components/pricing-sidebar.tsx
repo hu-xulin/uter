@@ -30,6 +30,7 @@ import {
 import { useTheme } from '@/context/theme-provider'
 import { Heading } from '@/design-system'
 import { ChannelTypeLogo } from '@/features/channels/components/channel-type-badge'
+import { comparePinnedChannelOrder } from '@/lib/channel-order'
 import { getLobeIcon, monoIconName } from '@/lib/lobe-icon'
 import { cn } from '@/lib/utils'
 
@@ -248,9 +249,10 @@ export function PricingSidebar(props: PricingSidebarProps) {
       : []),
   ]
 
-  // 渠道来自管理-渠道的展示名（`channels`），按承载模型数降序、同数量按名称排序。
+  // 渠道来自管理-渠道的展示名（`channels`）。九个业务指定渠道固定在前面；
+  // 其余渠道按承载模型数降序、同数量按名称排序，保持原有可发现性。
   // 「所有渠道」的徽标是**可筛选渠道数量**，具体渠道则显示各自承载的模型数。
-  const channelCounts = props.channels
+  const knownChannelCounts = props.channels
     .map((channel) => ({
       channel,
       count: countBy(
@@ -261,13 +263,15 @@ export function PricingSidebar(props: PricingSidebarProps) {
     .filter(
       ({ channel, count }) => count > 0 || channel === props.channelFilter
     )
-    .sort((a, b) => b.count - a.count || a.channel.localeCompare(b.channel))
   if (
     props.channelFilter !== FILTER_ALL &&
-    !channelCounts.some(({ channel }) => channel === props.channelFilter)
+    !knownChannelCounts.some(({ channel }) => channel === props.channelFilter)
   ) {
-    channelCounts.push({ channel: props.channelFilter, count: 0 })
+    knownChannelCounts.push({ channel: props.channelFilter, count: 0 })
   }
+  const channelCounts = knownChannelCounts.sort((a, b) =>
+    comparePinnedChannelOrder(a.channel, a.count, b.channel, b.count)
+  )
   // 每个渠道都带一枚标识：优特/内部渠道用品牌 Logo，聚合渠道用合并图标；
   // 其余渠道按它承载模型的供应商图标推断（同名渠道取出现最多的供应商），
   // 没有供应商图标时退回通用渠道图标。图标尺寸统一为 14px，由 FilterChip

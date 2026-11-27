@@ -39,6 +39,15 @@ describe('pricingModelIconKey', () => {
     expect(pricingModelIconKey('Qwen')).toBe('Qwen.Color')
   })
 
+  it('renders Kimi models with the avatar glyph so the logo is visible on the light card', () => {
+    // Kimi.Color's body is white on transparent (dark-background asset): on a
+    // white card only a blue dot remains. Moonshot.Avatar is the vendor company
+    // logo, which model cards must never show. Both normalize to Kimi.Avatar.
+    expect(pricingModelIconKey('Kimi')).toBe('Kimi.Avatar')
+    expect(pricingModelIconKey('Kimi.Color')).toBe('Kimi.Avatar')
+    expect(pricingModelIconKey('Moonshot.Avatar')).toBe('Kimi.Avatar')
+  })
+
   it('keeps an empty icon empty so the card renders its initial', () => {
     expect(pricingModelIconKey('')).toBe('')
     expect(pricingModelIconKey(undefined)).toBe('')

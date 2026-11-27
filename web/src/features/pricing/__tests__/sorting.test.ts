@@ -124,3 +124,48 @@ describe('price sorting', () => {
     }
   )
 })
+
+describe('card model ordering (NAME sort)', () => {
+  test('release date descends first; undated models sort after dated ones', () => {
+    const named = [
+      pricingModel('claude-opus-4-8', { release_date: '2026-05' }),
+      pricingModel('zeta-undated', {}),
+      pricingModel('claude-opus-5', { release_date: '2026-07' }),
+      pricingModel('alpha-undated', {}),
+      pricingModel('claude-opus-5-5', { release_date: '2026-09' }),
+    ]
+    expect(sortModels(named, SORT_OPTIONS.NAME).map((m) => m.model_name)).toEqual(
+      [
+        'claude-opus-5-5',
+        'claude-opus-5',
+        'claude-opus-4-8',
+        'alpha-undated',
+        'zeta-undated',
+      ]
+    )
+  })
+
+  test('same release date falls back to alphabetical, then larger version first', () => {
+    const named = [
+      pricingModel('beta-5', { release_date: '2026-01' }),
+      pricingModel('beta-5.5', { release_date: '2026-01' }),
+      pricingModel('alpha-9', { release_date: '2026-01' }),
+      pricingModel('beta-5-5', { release_date: '2026-01' }),
+    ]
+    expect(sortModels(named, SORT_OPTIONS.NAME).map((m) => m.model_name)).toEqual(
+      ['alpha-9', 'beta-5-5', 'beta-5.5', 'beta-5']
+    )
+  })
+
+  test('undated models with same letters put 5-5 and 5.5 before 5', () => {
+    const named = [
+      pricingModel('gpt-5', {}),
+      pricingModel('gpt-5.5', {}),
+      pricingModel('gpt-5-5', {}),
+      pricingModel('gpt-4-8', {}),
+    ]
+    expect(sortModels(named, SORT_OPTIONS.NAME).map((m) => m.model_name)).toEqual(
+      ['gpt-5-5', 'gpt-5.5', 'gpt-5', 'gpt-4-8']
+    )
+  })
+})

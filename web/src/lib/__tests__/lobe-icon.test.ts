@@ -104,4 +104,22 @@ describe('resolveModelIconKey', () => {
     expect(resolveModelIconKey('Claude.Color')).toBe('Claude.Color')
     expect(resolveModelIconKey('OpenAI.Avatar')).toBe('OpenAI.Avatar')
   })
+
+  test('uses the Kimi avatar glyph so a white-on-transparent logo stays visible on light surfaces', () => {
+    // Kimi.Color draws its main glyph in #fff on a transparent canvas (a
+    // dark-background asset). On the light pricing cards only its small blue
+    // square survives, so models must resolve to the Avatar variant, which
+    // pairs the same glyph with a brand background and stays legible anywhere.
+    expect(resolveModelIconKey('Kimi')).toBe('Kimi.Avatar')
+    expect(resolveModelIconKey('Kimi.Color')).toBe('Kimi.Avatar')
+    expect(resolveModelIconKey('Kimi.Avatar')).toBe('Kimi.Avatar')
+  })
+
+  test('normalizes a misconfigured Moonshot company logo to the Kimi product logo', () => {
+    // kimi-k2.5 / k2.6 carry the vendor's company logo as their model icon.
+    // Model surfaces must show the product's own logo, never the vendor mark.
+    expect(resolveModelIconKey('Moonshot')).toBe('Kimi.Avatar')
+    expect(resolveModelIconKey('Moonshot.Avatar')).toBe('Kimi.Avatar')
+    expect(resolveModelIconKey('Moonshot.Color')).toBe('Kimi.Avatar')
+  })
 })

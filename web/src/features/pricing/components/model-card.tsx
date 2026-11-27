@@ -60,6 +60,7 @@ import {
   formatRequestPrice,
   formatUSDRequestPrice,
   formatUSDTokenPrice,
+  getOfficialPerSecondUSD,
   getOfficialPresetRequestUSD,
   getOfficialPresetTokenUSD,
   getMarkupMultiplier,
@@ -358,7 +359,58 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     return usd != null ? { usd, perRequest: false } : null
   }
   let priceSummary: ReactNode
-  if (dynamicSummary) {
+  // 按秒计费模型（wan3.0-video / qwen-audio-3.0-asr-flash 等 quota_type=2）
+  // 的计价系数是「美元/秒」，与 token 倍率无关。表格视图早已支持这一形态，
+  // 卡片视图过去没有对应分支，导致这些模型只显示「尚未配置定价」或 $0。
+  // 优特价取 channel_internal_per_second_usd，官方价取 official_prices 的
+  // official_price_per_second（与表格视图同一口径）。
+  const cardPerSecond = props.model.channel_internal_per_second_usd
+  if (typeof cardPerSecond === 'number' && cardPerSecond > 0) {
+    const officialPerSecond = getOfficialPerSecondUSD(officialRatios)
+    const perSecondDiscount =
+      officialPerSecond != null && cardPerSecond < officialPerSecond
+        ? Math.round((1 - cardPerSecond / officialPerSecond) * 100)
+        : 0
+    const perSecondMarkup = getMarkupMultiplier(
+      cardPerSecond,
+      officialPerSecond ?? Number.NaN
+    )
+    const fmtPerSecond = (value: number) => `$${Number(value.toFixed(6))}`
+    priceSummary = (
+      <div className='col-span-full grid min-w-0 grid-cols-2 items-baseline gap-x-4 gap-y-1.5'>
+        <span className='text-muted-foreground text-sm'>
+          {i18n.language?.startsWith('zh') ? '优特' : 'Uter'}
+        </span>
+        <span className='text-sm font-semibold tabular-nums'>
+          {t('{{price}} / second', { price: fmtPerSecond(cardPerSecond) })}
+        </span>
+        <span className='text-muted-foreground text-sm whitespace-nowrap'>
+          {t('Official')}
+        </span>
+        <span className='text-muted-foreground text-sm tabular-nums'>
+          <span className='flex flex-col items-start'>
+            <span className={cn(perSecondDiscount > 0 && 'line-through')}>
+              {officialPerSecond != null
+                ? t('{{price}} / second', {
+                    price: fmtPerSecond(officialPerSecond),
+                  })
+                : '—'}
+            </span>
+            {perSecondDiscount > 0 && (
+              <span className='text-success-soft-foreground font-semibold'>
+                -{perSecondDiscount}%
+              </span>
+            )}
+            {perSecondMarkup != null && (
+              <span className='text-warning-soft-foreground font-semibold'>
+                x{perSecondMarkup}
+              </span>
+            )}
+          </span>
+        </span>
+      </div>
+    )
+  } else if (dynamicSummary) {
     if (dynamicSummary.isSpecialExpression) {
       priceSummary = (
         <div className='col-span-full min-w-0'>

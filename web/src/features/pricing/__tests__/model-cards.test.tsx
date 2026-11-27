@@ -541,6 +541,25 @@ describe('model cards', () => {
     expect(screen.getByText(expression)).toBeVisible()
   })
 
+  it('shows duration price tiers instead of the raw expression when the upstream omits a usage schema', () => {
+    const expression =
+      'has(lower(param("metadata.resolution")), "2k") || has(lower(param("size")), "2048") ? tier("2k", duration * 0.0656716419) : tier("768p", duration * 0.0410447762)'
+    render(
+      <ModelCard
+        model={pricingModel({
+          billing_mode: 'tiered_expr',
+          billing_expr: expression,
+        })}
+        onClick={vi.fn()}
+      />
+    )
+    expect(
+      screen.queryByText('Special billing expression')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText(expression)).not.toBeInTheDocument()
+    expect(screen.getAllByText(/0\.041045/).length).toBeGreaterThan(0)
+  })
+
   it('keeps browsing and missing metric values available after the metrics request fails', async () => {
     const request = vi
       .spyOn(api, 'get')

@@ -75,6 +75,19 @@ const CUSTOM_ICONS: Record<string, ComponentType<{ size?: number }>> = {
   // this registration every channel type that maps to it (58 Advanced Custom
   // and 60 New API) fell through to the grey single-letter placeholder circle.
   Uter: IconUter,
+  // `@lobehub/icons` ships no "ChatGLM" brand, but upstream model metadata
+  // uses `ChatGLM.Color` for every GLM model. Without this registration each
+  // GLM card fell back to a grey single-letter circle.
+  ChatGLM: (props) => (
+    <img
+      src='/img/partners/glm.svg'
+      alt=''
+      aria-hidden='true'
+      width={props.size ?? 20}
+      height={props.size ?? 20}
+      className='object-contain'
+    />
+  ),
   // Branded Advanced Custom variants. Each keeps its own glyph so the shared /
   // aggregate / proxy channels stay distinguishable wherever only the channel
   // type is known (type filter chips, provider button, logo fallback).
@@ -222,14 +235,32 @@ function isBareVariantSuffix(suffix: string): boolean {
 }
 
 /**
+ * Brand-level overrides for model logos. Resolved here (not in `colorIconName`,
+ * which is shared by vendor chips and the rankings leaderboard) so only model
+ * surfaces are affected.
+ */
+const MODEL_ICON_BRAND_OVERRIDES: Record<string, string> = {
+  // Kimi.Color paints its main glyph in #fff on a transparent canvas: it is a
+  // dark-background asset. On the light pricing cards only its tiny blue
+  // square survives (the rest is white-on-white). Kimi.Avatar pairs the same
+  // glyph with the brand background, so it stays legible on any surface.
+  kimi: 'Kimi.Avatar',
+  // kimi-k2.5 / k2.6 are stored with the vendor's company logo instead of the
+  // product logo. Moonshot is a company, not a model product — normalize it to
+  // Kimi so model surfaces never show a company mark.
+  moonshot: 'Kimi.Avatar',
+}
+
+/**
  * Pick the icon for a model entry.
  *
- * A model renders **only its own product logo**, in brand colors. There is
- * deliberately no vendor fallback: a vendor's company logo (black-and-white,
- * configured per-vendor in 模型-供应商) belongs to vendor surfaces — filter
- * chips, vendor lists, vendor columns — and must never stand in for a model's
- * logo on a model card. A model without a product logo of its own renders the
- * initial-letter placeholder at the call site.
+ * A model renders **only its own product logo**, in a variant that is visible
+ * on the surface it is used on. There is deliberately no vendor fallback: a
+ * vendor's company logo (black-and-white, configured per-vendor in
+ * 模型-供应商) belongs to vendor surfaces — filter chips, vendor lists, vendor
+ * columns — and must never stand in for a model's logo on a model card. A
+ * model without a product logo of its own renders the initial-letter
+ * placeholder at the call site.
  *
  * This is a hard product rule, not a styling preference: silently substituting
  * the company logo is what repeatedly put company logos on pricing cards. The
@@ -238,7 +269,18 @@ function isBareVariantSuffix(suffix: string): boolean {
 export function resolveModelIconKey(
   modelIcon: string | undefined | null
 ): string {
-  return colorIconName(modelIcon)
+  const key = colorIconName(modelIcon)
+  const segments = key.split('.').filter((segment) => segment !== '')
+  const baseKey = segments[0]
+  if (!baseKey) return ''
+  const override = MODEL_ICON_BRAND_OVERRIDES[baseKey.toLowerCase()]
+  if (!override) return key
+  // Preserve any chained rendering props (e.g. "type={'platform'}") that follow
+  // the variant segment, while replacing the brand + variant prefix.
+  const chainedProps = segments.slice(2)
+  return chainedProps.length > 0
+    ? `${override}.${chainedProps.join('.')}`
+    : override
 }
 
 /**

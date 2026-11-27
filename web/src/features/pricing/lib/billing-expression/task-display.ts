@@ -148,12 +148,24 @@ function displayCondition(
   return describeRequestCondition(node) ?? conditionSource(node, context)
 }
 
-/** The schema field that counts billable seconds, when the plugin declares one. */
+/**
+ * The schema field that counts billable seconds, when the plugin declares one.
+ *
+ * A plugin may declare several `second`-unit fields (e.g. MiniMax-H3 has both
+ * `input_video_seconds` and `seconds`). The bare `duration` variable in a
+ * pricing expression refers to the *output* billable duration, so prefer the
+ * canonical `seconds`/`duration` name; fall back to the sole second field when
+ * no canonical name exists. Returning null for an ambiguous multi-field schema
+ * would make the whole expression fall back to raw-source rendering.
+ */
 function secondsField(schema: BillingUsageSchema): string | null {
   const fields = Object.entries(schema).filter(
     ([, definition]) =>
       definition.type === 'number' && definition.unit === 'second'
   )
+  if (fields.length === 0) return null
+  const canonical = fields.find(([name]) => /^(seconds?|duration)$/i.test(name))
+  if (canonical) return canonical[0]
   return fields.length === 1 ? fields[0][0] : null
 }
 

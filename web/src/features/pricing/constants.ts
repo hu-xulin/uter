@@ -52,6 +52,12 @@ export function getSortLabels(t: TFunction): Record<SortOption, string> {
 /** Filter values */
 export const FILTER_ALL = 'all'
 
+/**
+ * 定价页首次打开（URL 没有 channel 参数）时默认选中的渠道。
+ * 侧栏的展示顺序另见 PINNED_CHANNEL_ORDER，两者互相独立。
+ */
+export const DEFAULT_CHANNEL_FILTER = 'Claude-Basic'
+
 /** Quota type options */
 export const QUOTA_TYPES = {
   ALL: 'all',

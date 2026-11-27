@@ -22,6 +22,7 @@ import { useMemo, useCallback, useState } from 'react'
 import { useDebounce } from '@/hooks/use-debounce'
 
 import {
+  DEFAULT_CHANNEL_FILTER,
   FILTER_ALL,
   SORT_OPTIONS,
   QUOTA_TYPES,
@@ -60,7 +61,8 @@ export function useFilters(models: PricingModel[]) {
     search: search.search,
     sort: search.sort,
     vendor: search.vendor,
-    channel: search.channel,
+    channel:
+      search.channel === undefined ? DEFAULT_CHANNEL_FILTER : search.channel,
     quotaType: search.quotaType,
     endpointType: search.endpointType,
     tag: search.tag,
@@ -73,7 +75,15 @@ export function useFilters(models: PricingModel[]) {
   const debouncedSearchInput = useDebounce(searchInput, 200)
   const sortBy = filterState.sort || SORT_OPTIONS.NAME
   const vendorFilter = filterState.vendor || FILTER_ALL
-  const channelFilter = filterState.channel || FILTER_ALL
+  // 默认渠道在目录中不存在（渠道尚未创建或被停用）时降级为「所有渠道」，
+  // 避免访客看到空白列表；URL 显式指定的渠道不受影响。
+  const selectedChannel = filterState.channel || FILTER_ALL
+  const channelFilter =
+    selectedChannel === DEFAULT_CHANNEL_FILTER &&
+    models.length > 0 &&
+    !models.some((model) => model.channels?.includes(DEFAULT_CHANNEL_FILTER))
+      ? FILTER_ALL
+      : selectedChannel
   const quotaTypeFilter = filterState.quotaType || QUOTA_TYPES.ALL
   const endpointTypeFilter = filterState.endpointType || ENDPOINT_TYPES.ALL
   // A `?tag=1m` bookmark created before context-size labels were hidden would

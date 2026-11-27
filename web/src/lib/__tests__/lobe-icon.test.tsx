@@ -197,4 +197,20 @@ describe('Lobe icons', () => {
   it('exposes the Uter icon through the selector registry', () => {
     expect(getLobeIconNames()).toEqual(expect.arrayContaining(['Uter']))
   })
+
+  // `@lobehub/icons` ships no "ChatGLM" brand, yet upstream model metadata
+  // uses `ChatGLM.Color` for every GLM model. Registering the project's GLM
+  // artwork keeps those cards from falling back to a single-letter circle.
+  it('renders the ChatGLM artwork instead of the initial placeholder', () => {
+    const { container } = render(getLobeIcon('ChatGLM.Color', 18))
+    const artwork = container.querySelector('img')
+    expect(artwork).not.toBeNull()
+    expect(artwork).toHaveAttribute('width', '18')
+    expect(artwork).toHaveAttribute('height', '18')
+    expect(container.querySelector('div')).toBeNull()
+  })
+
+  it('exposes the ChatGLM icon through the selector registry', () => {
+    expect(getLobeIconNames()).toEqual(expect.arrayContaining(['ChatGLM']))
+  })
 })
