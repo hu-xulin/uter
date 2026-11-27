@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127110453-4f96ead5",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T11:04:53.141Z",
+  "started_at": "2026-11-27T11:04:53.141Z",
+  "finished_at": "2026-11-27T11:04:53.141Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127110418-72a16752",
+    "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+    "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127110418-72a16752",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.architecture_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.architecture_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.architecture_integrity 实检: module_presence=PASS(32/32 规范文件 >=2000B 且含 11 sections 与自身 ID); dependency_integrity=PASS(自算依赖图 cycles=0 missing_deps=0; registry.unique_ids=true,registry.dependencies_exist=true,registry.dependencies_acyclic=true); interface_integrity=PASS(动态 import 11 个 runtime 模块, 11 个导出 component+health()) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12709 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复跑 registryIntegrity: exit_code=0 timed_out=false spawn_error=none 37/37 checks",
+  "content_hash": "1f8ccf1decc7170ef8395596c804dc14104a16ca73bd2a8c3fd604694dd63060"
+}

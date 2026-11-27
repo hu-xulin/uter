@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127110503-3eb6431d",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T11:05:03.336Z",
+  "started_at": "2026-11-27T11:05:03.336Z",
+  "finished_at": "2026-11-27T11:05:03.336Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127110418-72a16752",
+    "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+    "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127110418-72a16752",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.adr_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.adr_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.adr_integrity 实检: decision_records=PASS(ADR 索引条目=2; ID 唯一=true; frontmatter ID/status/date 与索引一致=true; Accepted ADR 至少引用 2 个真实文件=true; 规范含 ADR/背景/备选方案/状态=true); decision_traceability=PASS(依赖标准 UAP-02-001 文件存在=true; ADR 索引/文件/frontmatter 一致=true; Accepted ADR 代码/文档引用存在=true; go.mod/web/package.json 存在=true; 当前 UDS 总纲+Manifest+正式报告为 ACCEPTANCE_READY/accepted=false=true; ADR-0002 明确保留 3.0 runtime compatibility boundary=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12718 个 | 解析 ADR 索引与 frontmatter、验证唯一 ID/状态/日期、Accepted 决策的真实文件引用及 UDS 当前验收/兼容边界证据",
+  "content_hash": "98b3b22bb68ede78ac12a5e074492ebed69e1936ea83d0f2a17ecf675809a82a"
+}
