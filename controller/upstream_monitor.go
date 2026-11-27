@@ -4,16 +4,25 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/uter-ai/uter/common"
 	"github.com/uter-ai/uter/model"
+	"github.com/uter-ai/uter/pkg/jsplugin"
 	"github.com/uter-ai/uter/service"
 )
 
+// reconcileUpstreamMonitorOnce guarantees the channel↔monitor backfill runs at
+// most once per process on the first task-list read.
+var reconcileUpstreamMonitorOnce sync.Once
+
 type upstreamMonitorTaskRequest struct {
 	Name                string   `json:"name" binding:"required,max=128"`
-	BaseURL             string   `json:"base_url" binding:"required,max=512"`
+	ChannelID           int      `json:"channel_id"`
+	ChannelGroup        string   `json:"channel_group" binding:"omitempty,max=64"`
+	ChannelKeyIndex     int      `json:"channel_key_index"`
+	BaseURL             string   `json:"base_url" binding:"omitempty,max=512"`
 	APIKey              string   `json:"api_key"`
 	Model               string   `json:"model" binding:"omitempty,max=256"`
 	Models              []string `json:"models"`
@@ -24,10 +33,12 @@ type upstreamMonitorTaskRequest struct {
 }
 
 type upstreamMonitorModelsRequest struct {
-	BaseURL  string `json:"base_url" binding:"required,max=512"`
-	APIKey   string `json:"api_key"`
-	Protocol string `json:"protocol" binding:"required,oneof=openai anthropic"`
-	TaskId   int    `json:"task_id"`
+	BaseURL    string `json:"base_url" binding:"omitempty,max=512"`
+	APIKey     string `json:"api_key"`
+	Protocol   string `json:"protocol" binding:"required,oneof=openai anthropic"`
+	TaskId     int    `json:"task_id"`
+	ChannelID  int    `json:"channel_id"`
+	ChannelKey int    `json:"channel_key_index"`
 }
 
 func normalizeUpstreamMonitorModels(models []string, legacy string) []string {
@@ -53,14 +64,33 @@ func normalizeUpstreamMonitorModels(models []string, legacy string) []string {
 	return result
 }
 
-func normalizeUpstreamMonitorRequest(req *upstreamMonitorTaskRequest) {
+func normalizeUpstreamMonitorRequest(req *upstreamMonitorTaskRequest) error {
 	req.Name = strings.TrimSpace(req.Name)
-	req.BaseURL = strings.TrimRight(strings.TrimSpace(req.BaseURL), "/")
+	req.ChannelGroup = strings.TrimSpace(req.ChannelGroup)
+	req.APIKey = strings.TrimSpace(req.APIKey)
+	if req.ChannelID > 0 {
+		// Channel-backed task: address and key come from channel management.
+		// Store an encrypted snapshot at save time; the live channel is read
+		// again on every probe and discovery.
+		endpoint, err := service.ChannelEndpoint(req.ChannelID, req.ChannelKeyIndex)
+		if err != nil {
+			return err
+		}
+		req.BaseURL = strings.TrimRight(strings.TrimSpace(endpoint.BaseURL), "/")
+		req.APIKey = endpoint.APIKey
+		if len(req.Models) == 0 {
+			req.Models = endpoint.Models
+		}
+		if req.ChannelGroup == "" {
+			req.ChannelGroup = endpoint.ChannelGroup
+		}
+	} else {
+		req.BaseURL = strings.TrimRight(strings.TrimSpace(req.BaseURL), "/")
+	}
 	req.Models = normalizeUpstreamMonitorModels(req.Models, req.Model)
 	if len(req.Models) > 0 {
 		req.Model = req.Models[0]
 	}
-	req.APIKey = strings.TrimSpace(req.APIKey)
 	if req.ProbeDepth == "" {
 		req.ProbeDepth = service.UpstreamDepthStandard
 	}
@@ -68,6 +98,7 @@ func normalizeUpstreamMonitorRequest(req *upstreamMonitorTaskRequest) {
 		enabled := true
 		req.Enabled = &enabled
 	}
+	return nil
 }
 
 func marshalUpstreamMonitorModels(models []string) (string, error) {
@@ -85,6 +116,10 @@ func upstreamMonitorTaskToResponse(task *model.UpstreamMonitorTask) gin.H {
 	return gin.H{
 		"id":                    task.Id,
 		"name":                  task.Name,
+		"channel_id":            task.ChannelId,
+		"channel_name":          task.ChannelName,
+		"channel_group":         task.ChannelGroup,
+		"channel_key_index":     task.ChannelKeyIndex,
 		"base_url":              task.BaseURL,
 		"api_key_fingerprint":   task.APIKeyFingerprint,
 		"model":                 task.Model,
@@ -102,6 +137,45 @@ func upstreamMonitorTaskToResponse(task *model.UpstreamMonitorTask) gin.H {
 	}
 }
 
+// upstreamProtocolForChannel infers the probe protocol from a channel type.
+// Delegates to the service helper so manual monitor creation and channel
+// auto-sync share one mapping. Users can still override it in the monitor form.
+func upstreamProtocolForChannel(channelType int) string {
+	return service.UpstreamProtocolForChannel(channelType)
+}
+
+// GetUpstreamMonitorChannels lists channels available for monitoring. Only
+// display-safe fields are returned: API keys are masked and never plaintext.
+func GetUpstreamMonitorChannels(c *gin.Context) {
+	// selectAll loads the key column so it can be masked for display; no
+	// plaintext key is ever written to the response.
+	channels, err := model.GetAllChannels(0, 0, true, true)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	items := make([]gin.H, 0, len(channels))
+	for _, channel := range channels {
+		keys := channel.GetKeys()
+		masked := make([]string, 0, len(keys))
+		for _, key := range keys {
+			masked = append(masked, common.MaskSecretValue(jsplugin.RedactCredentialLines(key)))
+		}
+		items = append(items, gin.H{
+			"id":           channel.Id,
+			"name":         channel.Name,
+			"group":        channel.Group,
+			"type":         channel.Type,
+			"base_url":     channel.GetBaseURL(),
+			"models":       channel.GetModels(),
+			"protocol":     upstreamProtocolForChannel(channel.Type),
+			"masked_keys":  masked,
+			"is_multi_key": channel.ChannelInfo.IsMultiKey,
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{"success": true, "data": items})
+}
+
 func parseUpstreamMonitorID(c *gin.Context) (int, bool) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil || id <= 0 {
@@ -113,6 +187,14 @@ func parseUpstreamMonitorID(c *gin.Context) (int, bool) {
 
 // GetUpstreamMonitorTasks lists all monitoring tasks. Secrets are never included.
 func GetUpstreamMonitorTasks(c *gin.Context) {
+	// One-shot reconcile so channels created before channel↔monitor linkage,
+	// or through a path without a hook, are picked up automatically. Errors are
+	// logged but never block listing existing tasks.
+	reconcileUpstreamMonitorOnce.Do(func() {
+		if err := service.ReconcileChannelMonitors(); err != nil {
+			common.SysError(common.LogText("upstream monitor initial reconcile: %v", err))
+		}
+	})
 	tasks, err := model.ListUpstreamMonitorTasks()
 	if err != nil {
 		common.ApiError(c, err)
@@ -136,6 +218,19 @@ func FetchUpstreamMonitorModels(c *gin.Context) {
 	}
 	req.BaseURL = strings.TrimRight(strings.TrimSpace(req.BaseURL), "/")
 	apiKey := strings.TrimSpace(req.APIKey)
+
+	// Channel-backed discovery reads the model list configured on the channel
+	// in channel management. The browser never receives the channel key.
+	if req.ChannelID > 0 {
+		endpoint, err := service.ChannelEndpoint(req.ChannelID, req.ChannelKey)
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"models": endpoint.Models}})
+		return
+	}
+
 	if apiKey == "" {
 		if req.TaskId <= 0 {
 			common.ApiErrorT(c, "API key is required")
@@ -148,6 +243,15 @@ func FetchUpstreamMonitorModels(c *gin.Context) {
 		}
 		if task == nil {
 			common.ApiErrorT(c, "Monitor task not found")
+			return
+		}
+		if task.ChannelId > 0 {
+			endpoint, err := service.ChannelEndpoint(task.ChannelId, task.ChannelKeyIndex)
+			if err != nil {
+				common.ApiError(c, err)
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"models": endpoint.Models}})
 			return
 		}
 		apiKey, err = service.DecryptUpstreamAPIKey(task.APIKeyEncrypted)
@@ -172,11 +276,14 @@ func CreateUpstreamMonitorTask(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid request")
 		return
 	}
-	if req.APIKey == "" {
+	if req.ChannelID <= 0 && req.APIKey == "" {
 		common.ApiErrorT(c, "API key is required")
 		return
 	}
-	normalizeUpstreamMonitorRequest(&req)
+	if err := normalizeUpstreamMonitorRequest(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	if len(req.Models) == 0 {
 		common.ApiErrorT(c, "At least one model is required")
 		return
@@ -192,8 +299,21 @@ func CreateUpstreamMonitorTask(c *gin.Context) {
 		common.ApiError(c, err)
 		return
 	}
+	channelName := ""
+	if req.ChannelID > 0 {
+		endpoint, err := service.ChannelEndpoint(req.ChannelID, req.ChannelKeyIndex)
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		channelName = endpoint.ChannelName
+	}
 	task := &model.UpstreamMonitorTask{
 		Name:                req.Name,
+		ChannelId:           req.ChannelID,
+		ChannelName:         channelName,
+		ChannelGroup:        req.ChannelGroup,
+		ChannelKeyIndex:     req.ChannelKeyIndex,
 		BaseURL:             req.BaseURL,
 		APIKeyEncrypted:     encrypted,
 		APIKeyFingerprint:   service.UpstreamAPIKeyFingerprint(req.APIKey),
@@ -234,10 +354,17 @@ func UpdateUpstreamMonitorTask(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid request")
 		return
 	}
-	if req.APIKey == "" {
+	// Legacy tasks keep their credential when api_key is left blank. A
+	// channel-backed task always re-reads the key from channel management and
+	// refreshes its snapshot on save.
+	legacyKeepKey := req.ChannelID <= 0 && req.APIKey == ""
+	if legacyKeepKey {
 		req.APIKey = "placeholder"
 	}
-	normalizeUpstreamMonitorRequest(&req)
+	if err := normalizeUpstreamMonitorRequest(&req); err != nil {
+		common.ApiError(c, err)
+		return
+	}
 	if len(req.Models) == 0 {
 		common.ApiErrorT(c, "At least one model is required")
 		return
@@ -248,8 +375,21 @@ func UpdateUpstreamMonitorTask(c *gin.Context) {
 		return
 	}
 
+	channelName := ""
+	if req.ChannelID > 0 {
+		endpoint, err := service.ChannelEndpoint(req.ChannelID, req.ChannelKeyIndex)
+		if err != nil {
+			common.ApiError(c, err)
+			return
+		}
+		channelName = endpoint.ChannelName
+	}
 	updates := map[string]any{
 		"name":                  req.Name,
+		"channel_id":            req.ChannelID,
+		"channel_name":          channelName,
+		"channel_group":         req.ChannelGroup,
+		"channel_key_index":     req.ChannelKeyIndex,
 		"base_url":              req.BaseURL,
 		"model":                 req.Model,
 		"models":                modelsJSON,
@@ -258,7 +398,7 @@ func UpdateUpstreamMonitorTask(c *gin.Context) {
 		"probe_depth":           req.ProbeDepth,
 		"enabled":               *req.Enabled,
 	}
-	if req.APIKey != "placeholder" {
+	if !legacyKeepKey {
 		encrypted, err := service.EncryptUpstreamAPIKey(req.APIKey)
 		if err != nil {
 			common.ApiError(c, err)

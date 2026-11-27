@@ -16,26 +16,26 @@ import (
 
 const upstreamMonitorModelConcurrency = 4
 
-// RunAndPersistUpstreamMonitor decrypts the task's API key, probes every
-// configured model, persists one immutable report per model, and refreshes the
-// task with the worst model result. The plaintext key exists only for the
-// duration of this function.
+// RunAndPersistUpstreamMonitor resolves the task's target (from the referenced
+// channel when present), probes every configured model, persists one immutable
+// report per model, and refreshes the task with the worst model result. The
+// plaintext key exists only for the duration of this function.
 func RunAndPersistUpstreamMonitor(ctx context.Context, task *model.UpstreamMonitorTask) (*UpstreamMonitorRunSummary, error) {
 	if task == nil {
 		return nil, fmt.Errorf("nil monitor task")
 	}
-	models := task.MonitorModels()
+	endpoint, err := resolveUpstreamEndpoint(task)
+	if err != nil {
+		return nil, err
+	}
+	models := endpoint.Models
 	if len(models) == 0 {
 		return nil, fmt.Errorf("no models configured for monitor task %d", task.Id)
 	}
-	apiKey, err := common.DecryptSecret(task.APIKeyEncrypted)
-	if err != nil {
-		return nil, fmt.Errorf("decrypt upstream key: %w", err)
-	}
 
 	baseCfg := UpstreamProbeConfig{
-		BaseURL:  task.BaseURL,
-		APIKey:   apiKey,
+		BaseURL:  endpoint.BaseURL,
+		APIKey:   endpoint.APIKey,
 		Protocol: task.Protocol,
 		Depth:    task.ProbeDepth,
 		Timeout:  60 * time.Second,

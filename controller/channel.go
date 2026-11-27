@@ -92,6 +92,35 @@ func closeActiveChannelWebSockets(channelIDs []int) {
 	service.CloseActiveWebSocketsForChannels(channelIDs, service.ChannelDisabledCloseReason)
 }
 
+// syncUpstreamMonitorForChannels best-effort reconciles automatic monitor
+// tasks after channel CRUD. Monitoring is an observability sidecar: a sync
+// failure is logged but never fails the channel operation itself.
+func syncUpstreamMonitorForChannels(channelIDs []int) {
+	for _, id := range channelIDs {
+		if id <= 0 {
+			continue
+		}
+		channel, err := model.GetChannelById(id, true)
+		if err != nil || channel == nil {
+			continue
+		}
+		if _, err := service.SyncChannelMonitor(channel); err != nil {
+			common.SysError(common.LogText("upstream monitor sync for channel %d: %v", id, err))
+		}
+	}
+}
+
+// removeUpstreamMonitorForChannels best-effort removes channel-backed monitor
+// tasks after channel deletion. Manual monitors (channel_id = 0) are untouched.
+func removeUpstreamMonitorForChannels(channelIDs []int) {
+	if len(channelIDs) == 0 {
+		return
+	}
+	if err := service.RemoveChannelMonitors(channelIDs); err != nil {
+		common.SysError(common.LogText("upstream monitor removal for channels %v: %v", channelIDs, err))
+	}
+}
+
 func hasEnabledMultiKey(channel *model.Channel) bool {
 	if channel == nil || !channel.ChannelInfo.IsMultiKey {
 		return true
@@ -1008,6 +1037,9 @@ func AddChannel(c *gin.Context) {
 		"message": "",
 		"data":    data,
 	})
+	// Auto-enrol non-internal channels into upstream monitoring. Draft channels
+	// are skipped by SyncChannelMonitor and enrolled once published.
+	syncUpstreamMonitorForChannels(ids)
 	for i, channel := range channels {
 		if channel.Type == constant.ChannelTypeAli && ids[i] > 0 {
 			go syncBailianAfterCreate(ids[i])
@@ -1044,6 +1076,7 @@ func DeleteChannel(c *gin.Context) {
 		"name": channelName,
 	})
 	closeActiveChannelWebSockets([]int{id})
+	removeUpstreamMonitorForChannels([]int{id})
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -1072,6 +1105,7 @@ func DeleteDisabledChannel(c *gin.Context) {
 		"count": rows,
 	})
 	closeActiveChannelWebSockets(ids)
+	removeUpstreamMonitorForChannels(ids)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -1177,6 +1211,14 @@ func EditTagChannels(c *gin.Context) {
 		}
 		channelTag.HeaderOverride = common.GetPointer[string](trimmed)
 	}
+	// Capture affected ids before the edit: a tag rename changes which channels
+	// carry the tag, so the original set is the authoritative one to re-sync.
+	taggedChannels, err := model.GetChannelsByTag(channelTag.Tag, false, true)
+	if err != nil {
+		common.ApiError(c, err)
+		return
+	}
+	taggedIDs := channelIDsFromChannels(taggedChannels)
 	err = model.EditChannelByTag(channelTag.Tag, channelTag.NewTag, channelTag.ModelMapping, channelTag.Models, channelTag.Groups, channelTag.Priority, channelTag.Weight, channelTag.ParamOverride, channelTag.HeaderOverride)
 	if err != nil {
 		common.ApiError(c, err)
@@ -1186,6 +1228,9 @@ func EditTagChannels(c *gin.Context) {
 	recordManageAudit(c, "channel.tag_edit", map[string]any{
 		"tag": channelTag.Tag,
 	})
+	// A tag edit can change group/models; re-sync each affected channel so the
+	// monitor enrolment and snapshot stay consistent with channel management.
+	syncUpstreamMonitorForChannels(taggedIDs)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -1218,6 +1263,7 @@ func DeleteChannelBatch(c *gin.Context) {
 		"count": deletedCount,
 	})
 	closeActiveChannelWebSockets(channelBatch.Ids)
+	removeUpstreamMonitorForChannels(channelBatch.Ids)
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -1483,6 +1529,9 @@ func UpdateChannel(c *gin.Context) {
 	if proxyChanged {
 		service.InvalidateProxyClient(originProxy)
 	}
+	// Re-read the persisted channel (the request object has its key cleared)
+	// so the monitor snapshot mirrors the exact stored parameters.
+	syncUpstreamMonitorForChannels([]int{channel.Id})
 	// 记录变更的字段名（语言无关的字段标识），密钥仅记录"已更换"绝不记录内容。
 	changedFields := make([]string, 0)
 	if channel.Models != originChannel.Models {
@@ -1853,6 +1902,7 @@ func CopyChannel(c *gin.Context) {
 		"id":       clone.Id,
 		"name":     clone.Name,
 	})
+	syncUpstreamMonitorForChannels([]int{clone.Id})
 	// success
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "", "data": gin.H{"id": clone.Id}})
 }

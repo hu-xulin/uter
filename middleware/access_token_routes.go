@@ -246,6 +246,7 @@ var accessTokenRouteRules = map[string]accessTokenRouteRule{
 	// writes upstream credentials/reports), so no personal access token scope
 	// can stand in for the Root session.
 	"GET /api/upstream-monitor":             accessTokenSessionRule,
+	"GET /api/upstream-monitor/channels":    accessTokenSessionRule,
 	"GET /api/upstream-monitor/:id":         accessTokenSessionRule,
 	"POST /api/upstream-monitor":            accessTokenSessionRule,
 	"POST /api/upstream-monitor/models":     accessTokenSessionRule,

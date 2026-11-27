@@ -18,6 +18,39 @@ const (
 	upstreamMaxProbeBody = 4 << 20 // 4 MiB cap on any upstream response body
 )
 
+// upstreamAPIBase normalises a channel base URL to the OpenAI-compatible API
+// root (…/v1). Both the chat and the models probe must derive from this same
+// base: a root-only URL such as https://xxapi.ai used to produce
+// /chat/completions (the provider's SPA homepage, HTTP 200 + text/html) for
+// chat while models correctly used /v1/models. That mismatch made every
+// monitored channel fail with `invalid character '<' looking for beginning
+// of value` even though the upstream itself was healthy.
+func upstreamAPIBase(base string) string {
+	base = strings.TrimRight(strings.TrimSpace(base), "/")
+	base = strings.TrimSuffix(base, "/chat/completions")
+	base = strings.TrimSuffix(base, "/messages")
+	base = strings.TrimRight(base, "/")
+	// Bailian Model Studio serves its OpenAI-compatible API under
+	// /compatible-mode/v1; bare /v1/* returns 404. Historical channels often
+	// store only the workspace root, so normalise by the authoritative host
+	// check. Never duplicate the prefix when the operator already supplied it.
+	if IsBailianHost(base) && !strings.Contains(base, "/compatible-mode") {
+		return base + "/compatible-mode/v1"
+	}
+	if strings.HasSuffix(base, "/v1") {
+		return base
+	}
+	// Only treat "/v1" as a version segment when it ends the path or is
+	// followed by '/'. This avoids truncating a hostname like https://v1.example.com.
+	if idx := strings.LastIndex(base, "/v1"); idx >= 0 {
+		rest := base[idx+3:]
+		if rest == "" || strings.HasPrefix(rest, "/") {
+			return base[:idx+3]
+		}
+	}
+	return base + "/v1"
+}
+
 func upstreamEndpoint(cfg UpstreamProbeConfig) (string, error) {
 	base := strings.TrimRight(strings.TrimSpace(cfg.BaseURL), "/")
 	if base == "" {
@@ -28,10 +61,7 @@ func upstreamEndpoint(cfg UpstreamProbeConfig) (string, error) {
 		if strings.HasSuffix(base, "/chat/completions") {
 			return base, nil
 		}
-		if strings.HasSuffix(base, "/messages") {
-			base = strings.TrimSuffix(base, "/messages")
-		}
-		return base + "/chat/completions", nil
+		return upstreamAPIBase(base) + "/chat/completions", nil
 	case UpstreamProtocolAnthropic:
 		if strings.HasSuffix(base, "/messages") {
 			return base, nil
@@ -50,17 +80,7 @@ func upstreamModelsEndpoint(cfg UpstreamProbeConfig) (string, error) {
 	if base == "" {
 		return "", fmt.Errorf("empty base url")
 	}
-	if strings.HasSuffix(base, "/v1") {
-		return base + "/models", nil
-	}
-	if strings.HasSuffix(base, "/chat/completions") {
-		base = strings.TrimSuffix(base, "/chat/completions")
-	}
-	if strings.Contains(base, "/v1") {
-		idx := strings.LastIndex(base, "/v1")
-		return base[:idx+3] + "/models", nil
-	}
-	return base + "/v1/models", nil
+	return upstreamAPIBase(base) + "/models", nil
 }
 
 func upstreamNewRequest(ctx context.Context, cfg UpstreamProbeConfig, url string, body any) (*http.Request, error) {

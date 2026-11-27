@@ -356,6 +356,7 @@ func SetApiRouter(router *gin.Engine) {
 		upstreamMonitorRoute.Use(middleware.RootAuth())
 		{
 			upstreamMonitorRoute.GET("", controller.GetUpstreamMonitorTasks)
+			upstreamMonitorRoute.GET("/channels", controller.GetUpstreamMonitorChannels)
 			upstreamMonitorRoute.POST("/models", controller.FetchUpstreamMonitorModels)
 			upstreamMonitorRoute.GET("/:id", controller.GetUpstreamMonitorTask)
 			upstreamMonitorRoute.POST("", controller.CreateUpstreamMonitorTask)

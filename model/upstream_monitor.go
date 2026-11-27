@@ -13,8 +13,16 @@ import (
 // quality/speed/authenticity monitoring. The API key is stored as an encrypted
 // secret envelope (common.EncryptSecret) and is never returned by list/detail APIs.
 type UpstreamMonitorTask struct {
-	Id                  int    `json:"id" gorm:"primaryKey"`
-	Name                string `json:"name" gorm:"type:varchar(128);not null"`
+	Id   int    `json:"id" gorm:"primaryKey"`
+	Name string `json:"name" gorm:"type:varchar(128);not null"`
+	// ChannelId references a channel managed in channel management. When set,
+	// the probe resolves base_url/key/models from the live channel; BaseURL and
+	// APIKeyEncrypted are kept as a snapshot fallback for deleted channels.
+	// ChannelId == 0 marks a legacy task with its own embedded credentials.
+	ChannelId           int    `json:"channel_id" gorm:"column:channel_id;not null;default:0;index"`
+	ChannelName         string `json:"channel_name" gorm:"column:channel_name;type:varchar(128);not null;default:''"`
+	ChannelGroup        string `json:"channel_group" gorm:"column:channel_group;type:varchar(64);not null;default:''"`
+	ChannelKeyIndex     int    `json:"channel_key_index" gorm:"column:channel_key_index;not null;default:0"`
 	BaseURL             string `json:"base_url" gorm:"type:varchar(512);not null"`
 	APIKeyEncrypted     string `json:"-" gorm:"column:api_key_encrypted;type:text;not null"`
 	APIKeyFingerprint   string `json:"api_key_fingerprint" gorm:"type:varchar(32)"`
@@ -147,6 +155,54 @@ func DeleteUpstreamMonitorTask(id int) error {
 			return err
 		}
 		return tx.Where("id = ?", id).Delete(&UpstreamMonitorTask{}).Error
+	})
+}
+
+// GetUpstreamMonitorTaskByChannelID returns the single monitor task backed by
+// a channel, or nil when the channel has no monitor. Manual tasks (channel_id
+// = 0) are never returned by this lookup.
+func GetUpstreamMonitorTaskByChannelID(channelID int) (*UpstreamMonitorTask, error) {
+	if channelID <= 0 {
+		return nil, nil
+	}
+	var task UpstreamMonitorTask
+	err := DB.Where("channel_id = ?", channelID).First(&task).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &task, nil
+}
+
+// DeleteUpstreamMonitorTasksByChannelIDs removes every channel-backed monitor
+// task and its reports in one transaction. Manual tasks (channel_id = 0) are
+// never touched, so operator-created monitors survive channel deletion.
+func DeleteUpstreamMonitorTasksByChannelIDs(channelIDs []int) error {
+	valid := make([]int, 0, len(channelIDs))
+	for _, id := range channelIDs {
+		if id > 0 {
+			valid = append(valid, id)
+		}
+	}
+	if len(valid) == 0 {
+		return nil
+	}
+	return DB.Transaction(func(tx *gorm.DB) error {
+		var taskIDs []int
+		if err := tx.Model(&UpstreamMonitorTask{}).
+			Where("channel_id IN ?", valid).
+			Pluck("id", &taskIDs).Error; err != nil {
+			return err
+		}
+		if len(taskIDs) == 0 {
+			return nil
+		}
+		if err := tx.Where("task_id IN ?", taskIDs).Delete(&UpstreamMonitorReport{}).Error; err != nil {
+			return err
+		}
+		return tx.Where("id IN ?", taskIDs).Delete(&UpstreamMonitorTask{}).Error
 	})
 }
 

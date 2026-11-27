@@ -307,6 +307,9 @@ func PublishChannelDraft(c *gin.Context) {
 	}
 	model.InitChannelCache()
 	recordManageAudit(c, "channel.draft.publish", map[string]any{"id": id})
+	// A published draft is now a real channel; enrol it into monitoring unless
+	// it is an internal channel.
+	syncUpstreamMonitorForChannels([]int{id})
 	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{"id": id}})
 }
 

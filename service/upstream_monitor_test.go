@@ -12,7 +12,34 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/uter-ai/uter/common"
+	"github.com/uter-ai/uter/model"
 )
+
+func TestSelectUpstreamKey(t *testing.T) {
+	keys := []string{"first-key", "second-key", "third-key"}
+	assert.Equal(t, "first-key", selectUpstreamKey(keys, 0))
+	assert.Equal(t, "second-key", selectUpstreamKey(keys, 1))
+	assert.Equal(t, "third-key", selectUpstreamKey(keys, 2))
+	assert.Equal(t, "first-key", selectUpstreamKey(keys, -1), "negative index falls back to first")
+	assert.Equal(t, "first-key", selectUpstreamKey(keys, 99), "out-of-range index falls back to first")
+	assert.Empty(t, selectUpstreamKey(nil, 0))
+}
+
+func TestResolveUpstreamEndpoint_LegacyTask(t *testing.T) {
+	encrypted, err := common.EncryptSecret("sk-legacy")
+	require.NoError(t, err)
+
+	endpoint, err := resolveUpstreamEndpoint(&model.UpstreamMonitorTask{
+		BaseURL:         "https://legacy.example.com/v1",
+		APIKeyEncrypted: encrypted,
+		Models:          `["alpha","beta"]`,
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "https://legacy.example.com/v1", endpoint.BaseURL)
+	assert.Equal(t, "sk-legacy", endpoint.APIKey)
+	assert.Equal(t, []string{"alpha", "beta"}, endpoint.Models)
+	assert.False(t, endpoint.FromChannel)
+}
 
 func TestRunUpstreamMonitor_GoodEndpoint(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
