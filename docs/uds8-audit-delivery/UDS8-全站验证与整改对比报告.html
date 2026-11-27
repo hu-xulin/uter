@@ -49,6 +49,18 @@
 </header>
 <div class="wrap">
 
+<div class="card" style="border-left:4px solid #16a34a;background:#f0fdf4">
+  <h2 style="margin-top:0">后续整改闭环更新（2026-11-27 23:00）</h2>
+  <p>用户追加指令「待办与未解决项全部按照设计规范解决」后，本报告首次审计登记的三项未解决项已全部闭环。以下为原始审计快照，状态以本区块为准。</p>
+  <table>
+    <tr><th>原未解决项</th><th>根因</th><th>整改</th><th>状态</th></tr>
+    <tr><td>渠道插件页厂商徽标 8px</td><td><code>plugin-icon.tsx:134</code> 的 <code>Math.max(8, …)</code> 钳制低于 UDS8 12px 下限</td><td>改为 <code>Math.max(12, …)</code>，容器尺寸不变；新增渲染级守卫 <code>plugin-icon-image.test.tsx</code> 覆盖 16/20/24/32px</td><td><span class="tag t-ok">已修复</span></td></tr>
+    <tr><td>三个法务协议页错误态</td><td><code>useState(loader)</code> 将函数当惰性初始化器调用，触发 React #301「Too many re-renders」</td><td>改用 <code>useRef</code> 跟踪 loader（对齐 <code>NativeDocsView</code> 既有模式）；新增 3 项回归测试</td><td><span class="tag t-ok">已修复</span></td></tr>
+    <tr><td>前端守卫测试 1 项失败</td><td>精确字符串断言与并发会话的 <code>line-clamp-2 min-h-12</code> 格式改动冲突，字号本身未变</td><td>断言聚焦 <code>text-base</code> 字号契约并禁止其它字号档混入，不放宽校验</td><td><span class="tag t-ok">已修复</span></td></tr>
+  </table>
+  <p class="note good"><strong>验证</strong>：设计门禁 22/22、lint:design:strict、typecheck、Go 三包全部 EXIT=0；三协议页浏览器实测正常渲染、控制台无错误；新增 4 项守卫测试 PASS。</p>
+</div>
+
 <div class="card">
   <h2>0. 结论摘要</h2>
   <div class="metric">
