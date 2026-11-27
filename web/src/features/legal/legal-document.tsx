@@ -126,10 +126,14 @@ function BundledLegalDocument({
   const [Doc, setDoc] = useState<ComponentType<Record<string, unknown>> | null>(
     null
   )
-  const [prevLoader, setPrevLoader] = useState(loader)
-
-  if (loader !== prevLoader) {
-    setPrevLoader(loader)
+  // loader 本身是函数（() => Promise<Module>）。若把上一次 loader 存进
+  // useState，React 会把 useState(loader) 当作惰性初始化器、把
+  // setPrevLoader(loader) 当作 updater 去调用它，导致 prevLoader !== loader
+  // 永远成立并触发 Too many re-renders（React #301，与 NativeDocsView 同源）。
+  // 这里只需在切换语言/文档时重置 Doc，用 ref 跟踪过渡，不参与渲染。
+  const prevLoaderRef = useRef(loader)
+  if (prevLoaderRef.current !== loader) {
+    prevLoaderRef.current = loader
     setDoc(null)
   }
 
