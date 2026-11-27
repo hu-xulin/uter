@@ -25,7 +25,10 @@ import { Label } from '@/components/ui/label'
 
 import { getChannelModelPricing } from '../api'
 import { canDisplayChannelPrice } from '../lib/channel-price-display'
-import { remapPricingRowsForPreview } from '../lib/model-mapping-validation'
+import {
+  filterPricingRowsToSelectedModels,
+  remapPricingRowsForPreview,
+} from '../lib/model-mapping-validation'
 import type {
   ChannelModelPricingRecord,
   ChannelOfficialPricingTier,
@@ -152,15 +155,19 @@ export function FetchedPricePreview(props: FetchedPricePreviewProps) {
     retry: false,
     meta: { errorToast: false },
   })
-  const items: ChannelModelPricingRecord[] = useMemo(
-    () =>
-      remapPricingRowsForPreview(
-        query.data?.data?.items ?? [],
-        props.modelMapping ?? '',
-        props.models ?? []
-      ),
-    [query.data?.data?.items, props.modelMapping, props.models]
-  )
+  // Order matters: remap first so an unsaved redirect alias inherits its
+  // upstream price, then restrict the view to the models this channel serves.
+  // Without the second step a catalog sync's historical rows (batch/operator
+  // rows are never deleted) show up as unavailable models in the fetch step.
+  const items: ChannelModelPricingRecord[] = useMemo(() => {
+    const selectedModels = props.models ?? []
+    const remapped = remapPricingRowsForPreview(
+      query.data?.data?.items ?? [],
+      props.modelMapping ?? '',
+      selectedModels
+    )
+    return filterPricingRowsToSelectedModels(remapped, selectedModels)
+  }, [query.data?.data?.items, props.modelMapping, props.models])
 
   let body: ReactNode
   if (props.setupState === 'failed') {

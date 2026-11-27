@@ -468,6 +468,30 @@ export function filterPricingRowsToPublishedAliases<
 }
 
 /**
+ * Keep only pricing rows for models the channel actually publishes.
+ *
+ * A catalog sync writes every priced upstream model into the channel-isolated
+ * pricing table. When the operator later removes models from the channel,
+ * those rows remain (batch/operator prices are deliberately never deleted),
+ * so a raw listing shows stale models as "Not available" and buries the
+ * prices the operator just selected. This filter makes the fetched-price
+ * preview describe the channel's current model list, not its price history.
+ *
+ * An empty selection keeps every row: with no published models the preview
+ * has no authority to hide data, and an empty table would look like a failed
+ * sync instead of "no models selected".
+ */
+export function filterPricingRowsToSelectedModels<
+  T extends { model_name: string },
+>(rows: T[], selectedModels: string[]): T[] {
+  const selected = new Set(
+    selectedModels.map((model) => model.trim()).filter(Boolean)
+  )
+  if (selected.size === 0) return rows
+  return rows.filter((row) => selected.has(row.model_name.trim()))
+}
+
+/**
  * Check if model configuration has changed
  */
 export function hasModelConfigChanged(

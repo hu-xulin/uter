@@ -173,6 +173,37 @@ test('price preview header stays fixed while only the rows scroll', () => {
   expect(header?.parentElement).toHaveClass('max-h-80', 'overflow-y-auto')
 })
 
+test('fetched price preview hides catalog rows for models the channel no longer serves', async () => {
+  // 复现渠道 1271「优特-百炼」：渠道只发布 23 个模型，但同步过的目录把 168
+  // 个模型的价格全写进了价格表。获取价格步骤不能把 145 个已下架模型显示出来。
+  const staleRow = {
+    ...pricingItem(),
+    model_name: 'MiniMax-M2.5',
+    official: {
+      ...pricingItem().official,
+      tiers: [
+        {
+          range_name: 'Default',
+          input_per_million_usd: 11,
+          output_per_million_usd: 22,
+          unit: 'per_1m_tokens',
+        },
+      ],
+    },
+  }
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: {
+      success: true,
+      data: { channel_id: 7, items: [staleRow, pricingItem()] },
+    },
+  })
+  renderPreview({ models: ['qwen-plus'] })
+
+  expect(await screen.findByText('qwen-plus')).toBeVisible()
+  expect(screen.queryByText('MiniMax-M2.5')).not.toBeInTheDocument()
+  expect(screen.queryByText('$11.0000 / $22.0000')).not.toBeInTheDocument()
+})
+
 test('needs_review row never renders the official price as the channel price', async () => {
   // 复现截图 claude-fable-5 等 6 行：后端 channelUpstreamQuote 回落到
   // OFFICIAL_REFERENCE 填入 upstream_quote（$10/$50），但渠道价真实为空。
