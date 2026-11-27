@@ -46,23 +46,6 @@ export type SortOption = (typeof SORT_OPTIONS)[keyof typeof SORT_OPTIONS]
 /** 打开定价页（URL 无 sort 参数）时的默认排序。 */
 export const DEFAULT_SORT_OPTION: SortOption = SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH
 
-export function getSortLabels(t: TFunction): Record<SortOption, string> {
-  return {
-    [SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH]: t('Discount: Low to High'),
-    [SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW]: t('Discount: High to Low'),
-    [SORT_OPTIONS.TIME_NEWEST_TO_OLDEST]: t('Time: Newest to Oldest'),
-    [SORT_OPTIONS.TIME_OLDEST_TO_NEWEST]: t('Time: Oldest to Newest'),
-    [SORT_OPTIONS.NAME]: t('Name'),
-    [SORT_OPTIONS.NAME_DESC]: t('Name'),
-    [SORT_OPTIONS.INPUT_PRICE_LOW]: t('Input Price: Low to High'),
-    [SORT_OPTIONS.INPUT_PRICE_HIGH]: t('Input Price: High to Low'),
-    [SORT_OPTIONS.OUTPUT_PRICE_LOW]: t('Output Price: Low to High'),
-    [SORT_OPTIONS.OUTPUT_PRICE_HIGH]: t('Output Price: High to Low'),
-    [SORT_OPTIONS.REQUEST_PRICE_LOW]: t('Per-request Price: Low to High'),
-    [SORT_OPTIONS.REQUEST_PRICE_HIGH]: t('Per-request Price: High to Low'),
-  }
-}
-
 /** Filter values */
 export const FILTER_ALL = 'all'
 
