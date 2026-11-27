@@ -110,8 +110,12 @@ function PlaygroundParameterContent({
         return (
           <div
             className={cn(
-              'border-border/70 bg-background/60 grid gap-2 rounded-lg border p-3 transition-opacity',
-              (!enabled || disabled) && 'opacity-55'
+              'border-border/70 bg-background/60 grid gap-2 rounded-lg border p-3 transition-colors',
+              // 禁用态按 UDS 3.0 §10.5「双信号」约定：用底色 + 边框弱化表达
+              // 不可用，不再整块套 opacity —— 那会让 label/说明文字一起跌到
+              // 2.0~2.8:1，触发 axe color-contrast（实测 /playground 7 处）。
+              // 文字保留 text-muted-foreground 的可读对比度。
+              (!enabled || disabled) && 'bg-muted/40 border-border/40'
             )}
             key={control.key}
           >
