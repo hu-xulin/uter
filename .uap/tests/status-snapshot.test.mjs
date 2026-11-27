@@ -260,6 +260,23 @@ describe('真实快照适配器', () => {
     assert.ok(!['FULLY_VERIFIED', 'FULLY_OPERATIONAL'].includes(v.overall_status));
   });
 
+  test('P0 capability gaps mirror every unproven capability in the same execution snapshot', () => {
+    const snapshot = buildStatusSnapshot();
+    const expected = Object.entries(snapshot.capabilities)
+      .filter(([, proven]) => proven !== true)
+      .map(([key]) => `CAPABILITY-GAP-${key}`)
+      .sort();
+    const actual = snapshot.p0_blockers
+      .filter((item) => item.category === 'CAPABILITY_GAP')
+      .map((item) => item.id)
+      .sort();
+
+    assert.deepEqual(actual, expected);
+    for (const item of snapshot.p0_blockers.filter((entry) => entry.category === 'CAPABILITY_GAP')) {
+      assert.equal(item.status, 'OPEN');
+    }
+  });
+
   test('伪造旧 execution_id / HEAD 的真实快照一律判为 stale', () => {
     const s = buildStatusSnapshot();
     s.tests = { ...s.tests, execution_id: 'UAP-EXEC-FORGED-OLD' };

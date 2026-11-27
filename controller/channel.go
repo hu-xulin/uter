@@ -627,7 +627,7 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 		}
 		if service.IsBailianConsoleURL(*channel.BaseURL) {
 			return fmt.Errorf(
-				"Alibaba Bailian console login URL cannot be used as the API Base URL; use the workspace endpoint built from region and workspace ID",
+				"invalid Alibaba Bailian console login URL cannot be used as the API Base URL; use the workspace endpoint built from region and workspace ID",
 			)
 		}
 	}

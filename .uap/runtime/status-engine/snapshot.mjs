@@ -166,13 +166,22 @@ function p0Blockers(execution, caps) {
       out.push({ id: d.id, status: d.status, category: 'OPEN_DEFECT', title: d.title });
     }
   }
-  if (!caps.real_code_repair) {
-    out.push({ id: 'UAP-P0-REAL-CODE-REPAIR', status: 'OPEN', category: 'CAPABILITY_GAP',
-      title: 'auto-repair 仅修复 sandbox fixture，尚未完成真实 Uter 业务代码修复闭环' });
-  }
-  if (!caps.independent_regression) {
-    out.push({ id: 'UAP-P0-INDEPENDENT-REGRESSION', status: 'OPEN', category: 'CAPABILITY_GAP',
-      title: '缺少独立回归路径（不得由 UAP 自验证充当唯一验收依据）' });
+  const capabilityTitles = {
+    real_code_repair: 'auto-repair 尚未由当前执行证据证明已完成真实 Uter 业务代码修复闭环',
+    independent_regression: '缺少由当前执行证据证明的独立回归路径',
+    recovery: '恢复能力尚未由当前执行证据证明',
+    e2e: '真实浏览器业务 E2E 能力尚未由当前执行证据证明',
+    database_integration: '真实数据库集成能力尚未由当前执行证据证明',
+    financial_integrity: '真实财务完整性能力尚未由当前执行证据证明',
+  };
+  for (const [key, proven] of Object.entries(caps)) {
+    if (proven === true) continue;
+    out.push({
+      id: `CAPABILITY-GAP-${key}`,
+      status: 'OPEN',
+      category: 'CAPABILITY_GAP',
+      title: capabilityTitles[key] || `capability ${key} is not proven by current execution-bound evidence`,
+    });
   }
   return out;
 }

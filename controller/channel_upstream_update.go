@@ -43,7 +43,7 @@ const (
 
 // ErrBailianWorkspaceEndpointRequired is returned when a Bailian channel still
 // points at the web console instead of the workspace-scoped Model Studio API.
-var ErrBailianWorkspaceEndpointRequired = errors.New("Bailian workspace endpoint is required")
+var ErrBailianWorkspaceEndpointRequired = errors.New("bailian workspace endpoint is required")
 
 var channelUpstreamModelUpdateSelectFields = []string{
 	"id",
@@ -457,7 +457,7 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 // endpoint; a missing region or invalid credential fails closed.
 func fetchBailianAKModelIDs(channel *model.Channel) ([]string, error) {
 	if channel == nil {
-		return nil, errors.New("Bailian channel is required")
+		return nil, errors.New("bailian channel is required")
 	}
 	credentials := service.BailianChannelProviderCredentials()
 	if err := service.ValidateBailianAccessKey(
