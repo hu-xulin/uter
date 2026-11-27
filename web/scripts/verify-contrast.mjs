@@ -327,6 +327,78 @@ add(
   `gradient text declarations=${gradientOwners.join(',') || 'NONE'}`
 )
 
+// ── Theme-preset contrast coverage ────────────────────────────────────────
+// Gap closed 2026-11-27: this script previously validated ONLY the default
+// brand.tokens.json palette. axe E2E still found real color-contrast failures
+// under theme presets, because presets override --primary/--primary-foreground
+// with oklch() values this script never parsed. We now parse every preset block
+// and assert the primary-button foreground/background pair resolves to >= 4.5:1.
+const oklchToHex = (text) => {
+  const m = /oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)(?:deg)?(?:\s*\/\s*[\d.]+%?)?\s*\)/i.exec(text)
+  if (!m) {
+    const hex = /^#([0-9a-f]{6})$/i.exec(text.trim())
+    return hex ? text.trim() : null
+  }
+  let L = Number(m[1])
+  if (text.includes(`${m[1]}%`)) L /= 100
+  const C = Number(m[2])
+  const hRad = (Number(m[3]) * Math.PI) / 180
+  const a = C * Math.cos(hRad)
+  const b = C * Math.sin(hRad)
+  const l_ = L + 0.3963377774 * a + 0.2158037573 * b
+  const m_ = L - 0.1055613458 * a - 0.0638541728 * b
+  const s_ = L - 0.0894841775 * a - 1.291485548 * b
+  const l = l_ ** 3
+  const mm = m_ ** 3
+  const s = s_ ** 3
+  const linear = [
+    4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * mm + 1.707614701 * s,
+  ]
+  const toSrgb = (v) => {
+    const g = v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055
+    return Math.round(Math.min(1, Math.max(0, g)) * 255)
+      .toString(16)
+      .padStart(2, '0')
+  }
+  return `#${linear.map(toSrgb).join('')}`
+}
+
+const presetsPath = join(SRC, 'styles/theme-presets.css')
+const presetsCss = readFileSync(presetsPath, 'utf8')
+// Blocks are `[data-theme-preset='x'] { ... }` and `.dark [data-theme-preset='x'] { ... }`.
+const presetBlockRe =
+  /(\.dark\s+)?\[data-theme-preset='([^']+)'\]\s*\{([^}]*)\}/g
+const presetPairs = []
+for (const match of presetsCss.matchAll(presetBlockRe)) {
+  const [, darkPrefix, name, body] = match
+  if (name === 'default') continue
+  const pick = (variable) => {
+    const re = new RegExp(`${variable}:\\s*([^;]+);`, 'i')
+    const raw = re.exec(body)?.[1]?.trim()
+    return raw ? oklchToHex(raw) : null
+  }
+  const fg = pick('--primary-foreground')
+  const bg = pick('--primary')
+  if (fg && bg) {
+    presetPairs.push([fg, bg, 4.5, `preset ${name}`, darkPrefix ? 'dark' : 'light', 'button'])
+  }
+}
+add(
+  'PRESET_PAIRS_INVENTORY',
+  presetPairs.length >= 16,
+  `parsed ${presetPairs.length} preset foreground/background pairs (light+dark); minimum expected=16`
+)
+for (const [fg, bg, min, label, theme, state] of presetPairs) {
+  const value = ratio(fg, bg)
+  add(
+    `CONTRAST_PRESET_${theme.toUpperCase()}_${label.replaceAll(/[^a-z0-9]+/gi, '_')}`,
+    value >= min,
+    `${fg} on ${bg} = ${value.toFixed(2)}:1 (minimum ${min}:1) — ${label} ${state}`
+  )
+}
+
 // Print machine-readable rows and a strict final decision. There are no NOT_RUN-as-PASS cases.
 console.log(rows.join('\n'))
 console.log(
