@@ -1049,6 +1049,15 @@ func resolvePricingIcon(
 	metaMap map[string]*Model,
 	aliasView redirectAliasView,
 ) string {
+	// GLM models must expose the GLM product logo (ChatGLM / glm.svg) on every
+	// model surface, never the Z.AI company mark or a stray wrong-brand icon.
+	// Upstream metadata persists `ZAI.Avatar` on glm-5.1/5.2/5.3 and even
+	// `Hunyuan.Color` on cmaas-glm-5.3; a stored icon is not authoritative here.
+	// This mirrors the frontend's model-name override so the API payload and
+	// every consumer agree, without rewriting persisted rows.
+	if isGlmModelName(name) {
+		return "ChatGLM"
+	}
 	if meta != nil && meta.Icon != "" {
 		return meta.Icon
 	}

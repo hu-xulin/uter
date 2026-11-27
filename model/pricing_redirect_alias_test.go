@@ -207,6 +207,28 @@ func TestResolvePricingIcon(t *testing.T) {
 		icon := resolvePricingIcon("zzz-unknown-model-xyz", nil, nil, redirectAliasView{})
 		assert.Empty(t, icon)
 	})
+
+	t.Run("GLM models always expose the product logo regardless of stored icon", func(t *testing.T) {
+		// Upstream persists ZAI.Avatar on glm-5.x and a stray Hunyuan.Color on
+		// cmaas-glm-5.3. A stored icon is never authoritative for GLM models.
+		for name, stored := range map[string]string{
+			"glm-5.3":       "ZAI.Avatar",
+			"glm-5.1":       "ZAI.Avatar",
+			"cmaas-glm-5.3": "Hunyuan.Color",
+			"ZHIPU/GLM-5.3": "ZAI.Avatar",
+			"glm-5.3-prime": "ChatGLM.Color",
+		} {
+			assert.Equal(t, "ChatGLM", resolvePricingIcon(
+				name, &Model{Icon: stored}, nil, redirectAliasView{},
+			), "model %s", name)
+		}
+	})
+
+	t.Run("a non-GLM model keeps its own stored product icon", func(t *testing.T) {
+		assert.Equal(t, "Hunyuan.Color", resolvePricingIcon(
+			"hunyuan-turbo", &Model{Icon: "Hunyuan.Color"}, nil, redirectAliasView{},
+		))
+	})
 }
 
 func TestUpdatePricingFlagsRedirectedUpstreamAndInheritsLogo(t *testing.T) {

@@ -380,6 +380,18 @@ var defaultProductIconPatterns = func() []string {
 //
 // 前缀先于子串：多字母短词做子串容易误伤（"wan" 会命中 taiwan-llm），前缀
 // 把这类品牌收窄到真正的系列命名，且不影响既有子串规则的覆盖范围。
+// isGlmModelName reports whether a model name belongs to the GLM family
+// (glm-5.3, cmaas-glm-5.3, ZHIPU/GLM-5.3 ...). It matches a standalone `glm`
+// segment, so a name that merely contains those letters inside another word
+// does not qualify. GLM model surfaces must always show the GLM product logo.
+func isGlmModelName(modelName string) bool {
+	lower := strings.ToLower(strings.TrimSpace(modelName))
+	segments := strings.FieldsFunc(lower, func(r rune) bool {
+		return !((r >= 'a' && r <= 'z') || (r >= '0' && r <= '9'))
+	})
+	return slices.Contains(segments, "glm")
+}
+
 func defaultProductIconForModel(modelName string) string {
 	lower := strings.ToLower(strings.TrimSpace(modelName))
 	if lower == "" {
