@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T15:03:19.137Z",
+  "generated_at": "2026-11-27T16:05:14.514Z",
   "target": "http://localhost:3000",
   "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
   "version": {
@@ -8,13 +8,13 @@
   },
   "artifacts": {
     "dist_files": 2962,
-    "binary_sha256": "2661222b142a10c5ecd9a29d238d88d683dd6ef786ba363dd1b9d391192467e9"
+    "binary_sha256": "d321eff2eb0001053d872adf1601385c76c7a4d63b27f1d0f72ce5f5d23814df"
   },
   "steps": [
     {
       "name": "preflight_artifacts",
       "ok": true,
-      "detail": "VERSION=v1.7.95; web/dist 清单=2962 个文件; release 二进制 sha256=2661222b142a10c5…"
+      "detail": "VERSION=v1.7.95; web/dist 清单=2962 个文件; release 二进制 sha256=d321eff2eb000105…"
     },
     {
       "name": "version_advance_computed",
@@ -39,7 +39,7 @@
     {
       "name": "boundary_temp_only",
       "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-9KYyNq (os.tmpdir), 仓库无演练产物"
+      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-LaZOSg (os.tmpdir), 仓库无演练产物"
     }
   ],
   "verdict": {

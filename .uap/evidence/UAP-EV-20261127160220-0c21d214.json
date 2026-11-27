@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127160220-0c21d214",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T16:02:20.653Z",
+  "started_at": "2026-11-27T16:02:20.653Z",
+  "finished_at": "2026-11-27T16:02:20.653Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127160039-606797da",
+    "git_head": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
+    "worktree_fingerprint": "311ad1472eb999065684e25bff8dda52b57cd7b754d37f9b812ab436e9c1d90b",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127160039-606797da",
+  "git_head": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
+  "worktree_fingerprint": "311ad1472eb999065684e25bff8dda52b57cd7b754d37f9b812ab436e9c1d90b",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.coding_compliance",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.coding_compliance\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.coding_compliance 实检: format=PASS(10/10 个验证器模块以换行结尾/无 tab/无 CRLF); lint=PASS(node 子进程 spawnSync(node --check) 对 10 个模块: exit_code=0 语法失败=0); typecheck=PASS(动态 import 10 个模块成功=10; 导出 validator 键合计=32); dead_code=PASS(registry 声明 32 个; 导出 32 个; 孤儿导出=0 未实现=0) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12926 个 | 真实对 10 个验证器模块做 node --check / 动态 import / 导出键与 registry 精确对齐; 未跑 Go/前端 lint 门禁(超出本次范围)",
+  "content_hash": "4e5cca2488e19a46ef61ddbc378a3b503ab21bf16c289576a2cf5de15e0967bc"
+}

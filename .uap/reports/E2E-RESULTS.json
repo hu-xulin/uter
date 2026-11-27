@@ -3,17 +3,17 @@
   "status": "FAIL",
   "suite": "e2e",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts + playwright business",
-  "exit_code": 1,
+  "exit_code": 2,
   "items": [
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
       "title": "axe: 鉴权页批量扫描",
-      "status": "FAIL",
-      "reason": "Error: 鉴权页存在 critical/serious 可访问性违规：\n/dashboard serious/color-contrast \"Elements must meet minimum color contrast ratio thresholds\" -> .flex-wrap.gap-2.items-center > .bg-primary-strong.active\\:bg-primary-active.disabled\\:border-transparent [fg=#fcfdfe bg=#9497ee ratio=2.6 expected=4.5:1]; .pb-3.bo",
+      "status": "PASS",
+      "reason": null,
       "source": "runner",
-      "runner_ok": false,
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -199,47 +199,46 @@
     }
   ],
   "counts": {
-    "PASS": 13,
-    "FAIL": 1,
+    "PASS": 14,
+    "FAIL": 0,
     "SKIPPED": 0,
     "BLOCKED": 1,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 15,
-  "pass": 13,
-  "fail": 1,
+  "pass": 14,
+  "fail": 0,
   "blocked": 1,
   "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
   "problems": [
-    "axe exit=1",
     "business e2e BLOCKED: guarded isolated target is unavailable; no scenarios were executed"
   ],
   "browser_runs": [
     {
       "suite": "axe",
       "target": "http://localhost:3000",
-      "exit_code": 1,
-      "passed": 13,
-      "failed": 1,
+      "exit_code": 0,
+      "passed": 14,
+      "failed": 0,
       "skipped": 0,
       "blocked": 0,
       "stats": {
-        "startTime": "2026-11-27T15:06:06.934Z",
-        "duration": 270494.668,
-        "expected": 13,
+        "startTime": "2026-11-27T15:42:26.509Z",
+        "duration": 249262.915,
+        "expected": 14,
         "skipped": 0,
-        "unexpected": 1,
+        "unexpected": 0,
         "flaky": 0
       },
       "scenarios": [
         {
           "title": "axe: 鉴权页批量扫描",
-          "status": "FAIL",
-          "ok": false,
-          "reason": "Error: 鉴权页存在 critical/serious 可访问性违规：\n/dashboard serious/color-contrast \"Elements must meet minimum color contrast ratio thresholds\" -> .flex-wrap.gap-2.items-center > .bg-primary-strong.active\\:bg-primary-active.disabled\\:border-transparent [fg=#fcfdfe bg=#9497ee ratio=2.6 expected=4.5:1]; .pb-3.bo"
+          "status": "PASS",
+          "ok": true,
+          "reason": null
         },
         {
           "title": "axe: 公开页 /",
@@ -330,8 +329,8 @@
       "skipped": 0,
       "blocked": 0,
       "stats": {
-        "startTime": "2026-11-27T15:10:40.729Z",
-        "duration": 36.14499999999998,
+        "startTime": "2026-11-27T15:46:39.764Z",
+        "duration": 38.888999999999896,
         "expected": 0,
         "skipped": 0,
         "unexpected": 0,
@@ -346,19 +345,14 @@
   "zero_scenario_failure": true,
   "axe": {
     "command": "npx playwright test --config e2e/axe/playwright.config.ts",
-    "exit_code": 1,
+    "exit_code": 0,
     "target": "http://localhost:3000",
-    "passed": 13,
-    "failed": 1,
+    "passed": 14,
+    "failed": 0,
     "skipped": 0,
     "blocked": 0,
-    "critical_violations": [
-      {
-        "spec": "axe: 鉴权页批量扫描",
-        "message": "Error: 鉴权页存在 critical/serious 可访问性违规：\n/dashboard serious/color-contrast \"Elements must meet minimum color contrast ratio thresholds\" -> .flex-wrap.gap-2.items-center > .bg-primary-strong.active\\:bg-primary-active.disabled\\:border-transparent [fg=#fcfdfe bg=#9497ee ratio=2.6 expected=4.5:1]; .pb-3.border-b.gap-3 > .h-\\(--ds-button-height-sm\\).has-data-\\[icon\\=inline-end\\]\\:pr-1\\.5[href$=\"keys\"] [fg"
-      }
-    ],
-    "serious_violations": 2
+    "critical_violations": [],
+    "serious_violations": 0
   },
   "test_authentication": {
     "isolated": false,
@@ -366,10 +360,10 @@
     "production_auth_policy_modified": false
   },
   "skipped_note": "0 skipped / 0 blocked — never counted as PASS",
-  "generated_at": "2026-11-27T15:10:40.881Z",
+  "generated_at": "2026-11-27T15:46:39.916Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
+  "commit_sha": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -377,9 +371,9 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261127151041-1ce9582d",
-  "git_head": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
-  "worktree_fingerprint": "77c51a2047972b08386bfdb3fb87cd382b67acc3b535ea5adaa106e3591f4935",
+  "execution_id": "UAP-EXEC-20261127154641-355ab69f",
+  "git_head": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
+  "worktree_fingerprint": "f1c84b12c41a475ab8ff41de60a60162e4848f8648904af93c0238c235fbf973",
   "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
-  "evidence_ref": "UAP-EV-20261127151042-b0c9c10a"
+  "evidence_ref": "UAP-EV-20261127154642-14f87d02"
 }

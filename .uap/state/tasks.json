@@ -354889,6 +354889,5237 @@
       "blocked_reasons": [],
       "error": null,
       "health_probe": true
+    },
+    "UAP-TASK-20261127155431-0381ed52": {
+      "task_id": "UAP-TASK-20261127155431-0381ed52",
+      "objective": "probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [],
+      "acceptance_criteria": [
+        "x"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "ae3aeed2c6c455f0233db7b1a82096868078e7d59cc85a1cbcc06923502c27aa",
+      "trace_id": "UAP-TRACE-20261127155431-b1023eb5",
+      "created_at": "2026-11-27T15:54:31.215Z",
+      "updated_at": "2026-11-27T15:54:31.215Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155431-0f446c16": {
+      "task_id": "UAP-TASK-20261127155431-0f446c16",
+      "objective": "实现登录并补齐测试",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [],
+      "acceptance_criteria": [
+        "x"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "ae3aeed2c6c455f0233db7b1a82096868078e7d59cc85a1cbcc06923502c27aa",
+      "trace_id": "UAP-TRACE-20261127155431-f011b81c",
+      "created_at": "2026-11-27T15:54:31.475Z",
+      "updated_at": "2026-11-27T15:54:31.475Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155431-a2880a3d": {
+      "task_id": "UAP-TASK-20261127155431-a2880a3d",
+      "objective": "probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [],
+      "acceptance_criteria": [
+        "x"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "61387d5da6f9613bff4be055e7d7c9276f5cee551be4fc67dbae882a9d2cc1da",
+      "trace_id": "UAP-TRACE-20261127155431-a0981b4c",
+      "created_at": "2026-11-27T15:54:31.712Z",
+      "updated_at": "2026-11-27T15:54:32.203Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe",
+          "at": "2026-11-27T15:54:32.107Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155522-8ab00dd7": {
+      "task_id": "UAP-TASK-20261127155522-8ab00dd7",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155522-ab759161",
+      "created_at": "2026-11-27T15:55:22.355Z",
+      "updated_at": "2026-11-27T15:55:22.355Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155522-5bf2bbb7": {
+      "task_id": "UAP-TASK-20261127155522-5bf2bbb7",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "s2",
+          "idempotent": true,
+          "handler": "s2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "fb24d68225f7d0bca9599eca2855ae6ed68808c6ea7486b62254f8915167a114",
+      "trace_id": "UAP-TRACE-20261127155522-aa271386",
+      "created_at": "2026-11-27T15:55:22.695Z",
+      "updated_at": "2026-11-27T15:55:22.695Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155522-1d6812ea": {
+      "task_id": "UAP-TASK-20261127155522-1d6812ea",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155522-509629f3",
+      "created_at": "2026-11-27T15:55:22.896Z",
+      "updated_at": "2026-11-27T15:55:22.896Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155523-f6deca30": {
+      "task_id": "UAP-TASK-20261127155523-f6deca30",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155523-6b8c97fc",
+      "created_at": "2026-11-27T15:55:23.093Z",
+      "updated_at": "2026-11-27T15:55:23.093Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155523-1c3080de": {
+      "task_id": "UAP-TASK-20261127155523-1c3080de",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155523-e9c42458",
+      "created_at": "2026-11-27T15:55:23.411Z",
+      "updated_at": "2026-11-27T15:55:23.411Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155523-bd8fca89": {
+      "task_id": "UAP-TASK-20261127155523-bd8fca89",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155523-7a0510c6",
+      "created_at": "2026-11-27T15:55:23.725Z",
+      "updated_at": "2026-11-27T15:55:24.348Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe failure reason",
+          "at": "2026-11-27T15:55:24.258Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe failure reason",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155524-c0a8ab6b": {
+      "task_id": "UAP-TASK-20261127155524-c0a8ab6b",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CANCELLED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155524-a6e8717b",
+      "created_at": "2026-11-27T15:55:24.557Z",
+      "updated_at": "2026-11-27T15:55:24.864Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "CANCELLED",
+          "reason": "probe cancel",
+          "at": "2026-11-27T15:55:24.774Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155525-e394d20e": {
+      "task_id": "UAP-TASK-20261127155525-e394d20e",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "PAUSED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155525-f9089ca5",
+      "created_at": "2026-11-27T15:55:25.115Z",
+      "updated_at": "2026-11-27T15:55:25.616Z",
+      "history": [
+        {
+          "from": "QUEUED",
+          "to": "PAUSED",
+          "reason": "probe pause",
+          "at": "2026-11-27T15:55:25.525Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155525-cbef2d50": {
+      "task_id": "UAP-TASK-20261127155525-cbef2d50",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155525-2acd80d0",
+      "created_at": "2026-11-27T15:55:25.864Z",
+      "updated_at": "2026-11-27T15:55:26.370Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe interrupt",
+          "at": "2026-11-27T15:55:26.281Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155526-24e2506c": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155526-24e2506c",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155527-d832ec20"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155526-afb3e8e5",
+      "created_at": "2026-11-27T15:55:26.902Z",
+      "updated_at": "2026-11-27T15:55:29.198Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:55:27.139Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:55:27.139Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155527-d832ec20"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155529-085acfd9": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155529-085acfd9",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155530-b43f8363"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155529-d1f04b31",
+      "created_at": "2026-11-27T15:55:29.668Z",
+      "updated_at": "2026-11-27T15:55:31.776Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:55:29.905Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:55:29.905Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155530-b43f8363"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155532-9a1cf54a": {
+      "task_id": "UAP-TASK-20261127155532-9a1cf54a",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155532-84bcd9fa",
+      "created_at": "2026-11-27T15:55:32.116Z",
+      "updated_at": "2026-11-27T15:55:32.116Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155532-834f10d6": {
+      "task_id": "UAP-TASK-20261127155532-834f10d6",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [
+        {
+          "step_id": "step-1",
+          "state": "started"
+        },
+        {
+          "step_id": "step-2",
+          "state": "committed"
+        }
+      ],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155532-fe17d1d8",
+      "created_at": "2026-11-27T15:55:32.545Z",
+      "updated_at": "2026-11-27T15:55:32.794Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155533-da1b3cb6": {
+      "task_id": "UAP-TASK-20261127155533-da1b3cb6",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155533-d5a2e236",
+      "created_at": "2026-11-27T15:55:33.428Z",
+      "updated_at": "2026-11-27T15:55:33.640Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155533-06a2e0ff": {
+      "task_id": "UAP-TASK-20261127155533-06a2e0ff",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155533-bb2d5f69",
+      "created_at": "2026-11-27T15:55:33.871Z",
+      "updated_at": "2026-11-27T15:55:34.162Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155534-c1a48dc5": {
+      "task_id": "UAP-TASK-20261127155534-c1a48dc5",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155534-83975795",
+      "created_at": "2026-11-27T15:55:34.925Z",
+      "updated_at": "2026-11-27T15:55:34.925Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155535-69c51dee": {
+      "task_id": "UAP-TASK-20261127155535-69c51dee",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155535-be5aed22",
+      "created_at": "2026-11-27T15:55:35.877Z",
+      "updated_at": "2026-11-27T15:55:35.877Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155536-71565f72": {
+      "task_id": "UAP-TASK-20261127155536-71565f72",
+      "objective": "实现登录并补齐测试",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155536-59a64a4a",
+      "created_at": "2026-11-27T15:55:36.144Z",
+      "updated_at": "2026-11-27T15:55:36.144Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155536-879b93cc": {
+      "task_id": "UAP-TASK-20261127155536-879b93cc",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155536-2cc6fd27",
+      "created_at": "2026-11-27T15:55:36.464Z",
+      "updated_at": "2026-11-27T15:55:37.064Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "B1 probe interrupt",
+          "at": "2026-11-27T15:55:36.971Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "B1 probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155721-0791a62d": {
+      "task_id": "UAP-TASK-20261127155721-0791a62d",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155721-5e1c20af",
+      "created_at": "2026-11-27T15:57:21.064Z",
+      "updated_at": "2026-11-27T15:57:21.064Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155721-db07d83b": {
+      "task_id": "UAP-TASK-20261127155721-db07d83b",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "s2",
+          "idempotent": true,
+          "handler": "s2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "fb24d68225f7d0bca9599eca2855ae6ed68808c6ea7486b62254f8915167a114",
+      "trace_id": "UAP-TRACE-20261127155721-4ad6f565",
+      "created_at": "2026-11-27T15:57:21.381Z",
+      "updated_at": "2026-11-27T15:57:21.381Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155721-3bcdd32b": {
+      "task_id": "UAP-TASK-20261127155721-3bcdd32b",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155721-631e7d66",
+      "created_at": "2026-11-27T15:57:21.573Z",
+      "updated_at": "2026-11-27T15:57:21.573Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155721-d1262ddc": {
+      "task_id": "UAP-TASK-20261127155721-d1262ddc",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155721-e4540cf3",
+      "created_at": "2026-11-27T15:57:21.765Z",
+      "updated_at": "2026-11-27T15:57:21.765Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155722-3b6e266f": {
+      "task_id": "UAP-TASK-20261127155722-3b6e266f",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155722-491213db",
+      "created_at": "2026-11-27T15:57:22.078Z",
+      "updated_at": "2026-11-27T15:57:22.078Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155722-e204b786": {
+      "task_id": "UAP-TASK-20261127155722-e204b786",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155722-eafac24b",
+      "created_at": "2026-11-27T15:57:22.355Z",
+      "updated_at": "2026-11-27T15:57:22.875Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe failure reason",
+          "at": "2026-11-27T15:57:22.792Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe failure reason",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155723-443b3b03": {
+      "task_id": "UAP-TASK-20261127155723-443b3b03",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CANCELLED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155723-2782ce22",
+      "created_at": "2026-11-27T15:57:23.068Z",
+      "updated_at": "2026-11-27T15:57:23.342Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "CANCELLED",
+          "reason": "probe cancel",
+          "at": "2026-11-27T15:57:23.258Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155723-4d43fd59": {
+      "task_id": "UAP-TASK-20261127155723-4d43fd59",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "PAUSED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155723-790f74d6",
+      "created_at": "2026-11-27T15:57:23.572Z",
+      "updated_at": "2026-11-27T15:57:24.032Z",
+      "history": [
+        {
+          "from": "QUEUED",
+          "to": "PAUSED",
+          "reason": "probe pause",
+          "at": "2026-11-27T15:57:23.947Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155724-c7a53362": {
+      "task_id": "UAP-TASK-20261127155724-c7a53362",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155724-d81aaef8",
+      "created_at": "2026-11-27T15:57:24.261Z",
+      "updated_at": "2026-11-27T15:57:24.719Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe interrupt",
+          "at": "2026-11-27T15:57:24.631Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155725-8b8357e8": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155725-8b8357e8",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155725-e47299be"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155725-89092484",
+      "created_at": "2026-11-27T15:57:25.200Z",
+      "updated_at": "2026-11-27T15:57:27.275Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:57:25.423Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:57:25.423Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155725-e47299be"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155727-d5bd6b4f": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155727-d5bd6b4f",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155728-65564199"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155727-6a36ec91",
+      "created_at": "2026-11-27T15:57:27.674Z",
+      "updated_at": "2026-11-27T15:57:29.381Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:57:27.903Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:57:27.903Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155728-65564199"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155729-5067269b": {
+      "task_id": "UAP-TASK-20261127155729-5067269b",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155729-bea157a3",
+      "created_at": "2026-11-27T15:57:29.729Z",
+      "updated_at": "2026-11-27T15:57:29.729Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155730-faca99cc": {
+      "task_id": "UAP-TASK-20261127155730-faca99cc",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [
+        {
+          "step_id": "step-1",
+          "state": "started"
+        },
+        {
+          "step_id": "step-2",
+          "state": "committed"
+        }
+      ],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155730-4691c9bf",
+      "created_at": "2026-11-27T15:57:30.146Z",
+      "updated_at": "2026-11-27T15:57:30.447Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155730-ae41d72f": {
+      "task_id": "UAP-TASK-20261127155730-ae41d72f",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155730-6877f9b2",
+      "created_at": "2026-11-27T15:57:30.971Z",
+      "updated_at": "2026-11-27T15:57:31.186Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155731-45a137db": {
+      "task_id": "UAP-TASK-20261127155731-45a137db",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155731-9f78a8f4",
+      "created_at": "2026-11-27T15:57:31.445Z",
+      "updated_at": "2026-11-27T15:57:31.665Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155732-c4121432": {
+      "task_id": "UAP-TASK-20261127155732-c4121432",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155732-3b6770a1",
+      "created_at": "2026-11-27T15:57:32.261Z",
+      "updated_at": "2026-11-27T15:57:32.261Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155733-26e50d83": {
+      "task_id": "UAP-TASK-20261127155733-26e50d83",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155733-02d01aa0",
+      "created_at": "2026-11-27T15:57:33.181Z",
+      "updated_at": "2026-11-27T15:57:33.181Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155733-098ee3e8": {
+      "task_id": "UAP-TASK-20261127155733-098ee3e8",
+      "objective": "实现登录并补齐测试",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155733-0bd6f717",
+      "created_at": "2026-11-27T15:57:33.390Z",
+      "updated_at": "2026-11-27T15:57:33.390Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155735-33353b00": {
+      "task_id": "UAP-TASK-20261127155735-33353b00",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155735-0eeaad3f",
+      "created_at": "2026-11-27T15:57:35.221Z",
+      "updated_at": "2026-11-27T15:57:35.769Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "B1 probe interrupt",
+          "at": "2026-11-27T15:57:35.680Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "B1 probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155917-e1099e1e": {
+      "task_id": "UAP-TASK-20261127155917-e1099e1e",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155917-04629465",
+      "created_at": "2026-11-27T15:59:17.152Z",
+      "updated_at": "2026-11-27T15:59:17.152Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155917-34eb9882": {
+      "task_id": "UAP-TASK-20261127155917-34eb9882",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "s2",
+          "idempotent": true,
+          "handler": "s2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "fb24d68225f7d0bca9599eca2855ae6ed68808c6ea7486b62254f8915167a114",
+      "trace_id": "UAP-TRACE-20261127155917-59cf6014",
+      "created_at": "2026-11-27T15:59:17.503Z",
+      "updated_at": "2026-11-27T15:59:17.503Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155917-f19f30c3": {
+      "task_id": "UAP-TASK-20261127155917-f19f30c3",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155917-1f306b90",
+      "created_at": "2026-11-27T15:59:17.712Z",
+      "updated_at": "2026-11-27T15:59:17.712Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155917-c5743979": {
+      "task_id": "UAP-TASK-20261127155917-c5743979",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155917-24732c7c",
+      "created_at": "2026-11-27T15:59:17.921Z",
+      "updated_at": "2026-11-27T15:59:17.921Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155918-4cd0fde6": {
+      "task_id": "UAP-TASK-20261127155918-4cd0fde6",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155918-211855b2",
+      "created_at": "2026-11-27T15:59:18.246Z",
+      "updated_at": "2026-11-27T15:59:18.246Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155918-02405733": {
+      "task_id": "UAP-TASK-20261127155918-02405733",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155918-0f368a24",
+      "created_at": "2026-11-27T15:59:18.599Z",
+      "updated_at": "2026-11-27T15:59:19.256Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe failure reason",
+          "at": "2026-11-27T15:59:19.170Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe failure reason",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155919-b7136282": {
+      "task_id": "UAP-TASK-20261127155919-b7136282",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CANCELLED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155919-3c3708bc",
+      "created_at": "2026-11-27T15:59:19.470Z",
+      "updated_at": "2026-11-27T15:59:19.783Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "CANCELLED",
+          "reason": "probe cancel",
+          "at": "2026-11-27T15:59:19.692Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155920-b7f03da1": {
+      "task_id": "UAP-TASK-20261127155920-b7f03da1",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "PAUSED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155920-3c0b286c",
+      "created_at": "2026-11-27T15:59:20.041Z",
+      "updated_at": "2026-11-27T15:59:20.607Z",
+      "history": [
+        {
+          "from": "QUEUED",
+          "to": "PAUSED",
+          "reason": "probe pause",
+          "at": "2026-11-27T15:59:20.505Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155921-d8bf91c7": {
+      "task_id": "UAP-TASK-20261127155921-d8bf91c7",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155921-dee370e7",
+      "created_at": "2026-11-27T15:59:21.037Z",
+      "updated_at": "2026-11-27T15:59:21.528Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe interrupt",
+          "at": "2026-11-27T15:59:21.435Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155921-1051289a": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155921-1051289a",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155922-781f5dbb"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155922-0795f9f6",
+      "created_at": "2026-11-27T15:59:22.051Z",
+      "updated_at": "2026-11-27T15:59:24.307Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:59:22.309Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:59:22.309Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155922-781f5dbb"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127155924-015e1cf9": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127155924-015e1cf9",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127155925-0aa84492"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127155924-afc21ee5",
+      "created_at": "2026-11-27T15:59:24.813Z",
+      "updated_at": "2026-11-27T15:59:26.883Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T15:59:25.064Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T15:59:25.064Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127155925-0aa84492"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155927-54d86068": {
+      "task_id": "UAP-TASK-20261127155927-54d86068",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155927-b0a702a2",
+      "created_at": "2026-11-27T15:59:27.257Z",
+      "updated_at": "2026-11-27T15:59:27.257Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155927-2e9ea6c0": {
+      "task_id": "UAP-TASK-20261127155927-2e9ea6c0",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [
+        {
+          "step_id": "step-1",
+          "state": "started"
+        },
+        {
+          "step_id": "step-2",
+          "state": "committed"
+        }
+      ],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155927-453febce",
+      "created_at": "2026-11-27T15:59:27.694Z",
+      "updated_at": "2026-11-27T15:59:27.938Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155928-e7c6b7ea": {
+      "task_id": "UAP-TASK-20261127155928-e7c6b7ea",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155928-9dff8b4a",
+      "created_at": "2026-11-27T15:59:28.560Z",
+      "updated_at": "2026-11-27T15:59:28.768Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155928-49e3afde": {
+      "task_id": "UAP-TASK-20261127155928-49e3afde",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155928-2db20aa0",
+      "created_at": "2026-11-27T15:59:28.978Z",
+      "updated_at": "2026-11-27T15:59:29.234Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155929-b94ee3fb": {
+      "task_id": "UAP-TASK-20261127155929-b94ee3fb",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155929-676bbc14",
+      "created_at": "2026-11-27T15:59:29.794Z",
+      "updated_at": "2026-11-27T15:59:29.794Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155930-a0ca92c3": {
+      "task_id": "UAP-TASK-20261127155930-a0ca92c3",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155930-e91bb72e",
+      "created_at": "2026-11-27T15:59:30.693Z",
+      "updated_at": "2026-11-27T15:59:30.693Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155930-68bd1997": {
+      "task_id": "UAP-TASK-20261127155930-68bd1997",
+      "objective": "实现登录并补齐测试",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127155930-d082d61b",
+      "created_at": "2026-11-27T15:59:30.961Z",
+      "updated_at": "2026-11-27T15:59:30.961Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127155932-48316980": {
+      "task_id": "UAP-TASK-20261127155932-48316980",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127155932-64316cf4",
+      "created_at": "2026-11-27T15:59:32.454Z",
+      "updated_at": "2026-11-27T15:59:33.079Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "B1 probe interrupt",
+          "at": "2026-11-27T15:59:32.984Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "B1 probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160114-e9985818": {
+      "task_id": "UAP-TASK-20261127160114-e9985818",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160115-15ad0666",
+      "created_at": "2026-11-27T16:01:15.000Z",
+      "updated_at": "2026-11-27T16:01:15.000Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160115-057abca4": {
+      "task_id": "UAP-TASK-20261127160115-057abca4",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "s2",
+          "idempotent": true,
+          "handler": "s2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "fb24d68225f7d0bca9599eca2855ae6ed68808c6ea7486b62254f8915167a114",
+      "trace_id": "UAP-TRACE-20261127160115-c3cb19d3",
+      "created_at": "2026-11-27T16:01:15.348Z",
+      "updated_at": "2026-11-27T16:01:15.348Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160115-edd37aa2": {
+      "task_id": "UAP-TASK-20261127160115-edd37aa2",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160115-56b6e0cb",
+      "created_at": "2026-11-27T16:01:15.576Z",
+      "updated_at": "2026-11-27T16:01:15.576Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160115-4f9dd69e": {
+      "task_id": "UAP-TASK-20261127160115-4f9dd69e",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160115-3e3a755d",
+      "created_at": "2026-11-27T16:01:15.796Z",
+      "updated_at": "2026-11-27T16:01:15.796Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160116-cbc08fc2": {
+      "task_id": "UAP-TASK-20261127160116-cbc08fc2",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160116-c29338cc",
+      "created_at": "2026-11-27T16:01:16.141Z",
+      "updated_at": "2026-11-27T16:01:16.141Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160116-097e67e1": {
+      "task_id": "UAP-TASK-20261127160116-097e67e1",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160116-4c0e4ee8",
+      "created_at": "2026-11-27T16:01:16.441Z",
+      "updated_at": "2026-11-27T16:01:17.014Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe failure reason",
+          "at": "2026-11-27T16:01:16.921Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe failure reason",
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160117-91c8302b": {
+      "task_id": "UAP-TASK-20261127160117-91c8302b",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CANCELLED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160117-cfcfb860",
+      "created_at": "2026-11-27T16:01:17.246Z",
+      "updated_at": "2026-11-27T16:01:17.573Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "CANCELLED",
+          "reason": "probe cancel",
+          "at": "2026-11-27T16:01:17.477Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160117-fd30bb02": {
+      "task_id": "UAP-TASK-20261127160117-fd30bb02",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "PAUSED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160117-18f2f20e",
+      "created_at": "2026-11-27T16:01:17.838Z",
+      "updated_at": "2026-11-27T16:01:18.362Z",
+      "history": [
+        {
+          "from": "QUEUED",
+          "to": "PAUSED",
+          "reason": "probe pause",
+          "at": "2026-11-27T16:01:18.270Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160118-5159e243": {
+      "task_id": "UAP-TASK-20261127160118-5159e243",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160118-83350f1d",
+      "created_at": "2026-11-27T16:01:18.660Z",
+      "updated_at": "2026-11-27T16:01:19.174Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "probe interrupt",
+          "at": "2026-11-27T16:01:19.080Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127160119-8b23d9f8": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127160119-8b23d9f8",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160120-22fe4f25"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127160119-56ef3eaf",
+      "created_at": "2026-11-27T16:01:19.695Z",
+      "updated_at": "2026-11-27T16:01:21.958Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:01:19.947Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:01:19.947Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160120-22fe4f25"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127160122-58cdaf0c": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127160122-58cdaf0c",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "RUNNING",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160123-3cefd097"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127160122-40f25ad7",
+      "created_at": "2026-11-27T16:01:22.473Z",
+      "updated_at": "2026-11-27T16:01:24.340Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:01:22.745Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:01:22.745Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160123-3cefd097"
+      ],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160124-3f460fd9": {
+      "task_id": "UAP-TASK-20261127160124-3f460fd9",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160124-ac82e317",
+      "created_at": "2026-11-27T16:01:24.706Z",
+      "updated_at": "2026-11-27T16:01:24.706Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160125-39cff8f5": {
+      "task_id": "UAP-TASK-20261127160125-39cff8f5",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [
+        {
+          "step_id": "step-1",
+          "state": "started"
+        },
+        {
+          "step_id": "step-2",
+          "state": "committed"
+        }
+      ],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127160125-b4d0e1d0",
+      "created_at": "2026-11-27T16:01:25.149Z",
+      "updated_at": "2026-11-27T16:01:25.371Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160125-e63d568c": {
+      "task_id": "UAP-TASK-20261127160125-e63d568c",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160125-87564340",
+      "created_at": "2026-11-27T16:01:25.966Z",
+      "updated_at": "2026-11-27T16:01:26.187Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160126-006b2563": {
+      "task_id": "UAP-TASK-20261127160126-006b2563",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160126-084f8763",
+      "created_at": "2026-11-27T16:01:26.412Z",
+      "updated_at": "2026-11-27T16:01:26.687Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160127-56545241": {
+      "task_id": "UAP-TASK-20261127160127-56545241",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160127-3f7a275c",
+      "created_at": "2026-11-27T16:01:27.290Z",
+      "updated_at": "2026-11-27T16:01:27.290Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160128-7d1a0f91": {
+      "task_id": "UAP-TASK-20261127160128-7d1a0f91",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160128-1673faf7",
+      "created_at": "2026-11-27T16:01:28.225Z",
+      "updated_at": "2026-11-27T16:01:28.225Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160128-32aba595": {
+      "task_id": "UAP-TASK-20261127160128-32aba595",
+      "objective": "实现登录并补齐测试",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "execute",
+          "idempotent": true,
+          "handler": "execute",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "722ee65bc244fdf5ca456c87c09508301aa6b0b5ce69331b52e548afd62a38d3",
+      "trace_id": "UAP-TRACE-20261127160128-00ef318d",
+      "created_at": "2026-11-27T16:01:28.504Z",
+      "updated_at": "2026-11-27T16:01:28.504Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-20261127160130-b7730ec3": {
+      "task_id": "UAP-TASK-20261127160130-b7730ec3",
+      "objective": "requirement behavior probe",
+      "scope": "behavior-suite",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "probe assertion holds"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "WAITING_RECOVERY",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "s1",
+          "idempotent": true,
+          "handler": "s1",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "83ce3f1277439f9cb7dd8eb83290c0cff7369a8ec96e5250acb5d79b0ecac1e1",
+      "trace_id": "UAP-TRACE-20261127160130-94fd86cf",
+      "created_at": "2026-11-27T16:01:30.024Z",
+      "updated_at": "2026-11-27T16:01:30.625Z",
+      "history": [
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "B1 probe interrupt",
+          "at": "2026-11-27T16:01:30.531Z"
+        }
+      ],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": "B1 probe interrupt",
+      "health_probe": true
+    },
+    "UAP-TASK-HEALTH-20261127160522-4844fbd0": {
+      "task_id": "UAP-TASK-HEALTH-20261127160522-4844fbd0",
+      "objective": "runtime health probe",
+      "scope": "task-engine",
+      "specification_ids": [
+        "UAP-00-002"
+      ],
+      "constraints": [
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "all steps succeed",
+        "independent validator passes"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "__health_step__",
+          "idempotent": true,
+          "handler": "__health_step__",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160523-f9ed3685"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "ran": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "bf1fca805fb5b1d7649598d10f7e6cfb15bf3628fb179765368a21c14c6f68a5",
+      "trace_id": "UAP-TRACE-20261127160522-27ba89a9",
+      "created_at": "2026-11-27T16:05:22.730Z",
+      "updated_at": "2026-11-27T16:05:26.150Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:23.010Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:23.010Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-27T16:05:24.828Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160523-f9ed3685",
+        "UAP-EV-20261127160525-0e4f7af0"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-27T16:05:24.575Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160523-f9ed3685",
+            "UAP-EV-20261127160525-0e4f7af0"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-INTERRUPT-20261127160527-b436abab": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127160527-b436abab",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160527-7912aa34"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160531-ec6caa86"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160532-cb167dfa"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127160527-ad39114e",
+      "created_at": "2026-11-27T16:05:27.380Z",
+      "updated_at": "2026-11-27T16:05:35.303Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:27.622Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:27.622Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "recovery: previous process died while RUNNING",
+          "at": "2026-11-27T16:05:30.855Z"
+        },
+        {
+          "from": "WAITING_RECOVERY",
+          "to": "QUEUED",
+          "reason": "recovered from interruption",
+          "at": "2026-11-27T16:05:30.855Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "resumed execution",
+          "at": "2026-11-27T16:05:30.855Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-27T16:05:33.962Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160527-7912aa34",
+        "UAP-EV-20261127160531-ec6caa86",
+        "UAP-EV-20261127160532-cb167dfa",
+        "UAP-EV-20261127160534-6ea01d25"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-27T16:05:33.713Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160527-7912aa34",
+            "UAP-EV-20261127160531-ec6caa86",
+            "UAP-EV-20261127160532-cb167dfa",
+            "UAP-EV-20261127160534-6ea01d25"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-TEST-20261127160538-29ae3ef3": {
+      "task_id": "UAP-TASK-TEST-20261127160538-29ae3ef3",
+      "objective": "uap-tester behaviour probe",
+      "scope": "runtime/tests",
+      "specification_ids": [
+        "UAP-00-001"
+      ],
+      "constraints": [
+        "local only"
+      ],
+      "acceptance_criteria": [
+        "real assertions"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "CREATED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "step-one",
+          "idempotent": true,
+          "handler": "step-one",
+          "status": "PENDING",
+          "attempts": 0,
+          "evidence_refs": [],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "4455a617f82769e910d96cbe7654f746e402642440831945a743b2187e9963fa",
+      "trace_id": "UAP-TRACE-20261127160538-7ff0b1ad",
+      "created_at": "2026-11-27T16:05:38.878Z",
+      "updated_at": "2026-11-27T16:05:38.878Z",
+      "history": [],
+      "evidence_refs": [],
+      "changed_files": [],
+      "validation_results": [],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": false
+    },
+    "UAP-TASK-INTERRUPT-20261127160539-4235988c": {
+      "task_id": "UAP-TASK-INTERRUPT-20261127160539-4235988c",
+      "objective": "recovery probe (idempotent)",
+      "scope": "runtime/recovery-engine",
+      "specification_ids": [
+        "UAP-03-004"
+      ],
+      "constraints": [
+        "simulated process interruption",
+        "no external side effects"
+      ],
+      "acceptance_criteria": [
+        "recovery from persisted state",
+        "no repeated non-idempotent side effect"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "probe.step1",
+          "idempotent": true,
+          "handler": "probe.step1",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160539-6a7307b6"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "side_effect": "step1-committed"
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "probe.step2",
+          "idempotent": true,
+          "handler": "probe.step2",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160542-7d2a6525"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "probe.step3",
+          "idempotent": true,
+          "handler": "probe.step3",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160544-430f4a10"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "recovered": true,
+            "idempotent": true
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "e727a8feecc836849f6fe9acffc8adfe28803bea0aa4c9c51b2c49e2e9858c8f",
+      "trace_id": "UAP-TRACE-20261127160539-2eaa4a6c",
+      "created_at": "2026-11-27T16:05:39.275Z",
+      "updated_at": "2026-11-27T16:05:47.100Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:39.511Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:39.511Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "WAITING_RECOVERY",
+          "reason": "recovery: previous process died while RUNNING",
+          "at": "2026-11-27T16:05:42.698Z"
+        },
+        {
+          "from": "WAITING_RECOVERY",
+          "to": "QUEUED",
+          "reason": "recovered from interruption",
+          "at": "2026-11-27T16:05:42.698Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "resumed execution",
+          "at": "2026-11-27T16:05:42.698Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-27T16:05:45.727Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160539-6a7307b6",
+        "UAP-EV-20261127160542-7d2a6525",
+        "UAP-EV-20261127160544-430f4a10",
+        "UAP-EV-20261127160545-e180097a"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-27T16:05:45.371Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160539-6a7307b6",
+            "UAP-EV-20261127160542-7d2a6525",
+            "UAP-EV-20261127160544-430f4a10",
+            "UAP-EV-20261127160545-e180097a"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": true
+    },
+    "UAP-TASK-TEST-20261127160548-0b767fc6": {
+      "task_id": "UAP-TASK-TEST-20261127160548-0b767fc6",
+      "objective": "uap-tester behaviour probe",
+      "scope": "runtime/tests",
+      "specification_ids": [
+        "UAP-00-001"
+      ],
+      "constraints": [
+        "local only"
+      ],
+      "acceptance_criteria": [
+        "real assertions"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "__uap_test_retry_then_ok__",
+          "idempotent": true,
+          "handler": "__uap_test_retry_then_ok__",
+          "status": "SUCCEEDED",
+          "attempts": 3,
+          "evidence_refs": [
+            "UAP-EV-20261127160548-503efa34"
+          ],
+          "changed_files": [],
+          "outputs": {},
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "6d5a8068c9bae4e98a0cf60bbb517c237d15d8e6f384514424091506db338470",
+      "trace_id": "UAP-TRACE-20261127160548-723724ce",
+      "created_at": "2026-11-27T16:05:48.483Z",
+      "updated_at": "2026-11-27T16:05:51.722Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:48.749Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:48.749Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-27T16:05:50.402Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160548-503efa34",
+        "UAP-EV-20261127160550-bfc98ec1"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-27T16:05:50.145Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160548-503efa34",
+            "UAP-EV-20261127160550-bfc98ec1"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": false
+    },
+    "UAP-TASK-TEST-20261127160551-879ff884": {
+      "task_id": "UAP-TASK-TEST-20261127160551-879ff884",
+      "objective": "uap-tester behaviour probe",
+      "scope": "runtime/tests",
+      "specification_ids": [
+        "UAP-00-001"
+      ],
+      "constraints": [
+        "local only"
+      ],
+      "acceptance_criteria": [
+        "real assertions"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "FAILED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "__uap_test_always_fail__",
+          "idempotent": true,
+          "handler": "__uap_test_always_fail__",
+          "status": "FAILED",
+          "attempts": 3,
+          "evidence_refs": [
+            "UAP-EV-20261127160552-5c862094"
+          ],
+          "changed_files": [],
+          "outputs": {},
+          "error": "always broken"
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "7c63fedd65e50310046b5f3334c00c754dfd22d1ba986f788bfc9cb53d7c1634",
+      "trace_id": "UAP-TRACE-20261127160552-af0cabd5",
+      "created_at": "2026-11-27T16:05:52.043Z",
+      "updated_at": "2026-11-27T16:05:55.292Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:52.282Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:52.283Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "FAILED",
+          "reason": "acceptance criteria not met",
+          "at": "2026-11-27T16:05:53.962Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160552-5c862094",
+        "UAP-EV-20261127160554-0708bf9c"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "FAIL",
+          "executed": true,
+          "exit_code": 1,
+          "checked_at": "2026-11-27T16:05:53.709Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160552-5c862094",
+            "UAP-EV-20261127160554-0708bf9c"
+          ],
+          "findings": [
+            {
+              "severity": "BLOCKER",
+              "code": "steps_unfinished",
+              "message": "1 steps not SUCCEEDED"
+            }
+          ],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 1 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": "retryable: always broken",
+      "health_probe": false
+    },
+    "UAP-TASK-20261127160558-e51ba5c8": {
+      "task_id": "UAP-TASK-20261127160558-e51ba5c8",
+      "objective": "Execute workflow Financial Integrity Verification",
+      "scope": "workflow:uap-financial-verification",
+      "specification_ids": [
+        "UAP-00-001",
+        "UAP-00-002",
+        "UAP-00-003",
+        "UAP-00-004",
+        "UAP-01-001",
+        "UAP-01-002",
+        "UAP-01-003",
+        "UAP-02-001",
+        "UAP-02-002",
+        "UAP-02-003",
+        "UAP-03-001",
+        "UAP-03-002",
+        "UAP-03-003",
+        "UAP-03-004",
+        "UAP-04-001",
+        "UAP-04-002",
+        "UAP-04-003",
+        "UAP-05-001",
+        "UAP-05-002",
+        "UAP-05-003",
+        "UAP-05-004",
+        "UAP-06-001",
+        "UAP-06-002",
+        "UAP-06-003",
+        "UAP-07-001",
+        "UAP-07-002",
+        "UAP-07-003",
+        "UAP-08-001",
+        "UAP-08-002",
+        "UAP-08-003",
+        "UAP-09-001",
+        "UAP-09-002"
+      ],
+      "constraints": [
+        "local only",
+        "no production actions",
+        "environment=simulated_only"
+      ],
+      "acceptance_criteria": [
+        "acceptance: financial_integrity_verified",
+        "every step has evidence",
+        "independent validator passed"
+      ],
+      "dependencies": [],
+      "permissions": [],
+      "agent_id": "uap-orchestrator",
+      "files": [],
+      "state": "SUCCEEDED",
+      "steps": [
+        {
+          "step_id": "step-1",
+          "name": "inspect_payment_state_machine",
+          "idempotent": true,
+          "handler": "inspect_payment_state_machine",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160558-219e3d83",
+            "UAP-EV-20261127160559-950e7d91"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-2",
+          "name": "inspect_refund_state_machine",
+          "idempotent": true,
+          "handler": "inspect_refund_state_machine",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160601-7f7859d9",
+            "UAP-EV-20261127160602-0fd9ac9a"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-3",
+          "name": "inspect_balance_ledger",
+          "idempotent": true,
+          "handler": "inspect_balance_ledger",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160603-8ec4e70f",
+            "UAP-EV-20261127160604-cc23ec07"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-4",
+          "name": "test_idempotency",
+          "idempotent": true,
+          "handler": "test_idempotency",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160605-153f521d",
+            "UAP-EV-20261127160606-a1beea80"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-5",
+          "name": "test_concurrency",
+          "idempotent": true,
+          "handler": "test_concurrency",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160608-f976d834",
+            "UAP-EV-20261127160608-2a9e7ada"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-6",
+          "name": "test_duplicate_notifications",
+          "idempotent": true,
+          "handler": "test_duplicate_notifications",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160610-88b477d6",
+            "UAP-EV-20261127160611-fdc65030"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "simulated_only": true,
+            "financial_checks": 19,
+            "repair_attempts": [],
+            "repair_status": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-7",
+          "name": "test_failure_recovery",
+          "idempotent": true,
+          "handler": "test_failure_recovery",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160612-8e31e648",
+            "UAP-EV-20261127160613-a5d7aee1"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "exists": true,
+            "state": "SUCCEEDED",
+            "repeated_steps": null
+          },
+          "error": null
+        },
+        {
+          "step_id": "step-8",
+          "name": "verify_reconciliation",
+          "idempotent": true,
+          "handler": "verify_reconciliation",
+          "status": "SUCCEEDED",
+          "attempts": 1,
+          "evidence_refs": [
+            "UAP-EV-20261127160614-03185c28",
+            "UAP-EV-20261127160615-818db264"
+          ],
+          "changed_files": [],
+          "outputs": {
+            "exists": true,
+            "state": "SUCCEEDED",
+            "repeated_steps": null
+          },
+          "error": null
+        }
+      ],
+      "side_effects": [],
+      "retry_count": 0,
+      "max_retries": 2,
+      "context_version": "34ba4694d0d84a3507ad464bd440f81411e27aef1250a3e91bec20d2669dc160",
+      "trace_id": "UAP-TRACE-20261127160558-b07738cd",
+      "created_at": "2026-11-27T16:05:58.479Z",
+      "updated_at": "2026-11-27T16:06:18.353Z",
+      "history": [
+        {
+          "from": "CREATED",
+          "to": "QUEUED",
+          "reason": "task accepted",
+          "at": "2026-11-27T16:05:58.713Z"
+        },
+        {
+          "from": "QUEUED",
+          "to": "RUNNING",
+          "reason": "execution started",
+          "at": "2026-11-27T16:05:58.713Z"
+        },
+        {
+          "from": "RUNNING",
+          "to": "SUCCEEDED",
+          "reason": "all acceptance criteria met with independent validation",
+          "at": "2026-11-27T16:06:17.069Z"
+        }
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160559-950e7d91",
+        "UAP-EV-20261127160602-0fd9ac9a",
+        "UAP-EV-20261127160604-cc23ec07",
+        "UAP-EV-20261127160606-a1beea80",
+        "UAP-EV-20261127160608-2a9e7ada",
+        "UAP-EV-20261127160611-fdc65030",
+        "UAP-EV-20261127160613-a5d7aee1",
+        "UAP-EV-20261127160615-818db264",
+        "UAP-EV-20261127160617-9c328921"
+      ],
+      "changed_files": [],
+      "validation_results": [
+        {
+          "validator_id": "core.task_default_validator",
+          "status": "PASS",
+          "executed": true,
+          "exit_code": 0,
+          "checked_at": "2026-11-27T16:06:16.816Z",
+          "evidence_refs": [
+            "UAP-EV-20261127160559-950e7d91",
+            "UAP-EV-20261127160602-0fd9ac9a",
+            "UAP-EV-20261127160604-cc23ec07",
+            "UAP-EV-20261127160606-a1beea80",
+            "UAP-EV-20261127160608-2a9e7ada",
+            "UAP-EV-20261127160611-fdc65030",
+            "UAP-EV-20261127160613-a5d7aee1",
+            "UAP-EV-20261127160615-818db264",
+            "UAP-EV-20261127160617-9c328921"
+          ],
+          "findings": [],
+          "checks_run": [
+            "all_steps_succeeded",
+            "step_evidence_present",
+            "state_history_legal",
+            "no_blocking_errors"
+          ],
+          "commands": [],
+          "summary": "4 checks, 0 blocking findings",
+          "duration_ms": 0,
+          "block_category": null
+        }
+      ],
+      "blocked_reasons": [],
+      "error": null,
+      "health_probe": false
     }
   }
 }

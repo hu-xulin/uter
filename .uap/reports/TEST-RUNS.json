@@ -1205,10 +1205,29 @@
         "UAP-EV-20261127111046-55a04908"
       ],
       "recorded_at": "2026-11-27T11:10:45.736Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/runtime.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 56483,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 25,
+        "pass": 25,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/runtime.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127160619-6fa54e0e"
+      ],
+      "recorded_at": "2026-11-27T16:06:18.794Z"
     }
   ],
   "schema_version": "1.0",
-  "generated_at": "2026-11-27T11:10:45.736Z",
+  "generated_at": "2026-11-27T16:06:18.794Z",
   "executor_ids": [
     "quality.engineering",
     "quality.testing",
@@ -1217,19 +1236,19 @@
   "node_version": "v22.22.2",
   "environment": "local",
   "summary": {
-    "total": 36,
-    "executed": 36,
-    "passed": 28,
+    "total": 37,
+    "executed": 37,
+    "passed": 29,
     "blocked": 0,
     "failed": 8
   },
   "test_plan": {
-    "generated_at": "2026-11-27T11:10:47.515Z",
+    "generated_at": "2026-11-27T16:06:21.005Z",
     "layers": [
       {
         "layer": "unit.go",
         "source": "*_test.go",
-        "discovered_test_files": 539,
+        "discovered_test_files": 542,
         "sample": [
           "main_docs_test.go",
           "common/api_type_task_plugin_test.go",
@@ -1247,7 +1266,7 @@
       {
         "layer": "unit.web",
         "source": "web/src/**/*.test.ts(x)",
-        "discovered_test_files": 406,
+        "discovered_test_files": 407,
         "sample": [
           "web/src/components/__tests__/cjk-term-text.test.tsx",
           "web/src/components/__tests__/command-menu.test.tsx",

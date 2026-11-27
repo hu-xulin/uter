@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127160619-6fa54e0e",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T16:06:19.889Z",
+  "started_at": "2026-11-27T16:05:23.406Z",
+  "finished_at": "2026-11-27T16:06:19.889Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127160039-606797da",
+    "git_head": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
+    "worktree_fingerprint": "311ad1472eb999065684e25bff8dda52b57cd7b754d37f9b812ab436e9c1d90b",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127160039-606797da",
+  "git_head": "4dad259bfd68903e70dc5fc5584ecde3e30f0542",
+  "worktree_fingerprint": "311ad1472eb999065684e25bff8dda52b57cd7b754d37f9b812ab436e9c1d90b",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/runtime.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 56483,
+  "inputs": "{\"mode\":\"selected\",\"test_files\":[\".uap/tests/runtime.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 1 files -> exit 0, tap pass=25 fail=0",
+  "content_hash": "e7a9dd4a8e526fd31654519f525b112a901a3675839d1e833b3f12ab8765ab53"
+}
