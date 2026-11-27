@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261126112018-31490c0c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T11:20:18.788Z",
+  "started_at": "2026-11-26T11:20:18.788Z",
+  "finished_at": "2026-11-26T11:20:18.788Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126112018-c2e6cbb4",
+    "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+    "worktree_fingerprint": "262aad24a9dc88318e9116a48f7189f4ae4a39b370b94a096e5d84179898ce93",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126112018-c2e6cbb4",
+  "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "worktree_fingerprint": "262aad24a9dc88318e9116a48f7189f4ae4a39b370b94a096e5d84179898ce93",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.execution_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.execution_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.execution_integrity 实检: task_execution=PASS(tasks.json: 3839 任务, SUCCEEDED=1349, 含 evidence_refs 的 SUCCEEDED=1039); dependency_order=PASS(复核 UAP-TASK-HEALTH-20261112104051-18ebd06c 的 3 次迁移, 非法迁移=0, 终态=SUCCEEDED); bounded_retry=PASS(execution.max_repair_attempts_per_root_cause=3; SUCCEEDED 任务 retry_count<=上限=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12477 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | node 子进程复验 TASK_TRANSITIONS/executorResult: exit_code=0 terminal=true shape=true",
+  "content_hash": "c4e7b023558130f203855b33be187c8864c119bae0c7124b4cb45da5bb207552"
+}

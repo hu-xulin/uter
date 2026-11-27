@@ -1,0 +1,42 @@
+{
+  "evidence_id": "UAP-EV-20261126075227-44a0000b",
+  "kind": "task_step",
+  "task_id": "UAP-TASK-INTERRUPT-20261126075225-5f4bac7d",
+  "trace_id": "UAP-TRACE-20261126075225-c0393cdd",
+  "specification_ids": [
+    "UAP-03-004"
+  ],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T07:52:27.127Z",
+  "started_at": "2026-11-26T07:52:27.127Z",
+  "finished_at": "2026-11-26T07:52:27.127Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126075154-dde2e9ce",
+    "git_head": "13704c74cb01ce97c178b917a7df2e1789de7fdf",
+    "worktree_fingerprint": "f5b236fb865dd0ce90cc35b5ef4fda52de77adc7c837df05b61395b7149710ce",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126075154-dde2e9ce",
+  "git_head": "13704c74cb01ce97c178b917a7df2e1789de7fdf",
+  "worktree_fingerprint": "f5b236fb865dd0ce90cc35b5ef4fda52de77adc7c837df05b61395b7149710ce",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "step:probe.step2",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"step_id\":\"step-2\",\"attempts\":1}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "probe.step2 succeeded",
+  "content_hash": "1054239986735559a3782207f2ab254d6d6ea437c2a16e89ab32227ea4634f22"
+}

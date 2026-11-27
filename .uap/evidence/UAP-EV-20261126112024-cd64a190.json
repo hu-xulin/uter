@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261126112024-cd64a190",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T11:20:24.570Z",
+  "started_at": "2026-11-26T11:20:24.570Z",
+  "finished_at": "2026-11-26T11:20:24.570Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126112021-7400557a",
+    "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+    "worktree_fingerprint": "fb24091e734085a88eab01a3aba647922d5a71dd8bb51605493550ec589a2431",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126112021-7400557a",
+  "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "worktree_fingerprint": "fb24091e734085a88eab01a3aba647922d5a71dd8bb51605493550ec589a2431",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate architecture.api_database_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"architecture.api_database_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "architecture.api_database_integrity 实检: api_contracts=PASS(router/*.go=26 个; api-router.go=true; 插件契约 v1.schema.json=true; 规范含 API/契约/幂等=true); schema_integrity=PASS(model/*.go=237 个; go.mod/common/json.go 存在=true; 规范含 数据库/字段/约束=true); migration_safety=PASS(model/migration_dialector.go=true; common/quota_math.go=true; 规范含 迁移/幂等/三方言/备份/回滚=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12484 个 | 基于真实 Go 代码目录(router 26 / model 193 个 .go)+插件契约+三方言迁移文件做静态核对; 不连接任何数据库",
+  "content_hash": "416a6ffe06997b5924268100b97a5315bcfa388cc5d88619b46138967a4cb341"
+}

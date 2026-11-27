@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261126120547-6ea64e9d",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T12:05:47.374Z",
+  "started_at": "2026-11-26T12:05:47.374Z",
+  "finished_at": "2026-11-26T12:05:47.374Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126120450-168a4daa",
+    "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+    "worktree_fingerprint": "ffa7f76b82d290a6b501e7b79678d0f423b7ab2183daeac713e500f7cf371fde",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126120450-168a4daa",
+  "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+  "worktree_fingerprint": "ffa7f76b82d290a6b501e7b79678d0f423b7ab2183daeac713e500f7cf371fde",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate product.prototype_consistency",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"product.prototype_consistency\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "product.prototype_consistency 实检: prd_mapping=PASS(docs/product/prd/*.md=56; product-model 每个 feature 含 prd 字段=true; 规范映射语义=true); prototype_mapping=PASS(原型 .md=56 .html=56; prototype-registry 含 PP-/PROTO- ID=true; product-model 每个 feature 含 prototype=true); change_detection=PASS(change-registry conflicts:[]=true CHG-=true; product-model conflicts=0 snapshots=1; history/v1.json 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12662 个 | 真实统计 PRD/原型投影文件(各 56) + change-registry 冲突为空 + 历史快照",
+  "content_hash": "c363822fa17a43ef459ccec09544f64826632058ea25d3a50a4b56c1e674ffc4"
+}

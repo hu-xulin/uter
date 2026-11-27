@@ -1,0 +1,46 @@
+{
+  "evidence_id": "UAP-EV-20261126115235-8ad96400",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T11:52:35.387Z",
+  "started_at": "2026-11-26T11:52:35.387Z",
+  "finished_at": "2026-11-26T11:52:35.387Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126115209-8ac441b1",
+    "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+    "worktree_fingerprint": "96a94ae193d45e66682d6f623510aa9f7b98a9e0dfb57c1eb8f688a0bd448ab7",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126115209-8ac441b1",
+  "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+  "worktree_fingerprint": "96a94ae193d45e66682d6f623510aa9f7b98a9e0dfb57c1eb8f688a0bd448ab7",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.dependency_integrity",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.dependency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [
+    {
+      "severity": "BLOCKER",
+      "code": "check.unused_dependencies",
+      "message": "unused_dependencies: Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部={\"issues\":[{\"file\":\"src/features/system-settings/hooks/use-reset-form.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[{\"name\":\"releaseResetPause\",\"line\":60,\"col\":17,\"pos\":2163}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true"
+    }
+  ],
+  "summary": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=FAIL(Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部={\"issues\":[{\"file\":\"src/features/system-settings/hooks/use-reset-form.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[{\"name\":\"releaseResetPause\",\"line\":60,\"col\":17,\"pos\":2163}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12567 个 | 真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖",
+  "content_hash": "5355d0f73c4f36de3ed8db415423164c1dd2e28b4abd440fa8e4c3af8c8c48e7"
+}

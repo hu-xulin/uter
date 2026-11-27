@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261126111944-49b8f249",
+  "kind": "runtime_test_run",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-26T11:19:44.658Z",
+  "started_at": "2026-11-26T11:15:46.096Z",
+  "finished_at": "2026-11-26T11:19:44.658Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261126111850-8a3d7c7d",
+    "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+    "worktree_fingerprint": "262aad24a9dc88318e9116a48f7189f4ae4a39b370b94a096e5d84179898ce93",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261126111850-8a3d7c7d",
+  "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "worktree_fingerprint": "262aad24a9dc88318e9116a48f7189f4ae4a39b370b94a096e5d84179898ce93",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/ci-workflow-evidence.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs .uap/tests/worktree-fingerprint-exclusions.test.mjs",
+  "exit_code": 0,
+  "duration_ms": 238562,
+  "inputs": "{\"mode\":\"all\",\"test_files\":[\".uap/tests/architecture-adr-traceability.test.mjs\",\".uap/tests/ci-workflow-evidence.test.mjs\",\".uap/tests/deployment-drill-classification.test.mjs\",\".uap/tests/execution-identity-race.test.mjs\",\".uap/tests/execution-lifecycle.test.mjs\",\".uap/tests/final-acceptance-capabilities.test.mjs\",\".uap/tests/final-acceptance-negative.test.mjs\",\".uap/tests/final-remediation-regression.test.mjs\",\".uap/tests/independent-repair-review.test.mjs\",\".uap/tests/phase2-requirement-verification.test.mjs\",\".uap/tests/phase2-security-negative.test.mjs\",\".uap/tests/real-code-repair-boundaries.test.mjs\",\".uap/tests/real-repair-e2e.test.mjs\",\".uap/tests/requirement-behavior-suite.test.mjs\",\".uap/tests/requirement-honesty.test.mjs\",\".uap/tests/runtime.test.mjs\",\".uap/tests/status-consistency.test.mjs\",\".uap/tests/status-snapshot.test.mjs\",\".uap/tests/test-collector.test.mjs\",\".uap/tests/worktree-fingerprint-exclusions.test.mjs\"]}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "node --test 20 files -> exit 0, tap pass=218 fail=0",
+  "content_hash": "d5ba95d7e81f87de5ff7dae0946b8cafa1423812614428d3e5d2b8648e076eae"
+}
