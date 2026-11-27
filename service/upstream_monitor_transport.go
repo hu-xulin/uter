@@ -284,7 +284,11 @@ func parseUpstreamSSE(reader io.Reader, protocol string, start time.Time, result
 			continue
 		}
 		payload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
-		if payload == "" || payload == "[DONE]" {
+		if payload == "[DONE]" {
+			result.SSEEnded = true
+			continue
+		}
+		if payload == "" {
 			continue
 		}
 		delta, finish, usage, err := parseUpstreamSSEFrame([]byte(payload), protocol)
@@ -503,4 +507,160 @@ func dedupeAndSortModels(models []string) []string {
 	}
 	sort.Strings(result)
 	return result
+}
+
+// upstreamRawChat sends one chat request to the upstream and returns the raw
+// status code and body. It is used by probes that need to inspect error shape
+// (invalid parameters, over-long input) or rate-limit behaviour, where a
+// non-2xx is the expected signal rather than a failure of the probe transport.
+func upstreamRawChat(ctx context.Context, cfg UpstreamProbeConfig, body any) (int, []byte, error) {
+	endpoint, err := upstreamEndpoint(cfg)
+	if err != nil {
+		return 0, nil, err
+	}
+	req, err := upstreamNewRequest(ctx, cfg, endpoint, body)
+	if err != nil {
+		return 0, nil, err
+	}
+	client, err := upstreamHTTPClient(cfg)
+	if err != nil {
+		return 0, nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer resp.Body.Close()
+	limited, err := io.ReadAll(io.LimitReader(resp.Body, upstreamMaxProbeBody))
+	return resp.StatusCode, limited, err
+}
+
+// upstreamPostRaw sends a POST with the monitor credentials to an explicit URL.
+// Used for task submission endpoints.
+func upstreamPostRaw(ctx context.Context, cfg UpstreamProbeConfig, url string, body any) (int, []byte, error) {
+	req, err := upstreamNewRequest(ctx, cfg, url, body)
+	if err != nil {
+		return 0, nil, err
+	}
+	client, err := upstreamHTTPClient(cfg)
+	if err != nil {
+		return 0, nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer resp.Body.Close()
+	limited, err := io.ReadAll(io.LimitReader(resp.Body, upstreamMaxProbeBody))
+	return resp.StatusCode, limited, err
+}
+
+// upstreamGetRaw sends a GET with the monitor credentials to an explicit URL.
+// Used for task polling and artifact listing.
+func upstreamGetRaw(ctx context.Context, cfg UpstreamProbeConfig, url string) (int, []byte, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return 0, nil, err
+	}
+	if cfg.Protocol == UpstreamProtocolAnthropic {
+		req.Header.Set("x-api-key", cfg.APIKey)
+		req.Header.Set("anthropic-version", "2023-06-01")
+	} else {
+		req.Header.Set("Authorization", "Bearer "+cfg.APIKey)
+	}
+	client, err := upstreamHTTPClient(cfg)
+	if err != nil {
+		return 0, nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, nil, err
+	}
+	defer resp.Body.Close()
+	limited, err := io.ReadAll(io.LimitReader(resp.Body, upstreamMaxProbeBody))
+	return resp.StatusCode, limited, err
+}
+
+// upstreamStructuredErrorOK reports whether a body is a parseable structured
+// error object. Both OpenAI ({error:{message,...}}) and Anthropic
+// ({type:"error",error:{...}}) shapes are accepted.
+func upstreamStructuredErrorOK(status int, body []byte) bool {
+	if status < 400 || status > 499 {
+		return false
+	}
+	var openai struct {
+		Error struct {
+			Message string `json:"message"`
+		} `json:"error"`
+		Type string `json:"type"`
+	}
+	if common.Unmarshal(body, &openai) == nil && (openai.Error.Message != "" || openai.Type != "") {
+		return true
+	}
+	var anthropic struct {
+		Type  string `json:"type"`
+		Error struct {
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	return common.Unmarshal(body, &anthropic) == nil && anthropic.Error.Message != ""
+}
+
+// throughUterChat sends a minimal chat request through the Uter platform itself
+// (not directly to the upstream). The response carries the platform request id
+// in a header, which the caller uses to look up the real ledger deduction.
+// The token is used only in memory and never logged.
+func throughUterChat(ctx context.Context, cfg UpstreamProbeConfig, prompt string) (status int, body []byte, requestID string, err error) {
+	base := strings.TrimRight(strings.TrimSpace(cfg.UterBaseURL), "/")
+	if base == "" || strings.TrimSpace(cfg.UterToken) == "" {
+		return 0, nil, "", fmt.Errorf("uter base url or token is empty")
+	}
+	endpoint := strings.TrimSuffix(base, "/v1") + "/v1/chat/completions"
+	payload := openAIChatRequest{
+		Model:       cfg.Model,
+		Messages:    []upstreamMsg{{Role: "user", Content: prompt}},
+		MaxTokens:   probeBudgetMath,
+		Temperature: 0,
+	}
+	encoded, err := common.Marshal(payload)
+	if err != nil {
+		return 0, nil, "", err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(encoded))
+	if err != nil {
+		return 0, nil, "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+strings.TrimSpace(cfg.UterToken))
+	client, err := upstreamHTTPClient(cfg)
+	if err != nil {
+		return 0, nil, "", err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return 0, nil, "", err
+	}
+	defer resp.Body.Close()
+	requestID = resp.Header.Get(common.RequestIdKey)
+	limited, readErr := io.ReadAll(io.LimitReader(resp.Body, upstreamMaxProbeBody))
+	return resp.StatusCode, limited, requestID, readErr
+}
+
+// parseChatUsage extracts token counts from a non-streaming chat response body.
+func parseChatUsage(body []byte) (prompt, completion int) {
+	var parsed struct {
+		Usage struct {
+			PromptTokens     int `json:"prompt_tokens"`
+			CompletionTokens int `json:"completion_tokens"`
+		} `json:"usage"`
+		Choices []struct {
+			Message struct {
+				Content string `json:"content"`
+			} `json:"message"`
+		} `json:"choices"`
+	}
+	if common.Unmarshal(body, &parsed) != nil {
+		return 0, 0
+	}
+	return parsed.Usage.PromptTokens, parsed.Usage.CompletionTokens
 }

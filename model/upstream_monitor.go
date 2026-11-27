@@ -102,6 +102,8 @@ type UpstreamMonitorReport struct {
 	Dimensions string `json:"dimensions" gorm:"type:text;not null"`
 	Metrics    string `json:"metrics" gorm:"type:text;not null"`
 	Probes     string `json:"probes" gorm:"type:text;not null"`
+	Billing    string `json:"billing" gorm:"type:text"`
+	AsyncTask  string `json:"async_task" gorm:"type:text"`
 	Error      string `json:"error" gorm:"type:text"`
 	CreatedAt  int64  `json:"created_at" gorm:"bigint;not null;index"`
 }

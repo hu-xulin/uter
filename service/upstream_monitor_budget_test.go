@@ -92,8 +92,10 @@ func TestRunUpstreamMonitor_StandardDepthMinimalBudget(t *testing.T) {
 		"降低预算不得破坏可用性判定")
 }
 
-// full 深度跑 6 次 chat 探测（主 chat / math / recall×2 / inject / repeat）。
-// 新预算 256 + 32 + 16 + 16 + 48 + 32 = 400；旧预算 832。
+// full 深度跑 13 次 chat 探测。随着"完全覆盖文档 11 维度"需求落地，
+// full 深度新增了高级能力（JSON/工具）、长上下文、429 限流并发、错误边界
+// 四类主动探测。这些探测全部使用最小预算（4 或 32），单次上限 256 不变，
+// 总量上限从 420 提升到 560——这是维度覆盖扩展的合理基线，仍远低于旧值 832。
 func TestRunUpstreamMonitor_FullDepthMinimalBudget(t *testing.T) {
 	var budgets []int
 	server := newBudgetProbeServer(t, &budgets)
@@ -104,11 +106,16 @@ func TestRunUpstreamMonitor_FullDepthMinimalBudget(t *testing.T) {
 		Protocol: UpstreamProtocolOpenAI, Depth: UpstreamDepthFull, Timeout: 5 * time.Second,
 	})
 
-	require.Len(t, budgets, 6, "full 深度应有 6 次 chat 探测")
+	require.Len(t, budgets, 13, "full 深度应有 13 次 chat 探测（含 11 维度覆盖探测）")
 	for _, b := range budgets {
 		assert.LessOrEqual(t, b, 256, "单次预算不得超过 256")
 	}
-	assert.LessOrEqual(t, sumBudgets(budgets), 420,
-		"full 深度总预算须体现最低消费（旧值 832）")
+	assert.LessOrEqual(t, sumBudgets(budgets), 560,
+		"full 深度总预算须体现最低消费（旧值 832，维度扩展后基线 520）")
 	assert.NotContains(t, result.HardGates, "upstream_unreachable")
+
+	// 新增探测的预算必须均为极小值（4 或 32），不得出现无界预算。
+	for _, b := range budgets {
+		assert.Contains(t, []int{4, 16, 32, 48, 256}, b, "探测预算必须来自受控集合")
+	}
 }

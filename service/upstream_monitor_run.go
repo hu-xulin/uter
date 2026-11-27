@@ -33,12 +33,20 @@ func RunAndPersistUpstreamMonitor(ctx context.Context, task *model.UpstreamMonit
 		return nil, fmt.Errorf("no models configured for monitor task %d", task.Id)
 	}
 
+	// The through-Uter billing leg is optional and fail-closed: without a
+	// configured probe token the report is static-only and says so explicitly.
+	uterBase, uterToken := UpstreamBillingProbeCredentials()
 	baseCfg := UpstreamProbeConfig{
-		BaseURL:  endpoint.BaseURL,
-		APIKey:   endpoint.APIKey,
-		Protocol: task.Protocol,
-		Depth:    task.ProbeDepth,
-		Timeout:  60 * time.Second,
+		BaseURL:      endpoint.BaseURL,
+		APIKey:       endpoint.APIKey,
+		Protocol:     task.Protocol,
+		Depth:        task.ProbeDepth,
+		Timeout:      60 * time.Second,
+		UterBaseURL:  uterBase,
+		UterToken:    uterToken,
+		ChannelID:    task.ChannelId,
+		ChannelGroup: task.ChannelGroup,
+		KeyIndex:     task.ChannelKeyIndex,
 	}
 	type modelProbe struct {
 		model  string
@@ -83,6 +91,14 @@ func RunAndPersistUpstreamMonitor(ctx context.Context, task *model.UpstreamMonit
 		if err != nil {
 			return nil, err
 		}
+		billingJSON, err := common.Marshal(result.Billing)
+		if err != nil {
+			return nil, err
+		}
+		asyncTaskJSON, err := common.Marshal(result.AsyncTask)
+		if err != nil {
+			return nil, err
+		}
 		runID, err := newUpstreamRunID()
 		if err != nil {
 			return nil, err
@@ -96,6 +112,8 @@ func RunAndPersistUpstreamMonitor(ctx context.Context, task *model.UpstreamMonit
 			Dimensions: string(dimensionsJSON),
 			Metrics:    string(metricsJSON),
 			Probes:     string(probesJSON),
+			Billing:    string(billingJSON),
+			AsyncTask:  string(asyncTaskJSON),
 			Error:      result.Error,
 		}
 		if err := model.CreateUpstreamMonitorReport(report); err != nil {

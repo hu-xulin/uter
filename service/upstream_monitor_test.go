@@ -62,7 +62,8 @@ func TestRunUpstreamMonitor_GoodEndpoint(t *testing.T) {
 	}
 	result := RunUpstreamMonitor(context.Background(), cfg)
 
-	require.Len(t, result.Dimensions, 7)
+	// 文档 11 维度 + 监测独有 3 维度（identity/security/consistency）= 14。
+	require.Len(t, result.Dimensions, 14)
 	assert.True(t, result.Metrics.ModelsEndpointOK)
 	assert.True(t, result.Metrics.ModelAdvertised)
 	assert.Equal(t, http.StatusOK, result.Metrics.HTTPStatus)
@@ -86,9 +87,12 @@ func TestRunUpstreamMonitor_UnreachableEndpoint(t *testing.T) {
 
 	assert.Equal(t, UpstreamVerdictFail, result.Verdict)
 	assert.Contains(t, result.HardGates, "upstream_unreachable")
-	require.Len(t, result.Dimensions, 1)
-	assert.Equal(t, "availability", result.Dimensions[0].Key)
+	// 上游不可达：connectivity/availability 记 0 分，其余 12 维度标记为 skipped。
+	require.Len(t, result.Dimensions, 14)
+	assert.Equal(t, DimensionConnectivity, result.Dimensions[0].Key)
 	assert.Equal(t, 0, result.Dimensions[0].Score)
+	assert.Equal(t, DimensionAvailability, result.Dimensions[1].Key)
+	assert.Equal(t, 0, result.Dimensions[1].Score)
 }
 
 func TestUpstreamComputeThroughput(t *testing.T) {

@@ -62,7 +62,16 @@ func TestShouldAutoMonitorChannel(t *testing.T) {
 	draftSetting, err := common.Marshal(dto.ChannelOtherSettings{Draft: true})
 	require.NoError(t, err)
 	draft := newSyncChannel(4, "draft", "default", "https://d.example.com", "m1", string(draftSetting))
+	draft.Status = 0
 	assert.False(t, ShouldAutoMonitorChannel(draft), "unpublished draft must be excluded")
+
+	// A published channel (status=1) whose older publish path left settings.draft
+	// behind is live and must still be enrolled. This was the case for the
+	// Bailian channel: enabled and serving traffic, yet missing from monitoring
+	// because the stale draft flag was read as "unpublished".
+	staleDraft := newSyncChannel(7, "published-with-stale-draft", "default", "https://d.example.com", "m1", string(draftSetting))
+	staleDraft.Status = 1
+	assert.True(t, ShouldAutoMonitorChannel(staleDraft), "enabled channel with stale draft flag must be monitored")
 
 	noModels := newSyncChannel(5, "empty", "default", "https://e.example.com", "", "")
 	assert.False(t, ShouldAutoMonitorChannel(noModels))

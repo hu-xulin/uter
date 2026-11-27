@@ -524,6 +524,8 @@ func upstreamMonitorReportToResponse(report *model.UpstreamMonitorReport) gin.H 
 		"dimensions": decodeJSONField(report.Dimensions),
 		"metrics":    decodeJSONField(report.Metrics),
 		"probes":     decodeJSONField(report.Probes),
+		"billing":    decodeJSONField(report.Billing),
+		"async_task": decodeJSONField(report.AsyncTask),
 		"error":      report.Error,
 		"created_at": report.CreatedAt,
 	}

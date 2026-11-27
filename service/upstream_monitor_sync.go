@@ -74,7 +74,12 @@ func ShouldAutoMonitorChannel(channel *model.Channel) bool {
 	if channel == nil || channel.Id <= 0 {
 		return false
 	}
-	if channel.GetOtherSettings().Draft {
+	// A draft is an unpublished channel: status=0 AND the wizard's draft flag.
+	// An enabled channel (status=1) is live even if an older publish path only
+	// flipped status and left settings.draft behind. Treating that stale flag
+	// as an unpublished draft silently excludes a production channel from
+	// monitoring, so require both conditions.
+	if channel.GetOtherSettings().Draft && channel.Status == 0 {
 		return false
 	}
 	if IsInternalChannel(channel) {
