@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261126111216-453dee92","git_head":"0dca382852b892226dc6c198c301646bb734bfec","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-26T11:12:28.409Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261127120252-eea13c10","git_head":"f7574ea66fda78b10a6eedb24a8ad10279fe9a9d","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-27T12:03:01.562Z"} -->
 
-- 生成时间：2026-11-26T11:12:28.409Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-27T12:03:01.562Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,8 +11,8 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261126111216-453dee92` |
-| git_head | `0dca382852b892226dc6c198c301646bb734bfec` |
+| execution_id | `UAP-EXEC-20261127120252-eea13c10` |
+| git_head | `f7574ea66fda78b10a6eedb24a8ad10279fe9a9d` |
 | **overall_status** | **IMPLEMENTED_NOT_VERIFIED** |
 | claim_allowed | false |
 | 适用要求 / 已验证 | 538 / 0 |
@@ -21,7 +21,7 @@
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`5 test(s) failed`；`538/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
+> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`538/538 applicable requirements lack current valid evidence`；`416 requirement(s) have no evidence record`；`6 unresolved P0 blocker(s)`
 
 ## 统一章节要求
 
@@ -33,7 +33,7 @@
 
 | 编号 | 名称 | 文件 | 关键级别 | 验证状态 | 头部声明 | 执行器 | 验证器 | 依赖 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| UAP-00-001 | UAP 核心架构规范 | [`.uap/core/UAP-00-001-CORE-ARCHITECTURE.md`](../.uap/core/UAP-00-001-CORE-ARCHITECTURE.md) (14719B) | P0 | IMPLEMENTED_NOT_VERIFIED (6/18) | ACTIVE | `core.architecture` | `core.architecture_integrity` | — |
+| UAP-00-001 | UAP 核心架构规范 | [`.uap/core/UAP-00-001-CORE-ARCHITECTURE.md`](../.uap/core/UAP-00-001-CORE-ARCHITECTURE.md) (14719B) | P0 | IMPLEMENTED_NOT_VERIFIED (5/18) | ACTIVE | `core.architecture` | `core.architecture_integrity` | — |
 | UAP-00-002 | 自主执行规范 | [`.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md`](../.uap/core/UAP-00-002-AUTONOMOUS-EXECUTION.md) (13945B) | P0 | IMPLEMENTED_NOT_VERIFIED (13/20) | ACTIVE | `core.autonomous_execution` | `core.execution_integrity` | UAP-00-001 |
 | UAP-00-003 | 自主工程安全边界规范 | [`.uap/core/UAP-00-003-SECURITY-BOUNDARY.md`](../.uap/core/UAP-00-003-SECURITY-BOUNDARY.md) (14710B) | P0 | IMPLEMENTED_NOT_VERIFIED (14/19) | ACTIVE | `security.policy` | `security.permission_boundary` | UAP-00-001 |
 | UAP-00-004 | 证据与状态管理规范 | [`.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md`](../.uap/core/UAP-00-004-EVIDENCE-AND-STATE.md) (14278B) | P0 | IMPLEMENTED_NOT_VERIFIED (17/19) | ACTIVE | `core.evidence` | `core.evidence_integrity` | UAP-00-001 |

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T12:07:46.046Z",
+  "generated_at": "2026-11-27T11:12:57.364Z",
   "target": "http://localhost:3000",
   "blocked": false,
   "browser": "system chrome via playwright (headless, real render)",
@@ -65,7 +65,9 @@
         "touchstart": 1,
         "pointerdown": 1
       },
-      "console_errors": [],
+      "console_errors": [
+        "Failed to load resource: net::ERR_NETWORK_CHANGED"
+      ],
       "http_failures": [],
       "page_errors": []
     },
@@ -81,7 +83,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
@@ -101,7 +103,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -131,7 +133,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
@@ -151,7 +153,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -181,7 +183,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [294x40] eff=[294x40]",
@@ -201,7 +203,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -328,7 +330,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
@@ -348,7 +350,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -378,7 +380,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
@@ -398,7 +400,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -428,7 +430,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [279x40] eff=[279x40]",
@@ -448,7 +450,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -575,7 +577,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
@@ -595,7 +597,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -625,7 +627,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
@@ -645,7 +647,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -675,7 +677,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [334x40] eff=[334x40]",
@@ -695,7 +697,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -822,7 +824,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -842,7 +844,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -872,7 +874,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -892,7 +894,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -922,7 +924,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -942,7 +944,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -1064,7 +1066,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -1084,7 +1086,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -1109,7 +1111,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -1129,7 +1131,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -1154,7 +1156,7 @@
       "overflow_samples": [],
       "small_touch_targets": {
         "below_uter_recommended_44": {
-          "count": 10,
+          "count": 9,
           "samples": [
             "a.absolute.top-4 \"优特智能\" [114x26] eff=[114x26]",
             "button.group/button.inline-flex \"GitHub使用 GitHub 登录\" [416x40] eff=[416x40]",
@@ -1174,7 +1176,7 @@
           "disabled_or_sr_only": 0,
           "label_wrapped_measured": 1,
           "inline_exception": 3,
-          "pseudo_extended_pass": 10
+          "pseudo_extended_pass": 9
         }
       },
       "small_fonts": {
@@ -1237,7 +1239,7 @@
     "small_font_rows": 0,
     "page_error_rows": 0,
     "touch_target_44_coverage": {
-      "interactive_elements_below_44": 164,
+      "interactive_elements_below_44": 152,
       "interactive_elements_below_24": 0,
       "note": "44x44 为 Uter 推荐（§15.3），达标率供 UI 迭代跟踪；24x24 为 WCAG 硬线"
     },

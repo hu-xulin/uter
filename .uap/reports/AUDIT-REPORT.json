@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-24T07:44:20.869Z",
+  "generated_at": "2026-11-27T11:11:00.656Z",
   "registry": {
     "ok": true,
     "findings": 0
   },
   "audit": {
-    "generated_at": "2026-11-24T07:44:20.857Z",
+    "generated_at": "2026-11-27T11:11:00.643Z",
     "domains": [
       {
         "domain": "authentication",
@@ -22,7 +22,7 @@
           {
             "severity": "INFO",
             "code": "authz_controller_token_files",
-            "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 223",
+            "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 235",
             "file": "controller/",
             "domain": "authentication"
           },
@@ -43,7 +43,7 @@
           {
             "severity": "INFO",
             "code": "billing_service_files",
-            "message": "service/ 下计费/quota/结算相关文件真实计数 = 29",
+            "message": "service/ 下计费/quota/结算相关文件真实计数 = 30",
             "file": "service/",
             "domain": "billing"
           },
@@ -71,14 +71,14 @@
           {
             "severity": "INFO",
             "code": "pricing_model_files",
-            "message": "model/ 下 price/pricing/model 相关文件真实计数 = 24",
+            "message": "model/ 下 price/pricing/model 相关文件真实计数 = 26",
             "file": "model/",
             "domain": "pricing"
           },
           {
             "severity": "INFO",
             "code": "pricing_feature_presence",
-            "message": "web/src/features/pricing/ exists=true，真实文件计数 = 74（存在性探测，仅 INFO）",
+            "message": "web/src/features/pricing/ exists=true，真实文件计数 = 84（存在性探测，仅 INFO）",
             "file": "web/src/features/pricing/",
             "domain": "pricing"
           },
@@ -134,7 +134,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_src_files",
-            "message": "web/src/design-system/ 真实文件计数 = 37",
+            "message": "web/src/design-system/ 真实文件计数 = 41",
             "file": "web/src/design-system/",
             "domain": "frontend-design-system"
           },
@@ -148,7 +148,7 @@
           {
             "severity": "INFO",
             "code": "designsystem_docs_files",
-            "message": "docs/design-system/ 真实文件计数 = 110",
+            "message": "docs/design-system/ 真实文件计数 = 211",
             "file": "docs/design-system/",
             "domain": "frontend-design-system"
           }
@@ -162,7 +162,7 @@
           {
             "severity": "INFO",
             "code": "cicd_ci_yml_content",
-            "message": ".github/workflows/ci.yml 真实字节长度 = 33149，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+            "message": ".github/workflows/ci.yml 真实字节长度 = 35482，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
             "file": ".github/workflows/ci.yml",
             "domain": "ci-cd"
           },
@@ -211,7 +211,7 @@
           {
             "severity": "INFO",
             "code": "env_git_status",
-            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=280",
+            "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=318",
             "domain": "environment"
           },
           {
@@ -233,17 +233,17 @@
       {
         "path": "controller/",
         "exists": true,
-        "file_count": 223
+        "file_count": 235
       },
       {
         "path": "model/",
         "exists": true,
-        "file_count": 236
+        "file_count": 248
       },
       {
         "path": "service/",
         "exists": true,
-        "file_count": 231
+        "file_count": 269
       },
       {
         "path": "middleware/",
@@ -263,12 +263,12 @@
       {
         "path": "web/src/",
         "exists": true,
-        "file_count": 2155
+        "file_count": 2308
       },
       {
         "path": "web/src/features/",
         "exists": true,
-        "file_count": 1105
+        "file_count": 1200
       },
       {
         "path": "scripts/",
@@ -283,7 +283,7 @@
       {
         "path": "docs/design-system/",
         "exists": true,
-        "file_count": 110
+        "file_count": 211
       },
       {
         "path": "relaykit/",
@@ -302,7 +302,7 @@
         "exit_code": 0,
         "timed_out": false,
         "spawn_error": null,
-        "stdout_preview": "M .uap/SPECIFICATION-INDEX.md\n M .uap/reports/AGENT-COMPLIANCE-REPORT.md\n M .uap/reports/AUDIT-REPORT.json\n M .uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-BOUNDARY-TMP.md\n M .uap/reports/AUTO-REPAIR-",
+        "stdout_preview": "M .uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-BOUNDARY-TMP.md\n M .uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-CANARY-REPAIR.md\n M .uap/reports/AUTO-REPAIR-REAL-CODE-REPORT-UAP-NEG-NO-DEFECT.md\n M .",
         "stderr_preview": ""
       },
       {
@@ -322,7 +322,7 @@
         "stderr_preview": ""
       }
     ],
-    "files_scanned_total": 4454,
+    "files_scanned_total": 4865,
     "findings": [
       {
         "severity": "INFO",
@@ -334,7 +334,7 @@
       {
         "severity": "INFO",
         "code": "authz_controller_token_files",
-        "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 223",
+        "message": "controller/ 下登录/令牌/用户相关文件真实计数 = 235",
         "file": "controller/",
         "domain": "authentication"
       },
@@ -348,7 +348,7 @@
       {
         "severity": "INFO",
         "code": "billing_service_files",
-        "message": "service/ 下计费/quota/结算相关文件真实计数 = 29",
+        "message": "service/ 下计费/quota/结算相关文件真实计数 = 30",
         "file": "service/",
         "domain": "billing"
       },
@@ -369,14 +369,14 @@
       {
         "severity": "INFO",
         "code": "pricing_model_files",
-        "message": "model/ 下 price/pricing/model 相关文件真实计数 = 24",
+        "message": "model/ 下 price/pricing/model 相关文件真实计数 = 26",
         "file": "model/",
         "domain": "pricing"
       },
       {
         "severity": "INFO",
         "code": "pricing_feature_presence",
-        "message": "web/src/features/pricing/ exists=true，真实文件计数 = 74（存在性探测，仅 INFO）",
+        "message": "web/src/features/pricing/ exists=true，真实文件计数 = 84（存在性探测，仅 INFO）",
         "file": "web/src/features/pricing/",
         "domain": "pricing"
       },
@@ -418,7 +418,7 @@
       {
         "severity": "INFO",
         "code": "designsystem_src_files",
-        "message": "web/src/design-system/ 真实文件计数 = 37",
+        "message": "web/src/design-system/ 真实文件计数 = 41",
         "file": "web/src/design-system/",
         "domain": "frontend-design-system"
       },
@@ -432,14 +432,14 @@
       {
         "severity": "INFO",
         "code": "designsystem_docs_files",
-        "message": "docs/design-system/ 真实文件计数 = 110",
+        "message": "docs/design-system/ 真实文件计数 = 211",
         "file": "docs/design-system/",
         "domain": "frontend-design-system"
       },
       {
         "severity": "INFO",
         "code": "cicd_ci_yml_content",
-        "message": ".github/workflows/ci.yml 真实字节长度 = 33149，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
+        "message": ".github/workflows/ci.yml 真实字节长度 = 35482，非空指令锚点匹配 4/4: [jobs:, steps:, uses:, run:]",
         "file": ".github/workflows/ci.yml",
         "domain": "ci-cd"
       },
@@ -474,7 +474,7 @@
       {
         "severity": "INFO",
         "code": "env_git_status",
-        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=280",
+        "message": "真实命令 \"git status --porcelain=v1\" exit_code=0, timed_out=false, spawn_error=null, porcelain 变更行数=318",
         "domain": "environment"
       },
       {
@@ -490,7 +490,7 @@
         "domain": "environment"
       }
     ],
-    "summary": "扫描 13 个路径（真实文件计数合计 4454，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
+    "summary": "扫描 13 个路径（真实文件计数合计 4865，路径重叠按独立扫描计），执行 24 项静态检查与 3 条真实只读命令，共 24 条 finding：BLOCKER=0, MAJOR=0, MINOR=0, INFO=24。blockers 由 findings 中 severity==='BLOCKER' 的真实计数得出（未硬编码）。无阻断级 finding。",
     "blockers": 0,
     "severities": [
       "BLOCKER",
@@ -500,7 +500,7 @@
     ]
   },
   "financial": {
-    "generated_at": "2026-11-24T07:44:20.869Z",
+    "generated_at": "2026-11-27T11:11:00.656Z",
     "simulated_only": true,
     "safety": {
       "network_calls": 0,

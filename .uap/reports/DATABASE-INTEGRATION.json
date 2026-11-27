@@ -13,7 +13,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestIsolatedDBMigrationIsIdempotentAcrossRestart",
-        "--- PASS: TestIsolatedDBMigrationIsIdempotentAcrossRestart (0.03s)"
+        "--- PASS: TestIsolatedDBMigrationIsIdempotentAcrossRestart (0.02s)"
       ]
     },
     {
@@ -35,7 +35,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestIsolatedDBConcurrentWritersRespectUniqueConstraint",
-        "--- PASS: TestIsolatedDBConcurrentWritersRespectUniqueConstraint (0.10s)"
+        "--- PASS: TestIsolatedDBConcurrentWritersRespectUniqueConstraint (0.05s)"
       ]
     },
     {
@@ -46,7 +46,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements",
-        "--- PASS: TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements (0.07s)"
+        "--- PASS: TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements (0.06s)"
       ]
     },
     {
@@ -68,7 +68,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions",
-        "--- PASS: TestPhase2BusinessFunctions (1.20s)"
+        "--- PASS: TestPhase2BusinessFunctions (1.02s)"
       ]
     },
     {
@@ -79,8 +79,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/record_topup_log_writes_row",
-        "    phase2_business_functions_test.go:194: RecordTopupLog persisted one topup ledger row: id=1 request_id=2026111611530970352400026a4fa6bhBhB9fiN",
-        "--- PASS: TestPhase2BusinessFunctions/record_topup_log_writes_row (0.04s)"
+        "    phase2_business_functions_test.go:194: RecordTopupLog persisted one topup ledger row: id=1 request_id=2026112711120226140800026a4fa6bHYClVJyH",
+        "--- PASS: TestPhase2BusinessFunctions/record_topup_log_writes_row (0.03s)"
       ]
     },
     {
@@ -91,7 +91,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only",
-        "--- PASS: TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only (0.04s)"
       ]
     },
     {
@@ -113,7 +113,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/create_refund_intent_persists_pending",
-        "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.04s)"
       ]
     },
     {
@@ -135,7 +135,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_applies_once",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "    phase2_business_functions_test.go:335: ExecuteRefundIntent: quota 100->130, token remain 50->70 used 20->0, status done",
         "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_applies_once (0.03s)"
       ]
@@ -148,7 +148,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_replay_is_noop",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_replay_is_noop (0.03s)"
       ]
     },
@@ -160,7 +160,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback (0.04s)"
       ]
     },
     {
@@ -171,9 +171,9 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "    phase2_business_functions_test.go:411: 8 concurrent ExecuteRefundIntent calls -> one effective refund",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once (0.04s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once (0.03s)"
       ]
     },
     {
@@ -184,7 +184,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress (0.82s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress (0.67s)"
       ]
     },
     {
@@ -195,8 +195,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00 (0.03s)"
       ]
     },
     {
@@ -207,8 +207,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01 (0.05s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01 (0.04s)"
       ]
     },
     {
@@ -219,8 +219,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02 (0.03s)"
       ]
     },
     {
@@ -231,8 +231,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03 (0.03s)"
       ]
     },
     {
@@ -243,8 +243,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04 (0.03s)"
       ]
     },
     {
@@ -255,8 +255,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05 (0.03s)"
       ]
     },
     {
@@ -267,8 +267,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06 (0.03s)"
       ]
     },
     {
@@ -279,8 +279,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07 (0.03s)"
       ]
     },
     {
@@ -291,8 +291,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08 (0.03s)"
       ]
     },
     {
@@ -303,8 +303,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09 (0.03s)"
       ]
     },
     {
@@ -315,8 +315,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10 (0.03s)"
       ]
     },
     {
@@ -327,8 +327,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11 (0.03s)"
       ]
     },
     {
@@ -339,8 +339,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12 (0.03s)"
       ]
     },
     {
@@ -351,8 +351,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13 (0.03s)"
       ]
     },
     {
@@ -363,8 +363,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14 (0.03s)"
       ]
     },
     {
@@ -375,8 +375,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15 (0.03s)"
       ]
     },
     {
@@ -387,8 +387,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16 (0.06s)"
       ]
     },
     {
@@ -399,8 +399,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17 (0.03s)"
       ]
     },
     {
@@ -411,8 +411,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18 (0.03s)"
       ]
     },
     {
@@ -423,8 +423,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19 (0.03s)"
       ]
     },
     {
@@ -459,7 +459,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration",
-        "--- PASS: TestPhase2DBIntegration (0.89s)"
+        "--- PASS: TestPhase2DBIntegration (0.97s)"
       ]
     },
     {
@@ -493,7 +493,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_03_migration",
-        "--- PASS: TestPhase2DBIntegration/db_03_migration (0.04s)"
+        "--- PASS: TestPhase2DBIntegration/db_03_migration (0.05s)"
       ]
     },
     {
@@ -505,7 +505,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_04_migration_rollback",
         "    phase2_db_integration_test.go:329: real down migration exercised: V2 rolled back, V1 rollback refused (irreversible)",
-        "--- PASS: TestPhase2DBIntegration/db_04_migration_rollback (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_04_migration_rollback (0.04s)"
       ]
     },
     {
@@ -516,7 +516,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_05_transaction_commit",
-        "--- PASS: TestPhase2DBIntegration/db_05_transaction_commit (0.04s)"
+        "--- PASS: TestPhase2DBIntegration/db_05_transaction_commit (0.05s)"
       ]
     },
     {
@@ -527,7 +527,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_06_transaction_rollback",
-        "--- PASS: TestPhase2DBIntegration/db_06_transaction_rollback (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_06_transaction_rollback (0.05s)"
       ]
     },
     {
@@ -538,7 +538,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_07_concurrent_writes",
-        "--- PASS: TestPhase2DBIntegration/db_07_concurrent_writes (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/db_07_concurrent_writes (0.12s)"
       ]
     },
     {
@@ -585,7 +585,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_11_idempotency",
-        "--- PASS: TestPhase2DBIntegration/db_11_idempotency (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_11_idempotency (0.04s)"
       ]
     },
     {
@@ -596,7 +596,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_12_duplicate_request",
-        "--- PASS: TestPhase2DBIntegration/db_12_duplicate_request (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/db_12_duplicate_request (0.06s)"
       ]
     },
     {
@@ -607,7 +607,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_13_lock_contention",
-        "--- PASS: TestPhase2DBIntegration/db_13_lock_contention (0.09s)"
+        "--- PASS: TestPhase2DBIntegration/db_13_lock_contention (0.10s)"
       ]
     },
     {
@@ -631,7 +631,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_15_connection_interrupt",
         "    phase2_db_integration_test.go:608: post-close errors: raw=sql: database is closed gorm=sql: database is closed",
-        "--- PASS: TestPhase2DBIntegration/db_15_connection_interrupt (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_15_connection_interrupt (0.02s)"
       ]
     },
     {
@@ -642,8 +642,8 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_18_connection_pool",
-        "    phase2_db_integration_test.go:630: pool stats: maxOpen=4 open=2 inUse=0 idle=2 waitCount=3",
-        "--- PASS: TestPhase2DBIntegration/db_18_connection_pool (0.03s)"
+        "    phase2_db_integration_test.go:630: pool stats: maxOpen=4 open=2 inUse=0 idle=2 waitCount=4",
+        "--- PASS: TestPhase2DBIntegration/db_18_connection_pool (0.02s)"
       ]
     },
     {
@@ -655,7 +655,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_19_integrity_check",
         "    phase2_db_integration_test.go:649: observed PRAGMA integrity_check=\"ok\"",
-        "--- PASS: TestPhase2DBIntegration/db_19_integrity_check (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_19_integrity_check (0.02s)"
       ]
     },
     {
@@ -677,7 +677,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_16_process_crash",
-        "--- PASS: TestPhase2DBIntegration/db_16_process_crash (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_16_process_crash (0.02s)"
       ]
     },
     {
@@ -721,7 +721,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2DBIntegration/fault_03_same_request_concurrently",
-        "--- PASS: TestPhase2DBIntegration/fault_03_same_request_concurrently (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/fault_03_same_request_concurrently (0.06s)"
       ]
     },
     {
@@ -766,7 +766,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2FKOrphanOrderRejected",
-        "--- PASS: TestPhase2FKOrphanOrderRejected (0.03s)"
+        "--- PASS: TestPhase2FKOrphanOrderRejected (0.04s)"
       ]
     },
     {
@@ -788,7 +788,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2FKFailedInsertDoesNotPoisonTransaction",
-        "--- PASS: TestPhase2FKFailedInsertDoesNotPoisonTransaction (0.03s)"
+        "--- PASS: TestPhase2FKFailedInsertDoesNotPoisonTransaction (0.02s)"
       ]
     },
     {
@@ -799,7 +799,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2FKPersistenceAcrossRestart",
-        "--- PASS: TestPhase2FKPersistenceAcrossRestart (0.04s)"
+        "--- PASS: TestPhase2FKPersistenceAcrossRestart (0.03s)"
       ]
     },
     {
@@ -821,7 +821,7 @@
       "runner_ok": true,
       "output": [
         "=== RUN   TestPhase2FKBusinessWritePathProtected",
-        "--- PASS: TestPhase2FKBusinessWritePathProtected (0.03s)"
+        "--- PASS: TestPhase2FKBusinessWritePathProtected (0.02s)"
       ]
     },
     {
@@ -836,7 +836,7 @@
         "    phase2_fk_integration_test.go:344: PHASE2_MIGRATION idempotent=PASS",
         "    phase2_fk_integration_test.go:345: PHASE2_MIGRATION version_consistency=PASS",
         "    phase2_fk_integration_test.go:346: PHASE2_MIGRATION business_data_integrity=PASS",
-        "--- PASS: TestPhase2EvidenceMarkers (0.04s)"
+        "--- PASS: TestPhase2EvidenceMarkers (0.03s)"
       ]
     },
     {
@@ -952,7 +952,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestIsolatedDBMigrationIsIdempotentAcrossRestart",
-        "--- PASS: TestIsolatedDBMigrationIsIdempotentAcrossRestart (0.03s)"
+        "--- PASS: TestIsolatedDBMigrationIsIdempotentAcrossRestart (0.02s)"
       ]
     },
     {
@@ -968,7 +968,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestIsolatedDBConcurrentWritersRespectUniqueConstraint",
-        "--- PASS: TestIsolatedDBConcurrentWritersRespectUniqueConstraint (0.10s)"
+        "--- PASS: TestIsolatedDBConcurrentWritersRespectUniqueConstraint (0.05s)"
       ]
     },
     {
@@ -976,7 +976,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements",
-        "--- PASS: TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements (0.07s)"
+        "--- PASS: TestIsolatedDBConcurrentQuotaUpdatesNeverLoseIncrements (0.06s)"
       ]
     },
     {
@@ -992,7 +992,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions",
-        "--- PASS: TestPhase2BusinessFunctions (1.20s)"
+        "--- PASS: TestPhase2BusinessFunctions (1.02s)"
       ]
     },
     {
@@ -1000,8 +1000,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/record_topup_log_writes_row",
-        "    phase2_business_functions_test.go:194: RecordTopupLog persisted one topup ledger row: id=1 request_id=2026111611530970352400026a4fa6bhBhB9fiN",
-        "--- PASS: TestPhase2BusinessFunctions/record_topup_log_writes_row (0.04s)"
+        "    phase2_business_functions_test.go:194: RecordTopupLog persisted one topup ledger row: id=1 request_id=2026112711120226140800026a4fa6bHYClVJyH",
+        "--- PASS: TestPhase2BusinessFunctions/record_topup_log_writes_row (0.03s)"
       ]
     },
     {
@@ -1009,7 +1009,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only",
-        "--- PASS: TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/log_already_persisted_matches_committed_only (0.04s)"
       ]
     },
     {
@@ -1025,7 +1025,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/create_refund_intent_persists_pending",
-        "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/create_refund_intent_persists_pending (0.04s)"
       ]
     },
     {
@@ -1041,7 +1041,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_applies_once",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "    phase2_business_functions_test.go:335: ExecuteRefundIntent: quota 100->130, token remain 50->70 used 20->0, status done",
         "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_applies_once (0.03s)"
       ]
@@ -1051,7 +1051,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_replay_is_noop",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_replay_is_noop (0.03s)"
       ]
     },
@@ -1060,7 +1060,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback (0.03s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_transaction_rollback (0.04s)"
       ]
     },
     {
@@ -1068,9 +1068,9 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once",
-        "[SYS] 2026/11/16 - 19:53:09 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
         "    phase2_business_functions_test.go:411: 8 concurrent ExecuteRefundIntent calls -> one effective refund",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once (0.04s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once (0.03s)"
       ]
     },
     {
@@ -1078,7 +1078,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress (0.82s)"
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress (0.67s)"
       ]
     },
     {
@@ -1086,8 +1086,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_00 (0.03s)"
       ]
     },
     {
@@ -1095,8 +1095,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01 (0.05s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_01 (0.04s)"
       ]
     },
     {
@@ -1104,8 +1104,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_02 (0.03s)"
       ]
     },
     {
@@ -1113,8 +1113,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_03 (0.03s)"
       ]
     },
     {
@@ -1122,8 +1122,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_04 (0.03s)"
       ]
     },
     {
@@ -1131,8 +1131,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_05 (0.03s)"
       ]
     },
     {
@@ -1140,8 +1140,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_06 (0.03s)"
       ]
     },
     {
@@ -1149,8 +1149,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_07 (0.03s)"
       ]
     },
     {
@@ -1158,8 +1158,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_08 (0.03s)"
       ]
     },
     {
@@ -1167,8 +1167,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_09 (0.03s)"
       ]
     },
     {
@@ -1176,8 +1176,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_10 (0.03s)"
       ]
     },
     {
@@ -1185,8 +1185,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_11 (0.03s)"
       ]
     },
     {
@@ -1194,8 +1194,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_12 (0.03s)"
       ]
     },
     {
@@ -1203,8 +1203,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:02 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_13 (0.03s)"
       ]
     },
     {
@@ -1212,8 +1212,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_14 (0.03s)"
       ]
     },
     {
@@ -1221,8 +1221,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_15 (0.03s)"
       ]
     },
     {
@@ -1230,8 +1230,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_16 (0.06s)"
       ]
     },
     {
@@ -1239,8 +1239,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_17 (0.03s)"
       ]
     },
     {
@@ -1248,8 +1248,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_18 (0.03s)"
       ]
     },
     {
@@ -1257,8 +1257,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19",
-        "[SYS] 2026/11/16 - 19:53:10 | failed to sync token quota cache after refund intent 1: redis client is nil",
-        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19 (0.04s)"
+        "[SYS] 2026/11/27 - 19:12:03 | failed to sync token quota cache after refund intent 1: redis client is nil",
+        "--- PASS: TestPhase2BusinessFunctions/execute_refund_intent_concurrent_once_stress/round_19 (0.03s)"
       ]
     },
     {
@@ -1284,7 +1284,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration",
-        "--- PASS: TestPhase2DBIntegration (0.89s)"
+        "--- PASS: TestPhase2DBIntegration (0.97s)"
       ]
     },
     {
@@ -1309,7 +1309,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_03_migration",
-        "--- PASS: TestPhase2DBIntegration/db_03_migration (0.04s)"
+        "--- PASS: TestPhase2DBIntegration/db_03_migration (0.05s)"
       ]
     },
     {
@@ -1318,7 +1318,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_04_migration_rollback",
         "    phase2_db_integration_test.go:329: real down migration exercised: V2 rolled back, V1 rollback refused (irreversible)",
-        "--- PASS: TestPhase2DBIntegration/db_04_migration_rollback (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_04_migration_rollback (0.04s)"
       ]
     },
     {
@@ -1326,7 +1326,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_05_transaction_commit",
-        "--- PASS: TestPhase2DBIntegration/db_05_transaction_commit (0.04s)"
+        "--- PASS: TestPhase2DBIntegration/db_05_transaction_commit (0.05s)"
       ]
     },
     {
@@ -1334,7 +1334,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_06_transaction_rollback",
-        "--- PASS: TestPhase2DBIntegration/db_06_transaction_rollback (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_06_transaction_rollback (0.05s)"
       ]
     },
     {
@@ -1342,7 +1342,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_07_concurrent_writes",
-        "--- PASS: TestPhase2DBIntegration/db_07_concurrent_writes (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/db_07_concurrent_writes (0.12s)"
       ]
     },
     {
@@ -1377,7 +1377,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_11_idempotency",
-        "--- PASS: TestPhase2DBIntegration/db_11_idempotency (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_11_idempotency (0.04s)"
       ]
     },
     {
@@ -1385,7 +1385,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_12_duplicate_request",
-        "--- PASS: TestPhase2DBIntegration/db_12_duplicate_request (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/db_12_duplicate_request (0.06s)"
       ]
     },
     {
@@ -1393,7 +1393,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_13_lock_contention",
-        "--- PASS: TestPhase2DBIntegration/db_13_lock_contention (0.09s)"
+        "--- PASS: TestPhase2DBIntegration/db_13_lock_contention (0.10s)"
       ]
     },
     {
@@ -1411,7 +1411,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_15_connection_interrupt",
         "    phase2_db_integration_test.go:608: post-close errors: raw=sql: database is closed gorm=sql: database is closed",
-        "--- PASS: TestPhase2DBIntegration/db_15_connection_interrupt (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_15_connection_interrupt (0.02s)"
       ]
     },
     {
@@ -1419,8 +1419,8 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_18_connection_pool",
-        "    phase2_db_integration_test.go:630: pool stats: maxOpen=4 open=2 inUse=0 idle=2 waitCount=3",
-        "--- PASS: TestPhase2DBIntegration/db_18_connection_pool (0.03s)"
+        "    phase2_db_integration_test.go:630: pool stats: maxOpen=4 open=2 inUse=0 idle=2 waitCount=4",
+        "--- PASS: TestPhase2DBIntegration/db_18_connection_pool (0.02s)"
       ]
     },
     {
@@ -1429,7 +1429,7 @@
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_19_integrity_check",
         "    phase2_db_integration_test.go:649: observed PRAGMA integrity_check=\"ok\"",
-        "--- PASS: TestPhase2DBIntegration/db_19_integrity_check (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_19_integrity_check (0.02s)"
       ]
     },
     {
@@ -1445,7 +1445,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/db_16_process_crash",
-        "--- PASS: TestPhase2DBIntegration/db_16_process_crash (0.03s)"
+        "--- PASS: TestPhase2DBIntegration/db_16_process_crash (0.02s)"
       ]
     },
     {
@@ -1477,7 +1477,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2DBIntegration/fault_03_same_request_concurrently",
-        "--- PASS: TestPhase2DBIntegration/fault_03_same_request_concurrently (0.05s)"
+        "--- PASS: TestPhase2DBIntegration/fault_03_same_request_concurrently (0.06s)"
       ]
     },
     {
@@ -1510,7 +1510,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2FKOrphanOrderRejected",
-        "--- PASS: TestPhase2FKOrphanOrderRejected (0.03s)"
+        "--- PASS: TestPhase2FKOrphanOrderRejected (0.04s)"
       ]
     },
     {
@@ -1526,7 +1526,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2FKFailedInsertDoesNotPoisonTransaction",
-        "--- PASS: TestPhase2FKFailedInsertDoesNotPoisonTransaction (0.03s)"
+        "--- PASS: TestPhase2FKFailedInsertDoesNotPoisonTransaction (0.02s)"
       ]
     },
     {
@@ -1534,7 +1534,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2FKPersistenceAcrossRestart",
-        "--- PASS: TestPhase2FKPersistenceAcrossRestart (0.04s)"
+        "--- PASS: TestPhase2FKPersistenceAcrossRestart (0.03s)"
       ]
     },
     {
@@ -1550,7 +1550,7 @@
       "action": "pass",
       "output": [
         "=== RUN   TestPhase2FKBusinessWritePathProtected",
-        "--- PASS: TestPhase2FKBusinessWritePathProtected (0.03s)"
+        "--- PASS: TestPhase2FKBusinessWritePathProtected (0.02s)"
       ]
     },
     {
@@ -1570,7 +1570,7 @@
         "    phase2_fk_integration_test.go:344: PHASE2_MIGRATION idempotent=PASS",
         "    phase2_fk_integration_test.go:345: PHASE2_MIGRATION version_consistency=PASS",
         "    phase2_fk_integration_test.go:346: PHASE2_MIGRATION business_data_integrity=PASS",
-        "--- PASS: TestPhase2EvidenceMarkers (0.04s)"
+        "--- PASS: TestPhase2EvidenceMarkers (0.03s)"
       ]
     },
     {
@@ -1959,20 +1959,20 @@
     "version_consistency": "PASS",
     "business_data_integrity": "PASS"
   },
-  "generated_at": "2026-11-16T11:53:12.435Z",
+  "generated_at": "2026-11-27T11:12:04.816Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "commit_sha": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
   "test_environment": {
     "platform": "darwin",
-    "node": "v24.21.0",
+    "node": "v22.22.2",
     "cwd": "/Users/lincolnhu/uter",
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
-  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
-  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
-  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-  "evidence_ref": "UAP-EV-20261116115313-5500297a"
+  "execution_id": "UAP-EXEC-20261127110847-3c218810",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "evidence_ref": "UAP-EV-20261127111206-0e46a6a3"
 }

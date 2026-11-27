@@ -1167,10 +1167,48 @@
         "UAP-EV-20261126120535-65ff3fe4"
       ],
       "recorded_at": "2026-11-26T12:05:34.479Z"
+    },
+    {
+      "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/ci-workflow-evidence.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs .uap/tests/worktree-fingerprint-exclusions.test.mjs",
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_ms": 202351,
+      "status": "PASSED_EXECUTED",
+      "tap": {
+        "tests": 219,
+        "pass": 219,
+        "fail": 0
+      },
+      "test_files": [
+        ".uap/tests/architecture-adr-traceability.test.mjs",
+        ".uap/tests/ci-workflow-evidence.test.mjs",
+        ".uap/tests/deployment-drill-classification.test.mjs",
+        ".uap/tests/execution-identity-race.test.mjs",
+        ".uap/tests/execution-lifecycle.test.mjs",
+        ".uap/tests/final-acceptance-capabilities.test.mjs",
+        ".uap/tests/final-acceptance-negative.test.mjs",
+        ".uap/tests/final-remediation-regression.test.mjs",
+        ".uap/tests/independent-repair-review.test.mjs",
+        ".uap/tests/phase2-requirement-verification.test.mjs",
+        ".uap/tests/phase2-security-negative.test.mjs",
+        ".uap/tests/real-code-repair-boundaries.test.mjs",
+        ".uap/tests/real-repair-e2e.test.mjs",
+        ".uap/tests/requirement-behavior-suite.test.mjs",
+        ".uap/tests/requirement-honesty.test.mjs",
+        ".uap/tests/runtime.test.mjs",
+        ".uap/tests/status-consistency.test.mjs",
+        ".uap/tests/status-snapshot.test.mjs",
+        ".uap/tests/test-collector.test.mjs",
+        ".uap/tests/worktree-fingerprint-exclusions.test.mjs"
+      ],
+      "evidence_refs": [
+        "UAP-EV-20261127111046-55a04908"
+      ],
+      "recorded_at": "2026-11-27T11:10:45.736Z"
     }
   ],
   "schema_version": "1.0",
-  "generated_at": "2026-11-26T12:05:34.479Z",
+  "generated_at": "2026-11-27T11:10:45.736Z",
   "executor_ids": [
     "quality.engineering",
     "quality.testing",
@@ -1179,19 +1217,19 @@
   "node_version": "v22.22.2",
   "environment": "local",
   "summary": {
-    "total": 35,
-    "executed": 35,
-    "passed": 27,
+    "total": 36,
+    "executed": 36,
+    "passed": 28,
     "blocked": 0,
     "failed": 8
   },
   "test_plan": {
-    "generated_at": "2026-11-26T12:05:35.749Z",
+    "generated_at": "2026-11-27T11:10:47.515Z",
     "layers": [
       {
         "layer": "unit.go",
         "source": "*_test.go",
-        "discovered_test_files": 520,
+        "discovered_test_files": 539,
         "sample": [
           "main_docs_test.go",
           "common/api_type_task_plugin_test.go",
@@ -1209,7 +1247,7 @@
       {
         "layer": "unit.web",
         "source": "web/src/**/*.test.ts(x)",
-        "discovered_test_files": 381,
+        "discovered_test_files": 406,
         "sample": [
           "web/src/components/__tests__/cjk-term-text.test.tsx",
           "web/src/components/__tests__/command-menu.test.tsx",

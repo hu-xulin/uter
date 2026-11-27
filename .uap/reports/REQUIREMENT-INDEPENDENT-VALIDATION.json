@@ -1,25 +1,30 @@
 {
   "validator_id": "phase2.requirement_independent_validator",
-  "generated_at": "2026-11-24T08:00:40.327Z",
-  "execution_id": "UAP-EXEC-20261124075950-88f2cace",
-  "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
-  "worktree_fingerprint": "91b02a358cb399bed54d1be33d48ccf99aa10f064176cd1b5ee09c42e8f12833",
+  "generated_at": "2026-11-27T11:12:32.231Z",
+  "execution_id": "UAP-EXEC-20261127111230-7db3e2c5",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
   "ok": true,
   "checks": [
     {
       "name": "execution_identity_present",
       "ok": true,
-      "detail": "UAP-EXEC-20261124075950-88f2cace @ 33def7a5a7585779965e85e5854596c4ca7f79e0"
+      "detail": "UAP-EXEC-20261127111230-7db3e2c5 @ f7574ea66fda78b10a6eedb24a8ad10279fe9a9d"
     },
     {
       "name": "states_line_matches_matrix",
       "ok": true,
-      "detail": "derived={\"VERIFIED\":123,\"NOT_VERIFIED\":415,\"BLOCKED\":0,\"NOT_APPLICABLE\":0} emitted={\"VERIFIED\":123,\"NOT_VERIFIED\":415,\"BLOCKED\":0,\"NOT_APPLICABLE\":0}"
+      "detail": "derived={\"VERIFIED\":122,\"NOT_VERIFIED\":416,\"BLOCKED\":0,\"NOT_APPLICABLE\":0} emitted={\"VERIFIED\":122,\"NOT_VERIFIED\":416,\"BLOCKED\":0,\"NOT_APPLICABLE\":0}"
     },
     {
-      "name": "all_538_requirements_present",
+      "name": "registered_requirement_catalog_available",
       "ok": true,
-      "detail": "538 rows"
+      "detail": "32 specs / 538 registered requirement IDs"
+    },
+    {
+      "name": "matrix_ids_match_registered_specifications",
+      "ok": true,
+      "detail": "expected=538 actual=538 missing=0 unexpected=0 duplicates=0"
     },
     {
       "name": "states_sum_to_total",
@@ -53,16 +58,6 @@
     },
     {
       "name": "verified_UAP-00-001-REQ-009_has_real_actual_result",
-      "ok": true,
-      "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
-    },
-    {
-      "name": "verified_UAP-00-001-REQ-010_has_evidence_refs",
-      "ok": true,
-      "detail": "1 refs"
-    },
-    {
-      "name": "verified_UAP-00-001-REQ-010_has_real_actual_result",
       "ok": true,
       "detail": "node .uap/tools/requirement-behavior-suite.mjs -> exit 0; ob"
     },
@@ -1259,12 +1254,12 @@
     {
       "name": "verified_evidence_all_hash_bound",
       "ok": true,
-      "detail": "123 valid evidence refs / 123 VERIFIED rows"
+      "detail": "122 valid evidence refs / 122 VERIFIED rows"
     },
     {
       "name": "no_blanket_pass",
       "ok": true,
-      "detail": "123 VERIFIED rows, 123 distinct assertion keys"
+      "detail": "122 VERIFIED rows, 122 distinct assertion keys"
     },
     {
       "name": "all_non_verified_have_reason",
@@ -1274,12 +1269,12 @@
   ],
   "problems": [],
   "derived_states": {
-    "VERIFIED": 123,
-    "NOT_VERIFIED": 415,
+    "VERIFIED": 122,
+    "NOT_VERIFIED": 416,
     "BLOCKED": 0,
     "NOT_APPLICABLE": 0
   },
-  "checked_evidence_refs": 123,
-  "verified_rows": 123,
+  "checked_evidence_refs": 122,
+  "verified_rows": 122,
   "integrity_rule": "re-derive 4-state counts + recompute every VERIFIED evidence sha256 from disk + re-check execution binding + distinct assertions; fail closed on any disagreement"
 }

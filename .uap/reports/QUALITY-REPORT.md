@@ -1,6 +1,6 @@
 # Quality Report
 
-> 由 `./uap report` 依据真实运行产物生成 · 2026-11-26T11:12:26.431Z · UAP 1.0.0
+> 由 `./uap report` 依据真实运行产物生成 · 2026-11-27T12:02:59.815Z · UAP 1.0.0
 > 数据来源：`.uap/state/`、`.uap/reports/*.json`、`.uap/evidence/` 与实时文件系统探测。
 
 ## 质量门禁
@@ -22,7 +22,7 @@
 
 ## 验证器结果
 
-30 PASS / 2 FAIL / 0 BLOCKED / undefined NOT_EXECUTED（共 32）
+31 PASS / 1 FAIL / 0 BLOCKED / undefined NOT_EXECUTED（共 32）
 
 ## 不得降低门禁
 

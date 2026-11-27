@@ -1,19 +1,19 @@
 {
   "status_model": "UAP-TEST-STATUS-1.0",
-  "status": "BLOCKED",
+  "status": "FAIL",
   "suite": "accessibility",
   "command": "npx playwright test --config e2e/axe/playwright.config.ts",
-  "exit_code": 0,
+  "exit_code": 1,
   "items": [
     {
       "id": "axe_0_axe: 鉴权页批量扫描",
       "title": "axe: 鉴权页批量扫描",
-      "status": "SKIPPED",
-      "reason": "runner reported status=skipped",
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "skipped"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -21,12 +21,12 @@
     {
       "id": "axe_1_axe: 公开页 /",
       "title": "axe: 公开页 /",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -34,12 +34,12 @@
     {
       "id": "axe_2_axe: 公开页 /about",
       "title": "axe: 公开页 /about",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -47,12 +47,12 @@
     {
       "id": "axe_3_axe: 公开页 /pricing",
       "title": "axe: 公开页 /pricing",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -60,12 +60,12 @@
     {
       "id": "axe_4_axe: 公开页 /rankings",
       "title": "axe: 公开页 /rankings",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -73,12 +73,12 @@
     {
       "id": "axe_5_axe: 公开页 /docs",
       "title": "axe: 公开页 /docs",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -86,12 +86,12 @@
     {
       "id": "axe_6_axe: 公开页 /sign-in",
       "title": "axe: 公开页 /sign-in",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -99,12 +99,12 @@
     {
       "id": "axe_7_axe: 公开页 /sign-up",
       "title": "axe: 公开页 /sign-up",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -112,12 +112,12 @@
     {
       "id": "axe_8_axe: 公开页 /forgot-password",
       "title": "axe: 公开页 /forgot-password",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -125,12 +125,12 @@
     {
       "id": "axe_9_axe: 公开页 /404",
       "title": "axe: 公开页 /404",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -138,12 +138,12 @@
     {
       "id": "axe_10_axe: 公开页 /500",
       "title": "axe: 公开页 /500",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -151,12 +151,12 @@
     {
       "id": "axe_11_axe: 公开页 /privacy-policy",
       "title": "axe: 公开页 /privacy-policy",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -164,12 +164,12 @@
     {
       "id": "axe_12_axe: 公开页 /user-agreement",
       "title": "axe: 公开页 /user-agreement",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
@@ -177,35 +177,35 @@
     {
       "id": "axe_13_axe: 公开页 /recharge-agreement",
       "title": "axe: 公开页 /recharge-agreement",
-      "status": "PASS",
-      "reason": null,
+      "status": "FAIL",
+      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
       "source": "runner",
-      "runner_ok": true,
+      "runner_ok": false,
       "runner_statuses": [
-        "passed"
+        "failed"
       ],
       "evidence_ref": null,
       "suite": "axe"
     }
   ],
   "counts": {
-    "PASS": 13,
-    "FAIL": 0,
-    "SKIPPED": 1,
+    "PASS": 0,
+    "FAIL": 14,
+    "SKIPPED": 0,
     "BLOCKED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 14,
-  "pass": 13,
-  "fail": 0,
+  "pass": 0,
+  "fail": 14,
   "blocked": 0,
-  "skipped": 1,
+  "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
   "target": "http://localhost:3000",
-  "passed": 13,
-  "failed": 0,
+  "passed": 0,
+  "failed": 14,
   "critical": 0,
   "serious": 0,
   "critical_violations": [],
@@ -214,20 +214,20 @@
     "mechanism": "NOT_ISOLATED",
     "production_auth_policy_modified": false
   },
-  "generated_at": "2026-11-16T11:55:01.524Z",
+  "generated_at": "2026-11-27T11:13:39.518Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
+  "commit_sha": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
   "test_environment": {
     "platform": "darwin",
-    "node": "v24.21.0",
+    "node": "v22.22.2",
     "cwd": "/Users/lincolnhu/uter",
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261116115030-6a0ef6da",
-  "git_head": "cfb471c6cd043d81228e9703ff95d6d61c61da62",
-  "worktree_fingerprint": "c7131af634f4b1e1d78e31d74166f14bc2b117522b5857194912e82766b1eb9b",
-  "environment_fingerprint": "949ea2403f30d9c7daefa6b8e5258793d178e3ba4f8bd21048d973755c63127a",
-  "evidence_ref": "UAP-EV-20261116115501-53a5cdff"
+  "execution_id": "UAP-EXEC-20261127111230-7db3e2c5",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "evidence_ref": "UAP-EV-20261127111340-e3490fec"
 }
