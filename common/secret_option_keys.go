@@ -101,6 +101,10 @@ var secretOptionKeys = map[string]struct{}{
 	"channel_provider.bailian.access_key_secret": {},
 	"channel_provider.subscription.password":     {},
 	"channel_provider.subscription.api_key":      {},
+
+	// 上游监测的扣费对账探针令牌：经 Uter 链路产生真实小额扣费，
+	// 明文绝不下发浏览器，读取时掩码、验证后才可揭示。
+	"monitor_setting.billing_probe_token": {},
 }
 
 // 明确登记为「必须原样下发给浏览器」的公开值。这些键名以 key/token 结尾，

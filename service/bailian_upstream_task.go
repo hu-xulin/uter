@@ -206,6 +206,10 @@ func RunBailianUpstreamSync(ctx context.Context, force bool) (*BailianUpstreamSy
 			}
 			catalog.ChannelID = channel.Id
 			catalog.Region = BailianRegionOf(channel.GetBaseURL())
+			if priceErr := ApplyBailianOfficialPricingPage(ctx, catalog); priceErr != nil {
+				fail(priceErr)
+				continue
+			}
 			catalog.ReferencePrice = NormalizeBailianPrices(catalog)
 			seenModels := BailianSeenChannelModels(catalog, channel.GetModels())
 			previous := LoadBailianCatalogSnapshotForChannel(channel.Id)

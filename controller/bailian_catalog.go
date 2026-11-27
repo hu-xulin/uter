@@ -55,6 +55,10 @@ func RefreshBailianCatalog(c *gin.Context) {
 	}
 	catalog.ChannelID = channelID
 	catalog.Region = service.BailianRegionOf(channel.GetBaseURL())
+	if err := service.ApplyBailianOfficialPricingPage(c.Request.Context(), catalog); err != nil {
+		common.ApiErrorMsg(c, err.Error())
+		return
+	}
 	catalog.ReferencePrice = service.NormalizeBailianPrices(catalog)
 	if err := service.SaveBailianCatalogSnapshot(catalog); err != nil {
 		common.ApiErrorMsg(c, err.Error())
@@ -283,6 +287,10 @@ func syncBailianAfterCreate(channelID int) {
 	}
 	catalog.ChannelID = channelID
 	catalog.Region = service.BailianRegionOf(channel.GetBaseURL())
+	if err := service.ApplyBailianOfficialPricingPage(ctx, catalog); err != nil {
+		mark("fetch_catalog", "failed", err.Error())
+		return
+	}
 	catalog.ReferencePrice = service.NormalizeBailianPrices(catalog)
 	if err := service.SaveBailianCatalogSnapshot(catalog); err != nil {
 		mark("fetch_catalog", "failed", err.Error())

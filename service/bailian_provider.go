@@ -159,12 +159,20 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 				unit, ok := normalizeBailianPriceUnit(price.PriceUnit)
 				value, parseErr := strconv.ParseFloat(strings.TrimSpace(price.Price), 64)
 				currency, inferred := bailianCurrencyForRegion(catalog.Region)
+				if price.Currency != "" {
+					currency = strings.ToUpper(strings.TrimSpace(price.Currency))
+					inferred = false
+				}
 				if !ok {
 					unit = strings.TrimSpace(price.PriceUnit)
 				}
 				normalizedCurrency := ""
 				if currency != "" {
 					normalizedCurrency = "USD"
+				}
+				source := price.Source
+				if source == "" {
+					source = bailianCatalogSource
 				}
 				normalized := BailianReferencePrice{
 					Provider:           item.InferenceProvider,
@@ -181,7 +189,7 @@ func NormalizeBailianPrices(catalog *BailianCatalog) []BailianReferencePrice {
 					RawUnit:            price.PriceUnit,
 					RangeName:          priceRange.RangeName,
 					TimeBand:           price.TimeBand,
-					Source:             bailianCatalogSource,
+					Source:             source,
 					FetchedAt:          catalog.FetchedAt,
 				}
 				if parseErr == nil {
@@ -399,9 +407,11 @@ func ApplyBailianCatalog(catalog *BailianCatalog, channelModels []string) (*Bail
 	return result, nil
 }
 
-// BailianPricingRecords builds one channel-scoped catalog quote for every
-// requested model. Bailian publishes the channel price, not the vendor list. Only models the channel actually serves are written;
-// the untouched official payload is preserved on the row.
+// BailianPricingRecords builds one channel-scoped price record for every
+// requested model. The official help page is the authoritative source: for
+// Alibaba-owned models its price is the vendor list price, while third-party
+// models resold by Bailian publish a channel price. Only models the channel
+// actually serves are written; the untouched source payload is preserved.
 func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []model.ChannelOfficialPricingRecord {
 	if catalog == nil || len(channelModels) == 0 {
 		return nil
@@ -446,7 +456,7 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 			Currency:          normalized.Currency,
 			OfficialPricing:   string(raw),
 			NormalizedPricing: string(encoded),
-			Source:            bailianCatalogSource,
+			Source:            normalized.Source,
 			FetchedAt:         catalog.FetchedAt.Unix(),
 		})
 	}
@@ -1044,11 +1054,12 @@ func firstNonEmpty(values ...string) string {
 	return ""
 }
 
-// bailianOfficialPricing groups the Bailian catalog price items into ranges.
-// The catalog is Alibaba's supplier quote, not the model vendor's official
-// list price. Its tiers are therefore stored as ChannelPriceTiers while the
-// official tier list stays empty. Multiple ranges/time bands remain separate
-// and are flagged for review; they are never averaged into one number.
+// bailianOfficialPricing groups the Bailian help-center price items into ranges.
+// Alibaba-owned models publish their vendor list price there, while third-party
+// models resold through Bailian publish a channel quote there. Only the former
+// goes into Tiers; the latter stays in ChannelPriceTiers. Multiple ranges and
+// time bands remain separate and are flagged for review; they are never
+// averaged into one number.
 func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float64, fetchedAt int64) model.ChannelOfficialPricing {
 	// 百炼目录没有币种字段：这里只能按地域推断，必须把「推断」事实写进
 	// 价格记录，并把原始币种与标准化金额币种分开保存。
@@ -1057,6 +1068,18 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	if sourceCurrency != "" {
 		normalizedCurrency = "USD"
 	}
+	source := bailianCatalogSource
+	for _, priceRange := range item.Prices {
+		for _, price := range priceRange.Prices {
+			if price.Currency != "" {
+				sourceCurrency = strings.ToUpper(strings.TrimSpace(price.Currency))
+				currencyInferred = false
+			}
+			if price.Source != "" && source == bailianCatalogSource {
+				source = price.Source
+			}
+		}
+	}
 	result := model.ChannelOfficialPricing{
 		Currency:           sourceCurrency,
 		SourceCurrency:     sourceCurrency,
@@ -1064,8 +1087,11 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		CurrencyInferred:   currencyInferred,
 		Unit:               "per_1m_token",
 		PriceKind:          "CHANNEL_QUOTE",
-		Source:             bailianCatalogSource,
+		Source:             source,
 		FetchedAt:          fetchedAt,
+	}
+	if isAlibabaFamilyBailianModel(item.Model) {
+		result.PriceKind = "OFFICIAL_LIST"
 	}
 	if sourceCurrency == "CNY" {
 		result.FXRateToUSD = rate
@@ -1360,6 +1386,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			}
 		}
 	}
+	alibabaFamily := isAlibabaFamilyBailianModel(item.Model)
 	for _, key := range order {
 		tier := tiers[key]
 		// One model has one billable primary price. When the catalog also lists a
@@ -1372,8 +1399,13 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			tier.Unit = "per_1m_tokens"
 			result.Unit = "per_1m_token"
 		}
-		result.ChannelPriceTiers = append(result.ChannelPriceTiers, *tier)
+		if alibabaFamily {
+			result.Tiers = append(result.Tiers, *tier)
+		} else {
+			result.ChannelPriceTiers = append(result.ChannelPriceTiers, *tier)
+		}
 	}
+	allTiers := append(append([]model.ChannelPricingTier{}, result.Tiers...), result.ChannelPriceTiers...)
 	if len(result.ChannelPriceTiers) > 0 {
 		first := result.ChannelPriceTiers[0]
 		result.ChannelPrice = &first
@@ -1382,7 +1414,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	// the sale price then becomes one tiered expression. Mixed units or media
 	// dimensions cannot be flattened and are named below.
 	tokenTiersOnly := true
-	for _, tier := range result.ChannelPriceTiers {
+	for _, tier := range allTiers {
 		if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
 			tokenTiersOnly = false
 			break
@@ -1406,8 +1438,8 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	// Multi-tier rows are only executable when every tier is a token tier.
 	// Media dimensions mixed into several ranges cannot be flattened into one
 	// expression, so name the reason instead of leaving a silent empty sale price.
-	if len(result.ChannelPriceTiers) > 1 {
-		for _, tier := range result.ChannelPriceTiers {
+	if len(allTiers) > 1 {
+		for _, tier := range allTiers {
 			if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
 				result.ReviewReasons = append(result.ReviewReasons, "mixed price units across tiers need manual pricing")
 				break

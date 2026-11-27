@@ -35,6 +35,8 @@ type BailianPrice struct {
 	PriceUnit string `json:"price_unit"`
 	PriceName string `json:"price_name"`
 	TimeBand  string `json:"time_band,omitempty"`
+	Currency  string `json:"currency,omitempty"`
+	Source    string `json:"source,omitempty"`
 }
 
 // BailianPriceRange groups the price items that share one range (for example
@@ -64,13 +66,14 @@ type BailianModel struct {
 
 // BailianCatalog is the persisted snapshot of the official catalog.
 type BailianCatalog struct {
-	FetchedAt      time.Time               `json:"fetched_at"`
-	ChannelID      int                     `json:"channel_id"`
-	BaseURL        string                  `json:"base_url"`
-	Region         BailianRegion           `json:"region,omitempty"`
-	Total          int                     `json:"total"`
-	Models         []BailianModel          `json:"models"`
-	ReferencePrice []BailianReferencePrice `json:"reference_prices,omitempty"`
+	FetchedAt             time.Time               `json:"fetched_at"`
+	ChannelID             int                     `json:"channel_id"`
+	BaseURL               string                  `json:"base_url"`
+	Region                BailianRegion           `json:"region,omitempty"`
+	Total                 int                     `json:"total"`
+	Models                []BailianModel          `json:"models"`
+	ReferencePrice        []BailianReferencePrice `json:"reference_prices,omitempty"`
+	OfficialPricingSource string                  `json:"official_pricing_source,omitempty"`
 }
 
 type bailianModelsResponse struct {

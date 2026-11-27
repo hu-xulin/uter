@@ -146,9 +146,9 @@ type bailianAdapter struct{}
 func (bailianAdapter) Descriptor() UpstreamProvider {
 	return UpstreamProvider{
 		ID: "alibaba-bailian", Name: "阿里云百炼",
-		PricingURL: "/api/v1/models", ModelsURL: "/api/v1/models",
+		PricingURL: bailianOfficialPricingPageURL, ModelsURL: "/api/v1/models",
 		AuthType:            "api_key",
-		SourceDocumentation: "/api/v1/models",
+		SourceDocumentation: "/api/v1/models; " + bailianOfficialPricingPageURL,
 		SyncFrequency:       "scheduler 1m; channel cadence model 6h / official 24h / channel 1h",
 		Capabilities: UpstreamProviderCapabilities{
 			ModelDiscovery:      capability(CapabilitySupported, "paginated /api/v1/models"),
