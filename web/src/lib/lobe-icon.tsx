@@ -249,6 +249,24 @@ const MODEL_ICON_BRAND_OVERRIDES: Record<string, string> = {
   // product logo. Moonshot is a company, not a model product — normalize it to
   // Kimi so model surfaces never show a company mark.
   moonshot: 'Kimi.Avatar',
+  // Z.AI is the company behind GLM; its product logo is ChatGLM (glm.svg).
+  // Upstream metadata persists `ZAI.Avatar` for glm-5.1/5.2/5.3, which renders
+  // the company mark on model cards. Model surfaces use the product logo only.
+  zai: 'ChatGLM.Color',
+}
+
+/**
+ * Whether a model name belongs to the GLM family (智谱 GLM / ChatGLM).
+ *
+ * Matches a standalone `glm` segment at the start or after a separator, so
+ * `glm-5.3`, `cmaas-glm-5.3` and `ZHIPU/GLM-5.3` match while an unrelated name
+ * that merely contains those letters does not. GLM models must always render
+ * their own product logo (ChatGLM / glm.svg); upstream metadata has persisted
+ * both the Z.AI company mark and a stray Hunyuan mark on GLM rows, so the
+ * brand is corrected by model name, not only by icon key.
+ */
+function isGlmModelName(modelName: string | undefined | null): boolean {
+  return /(?:^|[^a-z])glm(?:[^a-z]|$)/i.test(modelName ?? '')
 }
 
 /**
@@ -267,8 +285,14 @@ const MODEL_ICON_BRAND_OVERRIDES: Record<string, string> = {
  * single-parameter signature keeps the fallback from being reintroduced.
  */
 export function resolveModelIconKey(
-  modelIcon: string | undefined | null
+  modelIcon: string | undefined | null,
+  modelName?: string | undefined | null
 ): string {
+  // GLM models must show the GLM product logo regardless of what upstream
+  // persisted in `icon`. A stray `Hunyuan.Color` on cmaas-glm-5.3 cannot be
+  // caught by the icon-key override table (overriding `hunyuan` globally would
+  // misbrand real Hunyuan models), so correct it by model name here.
+  if (isGlmModelName(modelName)) return 'ChatGLM.Color'
   const key = colorIconName(modelIcon)
   const segments = key.split('.').filter((segment) => segment !== '')
   const baseKey = segments[0]

@@ -95,7 +95,13 @@ export function auditPricingCatalog(
     }
 
     const summary = getDynamicPricingSummary(model, SUMMARY_OPTIONS)
-    const hasPerSecond = (model.channel_internal_per_second_usd ?? 0) > 0
+    // 按秒模型有两种形态：quota_type=2 的 channel_internal_per_second_usd，
+    // 和 tiered_expr 里含 `duration * 系数` 的任务模型（MiniMax-H3 等）。
+    // 后者过去漏检——它们没有 channel_internal_per_second_usd，缺官方秒价时
+    // 审计静默通过，卡片却显示 "-"。两种都要求 official_price_per_second。
+    const hasPerSecond =
+      (model.channel_internal_per_second_usd ?? 0) > 0 ||
+      /\bduration\b/.test(model.billing_expr ?? '')
 
     // 2) 定价：被判为未配置、或压根没有任何可用价格字段。
     if (

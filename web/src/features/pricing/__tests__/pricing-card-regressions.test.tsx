@@ -171,3 +171,64 @@ describe('定价页卡片展示回归', () => {
     expect(screen.getByText(/\$0\.041045\s*–\s*\$0\.065672/)).toBeTruthy()
   })
 })
+
+/**
+ * 回归背景（2026-11-27 用户反馈）：deepseek-v4.x 分时模型卡片，标题角标 x1.1、
+ * 价格行倍率 x2.2。根因是官方基准只有 offpeak 一个价，角标拿 offpeak 优特价比
+ * offpeak 官方价（1.1），价格行拿 peak 优特价比同一个 offpeak 官方价（2.2）。
+ * 平台对所有时段统一加价 10%，正确倍率恒为 x1.1。
+ */
+const deepseekTimePricing: PricingModel = {
+  id: 999,
+  model_name: 'deepseek-v4.1-flash',
+  icon: 'DeepSeek.Color',
+  quota_type: 0,
+  model_ratio: 0,
+  completion_ratio: 0,
+  model_price: 0,
+  enable_groups: ['default'],
+  channels: ['优特-百炼'],
+  billing_mode: 'tiered_expr',
+  billing_expr:
+    '(hour("Asia/Shanghai") >= 22 || hour("Asia/Shanghai") < 8 ? tier("offpeak:Default", p * 0.1649175412 + c * 0.6596701649 + cr * 0.0032983508) : tier("peak:Default", p * 0.3298350825 + c * 1.3193403298 + cr * 0.0065967016))',
+}
+
+const deepseekOfficial = {
+  model_ratio: 0.07496251874062969,
+  completion_ratio: 4,
+  cache_ratio: 0.02,
+}
+
+describe('分时定价倍率一致性', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('MiniMax-H3 动态分支展示官方秒价而非 "-"（优特精选渠道）', () => {
+    // tiered_expr 按秒任务模型，channel_internal_per_second_usd 缺失时走动态
+    // 分支。过去 presetOfficialUSDFor 只认 model_ratio，官方单元格恒为 "-"。
+    renderCard(minimaxH3, { official_price_per_second: 0.0746268657 })
+    expect(screen.getByText('$0.074627')).toBeTruthy()
+    // Uter 价仍展示档位区间，官方价不再缺失。
+    expect(screen.getByText(/\$0\.041045\s*–\s*\$0\.065672/)).toBeTruthy()
+  })
+
+  it('峰时角标与价格行倍率一致为 x1.1，不再出现 x2.2', () => {
+    // 北京 12:00（UTC 04:00）命中 peak 档。
+    vi.setSystemTime(new Date('2026-11-27T04:00:00Z'))
+    renderCard(deepseekTimePricing, deepseekOfficial)
+    expect(screen.getAllByText('x1.1').length).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByText('x2.2')).toBeNull()
+  })
+
+  it('平时角标与价格行倍率一致为 x1.1', () => {
+    // 北京 06:00（UTC 22:00）命中 offpeak 档。
+    vi.setSystemTime(new Date('2026-11-26T22:00:00Z'))
+    renderCard(deepseekTimePricing, deepseekOfficial)
+    expect(screen.getAllByText('x1.1').length).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByText('x2.2')).toBeNull()
+  })
+})

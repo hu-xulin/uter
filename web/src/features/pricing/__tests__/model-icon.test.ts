@@ -48,6 +48,19 @@ describe('pricingModelIconKey', () => {
     expect(pricingModelIconKey('Moonshot.Avatar')).toBe('Kimi.Avatar')
   })
 
+  it('normalizes Z.AI company logos to the ChatGLM product logo', () => {
+    expect(pricingModelIconKey('ZAI.Avatar', 'glm-5.3')).toBe('ChatGLM.Color')
+    expect(pricingModelIconKey('ZAI.Avatar', 'glm-5.1')).toBe('ChatGLM.Color')
+    expect(pricingModelIconKey('ZAI.Avatar', 'glm-5.2')).toBe('ChatGLM.Color')
+  })
+
+  it('forces the GLM product logo by model name even for a wrong-brand icon', () => {
+    // cmaas-glm-5.3 is stored with Hunyuan.Color; the card must show glm.svg.
+    expect(pricingModelIconKey('Hunyuan.Color', 'cmaas-glm-5.3')).toBe(
+      'ChatGLM.Color'
+    )
+  })
+
   it('keeps an empty icon empty so the card renders its initial', () => {
     expect(pricingModelIconKey('')).toBe('')
     expect(pricingModelIconKey(undefined)).toBe('')

@@ -118,4 +118,30 @@ describe('定价目录健康门禁', () => {
     )
     expect(issues.some((issue) => issue.kind === kind)).toBe(true)
   })
+
+  it('能捕获 tiered_expr 按秒任务模型缺失的官方秒价', () => {
+    // MiniMax-H3 这类模型没有 channel_internal_per_second_usd，过去缺
+    // official_price_per_second 时审计静默通过，卡片却显示 "-"。
+    const model = {
+      model_name: 'MiniMax-H3-missing-official',
+      icon: 'Minimax.Color',
+      quota_type: 0,
+      model_ratio: 0,
+      completion_ratio: 0,
+      model_price: 0,
+      enable_groups: ['default'],
+      billing_mode: 'tiered_expr',
+      billing_expr: 'tier("2k", duration * 0.0656716419)',
+    } as PricingModel
+    const issues = auditPricingCatalog([model], {
+      'MiniMax-H3-missing-official': { model_ratio: 1 },
+    })
+    expect(
+      issues.some(
+        (issue) =>
+          issue.kind === 'official-price-missing' &&
+          issue.detail.includes('按秒')
+      )
+    ).toBe(true)
+  })
 })

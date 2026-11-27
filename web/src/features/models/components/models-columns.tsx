@@ -102,7 +102,7 @@ export function useModelsColumns(
         const vendor = vendorMap.get(model.vendor_id ?? 0)
         // 模型列只渲染模型自己的产品 logo（彩色）；供应商公司 logo 只在
         // 供应商列/筛选处出现（monoIconName 渲染），不做模型图标回退。
-        const iconKey = resolveModelIconKey(model.icon)
+        const iconKey = resolveModelIconKey(model.icon, model.model_name)
         return (
           <div className='flex max-w-[320px] min-w-0 items-start gap-2.5 py-1'>
             <span className='mt-1 flex size-6 shrink-0 items-center justify-center'>

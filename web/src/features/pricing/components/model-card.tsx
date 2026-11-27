@@ -44,6 +44,7 @@ import {
   getDynamicDisplayGroupRatio,
   getDynamicPriceUnitLabelKey,
   getDynamicPricingSummary,
+  getDynamicPricingTiers,
   isUnconfiguredTaskUsageModel,
   type DynamicPriceEntry,
 } from '../lib/dynamic-price'
@@ -201,7 +202,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   // 模型卡片只渲染模型自己的产品 logo；没有自己的 logo 时显示首字母占位，
   // 绝不退化为供应商的公司 logo（运营在「模型-供应商」里设置的那个）。
   // GPT/OpenAI 使用透明底 Mono logo，避免 Avatar 的黑色品牌底。
-  const modelIconKey = pricingModelIconKey(props.model.icon)
+  const modelIconKey = pricingModelIconKey(props.model.icon, props.model.model_name)
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
@@ -245,6 +246,43 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.model, dynamicPriceOptions, currency]
   )
+  /**
+   * 分时表达式模型的「当前时段价 ÷ 最低时段价」比例。
+   *
+   * 官方参照价（`official_prices`）只携带一个基准，后端取的是分时表达式里最便宜
+   * 的档（offpeak）。而卡片的优特价按 `now` 取当前档（白天是峰时 peak）。若直接
+   * 拿「峰时优特价 ÷ 平时官方价」算溢价，deepseek-v4.x 会得到 x2.2；但平台对
+   * 所有时段统一加价 10%，正确倍率恒为 x1.1 —— 角标正是用最低档算的。
+   *
+   * 让价格行的官方价按同一比例缩放，等价于把「峰时优特价」与「峰时官方价」比较，
+   * 于是角标与价格行必然显示同一个倍率，结构上不再分叉。非分时模型比例为 1。
+   *
+   * 只取 input 维度（角标也只看 input）；各时段 input/output/cache 同比例缩放，
+   * 用首档比价即足够，且 `getDynamicInputPriceUSD` 与角标同口径。
+   */
+  const timeTierScale = useMemo(() => {
+    if (!dynamicSummary?.isTimePricing) return 1
+    const currentInput = dynamicSummary.entries.find(
+      (entry) => entry.key === 'p'
+    )?.value
+    const cheapestInputs: number[] = []
+    for (const tier of getDynamicPricingTiers(props.model)) {
+      if ('unitPrices' in tier) continue
+      const value = Number(tier.inputPrice)
+      if (Number.isFinite(value) && value > 0) cheapestInputs.push(value)
+    }
+    if (
+      typeof currentInput !== 'number' ||
+      !Number.isFinite(currentInput) ||
+      currentInput <= 0 ||
+      cheapestInputs.length === 0
+    ) {
+      return 1
+    }
+    const cheapest = Math.min(...cheapestInputs)
+    const scale = currentInput / cheapest
+    return Number.isFinite(scale) && scale > 0 ? scale : 1
+  }, [dynamicSummary, props.model])
   const cardExamplePrice = useMemo(
     () => getCardExamplePrice(props.model, dynamicPriceOptions),
     // Currency is read indirectly by the price formatter.
@@ -352,11 +390,25 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
       const requestUSD = officialRequestPriceUSD(officialRatios)
       return requestUSD != null ? { usd: requestUSD, perRequest: true } : null
     }
+    // 按秒计费的 tiered_expr 任务模型（MiniMax-H3 / MiniMax-H3-Max、
+    // wan3.0-video/prime 在「优特-精选」视图下）：channel_internal_per_second_usd
+    // 被清零后走动态分支，其 entry.unit='second'。官方参照价是美元/秒，没有
+    // model_ratio。过去这里只认 token 倍率字段，于是官方单元格恒为 "-"，即使
+    // official_prices 里明明有 official_price_per_second。补上按秒口径，保证
+    // 任何模型都不缺官方价。
+    if (entry.unit === 'second') {
+      const perSecond = getOfficialPerSecondUSD(officialRatios)
+      return perSecond != null ? { usd: perSecond, perRequest: false } : null
+    }
     const usd = officialTierVariablePriceUSD(
       officialRatios,
       entry.key as VisualPrice['variable']
     )
-    return usd != null ? { usd, perRequest: false } : null
+    // 分时官方基准取的是最低档（offpeak）；按当前时段比例缩放后再与优特价
+    // 比较，角标（x1.1）和价格行倍率才一致，不会一个 1.1 一个 2.2。
+    return usd != null
+      ? { usd: usd * timeTierScale, perRequest: false }
+      : null
   }
   let priceSummary: ReactNode
   // 按秒计费模型（wan3.0-video / qwen-audio-3.0-asr-flash 等 quota_type=2）

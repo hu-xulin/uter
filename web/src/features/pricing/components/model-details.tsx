@@ -613,7 +613,7 @@ function ModelHeader(props: {
   const { t } = useTranslation()
   const model = props.model
   // 模型详情头部同样只渲染模型自己的产品 logo（彩色），不用供应商公司 logo。
-  const modelIconKey = resolveModelIconKey(model.icon)
+  const modelIconKey = resolveModelIconKey(model.icon, model.model_name)
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 20) : null
   const description = model.description || model.vendor_description || null
 

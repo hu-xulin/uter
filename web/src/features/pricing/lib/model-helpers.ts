@@ -48,9 +48,10 @@ export function excludeRedirectedUpstreams<T extends object>(models: T[]): T[] {
  * renders its initial-letter placeholder.
  */
 export function pricingModelIconKey(
-  modelIcon: string | undefined | null
+  modelIcon: string | undefined | null,
+  modelName?: string | undefined | null
 ): string {
-  const key = resolveModelIconKey(modelIcon)
+  const key = resolveModelIconKey(modelIcon, modelName)
   const base = key.split('.')[0]?.trim().toLowerCase()
   if (base === 'openai') return 'OpenAI.Mono'
   return key

@@ -122,4 +122,34 @@ describe('resolveModelIconKey', () => {
     expect(resolveModelIconKey('Moonshot.Avatar')).toBe('Kimi.Avatar')
     expect(resolveModelIconKey('Moonshot.Color')).toBe('Kimi.Avatar')
   })
+
+  test('normalizes the Z.AI company logo to the ChatGLM product logo', () => {
+    // Upstream persists `ZAI.Avatar` (the company mark) for glm-5.1/5.2/5.3.
+    // Model cards must show the GLM product logo (glm.svg), never the company.
+    expect(resolveModelIconKey('ZAI.Avatar')).toBe('ChatGLM.Color')
+    expect(resolveModelIconKey('ZAI')).toBe('ChatGLM.Color')
+    expect(resolveModelIconKey('ZAI.Color')).toBe('ChatGLM.Color')
+  })
+
+  test('forces the GLM product logo by model name even when the icon is a wrong brand', () => {
+    // cmaas-glm-5.3 carries a stray Hunyuan.Color icon. It cannot be fixed by
+    // icon-key override (that would misbrand real Hunyuan models), so the GLM
+    // product logo is forced by model name.
+    expect(resolveModelIconKey('Hunyuan.Color', 'cmaas-glm-5.3')).toBe(
+      'ChatGLM.Color'
+    )
+    expect(resolveModelIconKey('ZAI.Avatar', 'glm-5.3')).toBe('ChatGLM.Color')
+    expect(resolveModelIconKey('ZAI.Avatar', 'ZHIPU/GLM-5.3')).toBe(
+      'ChatGLM.Color'
+    )
+  })
+
+  test('does not touch non-GLM models when correcting by model name', () => {
+    // A Hunyuan model, or a name that merely contains "glm"-like letters
+    // inside a word, must keep its own product logo.
+    expect(resolveModelIconKey('Hunyuan.Color', 'hunyuan-turbo')).toBe(
+      'Hunyuan.Color'
+    )
+    expect(resolveModelIconKey('Claude.Color', 'claude-3')).toBe('Claude.Color')
+  })
 })

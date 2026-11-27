@@ -69,7 +69,7 @@ export function usePricingColumns(
       cell: ({ row }) => {
         const model = row.original
         // 模型列只渲染模型自己的产品 logo（彩色），不用供应商公司 logo。
-        const modelIconKey = resolveModelIconKey(model.icon)
+        const modelIconKey = resolveModelIconKey(model.icon, model.model_name)
         const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 14) : null
 
         return (

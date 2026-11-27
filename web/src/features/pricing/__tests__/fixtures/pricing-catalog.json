@@ -164,7 +164,7 @@
     },
     {
       "model_name": "glm-5.2",
-      "icon": "ZAI.Avatar",
+      "icon": "ChatGLM.Color",
       "quota_type": 0,
       "model_ratio": 0.38675,
       "completion_ratio": 3.512605042016807,
@@ -404,7 +404,7 @@
     },
     {
       "model_name": "glm-5.1",
-      "icon": "ZAI.Avatar",
+      "icon": "ChatGLM.Color",
       "quota_type": 0,
       "model_ratio": 0.3705,
       "completion_ratio": 3.5087719298245617,
@@ -1055,7 +1055,7 @@
     },
     {
       "model_name": "glm-5.3",
-      "icon": "ZAI.Avatar",
+      "icon": "ChatGLM.Color",
       "quota_type": 0,
       "model_ratio": 0.38675,
       "completion_ratio": 3.512605042016807,
