@@ -42,6 +42,7 @@ import {
 import { check, deniedDecisions, assertAllowed, PolicyDeniedError } from '../runtime/policy-engine/index.mjs';
 import { loadConfig } from '../runtime/_lib/config.mjs';
 import { verifyEvidenceManifest, verifyFinalReportBindings, generateEvidenceManifest, FINAL_REPORTS } from '../runtime/evidence-engine/manifest.mjs';
+import { record as recordEvidence, verify as verifyEvidence } from '../runtime/evidence-engine/index.mjs';
 import { fingerprintBasis, gitHead } from '../runtime/status-engine/execution.mjs';
 import * as taskEngine from '../runtime/task-engine/index.mjs';
 import * as schedulerEngine from '../runtime/scheduler/index.mjs';
@@ -1339,6 +1340,86 @@ export const CHECKS = Object.freeze([
       engines.events.publish('bhv.persist', {});
       return checkAssert(engines.events.count() === before + 1,
         'event-system.count() -> publish 后磁盘事件数 +1，证据真实落盘');
+    },
+  },
+
+  // ---- B1 batch 1 (2026-11-27): unbound requirements with REAL engine behaviour.
+  // Each verify() calls a production runtime function and asserts its REAL return
+  // value. None is a static-existence / shared-evidence / exit-code-only proxy.
+  {
+    id: 'UAP-00-002-REQ-010', group: 'engines',
+    behavior: '可重试任务有最大重试次数：createTask 真实写入 MAX_RETRIES 上限',
+    verify: ({ engines }) => {
+      const t = engines.task.createTask(probeTaskInput());
+      return checkAssert(
+        engines.task.MAX_RETRIES > 0 && t.max_retries === engines.task.MAX_RETRIES,
+        `task.createTask().max_retries=${t.max_retries} === MAX_RETRIES=${engines.task.MAX_RETRIES}`
+      );
+    },
+  },
+  {
+    id: 'UAP-00-002-ACC-001', group: 'engines',
+    behavior: '自然语言目标生成可执行任务：createTask 从 objective 真实建任务并返回稳定 id/state',
+    verify: ({ engines }) => {
+      const t = engines.task.createTask(probeTaskInput({ objective: '实现登录并补齐测试' }));
+      const got = engines.task.getTask(t.task_id);
+      return checkAssert(
+        Boolean(t.task_id) && got && got.objective === '实现登录并补齐测试' && got.state === 'CREATED',
+        `task.createTask(objective) -> task_id=${t.task_id} state=${got?.state} objective preserved`
+      );
+    },
+  },
+  {
+    id: 'UAP-00-003-REQ-003', group: 'engines',
+    behavior: '权限分开定义：permission-policy 的读取/写入/执行命令/发布权限是彼此独立的权限组',
+    verify: ({ policy }) => {
+      const g = policy.group('project_read');
+      const w = policy.group('project_write');
+      const cmd = policy.group('local_command');
+      const deploy = policy.group('production_deploy');
+      return checkAssert(
+        Boolean(g && w && cmd && deploy) && g.effect === 'allow' && w.effect === 'allow' &&
+          cmd.effect === 'allow' && deploy.effect === 'deny' &&
+          g.description !== w.description,
+        'policy.group(project_read/write/local_command/production_deploy) -> 独立定义且 deploy=deny'
+      );
+    },
+  },
+  {
+    id: 'UAP-00-002-ACC-005', group: 'engines',
+    behavior: '任务完成证据可生成：evidence.record 真实落盘且 verify hash_valid=true',
+    verify: () => {
+      const rec = recordEvidence({ kind: 'requirement_behavior_probe', command: 'behavior-suite', exit_code: 0, summary: 'B1 batch1 evidence probe' });
+      const v = verifyEvidence(rec.evidence_id);
+      return checkAssert(
+        Boolean(rec.evidence_id && rec.content_hash && v && v.hash_valid === true),
+        `evidence.record() -> evidence_id=${rec.evidence_id} verify.hash_valid=${v?.hash_valid}`
+      );
+    },
+  },
+  {
+    id: 'UAP-00-004-ACC-002', group: 'engines',
+    behavior: '任务中断后可恢复：markInterrupted 真实进入 WAITING_RECOVERY 且 legalNext 允许恢复',
+    verify: ({ engines }) => {
+      const t = engines.task.createTask(probeTaskInput({ steps: [{ name: 's1' }] }));
+      engines.task.updateTask(t.task_id, { state: 'RUNNING' });
+      const r = engines.task.markInterrupted(t.task_id, 'B1 probe interrupt');
+      const next = engines.stateMachine.legalNext('WAITING_RECOVERY');
+      return checkAssert(
+        r.state === 'WAITING_RECOVERY' && Array.isArray(next) && next.length > 0,
+        `task.markInterrupted() -> state=${r.state}, legalNext(WAITING_RECOVERY)=${JSON.stringify(next)}`
+      );
+    },
+  },
+  {
+    id: 'UAP-00-003-ACC-004', group: 'engines',
+    behavior: '敏感信息不进普通日志：redact 对真实 token/密码串做脱敏',
+    verify: ({ engines }) => {
+      const out = engines.redact('token=sk-abcdefghijklmnopqrstuvwxyz password=hunter2secret');
+      return checkAssert(
+        typeof out === 'string' && !out.includes('sk-abcdefghijklmnopqrstuvwxyz') && !out.includes('hunter2secret') && /REDACT|\*\*\*|\[REDACTED\]/i.test(out),
+        `redact(token/password) -> ${String(out).slice(0, 80)}`
+      );
     },
   },
 ]);

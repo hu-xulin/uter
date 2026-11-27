@@ -659,7 +659,7 @@ behavior_probes:
         required_output: ['REQ_ASSERT UAP-00-001-REQ-010 PASS']
         forbid_output: []
         requirement_id: UAP-00-001-REQ-010
-        behavior: '配置/规范/代码/验证结果可追溯：honesty「矩阵 538 条完整性」真实 ok'
+        behavior: '配置/规范/代码/验证结果可追溯：honesty「注册规范派生的矩阵完整性」真实 ok'
       - name: 'req.UAP-00-002-REQ-004'
         required_output: ['REQ_ASSERT UAP-00-002-REQ-004 PASS']
         forbid_output: []
@@ -895,6 +895,36 @@ behavior_probes:
         forbid_output: []
         requirement_id: UAP-08-003-REQ-011
         behavior: '必须保存关键运行证据：publish 后 count() 从磁盘读到的事件数真实增加'
+      - name: 'req.UAP-00-002-REQ-010'
+        required_output: ['REQ_ASSERT UAP-00-002-REQ-010 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-REQ-010
+        behavior: '可重试任务有最大重试次数：createTask 真实写入 MAX_RETRIES 上限'
+      - name: 'req.UAP-00-002-ACC-001'
+        required_output: ['REQ_ASSERT UAP-00-002-ACC-001 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-ACC-001
+        behavior: '自然语言目标生成可执行任务：createTask 从 objective 真实建任务并返回稳定 id/state'
+      - name: 'req.UAP-00-003-REQ-003'
+        required_output: ['REQ_ASSERT UAP-00-003-REQ-003 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-REQ-003
+        behavior: '权限分开定义：permission-policy 的读取/写入/执行命令/发布权限是彼此独立的权限组'
+      - name: 'req.UAP-00-002-ACC-005'
+        required_output: ['REQ_ASSERT UAP-00-002-ACC-005 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-002-ACC-005
+        behavior: '任务完成证据可生成：evidence.record 真实落盘且 verify hash_valid=true'
+      - name: 'req.UAP-00-004-ACC-002'
+        required_output: ['REQ_ASSERT UAP-00-004-ACC-002 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-004-ACC-002
+        behavior: '任务中断后可恢复：markInterrupted 真实进入 WAITING_RECOVERY 且 legalNext 允许恢复'
+      - name: 'req.UAP-00-003-ACC-004'
+        required_output: ['REQ_ASSERT UAP-00-003-ACC-004 PASS']
+        forbid_output: []
+        requirement_id: UAP-00-003-ACC-004
+        behavior: '敏感信息不进普通日志：redact 对真实 token/密码串做脱敏'
 # END GENERATED: bhv.requirement-behavior-suite
 
 external_dependency_probes: []
