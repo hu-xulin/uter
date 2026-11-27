@@ -125,23 +125,21 @@ func float64Ptr(v float64) *float64 {
 	return &v
 }
 
-// Regression: Bailian catalog rows store their quote in ChannelPriceTiers and
-// leave Tiers empty. The plaza's official-basis view must still find the tier,
-// otherwise the operator sees a configured channel price with no official
-// reference price at all.
-func TestChannelPricingOfficialViewFallsBackToChannelPriceTiers(t *testing.T) {
+// Regression: non-Alibaba Bailian models store their help-center quote in
+// ChannelPriceTiers. That is a channel price, so the plaza must not present it
+// as an official reference price.
+func TestChannelPricingOfficialViewIgnoresChannelPriceTiers(t *testing.T) {
 	// 10 CNY input / 30 CNY output per million tokens, converted to USD at 7.3,
 	// in the exact shape bailianOfficialPricing persists (Tiers empty).
 	raw := `{"currency":"CNY","source_currency":"CNY","normalized_currency":"USD",` +
-		`"price_kind":"CHANNEL_QUOTE","source":"bailian-channel","unit":"per_1m_token",` +
-		`"tiers":[],"channel_price":{"range_name":"Default","unit":"per_1m_token",` +
+		`"price_kind":"CHANNEL_QUOTE","source":"https://help.aliyun.com/zh/model-studio/model-pricing",` +
+		`"unit":"per_1m_token","tiers":[],` +
+		`"channel_price":{"range_name":"Default","unit":"per_1m_token",` +
 		`"input_per_million_usd":1.36986301369863,"output_per_million_usd":4.10958904109589},` +
 		`"channel_price_tiers":[{"range_name":"Default","unit":"per_1m_token",` +
 		`"input_per_million_usd":1.36986301369863,"output_per_million_usd":4.10958904109589}]}`
 	view, err := channelPricingOfficialView(raw)
-	require.NoError(t, err, "Bailian rows must expose an official tier")
-	require.NotNil(t, view.tier)
-	assert.Equal(t, "per_1m_token", view.unit)
-	assert.InDelta(t, 10.0/7.3, view.tier.InputPerMillionUSD.Float64(), 1e-9)
-	assert.InDelta(t, 30.0/7.3, view.tier.OutputPerMillionUSD.Float64(), 1e-9)
+	require.Error(t, err, "Bailian channel quotes must not become official tiers")
+	assert.Nil(t, view.tier)
+	assert.Empty(t, view.unit)
 }

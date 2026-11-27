@@ -398,15 +398,10 @@ func channelPricingOfficialView(raw string) (channelOfficialView, error) {
 	if err := common.UnmarshalJsonStr(raw, &view); err != nil {
 		return channelOfficialView{}, err
 	}
-	// Bailian catalog rows persist their official quote in ChannelPriceTiers and
-	// leave Tiers empty (see bailianOfficialPricing). The plaza view must see the
-	// same official basis as the channel-management view, which already falls
-	// back to ChannelPriceTiers. Prefer Tiers, then that fallback, so a row with
-	// both keeps its original semantics.
+	// ChannelPriceTiers is the upstream channel quote, not the vendor list
+	// price. Non-Alibaba Bailian models publish their help-center price there,
+	// so this view must not present it as an official reference price.
 	tiers := view.Tiers
-	if len(tiers) == 0 {
-		tiers = view.ChannelPriceTiers
-	}
 	if len(tiers) == 0 {
 		return channelOfficialView{}, errors.New("normalized pricing has no tier")
 	}

@@ -156,8 +156,8 @@ func testBailianSyncMatrix(t *testing.T) {
 				 "model_info":{"context_window":131072,"max_output_tokens":8192},
 				 "inference_metadata":{"request_modality":"text","response_modality":"text"},
 				 "prices":[{"range_name":"Default","prices":[
-					{"type":"input_token","price":"0.0008","price_unit":"每千tokens"},
-					{"type":"output_token","price":"0.002","price_unit":"每千tokens"}]}]},
+					{"type":"input_token","price":"0.146","price_unit":"每千tokens"},
+					{"type":"output_token","price":"0.146","price_unit":"每千tokens"}]}]},
 				{"model":"qwen-vl","name":"Qwen VL","provider":"qwen","capabilities":["vision"],
 				 "inference_provider":"aliyun-bailian",
 				 "prices":[{"range_name":"Default","prices":[

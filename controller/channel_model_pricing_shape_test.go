@@ -52,6 +52,14 @@ func TestClassifyOfficialPricingShape(t *testing.T) {
 			supported: true,
 		},
 		{
+			name: "Bailian channel quote tiers are not official price",
+			official: &model.ChannelOfficialPricing{ChannelPriceTiers: []model.ChannelPricingTier{{
+				Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(shapePrice(8)),
+			}}},
+			shape:     "",
+			supported: false,
+		},
+		{
 			name: "multi tier",
 			official: &model.ChannelOfficialPricing{Tiers: []model.ChannelPricingTier{
 				{Unit: "per_1m_token", InputPerMillionUSD: model.MoneyFromFloatPtr(shapePrice(1))},

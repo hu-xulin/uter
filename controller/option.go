@@ -40,8 +40,14 @@ var completionRatioMetaOptionKeys = []string{
 // they reach the general option store. Keeping it separate from the HTTP
 // handler makes the at-rest contract testable without a database.
 func prepareOptionValueForStorage(key, value string) (string, error) {
-	if key != service.ChannelProviderBailianAccessKeySecretOption ||
-		value == "" || common.IsSecretEnvelope(value) {
+	// Long-lived credentials are encrypted at rest with the same envelope.
+	// A saved envelope stays untouched so re-saving an unchanged form cannot
+	// double-encrypt (and corrupt) the stored secret.
+	encryptKeys := map[string]struct{}{
+		service.ChannelProviderBailianAccessKeySecretOption: {},
+		service.UterBillingProbeTokenOption:                 {},
+	}
+	if _, ok := encryptKeys[key]; !ok || value == "" || common.IsSecretEnvelope(value) {
 		return value, nil
 	}
 	return common.EncryptSecret(value)
@@ -223,6 +229,13 @@ func RevealSystemSecret(c *gin.Context) {
 	}
 	if optionKey == service.ChannelProviderBailianAccessKeySecretOption {
 		value = service.DecryptStoredChannelProviderSecret(value)
+	} else if optionKey == service.UterBillingProbeTokenOption {
+		// Probe token is stored encrypted; fail-closed if the envelope is bad.
+		if decrypted, err := common.DecryptSecret(value); err == nil {
+			value = decrypted
+		} else {
+			value = ""
+		}
 	}
 	recordManageAudit(c, "option.secret.reveal", map[string]any{
 		"key": optionKey,

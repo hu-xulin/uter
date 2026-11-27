@@ -136,13 +136,17 @@ func floatMoneyPtr(value *float64) *model.Money {
 }
 
 func classifyOfficialPricingShape(official *model.ChannelOfficialPricing) (string, bool) {
-	if official == nil || len(official.Tiers) == 0 {
+	if official == nil {
 		return "", false
 	}
-	if len(official.Tiers) > 1 {
+	tiers := official.Tiers
+	if len(tiers) == 0 {
+		return "", false
+	}
+	if len(tiers) > 1 {
 		return "multi_tier", false
 	}
-	tier := official.Tiers[0]
+	tier := tiers[0]
 	switch tier.Unit {
 	case "per_1m_token":
 		return "per_1m_token", tier.InputPerMillionUSD != nil
