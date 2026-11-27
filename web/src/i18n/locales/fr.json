@@ -1,5 +1,17 @@
 {
   "translation": {
+    "Endpoint source": "Endpoint source",
+    "From channel": "From channel",
+    "Enter manually": "Enter manually",
+    "Please select a channel": "Please select a channel",
+    "Filter channels by their channel management group.": "Filter channels by their channel management group.",
+    "Read from the selected channel.": "Read from the selected channel.",
+    "Key type": "Key type",
+    "Choose which stored key of this channel to probe.": "Choose which stored key of this channel to probe.",
+    "Models are read from the selected channel; choose which ones to monitor.": "Models are read from the selected channel; choose which ones to monitor.",
+    "API address and key are read from channel management; the key is stored encrypted and never shown in full.": "API address and key are read from channel management; the key is stored encrypted and never shown in full.",
+    "Choose a channel": "Choose a channel",
+    "Manual endpoint": "Manual endpoint",
     "360": "360",
     "1000": "1000",
     "10000": "10000",

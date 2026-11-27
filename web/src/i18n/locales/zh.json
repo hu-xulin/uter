@@ -1,5 +1,17 @@
 {
   "translation": {
+    "Endpoint source": "端点来源",
+    "From channel": "从渠道选择",
+    "Enter manually": "手动填写",
+    "Please select a channel": "请选择渠道",
+    "Filter channels by their channel management group.": "按渠道管理中的分组筛选渠道。",
+    "Read from the selected channel.": "从所选渠道读取。",
+    "Key type": "密钥种类",
+    "Choose which stored key of this channel to probe.": "选择使用该渠道中哪一把已保存的密钥进行探测。",
+    "Models are read from the selected channel; choose which ones to monitor.": "模型列表从所选渠道读取，请选择需要监控的模型。",
+    "API address and key are read from channel management; the key is stored encrypted and never shown in full.": "API 地址与密钥均从渠道管理读取；密钥加密存储，永不完整显示。",
+    "Choose a channel": "选择渠道",
+    "Manual endpoint": "手动填写的端点",
     "360": "360",
     "1000": "1000",
     "10000": "10000",
