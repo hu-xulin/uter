@@ -59,13 +59,15 @@ function requireRenderedLink(
 describe('catalog data (from the nav manifest)', () => {
   it('lists protocol groups and standalone endpoints in sidebar order', () => {
     for (const [locale, expected] of [
-      ['zh', '音频（Audio）'],
+      ['zh', '音频'],
       ['en', 'Audio'],
     ] as const) {
       const cards = catalogCards(locale, 'api')
       expect(cards.map((c) => c.id)).toEqual([
         'ai-model-audio',
         'ai-model-chat',
+        'ai-model-responses',
+        'ai-model-search-tools',
         'ai-model-completions',
         'ai-model-embeddings',
         'ai-model-images-openai', // no group page → first child
@@ -74,6 +76,8 @@ describe('catalog data (from the nav manifest)', () => {
         'ai-model-realtime',
         'ai-model-rerank',
         'ai-model-videos',
+        'ai-model-tasks',
+        'ai-model-billing',
       ])
       expect(cards[0].title).toBe(expected)
     }
@@ -82,21 +86,54 @@ describe('catalog data (from the nav manifest)', () => {
   it('gives the standalone API endpoints their requested one-liners', () => {
     const zh = catalogCards('zh', 'api')
     expect(zh.find((c) => c.id === 'ai-model-moderations')).toMatchObject({
-      title: '审查（Moderations）',
+      title: '审查',
       description: '原生OpenAI格式',
     })
     expect(zh.find((c) => c.id === 'ai-model-realtime')).toMatchObject({
-      title: '实时语音（Realtime）',
+      title: '实时语音',
       description: '原生OpenAI格式',
     })
     expect(zh.find((c) => c.id === 'ai-model-rerank')).toMatchObject({
-      title: '重排序（Rerank）',
+      title: '重排序',
       description: '文档重排序',
     })
     expect(
       catalogCards('en', 'api').find((c) => c.id === 'ai-model-rerank')
         ?.description
     ).toBe('Document Reranking')
+  })
+
+  it('includes the newly added API endpoints with a localized title and one-liner', () => {
+    const zh = catalogCards('zh', 'api')
+    const expected = [
+      ['ai-model-responses', '响应接口'],
+      ['ai-model-search-tools', '搜索与工具'],
+      ['ai-model-tasks', '通用任务'],
+      ['ai-model-billing', '计费'],
+    ] as const
+    for (const [id, title] of expected) {
+      const card = zh.find((c) => c.id === id)
+      expect(card, `zh card ${id}`).toBeDefined()
+      expect(card?.title).toBe(title)
+      expect(card?.description.length, `zh teaser ${id}`).toBeGreaterThan(0)
+    }
+    // Every locale must ship a one-liner for these cards, not just zh.
+    for (const locale of [
+      'zh-TW',
+      'en',
+      'fr',
+      'ja',
+      'ru',
+      'vi',
+    ] as DocsLocaleCode[]) {
+      for (const [id] of expected) {
+        const card = catalogCards(locale, 'api').find((c) => c.id === id)
+        expect(
+          card?.description.length,
+          `${locale}/${id} teaser`
+        ).toBeGreaterThan(0)
+      }
+    }
   })
 
   it('excludes the self-linking index entry and ships a description for every card', () => {
@@ -174,10 +211,9 @@ describe('ApiCatalog / AppsCatalog cards', () => {
     )
     expect(chat, 'chat card link').toBeTruthy()
     expect(
-      within(requireRenderedLink(chat, 'chat card link')).getByText(
-        '聊天（Chat）',
-        { selector: 'span' }
-      )
+      within(requireRenderedLink(chat, 'chat card link')).getByText('聊天', {
+        selector: 'span',
+      })
     ).toBeTruthy()
   })
 

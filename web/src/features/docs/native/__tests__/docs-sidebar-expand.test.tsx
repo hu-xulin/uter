@@ -157,7 +157,7 @@ describe('docs sidebar API reference hierarchy', () => {
     await userEvent.click(
       screen.getByRole('button', { name: 'Expand API 参考' })
     )
-    for (const group of ['音频（Audio）', '聊天（Chat）', '视频（Videos）']) {
+    for (const group of ['音频', '聊天', '视频']) {
       expect(await screen.findByRole('link', { name: group })).toBeVisible()
     }
     // The next level (OpenAI/Gemini variants) is still nested, not promoted.
@@ -172,7 +172,7 @@ describe('docs sidebar nested folder disclosure', () => {
       screen.getByRole('button', { name: 'Expand API 参考' })
     )
 
-    const heading = '视频（Videos）'
+    const heading = '视频'
     const child = '即梦格式' // Unique to this group, so the assertion is exact.
     expect(screen.getByRole('link', { name: heading })).toHaveAttribute(
       'aria-expanded',

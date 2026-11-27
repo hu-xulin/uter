@@ -110,7 +110,7 @@
               {
                 "id": "ai-model-audio",
                 "label": {
-                  "zh": "音频（Audio）",
+                  "zh": "音频",
                   "en": "Audio",
                   "fr": "Audio",
                   "ru": "Аудио",
@@ -148,7 +148,7 @@
               {
                 "id": "ai-model-chat",
                 "label": {
-                  "zh": "聊天（Chat）",
+                  "zh": "聊天",
                   "en": "Chat",
                   "fr": "Chat",
                   "ru": "Чат",
@@ -186,7 +186,7 @@
               {
                 "id": "ai-model-completions",
                 "label": {
-                  "zh": "补全（Completions）",
+                  "zh": "补全",
                   "en": "Completions",
                   "fr": "Complétions",
                   "ru": "Завершения",
@@ -212,7 +212,7 @@
               {
                 "id": "ai-model-embeddings",
                 "label": {
-                  "zh": "嵌入（Embeddings）",
+                  "zh": "嵌入",
                   "en": "Embeddings",
                   "fr": "Embeddings",
                   "ru": "Эмбеддинги",
@@ -250,7 +250,7 @@
               {
                 "id": "ai-model-images",
                 "label": {
-                  "zh": "图像（Images）",
+                  "zh": "图像",
                   "en": "Images",
                   "fr": "Images",
                   "ru": "Изображения",
@@ -300,7 +300,7 @@
               {
                 "id": "ai-model-models-list",
                 "label": {
-                  "zh": "模型（Models）",
+                  "zh": "模型",
                   "en": "Models",
                   "fr": "Modèles",
                   "ru": "Модели",
@@ -338,7 +338,7 @@
               {
                 "id": "ai-model-videos",
                 "label": {
-                  "zh": "视频（Videos）",
+                  "zh": "视频",
                   "en": "Videos",
                   "fr": "Vidéos",
                   "ru": "Видео",

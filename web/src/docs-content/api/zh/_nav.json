@@ -1,32 +1,42 @@
 [
   {
     "id": "ai-model-audio",
-    "title": "音频（Audio）",
+    "title": "音频",
     "category": "ai-model"
   },
   {
     "id": "ai-model-audio-openai",
-    "title": "音频（Audio） · 原生OpenAI格式",
+    "title": "音频 · 原生OpenAI格式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat",
-    "title": "聊天（Chat）",
+    "title": "聊天",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-gemini",
-    "title": "聊天（Chat） · 原生Gemini格式",
+    "title": "聊天 · 原生Gemini格式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-chat-openai",
-    "title": "聊天（Chat） · 原生OpenAI格式",
+    "title": "聊天 · 原生OpenAI格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-responses",
+    "title": "响应接口",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-search-tools",
+    "title": "搜索与工具",
     "category": "ai-model"
   },
   {
     "id": "ai-model-completions",
-    "title": "补全（Completions）",
+    "title": "补全",
     "category": "ai-model"
   },
   {
@@ -36,7 +46,7 @@
   },
   {
     "id": "ai-model-embeddings",
-    "title": "嵌入（Embeddings）",
+    "title": "嵌入",
     "category": "ai-model"
   },
   {
@@ -51,12 +61,12 @@
   },
   {
     "id": "ai-model-images-gemini",
-    "title": "图像（Images） · 原生Gemini格式",
+    "title": "图像 · 原生Gemini格式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-images-openai",
-    "title": "图像（Images） · 原生OpenAI格式",
+    "title": "图像 · 原生OpenAI格式",
     "category": "ai-model"
   },
   {
@@ -71,37 +81,37 @@
   },
   {
     "id": "ai-model-models-list-openai",
-    "title": "模型（Models） · 原生OpenAI格式",
+    "title": "模型 · 原生OpenAI格式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-models-list-gemini",
-    "title": "模型（Models） · 原生Gemini格式",
+    "title": "模型 · 原生Gemini格式",
     "category": "ai-model"
   },
   {
     "id": "ai-model-moderations",
-    "title": "审查（Moderations）",
+    "title": "审查",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "实时语音（Realtime）",
+    "title": "实时语音",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "重排序（Rerank）",
+    "title": "重排序",
     "category": "ai-model"
   },
   {
     "id": "ai-model-unimplemented-fine-tuning",
-    "title": "微调（Fine-tuning）",
+    "title": "微调",
     "category": "ai-model"
   },
   {
     "id": "ai-model-videos",
-    "title": "视频（Videos）",
+    "title": "视频",
     "category": "ai-model"
   },
   {
@@ -147,6 +157,16 @@
   {
     "id": "ai-model-videos-seedance",
     "title": "Seedance格式",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-tasks",
+    "title": "通用任务",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-billing",
+    "title": "计费",
     "category": "ai-model"
   }
 ]

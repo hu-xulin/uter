@@ -353,10 +353,90 @@ const STANDALONE_API_CARDS: Record<
   string,
   { title: Localized; description: Localized }
 > = {
+  'ai-model-responses': {
+    title: {
+      zh: '响应接口',
+      'zh-TW': '響應介面',
+      en: 'Responses API',
+      fr: 'API Responses',
+      ru: 'Responses API',
+      ja: 'Responses API',
+      vi: 'Responses API',
+    },
+    description: {
+      zh: '多轮对话、工具调用与推理的服务端响应接口',
+      'zh-TW': '多輪對話、工具呼叫與推理的服務端響應介面',
+      en: 'Server-side responses for multi-turn chat, tools and reasoning',
+      fr: 'Réponses côté serveur pour dialogue multi-tours, outils et raisonnement',
+      ru: 'Серверные ответы для многоэтапного диалога, инструментов и рассуждения',
+      ja: 'マルチターン対話・ツール・推論のためのサーバー側レスポンス',
+      vi: 'Phản hồi phía máy chủ cho hội thoại nhiều lượt, công cụ và suy luận',
+    },
+  },
+  'ai-model-search-tools': {
+    title: {
+      zh: '搜索与工具',
+      'zh-TW': '搜尋與工具',
+      en: 'Search & Tools',
+      fr: 'Recherche et outils',
+      ru: 'Поиск и инструменты',
+      ja: '検索とツール',
+      vi: 'Tìm kiếm và công cụ',
+    },
+    description: {
+      zh: '联网搜索与网页抓取的转发端点',
+      'zh-TW': '連網搜尋與網頁擷取的轉送端點',
+      en: 'Web search and fetch forwarding endpoints',
+      fr: 'Points de terminaison de recherche et récupération Web',
+      ru: 'Эндпоинты веб-поиска и получения страниц',
+      ja: 'Web 検索・ページ取得の転送エンドポイント',
+      vi: 'Điểm cuối chuyển tiếp tìm kiếm và lấy nội dung web',
+    },
+  },
+  'ai-model-tasks': {
+    title: {
+      zh: '通用任务',
+      'zh-TW': '通用任務',
+      en: 'Generic Tasks',
+      fr: 'Tâches génériques',
+      ru: 'Универсальные задачи',
+      ja: '汎用タスク',
+      vi: 'Tác vụ chung',
+    },
+    description: {
+      zh: '与供应商无关的异步任务接口',
+      'zh-TW': '與供應商無關的非同步任務介面',
+      en: 'Provider-agnostic async task endpoints',
+      fr: 'Points de terminaison de tâches asynchrones indépendants du fournisseur',
+      ru: 'Независимые от провайдера асинхронные задачи',
+      ja: 'プロバイダー非依存の非同期タスク',
+      vi: 'Điểm cuối tác vụ bất đồng độc lập nhà cung cấp',
+    },
+  },
+  'ai-model-billing': {
+    title: {
+      zh: '计费',
+      'zh-TW': '計費',
+      en: 'Billing',
+      fr: 'Facturation',
+      ru: 'Тарификация',
+      ja: '課金',
+      vi: 'Tính phí',
+    },
+    description: {
+      zh: '查询剩余额度与本期用量',
+      'zh-TW': '查詢剩餘額度與本期用量',
+      en: 'Query remaining quota and current usage',
+      fr: "Interroger le quota restant et l'utilisation en cours",
+      ru: 'Запрос остатка квоты и текущего использования',
+      ja: '残りクォータと今期の使用量を照会',
+      vi: 'Truy vấn hạn mức còn lại và mức sử dụng hiện tại',
+    },
+  },
   'ai-model-moderations': {
     title: {
-      zh: '审查（Moderations）',
-      'zh-TW': '審查（Moderations）',
+      zh: '审查',
+      'zh-TW': '審查',
       en: 'Moderations',
       fr: 'Modération',
       ru: 'Модерация',
@@ -375,8 +455,8 @@ const STANDALONE_API_CARDS: Record<
   },
   'ai-model-realtime': {
     title: {
-      zh: '实时语音（Realtime）',
-      'zh-TW': '即時語音（Realtime）',
+      zh: '实时语音',
+      'zh-TW': '即時語音',
       en: 'Realtime',
       fr: 'Temps réel',
       ru: 'Реальное время',
@@ -395,8 +475,8 @@ const STANDALONE_API_CARDS: Record<
   },
   'ai-model-rerank': {
     title: {
-      zh: '重排序（Rerank）',
-      'zh-TW': '重新排序（Rerank）',
+      zh: '重排序',
+      'zh-TW': '重新排序',
       en: 'Rerank',
       fr: 'Re-classement',
       ru: 'Переранжирование',

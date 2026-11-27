@@ -126,7 +126,7 @@ describe('API reference sidebar group links', () => {
 })
 
 describe('Images group disclosure interaction', () => {
-  const IMAGES = '图像（Images）'
+  const IMAGES = '图像'
 
   it('renders the Images header as a button, not a link, with no selected state', async () => {
     await renderShell()

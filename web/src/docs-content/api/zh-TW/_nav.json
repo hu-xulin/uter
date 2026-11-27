@@ -25,6 +25,16 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-responses",
+    "title": "響應介面",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-search-tools",
+    "title": "搜尋與工具",
+    "category": "ai-model"
+  },
+  {
     "id": "ai-model-completions",
     "title": "AI Model API · Native OpenAI Format",
     "category": "ai-model"
@@ -81,22 +91,22 @@
   },
   {
     "id": "ai-model-moderations",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "審查",
     "category": "ai-model"
   },
   {
     "id": "ai-model-realtime",
-    "title": "AI Model API · Native OpenAI Format",
+    "title": "即時語音",
     "category": "ai-model"
   },
   {
     "id": "ai-model-rerank",
-    "title": "Document Reranking",
+    "title": "重新排序",
     "category": "ai-model"
   },
   {
     "id": "ai-model-unimplemented-fine-tuning",
-    "title": "fine-tuning",
+    "title": "微調",
     "category": "ai-model"
   },
   {
@@ -147,6 +157,16 @@
   {
     "id": "ai-model-videos-seedance",
     "title": "Seedance Format",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-tasks",
+    "title": "通用任務",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-billing",
+    "title": "計費",
     "category": "ai-model"
   }
 ]
