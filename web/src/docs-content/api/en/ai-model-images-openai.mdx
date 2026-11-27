@@ -46,6 +46,8 @@ Uter's image endpoints are compatible with the OpenAI Images API. Only models re
 
 `POST` `/v1/images/edits`
 
+This endpoint accepts both `multipart/form-data` (file uploads) and `application/json` (image passed as a URL or base64 string). Use the content type that matches your client.
+
 ### Request body (`multipart/form-data`)
 
 | Field | Type | Required | Description |
@@ -58,6 +60,27 @@ Uter's image endpoints are compatible with the OpenAI Images API. Only models re
 | `size` | string | No | Output size; accepted values depend on the model |
 | `response_format` | enum (`url`, `b64_json`) | No | Response format, default `url` |
 | `user` | string | No | Caller-supplied user identifier |
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | Yes | Image model ID from `GET /v1/models` |
+| `image` | string or array&lt;string&gt; | Yes | Image URL or base64 data URI to edit |
+| `prompt` | string | Yes | Edit description |
+| `n` | integer | No | Number of images, 1–128 (platform cap), default 1 |
+| `size` | string | No | Output size; accepted values depend on the model |
+| `response_format` | enum (`url`, `b64_json`) | No | Response format, default `url` |
+| `user` | string | No | Caller-supplied user identifier |
+
+```json
+{
+  "model": "gpt-image-1",
+  "image": "https://example.com/source.png",
+  "prompt": "Replace the background with a studio backdrop",
+  "size": "1024x1024"
+}
+```
 
 ### Response
 

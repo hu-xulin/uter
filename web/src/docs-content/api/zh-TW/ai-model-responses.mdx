@@ -1,0 +1,89 @@
+# Responses API
+
+OpenAI Responses API 支援多輪對話、工具呼叫、推理以及服務端響應狀態。Uter 提供建立、查詢、WebSocket 流式與壓縮端點。只需一個權杖即可呼叫任何承載 `openai-response` 端點族的渠道（例如 Uter Route / Uter API / Codex 及 OpenAI 相容渠道）。
+
+模型 ID 來自 `GET /v1/models`。對不支援該端點族的模型，請求會被拒絕；權杖的分組與模型白名單仍然生效。
+
+> 注意：`POST /v1/responses` 與 `GET /v1/responses/{response_id}` 是宿主協議端點。對已被任務外掛接管的模型由外掛處理；否則回退到內建 Responses 轉發。
+
+## 建立響應
+
+`POST` `/v1/responses`
+
+### 請求體（`application/json`）
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| `model` | string | 是 | 模型 ID |
+| `instructions` | string | 否 | 系統指令 |
+| `input` | string 或 array&lt;object&gt; | 否 | 輸入提示或訊息項 |
+| `max_output_tokens` | integer | 否 | 最大輸出 Token 數 |
+| `temperature` | number | 否 | 取樣溫度 |
+| `top_p` | number | 否 | 核取樣引數 |
+| `stream` | boolean | 否 | 是否流式返回 |
+| `tools` | array&lt;object&gt; | 否 | 工具定義 |
+| `previous_response_id` | string | 否 | 要續接的上一響應 ID |
+| `reasoning.effort` | enum（`low`、`medium`、`high`） | 否 | 推理強度 |
+| `reasoning.summary` | string | 否 | 推理摘要 |
+| `truncation` | enum（`auto`、`disabled`） | 否 | 截斷模式 |
+| `store` | boolean | 否 | 是否儲存響應供後續查詢 |
+
+### 響應
+
+| 狀態碼 | 說明 |
+|---|---|
+| `200` | 建立成功 |
+| `400` | 請求引數錯誤 |
+| `403` | 額度不足 |
+| `429` | 請求頻率限制 |
+| `503` | 當前模型無可用渠道 |
+
+#### `200` 響應欄位
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| `id` | string | 響應 ID（用於查詢與壓縮） |
+| `object` | string | `response` |
+| `created_at` | integer | 建立時間（Unix 秒） |
+| `status` | enum（`completed`、`failed`、`in_progress`、`incomplete`） | 響應狀態 |
+| `model` | string | 使用的模型 |
+| `output` | array&lt;object&gt; | 輸出項（訊息、工具呼叫、推理） |
+| `usage.input_tokens` | integer | 輸入 Token 數 |
+| `usage.output_tokens` | integer | 輸出 Token 數 |
+| `usage.total_tokens` | integer | 總 Token 數 |
+
+## 查詢響應
+
+`GET` `/v1/responses/{response_id}`
+
+按 ID 返回此前儲存的響應。
+
+| 引數 | 位置 | 型別 | 必填 | 說明 |
+|---|---|---|---|---|
+| `response_id` | path | string | 是 | 建立時返回的 ID |
+
+響應體欄位與建立介面一致。未知 ID 返回 OpenAI 格式錯誤。
+
+## WebSocket 流式響應
+
+`GET` `/v1/responses`
+
+用於流式響應的 WebSocket 端點。渠道選擇在收到首個 `response.create` 事件後進行，每個事件都會經過常規請求限流。無法設定握手請求頭的瀏覽器客戶端，除 `Authorization: Bearer` 外，還可用 `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` 子協議鑑權。
+
+連線地址：`wss://uter.ai/v1/responses`
+
+## 壓縮響應
+
+`POST` `/v1/responses/compact`
+
+壓縮響應的對話狀態，以降低續接會話的 Token 數。
+
+### 請求體（`application/json`）
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| `model` | string | 是 | 模型 ID |
+| `input` | string 或 array&lt;object&gt; | 是 | 待壓縮的對話 |
+| `instructions` | string | 否 | 系統指令 |
+
+響應結構與建立介面一致，壓縮後的對話位於 `output` 欄位。

@@ -1,0 +1,55 @@
+# 搜索与工具
+
+Uter 提供两类搜索/工具转发端点。原始请求体会原样转发给上游，上游响应也原样返回。调用按路由模型的请求价计费（不计 Token）。这些端点仅在支持它们的渠道上可用；不支持的渠道会返回错误，请求可在其他可用渠道上重试。
+
+## Alpha 搜索
+
+`POST` `/v1/alpha/search`
+
+Codex 类客户端使用的独立联网搜索。支持 Uter Route / Uter API / Sub2API / NewAPI / Codex / Advanced Custom 渠道以及供应商插件渠道。
+
+### 请求体（`application/json`）
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `model` | string | 是 | 路由模型 ID（例如 `GET /v1/models` 中的 alpha-search 模型） |
+| `id` | string | 否 | 客户端提供的请求 ID |
+| `stream` | boolean | 否 | 是否流式返回结果 |
+
+其他供应商专用字段会原样透传。
+
+### 响应
+
+| 状态码 | 说明 |
+|---|---|
+| `200` | 返回搜索结果 |
+| `400` | 请求无效或渠道不支持该端点 |
+| `403` | 额度不足 |
+
+响应体为上游响应，原样返回。
+
+## DeepSeek 搜索与抓取
+
+`POST` `/v1/tools/search`
+
+`POST` `/v1/tools/fetch`
+
+DeepSeek 类客户端使用的联网搜索与网页抓取工具。支持 DeepSeek、Uter Route / Uter API、Sub2API、NewAPI、Advanced Custom 渠道以及供应商插件渠道。模型名 `deepseek-search` 与 `deepseek-fetch` 分别选择对应的端点族。
+
+### 请求体（`application/json`）
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `model` | string | 否 | 路由模型 ID（搜索用 `deepseek-search`，抓取用 `deepseek-fetch`） |
+
+其余字段均为供应商专用，原样透传。
+
+### 响应
+
+| 状态码 | 说明 |
+|---|---|
+| `200` | 返回工具结果 |
+| `400` | 请求无效或渠道不支持该端点 |
+| `403` | 额度不足 |
+
+响应体为上游响应，原样返回。

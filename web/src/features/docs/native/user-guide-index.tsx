@@ -48,7 +48,7 @@ import {
   CONTENT_CARD_TEASER_CLASS,
   CONTENT_CARD_TITLE_CLASS,
 } from './content-card'
-import { firstSentence } from './teaser'
+import { cardTeaser, firstSentence } from './teaser'
 import {
   userGuideChapterSlugs,
   USER_GUIDE_PATH,
@@ -129,7 +129,12 @@ async function loadTeasers(
   for (const slug of userGuideChapterSlugs(locale)) {
     const row = rows.find((r) => r.p === `${USER_GUIDE_PATH}/${slug}`)
     if (!row?.b) continue
-    teasers[slug] = firstSentence(row.b)
+    const body = row.b.trim()
+    const lead = firstSentence(body)
+    // The second sentence is the natural continuation used to fill the
+    // card's second line when the opening sentence alone is too short.
+    const supplement = firstSentence(body.slice(lead.length))
+    teasers[slug] = cardTeaser(lead, supplement)
   }
   return teasers
 }

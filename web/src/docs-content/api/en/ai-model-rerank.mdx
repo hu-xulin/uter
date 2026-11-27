@@ -2,29 +2,29 @@
 
 ## Document Reranking
 
-根据查询对文档列表进行相关性重排序
+Re-rank a list of documents by relevance to a query
 
 `POST` `/v1/rerank`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `query` | string | 是 | 查询文本 |
-| `documents` | array&lt;string&gt; | 是 | 要重排序的文档列表 |
-| `top_n` | integer | 否 | 返回前 N 个结果 |
-| `return_documents` | boolean | 否 | — |
+| `model` | string | Yes | — |
+| `query` | string | Yes | Query text |
+| `documents` | array&lt;string&gt; | Yes | List of documents to re-rank |
+| `top_n` | integer | No | Return the top N results |
+| `return_documents` | boolean | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功重排序 |
+| `200` | Re-ranking completed |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `results` | array&lt;object&gt; | — |

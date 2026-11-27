@@ -57,29 +57,60 @@ function requireRenderedLink(
 }
 
 describe('catalog data (from the nav manifest)', () => {
-  it('lists protocol groups and standalone endpoints in sidebar order', () => {
+  it('lists protocol groups and standalone endpoints by title length', () => {
     for (const [locale, expected] of [
       ['zh', '音频'],
       ['en', 'Audio'],
     ] as const) {
       const cards = catalogCards(locale, 'api')
+      // Two-character Chinese titles first, then 3, 4 and 5; ties keep
+      // their `_nav.json` order. Stable across every UI locale.
       expect(cards.map((c) => c.id)).toEqual([
         'ai-model-audio',
         'ai-model-chat',
-        'ai-model-responses',
-        'ai-model-search-tools',
         'ai-model-completions',
         'ai-model-embeddings',
         'ai-model-images-openai', // no group page → first child
         'ai-model-models-list',
         'ai-model-moderations',
-        'ai-model-realtime',
-        'ai-model-rerank',
         'ai-model-videos',
-        'ai-model-tasks',
         'ai-model-billing',
+        'ai-model-rerank',
+        'ai-model-responses',
+        'ai-model-realtime',
+        'ai-model-tasks',
+        'ai-model-search-tools',
       ])
       expect(cards[0].title).toBe(expected)
+    }
+  })
+
+  it('orders AI-app cards alphabetically by their English short title', () => {
+    for (const locale of [
+      'zh',
+      'zh-TW',
+      'en',
+      'fr',
+      'ja',
+      'ru',
+      'vi',
+    ] as DocsLocaleCode[]) {
+      expect(catalogCards(locale, 'apps').map((c) => c.id)).toEqual([
+        'aionui',
+        'aqbot',
+        'astrbot',
+        'cc-switch',
+        'cherry-studio',
+        'claude-code',
+        'deepchat',
+        'factory-droid-cli',
+        'fluent-read',
+        'langbot',
+        'luna-translator',
+        'memoh',
+        'codex-cli',
+        'openclaw',
+      ])
     }
   })
 
@@ -310,11 +341,14 @@ describe('ApiCatalog / AppsCatalog cards', () => {
       .find((a) =>
         (a.getAttribute('href') ?? '').includes('/docs/zh/api/ai-model-audio')
       )
-    expect(
-      within(requireRenderedLink(card, 'audio card link')).getByText(
-        '原生OpenAI格式、原生Gemini格式'
-      )
-    ).toBeTruthy()
+    const teaser = within(requireRenderedLink(card, 'audio card link')).getByText(
+      /原生OpenAI格式、原生Gemini格式/
+    )
+    // Short variant lists are padded from the child document so the card
+    // teaser fills its two-line slot.
+    expect(teaser.textContent).toContain('语音合成')
+    expect(teaser.className).toContain('line-clamp-2')
+    expect(teaser.className).toContain('min-h-12')
   })
 
   it('localizes the API card one-liner too', () => {

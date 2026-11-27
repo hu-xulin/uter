@@ -39,7 +39,7 @@ Le format de réponse est choisi d'après les en-têtes :
 | `data[].object` | string | `model` |
 | `data[].created` | integer | Date d'enregistrement (secondes Unix) |
 | `data[].owned_by` | string | Propriétaire |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | Familles d'endpoints prises en charge : `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`, etc. |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Familles de points de terminaison prises en charge par le modèle. Valeurs possibles : `openai`, `openai-response`, `openai-response-compact`, `openai-alpha-search`, `deepseek-tools-search`, `deepseek-tools-fetch`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`. L'ensemble exact dépend du canal du modèle. |
 
 ## Récupérer un modèle
 

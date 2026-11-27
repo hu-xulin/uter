@@ -1,0 +1,79 @@
+# 通用任务
+
+通用任务 API 是与供应商无关的异步任务接口（图像与视频生成及其他任务插件）。它是 `/v1/video/generations` 背后的格式，也可直接通过 `/v1/tasks/*` 使用。两套入口共用任务 ID。
+
+所有端点都需要令牌（`Authorization: Bearer sk-...`）。产物内容下载还接受限定范围的产物访问授权。
+
+## 提交任务
+
+`POST` `/v1/tasks/{key}`
+
+`key` 路径段是任务插件 key。请求体由供应商决定；`model` 字段选择渠道与计费，供应商参数原样透传。
+
+| 参数 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任务插件 key |
+
+### 响应
+
+| 状态码 | 说明 |
+|---|---|
+| `200` | 任务已受理 |
+| `400` | 请求无效 |
+| `403` | 额度不足 |
+| `429` | 上游并发饱和 |
+| `503` | 无可用渠道 |
+
+响应携带任务 ID（`task_id` / `id`）与初始 `status`（通常为 `queued`）。
+
+## 查询任务
+
+`GET` `/v1/tasks/{key}`
+
+此处 `key` 为提交时返回的任务 ID。
+
+| 参数 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任务 ID |
+
+返回统一任务结构：
+
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4"
+  }
+}
+```
+
+任务不存在或属于其他用户时返回 `400`，`code` 为 `task_not_exist`。
+
+## 列出任务产物
+
+`GET` `/v1/tasks/{key}/artifacts`
+
+返回任务完成后产生的产物（例如生成的文件）。
+
+| 参数 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任务 ID |
+
+## 下载产物内容
+
+`GET` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+`HEAD` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+流式返回产物文件；`HEAD` 只返回相同的响应头，不带响应体。
+
+| 参数 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任务 ID |
+| `artifact_key` | path | string | 是 | 产物列表中的产物 key |
+
+该端点接受普通令牌，也接受限定范围的产物访问凭据。

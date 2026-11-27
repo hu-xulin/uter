@@ -8,24 +8,42 @@
 | 鉴权 | 请求头 `Authorization: Bearer sk-...` |
 | 令牌 | 在控制台「令牌」页创建，可限制分组、模型白名单与 IP |
 
-Claude 格式（`/v1/messages`）同时接受 `x-api-key` 请求头；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 请求头或 `?key=` 查询参数。
+Claude 格式（`/v1/messages`）同时接受 `x-api-key` 请求头；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 请求头或 `?key=` 查询参数。无法设置请求头的浏览器客户端，WebSocket 端点还可用 `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` 子协议鉴权。
 
-请求失败时统一返回 OpenAI 风格错误：
+## 错误格式
 
-```json
-{"error": {"message": "错误说明", "type": "错误类型", "param": "", "code": "错误代码"}}
-```
+错误结构取决于端点类别，请按响应体判断，而不要只看 HTTP 状态码：
+
+| 类别 | 结构 | 示例 |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI 格式 | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude（`/v1/messages`） | Anthropic 格式 | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| 视频 / 通用任务（`/v1/video/generations`、`/v1/videos`、`/v1/tasks/*`） | 扁平任务错误 | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| 鉴权 / 限流（中间件） | OpenAI 格式但无 `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+少数端点为例外：`GET /v1/models/{model}` 对不存在的模型仍返回 `200` 并携带 OpenAI 错误体；`GET /v1/videos/{id}/content` 对不存在的任务返回 `404`，而通用任务查询返回 `400 task_not_exist`。
 
 ## AI 模型接口
 
-一个令牌即可调用平台聚合的全部上游供应商。按协议分为四族：
+一个令牌即可调用平台聚合的全部上游供应商。端点按协议族分组如下，字段说明见对应页面：
 
-| 协议族 | 主要端点 |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`、`POST /v1/completions`、`POST /v1/responses`、`POST /v1/embeddings`、`POST /v1/images/generations`、`POST /v1/images/edits`、`POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations`、`POST /v1/moderations`、`POST /v1/rerank`、`GET /v1/models`、`GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` |
-| 视频任务 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` |
+| 类别 | 端点 | 详情 |
+|---|---|---|
+| 文本 · OpenAI | `POST /v1/chat/completions`、`POST /v1/completions` | [openai](./ai-model-chat-openai)、[completions](./ai-model-completions-openai) |
+| 文本 · Claude | `POST /v1/messages` | [原生 Claude 格式](./ai-model-chat) |
+| 文本 · Responses | `POST /v1/responses`、`GET /v1/responses/{response_id}`、`GET /v1/responses`（WebSocket）、`POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| 文本 · Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| 搜索与工具 | `POST /v1/alpha/search`、`POST /v1/tools/search`、`POST /v1/tools/fetch` | [搜索与工具](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai)、[gemini](./ai-model-embeddings-gemini) |
+| 图像 | `POST /v1/images/generations`、`POST /v1/images/edits` | [openai](./ai-model-images-openai)、[gemini](./ai-model-images-gemini)、[qwen](./ai-model-images-qwen) |
+| 音频 | `POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations` | [openai](./ai-model-audio-openai)、[gemini](./ai-model-audio-gemini) |
+| Moderations | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime`（WebSocket） | [realtime](./ai-model-realtime) |
+| 视频 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| 通用任务 | `POST /v1/tasks/{key}`、`GET /v1/tasks/{key}`、`GET /v1/tasks/{key}/artifacts`、`GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| 模型 | `GET /v1/models`、`GET /v1/models/{model}`、`GET /v1beta/models`、`GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| 计费 | `GET /v1/dashboard/billing/subscription`、`GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
 可调用的模型由令牌所属分组、令牌模型白名单与模型计费配置共同决定，请始终以 `GET /v1/models` 返回的模型名为准，不要猜测模型 ID。
 
@@ -37,4 +55,4 @@ Claude 格式（`/v1/messages`）同时接受 `x-api-key` 请求头；Gemini 格
 
 ## 尚未实现的端点
 
-`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 当前返回 `501`，请勿在生产环境调用。
+`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 当前返回 `501`；Gemini `:countTokens` 返回 `404`，请勿在生产环境调用。微调相关说明见[微调页面](./ai-model-unimplemented-fine-tuning)。

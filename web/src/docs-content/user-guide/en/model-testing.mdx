@@ -10,10 +10,10 @@ Confirm you have the items below. Missing any one of them makes step 1 fail.
 
 | Item | What it is | Where to get it |
 | --- | --- | --- |
-| **API Base URL** | e.g. `https://your-domain/v1`; use the domain this console is served from (your dedicated domain may differ) | Site address + `/v1` |
-| **API Key** | e.g. `sk-xxxxxxxx`. This is a credential equal to a password: never expose it, never ship it to the browser, never commit it | Console → API Keys → Create API Key |
-| **Quota** | Internal billing unit: **500,000 quota = US$1**; each model applies its own ratio and the wallet/usage screens show the site currency. Calls are rejected when quota runs out | Console → Wallet; Console → Usage Logs |
-| **Model name** | The registered name in Uter (not necessarily the vendor's original name) | Console → Pricing; or the `id` from `GET /v1/models` |
+| **API Base URL** | API-only entry point `https://api.uter.ai/v1`; the address of the console you are using plus `/v1` also works. Other domains are not official entry points | API reference home; or console site address + `/v1` |
+| **API Key** | e.g. `sk-xxxxxxxx`. This is a credential equal to a password: never expose it, never ship it to the browser, never commit it | General → API Keys → Create API Key |
+| **Quota** | Internal billing unit: **500,000 quota = US$1 by default**, configurable under System Settings → Billing; the wallet/usage screens show the configured currency. Calls are rejected when quota runs out | Personal → Wallet; General → Usage Logs |
+| **Model name** | The registered name in Uter (not necessarily the vendor's original name) | Public pricing page `/pricing`; or the `id` from `GET /v1/models` |
 
 ### Channels and groups: two different dimensions
 
@@ -30,32 +30,43 @@ The same model can therefore differ in availability and price across groups and 
 
 API keys have four states: **Enabled, Disabled, Expired, Exhausted**. Creating or editing a key can also apply:
 
+- **Group**: determines the billing ratio and routable models; an “auto group order” and cross-group retry can be configured as well.
 - **Expiry**: “Never expires” by default; after expiry calls return 401.
-- **Quota cap**: a dedicated allowance or “Unlimited”. When used up the key becomes Exhausted.
+- **Quota cap**: entered in the configured site currency (USD by default), or “Unlimited”. When used up the key becomes Exhausted.
 - **Model limits**: allow only selected models. With no model selected the key cannot call anything.
 - **IP allowlist**: supports CIDR (e.g. `203.0.113.0/24`); other sources are rejected.
 - **Allow querying user quota**: whether this key may call `/v1/dashboard/billing/*`.
+- **Quantity**: several keys can be generated at once; keep one for testing.
+
+<Callout type="info">
+  For a test key, allow only the model under test and turn off cross-group retry. Otherwise requests may route to unexpected channels and invalidate your connectivity or billing conclusions.
+</Callout>
 
 ## Fastest check: try it in the Playground
 
-Console → Playground exercises the same model path as the API.
+Chat → Playground exercises the same model path as the API.
 
-1. Pick a **channel** on the left; the right pane lists that channel's models. Select the model to test.
+1. Open the model selector: pick a **channel** in the left pane and one of its models in the right pane. The first channel in the list is selected by default.
 2. Send a message and watch the reply (streamed by default).
-3. Open Parameter settings and enable what you need: `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. Only enabled parameters are sent.
-4. To test multimodal or web-search behaviour, use the composer's attach / search tools (subject to model support).
-5. Stop, regenerate, edit history, or clear the conversation at any time.
+3. Open Parameter settings and enable what you need: `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. **Only enabled parameters are sent** (`max_tokens` and `seed` are off by default).
+4. Stop generation, regenerate, edit or copy a message, view the raw reply, delete a message, or clear the conversation (with confirmation).
+5. The composer's **attachment and web-search buttons are placeholders under development** — clicking them only shows an unsupported notice. For vision, use the API's `image_url` as in Step 6; for web search, use `POST /v1/tools/search`.
 
 The Playground bills quota under the same rules, which makes it ideal for iteration; still confirm over the API before shipping.
 
 ## Check the model and its price
 
-Console → Pricing lets you:
+The public pricing page `/pricing` lets you:
 
 - search by model name;
-- filter by **channel, vendor, type, tag** to see which channels serve a model;
-- inspect billing mode (per token / per request / per task), context limits and supported endpoints;
-- compare public prices before choosing a model.
+- filter by **channel, vendor, model tag, pricing type and endpoint type** to see which channels serve a model. Pricing types include token-based, per-request, task billing and dynamic pricing; endpoint types include Chat / Response / Anthropic / Gemini / Rerank / Image / Embeddings / Video;
+- inspect billing mode, context limits and supported endpoints, and switch between **standard / recharge price**, **per 1M / per 1K tokens**, seven sort orders, and card / table views;
+- compare the **Uter price** with the **official price** and the discount / markup. Per-second models (some video and audio models) show a `/ second` rate with an official reference;
+- note that the channel sidebar selects **Claude-Basic** by default and shows only its models; click “All channels” or visit `?channel=all` to see everything.
+
+<Callout type="warn">
+  A card showing “pricing not configured”, a raw billing expression, or no official price is a platform-side pricing-data problem, not a malformed request. Record the model and channel and contact the platform; do not parse the expression in your own client.
+</Callout>
 
 ## Test dimensions
 
@@ -118,7 +129,7 @@ curl --noproxy '*' -s "$BASE/models/your-model-id" \
 Copy the exact `id` you want to test (e.g. `gpt-4o`, `claude-3-5-sonnet-20241022`, or a custom name).
 
 <Callout type="warn">
-  If the model is missing, check Console → Pricing by channel first, then contact the platform. Do not guess names: that usually yields 404 or “no available channel”.
+  If the model is missing, check the pricing page `/pricing` by channel first, then contact the platform. The channel sidebar selects Claude-Basic by default, so click “All channels” or pick a specific channel. Do not guess names: that usually yields 404 or “no available channel”.
 </Callout>
 
 ### Step 3 · One minimal chat call (non-streaming)
@@ -221,7 +232,7 @@ Compare TTFT and total time with your SLA. Also test a long prompt (e.g. 8k / 32
 
 ### Step 8 · Quota and billing check
 
-`GET /v1/dashboard/billing/usage` returns **cumulative usage** (`total_usage`, in the site display currency), not the remaining balance — see Console → Wallet for the balance. Compare before/after:
+`GET /v1/dashboard/billing/usage` returns **cumulative usage** (`total_usage`), not the remaining balance — see Personal → Wallet for the balance. `total_usage` is converted to the site display currency and expressed in **1/100 of that currency** (US cents on a USD site), so divide the before/after difference by 100 to get dollars. Compare before/after:
 
 ```bash
 # Before
@@ -235,7 +246,9 @@ curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-You can also read `usage` from a single response (`prompt_tokens` + `completion_tokens`, or task usage) and cross-check it with the quota shown in Console → Usage Logs / Task Logs.
+You can also read `usage` from a single response (`prompt_tokens` + `completion_tokens`, or task usage) and cross-check it with the quota shown in General → Usage Logs / Task Logs.
+
+`GET /v1/dashboard/billing/subscription` is an OpenAI-compatible **quota ceiling** query. Its fields are named `*_usd` but the values follow the site display currency (USD / CNY / tokens), and it does not represent a real payment subscription; `access_until` is populated only in token-statistics mode.
 
 ### Step 9 · Boundaries and readable errors
 
@@ -254,25 +267,25 @@ Pass when the answer is a structured `{"error":{"message":...,"type":...,"code":
 
 Task models are **submit → poll → download**, not one request → one answer:
 
-1. **Submit** via the endpoint shown on the platform's task-plugin page — the generic `POST /v1/tasks/<plugin-key>`, video `POST /v1/video/generations`, or the OpenAI-compatible `POST /v1/images/generations` handled by the matching channel/plugin.
-2. **Poll** with the returned `task_id`: `GET /v1/tasks/<task_id>` or `GET /v1/video/generations/<task_id>`. Until completion the status is queued / processing.
-3. **Artifacts**: `GET /v1/tasks/<task_id>/artifacts` lists outputs; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` downloads one.
-4. **Verify** in Console → Usage Logs → Task Logs: status, progress, duration and quota; failed tasks should show a reason, with an async-task refund where applicable.
+1. **Submit** through an enabled plugin listed under Admin → Channel Plugins (`/task-plugins`, super admins only): the generic `POST /v1/tasks/<plugin-key>`, video `POST /v1/video/generations` or the OpenAI-style `POST /v1/videos`. The OpenAI-compatible `POST /v1/images/generations` is handled by the matching channel / plugin.
+2. **Poll** with the returned `task_id`: `GET /v1/tasks/<task_id>`, `GET /v1/video/generations/<task_id>` or `GET /v1/videos/<task_id>`. Until completion the status is queued / processing.
+3. **Artifacts**: `GET /v1/tasks/<task_id>/artifacts` lists outputs; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` downloads one (a signed access parameter also works without a token). For video, use `GET /v1/videos/<task_id>/content`.
+4. **Verify**: General → Task Logs shows status, progress, duration and the failure reason. **Refunds are not listed in Task Logs** — they appear as “Async task refund” entries in General → Usage Logs.
 5. **Edge cases**: trigger one timeout or invalid parameter and confirm the task ends in a failed state instead of hanging forever.
 
 ## Troubleshooting
 
 | # | What you see | HTTP | Likely cause | Fix |
 | --- | --- | --- | --- | --- |
-| **A1** | `That token isn’t valid.` | 401 | Key truncated, mistyped or disabled | Copy the full key again from Console → API Keys; confirm it is Enabled; no leading/trailing spaces |
+| **A1** | `That token isn’t valid.` | 401 | Key truncated, mistyped or disabled | Copy the full key again from General → API Keys; confirm it is Enabled; no leading/trailing spaces |
 | **A2** | `This token has expired. Please create a new one.` | 401 | Expiry passed | Create a new key, or set expiry to never |
-| **A3** | `This token (sk-***) has run out of quota. Please add more.` | 401 | Key's own quota exhausted | Add quota to the key in Console → API Keys, or create a new key / raise user quota |
+| **A3** | `This token (sk-***) has run out of quota. Please add more.` | 401 | Key's own quota exhausted | Add quota to the key in General → API Keys, or create a new key / raise user quota |
 | **A4** | `Your IP address is not on this token's allowlist` | 403 | IP allowlist (CIDR supported) excludes your egress IP | Add the egress IP/range, or disable the restriction in a test environment |
 | **A5** | `This token doesn’t have access to any models.` | 403 | Key's model limit list is empty | Edit the key and select the models to allow |
 | **A6** | `This token can’t access the model «xxx».` | 403 | Model not in the key's allowlist | Update the model limits, or use a key that allows it |
-| **A7** | Connection failure / `Could not resolve host` / timeouts | — | Wrong base URL, self-signed cert, private network | Verify `https://your-domain/v1`; use `--noproxy '*'` when a local proxy is configured; confirm reachability |
-| **B1** | `You don’t have enough quota.` | 403 | Account/key quota exhausted | Top up in Console → Wallet or add key quota; verify with Step 8 |
-| **B2** | `There’s no available channel for model «xxx» in group «default».` | 503 (400 for some filter cases) | No enabled channel serves the model in this group | Check Console → Pricing by channel; contact the platform; do not guess names |
+| **A7** | Connection failure / `Could not resolve host` / timeouts | — | Wrong base URL, self-signed cert, private network | Verify the API-only entry point `https://api.uter.ai/v1` or your console address + `/v1`; use `--noproxy '*'` when a local proxy is configured; confirm reachability |
+| **B1** | `You don’t have enough quota.` | 403 | Account/key quota exhausted | Top up in Personal → Wallet or add key quota; verify with Step 8 |
+| **B2** | `There’s no available channel for model «xxx» in group «default».` | 503 (400 for some filter cases) | No enabled channel serves the model in this group | Check the pricing page `/pricing` by channel (the sidebar selects Claude-Basic by default — click “All channels”); contact the platform; do not guess names |
 | **B3** | `404` / model not found | 404 | Wrong model name or no access | List models with Step 2 and copy the `id` exactly |
 | **C1** | `You’ve hit the limit: at most X requests every N minutes.` / total-limit variant | 429 | Key or platform rate limit | Lower concurrency, add exponential backoff, check RPM/TPM, stagger batches |
 | **C2** | Current group / upstream at capacity | 429 / 503 | Temporary upstream or group saturation | Retry later with backoff; contact the platform or switch group |
@@ -282,6 +295,7 @@ Task models are **submit → poll → download**, not one request → one answer
 | **D3** | Output truncated | — | `max_tokens` too small or model output cap | Raise `max_tokens`; stream long answers |
 | **E1** | Deduction differs from expectation | — | Hidden tokens (reasoning, cache hits, tools) or model ratio differences | Reconcile with the response `usage` and the billing detail in Usage Logs; ask the platform |
 | **E2** | Function calling / JSON mode does nothing | — | The model does not expose it | Verify with Step 5; degrade gracefully in your product |
+| **E3** | A pricing card shows “pricing not configured”, a raw billing expression, or no official price | — | Platform-side pricing / official-price data issue | Record the model and channel and contact the platform; do not parse the expression or change ratios yourself |
 | **F1** | `400` with an announcement-style message | 400 | Upstream provider notice, not your request | Validate your request format, then contact the platform with the raw error |
 
 <Callout type="idea">
@@ -333,7 +347,7 @@ Read `message` first — it usually names the direct cause.
 
 ## Reconcile every call in the logs
 
-Console → Usage Logs records time, model, key, channel (admins), latency, quota and error for each request; Task Logs record async task status, progress and artifacts. During integration:
+General → Usage Logs records time, channel / user (admins only), key (with group), model, stream / TPS, input / output / cached tokens, quota, latency / TTFT and details (the error message lives in the detail dialog). General → Task Logs records submit time, plugin, task ID, duration, status, progress, artifacts and details (failure reason). During integration:
 
 - compare the model, group/channel and quota in the log with what you expected;
 - keep the raw error for failures so platform-side and upstream-side issues stay distinguishable;
@@ -345,7 +359,9 @@ Console → Usage Logs records time, model, key, channel (admins), latency, quot
 - [ ] **Key** copied in full, status Enabled, not expired, enough quota.
 - [ ] The key's **model limits** include every model the product uses.
 - [ ] If the **IP allowlist** is on, production egress IPs/CIDRs are added.
+- [ ] The target model's **group and serving channels** are confirmed (the pricing sidebar selects Claude-Basic by default — click “All channels” or pick a channel).
 - [ ] `GET /v1/models` lists the target model and the `id` matches the code.
+- [ ] The pricing page shows an **Uter price and an official price** for the model, with the expected unit; per-second / per-request models are checked separately. No card shows “pricing not configured” or a raw billing expression.
 - [ ] Non-streaming chat works and returns `content` and `usage`.
 - [ ] Streaming (SSE) works and parses `data:` chunks and `[DONE]`.
 - [ ] Required **advanced abilities** (tools / JSON / vision / long context) are verified individually.
@@ -369,29 +385,32 @@ OpenAI-compatible first, plus native Claude / Gemini formats and task-plugin end
 | Retrieve model | `GET /v1/models/:model` | Single-model information |
 | Chat | `POST /v1/chat/completions` | Main endpoint; stream / tools / vision |
 | Legacy completions | `POST /v1/completions` | Supported by some models |
-| Native Claude | `POST /v1/messages` | `x-api-key` + `anthropic-version` |
-| Native Gemini | `GET /v1beta/models` | `x-goog-api-key` or `?key=` |
-| Gemini OpenAI list | `GET /v1beta/openai/models` | Gemini models in OpenAI list format |
-| Gemini forwarding | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Native Gemini paths |
-| Responses realtime | `GET /v1/responses` (WebSocket) | Responses protocol over WebSocket |
+| Responses main entry | `POST /v1/responses`, `GET /v1/responses/:response_id` | Sync / streaming / background modes, and result retrieval |
+| Responses WebSocket | `GET /v1/responses` (WebSocket) | Responses protocol over WebSocket |
 | Responses compaction | `POST /v1/responses/compact` | Compact conversation context |
+| Native Claude | `POST /v1/messages` | `x-api-key` + `anthropic-version`; errors use the Anthropic shape |
+| Native Gemini | `GET /v1beta/models`, `POST /v1beta/models/*path` | `x-goog-api-key` or `?key=`; the latter calls generateContent and other native methods |
+| Gemini OpenAI list | `GET /v1beta/openai/models` | Gemini models in OpenAI list format |
+| Gemini compatibility aliases | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Paths served through the Gemini protocol |
 | Realtime voice | `GET /v1/realtime` (WebSocket) | Realtime mode |
 | Embeddings | `POST /v1/embeddings` | Text embeddings |
+| Legacy image edit | `POST /v1/edits` | OpenAI-compatible fallback endpoint |
 | Rerank | `POST /v1/rerank` | Retrieval reranking |
 | Moderation | `POST /v1/moderations` | Content safety |
-| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | Generation / editing (channel or task plugin) |
+| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | Generation / editing (channel or plugin) |
 | Audio | `POST /v1/audio/transcriptions`, `/translations`, `/speech` | Transcribe / translate / synthesize |
 | Web tools | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | DeepSeek tools and Codex standalone search |
-| Video | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Submit, query, remix |
-| Generic tasks | `POST /v1/tasks/:key`, `GET /v1/tasks/:task_id` | Unified task-plugin entry |
-| Task artifacts | `GET /v1/tasks/:task_id/artifacts`, `GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | List / download |
-| Usage and subscription | `GET /v1/dashboard/billing/usage`, `/subscription` | Cumulative usage and subscription quota |
+| Video (platform) | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Submit, query, remix |
+| Video (OpenAI style) | `POST /v1/videos`, `GET /v1/videos/:task_id`, `GET /v1/videos/:task_id/content` | Submit, query, download |
+| Generic tasks | `POST /v1/tasks/:key`, `GET /v1/tasks/:key` | Unified task-plugin entry; read routes carry the `task_id` in the `:key` path segment |
+| Task artifacts | `GET /v1/tasks/:key/artifacts`, `GET` or `HEAD /v1/tasks/:key/artifacts/:artifact_key/content` | List / download; downloads accept a token or a signed access parameter |
+| Usage and subscription | `GET /v1/dashboard/billing/usage`, `/subscription` | Cumulative usage and quota ceiling (OpenAI-compatible shim, not a payment subscription) |
 
-> These are the public endpoints currently registered. Which endpoints a specific model supports is shown on its page in Console → Pricing.
+> These are the public endpoints currently registered. `/dashboard/billing/*` also works without the `/v1` prefix. Which endpoints a specific model supports is shown on the pricing page `/pricing`.
 
 ### Unified error envelope
 
-API errors use the OpenAI shape:
+OpenAI-compatible endpoints use the OpenAI error shape by default:
 
 ```json
 {
@@ -399,12 +418,23 @@ API errors use the OpenAI shape:
     "message": "Human-readable reason",
     "type": "invalid_request_error | authentication_error | ...",
     "code": "optional code",
-    "param": "optional offending parameter"
+    "param": "optional offending parameter",
+    "metadata": "optional extra context"
   }
 }
 ```
 
-Combine it with the HTTP status (401 auth / 403 permission or quota / 404 model / 429 rate limit / 5xx upstream) to cover most client handling.
+There are important exceptions that clients must handle separately:
+
+| Scenario | Actual response |
+| --- | --- |
+| Native Claude `POST /v1/messages` | Anthropic shape `{"type":"error","error":{"type":...,"message":...}}` |
+| WebSocket (Responses / Realtime) | Errors arrive as event frames, not HTTP status codes |
+| Billing endpoints | Often HTTP 200 with `{"error":{"message":...,"type":"uter_error"}}` |
+| Middleware auth / rate-limit errors | `type` may be `new_api_error` and `param` may be absent |
+| `GET /v1/models/:model` for an unknown model | HTTP 200 with `error.code = "model_not_found"` |
+
+Combine this with the HTTP status (401 auth / 403 permission or quota / 404 missing route / 429 rate limit / 501 unimplemented compatibility endpoint / 5xx upstream). **Do not rely on the HTTP status alone**: billing and model retrieval can return “HTTP 200 + error”, so parse the body first.
 
 ### Security reminders
 

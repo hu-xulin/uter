@@ -13,6 +13,9 @@
     <loc>https://uter.ai/docs/en/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/en/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/en/api/ai-model-chat</loc>
   </url>
   <url>
@@ -62,6 +65,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/en/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/en/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/en/api/ai-model-unimplemented-fine-tuning</loc>
@@ -217,6 +229,9 @@
     <loc>https://uter.ai/docs/fr/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/fr/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/fr/api/ai-model-chat</loc>
   </url>
   <url>
@@ -266,6 +281,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/fr/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/fr/api/ai-model-unimplemented-fine-tuning</loc>
@@ -421,6 +445,9 @@
     <loc>https://uter.ai/docs/ja/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/ja/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/ja/api/ai-model-chat</loc>
   </url>
   <url>
@@ -470,6 +497,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ja/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ja/api/ai-model-unimplemented-fine-tuning</loc>
@@ -625,6 +661,9 @@
     <loc>https://uter.ai/docs/ru/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/ru/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/ru/api/ai-model-chat</loc>
   </url>
   <url>
@@ -674,6 +713,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/ru/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/ru/api/ai-model-unimplemented-fine-tuning</loc>
@@ -829,6 +877,9 @@
     <loc>https://uter.ai/docs/vi/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/vi/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/vi/api/ai-model-chat</loc>
   </url>
   <url>
@@ -878,6 +929,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/vi/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/vi/api/ai-model-unimplemented-fine-tuning</loc>
@@ -1033,6 +1093,9 @@
     <loc>https://uter.ai/docs/zh-TW/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/zh-TW/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/zh-TW/api/ai-model-chat</loc>
   </url>
   <url>
@@ -1082,6 +1145,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh-TW/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh-TW/api/ai-model-unimplemented-fine-tuning</loc>
@@ -1237,6 +1309,9 @@
     <loc>https://uter.ai/docs/zh/api/ai-model-audio-openai</loc>
   </url>
   <url>
+    <loc>https://uter.ai/docs/zh/api/ai-model-billing</loc>
+  </url>
+  <url>
     <loc>https://uter.ai/docs/zh/api/ai-model-chat</loc>
   </url>
   <url>
@@ -1286,6 +1361,15 @@
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/api/ai-model-rerank</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh/api/ai-model-responses</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh/api/ai-model-search-tools</loc>
+  </url>
+  <url>
+    <loc>https://uter.ai/docs/zh/api/ai-model-tasks</loc>
   </url>
   <url>
     <loc>https://uter.ai/docs/zh/api/ai-model-unimplemented-fine-tuning</loc>

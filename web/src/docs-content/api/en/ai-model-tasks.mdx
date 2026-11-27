@@ -1,0 +1,79 @@
+# Generic Tasks
+
+The generic task API is the provider-agnostic surface for asynchronous work (image and video generation, and other task plugins). It is the format behind `/v1/video/generations` and is also available directly under `/v1/tasks/*`. Task IDs are shared across both entry points.
+
+All endpoints require a token (`Authorization: Bearer sk-...`). Artifact content download additionally accepts scoped artifact-access authorization.
+
+## Submit a task
+
+`POST` `/v1/tasks/{key}`
+
+The `key` path segment is the task-plugin key. The body is provider-specific; a `model` field selects the channel and billing, and provider options are passed through.
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `key` | path | string | Yes | Task plugin key |
+
+### Response
+
+| Status | Meaning |
+|---|---|
+| `200` | Task accepted |
+| `400` | Invalid request |
+| `403` | Insufficient quota |
+| `429` | Upstream concurrency saturated |
+| `503` | No channel available |
+
+The response carries a task ID (`task_id` / `id`) and an initial `status` (usually `queued`).
+
+## Query a task
+
+`GET` `/v1/tasks/{key}`
+
+Here `key` is the task ID returned at submission.
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `key` | path | string | Yes | Task ID |
+
+Returns the unified task envelope:
+
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4"
+  }
+}
+```
+
+A missing task, or one owned by another user, returns `400` with `code: task_not_exist`.
+
+## List task artifacts
+
+`GET` `/v1/tasks/{key}/artifacts`
+
+Returns the artifacts produced by a completed task (for example generated files).
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `key` | path | string | Yes | Task ID |
+
+## Download artifact content
+
+`GET` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+`HEAD` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+Streams the artifact file. `HEAD` returns the same headers without a body.
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `key` | path | string | Yes | Task ID |
+| `artifact_key` | path | string | Yes | Artifact key from the artifacts list |
+
+This endpoint accepts either a regular token or a scoped artifact-access credential.

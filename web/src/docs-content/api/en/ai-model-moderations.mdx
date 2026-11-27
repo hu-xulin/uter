@@ -2,25 +2,25 @@
 
 ## Native OpenAI Format
 
-检查文本内容是否违反使用政策
+Check whether text content violates the usage policy
 
 `POST` `/v1/moderations`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 否 | — |
+| `model` | string | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功审核 |
+| `200` | Moderation completed |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

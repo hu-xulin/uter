@@ -8,33 +8,51 @@
 | 鑑權 | 請求標頭 `Authorization: Bearer sk-...` |
 | 權杖 | 在主控台「權杖」頁建立，可限制分組、模型白名單與 IP |
 
-Claude 格式（`/v1/messages`）同時接受 `x-api-key` 請求標頭；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 請求標頭或 `?key=` 查詢參數。
+Claude 格式（`/v1/messages`）同時接受 `x-api-key` 請求標頭；Gemini 格式（`/v1beta/models/...`）接受 `x-goog-api-key` 請求標頭或 `?key=` 查詢參數。無法設定請求標頭的瀏覽器客戶端，WebSocket 端點還可用 `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` 子協定鑑權。
 
-請求失敗時統一傳回 OpenAI 風格錯誤：
+## 錯誤格式
 
-```json
-{"error": {"message": "錯誤說明", "type": "錯誤類型", "param": "", "code": "錯誤代碼"}}
-```
+錯誤結構取決於端點類別，請依響應體判斷，而不要只看 HTTP 狀態碼：
+
+| 類別 | 結構 | 範例 |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI 格式 | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude（`/v1/messages`） | Anthropic 格式 | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| 影片 / 通用任務（`/v1/video/generations`、`/v1/videos`、`/v1/tasks/*`） | 扁平任務錯誤 | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| 鑑權 / 限流（中介軟體） | OpenAI 格式但無 `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+少數端點為例外：`GET /v1/models/{model}` 對不存在的模型仍回傳 `200` 並攜帶 OpenAI 錯誤體；`GET /v1/videos/{id}/content` 對不存在的任務回傳 `404`，而通用任務查詢回傳 `400 task_not_exist`。
 
 ## AI 模型介面
 
-一個權杖即可呼叫平台彙整的全部上游供應商。依協定分為四族：
+一個權杖即可呼叫平台聚合的全部上游供應商。端點依協定族分組如下，欄位說明見對應頁面：
 
-| 協定族 | 主要端點 |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`、`POST /v1/completions`、`POST /v1/responses`、`POST /v1/embeddings`、`POST /v1/images/generations`、`POST /v1/images/edits`、`POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations`、`POST /v1/moderations`、`POST /v1/rerank`、`GET /v1/models`、`GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` |
-| 影片任務 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` |
+| 類別 | 端點 | 詳情 |
+|---|---|---|
+| 文字 · OpenAI | `POST /v1/chat/completions`、`POST /v1/completions` | [openai](./ai-model-chat-openai)、[completions](./ai-model-completions-openai) |
+| 文字 · Claude | `POST /v1/messages` | [原生 Claude 格式](./ai-model-chat) |
+| 文字 · Responses | `POST /v1/responses`、`GET /v1/responses/{response_id}`、`GET /v1/responses`（WebSocket）、`POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| 文字 · Gemini | `POST /v1beta/models/{model}:generateContent`、`POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| 搜尋與工具 | `POST /v1/alpha/search`、`POST /v1/tools/search`、`POST /v1/tools/fetch` | [搜尋與工具](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai)、[gemini](./ai-model-embeddings-gemini) |
+| 圖像 | `POST /v1/images/generations`、`POST /v1/images/edits` | [openai](./ai-model-images-openai)、[gemini](./ai-model-images-gemini)、[qwen](./ai-model-images-qwen) |
+| 音訊 | `POST /v1/audio/speech`、`POST /v1/audio/transcriptions`、`POST /v1/audio/translations` | [openai](./ai-model-audio-openai)、[gemini](./ai-model-audio-gemini) |
+| Moderations | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime`（WebSocket） | [realtime](./ai-model-realtime) |
+| 影片 | `POST /v1/video/generations`、`GET /v1/video/generations/{task_id}`、`POST /v1/videos`、`GET /v1/videos/{id}`、`GET /v1/videos/{id}/content`、`POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| 通用任務 | `POST /v1/tasks/{key}`、`GET /v1/tasks/{key}`、`GET /v1/tasks/{key}/artifacts`、`GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| 模型 | `GET /v1/models`、`GET /v1/models/{model}`、`GET /v1beta/models`、`GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| 計費 | `GET /v1/dashboard/billing/subscription`、`GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
-可呼叫的模型由權杖所屬分組、權杖模型白名單與模型計費設定共同決定，請一律以 `GET /v1/models` 傳回的模型名稱為準，不要猜測模型 ID。
+可呼叫的模型由權杖所屬分組、權杖模型白名單與模型計費設定共同決定，請一律以 `GET /v1/models` 回傳的模型名為準，不要猜測模型 ID。
 
 ## 計費與限制
 
-- 請求受理時依模型單價與預估用量預扣額度，結束後依實際用量結算差額；失敗或未產生內容的任務會自動退回預扣額度。
-- 額度不足傳回 `403`；請求頻率或上游併發飽和傳回 `429`；模型不存在或目前分組無可用渠道傳回 `503`。
-- 影像生成數量 `n` 上限為 128；影片時長、解析度與批次數量依所選模型的限制校驗，超界請求會在受理前被拒絕。
+- 請求受理時依模型單價與預估用量預扣額度，結束後依實際用量結算差額；失敗或未生成內容的任務自動退回預扣額度。
+- 額度不足回傳 `403`；請求頻率或上游併發飽和回傳 `429`；模型不存在或目前分組無可用渠道回傳 `503`。
+- 圖像生成數量 `n` 上限為 128；影片時長、解析度與批次數量依所選模型的限制校驗，超界請求在受理前即被拒絕。
 
-## 尚未實作的端點
+## 尚未實現的端點
 
-`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 目前傳回 `501`，請勿在生產環境呼叫。
+`/v1/files*`、`/v1/fine-tunes*`、`/v1/images/variations`、`DELETE /v1/models/{model}` 目前回傳 `501`；Gemini `:countTokens` 回傳 `404`，請勿在生產環境呼叫。微調相關說明見[微調頁面](./ai-model-unimplemented-fine-tuning)。

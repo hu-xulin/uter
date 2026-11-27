@@ -2,35 +2,35 @@
 
 ## Gemini Native Format
 
-Gemini 图片生成
+Gemini image generation
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Request Parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Name | In | Type | Required | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Yes | Model name |
 
-### 请求体（`application/json`）
+### Request Body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.thinkingConfig.includeThoughts` | boolean | 否 | 是否返回思考内容 |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
-| `generationConfig.imageConfig.aspectRatio` | string | 否 | — |
-| `generationConfig.imageConfig.imageSize` | string | 否 | — |
+| `contents` | array&lt;object&gt; | Yes | — |
+| `generationConfig.thinkingConfig.includeThoughts` | boolean | No | Whether to return thinking content |
+| `generationConfig.responseModalities` | array&lt;string&gt; | No | — |
+| `generationConfig.imageConfig.aspectRatio` | string | No | — |
+| `generationConfig.imageConfig.imageSize` | string | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Success |
 
-#### `200` 响应字段
+#### `200` Response Fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |
@@ -39,30 +39,30 @@ Gemini 图片生成
 
 ## OpenAI Chat Format
 
-Gemini 图片生成
+Gemini image generation
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Request Body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `stream` | boolean | 是 | — |
-| `messages` | array&lt;object&gt; | 是 | — |
-| `extra_body.google.image_config.aspect_ratio` | string | 否 | — |
-| `extra_body.google.image_config.image_size` | string | 否 | — |
-| `contents` | array&lt;object&gt; | 是 | — |
+| `model` | string | Yes | — |
+| `stream` | boolean | Yes | — |
+| `messages` | array&lt;object&gt; | Yes | — |
+| `extra_body.google.image_config.aspect_ratio` | string | No | — |
+| `extra_body.google.image_config.image_size` | string | No | — |
+| `contents` | array&lt;object&gt; | Yes | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Description |
 |---|---|
-| `200` | 成功 |
+| `200` | Success |
 
-#### `200` 响应字段
+#### `200` Response Fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `model` | string | — |

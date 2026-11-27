@@ -2,9 +2,9 @@
 
 ## Native OpenAI Format
 
-建立 WebSocket 连接用于实时对话。
+Establish a WebSocket connection for real-time conversations.
 
-**注意**: 这是一个 WebSocket 端点，需要使用 WebSocket 协议连接。
+**Note**: This is a WebSocket endpoint and must be connected using the WebSocket protocol.
 
 Connection URL example: `wss://uter.ai/v1/realtime?model=gpt-4o-realtime`
 
@@ -12,24 +12,24 @@ Authentication: send `Authorization: Bearer sk-...` in the handshake headers. Br
 
 `GET` `/v1/realtime`
 
-### 请求参数
+### Request Parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Name | In | Type | Required | Description |
 |---|---|---|---|---|
-| `model` | query | string | 否 | 要使用的模型 |
+| `model` | query | string | No | Model to use |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Description |
 |---|---|
-| `101` | WebSocket 协议切换 |
-| `400` | 请求错误 |
+| `101` | WebSocket protocol switch |
+| `400` | Bad request |
 
-#### `400` 响应字段
+#### `400` Response Fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |

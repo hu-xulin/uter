@@ -1,0 +1,79 @@
+# Generic Tasks
+
+L'API de tâches génériques est la surface indépendante du fournisseur pour les travaux asynchrones (génération d'images et de vidéos, et autres plugins de tâche). C'est le format sous-jacent de `/v1/video/generations`, également disponible directement sous `/v1/tasks/*`. Les ID de tâche sont partagés entre ces deux points d'entrée.
+
+Tous les points de terminaison nécessitent un jeton (`Authorization: Bearer sk-...`). Le téléchargement du contenu d'un artefact accepte en plus une autorisation d'accès à l'artefact à portée limitée.
+
+## Soumettre une tâche
+
+`POST` `/v1/tasks/{key}`
+
+Le segment de chemin `key` est la clé du plugin de tâche. Le corps est propre au fournisseur ; un champ `model` sélectionne le canal et la facturation, et les options du fournisseur sont transmises telles quelles.
+
+| Paramètre | Dans | Type | Requis | Description |
+|---|---|---|---|---|
+| `key` | path | string | Oui | Clé du plugin de tâche |
+
+### Réponse
+
+| Code d'état | Description |
+|---|---|
+| `200` | Tâche acceptée |
+| `400` | Requête invalide |
+| `403` | Quota insuffisant |
+| `429` | Concurrence amont saturée |
+| `503` | Aucun canal disponible |
+
+La réponse contient un ID de tâche (`task_id` / `id`) et un `status` initial (généralement `queued`).
+
+## Interroger une tâche
+
+`GET` `/v1/tasks/{key}`
+
+Ici, `key` est l'ID de tâche renvoyé lors de la soumission.
+
+| Paramètre | Dans | Type | Requis | Description |
+|---|---|---|---|---|
+| `key` | path | string | Oui | ID de la tâche |
+
+Renvoie l'enveloppe de tâche unifiée :
+
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4"
+  }
+}
+```
+
+Une tâche introuvable, ou appartenant à un autre utilisateur, renvoie `400` avec `code: task_not_exist`.
+
+## Lister les artefacts d'une tâche
+
+`GET` `/v1/tasks/{key}/artifacts`
+
+Renvoie les artefacts produits par une tâche terminée (par exemple les fichiers générés).
+
+| Paramètre | Dans | Type | Requis | Description |
+|---|---|---|---|---|
+| `key` | path | string | Oui | ID de la tâche |
+
+## Télécharger le contenu d'un artefact
+
+`GET` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+`HEAD` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+Diffuse le fichier de l'artefact. `HEAD` renvoie les mêmes en-têtes sans corps.
+
+| Paramètre | Dans | Type | Requis | Description |
+|---|---|---|---|---|
+| `key` | path | string | Oui | ID de la tâche |
+| `artifact_key` | path | string | Oui | Clé de l'artefact issue de la liste des artefacts |
+
+Ce point de terminaison accepte soit un jeton ordinaire, soit un identifiant d'accès à l'artefact à portée limitée.

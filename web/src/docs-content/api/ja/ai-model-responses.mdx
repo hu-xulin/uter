@@ -1,0 +1,89 @@
+# Responses API
+
+OpenAI Responses API はマルチターン会話、ツール呼び出し、推論、サーバー側のレスポンス状態に対応しています。Uter は作成、取得、WebSocket ストリーミング、圧縮（compaction）のエンドポイントを提供します。1 つのトークンで `openai-response` エンドポイント系統を提供する任意のチャネル（例：Uter Route / Uter API / Codex および OpenAI 互換チャネル）にアクセスできます。
+
+モデル ID は `GET /v1/models` から取得します。このエンドポイント系統に対応しないモデルへのリクエストは拒否されます。トークンのグループとモデルホワイトリストも引き続き適用されます。
+
+> 注：`POST /v1/responses` と `GET /v1/responses/{response_id}` はホストプロトコルのエンドポイントです。タスクプラグインが宣言したモデルについてはプラグインが呼び出しを処理し、それ以外の場合は組み込みの Responses リレーにフォールバックします。
+
+## レスポンスを作成
+
+`POST` `/v1/responses`
+
+### リクエストボディ（`application/json`）
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `model` | string | はい | モデル ID |
+| `instructions` | string | いいえ | システム指示 |
+| `input` | string or array&lt;object&gt; | いいえ | 入力プロンプトまたはメッセージ項目 |
+| `max_output_tokens` | integer | いいえ | 最大出力トークン数 |
+| `temperature` | number | いいえ | サンプリング温度 |
+| `top_p` | number | いいえ | Nucleus（top-p）サンプリング |
+| `stream` | boolean | いいえ | レスポンスをストリーミングするか |
+| `tools` | array&lt;object&gt; | いいえ | ツール定義 |
+| `previous_response_id` | string | いいえ | 継続元となる以前のレスポンスの ID |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | いいえ | 推論の度合い |
+| `reasoning.summary` | string | いいえ | 推論の要約 |
+| `truncation` | enum (`auto`, `disabled`) | いいえ | 切り詰めモード |
+| `store` | boolean | いいえ | 後で取得できるようレスポンスを保存するか |
+
+### レスポンス
+
+| ステータス | 意味 |
+|---|---|
+| `200` | レスポンスを作成 |
+| `400` | リクエストパラメータが不正 |
+| `403` | クォータ不足 |
+| `429` | レート制限 |
+| `503` | このモデルに利用可能なチャネルがない |
+
+#### `200` のフィールド
+
+| フィールド | 型 | 説明 |
+|---|---|---|
+| `id` | string | レスポンス ID（取得と圧縮に使用） |
+| `object` | string | `response` |
+| `created_at` | integer | 作成時刻（Unix 秒） |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | レスポンスのステータス |
+| `model` | string | 使用されたモデル |
+| `output` | array&lt;object&gt; | 出力項目（メッセージ、ツール呼び出し、推論） |
+| `usage.input_tokens` | integer | 入力トークン数 |
+| `usage.output_tokens` | integer | 出力トークン数 |
+| `usage.total_tokens` | integer | トークン総数 |
+
+## レスポンスを取得
+
+`GET` `/v1/responses/{response_id}`
+
+ID を指定して、保存済みのレスポンスを返します。
+
+| パラメータ | 位置 | 型 | 必須 | 説明 |
+|---|---|---|---|---|
+| `response_id` | path | string | はい | 作成時に返された ID |
+
+レスポンスボディは作成時と同じフィールドを使用します。不明な ID の場合は OpenAI 形式のエラーを返します。
+
+## WebSocket 経由の Responses
+
+`GET` `/v1/responses`
+
+レスポンスをストリーミングするための WebSocket エンドポイントです。チャネルの選択は最初の `response.create` イベントの後で行われ、各イベントは通常のリクエスト制限を通過します。ハンドシェイクヘッダーを設定できないクライアントは、`Authorization: Bearer` に加えて、`Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` サブプロトコルで認証できます。
+
+接続 URL：`wss://uter.ai/v1/responses`
+
+## レスポンスを圧縮
+
+`POST` `/v1/responses/compact`
+
+レスポンスの会話状態を圧縮し、継続セッションのトークン数を削減します。
+
+### リクエストボディ（`application/json`）
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `model` | string | はい | モデル ID |
+| `input` | string or array&lt;object&gt; | はい | 圧縮する会話 |
+| `instructions` | string | いいえ | システム指示 |
+
+レスポンスは作成時と同じオブジェクト形状で、`output` に圧縮済みの会話が入ります。

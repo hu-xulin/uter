@@ -1,0 +1,35 @@
+# 計費
+
+兩個 OpenAI 相容的計費端點可供客戶端查詢當前憑據的剩餘額度與本期用量。兩者均支援 `/v1/dashboard/...` 與舊版 `/dashboard/...` 字首，需要權杖（`Authorization: Bearer sk-...`）。
+
+> 數值型 `*_USD` 欄位的口徑遵循站點配置的額度顯示型別：USD 顯示時按 `QuotaPerUnit` 從額度單位換算；CNY 顯示時先換算為 USD 再乘匯率；Token 顯示時直接攜帶原始 Token 數。請勿假定字尾一定代表美元。
+
+## 訂閱資訊（剩餘額度）
+
+`GET` `/v1/dashboard/billing/subscription`
+
+### 響應
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| `object` | string | `billing_subscription` |
+| `has_payment_method` | boolean | 恆為 `true` |
+| `soft_limit_usd` | number | 總額度（剩餘 + 已用），按顯示單位 |
+| `hard_limit_usd` | number | 總額度，按顯示單位 |
+| `system_hard_limit_usd` | number | 總額度，按顯示單位 |
+| `access_until` | integer | 權杖過期時間（Unix 秒）；不限期為 `0` |
+
+當權杖統計啟用時，資料反映權杖自身；否則反映所屬使用者的額度。不限額權杖返回較大的哨兵值（100000000）。
+
+## 用量（已消耗額度）
+
+`GET` `/v1/dashboard/billing/usage`
+
+### 響應
+
+| 欄位 | 型別 | 說明 |
+|---|---|---|
+| `object` | string | 計費用量物件 |
+| `total_usage` | number | 本期已消耗額度，按顯示單位 |
+
+發生內部錯誤時該端點仍返回 HTTP `200` 並攜帶 `{"error": {...}}` 響應體（type 為 `uter_error`）。應檢查 `error` 欄位，而不要只依賴狀態碼。

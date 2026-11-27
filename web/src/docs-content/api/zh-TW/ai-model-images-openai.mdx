@@ -46,6 +46,8 @@ Uter 的圖像介面相容 OpenAI Images API。可用模型以 `GET /v1/models` 
 
 `POST` `/v1/images/edits`
 
+該端點同時接受 `multipart/form-data`（檔案上傳）與 `application/json`（圖片以 URL 或 Base64 字串傳入）。請使用與用戶端匹配的內容類型。
+
 ### 請求主體（`multipart/form-data`）
 
 | 欄位 | 類型 | 必填 | 說明 |

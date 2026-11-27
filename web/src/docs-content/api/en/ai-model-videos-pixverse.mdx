@@ -1,10 +1,12 @@
 # PixVerse Format
 
-PixVerse video generation: call the full PixVerse model family (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) through the OpenAI-compatible `/v1/videos` endpoint, supporting text-to-video and image-to-video.
+PixVerse video generation through the OpenAI-compatible `/v1/videos` endpoint, supporting text-to-video and image-to-video.
+
+> **Availability**: PixVerse is not a built-in provider channel. These model IDs are available only if your administrator has configured a custom channel (Advanced Custom / Uter Route) that serves them. Check `GET /v1/models` for the exact IDs your token can call; if no `PixVerse/*` model is listed, this format is unavailable on your account.
 
 ## Supported Models
 
-In the `model` field, always use the form `PixVerse/<version>`, e.g. `PixVerse/v5.6`.
+When a PixVerse channel is configured, use the form `PixVerse/<version>` in the `model` field, e.g. `PixVerse/v5.6`. The tiers below describe the PixVerse upstream convention; the models actually exposed depend on the channel configuration.
 
 | Model | Highlights | Duration tiers | Audio |
 |---|---|---|---|

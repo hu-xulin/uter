@@ -69,7 +69,7 @@ import {
   catalogIdentity,
   type CatalogCard,
 } from './docs-content'
-import { firstSentence } from './teaser'
+import { cardTeaser } from './teaser'
 
 /**
  * Synthesised landing pages for `/docs/<locale>/api` and `/apps`.
@@ -88,6 +88,8 @@ const API_ICONS: Record<string, LucideIcon> = {
   'ai-model-chat': MessageSquare,
   'ai-model-chat-openai': MessageSquare,
   'ai-model-chat-gemini': MessageSquare,
+  'ai-model-responses': BotMessageSquare,
+  'ai-model-search-tools': Puzzle,
   'ai-model-completions': Braces,
   'ai-model-completions-openai': Braces,
   'ai-model-embeddings': Boxes,
@@ -113,6 +115,8 @@ const API_ICONS: Record<string, LucideIcon> = {
   'ai-model-videos-veo': Clapperboard,
   'ai-model-videos-pixverse': Clapperboard,
   'ai-model-videos-seedance': Clapperboard,
+  'ai-model-tasks': Terminal,
+  'ai-model-billing': Wallet,
   // Management-plane endpoints.
   'api-key': KeyRound,
   'api-keys': KeyRound,
@@ -222,7 +226,7 @@ function CatalogCardItem({
         </span>
         {card.description ? (
           <span className={CONTENT_CARD_TEASER_CLASS}>
-            {firstSentence(card.description)}
+            {cardTeaser(card.description, card.supplement)}
           </span>
         ) : null}
       </Link>

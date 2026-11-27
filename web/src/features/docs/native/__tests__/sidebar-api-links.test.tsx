@@ -181,3 +181,51 @@ describe('Images group disclosure interaction', () => {
     )
   })
 })
+
+describe('sidebar ordering matches the landing cards', () => {
+  it('orders API rows by Chinese title length and AI apps alphabetically', () => {
+    for (const locale of LOCALES) {
+      const api = sidebarEntries(locale).find((s) => s.url.endsWith('/api'))
+      const apps = sidebarEntries(locale).find((s) => s.url.endsWith('/apps'))
+      if (!api || !apps) throw new Error(`${locale} section missing`)
+
+      const apiTitles = (api.children ?? []).map((child) => child.title)
+      // The zh variant is the ordering source: 2-character titles lead.
+      const zhApi = sidebarEntries('zh').find((s) => s.url.endsWith('/api'))
+      expect((zhApi?.children ?? []).map((c) => c.title)).toEqual([
+        '音频',
+        '聊天',
+        '补全',
+        '嵌入',
+        '图像',
+        '模型',
+        '审查',
+        '视频',
+        '计费',
+        '重排序',
+        '响应接口',
+        '实时语音',
+        '通用任务',
+        '搜索与工具',
+      ])
+      expect(apiTitles.length).toBe(14)
+
+      expect((apps.children ?? []).map((c) => c.url.split('/').pop())).toEqual([
+        'aionui',
+        'aqbot',
+        'astrbot',
+        'cc-switch',
+        'cherry-studio',
+        'claude-code',
+        'deepchat',
+        'factory-droid-cli',
+        'fluent-read',
+        'langbot',
+        'luna-translator',
+        'memoh',
+        'codex-cli',
+        'openclaw',
+      ])
+    }
+  })
+})

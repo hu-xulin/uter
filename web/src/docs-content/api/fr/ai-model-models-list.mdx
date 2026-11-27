@@ -1,12 +1,13 @@
 # Modèles (Models)
 
-Uter expose trois points de terminaison de consultation des modèles :
+Uter expose quatre points de terminaison de consultation des modèles :
 
 | Point de terminaison | Description |
 |---|---|
 | `GET /v1/models` | Modèles que le jeton courant peut appeler |
 | `GET /v1/models/{model}` | Détails d'un modèle |
 | `GET /v1beta/models` | La même liste au format natif Gemini |
+| `GET /v1beta/openai/models` | La même liste au format OpenAI (point d'entrée compatible Gemini) |
 
 La liste est filtrée par le groupe du jeton, sa liste de modèles autorisés et la configuration de facturation. Fiez-vous à la liste renvoyée et ne codez pas les noms de modèles en dur.
 

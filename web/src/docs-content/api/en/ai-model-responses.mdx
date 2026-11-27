@@ -1,0 +1,89 @@
+# Responses API
+
+The OpenAI Responses API supports multi-turn conversations, tool calls, reasoning and server-side response state. Uter exposes create, retrieve, WebSocket streaming and compaction endpoints. A single token reaches any channel that serves the `openai-response` endpoint family (for example Uter Route / Uter API / Codex and OpenAI-compatible channels).
+
+Model IDs come from `GET /v1/models`. Requests for models that do not support this endpoint family are rejected; the token's group and model allowlist still apply.
+
+> Note: `POST /v1/responses` and `GET /v1/responses/{response_id}` are host-protocol endpoints. For a model claimed by a task plugin the plugin handles the call; otherwise the request falls back to the built-in Responses relay.
+
+## Create a response
+
+`POST` `/v1/responses`
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | Yes | Model ID |
+| `instructions` | string | No | System instructions |
+| `input` | string or array&lt;object&gt; | No | Input prompt or message items |
+| `max_output_tokens` | integer | No | Maximum output tokens |
+| `temperature` | number | No | Sampling temperature |
+| `top_p` | number | No | Nucleus (top-p) sampling |
+| `stream` | boolean | No | Whether to stream the response |
+| `tools` | array&lt;object&gt; | No | Tool definitions |
+| `previous_response_id` | string | No | ID of a previous response to continue from |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | No | Reasoning effort |
+| `reasoning.summary` | string | No | Reasoning summary |
+| `truncation` | enum (`auto`, `disabled`) | No | Truncation mode |
+| `store` | boolean | No | Whether to store the response for later retrieval |
+
+### Response
+
+| Status | Meaning |
+|---|---|
+| `200` | Response created |
+| `400` | Invalid request parameters |
+| `403` | Insufficient quota |
+| `429` | Rate limit |
+| `503` | No channel available for this model |
+
+#### `200` fields
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Response ID (use with retrieve and compaction) |
+| `object` | string | `response` |
+| `created_at` | integer | Creation time (Unix seconds) |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | Response status |
+| `model` | string | Model used |
+| `output` | array&lt;object&gt; | Output items (messages, tool calls, reasoning) |
+| `usage.input_tokens` | integer | Input token count |
+| `usage.output_tokens` | integer | Output token count |
+| `usage.total_tokens` | integer | Total token count |
+
+## Retrieve a response
+
+`GET` `/v1/responses/{response_id}`
+
+Returns a previously stored response by ID.
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `response_id` | path | string | Yes | ID returned by create |
+
+The response body uses the same fields as create. An unknown ID returns an OpenAI-format error.
+
+## Responses over WebSocket
+
+`GET` `/v1/responses`
+
+A WebSocket endpoint for streaming responses. Channel selection happens after the first `response.create` event, and each event runs through the ordinary request limiter. Clients that cannot set handshake headers may authenticate with the `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` subprotocol, in addition to `Authorization: Bearer`.
+
+Connection URL: `wss://uter.ai/v1/responses`
+
+## Compact a response
+
+`POST` `/v1/responses/compact`
+
+Compacts the conversation state of a response to reduce the token count of a continued session.
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | Yes | Model ID |
+| `input` | string or array&lt;object&gt; | Yes | Conversation to compact |
+| `instructions` | string | No | System instructions |
+
+The response uses the same object shape as create, with the compacted conversation in `output`.

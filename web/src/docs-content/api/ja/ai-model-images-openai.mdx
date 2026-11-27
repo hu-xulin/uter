@@ -46,6 +46,8 @@ Uter の画像エンドポイントは OpenAI Images API と互換です。利�
 
 `POST` `/v1/images/edits`
 
+このエンドポイントは `multipart/form-data`（ファイルアップロード）と `application/json`（画像を URL または base64 文字列で渡す）の両方を受け付けます。クライアントに合ったコンテンツタイプを使用してください。
+
 ### リクエストボディ（`multipart/form-data`）
 
 | フィールド | 型 | 必須 | 説明 |
@@ -58,6 +60,27 @@ Uter の画像エンドポイントは OpenAI Images API と互換です。利�
 | `size` | string | いいえ | 出力サイズ。許容値はモデル依存 |
 | `response_format` | enum（`url`, `b64_json`） | いいえ | レスポンス形式。既定値は `url` |
 | `user` | string | いいえ | 呼び出し側のユーザー識別子 |
+
+### リクエストボディ（`application/json`）
+
+| フィールド | 型 | 必須 | 説明 |
+|---|---|---|---|
+| `model` | string | はい | `GET /v1/models` で取得した画像モデル ID |
+| `image` | string or array&lt;string&gt; | はい | 編集する画像の URL または base64 データ URI |
+| `prompt` | string | はい | 編集内容の説明 |
+| `n` | integer | いいえ | 生成枚数。1〜128（プラットフォーム上限）、既定値は 1 |
+| `size` | string | いいえ | 出力サイズ。許容値はモデル依存 |
+| `response_format` | enum（`url`, `b64_json`） | いいえ | レスポンス形式。既定値は `url` |
+| `user` | string | いいえ | 呼び出し側のユーザー識別子 |
+
+```json
+{
+  "model": "gpt-image-1",
+  "image": "https://example.com/source.png",
+  "prompt": "Replace the background with a studio backdrop",
+  "size": "1024x1024"
+}
+```
 
 ### レスポンス
 

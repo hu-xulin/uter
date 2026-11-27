@@ -32,4 +32,11 @@ export const CONTENT_CARD_CLASS =
 
 export const CONTENT_CARD_TITLE_CLASS = 'text-xl text-fg-primary font-semibold'
 
-export const CONTENT_CARD_TEASER_CLASS = 'text-base text-fg-secondary mt-2'
+/**
+ * Two-line teaser slot. `min-h-12` reserves two `text-base` line boxes
+ * (2 × 1.5rem = 3rem) so short and long teasers share one card height;
+ * `line-clamp-2` is the runtime guard for text that exceeds the slot. No
+ * font-size change — the design-system token stays `text-base`.
+ */
+export const CONTENT_CARD_TEASER_CLASS =
+  'text-base text-fg-secondary mt-2 line-clamp-2 min-h-12'

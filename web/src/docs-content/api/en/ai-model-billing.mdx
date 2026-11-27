@@ -1,0 +1,35 @@
+# Billing
+
+Two OpenAI-compatible billing endpoints let a client inspect the remaining quota and current-period usage of the credential in use. Both are available under `/v1/dashboard/...` and the legacy `/dashboard/...` prefix, and require a token (`Authorization: Bearer sk-...`).
+
+> The numeric `*_USD` fields follow the site's configured quota display type: with USD display they are converted from quota units at `QuotaPerUnit`; with CNY display they are converted to USD and multiplied by the exchange rate; with token display they carry the raw token count. Do not assume the suffix always means US dollars.
+
+## Subscription (remaining quota)
+
+`GET` `/v1/dashboard/billing/subscription`
+
+### Response
+
+| Field | Type | Description |
+|---|---|---|
+| `object` | string | `billing_subscription` |
+| `has_payment_method` | boolean | Always `true` |
+| `soft_limit_usd` | number | Total quota (remaining + used), in display units |
+| `hard_limit_usd` | number | Total quota, in display units |
+| `system_hard_limit_usd` | number | Total quota, in display units |
+| `access_until` | integer | Token expiry time (Unix seconds); `0` when unlimited |
+
+When token statistics are enabled for tokens, the figures reflect the token itself; otherwise they reflect the owning user's quota. An unlimited-quota token reports a large sentinel value (100000000).
+
+## Usage (consumed quota)
+
+`GET` `/v1/dashboard/billing/usage`
+
+### Response
+
+| Field | Type | Description |
+|---|---|---|
+| `object` | string | Billing usage object |
+| `total_usage` | number | Quota consumed in the current period, in display units |
+
+On an internal error this endpoint still returns HTTP `200` with an `{"error": {...}}` body (type `uter_error`). Check for an `error` field rather than relying only on the status code.

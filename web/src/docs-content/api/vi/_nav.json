@@ -25,6 +25,16 @@
     "category": "ai-model"
   },
   {
+    "id": "ai-model-responses",
+    "title": "Responses API",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-search-tools",
+    "title": "Search & Tools",
+    "category": "ai-model"
+  },
+  {
     "id": "ai-model-completions",
     "title": "AI Model API · Định dạng Native OpenAI",
     "category": "ai-model"
@@ -147,6 +157,16 @@
   {
     "id": "ai-model-videos-seedance",
     "title": "Định dạng Seedance",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-tasks",
+    "title": "Generic Tasks",
+    "category": "ai-model"
+  },
+  {
+    "id": "ai-model-billing",
+    "title": "Billing",
     "category": "ai-model"
   }
 ]

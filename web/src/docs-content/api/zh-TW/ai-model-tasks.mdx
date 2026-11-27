@@ -1,0 +1,79 @@
+# 通用任務
+
+通用任務 API 是與供應商無關的非同步任務介面（圖像與影片生成及其他任務外掛）。它是 `/v1/video/generations` 背後的格式，也可直接透過 `/v1/tasks/*` 使用。兩套入口共用任務 ID。
+
+所有端點都需要權杖（`Authorization: Bearer sk-...`）。產物內容下載還接受限定範圍的產物訪問授權。
+
+## 提交任務
+
+`POST` `/v1/tasks/{key}`
+
+`key` 路徑段是任務外掛 key。請求體由供應商決定；`model` 欄位選擇渠道與計費，供應商引數原樣透傳。
+
+| 引數 | 位置 | 型別 | 必填 | 說明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任務外掛 key |
+
+### 響應
+
+| 狀態碼 | 說明 |
+|---|---|
+| `200` | 任務已受理 |
+| `400` | 請求無效 |
+| `403` | 額度不足 |
+| `429` | 上游併發飽和 |
+| `503` | 無可用渠道 |
+
+響應攜帶任務 ID（`task_id` / `id`）與初始 `status`（通常為 `queued`）。
+
+## 查詢任務
+
+`GET` `/v1/tasks/{key}`
+
+此處 `key` 為提交時返回的任務 ID。
+
+| 引數 | 位置 | 型別 | 必填 | 說明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任務 ID |
+
+返回統一任務結構：
+
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4"
+  }
+}
+```
+
+任務不存在或屬於其他使用者時返回 `400`，`code` 為 `task_not_exist`。
+
+## 列出任務產物
+
+`GET` `/v1/tasks/{key}/artifacts`
+
+返回任務完成後產生的產物（例如生成的檔案）。
+
+| 引數 | 位置 | 型別 | 必填 | 說明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任務 ID |
+
+## 下載產物內容
+
+`GET` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+`HEAD` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+流式返回產物檔案；`HEAD` 只返回相同的響應頭，不帶響應體。
+
+| 引數 | 位置 | 型別 | 必填 | 說明 |
+|---|---|---|---|---|
+| `key` | path | string | 是 | 任務 ID |
+| `artifact_key` | path | string | 是 | 產物列表中的產物 key |
+
+該端點接受普通權杖，也接受限定範圍的產物訪問憑據。

@@ -1,0 +1,89 @@
+# Responses API
+
+API OpenAI Responses hỗ trợ hội thoại đa lượt, gọi công cụ, suy luận và trạng thái phản hồi phía máy chủ. Uter cung cấp các endpoint tạo, truy xuất, streaming qua WebSocket và nén (compaction). Một token duy nhất có thể tiếp cận bất kỳ kênh nào phục vụ nhóm endpoint `openai-response` (ví dụ Uter Route / Uter API / Codex và các kênh tương thích OpenAI).
+
+ID model lấy từ `GET /v1/models`. Yêu cầu cho các model không hỗ trợ nhóm endpoint này sẽ bị từ chối; nhóm của token và danh sách model được phép vẫn được áp dụng.
+
+> Lưu ý: `POST /v1/responses` và `GET /v1/responses/{response_id}` là các endpoint thuộc giao thức máy chủ (host-protocol). Với model do một plugin tác vụ đảm nhận, plugin đó sẽ xử lý lời gọi; nếu không, yêu cầu sẽ được chuyển về relay Responses tích hợp sẵn.
+
+## Tạo phản hồi
+
+`POST` `/v1/responses`
+
+### Body yêu cầu (`application/json`)
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `model` | string | Có | ID mô hình |
+| `instructions` | string | Không | Hướng dẫn hệ thống |
+| `input` | string hoặc array&lt;object&gt; | Không | Prompt đầu vào hoặc các mục tin nhắn |
+| `max_output_tokens` | integer | Không | Số Token đầu ra tối đa |
+| `temperature` | number | Không | Nhiệt độ lấy mẫu |
+| `top_p` | number | Không | Lấy mẫu hạt nhân (top-p) |
+| `stream` | boolean | Không | Có stream phản hồi hay không |
+| `tools` | array&lt;object&gt; | Không | Định nghĩa công cụ |
+| `previous_response_id` | string | Không | ID của phản hồi trước để tiếp tục |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | Không | Cường độ suy luận |
+| `reasoning.summary` | string | Không | Tóm tắt suy luận |
+| `truncation` | enum (`auto`, `disabled`) | Không | Chế độ cắt bớt |
+| `store` | boolean | Không | Có lưu phản hồi để truy xuất sau này hay không |
+
+### Phản hồi
+
+| Mã trạng thái | Ý nghĩa |
+|---|---|
+| `200` | Đã tạo phản hồi |
+| `400` | Tham số yêu cầu không hợp lệ |
+| `403` | Không đủ hạn mức |
+| `429` | Giới hạn tần suất yêu cầu |
+| `503` | Không có kênh khả dụng cho mô hình này |
+
+#### Trường `200`
+
+| Trường | Kiểu | Mô tả |
+|---|---|---|
+| `id` | string | ID phản hồi (dùng với truy xuất và nén) |
+| `object` | string | `response` |
+| `created_at` | integer | Thời điểm tạo (giây Unix) |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | Trạng thái phản hồi |
+| `model` | string | Mô hình đã sử dụng |
+| `output` | array&lt;object&gt; | Các mục đầu ra (tin nhắn, lời gọi công cụ, suy luận) |
+| `usage.input_tokens` | integer | Số Token đầu vào |
+| `usage.output_tokens` | integer | Số Token đầu ra |
+| `usage.total_tokens` | integer | Tổng số Token |
+
+## Truy xuất một phản hồi
+
+`GET` `/v1/responses/{response_id}`
+
+Trả về một phản hồi đã lưu trước đó theo ID.
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `response_id` | path | string | Có | ID do thao tác tạo trả về |
+
+Body phản hồi dùng các trường giống với thao tác tạo. ID không xác định sẽ trả về lỗi định dạng OpenAI.
+
+## Phản hồi qua WebSocket
+
+`GET` `/v1/responses`
+
+Endpoint WebSocket để stream phản hồi. Việc chọn kênh diễn ra sau sự kiện `response.create` đầu tiên và mỗi sự kiện đều đi qua bộ giới hạn yêu cầu thông thường. Client không thể đặt header trong quá trình bắt tay có thể xác thực bằng subprotocol `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>`, ngoài `Authorization: Bearer`.
+
+URL kết nối: `wss://uter.ai/v1/responses`
+
+## Nén một phản hồi
+
+`POST` `/v1/responses/compact`
+
+Nén trạng thái hội thoại của một phản hồi để giảm số Token của phiên tiếp tục.
+
+### Body yêu cầu (`application/json`)
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `model` | string | Có | ID mô hình |
+| `input` | string hoặc array&lt;object&gt; | Có | Hội thoại cần nén |
+| `instructions` | string | Không | Hướng dẫn hệ thống |
+
+Phản hồi dùng hình dạng đối tượng giống thao tác tạo, với hội thoại đã nén nằm trong `output`.

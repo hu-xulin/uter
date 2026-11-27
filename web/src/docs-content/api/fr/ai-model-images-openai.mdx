@@ -46,6 +46,8 @@ Les points de terminaison d'image d'Uter sont compatibles avec l'API OpenAI Imag
 
 `POST` `/v1/images/edits`
 
+Ce point de terminaison accepte aussi bien `multipart/form-data` (téléversement de fichiers) que `application/json` (image transmise sous forme d'URL ou de chaîne base64). Utilisez le type de contenu qui correspond à votre client.
+
 ### Corps de requête (`multipart/form-data`)
 
 | Champ | Type | Obligatoire | Description |
@@ -58,6 +60,27 @@ Les points de terminaison d'image d'Uter sont compatibles avec l'API OpenAI Imag
 | `size` | string | Non | Taille de sortie ; dépend du modèle |
 | `response_format` | enum (`url`, `b64_json`) | Non | Format de réponse, par défaut `url` |
 | `user` | string | Non | Identifiant utilisateur fourni par l'appelant |
+
+### Corps de requête (`application/json`)
+
+| Champ | Type | Obligatoire | Description |
+|---|---|---|---|
+| `model` | string | Oui | ID du modèle d'image, issu de `GET /v1/models` |
+| `image` | string ou array&lt;string&gt; | Oui | URL de l'image ou data URI base64 à éditer |
+| `prompt` | string | Oui | Description de l'édition |
+| `n` | integer | Non | Nombre d'images, 1–128 (plafond de la plateforme), par défaut 1 |
+| `size` | string | Non | Taille de sortie ; dépend du modèle |
+| `response_format` | enum (`url`, `b64_json`) | Non | Format de réponse, par défaut `url` |
+| `user` | string | Non | Identifiant utilisateur fourni par l'appelant |
+
+```json
+{
+  "model": "gpt-image-1",
+  "image": "https://example.com/source.png",
+  "prompt": "Replace the background with a studio backdrop",
+  "size": "1024x1024"
+}
+```
 
 ### Réponse
 

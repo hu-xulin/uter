@@ -3,7 +3,7 @@
 動画生成は非同期です。タスクを送信し、状態をポーリングしてから結果を取得します。Uter は 2 つの入口を提供します：
 
 - **汎用タスク形式**：`/v1/video/generations` は `task_id` を返します。プロバイダー固有のオプションは `metadata` に指定します。
-- **OpenAI 動画形式**：`/v1/videos` はリクエスト・レスポンスとも OpenAI Videos API に準拠し、公式 SDK をそのまま利用できます。
+- **OpenAI 動画形式**：`/v1/videos` は OpenAI Videos のフィールドを受け付けます。`openai_video` タスクプラグインに紐付いたモデルについては、リクエスト・レスポンスとも OpenAI Videos API に準拠し、公式 SDK をそのまま利用できます。そのようなプラグインが宣言していないモデルについては、リクエストは汎用タスク中継にフォールバックし、レスポンスは OpenAI 動画オブジェクトではなく、下記のタスクエンベロープ（`task_id`、`status: queued`）になります。
 
 リクエスト項目はプロバイダーごとに異なります。下記の各プロバイダー形式ページも併せて参照してください。
 
@@ -106,7 +106,9 @@ Uter の統合タスク形式（成功時は `code` が `success`）を返しま
 | メソッドとパス | 説明 |
 |---|---|
 | `GET /v1/videos/{id}` | タスクを照会。成功時は `completed_at` と最終 `status` を返します |
-| `GET /v1/videos/{id}/content` | 動画ファイルのストリームをプロキシ経由でダウンロード |
+| `GET /v1/videos/{id}/content` | 動画ファイルのストリームをプロキシ経由でダウンロード。タスクが存在しない場合は `404` を返します |
 | `POST /v1/videos/{id}/remix` | 既存動画から再生成（remix）し、新しい動画オブジェクトを返します |
+
+タスクが存在しない場合、`GET /v1/videos/{id}/content` は `404` を返すのに対し、汎用タスク照会の `GET /v1/video/generations/{task_id}` は `400 task_not_exist` を返す点に注意してください。
 
 `status` の値：`queued`、`in_progress`、`completed`、`failed`。

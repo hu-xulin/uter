@@ -39,7 +39,7 @@
 | `data[].object` | string | `model` |
 | `data[].created` | integer | 登録時刻（Unix 秒） |
 | `data[].owned_by` | string | 所有元 |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | 対応するエンドポイント系統：`openai`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`、`openai-response` など |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | 対応するエンドポイント系統。可能な値：`openai`、`openai-response`、`openai-response-compact`、`openai-alpha-search`、`deepseek-tools-search`、`deepseek-tools-fetch`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`。実際の値はモデルのチャネルによって異なります |
 
 ## 単一モデルを取得
 

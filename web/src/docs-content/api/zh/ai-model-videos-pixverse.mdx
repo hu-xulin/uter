@@ -1,10 +1,12 @@
 # PixVerse格式
 
-PixVerse 视频生成：通过 OpenAI 兼容的 `/v1/videos` 接口调用 PixVerse 全系列模型（C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5），支持文生视频、图生视频。
+通过 OpenAI 兼容的 `/v1/videos` 接口进行 PixVerse 视频生成，支持文生视频、图生视频。
+
+> **可用性说明**：PixVerse 不是内置供应商渠道。只有当管理员配置了承载这些模型的自定义渠道（Advanced Custom / Uter Route）时，这些模型 ID 才可用。请通过 `GET /v1/models` 确认当前令牌可调用的确切模型名；若列表中无 `PixVerse/*` 模型，则该格式在当前账号不可用。
 
 ## 支持的模型
 
-调用时在 `model` 字段统一使用 `PixVerse/<版本号>` 的形式，例如 `PixVerse/v5.6`。
+配置 PixVerse 渠道后，在 `model` 字段使用 `PixVerse/<版本号>` 的形式，例如 `PixVerse/v5.6`。下表为 PixVerse 上游的型号约定，实际暴露的模型取决于渠道配置。
 
 | 模型 | 特点 | 时长档位 | 音频支持 |
 |---|---|---|---|

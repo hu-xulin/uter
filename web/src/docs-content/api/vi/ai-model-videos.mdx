@@ -3,7 +3,7 @@
 Tạo video là tác vụ bất đồng bộ: gửi tác vụ, thăm dò trạng thái, rồi lấy kết quả. Uter cung cấp hai lối vào:
 
 - **Định dạng tác vụ chung**: `/v1/video/generations` trả về `task_id`; các tùy chọn riêng của nhà cung cấp nằm trong `metadata`.
-- **Định dạng video OpenAI**: `/v1/videos` tuân theo OpenAI Videos API cho cả yêu cầu và phản hồi, nên SDK chính thức dùng được nguyên trạng.
+- **Định dạng video OpenAI**: `/v1/videos` nhận các trường của OpenAI Videos. Với model do một plugin tác vụ `openai_video` đảm nhận, cả yêu cầu và phản hồi đều tuân theo OpenAI Videos API và SDK chính thức dùng được nguyên trạng. Với các model không do plugin đó đảm nhận, yêu cầu được chuyển về relay tác vụ chung và phản hồi dùng phong bì tác vụ bên dưới (`task_id`, `status: queued`) thay vì một đối tượng video OpenAI.
 
 Trường yêu cầu khác nhau theo nhà cung cấp; hãy đọc thêm trang định dạng tương ứng bên dưới.
 
@@ -106,7 +106,9 @@ Các endpoint đi kèm:
 | Phương thức và đường dẫn | Mô tả |
 |---|---|
 | `GET /v1/videos/{id}` | Thăm dò tác vụ; khi thành công trả về `completed_at` và `status` cuối |
-| `GET /v1/videos/{id}/content` | Tải luồng tệp video qua proxy |
+| `GET /v1/videos/{id}/content` | Tải luồng tệp video qua proxy; trả về `404` khi tác vụ không tồn tại |
 | `POST /v1/videos/{id}/remix` | Tạo lại từ video hiện có (remix), trả về đối tượng video mới |
+
+Lưu ý sự khác nhau về mã trạng thái: `GET /v1/videos/{id}/content` trả về `404` cho tác vụ không xác định, trong khi truy vấn tác vụ chung `GET /v1/video/generations/{task_id}` trả về `400 task_not_exist`.
 
 Giá trị `status`: `queued`, `in_progress`, `completed`, `failed`.

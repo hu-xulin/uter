@@ -10,10 +10,10 @@
 
 | 項目 | 說明 | 在哪裡拿 |
 | --- | --- | --- |
-| **API 接入網址（Base URL）** | 形如 `https://你的網域/v1`，以平台實際部署的網域為準（可能是你的專屬網域） | 平台存取位址 + `/v1` |
-| **API 金鑰（API Key）** | 形如 `sk-xxxxxxxx`。這是驗證憑證，等同密碼，請勿外洩、勿寫進前端程式碼、勿提交到程式碼倉庫 | 管理 → API 金鑰 → 建立 API 金鑰 |
-| **額度（Quota）** | 平台內部計費單位：**500,000 額度 = 1 美元**；不同模型按倍率折算，錢包／用量頁按站台幣別顯示金額。額度不足會被拒絕 | 管理 → 錢包；管理 → 使用日誌 |
-| **模型名稱** | 模型在平台裡的註冊名稱（不一定等於官方原名） | 管理 → 定價；或介面 `GET /v1/models` 回傳的 `id` |
+| **API 接入網址（Base URL）** | API 專用入口 `https://api.uter.ai/v1`；也可使用目前控制台站台位址 + `/v1`。其他網域不作為官方入口 | API 文件首頁；或控制台站台位址 + `/v1` |
+| **API 金鑰（API Key）** | 形如 `sk-xxxxxxxx`。這是驗證憑證，等同密碼，請勿外洩、勿寫進前端程式碼、勿提交到程式碼倉庫 | 常規 → API 金鑰 → 建立 API 金鑰 |
+| **額度（Quota）** | 平台內部計費單位：預設 **500,000 額度 = 1 美元**，該比例可在「系統設定 → 收費」調整；不同模型按各自計費規則折算，錢包／用量頁按站台設定幣別顯示金額。額度不足會被拒絕 | 個人 → 錢包；常規 → 使用日誌 |
+| **模型名稱** | 模型在平台裡的註冊名稱（不一定等於官方原名） | 公開定價頁 `/pricing`；或介面 `GET /v1/models` 回傳的 `id` |
 
 ### 管道與分組：先釐清兩個概念
 
@@ -30,32 +30,43 @@
 
 API 金鑰在控制台有四種狀態：**已啟用、已停用、已過期、已耗盡**。建立或編輯金鑰時還可施加以下限制，測試前請先核對：
 
+- **分組**：決定金鑰的計費倍率與可路由模型；可另外設定「自動分組順序」與「跨組重試」。
 - **到期時間**：預設「永不過期」，設定過則到期後呼叫回傳 401。
-- **額度上限**：可設定專用額度或「無限額度」；用盡後狀態變為「已耗盡」。
+- **額度上限**：依站台設定幣別（預設 USD）輸入，可設為「無限額度」；用盡後狀態變為「已耗盡」。
 - **模型限制**：只允許呼叫部分模型。未勾選任何模型時該金鑰無法呼叫任何模型。
 - **IP 白名單**：支援 CIDR（如 `203.0.113.0/24`）；不在名單內的來源會被拒絕。
 - **允許查詢使用者額度**：控制是否可用該金鑰查詢 `/v1/dashboard/billing/*`。
+- **建立數量**：建立時可一次產生多個金鑰，測試時只需保留其中一個。
+
+<Callout type="info">
+  測試金鑰建議只勾選待測模型，並關閉跨組重試，避免路由到預期外的管道，導致連通性與計費結論失真。
+</Callout>
 
 ## 最快的驗證：先在遊樂場裡點一遍
 
-管理 → 遊樂場提供與 API 相同的模型呼叫鏈路，適合先排除「模型是否可用、參數是否生效」。
+聊天 → 遊樂場提供與 API 相同的模型呼叫鏈路，適合先排除「模型是否可用、參數是否生效」。
 
-1. 左側選擇**管道**，右側列出該管道承載的模型；選中要測的模型。
-2. 直接送出一則訊息，觀察是否正常回覆；回覆過程預設以串流返回。
-3. 打開「參數設定」，按需啟用 `temperature`、`top_p`、`max_tokens`、`frequency_penalty`、`presence_penalty`、`seed`——只有啟用的參數才會隨請求送出。
-4. 需要驗證多模態或聯網能力時，可使用輸入框的附件／搜尋工具（受模型支援情況限制）。
-5. 可隨時停止生成、重新生成、編輯歷史訊息或清空會話。
+1. 點擊模型選擇器，在彈出面板左側選**管道**、右側選該管道承載的模型；預設選中列表中的第一個管道。
+2. 直接送出一則訊息，觀察是否正常回覆；回覆預設以串流返回。
+3. 打開「參數設定」，按需啟用 `temperature`、`top_p`、`max_tokens`、`frequency_penalty`、`presence_penalty`、`seed`——**只有啟用的參數才會隨請求送出**（`max_tokens`、`seed` 預設未啟用）。
+4. 可隨時停止生成、重新生成、編輯或複製歷史訊息、查看原文、刪除單一訊息、清空會話（有確認彈窗）。
+5. 輸入框的**附件與聯網搜尋按鈕目前是開發中佔位**，點擊只會提示不支援，不能用於真實測試。多模態請按 Step 6 走 API 的 `image_url`；聯網檢索請用 `POST /v1/tools/search`。
 
 遊樂場同樣按平台計費規則扣減額度，適合反覆除錯；正式聯調仍以 API 為準。
 
 ## 核對模型與價格
 
-管理 → 定價可以：
+開啟公開定價頁 `/pricing` 可以：
 
 - 搜尋模型名稱；
-- 按**管道、廠商、類型、標籤**篩選，確認目標模型由哪些管道提供；
-- 查看每個模型的計費方式（按量／按次／任務計費）、上下文與支援的端點；
-- 比較不同模型的公開價格，避免選到計費口徑不符預期的模型。
+- 按**管道、廠商、模型標籤、定價類型、端點類型**五類篩選，確認目標模型由哪些管道提供；定價類型含按量、按次、任務計費與動態計價，端點類型含 Chat / Response / Anthropic / Gemini / Rerank / Image / Embeddings / Video；
+- 查看每個模型的計費方式、上下文與支援的端點，並切換**標準價／儲值價**、**每 1M／每 1K token** 單位、7 種排序以及卡片／表格檢視；
+- 比較「優特價」與「官方價」及折扣／溢價；按秒計費模型（如部分影片、音訊模型）顯示 `/ second` 單價與官方參考價；
+- 左側管道欄預設選中 **Claude-Basic**，只展示該管道承載的模型；點「所有渠道」或造訪 `?channel=all` 可查看全部。
+
+<Callout type="warn">
+  卡片若出現「尚未設定定價」、直接顯示計費表達式原文，或缺少官方價，屬於平台端定價資料問題，不是請求寫錯。請記下模型名與管道聯絡平台處理，不要在業務層自行解析表達式。
+</Callout>
 
 ## 測試維度
 
@@ -118,7 +129,7 @@ curl --noproxy '*' -s "$BASE/models/替換為你的模型id" \
 找到你要測的模型 `id`（例如 `gpt-4o`、`claude-3-5-sonnet-20241022` 或平台自訂名稱）。
 
 <Callout type="warn">
-  若列表裡沒有目標模型，先到「管理 → 定價」按管道確認該模型是否由目前可用的管道提供，再聯絡平台。不要自己猜名稱硬呼叫，通常會得到 404 或「沒有可用管道」。
+  若列表裡沒有目標模型，先到定價頁 `/pricing` 按管道確認該模型是否由目前可用的管道提供，再聯絡平台。注意左側管道欄預設只展示 Claude-Basic，需點「所有渠道」或指定管道核對。不要自己猜名稱硬呼叫，通常會得到 404 或「沒有可用管道」。
 </Callout>
 
 ### Step 3 · 一次最簡對話（非串流）
@@ -221,7 +232,7 @@ done
 
 ### Step 8 · 配額與計費校驗
 
-`/v1/dashboard/billing/usage` 回傳的是**已用額度累計**（`total_usage`，按站台顯示幣別折算），不是剩餘餘額；餘額請看「管理 → 錢包」。校驗時比對呼叫前後的差值：
+`/v1/dashboard/billing/usage` 回傳的是**已用額度累計**（`total_usage`，不是剩餘餘額；餘額請看「個人 → 錢包」）。`total_usage` 按站台顯示幣別折算，單位為顯示幣別的 **1/100**（USD 站台即美分），因此呼叫前後的差值需除以 100 才是美元金額。校驗時比對呼叫前後的差值：
 
 ```bash
 # 呼叫前
@@ -235,7 +246,9 @@ curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-也可以直接看單次回應的 `usage`（`prompt_tokens` + `completion_tokens` 或任務用量），再與「管理 → 使用日誌／任務日誌」中的額度消耗核對。
+也可以直接看單次回應的 `usage`（`prompt_tokens` + `completion_tokens` 或任務用量），再與「常規 → 使用日誌／任務日誌」中的額度消耗核對。
+
+`/v1/dashboard/billing/subscription` 是 OpenAI 相容的**額度上限**查詢：欄位名稱帶 `_usd`，但值隨站台顯示幣別變化（可能是 USD / CNY / tokens），不代表真實支付訂閱狀態；`access_until` 僅在令牌統計模式下有值。
 
 ### Step 9 · 邊界與錯誤可讀性
 
@@ -254,25 +267,25 @@ curl --noproxy '*' -s -w "\nHTTP=%{http_code}\n" "$BASE/chat/completions" \
 
 任務型模型不是「送一則訊息就出結果」，而是**提交任務 → 輪詢狀態 → 下載產物**。測試要點：
 
-1. **提交**：依平台「任務外掛」頁面提供的介面提交，如通用任務入口 `POST /v1/tasks/<外掛key>`、影片 `POST /v1/video/generations`；OpenAI 相容的 `POST /v1/images/generations` 由對應管道／外掛承接。
-2. **輪詢**：用回傳的 `task_id` 查詢，如 `GET /v1/tasks/<task_id>`、`GET /v1/video/generations/<task_id>`；任務完成前狀態會是排隊／處理中。
-3. **產物**：`GET /v1/tasks/<task_id>/artifacts` 列出產物，`GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` 下載內容。
-4. **核對**：到「管理 → 使用日誌 → 任務日誌」確認狀態、進度、耗時與扣費；失敗任務應顯示失敗原因，必要時有退款紀錄。
+1. **提交**：在「管理員 → 渠道外掛」（`/task-plugins`，僅超級管理員可見）找到已啟用的外掛，按其介面提交。通用入口 `POST /v1/tasks/<外掛key>`、影片 `POST /v1/video/generations` 或 OpenAI 風格 `POST /v1/videos`；OpenAI 相容的 `POST /v1/images/generations` 由對應管道／外掛承接。
+2. **輪詢**：用回傳的 `task_id` 查詢，如 `GET /v1/tasks/<task_id>`、`GET /v1/video/generations/<task_id>` 或 `GET /v1/videos/<task_id>`；任務完成前狀態為排隊／處理中。
+3. **產物**：`GET /v1/tasks/<task_id>/artifacts` 列出產物，`GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` 下載內容（也支援簽名存取參數，可在無令牌場景下載）；影片可用 `GET /v1/videos/<task_id>/content`。
+4. **核對**：到「常規 → 任務日誌」查看狀態、進度、耗時與失敗原因；**退款紀錄不在任務日誌裡**，它作為「非同步任務退款」類型出現在「常規 → 使用日誌」中。
 5. **邊界**：測一次逾時或非法參數，確認任務會進入失敗狀態而不是一直掛起。
 
 ## 常見問題排查表
 
 | # | 現象（你看到的） | HTTP | 可能原因 | 解決方案 |
 | --- | --- | --- | --- | --- |
-| **A1** | `該令牌無效。` | 401 | 金鑰複製不全／拼錯／已被停用 | 從「管理 → API 金鑰」重新複製完整金鑰；確認狀態為「已啟用」，複製時不要截斷、不要帶多餘空格 |
+| **A1** | `該令牌無效。` | 401 | 金鑰複製不全／拼錯／已被停用 | 從「常規 → API 金鑰」重新複製完整金鑰；確認狀態為「已啟用」，複製時不要截斷、不要帶多餘空格 |
 | **A2** | `該令牌已過期，請重新建立一個。` | 401 | 金鑰設定了到期時間且已到期 | 建立新金鑰，或把到期時間設為「永不過期」 |
-| **A3** | `該令牌（sk-***）額度已用盡，請補充額度。` | 401 | 金鑰自身額度耗盡 | 在「管理 → API 金鑰」為該金鑰補充額度，或建立新金鑰／調整使用者額度 |
+| **A3** | `該令牌（sk-***）額度已用盡，請補充額度。` | 401 | 金鑰自身額度耗盡 | 在「常規 → API 金鑰」為該金鑰補充額度，或建立新金鑰／調整使用者額度 |
 | **A4** | `您的 IP 不在令牌允許存取的清單中` | 403 | 金鑰設定了 IP 白名單（支援 CIDR），目前出口 IP 不在名單內 | 把出口公網 IP／網段加入白名單；或暫時關閉 IP 限制（僅測試環境） |
 | **A5** | `該令牌沒有任何模型存取權限。` | 403 | 金鑰的「模型限制」為空 | 編輯金鑰並勾選要使用的模型 |
 | **A6** | `該令牌無權存取模型「xxx」。` | 403 | 目標模型不在該金鑰的模型限制內 | 編輯金鑰的模型限制，或改用允許該模型的金鑰 |
-| **A7** | 完全連不上／`Could not resolve host`／長時間逾時 | — | Base URL 寫錯、自簽憑證、內網存取 | 核對 Base URL（應為 `https://你的網域/v1`）；本機若走代理需加 `--noproxy '*'`；確認網路可達 |
-| **B1** | `您的額度不足。` | 403 | 帳號或金鑰可用額度不足 | 在「管理 → 錢包」儲值，或在「管理 → API 金鑰」補額度；用 Step 8 核對已用額度 |
-| **B2** | `分組「default」下模型「xxx」沒有可用管道。` | 503（個別篩選條件為 400） | 該模型在目前分組下沒有啟用管道 | 到「管理 → 定價」按管道確認該模型由哪些管道提供；聯絡平台確認可用性，不要猜模型名稱硬呼叫 |
+| **A7** | 完全連不上／`Could not resolve host`／長時間逾時 | — | Base URL 寫錯、自簽憑證、內網存取 | 核對 Base URL（API 專用入口 `https://api.uter.ai/v1`，或目前站台位址 + `/v1`）；本機若走代理需加 `--noproxy '*'`；確認網路可達 |
+| **B1** | `您的額度不足。` | 403 | 帳號或金鑰可用額度不足 | 在「個人 → 錢包」儲值，或在「常規 → API 金鑰」補額度；用 Step 8 核對已用額度 |
+| **B2** | `分組「default」下模型「xxx」沒有可用管道。` | 503（個別篩選條件為 400） | 該模型在目前分組下沒有啟用管道 | 到定價頁 `/pricing` 按管道確認該模型由哪些管道提供（左側管道欄預設只展示 Claude-Basic，需點「所有渠道」）；聯絡平台確認可用性，不要猜模型名稱硬呼叫 |
 | **B3** | `404`／模型不存在 | 404 | 模型名稱寫錯，或該模型未對你開通 | 用 Step 2 列模型，嚴格複製回傳的 `id` |
 | **C1** | `您已觸發限流：每 N 分鐘最多 X 次請求。`／`您已觸發總限流…` | 429 | 觸發了金鑰級或平台級限流 | 降低併發／加入退避重試（指數退避）；確認金鑰的 RPM/TPM 限額；批次任務錯峰 |
 | **C2** | 目前分組負載／上游已飽和 | 429／503 | 上游或分組的併發容量暫時不足 | 稍後重試 + 退避；必要時聯絡平台擴容或更換分組 |
@@ -280,8 +293,9 @@ curl --noproxy '*' -s -w "\nHTTP=%{http_code}\n" "$BASE/chat/completions" \
 | **D1** | 串流輸出一次全出來、不是逐字 | — | 用戶端緩衝（curl 沒加 `-N`，或 SDK 沒開 stream） | curl 加 `-N`；SDK 確認 `stream: true` 且未做整體緩衝 |
 | **D2** | 中文／特殊字元亂碼 | — | 未宣告編碼或解析出錯 | 請求與回應均按 UTF-8；`python3 -m json.tool` 正常顯示即伺服器端 OK，問題在本機終端編碼 |
 | **D3** | 回傳內容被截斷 | — | `max_tokens` 設太小，或模型達到輸出上限 | 調大 `max_tokens`；長文改用串流分段接收 |
-| **E1** | 扣費與預期不符（多扣／少扣） | — | 計費口徑含思維鏈、快取命中、工具呼叫等 token，或不同模型倍率不同 | 以單次回應 `usage` 與「使用日誌」中的計費明細為準；有疑問聯絡平台 |
+| **E1** | 扣費與預期不符（多扣／少扣） | — | 計費口徑含思維鏈、快取命中、工具呼叫等 token，或不同模型倍率不同 | 以單次回應 `usage` 與「常規 → 使用日誌」中的計費明細為準；有疑問聯絡平台 |
 | **E2** | function calling 不觸發／JSON 模式不生效 | — | 該模型未開放對應能力 | 用 Step 5 單獨驗證；不支援的能力不要強依賴，需在業務層降級 |
+| **E3** | 定價卡片顯示「尚未設定定價」、計費表達式原文，或沒有官方價 | — | 平台端定價／官方價資料未設定或解析異常 | 記下模型名與管道聯絡平台；不要自行解析表達式，也不要改倍率設定 |
 | **F1** | `400` + 中文「公告式」提示 | 400 | 上游供應商在報錯裡發通知，不是你請求寫錯 | 確認請求格式無誤後，聯絡平台並附上報錯原文 |
 
 <Callout type="idea">
@@ -333,7 +347,7 @@ curl -i https://你的網域/v1/chat/completions \
 
 ## 用日誌核對每次呼叫
 
-「管理 → 使用日誌」會記錄每次請求的時間、模型、金鑰、管道（管理員可見）、耗時、額度消耗與錯誤訊息；「任務日誌」記錄非同步任務的狀態、進度與產物。聯調階段建議：
+「常規 → 使用日誌」記錄每次請求的時間、管道／使用者（管理員可見）、金鑰（含分組）、模型、串流／TPS、輸入／輸出／快取 tokens、額度消耗、耗時／首字與詳情（錯誤訊息在詳情彈窗裡）；「常規 → 任務日誌」記錄提交時間、外掛、任務 ID、耗時、狀態、進度、產物與詳情（失敗原因）。聯調階段建議：
 
 - 每次測試後核對日誌中的模型名稱、分組／管道與額度是否與預期一致；
 - 失敗請求保留原始錯誤訊息，便於區分平台端與上游端問題；
@@ -347,7 +361,9 @@ curl -i https://你的網域/v1/chat/completions \
 - [ ] **金鑰**從控制台完整複製，狀態為「已啟用」，未過期，額度充足。
 - [ ] 金鑰的**模型限制**已勾選業務要用的模型。
 - [ ] 若金鑰開了 **IP 白名單**，生產伺服器出口 IP／網段（CIDR）已加入。
+- [ ] 目標模型的**分組與可用管道**已確認（定價頁左側管道欄預設只展示 Claude-Basic，需點「所有渠道」或指定管道核對）。
 - [ ] `GET /v1/models` 能列出目標模型，且 `id` 與程式碼裡寫的一致。
+- [ ] 定價頁已核對目標模型的**優特價／官方價**與計費口徑；按秒／按次模型已單獨確認單位，卡片未出現「尚未設定定價」或計費表達式原文。
 - [ ] 非串流對話跑通，能拿到 `content` 與 `usage`。
 - [ ] 串流（SSE）跑通，能正確解析 `data:` 片段與 `[DONE]`。
 - [ ] 業務依賴的**進階能力**（tools／JSON／視覺／長上下文）已逐項驗證通過。
@@ -371,29 +387,32 @@ curl -i https://你的網域/v1/chat/completions \
 | 檢索模型 | `GET /v1/models/:model` | 查看單一模型資訊 |
 | 對話 | `POST /v1/chat/completions` | 主介面，支援 stream／tools／視覺 |
 | 文字補全 | `POST /v1/completions` | 舊版補全（部分模型支援） |
-| Claude 原生 | `POST /v1/messages` | 用 `x-api-key` + `anthropic-version` 驗證 |
-| Gemini 原生 | `GET /v1beta/models` | 用 `x-goog-api-key` 或 `?key=` 驗證 |
-| Gemini 相容列表 | `GET /v1beta/openai/models` | 以 OpenAI 格式回傳 Gemini 管道模型 |
-| Gemini 轉發 | `POST /v1/models/*path`、`POST /v1/engines/:model/embeddings` | Gemini 原生路徑轉發 |
-| Responses 即時 | `GET /v1/responses`（WebSocket） | Responses 協定的 WebSocket 入口 |
+| Responses 主入口 | `POST /v1/responses`、`GET /v1/responses/:response_id` | 同步／串流／背景模式，以及結果檢索 |
+| Responses WebSocket | `GET /v1/responses`（WebSocket） | Responses 協定的 WebSocket 入口 |
 | Responses 壓縮 | `POST /v1/responses/compact` | 壓縮會話上下文 |
+| Claude 原生 | `POST /v1/messages` | 用 `x-api-key` + `anthropic-version` 驗證；錯誤為 Anthropic 形狀 |
+| Gemini 原生 | `GET /v1beta/models`、`POST /v1beta/models/*path` | 用 `x-goog-api-key` 或 `?key=` 驗證；後者呼叫 generateContent 等原生方法 |
+| Gemini 相容列表 | `GET /v1beta/openai/models` | 以 OpenAI 格式回傳 Gemini 管道模型 |
+| Gemini 相容別名 | `POST /v1/models/*path`、`POST /v1/engines/:model/embeddings` | 走 Gemini 協定的相容路徑 |
 | 即時語音 | `GET /v1/realtime`（WebSocket） | Realtime 模式 |
 | 向量 | `POST /v1/embeddings` | 文字向量化 |
+| 舊版改圖 | `POST /v1/edits` | OpenAI 相容回退端點 |
 | 重排 | `POST /v1/rerank` | 檢索重排 |
 | 內容審查 | `POST /v1/moderations` | 內容安全審查 |
-| 繪圖 | `POST /v1/images/generations`、`POST /v1/images/edits` | 文生圖／改圖（由對應管道或任務外掛承接） |
+| 繪圖 | `POST /v1/images/generations`、`POST /v1/images/edits` | 文生圖／改圖（由對應管道或外掛承接） |
 | 語音 | `POST /v1/audio/transcriptions`、`/translations`、`/speech` | 轉寫／翻譯／合成 |
 | 聯網檢索 | `POST /v1/tools/search`、`/v1/tools/fetch`、`/v1/alpha/search` | DeepSeek 工具與 Codex 獨立搜尋 |
-| 影片生成 | `POST /v1/video/generations`、`GET /v1/video/generations/:task_id`、`POST /v1/videos/:video_id/remix` | 提交、查詢與二次創作 |
-| 通用任務 | `POST /v1/tasks/:key`、`GET /v1/tasks/:task_id` | 任務外掛統一入口 |
-| 任務產物 | `GET /v1/tasks/:task_id/artifacts`、`GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | 列出／下載產物 |
-| 用量／訂閱 | `GET /v1/dashboard/billing/usage`、`/subscription` | 查詢累計用量與訂閱額度 |
+| 影片生成（平台） | `POST /v1/video/generations`、`GET /v1/video/generations/:task_id`、`POST /v1/videos/:video_id/remix` | 提交、查詢與二次創作 |
+| 影片生成（OpenAI 風格） | `POST /v1/videos`、`GET /v1/videos/:task_id`、`GET /v1/videos/:task_id/content` | 提交、查詢與產物下載 |
+| 通用任務 | `POST /v1/tasks/:key`、`GET /v1/tasks/:key` | 任務外掛統一入口；讀路由的路徑段承載 `task_id`（Gin 通配符名仍為 `key`） |
+| 任務產物 | `GET /v1/tasks/:key/artifacts`、`GET` 或 `HEAD /v1/tasks/:key/artifacts/:artifact_key/content` | 列出／下載產物；下載支援令牌或簽名存取參數 |
+| 用量／訂閱 | `GET /v1/dashboard/billing/usage`、`/subscription` | 累計用量與額度上限（OpenAI 相容 shim，非支付訂閱） |
 
-> 以上為目前服務端註冊的公開介面。某個模型支援哪些端點，以「管理 → 定價」的模型詳情為準。
+> 以上為目前服務端註冊的公開介面。`/dashboard/billing/*` 也支援省略 `/v1` 前綴。某個模型支援哪些端點，以定價頁 `/pricing` 的模型詳情為準。
 
 ### 錯誤回應統一格式
 
-平台 API 錯誤為 OpenAI 風格結構，便於統一處理：
+OpenAI 相容端點的錯誤預設使用 OpenAI 風格結構：
 
 ```json
 {
@@ -401,12 +420,23 @@ curl -i https://你的網域/v1/chat/completions \
     "message": "人類可讀的錯誤原因",
     "type": "invalid_request_error | authentication_error | ...",
     "code": "可選的錯誤碼",
-    "param": "可選的問題參數名稱"
+    "param": "可選的問題參數名稱",
+    "metadata": "可選，附加上下文"
   }
 }
 ```
 
-搭配 HTTP 狀態碼（401 驗證／403 權限或額度／404 模型／429 限流／5xx 上游）即可覆蓋絕大多數用戶端處理邏輯。
+但存在以下例外，用戶端需分別處理：
+
+| 場景 | 實際回應 |
+| --- | --- |
+| Claude 原生 `POST /v1/messages` | Anthropic 形狀 `{"type":"error","error":{"type":...,"message":...}}` |
+| WebSocket（Responses／Realtime） | 錯誤作為事件訊框發送，不走 HTTP 狀態碼 |
+| 計費類介面錯誤 | 常為 HTTP 200 + `{"error":{"message":...,"type":"uter_error"}}` |
+| 中介層驗證／限流錯誤 | `type` 可能是 `new_api_error`，且不含 `param` |
+| `GET /v1/models/:model` 模型不存在 | HTTP 200 + `error.code = "model_not_found"` |
+
+搭配 HTTP 狀態碼（401 驗證／403 權限或額度／404 路由不存在／429 限流／501 未實作的相容端點／5xx 上游）即可覆蓋絕大多數用戶端處理邏輯。**不要只依賴 HTTP 狀態碼**：計費與模型檢索存在「HTTP 200 + error」的情況，必須先解析 body。
 
 ### 安全提醒（務必遵守）
 

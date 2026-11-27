@@ -3,7 +3,7 @@
 影片生成為非同步流程：提交任務 → 輪詢狀態 → 取回結果。Uter 同時提供兩套入口：
 
 - **通用任務格式**：`/v1/video/generations` 回傳 `task_id`，搭配查詢介面使用；各模型供應商的擴充參數寫在 `metadata` 中。
-- **OpenAI 影片格式**：`/v1/videos` 的請求和回應皆相容 OpenAI Videos API，可直接使用官方 SDK。
+- **OpenAI 影片格式**：`/v1/videos` 接受 OpenAI Videos 欄位。對綁定到 `openai_video` 任務外掛的模型，請求與響應均相容 OpenAI Videos API，可直接使用官方 SDK；對未被此類外掛接管的模型，請求會回退到通用任務轉發，響應使用下方的任務結構（`task_id`、`status: queued`），而非 OpenAI 影片物件。
 
 不同供應商的請求欄位有差異，請同時閱讀下方對應的供應商格式頁面。
 
@@ -106,7 +106,9 @@
 | 方法與路徑 | 說明 |
 |---|---|
 | `GET /v1/videos/{id}` | 查詢任務狀態，成功後回傳 `completed_at` 與最終 `status` |
-| `GET /v1/videos/{id}/content` | 代理下載影片檔案串流 |
+| `GET /v1/videos/{id}/content` | 代理下載影片檔案串流；任務不存在時回傳 `404` |
 | `POST /v1/videos/{id}/remix` | 基於已有影片再次生成（remix），回傳新的影片物件 |
+
+注意狀態碼差異：`GET /v1/videos/{id}/content` 對未知任務回傳 `404`，而通用任務查詢 `GET /v1/video/generations/{task_id}` 回傳 `400 task_not_exist`。
 
 `status` 取值：`queued`、`in_progress`、`completed`、`failed`。

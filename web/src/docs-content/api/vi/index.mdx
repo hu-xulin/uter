@@ -5,27 +5,45 @@
 | Hạng mục | Giá trị |
 |---|---|
 | Base URL | `https://uter.ai` (cổng dành riêng cho API: `https://api.uter.ai`) |
-| Xác thực | Header `Authorization: Bearer sk-...` |
+| Xác thực | `Authorization: Bearer sk-...` |
 | Token | Tạo tại trang "Token" trong bảng điều khiển; có thể giới hạn theo nhóm, danh sách model được phép và IP nguồn |
 
-Định dạng Claude (`/v1/messages`) cũng nhận header `x-api-key`; định dạng Gemini (`/v1beta/models/...`) nhận header `x-goog-api-key` hoặc tham số truy vấn `?key=`.
+Định dạng Claude (`/v1/messages`) cũng nhận header `x-api-key`; định dạng Gemini (`/v1beta/models/...`) nhận header `x-goog-api-key` hoặc tham số truy vấn `?key=`. Các endpoint WebSocket còn chấp nhận subprotocol `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` cho những client trình duyệt không thể đặt header.
 
-Lỗi được trả về theo định dạng OpenAI:
+## Định dạng lỗi
 
-```json
-{"error": {"message": "mô tả lỗi", "type": "loại lỗi", "param": "", "code": "mã lỗi"}}
-```
+Phong bì lỗi phụ thuộc vào nhóm endpoint. Luôn phân nhánh dựa trên body, không chỉ dựa vào mã HTTP:
+
+| Nhóm | Phong bì | Ví dụ |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude (`/v1/messages`) | Anthropic | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| Video / tác vụ chung (`/v1/video/generations`, `/v1/videos`, `/v1/tasks/*`) | Lỗi tác vụ dạng phẳng | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| Xác thực / giới hạn tần suất (middleware) | OpenAI không có `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+Một số endpoint là ngoại lệ: `GET /v1/models/{model}` trả về `200` kèm body lỗi định dạng OpenAI cho model không xác định, còn `GET /v1/videos/{id}/content` trả về `404` khi tác vụ không tồn tại trong khi truy vấn tác vụ chung trả về `400 task_not_exist`.
 
 ## API mô hình AI
 
-Một token có thể gọi mọi nhà cung cấp mà nền tảng đã tổng hợp. API chia thành bốn nhóm giao thức:
+Một token duy nhất có thể tiếp cận mọi nhà cung cấp thượng nguồn mà nền tảng tổng hợp. Các endpoint được nhóm bên dưới theo họ giao thức; xem trang được liên kết để biết trường yêu cầu/phản hồi.
 
-| Giao thức | Các endpoint chính |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
-| Tác vụ video | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
+| Nhóm | Endpoint | Chi tiết |
+|---|---|---|
+| Văn bản · OpenAI | `POST /v1/chat/completions`, `POST /v1/completions` | [openai](./ai-model-chat-openai), [completions](./ai-model-completions-openai) |
+| Văn bản · Claude | `POST /v1/messages` | [Định dạng Native Claude](./ai-model-chat) |
+| Văn bản · Responses | `POST /v1/responses`, `GET /v1/responses/{response_id}`, `GET /v1/responses` (WebSocket), `POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| Văn bản · Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| Tìm kiếm & công cụ | `POST /v1/alpha/search`, `POST /v1/tools/search`, `POST /v1/tools/fetch` | [Tìm kiếm & Công cụ](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai), [gemini](./ai-model-embeddings-gemini) |
+| Hình ảnh | `POST /v1/images/generations`, `POST /v1/images/edits` | [openai](./ai-model-images-openai), [gemini](./ai-model-images-gemini), [qwen](./ai-model-images-qwen) |
+| Âm thanh | `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations` | [openai](./ai-model-audio-openai), [gemini](./ai-model-audio-gemini) |
+| Kiểm duyệt | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime` (WebSocket) | [realtime](./ai-model-realtime) |
+| Video | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| Tác vụ chung | `POST /v1/tasks/{key}`, `GET /v1/tasks/{key}`, `GET /v1/tasks/{key}/artifacts`, `GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| Mô hình | `GET /v1/models`, `GET /v1/models/{model}`, `GET /v1beta/models`, `GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| Tính phí | `GET /v1/dashboard/billing/subscription`, `GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
 Model mà token gọi được phụ thuộc vào nhóm của token, danh sách model được phép và cấu hình tính phí của model. Luôn dùng tên model do `GET /v1/models` trả về, không tự đoán ID model.
 
@@ -35,6 +53,6 @@ Model mà token gọi được phụ thuộc vào nhóm của token, danh sách 
 - Hết hạn mức trả về `403`; giới hạn tần suất hoặc nghẽn đồng thời phía upstream trả về `429`; model không tồn tại hoặc nhóm hiện tại không có kênh khả dụng trả về `503`.
 - Số lượng ảnh `n` tối đa là 128. Thời lượng, độ phân giải và số lượng lô video theo giới hạn của model đã chọn; yêu cầu vượt giới hạn bị từ chối trước khi được nhận.
 
-## Endpoint chưa triển khai
+## Chưa triển khai
 
-`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` và `DELETE /v1/models/{model}` hiện trả về `501`. Không gọi trong môi trường production.
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` và `DELETE /v1/models/{model}` hiện trả về `501`. Gemini `:countTokens` trả về `404`. Không gọi trong môi trường production. Tính năng fine-tuning được ghi riêng tại [trang fine-tuning](./ai-model-unimplemented-fine-tuning).

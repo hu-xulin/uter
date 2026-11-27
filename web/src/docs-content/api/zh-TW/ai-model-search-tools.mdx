@@ -1,0 +1,55 @@
+# 搜尋與工具
+
+Uter 提供兩類搜尋/工具轉發端點。原始請求體會原樣轉發給上游，上游響應也原樣返回。呼叫按路由模型的請求價計費（不計 Token）。這些端點僅在支援它們的渠道上可用；不支援的渠道會返回錯誤，請求可在其他可用渠道上重試。
+
+## Alpha 搜尋
+
+`POST` `/v1/alpha/search`
+
+Codex 類客戶端使用的獨立聯網搜尋。支援 Uter Route / Uter API / Sub2API / NewAPI / Codex / Advanced Custom 渠道以及供應商外掛渠道。
+
+### 請求體（`application/json`）
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| `model` | string | 是 | 路由模型 ID（例如 `GET /v1/models` 中的 alpha-search 模型） |
+| `id` | string | 否 | 客戶端提供的請求 ID |
+| `stream` | boolean | 否 | 是否流式返回結果 |
+
+其他供應商專用欄位會原樣透傳。
+
+### 響應
+
+| 狀態碼 | 說明 |
+|---|---|
+| `200` | 返回搜尋結果 |
+| `400` | 請求無效或渠道不支援該端點 |
+| `403` | 額度不足 |
+
+響應體為上游響應，原樣返回。
+
+## DeepSeek 搜尋與抓取
+
+`POST` `/v1/tools/search`
+
+`POST` `/v1/tools/fetch`
+
+DeepSeek 類客戶端使用的聯網搜尋與網頁抓取工具。支援 DeepSeek、Uter Route / Uter API、Sub2API、NewAPI、Advanced Custom 渠道以及供應商外掛渠道。模型名 `deepseek-search` 與 `deepseek-fetch` 分別選擇對應的端點族。
+
+### 請求體（`application/json`）
+
+| 欄位 | 型別 | 必填 | 說明 |
+|---|---|---|---|
+| `model` | string | 否 | 路由模型 ID（搜尋用 `deepseek-search`，抓取用 `deepseek-fetch`） |
+
+其餘欄位均為供應商專用，原樣透傳。
+
+### 響應
+
+| 狀態碼 | 說明 |
+|---|---|
+| `200` | 返回工具結果 |
+| `400` | 請求無效或渠道不支援該端點 |
+| `403` | 額度不足 |
+
+響應體為上游響應，原樣返回。

@@ -1,10 +1,12 @@
 # PixVerse格式
 
-PixVerse 影片生成：透過 OpenAI 相容的 `/v1/videos` 介面呼叫 PixVerse 全系列模型（C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5），支援文生影片、圖生影片。
+透過 OpenAI 相容的 `/v1/videos` 介面進行 PixVerse 影片生成，支援文生影片、圖生影片。
+
+> **可用性說明**：PixVerse 不是內建供應商渠道。只有當管理員設定了承載這些模型的自訂渠道（Advanced Custom / Uter Route）時，這些模型 ID 才可用。請透過 `GET /v1/models` 確認目前權杖可呼叫的確切模型名；若列表中無 `PixVerse/*` 模型，則該格式在目前帳號不可用。
 
 ## 支援的模型
 
-呼叫時在 `model` 欄位統一使用 `PixVerse/<版本号>` 的形式，例如 `PixVerse/v5.6`。
+設定 PixVerse 渠道後，在 `model` 欄位使用 `PixVerse/<版本號>` 的形式，例如 `PixVerse/v5.6`。下表為 PixVerse 上游的型號約定，實際暴露的模型取決於渠道設定。
 
 | 模型 | 特點 | 時長檔位 | 音訊支援 |
 |---|---|---|---|
@@ -164,23 +166,23 @@ PixVerse 圖生影片要求先把圖片上傳到上游獲取 `img_id`。優特�
 ## 完整呼叫示例
 
 ```bash
-# Step 1: 提交任务
+# Step 1: 提交任務
 curl -X POST https://uter.ai/v1/videos \
   -H "Authorization: Bearer sk-你的APIKey" \
   -H "Content-Type: application/json" \
   -d '{
     "model": "PixVerse/v5.6",
-    "prompt": "一只猫在月球表面漫步，背景是璀璨的星空",
+    "prompt": "一隻貓在月球表面漫步，背景是璀璨的星空",
     "duration": 5,
     "size": "720p",
     "metadata": { "aspect_ratio": "16:9", "seed": 42 }
   }'
 
-# Step 2: 轮询任务状态（建议间隔 3~5 秒）
+# Step 2: 輪詢任務狀態（建議間隔 3~5 秒）
 curl https://uter.ai/v1/videos/task_xxx \
   -H "Authorization: Bearer sk-你的APIKey"
 
-# Step 3: 状态变为 completed 后，下载视频
+# Step 3: 狀態變為 completed 後，下載影片
 curl https://uter.ai/v1/videos/task_xxx/content \
   -H "Authorization: Bearer sk-你的APIKey" \
   -o cat_on_moon.mp4

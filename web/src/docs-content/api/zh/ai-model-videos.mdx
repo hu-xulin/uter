@@ -3,7 +3,7 @@
 视频生成采用「提交任务 → 轮询状态 → 取回结果」的异步模型。Uter 同时提供两套入口：
 
 - **通用任务格式**：`/v1/video/generations`，返回 `task_id`，配合查询接口使用；各模型供应商的扩展参数写在 `metadata` 中。
-- **OpenAI 视频格式**：`/v1/videos`，请求与响应均兼容 OpenAI Videos API，可直接使用官方 SDK。
+- **OpenAI 视频格式**：`/v1/videos` 接受 OpenAI Videos 字段。对绑定到 `openai_video` 任务插件的模型，请求与响应均兼容 OpenAI Videos API，可直接使用官方 SDK；对未被此类插件接管的模型，请求会回退到通用任务转发，响应使用下方的任务结构（`task_id`、`status: queued`），而非 OpenAI 视频对象。
 
 不同供应商的请求字段有差异，请同时阅读下方对应的供应商格式页面。
 
@@ -106,7 +106,9 @@
 | 方法与路径 | 说明 |
 |---|---|
 | `GET /v1/videos/{id}` | 查询任务状态，成功后返回 `completed_at` 与最终 `status` |
-| `GET /v1/videos/{id}/content` | 代理下载视频文件流 |
+| `GET /v1/videos/{id}/content` | 代理下载视频文件流；任务不存在时返回 `404` |
 | `POST /v1/videos/{id}/remix` | 基于已有视频再次生成（remix），返回新的视频对象 |
+
+注意状态码差异：`GET /v1/videos/{id}/content` 对未知任务返回 `404`，而通用任务查询 `GET /v1/video/generations/{task_id}` 返回 `400 task_not_exist`。
 
 `status` 取值：`queued`、`in_progress`、`completed`、`failed`。

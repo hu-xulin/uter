@@ -1,0 +1,79 @@
+# Tác vụ chung (Generic Tasks)
+
+API tác vụ chung là bề mặt không phụ thuộc nhà cung cấp dành cho công việc bất đồng bộ (tạo hình ảnh và video, cùng các plugin tác vụ khác). Đây là định dạng đứng sau `/v1/video/generations` và cũng khả dụng trực tiếp tại `/v1/tasks/*`. ID tác vụ được dùng chung giữa hai lối vào này.
+
+Mọi endpoint đều yêu cầu token (`Authorization: Bearer sk-...`). Việc tải nội dung tệp kết quả còn chấp nhận thông tin xác thực phạm vi truy cập tệp kết quả (artifact-access).
+
+## Gửi một tác vụ
+
+`POST` `/v1/tasks/{key}`
+
+Phân đoạn đường dẫn `key` là khóa của plugin tác vụ. Body riêng của từng nhà cung cấp; trường `model` chọn kênh và cách tính phí, còn các tùy chọn của nhà cung cấp được chuyển tiếp.
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `key` | path | string | Có | Khóa plugin tác vụ |
+
+### Phản hồi
+
+| Mã trạng thái | Ý nghĩa |
+|---|---|
+| `200` | Đã chấp nhận tác vụ |
+| `400` | Yêu cầu không hợp lệ |
+| `403` | Không đủ hạn mức |
+| `429` | Nghẽn đồng thời phía upstream |
+| `503` | Không có kênh khả dụng |
+
+Phản hồi mang ID tác vụ (`task_id` / `id`) và `status` ban đầu (thường là `queued`).
+
+## Truy vấn một tác vụ
+
+`GET` `/v1/tasks/{key}`
+
+Ở đây `key` là ID tác vụ trả về lúc gửi.
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `key` | path | string | Có | ID tác vụ |
+
+Trả về phong bì tác vụ thống nhất:
+
+```json
+{
+  "code": "success",
+  "message": "",
+  "data": {
+    "task_id": "task_xxx",
+    "status": "SUCCESS",
+    "progress": "100%",
+    "result_url": "https://example.com/result.mp4"
+  }
+}
+```
+
+Tác vụ không tồn tại hoặc thuộc người dùng khác trả về `400` với `code: task_not_exist`.
+
+## Liệt kê tệp kết quả của tác vụ
+
+`GET` `/v1/tasks/{key}/artifacts`
+
+Trả về các tệp kết quả do một tác vụ đã hoàn tất tạo ra (ví dụ các tệp đã tạo).
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `key` | path | string | Có | ID tác vụ |
+
+## Tải nội dung tệp kết quả
+
+`GET` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+`HEAD` `/v1/tasks/{key}/artifacts/{artifact_key}/content`
+
+Stream tệp kết quả. `HEAD` trả về cùng các header nhưng không có body.
+
+| Tham số | Vị trí | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|---|
+| `key` | path | string | Có | ID tác vụ |
+| `artifact_key` | path | string | Có | Khóa tệp kết quả từ danh sách tệp kết quả |
+
+Endpoint này chấp nhận token thông thường hoặc thông tin xác thực phạm vi truy cập tệp kết quả.

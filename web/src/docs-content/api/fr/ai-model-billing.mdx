@@ -1,0 +1,35 @@
+# Billing
+
+Deux points de terminaison de facturation compatibles OpenAI permettent à un client de consulter le quota restant et l'utilisation de la période en cours pour l'identifiant utilisé. Tous deux sont disponibles sous `/v1/dashboard/...` et l'ancien préfixe `/dashboard/...`, et nécessitent un jeton (`Authorization: Bearer sk-...`).
+
+> Les champs numériques `*_USD` suivent le type d'affichage du quota configuré sur le site : avec l'affichage en USD, ils sont convertis depuis les unités de quota selon `QuotaPerUnit` ; avec l'affichage en CNY, ils sont convertis en USD et multipliés par le taux de change ; avec l'affichage en tokens, ils contiennent le nombre brut de tokens. Ne supposez pas que le suffixe signifie toujours dollars américains.
+
+## Abonnement (quota restant)
+
+`GET` `/v1/dashboard/billing/subscription`
+
+### Réponse
+
+| Champ | Type | Description |
+|---|---|---|
+| `object` | string | `billing_subscription` |
+| `has_payment_method` | boolean | Toujours `true` |
+| `soft_limit_usd` | number | Quota total (restant + utilisé), en unités d'affichage |
+| `hard_limit_usd` | number | Quota total, en unités d'affichage |
+| `system_hard_limit_usd` | number | Quota total, en unités d'affichage |
+| `access_until` | integer | Date d'expiration du jeton (secondes Unix) ; `0` si illimitée |
+
+Lorsque les statistiques de tokens sont activées pour les jetons, les chiffres reflètent le jeton lui-même ; sinon, ils reflètent le quota de l'utilisateur propriétaire. Un jeton à quota illimité renvoie une valeur sentinelle élevée (100000000).
+
+## Utilisation (quota consommé)
+
+`GET` `/v1/dashboard/billing/usage`
+
+### Réponse
+
+| Champ | Type | Description |
+|---|---|---|
+| `object` | string | Objet d'utilisation de la facturation |
+| `total_usage` | number | Quota consommé pendant la période en cours, en unités d'affichage |
+
+En cas d'erreur interne, ce point de terminaison renvoie tout de même HTTP `200` avec un corps `{"error": {...}}` (type `uter_error`). Vérifiez la présence d'un champ `error` plutôt que de vous fier uniquement au code d'état.

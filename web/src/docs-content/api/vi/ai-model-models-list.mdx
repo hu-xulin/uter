@@ -1,12 +1,13 @@
 # Mô hình (Models)
 
-Uter cung cấp ba endpoint tra cứu model:
+Uter cung cấp bốn endpoint tra cứu model:
 
 | Endpoint | Mô tả |
 |---|---|
 | `GET /v1/models` | Danh sách model token hiện tại gọi được |
 | `GET /v1/models/{model}` | Chi tiết một model |
 | `GET /v1beta/models` | Cùng danh sách ở định dạng Gemini gốc |
+| `GET /v1beta/openai/models` | Cùng danh sách ở định dạng OpenAI (lối vào tương thích Gemini) |
 
 Danh sách được lọc theo nhóm của token, danh sách model được phép và cấu hình tính phí. Hãy dựa vào kết quả trả về, không hardcode tên model.
 

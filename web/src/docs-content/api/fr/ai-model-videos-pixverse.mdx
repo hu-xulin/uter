@@ -1,10 +1,12 @@
 # Format de l'API PixVerse
 
-Génération vidéo PixVerse : appelez toute la famille de modèles PixVerse (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) via le point de terminaison compatible OpenAI `/v1/videos`, avec prise en charge de la génération texte vers vidéo et image vers vidéo.
+Génération vidéo PixVerse via le point de terminaison compatible OpenAI `/v1/videos`, avec prise en charge de la génération texte vers vidéo et image vers vidéo.
+
+> **Disponibilité** : PixVerse n'est pas un canal fournisseur intégré. Ces identifiants de modèle ne sont disponibles que si votre administrateur a configuré un canal personnalisé (Advanced Custom / Uter Route) qui les prend en charge. Consultez `GET /v1/models` pour connaître les identifiants exacts que votre jeton peut appeler ; si aucun modèle `PixVerse/*` n'est listé, ce format n'est pas disponible sur votre compte.
 
 ## Modèles pris en charge
 
-Dans le champ `model`, utilisez toujours la forme `PixVerse/<version>`, par ex. `PixVerse/v5.6`.
+Lorsqu'un canal PixVerse est configuré, utilisez la forme `PixVerse/<version>` dans le champ `model`, par ex. `PixVerse/v5.6`. Les paliers ci-dessous décrivent la convention en amont de PixVerse ; les modèles réellement exposés dépendent de la configuration du canal.
 
 | Modèle | Points forts | Paliers de durée | Audio |
 |---|---|---|---|

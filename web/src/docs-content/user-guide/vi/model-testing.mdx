@@ -8,10 +8,10 @@ Nên thử trong **Sân chơi** của bảng điều khiển trước, sau đó 
 
 | Mục | Nội dung | Lấy ở đâu |
 | --- | --- | --- |
-| **Base URL** | Ví dụ `https://ten-mien-cua-ban/v1`, theo tên miền thực tế (có thể là tên miền riêng) | Địa chỉ trang + `/v1` |
-| **Khóa API** | Ví dụ `sk-xxxxxxxx`. Đây là bí mật tương đương mật khẩu: không để lộ, không đưa vào frontend, không commit | Bảng điều khiển → Khóa API → Tạo khóa API |
-| **Hạn ngạch** | Đơn vị nội bộ: **500.000 hạn ngạch = 1 USD**; mỗi mô hình áp tỷ lệ riêng, ví và nhật ký hiển thị theo tiền tệ của site. Hết hạn ngạch sẽ bị từ chối | Bảng điều khiển → Ví; Bảng điều khiển → Nhật ký sử dụng |
-| **Tên mô hình** | Tên đã đăng ký trong Uter (có thể khác tên gốc) | Bảng điều khiển → Giá cả; hoặc `id` từ `GET /v1/models` |
+| **Base URL** | Điểm vào riêng cho API `https://api.uter.ai/v1`; địa chỉ trang console đang dùng + `/v1` cũng hợp lệ. Các tên miền khác không phải điểm vào chính thức | Trang chủ tài liệu API; hoặc địa chỉ trang console + `/v1` |
+| **Khóa API** | Ví dụ `sk-xxxxxxxx`. Đây là bí mật tương đương mật khẩu: không để lộ, không đưa vào frontend, không commit | Chung → Khóa API → Tạo khóa API |
+| **Hạn ngạch** | Đơn vị tính phí nội bộ: **mặc định 500.000 hạn ngạch = 1 USD**, tỷ lệ này có thể chỉnh tại Cài đặt hệ thống → Thanh toán; mỗi mô hình áp quy tắc riêng, ví và nhật ký hiển thị theo tiền tệ cấu hình của site. Hết hạn ngạch sẽ bị từ chối | Cá nhân → Ví; Chung → Nhật ký sử dụng |
+| **Tên mô hình** | Tên đã đăng ký trong Uter (có thể khác tên gốc) | Trang giá công khai `/pricing`; hoặc `id` từ `GET /v1/models` |
 
 ### Kênh và nhóm là hai chiều khác nhau
 
@@ -28,32 +28,43 @@ Vì vậy cùng một mô hình có thể khác nhau về khả dụng và giá 
 
 Bốn trạng thái: **đang bật, đã tắt, đã hết hạn, đã cạn hạn ngạch**. Khi tạo/sửa khóa có thể áp:
 
+- **Nhóm**: quyết định tỷ lệ tính phí và các mô hình có thể định tuyến; có thể đặt thêm “thứ tự nhóm tự động” và “thử lại giữa các nhóm”.
 - **Thời hạn**: mặc định “không hết hạn”; sau khi hết hạn, gọi API trả 401.
-- **Giới hạn hạn ngạch**: hạn ngạch riêng hoặc “không giới hạn”. Dùng hết thì chuyển “đã cạn”.
+- **Giới hạn hạn ngạch**: nhập theo tiền tệ cấu hình của site (mặc định USD) hoặc “không giới hạn”. Dùng hết thì chuyển “đã cạn”.
 - **Giới hạn mô hình**: chỉ cho phép một số mô hình. Không chọn mô hình nào thì khóa không gọi được gì.
 - **Danh sách IP**: hỗ trợ CIDR (ví dụ `203.0.113.0/24`); nguồn khác bị từ chối.
 - **Cho phép truy vấn hạn ngạch người dùng**: có được gọi `/v1/dashboard/billing/*` hay không.
+- **Số lượng tạo**: có thể tạo nhiều khóa cùng lúc; khi kiểm tra chỉ cần giữ lại một khóa.
+
+<Callout type="info">
+  Với khóa kiểm tra, hãy chỉ chọn mô hình cần thử và tắt thử lại giữa các nhóm. Nếu không, yêu cầu có thể đi đến kênh ngoài dự kiến và làm sai lệch kết luận về kết nối hoặc tính phí.
+</Callout>
 
 ## Kiểm tra nhanh nhất: Sân chơi
 
-Bảng điều khiển → Sân chơi dùng cùng đường gọi như API.
+Trò chuyện → Sân chơi dùng cùng đường gọi như API.
 
-1. Chọn **kênh** bên trái; bên phải liệt kê các mô hình của kênh đó. Chọn mô hình cần thử.
+1. Mở bộ chọn mô hình: chọn **kênh** ở bên trái của bảng popup, mô hình do kênh đó phục vụ ở bên phải. Mặc định chọn kênh đầu tiên trong danh sách.
 2. Gửi một tin nhắn và xem phản hồi (mặc định trả theo luồng).
-3. Mở cài đặt tham số và bật những gì cần: `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. Chỉ tham số được bật mới gửi đi.
-4. Cần kiểm tra đa phương thức hoặc tìm kiếm web thì dùng đính kèm / công cụ tìm kiếm (tùy mô hình hỗ trợ).
-5. Có thể dừng, tạo lại, sửa lịch sử hoặc xóa hội thoại bất cứ lúc nào.
+3. Mở cài đặt tham số và bật những gì cần: `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. **Chỉ tham số được bật mới gửi đi** (`max_tokens` và `seed` mặc định tắt).
+4. Có thể dừng tạo, tạo lại, chỉnh sửa hoặc sao chép tin nhắn, xem bản gốc, xóa từng tin nhắn, xóa toàn bộ hội thoại (có hộp thoại xác nhận).
+5. Nút **đính kèm và tìm kiếm web trong ô nhập hiện là chỗ giữ chỗ đang phát triển** — nhấn chỉ hiện thông báo không hỗ trợ. Đa phương thức dùng `image_url` qua API theo Bước 6; tìm kiếm web dùng `POST /v1/tools/search`.
 
 Sân chơi cũng trừ hạn ngạch theo cùng quy tắc — phù hợp để thử lặp lại; vẫn nên xác nhận bằng API trước khi phát hành.
 
 ## Kiểm tra mô hình và giá
 
-Bảng điều khiển → Giá cả cho phép:
+Trang giá công khai `/pricing` cho phép:
 
 - tìm theo tên mô hình;
-- lọc theo **kênh, nhà cung cấp, loại, thẻ** để xem kênh nào phục vụ;
-- xem cách tính phí (theo token / theo yêu cầu / theo tác vụ), ngữ cảnh và endpoint hỗ trợ;
-- so sánh giá công khai trước khi chọn.
+- lọc theo **kênh, nhà cung cấp, thẻ mô hình, loại giá, loại endpoint** (năm nhóm). Loại giá gồm theo token, theo yêu cầu, theo tác vụ và giá động; loại endpoint gồm Chat / Response / Anthropic / Gemini / Rerank / Image / Embeddings / Video;
+- xem cách tính phí, ngữ cảnh và endpoint hỗ trợ, chuyển đổi **giá chuẩn / giá nạp tiền**, đơn vị **mỗi 1M / mỗi 1K token**, 7 kiểu sắp xếp và dạng thẻ / bảng;
+- so sánh **giá Uter** với **giá chính thức** và mức giảm / tăng. Mô hình tính theo giây (một số mô hình video / âm thanh) hiển thị đơn giá `/ second` cùng giá tham khảo chính thức;
+- lưu ý: thanh kênh bên trái mặc định chọn **Claude-Basic** và chỉ hiện mô hình của kênh đó. Nhấn “Tất cả kênh” hoặc truy cập `?channel=all` để xem tất cả.
+
+<Callout type="warn">
+  Thẻ hiển thị “chưa cấu hình giá”, biểu thức tính phí dạng nguyên văn hoặc thiếu giá chính thức là vấn đề dữ liệu giá phía nền tảng, không phải yêu cầu sai. Hãy ghi lại tên mô hình và kênh rồi liên hệ nền tảng; không tự phân tích biểu thức trong client.
+</Callout>
 
 ## Các chiều kiểm thử
 
@@ -107,7 +118,7 @@ curl --noproxy '*' -s "$BASE/models/ma-mo-hinh" \
 ```
 
 <Callout type="warn">
-  Không thấy mô hình? Kiểm tra Bảng điều khiển → Giá cả theo kênh trước, rồi liên hệ nền tảng. Đừng đoán tên: thường sẽ 404 hoặc “không có kênh khả dụng”.
+  Không thấy mô hình? Kiểm tra trang giá `/pricing` theo kênh trước, rồi liên hệ nền tảng. Thanh kênh bên trái mặc định chỉ hiện Claude-Basic — nhấn “Tất cả kênh” hoặc chọn một kênh cụ thể để đối chiếu. Đừng đoán tên: thường sẽ 404 hoặc “không có kênh khả dụng”.
 </Callout>
 
 ### Bước 3 · Hội thoại tối thiểu (không streaming)
@@ -202,14 +213,23 @@ So TTFT và tổng thời gian với SLA. Thử thêm prompt dài (8k / 32k toke
 
 ### Bước 8 · Hạn ngạch và tính phí
 
-`/v1/dashboard/billing/usage` trả **tổng mức dùng lũy kế** (`total_usage`, theo tiền tệ hiển thị), không phải số dư — số dư xem ở Bảng điều khiển → Ví. So sánh trước/sau khi gọi:
+`/v1/dashboard/billing/usage` trả **mức dùng lũy kế** (`total_usage`), không phải số dư — số dư xem ở Cá nhân → Ví. `total_usage` được đổi theo tiền tệ hiển thị của site và tính theo **1/100 của tiền tệ đó** (xu USD trên site USD), vì vậy hiệu số trước/sau phải chia cho 100 mới ra số USD. So sánh trước/sau khi gọi:
 
 ```bash
+# Trước khi gọi
+curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
+  -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
+
+# (chạy Bước 3 ở đây)
+
+# Sau khi gọi
 curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-Cũng có thể đối chiếu `usage` của một phản hồi với chi tiết trong Nhật ký sử dụng / Nhật ký tác vụ.
+Cũng có thể đối chiếu `usage` của một phản hồi với chi tiết trong Chung → Nhật ký sử dụng / Nhật ký tác vụ.
+
+`GET /v1/dashboard/billing/subscription` là truy vấn **giới hạn hạn ngạch** tương thích OpenAI. Tên trường có dạng `*_usd` nhưng giá trị theo tiền tệ hiển thị của site (USD / CNY / tokens), không phản ánh gói thanh toán thực tế; `access_until` chỉ có giá trị ở chế độ thống kê theo token.
 
 ### Bước 9 · Lỗi dễ đọc
 
@@ -226,25 +246,25 @@ Kỳ vọng: `{"error":{"message":...,"type":...,"code":...}}` với 4xx, không
 
 Quy trình **gửi → chờ → tải xuống**:
 
-1. **Gửi** qua endpoint trên trang plugin tác vụ: `POST /v1/tasks/<khóa-plugin>`, video `POST /v1/video/generations`, hoặc `POST /v1/images/generations` (tương thích OpenAI) do kênh/plugin tương ứng phục vụ.
-2. **Chờ**: `GET /v1/tasks/<task_id>` hoặc `GET /v1/video/generations/<task_id>`. Trước khi xong là đang chờ / đang xử lý.
-3. **Kết quả**: `GET /v1/tasks/<task_id>/artifacts` liệt kê; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` tải nội dung.
-4. **Đối chiếu** trong Bảng điều khiển → Nhật ký sử dụng → Nhật ký tác vụ: trạng thái, tiến độ, thời gian, hạn ngạch; thất bại phải có lý do, có thể có hoàn tiền.
+1. **Gửi**: vào Quản trị viên → Plugin kênh (`/task-plugins`, chỉ siêu quản trị viên), dùng endpoint của plugin đã bật: chung `POST /v1/tasks/<khóa-plugin>`, video `POST /v1/video/generations` hoặc kiểu OpenAI `POST /v1/videos`. `POST /v1/images/generations` tương thích OpenAI do kênh / plugin tương ứng phục vụ.
+2. **Chờ**: dùng `task_id` trả về với `GET /v1/tasks/<task_id>`, `GET /v1/video/generations/<task_id>` hoặc `GET /v1/videos/<task_id>`. Trước khi xong là đang xếp hàng / đang xử lý.
+3. **Kết quả**: `GET /v1/tasks/<task_id>/artifacts` liệt kê; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` tải nội dung (cũng hỗ trợ tham số truy cập đã ký, tải không cần token). Với video dùng `GET /v1/videos/<task_id>/content`.
+4. **Đối chiếu**: xem Chung → Nhật ký tác vụ để biết trạng thái, tiến độ, thời gian và lý do thất bại. **Hoàn tiền không nằm trong nhật ký tác vụ** — chúng xuất hiện dưới dạng “Hoàn tiền tác vụ bất đồng bộ” trong Chung → Nhật ký sử dụng.
 5. **Biên**: thử timeout hoặc tham số sai để chắc tác vụ chuyển sang trạng thái thất bại thay vì treo.
 
 ## Khắc phục sự cố
 
 | # | Hiện tượng | HTTP | Nguyên nhân | Cách xử lý |
 | --- | --- | --- | --- | --- |
-| **A1** | Mã thông báo không hợp lệ | 401 | Khóa thiếu/sai/đã tắt | Sao chép đầy đủ trong Khóa API, xác nhận “đang bật”, không có khoảng trắng |
+| **A1** | Mã thông báo không hợp lệ | 401 | Khóa thiếu/sai/đã tắt | Sao chép đầy đủ trong Chung → Khóa API, xác nhận “đang bật”, không có khoảng trắng |
 | **A2** | Mã thông báo đã hết hạn | 401 | Quá hạn | Tạo khóa mới hoặc đặt “không hết hạn” |
-| **A3** | Hạn ngạch khóa đã cạn | 401 | Khóa hết hạn ngạch | Nạp thêm cho khóa hoặc tạo khóa mới |
+| **A3** | Hạn ngạch khóa đã cạn | 401 | Khóa hết hạn ngạch | Nạp thêm cho khóa trong Chung → Khóa API hoặc tạo khóa mới |
 | **A4** | Your IP address is not on this token's allowlist | 403 | IP ngoài danh sách (CIDR) | Thêm IP/dải IP hoặc tắt giới hạn khi thử |
 | **A5** | Không có quyền truy cập mô hình nào | 403 | Giới hạn mô hình trống | Sửa khóa và chọn mô hình |
 | **A6** | Không có quyền truy cập mô hình «xxx» | 403 | Mô hình ngoài danh sách | Cập nhật giới hạn hoặc dùng khóa khác |
-| **A7** | Không kết nối / timeout | — | URL sai, chứng chỉ, mạng nội bộ | Kiểm tra `https://ten-mien-cua-ban/v1`; dùng `--noproxy '*'` khi có proxy |
-| **B1** | Không đủ hạn ngạch | 403 | Hết hạn ngạch tài khoản/khóa | Nạp ở Ví hoặc thêm cho khóa; kiểm tra bằng bước 8 |
-| **B2** | Không có kênh khả dụng cho mô hình «xxx» thuộc nhóm «default» | 503 (400 với một số bộ lọc) | Không có kênh bật | Kiểm tra Giá cả theo kênh và liên hệ nền tảng |
+| **A7** | Không kết nối / timeout | — | URL sai, chứng chỉ, mạng nội bộ | Kiểm tra điểm vào riêng `https://api.uter.ai/v1` hoặc địa chỉ console + `/v1`; dùng `--noproxy '*'` khi có proxy |
+| **B1** | Không đủ hạn ngạch | 403 | Hết hạn ngạch tài khoản/khóa | Nạp ở Cá nhân → Ví hoặc nạp cho khóa trong Chung → Khóa API; kiểm tra bằng bước 8 |
+| **B2** | Không có kênh khả dụng cho mô hình «xxx» thuộc nhóm «default» | 503 (400 với một số bộ lọc) | Không có kênh bật | Kiểm tra trang giá `/pricing` theo kênh (thanh bên trái mặc định chỉ hiện Claude-Basic — nhấn “Tất cả kênh”); liên hệ nền tảng, đừng đoán tên |
 | **B3** | 404 / không tìm thấy mô hình | 404 | Sai tên hoặc chưa mở | Lấy `id` chính xác ở bước 2 |
 | **C1** | Đã đạt giới hạn yêu cầu | 429 | Giới hạn khóa/nền tảng | Giảm đồng thời, backoff lũy thừa, kiểm tra RPM/TPM |
 | **C2** | Nhóm/thượng nguồn quá tải | 429 / 503 | Thiếu dung lượng tạm thời | Thử lại sau với backoff; liên hệ nền tảng nếu cần |
@@ -252,12 +272,13 @@ Quy trình **gửi → chờ → tải xuống**:
 | **D1** | Streaming đến một lần | — | Đệm phía client | `-N` với curl; `stream: true`, không đệm toàn bộ trong SDK |
 | **D2** | Ký tự lỗi | — | Mã hóa/phân tích | UTF-8 hai chiều; nếu `json.tool` hiển thị đúng thì lỗi ở terminal |
 | **D3** | Nội dung bị cắt | — | `max_tokens` nhỏ hoặc giới hạn mô hình | Tăng `max_tokens`; dùng streaming cho văn bản dài |
-| **E1** | Trừ phí khác kỳ vọng | — | Token ẩn (suy luận, cache, tools) hoặc tỷ lệ khác | Đối chiếu `usage` và chi tiết nhật ký |
+| **E1** | Trừ phí khác kỳ vọng | — | Token ẩn (suy luận, cache, tools) hoặc tỷ lệ khác | Đối chiếu `usage` và chi tiết tính phí trong Chung → Nhật ký sử dụng |
 | **E2** | Function calling / JSON mode không hoạt động | — | Mô hình không hỗ trợ | Kiểm tra bước 5; có phương án dự phòng |
+| **E3** | Thẻ giá hiện “chưa cấu hình giá”, biểu thức tính phí nguyên văn hoặc thiếu giá chính thức | — | Dữ liệu giá / giá chính thức phía nền tảng có vấn đề | Ghi tên mô hình và kênh rồi liên hệ nền tảng; không tự phân tích biểu thức hay đổi tỷ lệ |
 | **F1** | 400 với thông báo “kiểu thông cáo” | 400 | Thông báo từ thượng nguồn | Kiểm tra yêu cầu rồi liên hệ nền tảng kèm nguyên văn |
 
 <Callout type="idea">
-  Hai kinh nghiệm: “không có kênh / không thấy mô hình” → xem `GET /v1/models` và bộ lọc kênh ở trang Giá cả trước khi liên hệ. “401/403” → kiểm tra trạng thái khóa, giới hạn mô hình, danh sách IP, rồi mới đến Base URL.
+  Hai kinh nghiệm: “không có kênh / không thấy mô hình” → xem `GET /v1/models` và bộ lọc kênh ở trang giá `/pricing` trước khi liên hệ. “401/403” → kiểm tra trạng thái khóa, giới hạn mô hình, danh sách IP, rồi mới đến Base URL.
 </Callout>
 
 ## Khi gặp 400 (Bad Request)
@@ -296,7 +317,7 @@ curl -i https://ten-mien-cua-ban/v1/chat/completions \
 
 ## Đối chiếu qua nhật ký
 
-Bảng điều khiển → Nhật ký sử dụng ghi thời gian, mô hình, khóa, kênh (quản trị viên), độ trễ, hạn ngạch và lỗi; Nhật ký tác vụ ghi trạng thái, tiến độ và kết quả của tác vụ bất đồng bộ. Khi tích hợp:
+Chung → Nhật ký sử dụng ghi thời gian, kênh / người dùng (chỉ quản trị viên thấy), khóa (kèm nhóm), mô hình, streaming / TPS, token đầu vào / đầu ra / cache, hạn ngạch, độ trễ / TTFT và chi tiết (thông báo lỗi nằm trong hộp thoại chi tiết). Chung → Nhật ký tác vụ ghi thời gian gửi, plugin, ID tác vụ, thời lượng, trạng thái, tiến độ, kết quả và chi tiết (lý do thất bại). Khi tích hợp:
 
 - so mô hình, nhóm/kênh và hạn ngạch với kỳ vọng;
 - giữ nguyên văn lỗi để phân biệt nền tảng và thượng nguồn;
@@ -308,7 +329,9 @@ Bảng điều khiển → Nhật ký sử dụng ghi thời gian, mô hình, kh
 - [ ] **Khóa** đầy đủ, “đang bật”, chưa hết hạn, đủ hạn ngạch.
 - [ ] **Giới hạn mô hình** của khóa bao gồm các mô hình sản phẩm dùng.
 - [ ] Nếu bật **danh sách IP**, đã thêm IP/CIDR của production.
+- [ ] Đã xác nhận **nhóm và các kênh khả dụng** của mô hình mục tiêu (thanh kênh bên trái trên trang giá mặc định chỉ hiện Claude-Basic — nhấn “Tất cả kênh” hoặc chọn một kênh cụ thể).
 - [ ] `GET /v1/models` có mô hình và `id` khớp mã nguồn.
+- [ ] Đã đối chiếu trên trang giá **giá Uter / giá chính thức** và cách tính phí; mô hình tính theo giây / theo yêu cầu đã xác nhận đơn vị riêng. Không thẻ nào hiện “chưa cấu hình giá” hay biểu thức tính phí nguyên văn.
 - [ ] Hội thoại không streaming chạy được (`content`, `usage`).
 - [ ] Streaming chạy được (`data:` và `[DONE]`).
 - [ ] Các **năng lực nâng cao** cần thiết (tools / JSON / thị giác / ngữ cảnh dài) đã kiểm tra riêng.
@@ -330,27 +353,32 @@ Bảng điều khiển → Nhật ký sử dụng ghi thời gian, mô hình, kh
 | Chi tiết mô hình | `GET /v1/models/:model` | Thông tin một mô hình |
 | Hội thoại | `POST /v1/chat/completions` | stream / tools / thị giác |
 | Completion | `POST /v1/completions` | Một số mô hình |
-| Claude gốc | `POST /v1/messages` | `x-api-key` + `anthropic-version` |
-| Gemini gốc | `GET /v1beta/models` | `x-goog-api-key` hoặc `?key=` |
-| Danh sách Gemini (OpenAI) | `GET /v1beta/openai/models` | Mô hình Gemini dạng OpenAI |
-| Chuyển tiếp Gemini | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Đường dẫn gốc |
-| Responses realtime | `GET /v1/responses` (WebSocket) | Giao thức Responses |
+| Responses (đường vào chính) | `POST /v1/responses`, `GET /v1/responses/:response_id` | Chế độ đồng bộ / streaming / nền và truy xuất kết quả |
+| Responses WebSocket | `GET /v1/responses` (WebSocket) | Giao thức Responses qua WebSocket |
 | Nén Responses | `POST /v1/responses/compact` | Nén ngữ cảnh |
+| Claude gốc | `POST /v1/messages` | `x-api-key` + `anthropic-version`; lỗi dạng Anthropic |
+| Gemini gốc | `GET /v1beta/models`, `POST /v1beta/models/*path` | `x-goog-api-key` hoặc `?key=`; đường thứ hai gọi generateContent và các phương thức gốc khác |
+| Danh sách Gemini (OpenAI) | `GET /v1beta/openai/models` | Mô hình Gemini dạng OpenAI |
+| Bí danh tương thích Gemini | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Đường dẫn tương thích đi qua giao thức Gemini |
 | Giọng nói realtime | `GET /v1/realtime` (WebSocket) | Realtime |
 | Embedding | `POST /v1/embeddings` | Vector hóa văn bản |
+| Sửa ảnh cũ | `POST /v1/edits` | Endpoint dự phòng tương thích OpenAI |
 | Rerank | `POST /v1/rerank` | Xếp hạng lại kết quả |
 | Kiểm duyệt | `POST /v1/moderations` | An toàn nội dung |
-| Hình ảnh | `POST /v1/images/generations`, `POST /v1/images/edits` | Tạo / chỉnh sửa |
+| Hình ảnh | `POST /v1/images/generations`, `POST /v1/images/edits` | Tạo / chỉnh sửa (kênh hoặc plugin) |
 | Âm thanh | `POST /v1/audio/transcriptions`, `/translations`, `/speech` | Gỡ băng / dịch / tổng hợp |
-| Công cụ web | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | Công cụ DeepSeek và tìm kiếm Codex |
-| Video | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Gửi, truy vấn, remix |
-| Tác vụ | `POST /v1/tasks/:key`, `GET /v1/tasks/:task_id` | Đầu vào chung của plugin |
-| Kết quả tác vụ | `GET /v1/tasks/:task_id/artifacts`, `GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | Liệt kê / tải |
-| Mức dùng / gói | `GET /v1/dashboard/billing/usage`, `/subscription` | Mức dùng lũy kế và hạn ngạch gói |
+| Công cụ web | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | Công cụ DeepSeek và tìm kiếm Codex độc lập |
+| Video (nền tảng) | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Gửi, truy vấn, remix |
+| Video (kiểu OpenAI) | `POST /v1/videos`, `GET /v1/videos/:task_id`, `GET /v1/videos/:task_id/content` | Gửi, truy vấn, tải kết quả |
+| Tác vụ chung | `POST /v1/tasks/:key`, `GET /v1/tasks/:key` | Đầu vào chung của plugin; route đọc mang `task_id` trong đoạn đường dẫn `:key` |
+| Kết quả tác vụ | `GET /v1/tasks/:key/artifacts`, `GET` hoặc `HEAD /v1/tasks/:key/artifacts/:artifact_key/content` | Liệt kê / tải; tải chấp nhận token hoặc tham số truy cập đã ký |
+| Mức dùng / gói | `GET /v1/dashboard/billing/usage`, `/subscription` | Mức dùng lũy kế và giới hạn hạn ngạch (shim tương thích OpenAI, không phải gói thanh toán) |
 
-> Đây là các endpoint công khai hiện được đăng ký. Endpoint mà từng mô hình hỗ trợ hiển thị ở trang chi tiết trong Bảng điều khiển → Giá cả.
+> Đây là các endpoint công khai hiện được đăng ký. `/dashboard/billing/*` cũng chạy được khi bỏ tiền tố `/v1`. Endpoint mà từng mô hình hỗ trợ hiển thị ở trang giá công khai `/pricing`.
 
 ### Định dạng lỗi thống nhất
+
+Các endpoint tương thích OpenAI mặc định dùng cấu trúc lỗi OpenAI:
 
 ```json
 {
@@ -358,12 +386,23 @@ Bảng điều khiển → Nhật ký sử dụng ghi thời gian, mô hình, kh
     "message": "Lý do dễ đọc",
     "type": "invalid_request_error | authentication_error | ...",
     "code": "mã tùy chọn",
-    "param": "tham số gây lỗi (tùy chọn)"
+    "param": "tham số gây lỗi (tùy chọn)",
+    "metadata": "ngữ cảnh bổ sung (tùy chọn)"
   }
 }
 ```
 
-Kết hợp HTTP status (401 / 403 / 404 / 429 / 5xx) là đủ cho hầu hết client.
+Tuy nhiên có các ngoại lệ sau cần xử lý riêng:
+
+| Tình huống | Phản hồi thực tế |
+| --- | --- |
+| Claude gốc `POST /v1/messages` | Dạng Anthropic `{"type":"error","error":{"type":...,"message":...}}` |
+| WebSocket (Responses / Realtime) | Lỗi gửi dưới dạng khung sự kiện, không dùng HTTP status |
+| Lỗi endpoint tính phí | Thường HTTP 200 + `{"error":{"message":...,"type":"uter_error"}}` |
+| Lỗi xác thực / giới hạn của middleware | `type` có thể là `new_api_error` và không có `param` |
+| `GET /v1/models/:model` không tìm thấy mô hình | HTTP 200 + `error.code = "model_not_found"` |
+
+Kết hợp với HTTP status (401 xác thực / 403 quyền hoặc hạn ngạch / 404 không có route / 429 giới hạn / 501 endpoint tương thích chưa triển khai / 5xx thượng nguồn) là đủ cho hầu hết client. **Đừng chỉ dựa vào HTTP status**: tính phí và truy xuất mô hình có thể trả “HTTP 200 + error”, vì vậy phải phân tích body trước.
 
 ### Lưu ý bảo mật
 

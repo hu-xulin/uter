@@ -1,12 +1,13 @@
 # 模型（Models）
 
-Uter 提供三个模型查询入口：
+Uter 提供四个模型查询入口：
 
 | 端点 | 说明 |
 |---|---|
 | `GET /v1/models` | 当前令牌可调用的模型列表 |
 | `GET /v1/models/{model}` | 单个模型详情 |
 | `GET /v1beta/models` | 同一列表的 Gemini 原生格式 |
+| `GET /v1beta/openai/models` | 同一列表的 OpenAI 格式（Gemini 兼容入口） |
 
 列表已按令牌所属分组、令牌模型白名单与模型计费配置过滤，请以返回结果为准，不要硬编码模型名。
 

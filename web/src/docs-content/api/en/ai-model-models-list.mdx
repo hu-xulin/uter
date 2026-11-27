@@ -1,12 +1,13 @@
 # Models
 
-Uter exposes three model lookup endpoints:
+Uter exposes four model lookup endpoints:
 
 | Endpoint | Description |
 |---|---|
 | `GET /v1/models` | Models the current token can call |
 | `GET /v1/models/{model}` | One model's details |
 | `GET /v1beta/models` | The same list in native Gemini format |
+| `GET /v1beta/openai/models` | The same list in OpenAI format (Gemini-compatible entry point) |
 
 The list is filtered by the token's group, its model allowlist and model billing configuration. Trust the returned list and do not hardcode model names.
 

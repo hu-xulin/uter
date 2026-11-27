@@ -2,33 +2,33 @@
 
 ## Native Gemini Format
 
-Gemini 音频生成接口。
-可使用gemini-2.5-flash-preview-tts等模型
+Gemini audio generation API.
+You can use models such as gemini-2.5-flash-preview-tts.
 
 `POST` `/v1beta/models/{model}:generateContent`
 
-### 请求参数
+### Request parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Parameter | In | Type | Required | Description |
 |---|---|---|---|---|
-| `model` | path | string | 是 | 模型名称 |
+| `model` | path | string | Yes | Model name |
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `contents` | array&lt;object&gt; | 是 | — |
-| `generationConfig.responseModalities` | array&lt;string&gt; | 否 | — |
+| `contents` | array&lt;object&gt; | Yes | — |
+| `generationConfig.responseModalities` | array&lt;string&gt; | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功 |
+| `200` | Success |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `candidates` | array&lt;object&gt; | — |
 | `usageMetadata.promptTokenCount` | integer | — |

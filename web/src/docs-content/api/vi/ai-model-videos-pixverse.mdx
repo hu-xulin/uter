@@ -1,10 +1,12 @@
 # Định dạng PixVerse
 
-Tạo video PixVerse: gọi toàn bộ họ mô hình PixVerse (C1 / V6 / V5.6 / V5.5 / V5 / V4.5 / V4 / V3.5) qua endpoint tương thích OpenAI `/v1/videos`, hỗ trợ tạo video từ văn bản và từ hình ảnh.
+Tạo video PixVerse qua endpoint tương thích OpenAI `/v1/videos`, hỗ trợ tạo video từ văn bản và từ hình ảnh.
+
+> **Tính khả dụng**: PixVerse không phải kênh nhà cung cấp tích hợp sẵn. Các ID model này chỉ khả dụng nếu quản trị viên của bạn đã cấu hình một kênh tùy chỉnh (Advanced Custom / Uter Route) phục vụ chúng. Hãy kiểm tra `GET /v1/models` để biết chính xác ID mà token của bạn có thể gọi; nếu không có model `PixVerse/*` nào được liệt kê thì định dạng này không khả dụng trên tài khoản của bạn.
 
 ## Các mô hình được hỗ trợ
 
-Trong trường `model`, luôn dùng dạng `PixVerse/<phiên bản>`, ví dụ `PixVerse/v5.6`.
+Khi một kênh PixVerse đã được cấu hình, hãy dùng dạng `PixVerse/<version>` trong trường `model`, ví dụ `PixVerse/v5.6`. Các bậc bên dưới mô tả quy ước của thượng nguồn PixVerse; các model thực tế được phơi bày phụ thuộc vào cấu hình kênh.
 
 | Mô hình | Điểm nhấn | Bậc thời lượng | Âm thanh |
 |---|---|---|---|

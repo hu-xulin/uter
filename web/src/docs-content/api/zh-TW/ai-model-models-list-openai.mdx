@@ -39,7 +39,7 @@
 | `data[].object` | string | `model` |
 | `data[].created` | integer | 模型登記時間（Unix 秒） |
 | `data[].owned_by` | string | 模型歸屬 |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | 該模型支援的端點族：`openai`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`、`openai-response` 等 |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | 該模型支援的端點族。可能取值：`openai`、`openai-response`、`openai-response-compact`、`openai-alpha-search`、`deepseek-tools-search`、`deepseek-tools-fetch`、`anthropic`、`gemini`、`embeddings`、`image-generation`、`openai-video`、`jina-rerank`。具體集合取決於模型所屬渠道。 |
 
 ## 取得單一模型
 

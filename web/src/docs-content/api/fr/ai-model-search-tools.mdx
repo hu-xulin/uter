@@ -1,0 +1,55 @@
+# Search & Tools
+
+Uter expose deux familles de points de terminaison de relais de recherche/d'outils. Le corps brut de la requête est transmis à l'amont et la réponse de l'amont est renvoyée telle quelle. Les appels sont facturés par requête au prix du modèle de routage (sans comptage de tokens). Ces points de terminaison ne sont disponibles que sur les canaux qui les prennent en charge ; un canal qui ne les prend pas en charge renvoie une erreur et la requête peut être réessayée sur un autre canal éligible.
+
+## Recherche alpha
+
+`POST` `/v1/alpha/search`
+
+Recherche web autonome utilisée par les clients de style Codex. Prise en charge sur les canaux Uter Route / Uter API / Sub2API / NewAPI / Codex / Advanced Custom ainsi que sur les canaux de plugin fournisseur.
+
+### Corps de la requête (`application/json`)
+
+| Champ | Type | Requis | Description |
+|---|---|---|---|
+| `model` | string | Oui | ID du modèle de routage (par exemple un modèle `alpha-search` de `GET /v1/models`) |
+| `id` | string | Non | ID de requête fourni par le client |
+| `stream` | boolean | Non | Diffusion du résultat ou non |
+
+Les champs supplémentaires propres au fournisseur sont transmis tels quels.
+
+### Réponse
+
+| Code d'état | Description |
+|---|---|
+| `200` | Résultat de recherche renvoyé |
+| `400` | Requête invalide ou canal ne prenant pas en charge ce point de terminaison |
+| `403` | Quota insuffisant |
+
+Le corps de la réponse est la réponse de l'amont, renvoyée telle quelle.
+
+## Recherche et récupération DeepSeek
+
+`POST` `/v1/tools/search`
+
+`POST` `/v1/tools/fetch`
+
+Outils de recherche web et de récupération de page utilisés par les clients de style DeepSeek. Pris en charge sur DeepSeek, Uter Route / Uter API, Sub2API, NewAPI et les canaux Advanced Custom, ainsi que sur les canaux de plugin fournisseur. Les noms de modèle `deepseek-search` et `deepseek-fetch` sélectionnent la famille de points de terminaison correspondante.
+
+### Corps de la requête (`application/json`)
+
+| Champ | Type | Requis | Description |
+|---|---|---|---|
+| `model` | string | Non | ID du modèle de routage (`deepseek-search` pour la recherche, `deepseek-fetch` pour la récupération) |
+
+Tous les autres champs sont propres au fournisseur et transmis tels quels.
+
+### Réponse
+
+| Code d'état | Description |
+|---|---|
+| `200` | Résultat de l'outil renvoyé |
+| `400` | Requête invalide ou canal ne prenant pas en charge ce point de terminaison |
+| `403` | Quota insuffisant |
+
+Le corps de la réponse est la réponse de l'amont, renvoyée telle quelle.

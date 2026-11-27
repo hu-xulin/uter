@@ -2,51 +2,51 @@
 
 ## Jimeng Video Generation
 
-即梦官方 API 格式的视频生成接口。
+Video generation API in the official Jimeng API format.
 
-支持通过 Action 参数指定操作类型：
-- `CVSync2AsyncSubmitTask`: 提交视频生成任务
-- `CVSync2AsyncGetResult`: 获取任务结果
+The operation type can be specified with the Action parameter:
+- `CVSync2AsyncSubmitTask`: Submit a video generation task
+- `CVSync2AsyncGetResult`: Get the task result
 
-需要在查询参数中指定 Action 和 Version。
+Action and Version must be specified in the query parameters.
 
 `POST` `/jimeng/`
 
-### 请求参数
+### Request parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Parameter | In | Type | Required | Description |
 |---|---|---|---|---|
-| `Action` | query | enum（`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`） | 是 | API 操作类型 |
-| `Version` | query | string | 是 | API 版本 |
+| `Action` | query | enum (`CVSync2AsyncSubmitTask`, `CVSync2AsyncGetResult`) | Yes | API operation type |
+| `Version` | query | string | Yes | API version |
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `req_key` | string | 否 | 请求类型标识 |
-| `prompt` | string | 否 | 文本描述 |
-| `binary_data_base64` | array&lt;string&gt; | 否 | Base64 编码的图片数据 |
+| `req_key` | string | No | Request type identifier |
+| `prompt` | string | No | Text description |
+| `binary_data_base64` | array&lt;string&gt; | No | Base64-encoded image data |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功处理请求 |
-| `400` | 请求参数错误 |
+| `200` | Request processed successfully |
+| `400` | Invalid request parameters |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `code` | integer | 响应码 |
-| `message` | string | 响应消息 |
-| `data` | object | 响应数据 |
+| `code` | integer | Response code |
+| `message` | string | Response message |
+| `data` | object | Response data |
 
-#### `400` 响应字段
+#### `400` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |

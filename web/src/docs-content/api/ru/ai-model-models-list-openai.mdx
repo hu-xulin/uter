@@ -39,7 +39,7 @@
 | `data[].object` | string | `model` |
 | `data[].created` | integer | Время регистрации (Unix-секунды) |
 | `data[].owned_by` | string | Владелец |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | Поддерживаемые семейства эндпоинтов: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response` и др. |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Семейства эндпоинтов, которые обслуживает модель. Возможные значения: `openai`, `openai-response`, `openai-response-compact`, `openai-alpha-search`, `deepseek-tools-search`, `deepseek-tools-fetch`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`. Точный набор зависит от канала модели. |
 
 ## Одна модель
 

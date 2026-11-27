@@ -198,7 +198,7 @@ function apiChildren(
     return at < 0 ? Number.MAX_SAFE_INTEGER : at
   }
 
-  const entries: { pos: number; node: SidebarNode }[] = []
+  const entries: { id: string; pos: number; node: SidebarNode }[] = []
 
   for (const category of source.categories ?? []) {
     for (const group of category.groups ?? []) {
@@ -212,6 +212,7 @@ function apiChildren(
       // group id, so keep the canonical URL as the identity.
       const toggleOnly = GROUP_WITHOUT_PAGE[group.id] !== undefined
       entries.push({
+        id: group.id,
         pos: Math.min(...positions),
         node: {
           title: text(group.label, locale, group.id),
@@ -234,12 +235,18 @@ function apiChildren(
     if (groupIds.has(item.id)) continue // declared above, as a group
     if (pageIds.has(item.id)) continue // a member of one of those groups
     entries.push({
+      id: item.id,
       pos: orderOf(item.id),
       node: { title: item.title, url: `${apiRoot}/${item.id}` },
     })
   }
 
-  entries.sort((a, b) => a.pos - b.pos)
+  // Top-level API rows follow the same ordering as the API landing cards:
+  // ascending Chinese title length (2 characters before 3), source order
+  // for ties. Group children keep their own `_nav.json` order.
+  entries.sort(
+    (a, b) => compareApiTitleLength(a.id, b.id) || a.pos - b.pos
+  )
   return entries.map((entry) => entry.node)
 }
 
@@ -250,14 +257,18 @@ function navigationChildren(
   source: Extract<ChildrenSource, { source: 'navigation' }>
 ): SidebarNode[] {
   const skip = new Set(source.skip ?? [])
-  return (SECTION_NAV[source.navigation][locale] ?? [])
-    .filter((item) => !skip.has(item.id))
-    .map((item) => ({
-      title: source.shortenAt
-        ? shorten(item.title, source.shortenAt)
-        : item.title,
-      url: `${root}/${item.id}`,
-    }))
+  const items = (SECTION_NAV[source.navigation][locale] ?? []).filter(
+    (item) => !skip.has(item.id)
+  )
+  // AI-app rows are alphabetical by English short title, matching the app
+  // landing cards; API rows are ordered by apiChildren() instead.
+  if (source.navigation === 'apps') {
+    items.sort((a, b) => appSortKey(a.id).localeCompare(appSortKey(b.id), 'en'))
+  }
+  return items.map((item) => ({
+    title: source.shortenAt ? shorten(item.title, source.shortenAt) : item.title,
+    url: `${root}/${item.id}`,
+  }))
 }
 
 function childrenOf(
@@ -331,8 +342,79 @@ export type CatalogCard = {
   /** Locale-neutral slug used as the card's link target. */
   id: string
   title: string
-  /** One-line teaser shown under the card title. */
+  /** The card's own short teaser (variant list or one-liner). */
   description: string
+  /**
+   * Extra sentence drawn from the child document this card covers. Joined
+   * with `description` and clipped to two lines, so a short one-liner never
+   * leaves a half-empty line in the card grid.
+   */
+  supplement?: string
+}
+
+/**
+ * API cards whose own teaser is only a variant list or a few words. Each
+ * supplement summarises the child document behind the card, filling the
+ * second line. `zh`/`en` are authored; `text()` falls back for the rest,
+ * matching the rest of the nav data.
+ */
+const API_CARD_SUPPLEMENTS: Record<string, Localized> = {
+  'ai-model-audio': {
+    zh: '覆盖语音合成、转写与翻译，兼容 OpenAI 与 Gemini 两套格式。',
+    en: 'Speech synthesis, transcription and translation through OpenAI- and Gemini-compatible endpoints.',
+  },
+  'ai-model-chat': {
+    zh: '兼容 Claude Messages 与 Gemini 格式的对话请求，支持流式输出。',
+    en: 'Chat requests in Claude Messages and Gemini formats, with streaming responses.',
+  },
+  'ai-model-responses': {
+    zh: '创建、查询与流式读取服务端响应，兼容 Codex 等响应端点客户端。',
+    en: 'Create, retrieve and stream server-side responses for Codex-style clients.',
+  },
+  'ai-model-search-tools': {
+    zh: '提供联网搜索与网页抓取工具，按请求计费并按渠道能力转发。',
+    en: 'Web search and page-fetch tools, billed per request and routed by channel capability.',
+  },
+  'ai-model-completions': {
+    zh: '根据给定提示生成文本补全，使用 OpenAI 兼容的请求结构。',
+    en: 'Generate text completions from a prompt with the OpenAI-compatible schema.',
+  },
+  'ai-model-embeddings': {
+    zh: '把文本转换为向量，兼容 OpenAI 与 Gemini 两套嵌入格式。',
+    en: 'Turn text into vectors through OpenAI- and Gemini-compatible embedding formats.',
+  },
+  'ai-model-images-openai': {
+    zh: '图像生成与编辑，支持文生图、图生图及多模型尺寸与质量参数。',
+    en: 'Image generation and editing with text-to-image, image-to-image and per-model options.',
+  },
+  'ai-model-models-list': {
+    zh: '查询当前令牌可用的模型列表，返回格式随请求头自动切换。',
+    en: 'List the models available to the current token; the response format follows request headers.',
+  },
+  'ai-model-moderations': {
+    zh: '检查文本内容是否违反使用政策，返回 OpenAI 兼容的审核结果。',
+    en: 'Check whether text violates the usage policy and return OpenAI-compatible moderation results.',
+  },
+  'ai-model-realtime': {
+    zh: '通过 WebSocket 建立实时语音对话连接，支持浏览器子协议鉴权。',
+    en: 'Open a WebSocket connection for real-time speech, with browser subprotocol authentication.',
+  },
+  'ai-model-rerank': {
+    zh: '根据查询与文档的相关性对候选文档重新排序，返回相关度分数。',
+    en: 'Re-rank candidate documents against a query and return relevance scores.',
+  },
+  'ai-model-videos': {
+    zh: '异步视频生成，提供通用任务与 OpenAI 视频两种入口及多供应商格式。',
+    en: 'Asynchronous video generation via generic tasks or OpenAI video endpoints across providers.',
+  },
+  'ai-model-tasks': {
+    zh: '与供应商无关的异步任务接口，统一任务 ID 与状态查询入口。',
+    en: 'Provider-agnostic async task API with shared task IDs and status polling.',
+  },
+  'ai-model-billing': {
+    zh: '查询当前凭据的剩余额度与本期用量，兼容新旧两套端点前缀。',
+    en: 'Inspect remaining quota and current-period usage through legacy and new endpoint prefixes.',
+  },
 }
 
 /**
@@ -502,6 +584,57 @@ function shortAppTitle(title: string): string {
   return title.split(APP_TITLE_SEPARATOR)[0] || title
 }
 
+/** Protocol groups of the API section, shared by the sidebar and the cards. */
+function apiManifestGroups(): ManifestGroup[] {
+  const source = MANIFEST.sections.find((s) => s.id === 'api')?.children
+  return source?.source === 'navigation'
+    ? (source.categories ?? []).flatMap((category) => category.groups ?? [])
+    : []
+}
+
+/**
+ * Chinese card title of an API card, used as the shared sort key. Chinese is
+ * the source language for the "2 characters before 3" ordering, so every UI
+ * locale ends up with the same, stable order.
+ */
+function apiTitleZh(id: string): string {
+  // A group without its own landing page links to its first child (e.g.
+  // images → ai-model-images-openai). Order it by the group's short title,
+  // as the sidebar does, not by the child's "图像 · 原生OpenAI格式" label.
+  const groupId =
+    Object.keys(GROUP_WITHOUT_PAGE).find(
+      (key) => GROUP_WITHOUT_PAGE[key] === id
+    ) ?? id
+  const group = apiManifestGroups().find((item) => item.id === groupId)
+  if (group) return text(group.label, 'zh', group.id)
+  const standalone = STANDALONE_API_CARDS[id]
+  if (standalone) return text(standalone.title, 'zh', id)
+  const nav = SECTION_NAV.api.zh ?? []
+  return nav.find((item) => item.id === id)?.title ?? id
+}
+
+function titleUnits(title: string): number {
+  return [...title].filter((char) => char.trim() !== '').length
+}
+
+/**
+ * API cards/rows: ascending Chinese title length (2-character titles first),
+ * preserving source order for ties.
+ */
+function compareApiTitleLength(a: string, b: string): number {
+  return titleUnits(apiTitleZh(a)) - titleUnits(apiTitleZh(b))
+}
+
+/**
+ * AI-app cards/rows: alphabetical by the English short title (the marketing
+ * subtitle after the dash is excluded), so all UI locales share one order.
+ */
+function appSortKey(id: string): string {
+  const nav = SECTION_NAV.apps.en ?? []
+  const title = nav.find((item) => item.id === id)?.title ?? id
+  return shortAppTitle(title).toLocaleLowerCase('en')
+}
+
 /**
  * Cards for a catalog section's synthesised index page.
  *
@@ -528,20 +661,18 @@ export function catalogCards(
   section: 'api' | 'apps'
 ): CatalogCard[] {
   if (section === 'api') {
-    const source = MANIFEST.sections.find((s) => s.id === 'api')?.children
-    const groups =
-      source?.source === 'navigation'
-        ? (source.categories ?? []).flatMap((category) => category.groups ?? [])
-        : []
+    const groups = apiManifestGroups()
     const groupCards = groups.map((group) => {
       const linkId = GROUP_WITHOUT_PAGE[group.id] ?? group.id
       const variants = (group.pages ?? []).map((page) =>
         text(page.label, locale, page.id)
       )
+      const supplement = API_CARD_SUPPLEMENTS[group.id]
       return {
         id: linkId,
         title: text(group.label, locale, group.id),
         description: variants.join(locale === 'en' ? ', ' : '、'),
+        supplement: supplement ? text(supplement, locale, group.id) : '',
       }
     })
     const nav = SECTION_NAV.api[locale] ?? []
@@ -549,20 +680,22 @@ export function catalogCards(
       .filter((item) => STANDALONE_API_CARDS[item.id])
       .map((item) => {
         const card = STANDALONE_API_CARDS[item.id]
+        const supplement = API_CARD_SUPPLEMENTS[item.id]
         return {
           id: item.id,
           title: text(card.title, locale, item.id),
           description: text(card.description, locale, item.id),
+          supplement: supplement ? text(supplement, locale, item.id) : '',
         }
       })
-    // Same order as the sidebar: the nav file is the source of the outline,
-    // and a group takes the position of its first real page.
+    // Same order as the sidebar: ascending Chinese title length, source
+    // order for ties. A group takes its first real page's nav position.
     const orderOf = (id: string): number => {
       const at = nav.findIndex((item) => item.id === id)
       return at < 0 ? Number.MAX_SAFE_INTEGER : at
     }
     return [...groupCards, ...standaloneCards].sort(
-      (a, b) => orderOf(a.id) - orderOf(b.id)
+      (a, b) => compareApiTitleLength(a.id, b.id) || orderOf(a.id) - orderOf(b.id)
     )
   }
   return (SECTION_NAV.apps[locale] ?? [])
@@ -572,6 +705,7 @@ export function catalogCards(
       title: shortAppTitle(item.title),
       description: item.description ?? '',
     }))
+    .sort((a, b) => appSortKey(a.id).localeCompare(appSortKey(b.id), 'en'))
 }
 
 /** A catalog section's own title and blurb, in the reader's language. */

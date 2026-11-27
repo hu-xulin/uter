@@ -2,131 +2,130 @@
 
 ## ChatCompletions Format
 
-根据对话历史创建模型响应。支持流式和非流式响应。
+Create a model response from a conversation history. Both streaming and non-streaming responses are supported.
 
-兼容 OpenAI Chat Completions API。
+Compatible with the OpenAI Chat Completions API.
 
 `POST` `/v1/chat/completions`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | 模型 ID |
-| `messages` | array&lt;object&gt; | 是 | 对话消息列表 |
-| `temperature` | number | 否 | 采样温度 |
-| `top_p` | number | 否 | 核采样参数 |
-| `n` | integer | 否 | 生成数量 |
-| `stream` | boolean | 否 | 是否流式响应 |
-| `stream_options.include_usage` | boolean | 否 | — |
-| `max_tokens` | integer | 否 | 最大生成 Token 数 |
-| `max_completion_tokens` | integer | 否 | 最大补全 Token 数 |
-| `presence_penalty` | number | 否 | — |
-| `frequency_penalty` | number | 否 | — |
-| `logit_bias` | object | 否 | — |
-| `user` | string | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `response_format.type` | enum（`text`, `json_object`, `json_schema`） | 否 | — |
-| `response_format.json_schema` | object | 否 | JSON Schema 定义 |
-| `seed` | integer | 否 | — |
-| `reasoning_effort` | enum（`low`, `medium`, `high`） | 否 | 推理强度 (用于支持推理的模型) |
-| `modalities` | array&lt;enum（`text`, `audio`）&gt; | 否 | — |
-| `audio.voice` | string | 否 | — |
-| `audio.format` | string | 否 | — |
+| `model` | string | Yes | Model ID |
+| `messages` | array&lt;object&gt; | Yes | Conversation messages |
+| `temperature` | number | No | Sampling temperature |
+| `top_p` | number | No | Nucleus (top-p) sampling |
+| `n` | integer | No | Number of completions |
+| `stream` | boolean | No | Whether to stream the response |
+| `stream_options.include_usage` | boolean | No | Include usage in the final stream chunk |
+| `max_tokens` | integer | No | Maximum number of tokens to generate |
+| `max_completion_tokens` | integer | No | Maximum number of completion tokens |
+| `presence_penalty` | number | No | Presence penalty |
+| `frequency_penalty` | number | No | Frequency penalty |
+| `logit_bias` | object | No | Logit bias |
+| `user` | string | No | Caller-supplied user identifier |
+| `tools` | array&lt;object&gt; | No | Tool definitions |
+| `response_format.type` | enum (`text`, `json_object`, `json_schema`) | No | Response format type |
+| `response_format.json_schema` | object | No | JSON Schema definition |
+| `seed` | integer | No | Sampling seed |
+| `reasoning_effort` | enum (`low`, `medium`, `high`) | No | Reasoning effort (for reasoning models) |
+| `modalities` | array&lt;enum (`text`, `audio`)&gt; | No | Output modalities |
+| `audio.voice` | string | No | Audio voice |
+| `audio.format` | string | No | Audio output format |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功创建响应 |
-| `400` | 请求参数错误 |
-| `429` | 请求频率限制 |
+| `200` | Response created |
+| `400` | Invalid request parameters |
+| `429` | Rate limit |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `id` | string | — |
-| `object` | string | — |
-| `created` | integer | — |
-| `model` | string | — |
-| `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
-| `usage.prompt_tokens_details.cached_tokens` | integer | — |
-| `usage.prompt_tokens_details.text_tokens` | integer | — |
-| `usage.prompt_tokens_details.audio_tokens` | integer | — |
-| `usage.prompt_tokens_details.image_tokens` | integer | — |
-| `usage.completion_tokens_details.text_tokens` | integer | — |
-| `usage.completion_tokens_details.audio_tokens` | integer | — |
-| `usage.completion_tokens_details.reasoning_tokens` | integer | — |
-| `system_fingerprint` | string | — |
+| `id` | string | Response ID |
+| `object` | string | Object type |
+| `created` | integer | Creation time (Unix seconds) |
+| `model` | string | Model used |
+| `choices` | array&lt;object&gt; | Completion choices |
+| `usage.prompt_tokens` | integer | Prompt token count |
+| `usage.completion_tokens` | integer | Completion token count |
+| `usage.total_tokens` | integer | Total token count |
+| `usage.prompt_tokens_details.cached_tokens` | integer | Cached prompt tokens |
+| `usage.prompt_tokens_details.text_tokens` | integer | Text prompt tokens |
+| `usage.prompt_tokens_details.audio_tokens` | integer | Audio prompt tokens |
+| `usage.prompt_tokens_details.image_tokens` | integer | Image prompt tokens |
+| `usage.completion_tokens_details.text_tokens` | integer | Text completion tokens |
+| `usage.completion_tokens_details.audio_tokens` | integer | Audio completion tokens |
+| `usage.completion_tokens_details.reasoning_tokens` | integer | Reasoning tokens |
+| `system_fingerprint` | string | System fingerprint |
 
-#### `400` 响应字段
+#### `400` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |
 
-#### `429` 响应字段
+#### `429` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |
 
 ## Responses Format
 
-OpenAI Responses API，用于创建模型响应。
-支持多轮对话、工具调用、推理等功能。
+The OpenAI Responses API creates model responses with support for multi-turn conversations, tool calls and reasoning. Uter exposes the full Responses surface—create, retrieve, WebSocket streaming and compaction—on the [Responses API](./ai-model-responses) page.
 
 `POST` `/v1/responses`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `instructions` | string | 否 | — |
-| `max_output_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `stream` | boolean | 否 | — |
-| `tools` | array&lt;object&gt; | 否 | — |
-| `reasoning.effort` | enum（`low`, `medium`, `high`） | 否 | — |
-| `reasoning.summary` | string | 否 | — |
-| `previous_response_id` | string | 否 | — |
-| `truncation` | enum（`auto`, `disabled`） | 否 | — |
+| `model` | string | Yes | Model ID |
+| `instructions` | string | No | System instructions |
+| `max_output_tokens` | integer | No | Maximum output tokens |
+| `temperature` | number | No | Sampling temperature |
+| `top_p` | number | No | Nucleus (top-p) sampling |
+| `stream` | boolean | No | Whether to stream the response |
+| `tools` | array&lt;object&gt; | No | Tool definitions |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | No | Reasoning effort |
+| `reasoning.summary` | string | No | Reasoning summary |
+| `previous_response_id` | string | No | ID of a previous response to continue from |
+| `truncation` | enum (`auto`, `disabled`) | No | Truncation mode |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Response created |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `id` | string | — |
-| `object` | string | — |
-| `created_at` | integer | — |
-| `status` | enum（`completed`, `failed`, `in_progress`, `incomplete`） | — |
-| `model` | string | — |
-| `output` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
-| `usage.prompt_tokens_details.cached_tokens` | integer | — |
-| `usage.prompt_tokens_details.text_tokens` | integer | — |
-| `usage.prompt_tokens_details.audio_tokens` | integer | — |
-| `usage.prompt_tokens_details.image_tokens` | integer | — |
-| `usage.completion_tokens_details.text_tokens` | integer | — |
-| `usage.completion_tokens_details.audio_tokens` | integer | — |
-| `usage.completion_tokens_details.reasoning_tokens` | integer | — |
+| `id` | string | Response ID |
+| `object` | string | Object type |
+| `created_at` | integer | Creation time (Unix seconds) |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | Response status |
+| `model` | string | Model used |
+| `output` | array&lt;object&gt; | Output items |
+| `usage.prompt_tokens` | integer | Prompt token count |
+| `usage.completion_tokens` | integer | Completion token count |
+| `usage.total_tokens` | integer | Total token count |
+| `usage.prompt_tokens_details.cached_tokens` | integer | Cached prompt tokens |
+| `usage.prompt_tokens_details.text_tokens` | integer | Text prompt tokens |
+| `usage.prompt_tokens_details.audio_tokens` | integer | Audio prompt tokens |
+| `usage.prompt_tokens_details.image_tokens` | integer | Image prompt tokens |
+| `usage.completion_tokens_details.text_tokens` | integer | Text completion tokens |
+| `usage.completion_tokens_details.audio_tokens` | integer | Audio completion tokens |
+| `usage.completion_tokens_details.reasoning_tokens` | integer | Reasoning tokens |

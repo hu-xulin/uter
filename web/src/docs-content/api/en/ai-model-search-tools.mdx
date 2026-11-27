@@ -1,0 +1,55 @@
+# Search & Tools
+
+Uter exposes two families of search/tool relay endpoints. The raw request body is forwarded to the upstream and the upstream response is returned unchanged. Calls are billed by request at the routing model's price (no token count). These endpoints are available only on channels that support them; a channel that does not returns an error and the request may be retried on another eligible channel.
+
+## Alpha search
+
+`POST` `/v1/alpha/search`
+
+Standalone web search used by Codex-style clients. Supported on Uter Route / Uter API / Sub2API / NewAPI / Codex / Advanced Custom channels and provider-plugin channels.
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | Yes | Routing model ID (e.g. an `alpha-search` model from `GET /v1/models`) |
+| `id` | string | No | Client-supplied request ID |
+| `stream` | boolean | No | Whether to stream the result |
+
+Additional provider-specific fields are passed through unchanged.
+
+### Response
+
+| Status | Meaning |
+|---|---|
+| `200` | Search result returned |
+| `400` | Invalid request or channel does not support this endpoint |
+| `403` | Insufficient quota |
+
+The response body is the upstream response, returned as-is.
+
+## DeepSeek search and fetch
+
+`POST` `/v1/tools/search`
+
+`POST` `/v1/tools/fetch`
+
+Web search and page fetch tools used by DeepSeek-style clients. Supported on DeepSeek, Uter Route / Uter API, Sub2API, NewAPI and Advanced Custom channels, plus provider-plugin channels. The model names `deepseek-search` and `deepseek-fetch` select the corresponding endpoint family.
+
+### Request body (`application/json`)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `model` | string | No | Routing model ID (`deepseek-search` for search, `deepseek-fetch` for fetch) |
+
+All other fields are provider-specific and passed through unchanged.
+
+### Response
+
+| Status | Meaning |
+|---|---|
+| `200` | Tool result returned |
+| `400` | Invalid request or channel does not support this endpoint |
+| `403` | Insufficient quota |
+
+The response body is the upstream response, returned as-is.

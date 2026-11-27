@@ -64,12 +64,19 @@ function imageUrls(source: string): string[] {
 
 describe('native docs search index', () => {
   test('all seven locales ship a complete, resolvable index', () => {
+    // Derive the expected count from the English index instead of hardcoding
+    // it: adding a documentation page must update every locale's generated
+    // index, but must not require editing this test each time.
+    const enIndex = JSON.parse(
+      readFileSync(join(PUBLIC_ROOT, 'docs-search', 'en.json'), 'utf8')
+    ) as { p: string }[]
+    const expectedLength = enIndex.length
     let total = 0
     for (const locale of LOCALES) {
       const file = join(PUBLIC_ROOT, 'docs-search', `${locale}.json`)
       expect(existsSync(file), `missing ${locale} search index`).toBe(true)
       const docs = JSON.parse(readFileSync(file, 'utf8')) as { p: string }[]
-      expect(docs, `${locale} index`).toHaveLength(68)
+      expect(docs, `${locale} index`).toHaveLength(expectedLength)
       expect(
         new Set(docs.map((doc) => doc.p)).size,
         `${locale} index has duplicate page paths`
@@ -89,7 +96,9 @@ describe('native docs search index', () => {
       }
       total += docs.length
     }
-    expect(total, '476 migrated documents across 7 locales').toBe(476)
+    expect(total, `documents across ${LOCALES.length} locales`).toBe(
+      expectedLength * LOCALES.length
+    )
   })
 })
 

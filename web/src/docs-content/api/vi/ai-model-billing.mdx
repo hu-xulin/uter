@@ -1,0 +1,35 @@
+# Tính phí (Billing)
+
+Hai endpoint tính phí tương thích OpenAI cho phép client kiểm tra hạn mức còn lại và mức sử dụng trong kỳ hiện tại của thông tin xác thực đang dùng. Cả hai đều khả dụng tại `/v1/dashboard/...` và tiền tố cũ `/dashboard/...`, và yêu cầu token (`Authorization: Bearer sk-...`).
+
+> Các trường số `*_USD` tuân theo kiểu hiển thị hạn mức đã cấu hình của trang web: khi hiển thị bằng USD, chúng được chuyển đổi từ đơn vị hạn mức theo `QuotaPerUnit`; khi hiển thị bằng CNY, chúng được chuyển sang USD rồi nhân với tỷ giá; khi hiển thị bằng Token, chúng chứa số Token thô. Đừng giả định hậu tố này lúc nào cũng có nghĩa là đô la Mỹ.
+
+## Đăng ký (hạn mức còn lại)
+
+`GET` `/v1/dashboard/billing/subscription`
+
+### Phản hồi
+
+| Trường | Kiểu | Mô tả |
+|---|---|---|
+| `object` | string | `billing_subscription` |
+| `has_payment_method` | boolean | Luôn là `true` |
+| `soft_limit_usd` | number | Tổng hạn mức (còn lại + đã dùng), theo đơn vị hiển thị |
+| `hard_limit_usd` | number | Tổng hạn mức, theo đơn vị hiển thị |
+| `system_hard_limit_usd` | number | Tổng hạn mức, theo đơn vị hiển thị |
+| `access_until` | integer | Thời điểm hết hạn của token (giây Unix); `0` khi không giới hạn |
+
+Khi thống kê Token được bật cho token, các con số phản ánh chính token đó; nếu không, chúng phản ánh hạn mức của người dùng sở hữu. Token có hạn mức không giới hạn sẽ báo một giá trị sentinel rất lớn (100000000).
+
+## Mức sử dụng (hạn mức đã tiêu thụ)
+
+`GET` `/v1/dashboard/billing/usage`
+
+### Phản hồi
+
+| Trường | Kiểu | Mô tả |
+|---|---|---|
+| `object` | string | Đối tượng mức sử dụng tính phí |
+| `total_usage` | number | Hạn mức đã tiêu thụ trong kỳ hiện tại, theo đơn vị hiển thị |
+
+Khi có lỗi nội bộ, endpoint này vẫn trả về HTTP `200` với body `{"error": {...}}` (kiểu `uter_error`). Hãy kiểm tra sự hiện diện của trường `error` thay vì chỉ dựa vào mã trạng thái.

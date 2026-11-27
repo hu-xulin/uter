@@ -39,7 +39,7 @@ Trả về các model mà token hiện tại gọi được. Danh sách đã đ�
 | `data[].object` | string | `model` |
 | `data[].created` | integer | Thời điểm đăng ký (giây Unix) |
 | `data[].owned_by` | string | Chủ sở hữu |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | Nhóm endpoint được hỗ trợ: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`… |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Các nhóm endpoint mà mô hình phục vụ. Giá trị có thể có: `openai`, `openai-response`, `openai-response-compact`, `openai-alpha-search`, `deepseek-tools-search`, `deepseek-tools-fetch`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`. Tập hợp chính xác phụ thuộc vào kênh của mô hình. |
 
 ## Lấy một model
 

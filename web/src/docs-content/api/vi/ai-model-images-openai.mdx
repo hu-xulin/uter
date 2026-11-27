@@ -46,6 +46,8 @@ Các endpoint hình ảnh của Uter tương thích OpenAI Images API. Chỉ dù
 
 `POST` `/v1/images/edits`
 
+Endpoint này chấp nhận cả `multipart/form-data` (tải tệp lên) và `application/json` (ảnh được truyền dưới dạng URL hoặc chuỗi base64). Hãy dùng kiểu nội dung phù hợp với client của bạn.
+
 ### Body yêu cầu (`multipart/form-data`)
 
 | Trường | Kiểu | Bắt buộc | Mô tả |
@@ -58,6 +60,27 @@ Các endpoint hình ảnh của Uter tương thích OpenAI Images API. Chỉ dù
 | `size` | string | Không | Kích thước đầu ra; tùy model |
 | `response_format` | enum (`url`, `b64_json`) | Không | Định dạng phản hồi, mặc định `url` |
 | `user` | string | Không | Mã người dùng do bên gọi cung cấp |
+
+### Body yêu cầu (`application/json`)
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `model` | string | Có | ID model hình ảnh lấy từ `GET /v1/models` |
+| `image` | string hoặc array&lt;string&gt; | Có | URL ảnh hoặc data URI base64 cần chỉnh sửa |
+| `prompt` | string | Có | Mô tả chỉnh sửa |
+| `n` | integer | Không | Số lượng ảnh, 1–128 (giới hạn nền tảng), mặc định 1 |
+| `size` | string | Không | Kích thước đầu ra; giá trị hợp lệ tùy model |
+| `response_format` | enum (`url`, `b64_json`) | Không | Định dạng phản hồi, mặc định `url` |
+| `user` | string | Không | Mã người dùng do bên gọi cung cấp |
+
+```json
+{
+  "model": "gpt-image-1",
+  "image": "https://example.com/source.png",
+  "prompt": "Replace the background with a studio backdrop",
+  "size": "1024x1024"
+}
+```
 
 ### Phản hồi
 

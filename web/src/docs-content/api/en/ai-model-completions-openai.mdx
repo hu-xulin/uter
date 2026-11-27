@@ -1,40 +1,40 @@
 # Native OpenAI Format
 
-基于给定提示创建文本补全
+Create a text completion based on the given prompt
 
 `POST` `/v1/completions`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `max_tokens` | integer | 否 | — |
-| `temperature` | number | 否 | — |
-| `top_p` | number | 否 | — |
-| `n` | integer | 否 | — |
-| `stream` | boolean | 否 | — |
-| `suffix` | string | 否 | — |
-| `echo` | boolean | 否 | — |
+| `model` | string | Yes | — |
+| `max_tokens` | integer | No | — |
+| `temperature` | number | No | — |
+| `top_p` | number | No | — |
+| `n` | integer | No | — |
+| `stream` | boolean | No | — |
+| `suffix` | string | No | — |
+| `echo` | boolean | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功创建响应 |
+| `200` | Response created |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
 | `created` | integer | — |
 | `model` | string | — |
 | `choices` | array&lt;object&gt; | — |
-| `usage.prompt_tokens` | integer | 提示词 Token 数 |
-| `usage.completion_tokens` | integer | 补全 Token 数 |
-| `usage.total_tokens` | integer | 总 Token 数 |
+| `usage.prompt_tokens` | integer | Prompt token count |
+| `usage.completion_tokens` | integer | Completion token count |
+| `usage.total_tokens` | integer | Total token count |
 | `usage.prompt_tokens_details.cached_tokens` | integer | — |
 | `usage.prompt_tokens_details.text_tokens` | integer | — |
 | `usage.prompt_tokens_details.audio_tokens` | integer | — |

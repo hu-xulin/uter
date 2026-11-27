@@ -39,7 +39,7 @@ The response format is selected from the request headers:
 | `data[].object` | string | `model` |
 | `data[].created` | integer | Registration time (Unix seconds) |
 | `data[].owned_by` | string | Owner |
-| `data[].supported_endpoint_types` | array&lt;string&gt; | Endpoint families the model serves: `openai`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`, `openai-response`, … |
+| `data[].supported_endpoint_types` | array&lt;string&gt; | Endpoint families the model serves. Possible values: `openai`, `openai-response`, `openai-response-compact`, `openai-alpha-search`, `deepseek-tools-search`, `deepseek-tools-fetch`, `anthropic`, `gemini`, `embeddings`, `image-generation`, `openai-video`, `jina-rerank`. The exact set depends on the model's channel. |
 
 ## Retrieve a model
 

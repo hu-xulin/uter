@@ -2,80 +2,80 @@
 
 ## Text-to-Speech
 
-将文本转换为音频
+Convert text to audio
 
 `POST` `/v1/audio/speech`
 
-### 请求体（`application/json`）
+### Request body (`application/json`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 是 | — |
-| `input` | string | 是 | 要转换的文本 |
-| `voice` | enum（`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`） | 是 | — |
-| `response_format` | enum（`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`） | 否 | — |
-| `speed` | number | 否 | — |
+| `model` | string | Yes | — |
+| `input` | string | Yes | Text to convert |
+| `voice` | enum (`alloy`, `echo`, `fable`, `onyx`, `nova`, `shimmer`) | Yes | — |
+| `response_format` | enum (`mp3`, `opus`, `aac`, `flac`, `wav`, `pcm`) | No | — |
+| `speed` | number | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功生成音频 |
+| `200` | Audio generated successfully |
 
 ## Audio Transcriptions
 
-将音频转换为文本
+Convert audio to text
 
 `POST` `/v1/audio/transcriptions`
 
-### 请求体（`multipart/form-data`）
+### Request body (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `file` | string（binary） | 是 | 音频文件 |
-| `model` | string | 是 | — |
-| `language` | string | 否 | ISO-639-1 语言代码 |
-| `prompt` | string | 否 | — |
-| `response_format` | enum（`json`, `text`, `srt`, `verbose_json`, `vtt`） | 否 | — |
-| `temperature` | number | 否 | — |
-| `timestamp_granularities` | array&lt;enum（`word`, `segment`）&gt; | 否 | — |
+| `file` | string (binary) | Yes | Audio file |
+| `model` | string | Yes | — |
+| `language` | string | No | ISO-639-1 language code |
+| `prompt` | string | No | — |
+| `response_format` | enum (`json`, `text`, `srt`, `verbose_json`, `vtt`) | No | — |
+| `temperature` | number | No | — |
+| `timestamp_granularities` | array&lt;enum (`word`, `segment`)&gt; | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功转录 |
+| `200` | Transcription completed |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `text` | string | — |
 
 ## Audio Translation
 
-将音频翻译为英文文本
+Translate audio into English text
 
 `POST` `/v1/audio/translations`
 
-### 请求体（`multipart/form-data`）
+### Request body (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `file` | string（binary） | 是 | — |
-| `model` | string | 是 | — |
-| `prompt` | string | 否 | — |
-| `response_format` | string | 否 | — |
-| `temperature` | number | 否 | — |
+| `file` | string (binary) | Yes | — |
+| `model` | string | Yes | — |
+| `prompt` | string | No | — |
+| `response_format` | string | No | — |
+| `temperature` | number | No | — |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功翻译 |
+| `200` | Translation completed |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `text` | string | — |

@@ -10,10 +10,10 @@
 
 | 项目 | 说明 | 在哪里拿 |
 | --- | --- | --- |
-| **API 接入地址（Base URL）** | 推荐 `https://api.uter.ai/v1`；国内可换 `https://api.uter.cc/v1`，海外可换 `https://api.uter.pro/v1` | 平台访问地址 + `/v1` |
-| **API 密钥（API Key）** | 形如 `sk-xxxxxxxx`。这是鉴权凭证，等同于密码，不要外泄、不要写进前端代码、不要提交到代码仓库 | 管理 → API 密钥 → 创建 API 密钥 |
-| **额度（Quota）** | 平台内部计费单位：**500,000 额度 = 1 美元**；不同模型按倍率折算，钱包/用量页按站点币种显示金额。额度不足会被拒 | 管理 → 钱包；管理 → 使用日志 |
-| **模型名称** | 模型在平台里的注册名（不一定等于官方原名） | 管理 → 定价；或接口 `GET /v1/models` 返回的 `id` |
+| **API 接入地址（Base URL）** | API 专用入口 `https://api.uter.ai/v1`；也可使用当前控制台站点地址 + `/v1`。其他域名不作为官方入口 | API 文档首页；或控制台站点地址 + `/v1` |
+| **API 密钥（API Key）** | 形如 `sk-xxxxxxxx`。这是鉴权凭证，等同于密码，不要外泄、不要写进前端代码、不要提交到代码仓库 | 常规 → API 密钥 → 创建 API 密钥 |
+| **额度（Quota）** | 平台内部计费单位：默认 **500,000 额度 = 1 美元**，该比例可在「系统设置 → 计费」调整；不同模型按各自计费规则折算，钱包 / 用量页按站点配置币种显示金额。额度不足会被拒 | 个人 → 钱包；常规 → 使用日志 |
+| **模型名称** | 模型在平台里的注册名（不一定等于官方原名） | 公开定价页 `/pricing`；或接口 `GET /v1/models` 返回的 `id` |
 
 ### 渠道与分组：先弄清两个概念
 
@@ -30,32 +30,43 @@
 
 API 密钥在控制台有四种状态：**已启用、已禁用、已过期、已耗尽**。创建或编辑密钥时还可以施加以下限制，测试前先核对：
 
+- **分组**：决定密钥的计费倍率与可路由模型；可另外设置「自动分组顺序」与「跨组重试」。
 - **过期时间**：默认「永不过期」，设置过则到期后调用返回 401。
-- **额度上限**：可设置专用额度或「无限额度」；用尽后状态变为「已耗尽」。
+- **额度上限**：按站点配置币种（默认 USD）输入，可设为「无限额度」；用尽后状态变为「已耗尽」。
 - **模型限制**：只允许调用部分模型。未勾选任何模型时该密钥无法调用任何模型。
 - **IP 白名单**：支持 CIDR（如 `203.0.113.0/24`）；不在名单内的来源会被拒绝。
 - **允许查询用户额度**：控制是否可用该密钥查询 `/v1/dashboard/billing/*`。
+- **创建数量**：创建时可一次生成多个密钥，测试时只需保留其中一个。
+
+<Callout type="info">
+  测试密钥建议只勾选待测模型，并关闭跨组重试，避免路由到预期外的渠道，导致连通性与计费结论失真。
+</Callout>
 
 ## 最快的验证：先在游乐场里点一遍
 
-管理 → 游乐场提供与 API 相同的模型调用链路，适合先排除「模型是否可用、参数是否生效」。
+聊天 → 游乐场提供与 API 相同的模型调用链路，适合先排除「模型是否可用、参数是否生效」。
 
-1. 左侧选择**渠道**，右侧列出该渠道承载的模型；选中要测的模型。
-2. 直接发一条消息，观察是否正常回复；回复过程默认按流式返回。
-3. 打开「参数设置」，按需启用 `temperature`、`top_p`、`max_tokens`、`frequency_penalty`、`presence_penalty`、`seed`——只有启用的参数才会随请求发送。
-4. 需要验证多模态或联网能力时，可用输入框的附件/搜索工具（受模型支持情况限制）。
-5. 支持随时停止生成、重新生成、编辑历史消息或清空会话。
+1. 点击模型选择器，在弹出面板左侧选**渠道**、右侧选该渠道承载的模型；默认选中列表中的第一个渠道。
+2. 直接发一条消息，观察是否正常回复；回复默认按流式返回。
+3. 打开「参数设置」，按需启用 `temperature`、`top_p`、`max_tokens`、`frequency_penalty`、`presence_penalty`、`seed`——**只有启用的参数才会随请求发送**（`max_tokens`、`seed` 默认未启用）。
+4. 可随时停止生成、重新生成、编辑或复制历史消息、查看原文、删除单条消息、清空会话（有确认弹窗）。
+5. 输入框的**附件与联网搜索按钮目前是开发中占位**，点击只会提示不支持，不能用于真实测试。多模态请按 Step 6 走 API 的 `image_url`；联网检索请用 `POST /v1/tools/search`。
 
 游乐场同样按平台的计费规则扣减额度，适合反复调试；正式联调仍以 API 为准。
 
 ## 核对模型与价格
 
-管理 → 定价里可以：
+打开公开定价页 `/pricing` 可以：
 
 - 搜索模型名称；
-- 按**渠道、厂商、类型、标签**筛选，确认目标模型由哪些渠道提供；
-- 查看每个模型的计费方式（按量 / 按次 / 任务计费）、上下文与支持的端点；
-- 对比不同模型的公开价格，避免选到计费口径不符合预期的模型。
+- 按**渠道、厂商、模型标签、定价类型、端点类型**五类筛选，确认目标模型由哪些渠道提供；定价类型含按量、按次、任务计费与动态计价，端点类型含 Chat / Response / Anthropic / Gemini / Rerank / Image / Embeddings / Video；
+- 查看每个模型的计费方式、上下文与支持的端点，并切换**标准价 / 充值价**、**每 1M / 每 1K token** 单位、7 种排序以及卡片 / 表格视图；
+- 对比「优特价」与「官方价」及折扣 / 溢价；按秒计费模型（如部分视频、音频模型）显示 `/ second` 单价与官方参考价；
+- 左侧渠道栏默认选中 **Claude-Basic**，只展示该渠道承载的模型；点「所有渠道」或访问 `?channel=all` 可查看全部。
+
+<Callout type="warn">
+  卡片若出现「尚未配置定价」、直接显示计费表达式原文，或缺少官方价，属于平台侧定价数据问题，不是请求写错。请记下模型名与渠道联系平台处理，不要在业务层自行解析表达式。
+</Callout>
 
 ## 测试维度
 
@@ -118,7 +129,7 @@ curl --noproxy '*' -s "$BASE/models/替换为你的模型id" \
 找到你要测的模型 `id`（例如 `gpt-4o`、`claude-3-5-sonnet-20241022` 或平台自定义名）。
 
 <Callout type="warn">
-  如果列表里没有目标模型，先到「管理 → 定价」按渠道确认该模型是否由当前可用的渠道提供，再联系平台。不要自己猜名字硬调，通常会得到 404 或「没有可用渠道」。
+  如果列表里没有目标模型，先到定价页 `/pricing` 按渠道确认该模型是否由当前可用的渠道提供，再联系平台。注意左侧渠道栏默认只展示 Claude-Basic，需点「所有渠道」或指定渠道核对。不要自己猜名字硬调，通常会得到 404 或「没有可用渠道」。
 </Callout>
 
 ### Step 3 · 一次最简对话（非流式）
@@ -221,7 +232,7 @@ done
 
 ### Step 8 · 配额与计费校验
 
-`/v1/dashboard/billing/usage` 返回的是**已用额度累计**（`total_usage`，按站点显示币种折算），不是剩余余额；余额请看「管理 → 钱包」。校验时对比调用前后的差值：
+`/v1/dashboard/billing/usage` 返回的是**已用额度累计**（`total_usage`，不是剩余余额；余额请看「个人 → 钱包」）。`total_usage` 按站点显示币种折算，单位为显示币种的 **1/100**（USD 站点即美分），因此调用前后差值需除以 100 才是美元金额。校验时对比调用前后的差值：
 
 ```bash
 # 调用前
@@ -235,7 +246,9 @@ curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-也可以直接看单次响应的 `usage`（`prompt_tokens` + `completion_tokens` 或任务用量），再与「管理 → 使用日志 / 任务日志」中的额度消耗核对。
+也可以直接看单次响应的 `usage`（`prompt_tokens` + `completion_tokens` 或任务用量），再与「常规 → 使用日志 / 任务日志」中的额度消耗核对。
+
+`/v1/dashboard/billing/subscription` 是 OpenAI 兼容的**额度上限**查询：字段名带 `_usd`，但值随站点显示币种变化（可能是 USD / CNY / tokens），不代表真实支付订阅状态；`access_until` 仅在令牌统计模式下有值。
 
 ### Step 9 · 边界与错误可读性
 
@@ -254,25 +267,25 @@ curl --noproxy '*' -s -w "\nHTTP=%{http_code}\n" "$BASE/chat/completions" \
 
 任务型模型不是「发一条消息就出结果」，而是**提交任务 → 轮询状态 → 下载产物**。测试要点：
 
-1. **提交**：按平台「任务插件」页面给出的接口提交，如通用任务入口 `POST /v1/tasks/<插件key>`、视频 `POST /v1/video/generations`；OpenAI 兼容的 `POST /v1/images/generations` 由对应渠道/插件承接。
-2. **轮询**：用返回的 `task_id` 查询，如 `GET /v1/tasks/<task_id>`、`GET /v1/video/generations/<task_id>`；任务完成前状态会是排队 / 处理中。
-3. **产物**：`GET /v1/tasks/<task_id>/artifacts` 列出产物，`GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` 下载内容。
-4. **核对**：到「管理 → 使用日志 → 任务日志」确认状态、进度、耗时与扣费；失败任务应显示失败原因，必要时有退款记录。
+1. **提交**：按「管理员 → 渠道插件」（`/task-plugins`，仅超级管理员可见）里已启用的插件接口提交。通用入口 `POST /v1/tasks/<插件key>`、视频 `POST /v1/video/generations` 或 OpenAI 风格 `POST /v1/videos`；OpenAI 兼容的 `POST /v1/images/generations` 由对应渠道 / 插件承接。
+2. **轮询**：用返回的 `task_id` 查询，如 `GET /v1/tasks/<task_id>`、`GET /v1/video/generations/<task_id>` 或 `GET /v1/videos/<task_id>`；任务完成前状态为排队 / 处理中。
+3. **产物**：`GET /v1/tasks/<task_id>/artifacts` 列出产物，`GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` 下载内容（也支持签名访问参数，可在无令牌场景下下载）；视频可用 `GET /v1/videos/<task_id>/content`。
+4. **核对**：到「常规 → 任务日志」查看状态、进度、耗时与失败原因；**退款记录不在任务日志里**，它作为「异步任务退款」类型日志出现在「常规 → 使用日志」中。
 5. **边界**：测一次超时或非法参数，确认任务会进入失败态而不是一直挂起。
 
 ## 常见问题排查表
 
 | # | 现象（你看到的） | HTTP | 可能原因 | 解决方案 |
 | --- | --- | --- | --- | --- |
-| **A1** | `该令牌无效。` | 401 | 密钥复制不全 / 拼错 / 已被禁用 | 从「管理 → API 密钥」重新复制完整密钥；确认状态为「已启用」，复制时不要截断、不要带多余空格 |
+| **A1** | `该令牌无效。` | 401 | 密钥复制不全 / 拼错 / 已被禁用 | 从「常规 → API 密钥」重新复制完整密钥；确认状态为「已启用」，复制时不要截断、不要带多余空格 |
 | **A2** | `该令牌已过期，请重新创建一个。` | 401 | 密钥设置了过期时间且已到期 | 新建密钥，或把过期时间设为「永不过期」 |
-| **A3** | `该令牌（sk-***）额度已用尽，请补充额度。` | 401 | 密钥自身额度耗尽 | 在「管理 → API 密钥」给该密钥补充额度，或新建密钥 / 改用户额度 |
+| **A3** | `该令牌（sk-***）额度已用尽，请补充额度。` | 401 | 密钥自身额度耗尽 | 在「常规 → API 密钥」给该密钥补充额度，或新建密钥 / 改用户额度 |
 | **A4** | `您的 IP 不在令牌允许访问的列表中` | 403 | 密钥配置了 IP 白名单（支持 CIDR），当前出口 IP 不在名单内 | 把出口公网 IP / 网段加入白名单；或临时关闭 IP 限制（仅测试环境） |
 | **A5** | `该令牌没有任何模型访问权限。` | 403 | 密钥的「模型限制」为空 | 编辑密钥并勾选要使用的模型 |
 | **A6** | `该令牌无权访问模型「xxx」。` | 403 | 目标模型不在该密钥的模型限制内 | 编辑密钥的模型限制，或改用允许该模型的密钥 |
-| **A7** | 完全连不上 / `Could not resolve host` / 长时间超时 | — | Base URL 写错、自签证书、内网访问 | 核对 Base URL（应为 `https://api.uter.ai/v1`）；本地若走代理需加 `--noproxy '*'`；确认网络可达 |
-| **B1** | `您的额度不足。` | 403 | 账号或密钥可用额度不足 | 在「管理 → 钱包」充值，或在「管理 → API 密钥」补额度；用 Step 8 核对已用额度 |
-| **B2** | `分组「default」下模型「xxx」没有可用渠道。` | 503（个别过滤条件为 400） | 该模型在当前分组下没有启用渠道 | 到「管理 → 定价」按渠道确认该模型由哪些渠道提供；联系平台确认可用性，不要猜模型名硬调 |
+| **A7** | 完全连不上 / `Could not resolve host` / 长时间超时 | — | Base URL 写错、自签证书、内网访问 | 核对 Base URL（API 专用入口 `https://api.uter.ai/v1`，或当前站点地址 + `/v1`）；本地若走代理需加 `--noproxy '*'`；确认网络可达 |
+| **B1** | `您的额度不足。` | 403 | 账号或密钥可用额度不足 | 在「个人 → 钱包」充值，或在「常规 → API 密钥」补额度；用 Step 8 核对已用额度 |
+| **B2** | `分组「default」下模型「xxx」没有可用渠道。` | 503（个别过滤条件为 400） | 该模型在当前分组下没有启用渠道 | 到定价页 `/pricing` 按渠道确认该模型由哪些渠道提供（左侧渠道栏默认只展示 Claude-Basic，需点「所有渠道」）；联系平台确认可用性，不要猜模型名硬调 |
 | **B3** | `404` / 模型不存在 | 404 | 模型名写错，或该模型未对你开通 | 用 Step 2 列模型，严格复制返回的 `id` |
 | **C1** | `您已触发限流：每 N 分钟最多 X 次请求。` / `您已触发总限流…` | 429 | 触发了密钥级或平台级限流 | 降低并发 / 加退避重试（指数退避）；确认密钥的 RPM/TPM 限额；批量任务错峰 |
 | **C2** | 当前分组负载 / 上游已饱和 | 429 / 503 | 上游或分组的并发容量暂时不足 | 稍后重试 + 退避；必要时联系平台扩容或更换分组 |
@@ -282,6 +295,7 @@ curl --noproxy '*' -s -w "\nHTTP=%{http_code}\n" "$BASE/chat/completions" \
 | **D3** | 返回内容被截断 | — | `max_tokens` 设太小，或模型达到输出上限 | 调大 `max_tokens`；长文改用流式分段接收 |
 | **E1** | 扣费与预期不符（多扣 / 少扣） | — | 计费口径含思维链、缓存命中、工具调用等 token，或不同模型倍率不同 | 以单次响应 `usage` 与「使用日志」中的计费明细为准；有疑问联系平台 |
 | **E2** | function calling 不触发 / JSON 模式不生效 | — | 该模型未开放对应能力 | 用 Step 5 单独验证；不支持的能力不要强依赖，需在业务层降级 |
+| **E3** | 定价卡片显示「尚未配置定价」、计费表达式原文，或没有官方价 | — | 平台侧定价 / 官方价数据未配置或解析异常 | 记下模型名与渠道联系平台；不要自行解析表达式，也不要改倍率配置 |
 | **F1** | `400` + 中文「公告式」提示 | 400 | 上游供应商在报错里发通知，不是你请求写错 | 确认请求格式无误后，联系平台并附上报错原文 |
 
 <Callout type="idea">
@@ -333,7 +347,7 @@ curl -i https://api.uter.ai/v1/chat/completions \
 
 ## 用日志核对每次调用
 
-「管理 → 使用日志」会记录每次请求的时间、模型、令牌、渠道（管理员可见）、耗时、额度消耗与错误信息；「任务日志」记录异步任务的状态、进度与产物。联调阶段建议：
+「常规 → 使用日志」记录每次请求的时间、渠道 / 用户（管理员可见）、令牌（含分组）、模型、流式 / TPS、输入 / 输出 / 缓存 tokens、额度消耗、耗时 / 首字与详情（错误信息在详情弹窗里）；「常规 → 任务日志」记录提交时间、插件、任务 ID、耗时、状态、进度、产物与详情（失败原因）。联调阶段建议：
 
 - 每次测试后核对日志中的模型名、分组 / 渠道和额度是否与预期一致；
 - 失败请求保留原始错误信息，便于区分平台侧与上游侧问题；
@@ -347,7 +361,9 @@ curl -i https://api.uter.ai/v1/chat/completions \
 - [ ] **密钥**从控制台完整复制，状态为「已启用」，未过期，额度充足。
 - [ ] 密钥的**模型限制**已勾选业务要用的模型。
 - [ ] 若密钥开了 **IP 白名单**，生产服务器出口 IP / 网段（CIDR）已加入。
+- [ ] 目标模型的**分组与可用渠道**已确认（定价页左侧渠道栏默认只展示 Claude-Basic，需点「所有渠道」或指定渠道核对）。
 - [ ] `GET /v1/models` 能列出目标模型，且 `id` 与代码里写的一致。
+- [ ] 定价页已核对目标模型的**优特价 / 官方价**与计费口径；按秒 / 按次模型已单独确认单位，卡片未出现「尚未配置定价」或计费表达式原文。
 - [ ] 非流式对话跑通，能拿到 `content` 与 `usage`。
 - [ ] 流式（SSE）跑通，能正确解析 `data:` 片段与 `[DONE]`。
 - [ ] 业务依赖的**高级能力**（tools / JSON / 视觉 / 长上下文）已逐项验证通过。
@@ -371,29 +387,32 @@ curl -i https://api.uter.ai/v1/chat/completions \
 | 检索模型 | `GET /v1/models/:model` | 查看单个模型信息 |
 | 对话 | `POST /v1/chat/completions` | 主接口，支持 stream / tools / 视觉 |
 | 文本补全 | `POST /v1/completions` | 旧版补全（部分模型支持） |
-| Claude 原生 | `POST /v1/messages` | 用 `x-api-key` + `anthropic-version` 鉴权 |
-| Gemini 原生 | `GET /v1beta/models` | 用 `x-goog-api-key` 或 `?key=` 鉴权 |
-| Gemini 兼容列表 | `GET /v1beta/openai/models` | 以 OpenAI 格式返回 Gemini 渠道模型 |
-| Gemini 转发 | `POST /v1/models/*path`、`POST /v1/engines/:model/embeddings` | Gemini 原生路径转发 |
-| Responses 实时 | `GET /v1/responses`（WebSocket） | Responses 协议的 WebSocket 入口 |
+| Responses 主入口 | `POST /v1/responses`、`GET /v1/responses/:response_id` | 同步 / 流式 / 后台模式，以及结果检索 |
+| Responses WebSocket | `GET /v1/responses`（WebSocket） | Responses 协议的 WebSocket 入口 |
 | Responses 压缩 | `POST /v1/responses/compact` | 压缩会话上下文 |
+| Claude 原生 | `POST /v1/messages` | 用 `x-api-key` + `anthropic-version` 鉴权；错误为 Anthropic 形状 |
+| Gemini 原生 | `GET /v1beta/models`、`POST /v1beta/models/*path` | 用 `x-goog-api-key` 或 `?key=` 鉴权；后者调用 generateContent 等原生方法 |
+| Gemini 兼容列表 | `GET /v1beta/openai/models` | 以 OpenAI 格式返回 Gemini 渠道模型 |
+| Gemini 兼容别名 | `POST /v1/models/*path`、`POST /v1/engines/:model/embeddings` | 走 Gemini 协议的兼容路径 |
 | 实时语音 | `GET /v1/realtime`（WebSocket） | Realtime 模式 |
 | 向量 | `POST /v1/embeddings` | 文本向量化 |
+| 旧版改图 | `POST /v1/edits` | OpenAI 兼容回退端点 |
 | 重排 | `POST /v1/rerank` | 检索重排 |
 | 内容审查 | `POST /v1/moderations` | 内容安全审查 |
-| 绘图 | `POST /v1/images/generations`、`POST /v1/images/edits` | 文生图 / 改图（由对应渠道或任务插件承接） |
+| 绘图 | `POST /v1/images/generations`、`POST /v1/images/edits` | 文生图 / 改图（由对应渠道或插件承接） |
 | 语音 | `POST /v1/audio/transcriptions`、`/translations`、`/speech` | 转写 / 翻译 / 合成 |
 | 联网检索 | `POST /v1/tools/search`、`/v1/tools/fetch`、`/v1/alpha/search` | DeepSeek 工具与 Codex 独立搜索 |
-| 视频生成 | `POST /v1/video/generations`、`GET /v1/video/generations/:task_id`、`POST /v1/videos/:video_id/remix` | 提交、查询与二次创作 |
-| 通用任务 | `POST /v1/tasks/:key`、`GET /v1/tasks/:task_id` | 任务插件统一入口 |
-| 任务产物 | `GET /v1/tasks/:task_id/artifacts`、`GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | 列出 / 下载产物 |
-| 用量 / 订阅 | `GET /v1/dashboard/billing/usage`、`/subscription` | 查询累计用量与订阅额度 |
+| 视频生成（平台） | `POST /v1/video/generations`、`GET /v1/video/generations/:task_id`、`POST /v1/videos/:video_id/remix` | 提交、查询与二次创作 |
+| 视频生成（OpenAI 风格） | `POST /v1/videos`、`GET /v1/videos/:task_id`、`GET /v1/videos/:task_id/content` | 提交、查询与产物下载 |
+| 通用任务 | `POST /v1/tasks/:key`、`GET /v1/tasks/:key` | 任务插件统一入口；读路由的路径段承载 `task_id`（Gin 通配符名仍为 `key`） |
+| 任务产物 | `GET /v1/tasks/:key/artifacts`、`GET` 或 `HEAD /v1/tasks/:key/artifacts/:artifact_key/content` | 列出 / 下载产物；下载支持令牌或签名访问参数 |
+| 用量 / 订阅 | `GET /v1/dashboard/billing/usage`、`/subscription` | 累计用量与额度上限（OpenAI 兼容 shim，非支付订阅） |
 
-> 以上为当前服务端注册的公开接口。具体某个模型支持哪些端点，以「管理 → 定价」的模型详情为准。
+> 以上为当前服务端注册的公开接口。`/dashboard/billing/*` 也支持省略 `/v1` 前缀。具体某个模型支持哪些端点，以定价页 `/pricing` 的模型详情为准。
 
 ### 错误响应统一格式
 
-平台 API 错误为 OpenAI 风格结构，便于统一处理：
+OpenAI 兼容端点的错误默认使用 OpenAI 风格结构：
 
 ```json
 {
@@ -401,12 +420,23 @@ curl -i https://api.uter.ai/v1/chat/completions \
     "message": "人类可读的错误原因",
     "type": "invalid_request_error | authentication_error | ...",
     "code": "可选的错误码",
-    "param": "可选的问题参数名"
+    "param": "可选的问题参数名",
+    "metadata": "可选，附加上下文"
   }
 }
 ```
 
-配合 HTTP 状态码（401 鉴权 / 403 权限或额度 / 404 模型 / 429 限流 / 5xx 上游）即可覆盖绝大多数客户端处理逻辑。
+但存在以下例外，客户端需分别处理：
+
+| 场景 | 实际响应 |
+| --- | --- |
+| Claude 原生 `POST /v1/messages` | Anthropic 形状 `{"type":"error","error":{"type":...,"message":...}}` |
+| WebSocket（Responses / Realtime） | 错误作为事件帧发送，不走 HTTP 状态码 |
+| 计费类接口错误 | 常为 HTTP 200 + `{"error":{"message":...,"type":"uter_error"}}` |
+| 中间件鉴权 / 限流错误 | `type` 可能是 `new_api_error`，且不含 `param` |
+| `GET /v1/models/:model` 模型不存在 | HTTP 200 + `error.code = "model_not_found"` |
+
+配合 HTTP 状态码（401 鉴权 / 403 权限或额度 / 404 路由不存在 / 429 限流 / 501 未实现的兼容端点 / 5xx 上游）即可覆盖绝大多数客户端处理逻辑。**不要只依赖 HTTP 状态码**：计费与模型检索存在「HTTP 200 + error」的情况，必须先解析 body。
 
 ### 安全提醒（务必遵守）
 

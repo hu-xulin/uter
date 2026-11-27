@@ -6,35 +6,53 @@
 |---|---|
 | Base URL | `https://uter.ai` (point d'entrée dédié à l'API : `https://api.uter.ai`) |
 | Authentification | `Authorization: Bearer sk-...` |
-| Jeton | Créé dans la page « Jetons » de la console ; peut être limité à un groupe, à une liste de modèles et à des IP sources |
+| Jeton | Créé dans la page « Jetons » de la console ; peut être limité à un groupe, à une liste blanche de modèles et à des IP sources |
 
-Le format Claude (`/v1/messages`) accepte aussi l'en-tête `x-api-key` ; le format Gemini (`/v1beta/models/...`) accepte l'en-tête `x-goog-api-key` ou le paramètre de requête `?key=`.
+Le format Claude (`/v1/messages`) accepte aussi l'en-tête `x-api-key` ; le format Gemini (`/v1beta/models/...`) accepte l'en-tête `x-goog-api-key` ou le paramètre de requête `?key=`. Les points de terminaison WebSocket acceptent en plus le sous-protocole `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` pour les clients navigateur qui ne peuvent pas définir d'en-têtes.
 
-Les erreurs suivent le format OpenAI :
+## Format des erreurs
 
-```json
-{"error": {"message": "description de l'erreur", "type": "type d'erreur", "param": "", "code": "code d'erreur"}}
-```
+L'enveloppe d'erreur dépend de la famille de points de terminaison. Branchuez toujours sur le corps, et pas uniquement sur le code d'état HTTP :
+
+| Famille | Enveloppe | Exemple |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude (`/v1/messages`) | Anthropic | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| Vidéo / tâches génériques (`/v1/video/generations`, `/v1/videos`, `/v1/tasks/*`) | Erreur de tâche plate | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| Authentification / limite de fréquence (middleware) | OpenAI sans `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+Quelques points de terminaison font exception : `GET /v1/models/{model}` renvoie `200` avec un corps d'erreur OpenAI pour un modèle inconnu, et `GET /v1/videos/{id}/content` renvoie `404` pour une tâche introuvable, tandis que la requête de tâche générique renvoie `400 task_not_exist`.
 
 ## API des modèles d'IA
 
-Un seul jeton donne accès à tous les fournisseurs amont agrégés par la plateforme. Les API se répartissent en quatre familles de protocoles :
+Un seul jeton donne accès à tous les fournisseurs amont agrégés par la plateforme. Les points de terminaison sont regroupés ci-dessous par famille de protocole ; consultez la page liée pour les champs de requête/réponse.
 
-| Protocole | Points de terminaison principaux |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
-| Tâches vidéo | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
+| Famille | Points de terminaison | Détails |
+|---|---|---|
+| Texte · OpenAI | `POST /v1/chat/completions`, `POST /v1/completions` | [openai](./ai-model-chat-openai), [completions](./ai-model-completions-openai) |
+| Texte · Claude | `POST /v1/messages` | [Native Claude Format](./ai-model-chat) |
+| Texte · Responses | `POST /v1/responses`, `GET /v1/responses/{response_id}`, `GET /v1/responses` (WebSocket), `POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| Texte · Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| Recherche et outils | `POST /v1/alpha/search`, `POST /v1/tools/search`, `POST /v1/tools/fetch` | [Search & Tools](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai), [gemini](./ai-model-embeddings-gemini) |
+| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | [openai](./ai-model-images-openai), [gemini](./ai-model-images-gemini), [qwen](./ai-model-images-qwen) |
+| Audio | `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations` | [openai](./ai-model-audio-openai), [gemini](./ai-model-audio-gemini) |
+| Modérations | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime` (WebSocket) | [realtime](./ai-model-realtime) |
+| Vidéo | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| Tâches génériques | `POST /v1/tasks/{key}`, `GET /v1/tasks/{key}`, `GET /v1/tasks/{key}/artifacts`, `GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| Modèles | `GET /v1/models`, `GET /v1/models/{model}`, `GET /v1beta/models`, `GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| Facturation | `GET /v1/dashboard/billing/subscription`, `GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
-Les modèles accessibles à un jeton dépendent de son groupe, de sa liste de modèles autorisés et de la configuration de facturation du modèle. Utilisez toujours les noms renvoyés par `GET /v1/models` ; ne devinez pas les identifiants de modèle.
+Les modèles qu'un jeton peut appeler sont déterminés par son groupe, par la liste blanche de modèles du jeton et par la configuration de facturation du modèle. Utilisez toujours les noms de modèles renvoyés par `GET /v1/models` ; ne devinez pas les identifiants de modèle.
 
 ## Facturation et limites
 
 - À l'acceptation d'une requête, le quota est prélevé selon le prix du modèle et l'usage estimé, puis régularisé selon l'usage réel. Les requêtes en échec et les tâches sans résultat sont remboursées.
-- Un quota insuffisant renvoie `403` ; une limitation de débit ou une concurrence amont saturée renvoie `429` ; un modèle inconnu ou l'absence de canal disponible dans le groupe renvoie `503`.
+- Un quota insuffisant renvoie `403` ; une limitation de débit ou une concurrence amont saturée renvoie `429` ; un modèle inconnu ou l'absence de canal disponible dans le groupe actuel renvoie `503`.
 - Le nombre d'images `n` est plafonné à 128. La durée, la résolution et la taille de lot des vidéos suivent les limites du modèle choisi ; les valeurs hors limites sont rejetées avant acceptation.
 
 ## Points de terminaison non implémentés
 
-`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` et `DELETE /v1/models/{model}` renvoient actuellement `501`. Ne pas les appeler en production.
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` et `DELETE /v1/models/{model}` renvoient actuellement `501`. Le `:countTokens` de Gemini renvoie `404`. Ne pas les appeler en production. Le réglage fin est documenté séparément sur la [page dédiée](./ai-model-unimplemented-fine-tuning).

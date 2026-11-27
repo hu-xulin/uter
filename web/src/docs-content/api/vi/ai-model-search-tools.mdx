@@ -1,0 +1,55 @@
+# Tìm kiếm & Công cụ
+
+Uter cung cấp hai nhóm endpoint relay cho tìm kiếm/công cụ. Body yêu cầu thô được chuyển tiếp nguyên văn tới thượng nguồn và phản hồi của thượng nguồn được trả về không thay đổi. Lời gọi được tính phí theo yêu cầu dựa trên giá của model định tuyến (không tính theo số Token). Các endpoint này chỉ khả dụng trên những kênh hỗ trợ chúng; kênh nào không hỗ trợ sẽ trả về lỗi và yêu cầu có thể được thử lại trên một kênh đủ điều kiện khác.
+
+## Tìm kiếm Alpha
+
+`POST` `/v1/alpha/search`
+
+Tìm kiếm web độc lập dùng bởi các client kiểu Codex. Được hỗ trợ trên các kênh Uter Route / Uter API / Sub2API / NewAPI / Codex / Advanced Custom và các kênh plugin nhà cung cấp.
+
+### Body yêu cầu (`application/json`)
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `model` | string | Có | ID model định tuyến (ví dụ model `alpha-search` từ `GET /v1/models`) |
+| `id` | string | Không | ID yêu cầu do client cung cấp |
+| `stream` | boolean | Không | Có stream kết quả hay không |
+
+Các trường bổ sung riêng của nhà cung cấp được chuyển tiếp không thay đổi.
+
+### Phản hồi
+
+| Mã trạng thái | Ý nghĩa |
+|---|---|
+| `200` | Đã trả về kết quả tìm kiếm |
+| `400` | Yêu cầu không hợp lệ hoặc kênh không hỗ trợ endpoint này |
+| `403` | Không đủ hạn mức |
+
+Body phản hồi là phản hồi của thượng nguồn, được trả về nguyên văn.
+
+## Tìm kiếm và truy xuất của DeepSeek
+
+`POST` `/v1/tools/search`
+
+`POST` `/v1/tools/fetch`
+
+Công cụ tìm kiếm web và truy xuất trang dùng bởi các client kiểu DeepSeek. Được hỗ trợ trên các kênh DeepSeek, Uter Route / Uter API, Sub2API, NewAPI và Advanced Custom, cùng các kênh plugin nhà cung cấp. Tên model `deepseek-search` và `deepseek-fetch` dùng để chọn nhóm endpoint tương ứng.
+
+### Body yêu cầu (`application/json`)
+
+| Trường | Kiểu | Bắt buộc | Mô tả |
+|---|---|---|---|
+| `model` | string | Không | ID model định tuyến (`deepseek-search` cho tìm kiếm, `deepseek-fetch` cho truy xuất) |
+
+Mọi trường khác đều riêng của nhà cung cấp và được chuyển tiếp không thay đổi.
+
+### Phản hồi
+
+| Mã trạng thái | Ý nghĩa |
+|---|---|
+| `200` | Đã trả về kết quả công cụ |
+| `400` | Yêu cầu không hợp lệ hoặc kênh không hỗ trợ endpoint này |
+| `403` | Không đủ hạn mức |
+
+Body phản hồi là phản hồi của thượng nguồn, được trả về nguyên văn.

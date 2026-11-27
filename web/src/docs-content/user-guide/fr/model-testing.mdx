@@ -8,10 +8,10 @@ Commencez par l'**Aire de jeux** de la console, puis recontrôlez via l'API : ce
 
 | Élément | Description | Où l'obtenir |
 | --- | --- | --- |
-| **URL de base (Base URL)** | Par ex. `https://votre-domaine/v1`, selon le domaine réellement servi (le vôtre peut différer) | Adresse du site + `/v1` |
-| **Clé d'API** | Par ex. `sk-xxxxxxxx`. C'est un secret équivalent à un mot de passe : ne jamais l'exposer, ne jamais l'envoyer au navigateur, ne jamais le committer | Console → Clés API → Créer une clé API |
-| **Quota** | Unité interne : **500 000 quota = 1 USD** ; chaque modèle applique son ratio, le portefeuille et les journaux affichent la devise du site. Les appels sont refusés quand le quota est épuisé | Console → Portefeuille ; Console → Journaux d'utilisation |
-| **Nom du modèle** | Le nom enregistré dans Uter (pas forcément le nom d'origine du fournisseur) | Console → Tarification ; ou l'`id` de `GET /v1/models` |
+| **URL de base (Base URL)** | Point d'entrée dédié à l'API `https://api.uter.ai/v1` ; l'adresse de la console utilisée + `/v1` fonctionne aussi. Les autres domaines ne sont pas des points d'entrée officiels | Accueil de la référence API ; ou adresse du site de la console + `/v1` |
+| **Clé d'API** | Par ex. `sk-xxxxxxxx`. C'est un secret équivalent à un mot de passe : ne jamais l'exposer, ne jamais l'envoyer au navigateur, ne jamais le committer | Général → Clés API → Créer une clé API |
+| **Quota** | Unité interne de facturation : **500 000 quota = 1 USD par défaut**, configurable dans Paramètres du système → Facturation ; chaque modèle applique ses propres règles, le portefeuille et les journaux affichent la devise configurée du site. Les appels sont refusés quand le quota est épuisé | Personnel → Portefeuille ; Général → Journaux d'utilisation |
+| **Nom du modèle** | Le nom enregistré dans Uter (pas forcément le nom d'origine du fournisseur) | Page de tarification publique `/pricing` ; ou l'`id` de `GET /v1/models` |
 
 ### Canal et groupe : deux dimensions distinctes
 
@@ -28,32 +28,43 @@ Un même modèle peut donc varier en disponibilité et en prix selon le groupe e
 
 Quatre états : **activée, désactivée, expirée, épuisée**. À la création ou à l'édition :
 
+- **Groupe** : détermine le ratio de facturation et les modèles routables ; un « ordre de groupes automatique » et les retries inter-groupes peuvent aussi être configurés.
 - **Expiration** : « n'expire jamais » par défaut ; après expiration, les appels renvoient 401.
-- **Plafond de quota** : quota dédié ou « illimité ». Une fois épuisé, la clé passe à « épuisée ».
+- **Plafond de quota** : saisi dans la devise configurée du site (USD par défaut), ou « illimité ». Une fois épuisé, la clé passe à « épuisée ».
 - **Limites de modèles** : n'autoriser que certains modèles. Sans aucun modèle coché, la clé ne peut rien appeler.
 - **Liste d'IP autorisées** : prend en charge le CIDR (ex. `203.0.113.0/24`) ; les autres sources sont rejetées.
 - **Autoriser la consultation du quota utilisateur** : accès à `/v1/dashboard/billing/*`.
+- **Quantité** : plusieurs clés peuvent être générées à la fois ; en conserver une pour le test.
+
+<Callout type="info">
+  Pour une clé de test, n'autorisez que le modèle à tester et désactivez les retries inter-groupes : sinon les requêtes peuvent partir vers des canaux inattendus et fausser vos conclusions sur la connectivité ou la facturation.
+</Callout>
 
 ## Vérification la plus rapide : l'Aire de jeux
 
-Console → Aire de jeux utilise le même chemin d'appel que l'API.
+Discuter → Aire de jeux utilise le même chemin d'appel que l'API.
 
-1. Choisissez un **canal** à gauche ; la liste de droite affiche ses modèles. Sélectionnez celui à tester.
+1. Ouvrez le sélecteur de modèle : choisissez un **canal** dans le panneau de gauche et l'un de ses modèles dans celui de droite. Le premier canal de la liste est sélectionné par défaut.
 2. Envoyez un message et observez la réponse (en streaming par défaut).
-3. Ouvrez les paramètres et activez ce dont vous avez besoin : `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. Seuls les paramètres activés sont envoyés.
-4. Pour le multimodal ou la recherche web, utilisez les outils de pièce jointe / recherche (selon le support du modèle).
-5. Arrêtez, régénérez, éditez l'historique ou effacez la conversation à tout moment.
+3. Ouvrez les paramètres et activez ce dont vous avez besoin : `temperature`, `top_p`, `max_tokens`, `frequency_penalty`, `presence_penalty`, `seed`. **Seuls les paramètres activés sont envoyés** (`max_tokens` et `seed` sont désactivés par défaut).
+4. Vous pouvez arrêter la génération, régénérer, éditer ou copier un message, voir la réponse brute, supprimer un message ou effacer la conversation (avec confirmation).
+5. Les boutons **pièce jointe et recherche web sont des emplacements en cours de développement** : un clic affiche seulement un message « non pris en charge ». Pour la vision, utilisez `image_url` via l'API (étape 6) ; pour la recherche web, `POST /v1/tools/search`.
 
 L'Aire de jeux débite le quota selon les mêmes règles : idéale pour itérer, mais confirmez ensuite via l'API.
 
 ## Vérifier le modèle et son prix
 
-Console → Tarification permet de :
+La page de tarification publique `/pricing` permet de :
 
 - rechercher un modèle ;
-- filtrer par **canal, fournisseur, type, tag** pour voir quels canaux le servent ;
-- consulter le mode de facturation (au token / à la requête / à la tâche), le contexte et les endpoints pris en charge ;
-- comparer les prix publics avant de choisir.
+- filtrer par **canal, fournisseur, tag de modèle, type de tarification et type d'endpoint** (cinq filtres) pour voir quels canaux servent un modèle. Les types de tarification couvrent le token, la requête, la tâche et la tarification dynamique ; les types d'endpoint incluent Chat / Response / Anthropic / Gemini / Rerank / Image / Embeddings / Video ;
+- consulter le mode de facturation, le contexte et les endpoints pris en charge, et basculer entre **prix standard / prix recharge**, **par 1M / par 1K tokens**, sept tris et les vues carte / tableau ;
+- comparer le **prix Uter** au **prix officiel** et la remise / le surcoût. Les modèles à la seconde (certains modèles vidéo / audio) affichent un tarif `/ second` avec un prix de référence officiel ;
+- noter que la barre latérale des canaux sélectionne **Claude-Basic** par défaut et n'affiche que ses modèles ; cliquez sur « Tous les canaux » ou visitez `?channel=all` pour tout voir.
+
+<Callout type="warn">
+  Une carte affichant « tarification non configurée », une expression de facturation brute ou l'absence de prix officiel est un problème de données de tarification côté plateforme, pas une requête mal formée. Notez le modèle et le canal, puis contactez la plateforme ; n'analysez pas l'expression vous-même dans votre client.
+</Callout>
 
 ## Dimensions de test
 
@@ -107,7 +118,7 @@ curl --noproxy '*' -s "$BASE/models/votre-modele" \
 ```
 
 <Callout type="warn">
-  Modèle absent ? Vérifiez d'abord Console → Tarification par canal, puis contactez la plateforme. Ne devinez pas les noms : 404 ou « aucun canal disponible » en général.
+  Modèle absent ? Vérifiez d'abord la page `/pricing` par canal, puis contactez la plateforme. La barre latérale des canaux sélectionne Claude-Basic par défaut : cliquez sur « Tous les canaux » ou choisissez un canal précis. Ne devinez pas les noms : 404 ou « aucun canal disponible » en général.
 </Callout>
 
 ### Étape 3 · Dialogue minimal (non streaming)
@@ -202,14 +213,23 @@ Comparez TTFT et durée totale au SLA. Testez aussi un prompt long (8k / 32k tok
 
 ### Étape 8 · Quota et facturation
 
-`/v1/dashboard/billing/usage` renvoie l'**usage cumulé** (`total_usage`, dans la devise affichée), pas le solde restant (voir Console → Portefeuille). Comparez avant/après un appel :
+`/v1/dashboard/billing/usage` renvoie l'**usage cumulé** (`total_usage`), pas le solde restant (voir Personnel → Portefeuille). `total_usage` est converti dans la devise affichée du site et exprimé en **1/100 de cette devise** (cents USD sur un site en USD) : divisez la différence avant/après par 100 pour obtenir des dollars. Comparez avant/après un appel :
 
 ```bash
+# Avant
+curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
+  -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
+
+# (exécutez l'étape 3 ici)
+
+# Après
 curl --noproxy '*' -s "$BASE/dashboard/billing/usage" \
   -H "Authorization: Bearer $TOKEN" | python3 -m json.tool
 ```
 
-Recoupez ensuite avec l'`usage` d'une réponse et le détail de facturation dans Console → Journaux d'utilisation / Journaux de tâches.
+Recoupez ensuite avec l'`usage` d'une réponse et le détail de facturation dans Général → Journaux d'utilisation / Journaux des tâches.
+
+`GET /v1/dashboard/billing/subscription` est une requête de **plafond de quota** compatible OpenAI. Ses champs portent le suffixe `_usd`, mais les valeurs suivent la devise affichée du site (USD / CNY / tokens) : ce n'est pas un véritable abonnement payant ; `access_until` n'est renseigné qu'en mode statistique par jeton.
 
 ### Étape 9 · Erreurs lisibles
 
@@ -226,25 +246,25 @@ Attendu : enveloppe `{"error":{"message":...,"type":...,"code":...}}` et statut 
 
 Ces modèles suivent **soumission → polling → téléchargement** :
 
-1. **Soumettre** via l'endpoint indiqué par la page des plugins de tâches : `POST /v1/tasks/<clé-plugin>`, vidéo `POST /v1/video/generations`, ou `POST /v1/images/generations` (compatible OpenAI) servi par le canal/plugin correspondant.
-2. **Interroger** avec le `task_id` : `GET /v1/tasks/<task_id>` ou `GET /v1/video/generations/<task_id>`. Tant que ce n'est pas fini : en file / en cours.
-3. **Artefacts** : `GET /v1/tasks/<task_id>/artifacts` liste les sorties ; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` en télécharge une.
-4. **Vérifier** dans Console → Journaux d'utilisation → Journaux de tâches : état, progression, durée, quota ; en cas d'échec, la raison (et un remboursement le cas échéant).
+1. **Soumettre** via un plugin activé listé dans Administrateur → Plugins de canaux (`/task-plugins`, super-administrateurs uniquement) : entrée générique `POST /v1/tasks/<clé-plugin>`, vidéo `POST /v1/video/generations` ou style OpenAI `POST /v1/videos`. Le `POST /v1/images/generations` compatible OpenAI est servi par le canal / plugin correspondant.
+2. **Interroger** avec le `task_id` : `GET /v1/tasks/<task_id>`, `GET /v1/video/generations/<task_id>` ou `GET /v1/videos/<task_id>`. Tant que ce n'est pas fini : en file / en cours.
+3. **Artefacts** : `GET /v1/tasks/<task_id>/artifacts` liste les sorties ; `GET /v1/tasks/<task_id>/artifacts/<artifact_key>/content` en télécharge une (un paramètre d'accès signé fonctionne aussi sans jeton). Pour la vidéo : `GET /v1/videos/<task_id>/content`.
+4. **Vérifier** dans Général → Journaux des tâches : état, progression, durée et cause d'échec. **Les remboursements ne figurent pas dans les journaux des tâches** : ils apparaissent comme entrées de type « Remboursement de tâche asynchrone » dans Général → Journaux d'utilisation.
 5. **Cas limites** : provoquez un timeout ou un paramètre invalide et vérifiez que la tâche échoue proprement au lieu de rester bloquée.
 
 ## Dépannage
 
 | # | Message observé | HTTP | Cause probable | Solution |
 | --- | --- | --- | --- | --- |
-| **A1** | Jeton invalide | 401 | Clé tronquée, mal saisie ou désactivée | Recopiez la clé complète dans Console → Clés API ; état « activée » ; sans espaces |
+| **A1** | Jeton invalide | 401 | Clé tronquée, mal saisie ou désactivée | Recopiez la clé complète dans Général → Clés API ; état « activée » ; sans espaces |
 | **A2** | Ce jeton a expiré | 401 | Date d'expiration dépassée | Créez une clé, ou mettez « n'expire jamais » |
-| **A3** | Quota du jeton épuisé | 401 | Quota propre à la clé épuisé | Rechargez la clé dans Console → Clés API, ou créez-en une autre |
+| **A3** | Quota du jeton épuisé | 401 | Quota propre à la clé épuisé | Rechargez la clé dans Général → Clés API, ou créez-en une autre |
 | **A4** | Votre IP n'est pas dans la liste autorisée | 403 | Liste d'IP (CIDR) exclut votre sortie | Ajoutez l'IP/plage de sortie, ou désactivez la restriction en test |
 | **A5** | Ce jeton n'a accès à aucun modèle | 403 | Limites de modèles vides | Éditez la clé et cochez les modèles |
 | **A6** | Ce jeton n'a pas accès au modèle « xxx » | 403 | Modèle absent des limites | Mettez à jour les limites ou changez de clé |
-| **A7** | Connexion impossible / timeout | — | URL erronée, certificat, réseau privé | Vérifiez `https://votre-domaine/v1` ; `--noproxy '*'` si proxy local |
-| **B1** | Quota insuffisant | 403 | Quota compte/clé épuisé | Rechargez dans Console → Portefeuille ou sur la clé ; vérifiez via l'étape 8 |
-| **B2** | Aucun canal disponible pour le modèle « xxx » sous le groupe « default » | 503 (400 selon les filtres) | Aucun canal activé pour ce groupe | Vérifiez Console → Tarification par canal ; contactez la plateforme |
+| **A7** | Connexion impossible / timeout | — | URL erronée, certificat, réseau privé | Vérifiez le point d'entrée dédié à l'API `https://api.uter.ai/v1` ou l'adresse de votre console + `/v1` ; `--noproxy '*'` si proxy local |
+| **B1** | Quota insuffisant | 403 | Quota compte/clé épuisé | Rechargez dans Personnel → Portefeuille ou sur la clé dans Général → Clés API ; vérifiez via l'étape 8 |
+| **B2** | Aucun canal disponible pour le modèle « xxx » sous le groupe « default » | 503 (400 selon les filtres) | Aucun canal activé pour ce groupe | Vérifiez la page `/pricing` par canal (la barre latérale sélectionne Claude-Basic par défaut — cliquez sur « Tous les canaux ») ; contactez la plateforme, ne devinez pas les noms |
 | **B3** | 404 / modèle introuvable | 404 | Nom erroné ou accès absent | Listez via l'étape 2 et copiez l'`id` |
 | **C1** | Limite de requêtes atteinte | 429 | Limite clé ou plateforme | Réduisez la concurrence, backoff exponentiel, vérifiez RPM/TPM |
 | **C2** | Groupe / amont saturé | 429 / 503 | Capacité temporairement insuffisante | Réessayez plus tard avec backoff ; contactez la plateforme |
@@ -252,12 +272,13 @@ Ces modèles suivent **soumission → polling → téléchargement** :
 | **D1** | Streaming d'un coup | — | Tampon client (`curl` sans `-N`, SDK) | `-N` ; `stream: true` sans tampon global |
 | **D2** | Caractères mal affichés | — | Encodage/parsing | UTF-8 des deux côtés ; si `json.tool` s'affiche bien, le serveur est OK |
 | **D3** | Sortie tronquée | — | `max_tokens` trop petit ou plafond modèle | Augmentez `max_tokens` ; streamez les longues réponses |
-| **E1** | Débit inattendu | — | Tokens cachés (raisonnement, cache, outils) ou ratios différents | Recoupez avec `usage` et le détail des journaux |
+| **E1** | Débit inattendu | — | Tokens cachés (raisonnement, cache, outils) ou ratios différents | Recoupez avec `usage` et le détail de facturation dans Général → Journaux d'utilisation |
 | **E2** | Function calling / mode JSON inactif | — | Capacité non exposée par le modèle | Vérifiez à l'étape 5 ; prévoyez une dégradation |
+| **E3** | Une carte affiche « tarification non configurée », une expression brute ou aucun prix officiel | — | Données de tarification / prix officiel côté plateforme non configurées ou mal interprétées | Notez le modèle et le canal, contactez la plateforme ; n'analysez pas l'expression et ne modifiez pas les ratios vous-même |
 | **F1** | 400 avec message « annonce » | 400 | Notification du fournisseur amont | Validez votre requête puis contactez la plateforme avec le message |
 
 <Callout type="idea">
-  Deux réflexes : « aucun canal / modèle introuvable » → listez `GET /v1/models` et vérifiez la page Tarification par canal avant de contacter la plateforme. « 401/403 » → contrôlez l'état de la clé, les limites de modèles et la liste d'IP, puis l'URL de base.
+  Deux réflexes : « aucun canal / modèle introuvable » → listez `GET /v1/models` et vérifiez la page de tarification `/pricing` par canal avant de contacter la plateforme. « 401/403 » → contrôlez l'état de la clé, les limites de modèles et la liste d'IP, puis l'URL de base.
 </Callout>
 
 ## Que faire d'un 400 (Bad Request)
@@ -296,7 +317,7 @@ Lisez d'abord `message`.
 
 ## Recouper chaque appel dans les journaux
 
-Console → Journaux d'utilisation enregistre heure, modèle, clé, canal (admin), latence, quota et erreur ; les Journaux de tâches couvrent l'asynchrone. Pendant l'intégration :
+Général → Journaux d'utilisation enregistre l'heure, le canal / utilisateur (visible par les admins), la clé (avec groupe), le modèle, le streaming / TPS, les tokens d'entrée / sortie / cache, le quota, la latence / TTFT et les détails (le message d'erreur est dans la fenêtre de détail). Général → Journaux des tâches enregistre l'heure de soumission, le plugin, l'ID de tâche, la durée, le statut, la progression, les artefacts et les détails (cause d'échec). Pendant l'intégration :
 
 - comparez modèle, groupe/canal et quota avec l'attendu ;
 - conservez l'erreur brute pour distinguer plateforme et amont ;
@@ -308,7 +329,9 @@ Console → Journaux d'utilisation enregistre heure, modèle, clé, canal (admin
 - [ ] **Clé** complète, état activé, non expirée, quota suffisant.
 - [ ] **Limites de modèles** de la clé couvrent les modèles utilisés.
 - [ ] **Liste d'IP** : IP/CIDR de sortie de production ajoutés si activée.
+- [ ] Le **groupe et les canaux disponibles** du modèle cible sont confirmés (la barre latérale de la page de tarification sélectionne Claude-Basic par défaut — cliquez sur « Tous les canaux » ou choisissez un canal).
 - [ ] `GET /v1/models` liste le modèle et l'`id` correspond au code.
+- [ ] La page de tarification affiche un **prix Uter et un prix officiel** cohérents avec la facturation attendue ; les modèles à la seconde / à la requête sont vérifiés séparément. Aucune carte n'affiche « tarification non configurée » ni d'expression de facturation brute.
 - [ ] Dialogue non streaming OK (`content`, `usage`).
 - [ ] Streaming OK (`data:` et `[DONE]`).
 - [ ] Capacités avancées requises (tools / JSON / vision / contexte long) vérifiées.
@@ -330,27 +353,32 @@ Console → Journaux d'utilisation enregistre heure, modèle, clé, canal (admin
 | Détail d'un modèle | `GET /v1/models/:model` | Informations d'un modèle |
 | Dialogue | `POST /v1/chat/completions` | stream / tools / vision |
 | Complétions | `POST /v1/completions` | Ancien format, modèles compatibles |
-| Claude natif | `POST /v1/messages` | `x-api-key` + `anthropic-version` |
-| Gemini natif | `GET /v1beta/models` | `x-goog-api-key` ou `?key=` |
-| Liste Gemini (OpenAI) | `GET /v1beta/openai/models` | Modèles Gemini au format OpenAI |
-| Relais Gemini | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Chemins natifs Gemini |
-| Responses temps réel | `GET /v1/responses` (WebSocket) | Protocole Responses via WebSocket |
+| Responses (entrée principale) | `POST /v1/responses`, `GET /v1/responses/:response_id` | Modes synchrone / streaming / arrière-plan et récupération du résultat |
+| Responses WebSocket | `GET /v1/responses` (WebSocket) | Protocole Responses via WebSocket |
 | Compactage Responses | `POST /v1/responses/compact` | Compacte le contexte |
+| Claude natif | `POST /v1/messages` | `x-api-key` + `anthropic-version` ; erreurs au format Anthropic |
+| Gemini natif | `GET /v1beta/models`, `POST /v1beta/models/*path` | `x-goog-api-key` ou `?key=` ; le second appelle generateContent et d'autres méthodes natives |
+| Liste Gemini (OpenAI) | `GET /v1beta/openai/models` | Modèles Gemini au format OpenAI |
+| Alias de compatibilité Gemini | `POST /v1/models/*path`, `POST /v1/engines/:model/embeddings` | Chemins compatibles servis via le protocole Gemini |
 | Voix temps réel | `GET /v1/realtime` (WebSocket) | Mode Realtime |
 | Embeddings | `POST /v1/embeddings` | Vectorisation de texte |
+| Ancienne édition d'image | `POST /v1/edits` | Endpoint de repli compatible OpenAI |
 | Rerank | `POST /v1/rerank` | Rerangement de recherche |
 | Modération | `POST /v1/moderations` | Sécurité du contenu |
-| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | Génération / édition |
+| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | Génération / édition (canal ou plugin) |
 | Audio | `POST /v1/audio/transcriptions`, `/translations`, `/speech` | Transcription / traduction / synthèse |
-| Outils web | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | Outils DeepSeek et recherche Codex |
-| Vidéo | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Soumission, consultation, remix |
-| Tâches génériques | `POST /v1/tasks/:key`, `GET /v1/tasks/:task_id` | Entrée unifiée des plugins |
-| Artefacts | `GET /v1/tasks/:task_id/artifacts`, `GET /v1/tasks/:task_id/artifacts/:artifact_key/content` | Lister / télécharger |
-| Usage / abonnement | `GET /v1/dashboard/billing/usage`, `/subscription` | Usage cumulé et quota d'abonnement |
+| Outils web | `POST /v1/tools/search`, `/v1/tools/fetch`, `/v1/alpha/search` | Outils DeepSeek et recherche Codex autonome |
+| Vidéo (plateforme) | `POST /v1/video/generations`, `GET /v1/video/generations/:task_id`, `POST /v1/videos/:video_id/remix` | Soumission, consultation, remix |
+| Vidéo (style OpenAI) | `POST /v1/videos`, `GET /v1/videos/:task_id`, `GET /v1/videos/:task_id/content` | Soumission, consultation, téléchargement |
+| Tâches génériques | `POST /v1/tasks/:key`, `GET /v1/tasks/:key` | Entrée unifiée des plugins ; la route de lecture porte le `task_id` dans le segment `:key` |
+| Artefacts de tâche | `GET /v1/tasks/:key/artifacts`, `GET` ou `HEAD /v1/tasks/:key/artifacts/:artifact_key/content` | Lister / télécharger ; le téléchargement accepte un jeton ou un paramètre d'accès signé |
+| Usage / abonnement | `GET /v1/dashboard/billing/usage`, `/subscription` | Usage cumulé et plafond de quota (shim compatible OpenAI, pas un abonnement payant) |
 
-> Il s'agit des endpoints publics actuellement enregistrés. Les endpoints réellement pris en charge par un modèle figurent sur sa page dans Console → Tarification.
+> Il s'agit des endpoints publics actuellement enregistrés. `/dashboard/billing/*` fonctionne aussi sans le préfixe `/v1`. Les endpoints réellement pris en charge par un modèle figurent sur la page de tarification publique `/pricing`.
 
 ### Enveloppe d'erreur unifiée
+
+Les endpoints compatibles OpenAI utilisent par défaut le format d'erreur OpenAI :
 
 ```json
 {
@@ -358,12 +386,23 @@ Console → Journaux d'utilisation enregistre heure, modèle, clé, canal (admin
     "message": "Raison lisible",
     "type": "invalid_request_error | authentication_error | ...",
     "code": "code optionnel",
-    "param": "paramètre fautif optionnel"
+    "param": "paramètre fautif optionnel",
+    "metadata": "contexte supplémentaire optionnel"
   }
 }
 ```
 
-Avec le statut HTTP (401 / 403 / 404 / 429 / 5xx), cela couvre la plupart des traitements client.
+Il existe toutefois des exceptions que le client doit gérer séparément :
+
+| Scénario | Réponse réelle |
+| --- | --- |
+| Claude natif `POST /v1/messages` | Format Anthropic `{"type":"error","error":{"type":...,"message":...}}` |
+| WebSocket (Responses / Realtime) | Les erreurs arrivent comme trames d'événement, pas comme statut HTTP |
+| Endpoints de facturation | Souvent HTTP 200 avec `{"error":{"message":...,"type":"uter_error"}}` |
+| Erreurs d'authentification / de limitation du middleware | `type` peut valoir `new_api_error`, sans `param` |
+| `GET /v1/models/:model` pour un modèle inconnu | HTTP 200 avec `error.code = "model_not_found"` |
+
+Combinez cela avec le statut HTTP (401 auth / 403 permission ou quota / 404 route absente / 429 limite / 501 endpoint de compatibilité non implémenté / 5xx amont). **Ne vous fiez pas au seul statut HTTP** : la facturation et la récupération de modèle peuvent renvoyer « HTTP 200 + error » — analysez d'abord le corps.
 
 ### Rappels de sécurité
 

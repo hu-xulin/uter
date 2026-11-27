@@ -1,0 +1,35 @@
+# 计费
+
+两个 OpenAI 兼容的计费端点可供客户端查询当前凭据的剩余额度与本期用量。两者均支持 `/v1/dashboard/...` 与旧版 `/dashboard/...` 前缀，需要令牌（`Authorization: Bearer sk-...`）。
+
+> 数值型 `*_USD` 字段的口径遵循站点配置的额度显示类型：USD 显示时按 `QuotaPerUnit` 从额度单位换算；CNY 显示时先换算为 USD 再乘汇率；Token 显示时直接携带原始 Token 数。请勿假定后缀一定代表美元。
+
+## 订阅信息（剩余额度）
+
+`GET` `/v1/dashboard/billing/subscription`
+
+### 响应
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `object` | string | `billing_subscription` |
+| `has_payment_method` | boolean | 恒为 `true` |
+| `soft_limit_usd` | number | 总额度（剩余 + 已用），按显示单位 |
+| `hard_limit_usd` | number | 总额度，按显示单位 |
+| `system_hard_limit_usd` | number | 总额度，按显示单位 |
+| `access_until` | integer | 令牌过期时间（Unix 秒）；不限期为 `0` |
+
+当令牌统计启用时，数据反映令牌自身；否则反映所属用户的额度。不限额令牌返回较大的哨兵值（100000000）。
+
+## 用量（已消耗额度）
+
+`GET` `/v1/dashboard/billing/usage`
+
+### 响应
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `object` | string | 计费用量对象 |
+| `total_usage` | number | 本期已消耗额度，按显示单位 |
+
+发生内部错误时该端点仍返回 HTTP `200` 并携带 `{"error": {...}}` 响应体（type 为 `uter_error`）。应检查 `error` 字段，而不要只依赖状态码。

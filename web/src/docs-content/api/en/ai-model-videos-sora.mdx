@@ -2,87 +2,87 @@
 
 ## Create Video 
 
-OpenAI 兼容的视频生成接口。
+OpenAI-compatible video generation API.
 
-参考文档: https://platform.openai.com/docs/api-reference/videos/create
+Reference: https://platform.openai.com/docs/api-reference/videos/create
 
 `POST` `/v1/videos`
 
-### 请求体（`multipart/form-data`）
+### Request body (`multipart/form-data`)
 
-| 字段 | 类型 | 必填 | 说明 |
+| Field | Type | Required | Description |
 |---|---|---|---|
-| `model` | string | 否 | 模型/风格 ID |
-| `prompt` | string | 否 | 文本描述提示词 |
-| `image` | string | 否 | 图片输入 (URL 或 Base64) |
-| `duration` | number | 否 | 视频时长（秒） |
-| `width` | integer | 否 | 视频宽度 |
-| `height` | integer | 否 | 视频高度 |
-| `fps` | integer | 否 | 视频帧率 |
-| `seed` | integer | 否 | 随机种子 |
-| `n` | integer | 否 | 生成视频数量 |
-| `response_format` | string | 否 | 响应格式 |
-| `user` | string | 否 | 用户标识 |
-| `metadata` | object | 否 | 扩展参数 (如 negative_prompt, style, quality_level 等) |
+| `model` | string | No | Model/style ID |
+| `prompt` | string | No | Text description prompt |
+| `image` | string | No | Image input (URL or Base64) |
+| `duration` | number | No | Video duration (seconds) |
+| `width` | integer | No | Video width |
+| `height` | integer | No | Video height |
+| `fps` | integer | No | Video frame rate |
+| `seed` | integer | No | Random seed |
+| `n` | integer | No | Number of videos to generate |
+| `response_format` | string | No | Response format |
+| `user` | string | No | User identifier |
+| `metadata` | object | No | Additional parameters (such as negative_prompt, style, quality_level, etc.) |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功创建视频任务 |
-| `400` | 请求参数错误 |
+| `200` | Video task created successfully |
+| `400` | Invalid request parameters |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `id` | string | 视频 ID |
-| `object` | string | 对象类型 |
-| `model` | string | 使用的模型 |
-| `status` | string | 任务状态 |
-| `progress` | integer | 进度百分比 |
-| `created_at` | integer | 创建时间戳 |
-| `seconds` | string | 视频时长 |
-| `completed_at` | integer | 完成时间戳 |
-| `expires_at` | integer | 过期时间戳 |
-| `size` | string | 视频尺寸 |
-| `error.message` | string | 错误信息 |
-| `error.code` | string | 错误码 |
-| `metadata` | object | 额外元数据 |
+| `id` | string | Video ID |
+| `object` | string | Object type |
+| `model` | string | Model used |
+| `status` | string | Task status |
+| `progress` | integer | Progress percentage |
+| `created_at` | integer | Creation timestamp |
+| `seconds` | string | Video duration |
+| `completed_at` | integer | Completion timestamp |
+| `expires_at` | integer | Expiration timestamp |
+| `size` | string | Video dimensions |
+| `error.message` | string | Error message |
+| `error.code` | string | Error code |
+| `metadata` | object | Additional metadata |
 
-#### `400` 响应字段
+#### `400` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |
 
 ## Get Video Task Status 
 
-OpenAI 兼容的视频任务状态查询接口。
+OpenAI-compatible video task status query API.
 
-返回视频任务的详细状态信息。
+Returns detailed status information for a video task.
 
 `GET` `/v1/videos/{task_id}`
 
-### 请求参数
+### Request parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Parameter | In | Type | Required | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | Yes | Video task ID |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功获取视频任务状态 |
-| `404` | 任务不存在 |
+| `200` | Video task status retrieved successfully |
+| `404` | Task not found |
 
-#### `200` 响应字段
+#### `200` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
 | `id` | string | — |
 | `object` | string | — |
@@ -92,14 +92,14 @@ OpenAI 兼容的视频任务状态查询接口。
 | `created_at` | integer | — |
 | `seconds` | string | — |
 
-#### `404` 响应字段
+#### `404` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |
 
 ## Remix a video
 
@@ -120,30 +120,30 @@ Returns a new OpenAI video object with the same fields as "Create Video". A miss
 
 ## Get Video Content
 
-获取已完成视频任务的视频文件内容。
+Get the video file content of a completed video task.
 
-此接口会代理返回视频文件流。
+This endpoint proxies and returns the video file stream.
 
 `GET` `/v1/videos/{task_id}/content`
 
-### 请求参数
+### Request parameters
 
-| 参数名 | 位置 | 类型 | 必填 | 说明 |
+| Parameter | In | Type | Required | Description |
 |---|---|---|---|---|
-| `task_id` | path | string | 是 | 视频任务 ID |
+| `task_id` | path | string | Yes | Video task ID |
 
-### 响应
+### Response
 
-| 状态码 | 说明 |
+| Status | Meaning |
 |---|---|
-| `200` | 成功获取视频内容 |
-| `404` | 视频不存在或未完成 |
+| `200` | Video content retrieved successfully |
+| `404` | Video does not exist or is not complete |
 
-#### `404` 响应字段
+#### `404` fields
 
-| 字段 | 类型 | 说明 |
+| Field | Type | Description |
 |---|---|---|
-| `error.message` | string | 错误信息 |
-| `error.type` | string | 错误类型 |
-| `error.param` | string | 相关参数 |
-| `error.code` | string | 错误代码 |
+| `error.message` | string | Error message |
+| `error.type` | string | Error type |
+| `error.param` | string | Related parameter |
+| `error.code` | string | Error code |

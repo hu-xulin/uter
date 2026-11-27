@@ -8,24 +8,42 @@
 | Authentication | `Authorization: Bearer sk-...` |
 | Token | Created on the console's Tokens page; can be limited to a group, a model allowlist and source IPs |
 
-Claude format (`/v1/messages`) also accepts an `x-api-key` header; Gemini format (`/v1beta/models/...`) accepts an `x-goog-api-key` header or a `?key=` query parameter.
+Claude format (`/v1/messages`) also accepts an `x-api-key` header; Gemini format (`/v1beta/models/...`) accepts an `x-goog-api-key` header or a `?key=` query parameter. WebSocket endpoints additionally accept the `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` subprotocol for browser clients that cannot set headers.
 
-Failures use the OpenAI error envelope:
+## Error format
 
-```json
-{"error": {"message": "what went wrong", "type": "error type", "param": "", "code": "error code"}}
-```
+The error envelope depends on the endpoint family. Always branch on the body, not only the HTTP status:
+
+| Family | Envelope | Example |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude (`/v1/messages`) | Anthropic | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| Video / generic tasks (`/v1/video/generations`, `/v1/videos`, `/v1/tasks/*`) | Flat task error | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| Auth / rate limit (middleware) | OpenAI without `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+A few endpoints are exceptions: `GET /v1/models/{model}` returns `200` with an OpenAI error body for an unknown model, and `GET /v1/videos/{id}/content` returns `404` for a missing task while the generic task query returns `400 task_not_exist`.
 
 ## AI Model APIs
 
-A single token reaches every upstream provider aggregated by the platform. The APIs fall into four protocol families:
+A single token reaches every upstream provider aggregated by the platform. Endpoints are grouped below by protocol family; see the linked page for request/response fields.
 
-| Protocol | Main endpoints |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
-| Video tasks | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
+| Family | Endpoints | Details |
+|---|---|---|
+| Text · OpenAI | `POST /v1/chat/completions`, `POST /v1/completions` | [openai](./ai-model-chat-openai), [completions](./ai-model-completions-openai) |
+| Text · Claude | `POST /v1/messages` | [Native Claude Format](./ai-model-chat) |
+| Text · Responses | `POST /v1/responses`, `GET /v1/responses/{response_id}`, `GET /v1/responses` (WebSocket), `POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| Text · Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| Search & tools | `POST /v1/alpha/search`, `POST /v1/tools/search`, `POST /v1/tools/fetch` | [Search & Tools](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai), [gemini](./ai-model-embeddings-gemini) |
+| Images | `POST /v1/images/generations`, `POST /v1/images/edits` | [openai](./ai-model-images-openai), [gemini](./ai-model-images-gemini), [qwen](./ai-model-images-qwen) |
+| Audio | `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations` | [openai](./ai-model-audio-openai), [gemini](./ai-model-audio-gemini) |
+| Moderations | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime` (WebSocket) | [realtime](./ai-model-realtime) |
+| Video | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| Generic tasks | `POST /v1/tasks/{key}`, `GET /v1/tasks/{key}`, `GET /v1/tasks/{key}/artifacts`, `GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| Models | `GET /v1/models`, `GET /v1/models/{model}`, `GET /v1beta/models`, `GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| Billing | `GET /v1/dashboard/billing/subscription`, `GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
 Which models a token can call is decided by its group, the token's model allowlist and the model's billing configuration. Always use the model names returned by `GET /v1/models`; do not guess model IDs.
 
@@ -37,4 +55,4 @@ Which models a token can call is decided by its group, the token's model allowli
 
 ## Not implemented
 
-`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` and `DELETE /v1/models/{model}` currently return `501`. Do not call them in production.
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` and `DELETE /v1/models/{model}` currently return `501`. Gemini `:countTokens` returns `404`. Do not call them in production. Fine-tuning is documented separately on the [fine-tuning page](./ai-model-unimplemented-fine-tuning).

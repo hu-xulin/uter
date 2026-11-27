@@ -1,0 +1,89 @@
+# Responses API
+
+L'API OpenAI Responses prend en charge les conversations multi-tours, les appels d'outils, le raisonnement et l'état de la réponse côté serveur. Uter expose les points de terminaison de création, de récupération, de diffusion via WebSocket et de compaction. Un seul jeton permet d'accéder à n'importe quel canal prenant en charge la famille de points de terminaison `openai-response` (par exemple Uter Route / Uter API / Codex et les canaux compatibles OpenAI).
+
+Les ID de modèle proviennent de `GET /v1/models`. Les requêtes concernant des modèles qui ne prennent pas en charge cette famille de points de terminaison sont rejetées ; le groupe du jeton et la liste blanche de modèles s'appliquent toujours.
+
+> Remarque : `POST /v1/responses` et `GET /v1/responses/{response_id}` sont des points de terminaison du protocole hôte. Pour un modèle revendiqué par un plugin de tâche, c'est le plugin qui gère l'appel ; sinon, la requête revient au relais Responses intégré.
+
+## Créer une réponse
+
+`POST` `/v1/responses`
+
+### Corps de la requête (`application/json`)
+
+| Champ | Type | Requis | Description |
+|---|---|---|---|
+| `model` | string | Oui | ID du modèle |
+| `instructions` | string | Non | Instructions système |
+| `input` | string ou array&lt;object&gt; | Non | Invite d'entrée ou éléments de message |
+| `max_output_tokens` | integer | Non | Nombre maximum de tokens de sortie |
+| `temperature` | number | Non | Température d'échantillonnage |
+| `top_p` | number | Non | Échantillonnage par noyau (top-p) |
+| `stream` | boolean | Non | Diffusion de la réponse ou non |
+| `tools` | array&lt;object&gt; | Non | Définitions des outils |
+| `previous_response_id` | string | Non | ID d'une réponse précédente à partir de laquelle continuer |
+| `reasoning.effort` | enum (`low`, `medium`, `high`) | Non | Intensité du raisonnement |
+| `reasoning.summary` | string | Non | Résumé du raisonnement |
+| `truncation` | enum (`auto`, `disabled`) | Non | Mode de troncature |
+| `store` | boolean | Non | Stocker la réponse pour une récupération ultérieure ou non |
+
+### Réponse
+
+| Code d'état | Description |
+|---|---|
+| `200` | Réponse créée |
+| `400` | Paramètres de requête invalides |
+| `403` | Quota insuffisant |
+| `429` | Limite de fréquence de requête |
+| `503` | Aucun canal disponible pour ce modèle |
+
+#### Champs de la réponse `200`
+
+| Champ | Type | Description |
+|---|---|---|
+| `id` | string | ID de la réponse (à utiliser avec la récupération et la compaction) |
+| `object` | string | `response` |
+| `created_at` | integer | Date de création (secondes Unix) |
+| `status` | enum (`completed`, `failed`, `in_progress`, `incomplete`) | État de la réponse |
+| `model` | string | Modèle utilisé |
+| `output` | array&lt;object&gt; | Éléments de sortie (messages, appels d'outils, raisonnement) |
+| `usage.input_tokens` | integer | Nombre de tokens d'entrée |
+| `usage.output_tokens` | integer | Nombre de tokens de sortie |
+| `usage.total_tokens` | integer | Nombre total de tokens |
+
+## Récupérer une réponse
+
+`GET` `/v1/responses/{response_id}`
+
+Renvoie une réponse précédemment stockée, par son ID.
+
+| Paramètre | Dans | Type | Requis | Description |
+|---|---|---|---|---|
+| `response_id` | path | string | Oui | ID renvoyé lors de la création |
+
+Le corps de la réponse utilise les mêmes champs que lors de la création. Un ID inconnu renvoie une erreur au format OpenAI.
+
+## Réponses via WebSocket
+
+`GET` `/v1/responses`
+
+Un point de terminaison WebSocket pour la diffusion des réponses. La sélection du canal a lieu après le premier événement `response.create`, et chaque événement passe par le limiteur de requêtes habituel. Les clients qui ne peuvent pas définir d'en-têtes lors de la poignée de main peuvent s'authentifier avec le sous-protocole `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>`, en plus de `Authorization: Bearer`.
+
+URL de connexion : `wss://uter.ai/v1/responses`
+
+## Compacter une réponse
+
+`POST` `/v1/responses/compact`
+
+Compacte l'état de conversation d'une réponse afin de réduire le nombre de tokens d'une session poursuivie.
+
+### Corps de la requête (`application/json`)
+
+| Champ | Type | Requis | Description |
+|---|---|---|---|
+| `model` | string | Oui | ID du modèle |
+| `input` | string ou array&lt;object&gt; | Oui | Conversation à compacter |
+| `instructions` | string | Non | Instructions système |
+
+La réponse utilise la même forme d'objet que lors de la création, avec la conversation compactée dans `output`.

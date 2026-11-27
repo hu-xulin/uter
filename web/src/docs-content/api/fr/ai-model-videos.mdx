@@ -3,7 +3,7 @@
 La génération de vidéos est asynchrone : soumettez une tâche, interrogez son état, puis récupérez le résultat. Uter expose deux entrées :
 
 - **Format de tâche générique** : `/v1/video/generations` renvoie un `task_id` ; les options propres au fournisseur vont dans `metadata`.
-- **Format vidéo OpenAI** : `/v1/videos` respecte l'API OpenAI Videos en requête comme en réponse ; le SDK officiel fonctionne tel quel.
+- **Format vidéo OpenAI** : `/v1/videos` accepte les champs OpenAI Videos. Pour un modèle lié à un plugin de tâche `openai_video`, la requête comme la réponse suivent l'API OpenAI Videos et le SDK officiel fonctionne tel quel. Pour les modèles non revendiqués par un tel plugin, la requête revient au relais de tâche générique et la réponse utilise l'enveloppe de tâche ci-dessous (`task_id`, `status: queued`) au lieu d'un objet vidéo OpenAI.
 
 Les champs de requête varient selon le fournisseur ; consultez aussi la page de format correspondante ci-dessous.
 
@@ -106,7 +106,9 @@ Points de terminaison associés :
 | Méthode et chemin | Description |
 |---|---|
 | `GET /v1/videos/{id}` | Interroge la tâche ; en cas de succès renvoie `completed_at` et le `status` final |
-| `GET /v1/videos/{id}/content` | Télécharge le flux vidéo via le proxy |
+| `GET /v1/videos/{id}/content` | Télécharge le flux vidéo via le proxy ; renvoie `404` pour une tâche introuvable |
 | `POST /v1/videos/{id}/remix` | Régénère à partir d'une vidéo existante (remix) et renvoie un nouvel objet vidéo |
+
+Notez la différence de code d'état : `GET /v1/videos/{id}/content` renvoie `404` pour une tâche inconnue, tandis que la requête de tâche générique `GET /v1/video/generations/{task_id}` renvoie `400 task_not_exist`.
 
 Valeurs de `status` : `queued`, `in_progress`, `completed`, `failed`.

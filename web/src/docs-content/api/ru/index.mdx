@@ -5,36 +5,54 @@
 | Параметр | Значение |
 |---|---|
 | Base URL | `https://uter.ai` (отдельный адрес для API: `https://api.uter.ai`) |
-| Аутентификация | Заголовок `Authorization: Bearer sk-...` |
+| Аутентификация | `Authorization: Bearer sk-...` |
 | Токен | Создаётся на странице «Токены» в консоли; можно ограничить группой, списком моделей и IP-адресами |
 
-Формат Claude (`/v1/messages`) также принимает заголовок `x-api-key`; формат Gemini (`/v1beta/models/...`) — заголовок `x-goog-api-key` или параметр запроса `?key=`.
+Формат Claude (`/v1/messages`) также принимает заголовок `x-api-key`; формат Gemini (`/v1beta/models/...`) — заголовок `x-goog-api-key` или параметр запроса `?key=`. Эндпоинты WebSocket дополнительно принимают подпротокол `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` для браузерных клиентов, которые не могут задать заголовки.
 
-Ошибки возвращаются в формате OpenAI:
+## Формат ошибок
 
-```json
-{"error": {"message": "описание ошибки", "type": "тип ошибки", "param": "", "code": "код ошибки"}}
-```
+Конверт ошибки зависит от семейства эндпоинтов. Всегда проверяйте тело ответа, а не только HTTP-статус:
+
+| Семейство | Конверт | Пример |
+|---|---|---|
+| OpenAI / Responses / Embeddings / Audio / Moderations / Rerank / Gemini | OpenAI | `{"error": {"message": "...", "type": "...", "param": "", "code": "..."}}` |
+| Claude (`/v1/messages`) | Anthropic | `{"type": "error", "error": {"type": "...", "message": "..."}}` |
+| Видео / универсальные задачи (`/v1/video/generations`, `/v1/videos`, `/v1/tasks/*`) | Плоская ошибка задачи | `{"code": "task_not_exist", "message": "...", "data": {}}` |
+| Аутентификация / ограничение частоты (промежуточное ПО) | OpenAI без `param` | `{"error": {"message": "...", "type": "new_api_error", "code": "..."}}` |
+
+Несколько эндпоинтов являются исключениями: `GET /v1/models/{model}` возвращает `200` с телом ошибки OpenAI для неизвестной модели, а `GET /v1/videos/{id}/content` возвращает `404` для отсутствующей задачи, в то время как универсальный запрос задачи возвращает `400 task_not_exist`.
 
 ## API моделей ИИ
 
-Один токен открывает доступ ко всем провайдерам, агрегированным платформой. API делятся на четыре семейства протоколов:
+Один токен открывает доступ ко всем провайдерам, агрегированным платформой. Эндпоинты сгруппированы ниже по семействам протоколов; поля запроса и ответа описаны на соответствующих страницах.
 
-| Протокол | Основные эндпоинты |
-|---|---|
-| OpenAI | `POST /v1/chat/completions`, `POST /v1/completions`, `POST /v1/responses`, `POST /v1/embeddings`, `POST /v1/images/generations`, `POST /v1/images/edits`, `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations`, `POST /v1/moderations`, `POST /v1/rerank`, `GET /v1/models`, `GET /v1/models/{model}` |
-| Anthropic | `POST /v1/messages` |
-| Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` |
-| Видеозадачи | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` |
+| Семейство | Эндпоинты | Подробности |
+|---|---|---|
+| Текст · OpenAI | `POST /v1/chat/completions`, `POST /v1/completions` | [openai](./ai-model-chat-openai), [completions](./ai-model-completions-openai) |
+| Текст · Claude | `POST /v1/messages` | [Нативный формат Claude](./ai-model-chat) |
+| Текст · Responses | `POST /v1/responses`, `GET /v1/responses/{response_id}`, `GET /v1/responses` (WebSocket), `POST /v1/responses/compact` | [Responses API](./ai-model-responses) |
+| Текст · Gemini | `POST /v1beta/models/{model}:generateContent`, `POST /v1/engines/{model}/embeddings` | [gemini](./ai-model-chat-gemini) |
+| Поиск и инструменты | `POST /v1/alpha/search`, `POST /v1/tools/search`, `POST /v1/tools/fetch` | [Search & Tools](./ai-model-search-tools) |
+| Embeddings | `POST /v1/embeddings` | [openai](./ai-model-embeddings-openai), [gemini](./ai-model-embeddings-gemini) |
+| Изображения | `POST /v1/images/generations`, `POST /v1/images/edits` | [openai](./ai-model-images-openai), [gemini](./ai-model-images-gemini), [qwen](./ai-model-images-qwen) |
+| Аудио | `POST /v1/audio/speech`, `POST /v1/audio/transcriptions`, `POST /v1/audio/translations` | [openai](./ai-model-audio-openai), [gemini](./ai-model-audio-gemini) |
+| Moderations | `POST /v1/moderations` | [moderations](./ai-model-moderations) |
+| Rerank | `POST /v1/rerank` | [rerank](./ai-model-rerank) |
+| Realtime | `GET /v1/realtime` (WebSocket) | [realtime](./ai-model-realtime) |
+| Видео | `POST /v1/video/generations`, `GET /v1/video/generations/{task_id}`, `POST /v1/videos`, `GET /v1/videos/{id}`, `GET /v1/videos/{id}/content`, `POST /v1/videos/{id}/remix` | [videos](./ai-model-videos) |
+| Универсальные задачи | `POST /v1/tasks/{key}`, `GET /v1/tasks/{key}`, `GET /v1/tasks/{key}/artifacts`, `GET\|HEAD /v1/tasks/{key}/artifacts/{artifact_key}/content` | [tasks](./ai-model-tasks) |
+| Модели | `GET /v1/models`, `GET /v1/models/{model}`, `GET /v1beta/models`, `GET /v1beta/openai/models` | [models](./ai-model-models-list) |
+| Тарификация | `GET /v1/dashboard/billing/subscription`, `GET /v1/dashboard/billing/usage` | [billing](./ai-model-billing) |
 
-Доступные токену модели определяются его группой, списком разрешённых моделей и настройками тарификации модели. Всегда используйте имена моделей из ответа `GET /v1/models` и не угадывайте идентификаторы.
+Доступные токену модели определяются его группой, списком разрешённых моделей токена и настройками тарификации модели. Всегда используйте имена моделей из ответа `GET /v1/models`; не угадывайте идентификаторы.
 
 ## Тарификация и ограничения
 
 - При приёме запроса квота списывается по цене модели и оценённому объёму, затем пересчитывается по фактическому использованию. Неудачные запросы и задачи без результата возвращают списанное.
-- Недостаток квоты — `403`; ограничение частоты или насыщение параллельных запросов на стороне провайдера — `429`; неизвестная модель или отсутствие доступного канала в группе — `503`.
+- Недостаток квоты — `403`; ограничение частоты или насыщение параллельных запросов на стороне провайдера — `429`; неизвестная модель или отсутствие доступного канала в текущей группе — `503`.
 - Количество изображений `n` ограничено 128. Длительность, разрешение и размер пакета видео определяются выбранной моделью; запросы вне допустимых значений отклоняются до приёма.
 
 ## Не реализовано
 
-`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` и `DELETE /v1/models/{model}` сейчас возвращают `501`. Не вызывайте их в продакшене.
+`/v1/files*`, `/v1/fine-tunes*`, `/v1/images/variations` и `DELETE /v1/models/{model}` сейчас возвращают `501`. Gemini `:countTokens` возвращает `404`. Не вызывайте их в продакшене. Дообучение описано отдельно на [странице дообучения](./ai-model-unimplemented-fine-tuning).

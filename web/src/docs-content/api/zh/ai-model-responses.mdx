@@ -1,0 +1,89 @@
+# Responses API
+
+OpenAI Responses API 支持多轮对话、工具调用、推理以及服务端响应状态。Uter 提供创建、查询、WebSocket 流式与压缩端点。只需一个令牌即可调用任何承载 `openai-response` 端点族的渠道（例如 Uter Route / Uter API / Codex 及 OpenAI 兼容渠道）。
+
+模型 ID 来自 `GET /v1/models`。对不支持该端点族的模型，请求会被拒绝；令牌的分组与模型白名单仍然生效。
+
+> 注意：`POST /v1/responses` 与 `GET /v1/responses/{response_id}` 是宿主协议端点。对已被任务插件接管的模型由插件处理；否则回退到内置 Responses 转发。
+
+## 创建响应
+
+`POST` `/v1/responses`
+
+### 请求体（`application/json`）
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `model` | string | 是 | 模型 ID |
+| `instructions` | string | 否 | 系统指令 |
+| `input` | string 或 array&lt;object&gt; | 否 | 输入提示或消息项 |
+| `max_output_tokens` | integer | 否 | 最大输出 Token 数 |
+| `temperature` | number | 否 | 采样温度 |
+| `top_p` | number | 否 | 核采样参数 |
+| `stream` | boolean | 否 | 是否流式返回 |
+| `tools` | array&lt;object&gt; | 否 | 工具定义 |
+| `previous_response_id` | string | 否 | 要续接的上一响应 ID |
+| `reasoning.effort` | enum（`low`、`medium`、`high`） | 否 | 推理强度 |
+| `reasoning.summary` | string | 否 | 推理摘要 |
+| `truncation` | enum（`auto`、`disabled`） | 否 | 截断模式 |
+| `store` | boolean | 否 | 是否存储响应供后续查询 |
+
+### 响应
+
+| 状态码 | 说明 |
+|---|---|
+| `200` | 创建成功 |
+| `400` | 请求参数错误 |
+| `403` | 额度不足 |
+| `429` | 请求频率限制 |
+| `503` | 当前模型无可用渠道 |
+
+#### `200` 响应字段
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 响应 ID（用于查询与压缩） |
+| `object` | string | `response` |
+| `created_at` | integer | 创建时间（Unix 秒） |
+| `status` | enum（`completed`、`failed`、`in_progress`、`incomplete`） | 响应状态 |
+| `model` | string | 使用的模型 |
+| `output` | array&lt;object&gt; | 输出项（消息、工具调用、推理） |
+| `usage.input_tokens` | integer | 输入 Token 数 |
+| `usage.output_tokens` | integer | 输出 Token 数 |
+| `usage.total_tokens` | integer | 总 Token 数 |
+
+## 查询响应
+
+`GET` `/v1/responses/{response_id}`
+
+按 ID 返回此前存储的响应。
+
+| 参数 | 位置 | 类型 | 必填 | 说明 |
+|---|---|---|---|---|
+| `response_id` | path | string | 是 | 创建时返回的 ID |
+
+响应体字段与创建接口一致。未知 ID 返回 OpenAI 格式错误。
+
+## WebSocket 流式响应
+
+`GET` `/v1/responses`
+
+用于流式响应的 WebSocket 端点。渠道选择在收到首个 `response.create` 事件后进行，每个事件都会经过常规请求限流。无法设置握手请求头的浏览器客户端，除 `Authorization: Bearer` 外，还可用 `Sec-WebSocket-Protocol: openai-insecure-api-key.<key>` 子协议鉴权。
+
+连接地址：`wss://uter.ai/v1/responses`
+
+## 压缩响应
+
+`POST` `/v1/responses/compact`
+
+压缩响应的对话状态，以降低续接会话的 Token 数。
+
+### 请求体（`application/json`）
+
+| 字段 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `model` | string | 是 | 模型 ID |
+| `input` | string 或 array&lt;object&gt; | 是 | 待压缩的对话 |
+| `instructions` | string | 否 | 系统指令 |
+
+响应结构与创建接口一致，压缩后的对话位于 `output` 字段。
