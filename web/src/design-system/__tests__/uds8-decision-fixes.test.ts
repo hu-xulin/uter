@@ -136,8 +136,17 @@ describe('④ 15px 派生档清除 —— 6 处改 16px text-base（字号校对
   const pageNav = read('features/docs/native/page-nav.tsx')
 
   it('文档/关于卡片 teaser 用 text-base（覆盖 /about 4 处 + /docs 1 处）', () => {
-    expect(contentCard).toContain(
-      "CONTENT_CARD_TEASER_CLASS = 'text-base text-fg-secondary mt-2'"
+    // 断言聚焦字号契约：teaser 必须落在 text-base（16px）标准档。
+    // 纯布局类（line-clamp-2 / min-h-12 等）可追加，但任何其它字号档
+    // 出现都视为回退，避免以「格式变化」掩盖字号降级。
+    const teaser = contentCard.match(
+      /CONTENT_CARD_TEASER_CLASS\s*=\s*'([^']+)'/
+    )
+    expect(teaser).not.toBeNull()
+    const classes = teaser?.[1] ?? ''
+    expect(classes).toMatch(/\btext-base\b/)
+    expect(classes).not.toMatch(
+      /\btext-(?:2xs|xs|sm|md|lg|xl|2xl|dense|long)\b/
     )
     expect(contentCard).not.toMatch(/text-md\b/)
   })

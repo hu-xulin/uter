@@ -131,7 +131,10 @@ export function PluginIcon(props: PluginIconProps) {
       style={{
         width: size,
         height: size,
-        fontSize: Math.max(8, Math.floor(size * 0.42)),
+        // UDS 8.0.0 字号下限：所有可见文字不小于 12px（--ds-text-2xs）。
+        // 原先 8px 钳制让 16/20px 徽标低于下限，属已登记的合规缺陷。
+        // 仅抬高字号，容器尺寸保持不变，避免影响各调用点的既有布局。
+        fontSize: Math.max(12, Math.floor(size * 0.42)),
       }}
     >
       {descriptor.label}

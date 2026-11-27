@@ -244,4 +244,18 @@ describe('PluginIcon image rendering', () => {
     rerender(<PluginIcon plugin={{ key: 'sora', icon: 'Sora.Color' }} />)
     expect(getByTestId('lobe-icon')).toBeTruthy()
   })
+
+  test('text avatar glyph never drops below the UDS 12px minimum', () => {
+    // UDS 8.0.0 规定全站可见文字不小于 12px；此前小尺寸徽标被
+    // Math.max(8, …) 钳到 8px，本守卫覆盖所有实际使用的 size。
+    for (const size of [16, 20, 24, 32]) {
+      const { container, unmount } = render(
+        <PluginIcon plugin={{ key: 'sunoapi', name: 'SunoAPI' }} size={size} />
+      )
+      const avatar = container.querySelector('[aria-hidden="true"]') as HTMLElement
+      expect(avatar).not.toBeNull()
+      expect(Number.parseFloat(avatar.style.fontSize)).toBeGreaterThanOrEqual(12)
+      unmount()
+    }
+  })
 })
