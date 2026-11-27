@@ -50,6 +50,29 @@ export type UpstreamDimension = {
   weight: number
   summary: string
   findings: string[]
+  skipped?: boolean
+}
+
+export type BillingReconciliation = {
+  mode: 'static' | 'full_chain'
+  upstream_prompt_tokens: number
+  upstream_completion_tokens: number
+  theoretical_quota: number
+  uter_actual_quota: number
+  uter_request_id: string
+  quota_delta: number
+  match: boolean
+  notes: string
+  inflation_ratio: number
+}
+
+export type AsyncTaskProbeResult = {
+  applicable: boolean
+  submitted: boolean
+  polled: boolean
+  artifact_listed: boolean
+  status: string
+  detail: string
 }
 
 export type UpstreamProbe = {
@@ -76,6 +99,10 @@ export type UpstreamMetrics = {
   finish_reason: string
   injection_resisted: boolean
   consistent: boolean
+  sse_ended: boolean
+  long_context_ok: boolean
+  structured_error_ok: boolean
+  rate_limit_observed: boolean
 }
 
 export type UpstreamMonitorReport = {
@@ -88,6 +115,8 @@ export type UpstreamMonitorReport = {
   dimensions: UpstreamDimension[]
   metrics: UpstreamMetrics
   probes: UpstreamProbe[]
+  billing?: BillingReconciliation
+  async_task?: AsyncTaskProbeResult
   error: string
   created_at: number
 }
@@ -98,6 +127,8 @@ export type UpstreamMonitorRunResult = {
   dimensions: UpstreamDimension[]
   metrics: UpstreamMetrics
   probes: UpstreamProbe[]
+  billing?: BillingReconciliation
+  async_task?: AsyncTaskProbeResult
   hard_gates: string[]
   error: string
 }

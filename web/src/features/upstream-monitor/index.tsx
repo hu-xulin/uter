@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next'
 import { SectionPageLayout } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 
+import { BillingProbeSettingsCard } from './components/billing-probe-settings-card'
 import { UpstreamMonitorMutateDrawer } from './components/upstream-monitor-mutate-drawer'
 import { UpstreamMonitorTable } from './components/upstream-monitor-table'
 import type { UpstreamMonitorTask } from './types'
@@ -63,11 +64,14 @@ export function UpstreamMonitor() {
           </Button>
         </SectionPageLayout.Actions>
         <SectionPageLayout.Content>
-          <div key={refreshTrigger}>
-            <UpstreamMonitorTable
-              onEdit={handleEdit}
-              refreshTrigger={refreshTrigger}
-            />
+          <div className='h-full min-h-0 space-y-4 overflow-y-auto'>
+            <BillingProbeSettingsCard />
+            <div key={refreshTrigger}>
+              <UpstreamMonitorTable
+                onEdit={handleEdit}
+                refreshTrigger={refreshTrigger}
+              />
+            </div>
           </div>
         </SectionPageLayout.Content>
       </SectionPageLayout>

@@ -97,6 +97,40 @@ test('fetched price preview shows official and channel prices per model', async 
   expect(screen.getByText('$1.5000 / $3.0000')).toBeVisible()
 })
 
+test('fetched price preview keeps Bailian third-party price as channel price only', () => {
+  // DeepSeek/GLM are not Alibaba-owned models. Their help-page quote is a
+  // Bailian channel price: it belongs in channel_price_tiers and upstream_quote,
+  // never in the official price column.
+  const bailianRow = {
+    ...pricingItem(),
+    model_name: 'deepseek-v4.1-flash',
+    official: {
+      ...pricingItem().official,
+      tiers: [],
+      channel_price_tiers: [
+        {
+          range_name: 'Default',
+          input_per_million_usd: 2,
+          output_per_million_usd: 4,
+          unit: 'per_1m_token',
+        },
+      ],
+    },
+    upstream_quote: {
+      ...pricingItem().upstream_quote,
+      price_basis: 'CHANNEL_CATALOG',
+      input_per_million_usd: 2,
+      output_per_million_usd: 4,
+    },
+  }
+
+  render(<PricePreviewTable items={[bailianRow]} />)
+
+  expect(screen.getByText('Not available')).toBeVisible()
+  expect(screen.getByText('$2.0000 / $4.0000')).toBeVisible()
+  expect(screen.queryByText('$1.5000 / $3.0000')).not.toBeInTheDocument()
+})
+
 test('fetched price preview remaps saved upstream prices to unsaved redirect aliases', async () => {
   vi.spyOn(api, 'get').mockResolvedValue({
     data: { success: true, data: { channel_id: 7, items: [pricingItem()] } },

@@ -47,6 +47,7 @@ import {
 } from '../api'
 import { canDisplayChannelPrice } from '../lib/channel-price-display'
 import { filterPricingRowsToPublishedAliases } from '../lib/model-mapping-validation'
+import { resolveOfficialDisplayTier } from '../lib/official-price-display'
 import type {
   ChannelInternalPricingView,
   ChannelModelPricingRecord,
@@ -518,12 +519,12 @@ export function ChannelModelPricingSection(
 
   const rawPriceComponent = (item: ChannelModelPricingRecord) => {
     const tier =
-      item.official?.channel_price_tiers?.[0] ?? item.official?.tiers?.[0]
+      item.official?.tiers?.[0] ?? item.official?.channel_price_tiers?.[0]
     return tier?.raw_components?.[0]
   }
 
   const officialPriceLabel = (item: ChannelModelPricingRecord) => {
-    const tier = item.official?.tiers?.[0]
+    const tier = resolveOfficialDisplayTier(item.official)
     if (!tier) return t('Not available')
     return formatTierPrice(tier)
   }

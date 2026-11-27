@@ -148,7 +148,10 @@ export function UpstreamMonitorReportDetail(props: Props) {
     {
       id: 'summary',
       header: t('Summary'),
-      cell: (dimension) => dimension.summary,
+      cell: (dimension) =>
+        dimension.skipped
+          ? `${t('Skipped')} · ${dimension.summary}`
+          : dimension.summary,
     },
   ]
 
@@ -263,7 +266,96 @@ export function UpstreamMonitorReportDetail(props: Props) {
           {t('Token inflation ratio')}:{' '}
           {report.metrics?.token_inflation_ratio ?? 0}
         </p>
+        <p className='text-sm'>
+          {t('SSE ended with [DONE]')}:{' '}
+          {report.metrics?.sse_ended ? t('Yes') : t('No')}
+        </p>
+        <p className='text-sm'>
+          {t('Long context ok')}:{' '}
+          {report.metrics?.long_context_ok ? t('Yes') : t('No')}
+        </p>
+        <p className='text-sm'>
+          {t('Structured error ok')}:{' '}
+          {report.metrics?.structured_error_ok ? t('Yes') : t('No')}
+        </p>
+        <p className='text-sm'>
+          {t('Rate limit observed')}:{' '}
+          {report.metrics?.rate_limit_observed ? t('Yes') : t('No')}
+        </p>
       </TitledCard>
+
+      {report.billing && (
+        <TitledCard title={t('Billing reconciliation')} disableHoverEffect>
+          <div className='space-y-2 text-sm'>
+            <p>
+              <span className='text-muted-foreground'>{t('Mode')}: </span>
+              {report.billing.mode === 'full_chain'
+                ? t('Full chain (through Uter)')
+                : t('Static (upstream usage only)')}
+            </p>
+            <p>
+              <span className='text-muted-foreground'>
+                {t('Upstream tokens')}:{' '}
+              </span>
+              {report.billing.upstream_prompt_tokens ?? 0} /{' '}
+              {report.billing.upstream_completion_tokens ?? 0}
+            </p>
+            <p>
+              <span className='text-muted-foreground'>
+                {t('Theoretical quota')}:{' '}
+              </span>
+              {report.billing.theoretical_quota ?? 0}
+            </p>
+            <p>
+              <span className='text-muted-foreground'>
+                {t('Uter actual deduction')}:{' '}
+              </span>
+              {report.billing.mode === 'full_chain'
+                ? (report.billing.uter_actual_quota ?? 0)
+                : t('Not verified')}
+            </p>
+            {report.billing.uter_request_id && (
+              <p>
+                <span className='text-muted-foreground'>
+                  {t('Uter request id')}:{' '}
+                </span>
+                <span className='text-mono break-all'>
+                  {report.billing.uter_request_id}
+                </span>
+              </p>
+            )}
+            <p>{report.billing.notes}</p>
+          </div>
+        </TitledCard>
+      )}
+
+      {report.async_task?.applicable && (
+        <TitledCard title={t('Async task probe')} disableHoverEffect>
+          <div className='space-y-2 text-sm'>
+            <p>
+              <span className='text-muted-foreground'>{t('Submitted')}: </span>
+              {report.async_task.submitted ? t('Yes') : t('No')}
+            </p>
+            <p>
+              <span className='text-muted-foreground'>{t('Polled')}: </span>
+              {report.async_task.polled ? t('Yes') : t('No')}
+            </p>
+            <p>
+              <span className='text-muted-foreground'>
+                {t('Artifacts listed')}:{' '}
+              </span>
+              {report.async_task.artifact_listed ? t('Yes') : t('No')}
+            </p>
+            {report.async_task.status && (
+              <p>
+                <span className='text-muted-foreground'>{t('Status')}: </span>
+                {report.async_task.status}
+              </p>
+            )}
+            {report.async_task.detail && <p>{report.async_task.detail}</p>}
+          </div>
+        </TitledCard>
+      )}
 
       <TitledCard title={t('History')} disableHoverEffect>
         <StaticDataTable

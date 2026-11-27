@@ -29,6 +29,7 @@ import {
   filterPricingRowsToSelectedModels,
   remapPricingRowsForPreview,
 } from '../lib/model-mapping-validation'
+import { resolveOfficialDisplayTier } from '../lib/official-price-display'
 import type {
   ChannelModelPricingRecord,
   ChannelOfficialPricingTier,
@@ -127,7 +128,7 @@ export function PricePreviewTable({
         >
           <span className='font-mono break-words'>{item.model_name}</span>
           <span className='tabular-nums'>
-            {officialLabel(item.official?.tiers?.[0], t)}
+            {officialLabel(resolveOfficialDisplayTier(item.official), t)}
           </span>
           <span className='tabular-nums'>
             {canDisplayChannelPrice(item)

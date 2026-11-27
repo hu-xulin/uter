@@ -138,6 +138,43 @@ test('shows only published aliases when the channel uses redirects', async () =>
   expect(screen.queryByText('Unmapped-Model')).not.toBeInTheDocument()
 })
 
+test('keeps Bailian third-party price as channel price only', async () => {
+  // 非阿里系模型在阿里云帮助页上的价格是百炼渠道价，不能显示为官方价。
+  const bailianRecord = {
+    ...record('glm-5.2', 'alibaba-bailian', 'configured'),
+    official: {
+      currency: 'USD',
+      unit: 'per_1m_token',
+      tiers: [],
+      channel_price_tiers: [
+        {
+          range_name: 'Default',
+          unit: 'per_1m_token',
+          input_per_million_usd: 8,
+          output_per_million_usd: 28,
+        },
+      ],
+      source: 'bailian-official',
+      fetched_at: 1,
+      currency_inferred: true,
+    },
+  }
+  vi.mocked(getChannelModelPricing).mockResolvedValue({
+    success: true,
+    data: { items: [bailianRecord] },
+  } as never)
+
+  renderSection()
+  await waitFor(() =>
+    expect(screen.getByText(/Upstream official price:/)).toHaveTextContent(
+      'Not available'
+    )
+  )
+  expect(
+    screen.getByText(/Upstream channel price tiers \(1\)/)
+  ).toBeVisible()
+})
+
 test('applies the same alias-only rule to a different channel mapping', async () => {
   vi.mocked(getChannelModelPricing).mockResolvedValue({
     success: true,

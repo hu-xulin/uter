@@ -2014,9 +2014,17 @@ export function ChannelMutateDrawer({
     enabled: canDiscoverWithCurrentRequest,
     request: previewModels ? previewRequest : savedRequest,
   })
+  // Bailian prices are written by applying the official catalog to the
+  // channel's *selected* models. Both creation and editing legitimately have
+  // zero price rows until that explicit price sync has run; treating an empty
+  // catalogue as a completed price check hides every discovered model and
+  // deadlocks the wizard (no model can be selected, so no price row can ever
+  // be written).
+  const canFilterDiscoveredModelsByPrice =
+    pricingDataReady && (!isBailianProvider || pricingRows.length > 0)
   const upstreamModelList = useMemo(() => {
     if (discovery.status !== 'success') return NO_UPSTREAM_MODELS
-    if (!pricingDataReady) return discovery.models
+    if (!canFilterDiscoveredModelsByPrice) return discovery.models
     return filterModelsWithBillablePrice(
       pricingRows,
       discovery.models,
@@ -2025,7 +2033,7 @@ export function ChannelMutateDrawer({
   }, [
     discovery.status,
     discovery.models,
-    pricingDataReady,
+    canFilterDiscoveredModelsByPrice,
     pricingRows,
     currentModelMapping,
   ])
@@ -2369,11 +2377,14 @@ export function ChannelMutateDrawer({
     createDraftChannel,
   ])
 
-  // Bailian prices come from the official catalog; read it automatically once a
-  // draft exists in the creation flow so the fetch step is never empty.
+  // Bailian prices come from the official catalog, but applying the catalog
+  // only writes rows for models the channel already serves. Wait until the
+  // operator has selected at least one model; applying earlier writes an empty
+  // price table and makes the discovered models look unpriced forever.
   useEffect(() => {
     if (!autoProvisionRuntime || isEditing || !isBailianProvider) return
     if (effectiveChannelId == null) return
+    if (currentModelsArray.length === 0) return
     if (autoPriceChannelRef.current === effectiveChannelId) return
     autoPriceChannelRef.current = effectiveChannelId
     void (async () => {
@@ -2389,6 +2400,7 @@ export function ChannelMutateDrawer({
     isEditing,
     isBailianProvider,
     effectiveChannelId,
+    currentModelsArray.length,
     runBailianAutoFetch,
     createDraftChannel,
   ])
@@ -4882,10 +4894,16 @@ export function ChannelMutateDrawer({
                   upstreamModelList.length === 0 && (
                     <EmptyState
                       className='min-h-0 p-3'
-                      title={t('No models returned by the upstream')}
-                      description={t(
-                        'Models without a usable price are hidden.'
-                      )}
+                      title={
+                        discovery.models.length === 0
+                          ? t('No models returned by the upstream')
+                          : t('Models without a usable price are hidden.')
+                      }
+                      description={
+                        discovery.models.length === 0
+                          ? t('Models without a usable price are hidden.')
+                          : undefined
+                      }
                       action={
                         <Button
                           type='button'

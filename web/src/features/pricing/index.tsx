@@ -38,6 +38,7 @@ import { FILTER_ALL, VIEW_MODES } from './constants'
 import { useFilters } from './hooks/use-filters'
 import { usePricingData } from './hooks/use-pricing-data'
 import { applyChannelView } from './lib/channel-view'
+import { sortModels } from './lib/filters'
 
 export function Pricing() {
   const { t } = useTranslation()
@@ -93,16 +94,25 @@ export function Pricing() {
 
   // When a channel filter is active, show that channel's configured sale
   // price and official basis instead of the cheapest price across channels.
-  const channelView = useMemo(
-    () =>
-      applyChannelView(
-        filteredModels,
-        channelFilter,
-        officialPrices,
+  // 折扣角标用渠道视图价格计算，因此排序必须在 applyChannelView 之后进行，
+  // 并传入同一份渠道官方价，保证「2 折排在 3 折前」的顺序与角标数值一致。
+  const channelView = useMemo(() => {
+    const view = applyChannelView(
+      filteredModels,
+      channelFilter,
+      officialPrices,
+      FILTER_ALL
+    )
+    return {
+      ...view,
+      models: sortModels(
+        view.models,
+        sortBy,
+        view.officialPrices,
         FILTER_ALL
       ),
-    [filteredModels, channelFilter, officialPrices]
-  )
+    }
+  }, [filteredModels, channelFilter, officialPrices, sortBy])
 
   const handleModelClick = useCallback((modelName: string) => {
     setSelectedModelName(modelName)

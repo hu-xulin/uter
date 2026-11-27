@@ -285,15 +285,129 @@ describe('pricing controls', () => {
     )
   })
 
-  it('selects price sorting from the shared dropdown', async () => {
+  it('exposes discount, time, name and input-price as four sort dimensions', () => {
+    render(<PricingToolbar {...toolbarProps()} />)
+    expect(
+      screen.getByRole('button', { name: /Discount Low to High/ })
+    ).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: /Time Newest to Oldest/ })
+    ).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Name A to Z' })).toBeVisible()
+    expect(
+      screen.getByRole('button', { name: /Input Price Low to High/ })
+    ).toBeVisible()
+    // 旧的下拉排序菜单已移除，避免它跟着 sortBy 显示成第二个「时间」按钮。
+    expect(screen.queryByRole('menuitem')).toBeNull()
+  })
+
+  it('toggles name direction from A to Z to Z to A and back', async () => {
     const props = toolbarProps()
     const user = userEvent.setup()
-    render(<PricingToolbar {...props} />)
-    await user.click(screen.getByRole('button', { name: 'Name' }))
+    const { rerender } = render(
+      <PricingToolbar {...props} sortBy='discount-low-to-high' />
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Name A to Z' }))
+    expect(props.onSortChange).toHaveBeenCalledWith('name')
+
+    rerender(<PricingToolbar {...props} sortBy='name' />)
+    const ascendingActive = screen.getByRole('button', {
+      name: 'Name A to Z',
+    })
+    expect(ascendingActive).toHaveAttribute('aria-pressed', 'true')
+    expect(ascendingActive.querySelector('svg')).toHaveClass('lucide-arrow-up')
+    await user.click(ascendingActive)
+    expect(props.onSortChange).toHaveBeenLastCalledWith('name-desc')
+
+    rerender(<PricingToolbar {...props} sortBy='name-desc' />)
+    const descendingActive = screen.getByRole('button', {
+      name: 'Name Z to A',
+    })
+    expect(descendingActive).toHaveAttribute('aria-pressed', 'true')
+    expect(descendingActive.querySelector('svg')).toHaveClass(
+      'lucide-arrow-down'
+    )
+    await user.click(descendingActive)
+    expect(props.onSortChange).toHaveBeenLastCalledWith('name')
+  })
+
+  it('toggles input price direction from low-to-high to high-to-low and back', async () => {
+    const props = toolbarProps()
+    const user = userEvent.setup()
+    const { rerender } = render(<PricingToolbar {...props} />)
+
     await user.click(
-      screen.getByRole('menuitem', { name: 'Input Price: Low to High' })
+      screen.getByRole('button', { name: /Input Price Low to High/ })
     )
     expect(props.onSortChange).toHaveBeenCalledWith('input-price-low')
+
+    rerender(<PricingToolbar {...props} sortBy='input-price-low' />)
+    const ascendingActive = screen.getByRole('button', {
+      name: /Input Price Low to High/,
+    })
+    expect(ascendingActive).toHaveAttribute('aria-pressed', 'true')
+    await user.click(ascendingActive)
+    expect(props.onSortChange).toHaveBeenLastCalledWith('input-price-high')
+
+    rerender(<PricingToolbar {...props} sortBy='input-price-high' />)
+    await user.click(
+      screen.getByRole('button', { name: /Input Price High to Low/ })
+    )
+    expect(props.onSortChange).toHaveBeenLastCalledWith('input-price-low')
+  })
+
+  it('toggles discount direction from low-to-high to high-to-low and back', async () => {
+    const props = toolbarProps()
+    const user = userEvent.setup()
+    const { rerender } = render(<PricingToolbar {...props} />)
+
+    const lowToHigh = screen.getByRole('button', {
+      name: /Discount Low to High/,
+    })
+    await user.click(lowToHigh)
+    expect(props.onSortChange).toHaveBeenCalledWith('discount-low-to-high')
+
+    // 已按折扣升序：按钮 aria-label 仍描述当前方向，aria-pressed 反映选中。
+    rerender(<PricingToolbar {...props} sortBy='discount-low-to-high' />)
+    const ascendingActive = screen.getByRole('button', {
+      name: /Discount Low to High/,
+    })
+    expect(ascendingActive).toHaveAttribute('aria-pressed', 'true')
+    await user.click(ascendingActive)
+    expect(props.onSortChange).toHaveBeenLastCalledWith('discount-high-to-low')
+
+    // 已按折扣降序：名称与箭头切换为「从高到低」，再点回到升序。
+    rerender(<PricingToolbar {...props} sortBy='discount-high-to-low' />)
+    await user.click(
+      screen.getByRole('button', { name: /Discount High to Low/ })
+    )
+    expect(props.onSortChange).toHaveBeenLastCalledWith('discount-low-to-high')
+  })
+
+  it('toggles time direction from newest-to-oldest to oldest-to-newest and back', async () => {
+    const props = toolbarProps()
+    const user = userEvent.setup()
+    const { rerender } = render(<PricingToolbar {...props} />)
+
+    await user.click(
+      screen.getByRole('button', { name: /Time Newest to Oldest/ })
+    )
+    expect(props.onSortChange).toHaveBeenCalledWith('time-newest-to-oldest')
+
+    rerender(<PricingToolbar {...props} sortBy='time-newest-to-oldest' />)
+    const newestActive = screen.getByRole('button', {
+      name: /Time Newest to Oldest/,
+    })
+    expect(newestActive).toHaveAttribute('aria-pressed', 'true')
+    await user.click(newestActive)
+    expect(props.onSortChange).toHaveBeenLastCalledWith('time-oldest-to-newest')
+
+    rerender(<PricingToolbar {...props} sortBy='time-oldest-to-newest' />)
+    await user.click(
+      screen.getByRole('button', { name: /Time Oldest to Newest/ })
+    )
+    expect(props.onSortChange).toHaveBeenLastCalledWith('time-newest-to-oldest')
   })
 
   it('opens mobile filters from the left, selects a channel, and restores focus on close', async () => {
@@ -400,11 +514,14 @@ describe('pricing controls', () => {
     cleanup()
     render(<PricingToolbar {...toolbarProps()} />)
 
-    for (const name of ['Standard', 'Recharge', '/1M', '/1K', 'Name']) {
+    for (const name of ['Standard', 'Recharge', '/1M', '/1K']) {
       expect(screen.getByRole('button', { name })).toHaveClass(
         'h-(--ds-button-height-sm)'
       )
     }
+    expect(screen.getByRole('button', { name: 'Name A to Z' })).toHaveClass(
+      'h-(--ds-button-height-sm)'
+    )
     expect(screen.getByRole('group', { name: 'View mode' })).toHaveClass(
       'h-(--ds-button-height-sm)'
     )

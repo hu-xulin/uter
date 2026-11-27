@@ -33,7 +33,7 @@ import {
   isUnconfiguredTaskUsageModel,
 } from './dynamic-price'
 import { isTokenBasedModel } from './model-helpers'
-import { calculateTokenPrice } from './price'
+import { calculateTokenPrice, getDiscountInfo } from './price'
 
 // ----------------------------------------------------------------------------
 // Filter Utilities
@@ -215,6 +215,25 @@ function compareModelNames(a: string, b: string): number {
 }
 
 /**
+ * 名称维度的严格字母比较：只按 model_name 排，不掺入发布日期；`numeric`
+ * 让 gpt-5 排在 gpt-10 之前，`sensitivity: 'base'` 忽略大小写差异。
+ * 方向由 dir 决定（1 = A→Z，-1 = Z→A）。
+ */
+function compareModelsByName(
+  a: PricingModel,
+  b: PricingModel,
+  dir: 1 | -1
+): number {
+  return (
+    dir *
+    (a.model_name ?? '').localeCompare(b.model_name ?? '', undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    })
+  )
+}
+
+/**
  * Pricing-card order: newest release first; models without a release date
  * (or sharing one) fall back to alphabetical order with larger version
  * numbers ahead. ISO `YYYY-MM`/`YYYY-MM-DD` strings sort chronologically as
@@ -232,13 +251,98 @@ export function compareModelsForCard(a: PricingModel, b: PricingModel): number {
 }
 
 /**
+ * 时间维度的严格比较（用于「时间」排序按钮的主维度）：
+ * 新→旧时 release_date 降序，旧→新时升序。无发布日期的模型在两种方向下
+ * 都排最后（与价格排序的缺失值惯例一致），避免缺数据的模型在反向时被顶到最前。
+ * 同日期用「字母升序 → 版本号大→小」细分。
+ */
+export function compareModelsByTime(
+  a: PricingModel,
+  b: PricingModel,
+  direction: 'newest-to-oldest' | 'oldest-to-newest'
+): number {
+  const dateA = (a.release_date ?? '').trim()
+  const dateB = (b.release_date ?? '').trim()
+  if (!dateA && !dateB) {
+    return compareModelNames(a.model_name ?? '', b.model_name ?? '')
+  }
+  if (!dateA) return 1
+  if (!dateB) return -1
+  if (dateA !== dateB) {
+    const cmp = dateA < dateB ? -1 : 1
+    return direction === 'newest-to-oldest' ? -cmp : cmp
+  }
+  return compareModelNames(a.model_name ?? '', b.model_name ?? '')
+}
+
+/**
+ * 折扣倍率（平台价 ÷ 官方价），即角标上的 `x0.2` / `x0.3`。
+ * 0.2 = 2 折，0.3 = 3 折；「折扣从低到高」要求 2 折在 3 折之前，
+ * 因此按该 ratio 数值升序。没有官方参照（ratio=null）返回 undefined，
+ * 排序时两种方向都排最后。
+ */
+export function getDiscountRatio(
+  model: PricingModel,
+  officialPrices?: Record<string, Record<string, number>>,
+  selectedGroup?: string
+): number | undefined {
+  return (
+    getDiscountInfo(model, officialPrices, selectedGroup).ratio ?? undefined
+  )
+}
+
+/**
+ * 折扣主维度 + 三级次级的复合比较器。主维度按 ratio 排序（方向由 dir 决定），
+ * 同折扣依次按「发布时间新→旧 → 名称字母 → 版本号大→小」——这一整段次级
+ * 正是 compareModelsForCard，复用保证卡片默认顺序与折扣排序口径一致。
+ */
+function compareModelsByDiscount(
+  a: PricingModel,
+  b: PricingModel,
+  dir: 1 | -1,
+  officialPrices?: Record<string, Record<string, number>>,
+  selectedGroup?: string
+): number {
+  const ratioA = getDiscountRatio(a, officialPrices, selectedGroup)
+  const ratioB = getDiscountRatio(b, officialPrices, selectedGroup)
+  if (ratioA === undefined && ratioB === undefined) {
+    return compareModelsForCard(a, b)
+  }
+  if (ratioA === undefined) return 1
+  if (ratioB === undefined) return -1
+  if (ratioA !== ratioB) return dir * (ratioA - ratioB)
+  return compareModelsForCard(a, b)
+}
+
+/**
  * Sort models by specified option
  */
 export function sortModels(
   models: PricingModel[],
-  sortBy: string
+  sortBy: string,
+  officialPrices?: Record<string, Record<string, number>>,
+  selectedGroup?: string
 ): PricingModel[] {
   const sorted = [...models]
+
+  switch (sortBy) {
+    case SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH:
+      return sorted.sort((a, b) =>
+        compareModelsByDiscount(a, b, 1, officialPrices, selectedGroup)
+      )
+    case SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW:
+      return sorted.sort((a, b) =>
+        compareModelsByDiscount(a, b, -1, officialPrices, selectedGroup)
+      )
+    case SORT_OPTIONS.TIME_NEWEST_TO_OLDEST:
+      return sorted.sort((a, b) =>
+        compareModelsByTime(a, b, 'newest-to-oldest')
+      )
+    case SORT_OPTIONS.TIME_OLDEST_TO_NEWEST:
+      return sorted.sort((a, b) =>
+        compareModelsByTime(a, b, 'oldest-to-newest')
+      )
+  }
 
   const priceSort = PRICE_SORTS[sortBy as SortOption]
   if (priceSort) {
@@ -260,7 +364,10 @@ export function sortModels(
 
   switch (sortBy) {
     case SORT_OPTIONS.NAME:
-      sorted.sort(compareModelsForCard)
+      sorted.sort((a, b) => compareModelsByName(a, b, 1))
+      break
+    case SORT_OPTIONS.NAME_DESC:
+      sorted.sort((a, b) => compareModelsByName(a, b, -1))
       break
   }
 
@@ -280,7 +387,9 @@ export function filterAndSortModels(
     endpointType: string
     tag: string
     sortBy: string
-  }
+  },
+  officialPrices?: Record<string, Record<string, number>>,
+  selectedGroup?: string
 ): PricingModel[] {
   let result = filterBySearch(models, filters.search)
   result = filterByVendor(result, filters.vendor)
@@ -288,7 +397,7 @@ export function filterAndSortModels(
   result = filterByQuotaType(result, filters.quotaType)
   result = filterByEndpointType(result, filters.endpointType)
   result = filterByTag(result, filters.tag)
-  result = sortModels(result, filters.sortBy)
+  result = sortModels(result, filters.sortBy, officialPrices, selectedGroup)
 
   return result
 }

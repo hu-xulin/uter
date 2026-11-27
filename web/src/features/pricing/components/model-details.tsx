@@ -345,6 +345,22 @@ function CatalogInfoCell(props: { label: string; children: React.ReactNode }) {
   )
 }
 
+/**
+ * 两列信息网格：奇数个信息格会在末尾留下一个空位。此前空位直接露出
+ * 容器的 bg-border/60 网格底色，看起来像未填充的表单格；这里补一个真正的
+ * 空单元格并用 bg-card 填充，和其余信息格/表格背景保持一致。
+ */
+function CatalogInfoGrid(props: { cells: React.ReactNode[] }) {
+  return (
+    <div className='border-border/60 bg-border/60 grid grid-cols-1 gap-px overflow-hidden rounded-lg border sm:grid-cols-2'>
+      {props.cells}
+      {props.cells.length % 2 === 1 && (
+        <div aria-hidden='true' className='bg-card' />
+      )}
+    </div>
+  )
+}
+
 function ModalityLabels(props: { items: string[] }) {
   const { t } = useTranslation()
   if (props.items.length === 0) return null
@@ -583,9 +599,7 @@ function ModelBackendProviderSection(props: { model: PricingModel }) {
   return (
     <section>
       <SectionTitle>{t('Model')}</SectionTitle>
-      <div className='border-border/60 bg-border/60 grid grid-cols-1 gap-px overflow-hidden rounded-lg border sm:grid-cols-2'>
-        {cells}
-      </div>
+      <CatalogInfoGrid cells={cells} />
     </section>
   )
 }

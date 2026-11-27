@@ -16,7 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 
@@ -151,6 +157,94 @@ test('百炼创建态支持三种密钥添加模式', async () => {
   expect(
     await screen.findByRole('combobox', { name: 'Multi-Key Strategy' })
   ).toBeVisible()
+})
+
+test('百炼多密钥草稿价格目录为空时，从上游获取仍展示已发现模型', async () => {
+  const user = userEvent.setup()
+  mocks.postSpy.mockImplementation(async (url: string) => {
+    if (url === '/api/channel/draft') {
+      return { data: { success: true, data: { id: 77 } } } as never
+    }
+    if (url === '/api/channel/fetch_models') {
+      return {
+        data: { success: true, data: ['upstream-model'] },
+      } as never
+    }
+    return { data: { success: true, data: {} } } as never
+  })
+
+  await pickBailian(user)
+  await user.click(screen.getByRole('combobox', { name: 'Add Mode' }))
+  await user.click(
+    await screen.findByRole('option', {
+      name: 'Multi-Key Mode (multiple keys, one channel)',
+    })
+  )
+  await user.click(screen.getByRole('combobox', { name: 'Multi-Key Strategy' }))
+  await user.click(await screen.findByRole('option', { name: 'Polling' }))
+  fireEvent.change(
+    screen.getByPlaceholderText('Enter one key per line for batch creation'),
+    { target: { value: 'sk-ws-a\nsk-ws-b\nsk-ws-c' } }
+  )
+
+  // The Bailian wizard exposes draft creation from the pricing step, not the
+  // Uter Route-specific "Prepare draft channel" button.
+  await user.click(screen.getByRole('tab', { name: /Configure prices/ }))
+  await user.click(
+    await screen.findByRole('button', { name: 'Configure pricing now' })
+  )
+  await user.click(
+    await screen.findByRole('button', { name: 'Create draft channel' })
+  )
+  await waitFor(() =>
+    expect(mocks.postSpy).toHaveBeenCalledWith(
+      '/api/channel/draft',
+      expect.objectContaining({
+        mode: 'multi_to_single',
+        multi_key_mode: 'polling',
+        key: 'sk-ws-a\nsk-ws-b\nsk-ws-c',
+      }),
+      expect.anything()
+    )
+  )
+
+  await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
+  await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
+
+  // The draft has no selected models yet, so the Bailian catalogue has not
+  // written any price row. That must not turn a successful upstream
+  // discovery into "the upstream returned no models".
+  expect(
+    await screen.findByRole('checkbox', { name: 'upstream-model' })
+  ).toBeVisible()
+  expect(screen.queryByText('No models returned by the upstream')).toBeNull()
+})
+
+test('百炼编辑态价格目录为空时，从上游获取仍展示已发现模型', async () => {
+  const user = userEvent.setup()
+  const row = makeEditingChannel({
+    type: CHANNEL_TYPE_ALI,
+    name: 'Bailian empty price catalogue',
+    base_url: 'https://myws.cn-beijing.maas.aliyuncs.com/api/v1',
+    key: 'sk-existing',
+    models: 'existing-model',
+  })
+  mocks = setupWizardApiMocks({ editingRow: row, pricingRows: [] })
+  render(<WizardHarness client={mocks.client} currentRow={row} />)
+  await user.click(
+    await screen.findByRole('button', { name: 'Back to configuration' })
+  )
+  await screen.findByDisplayValue('Bailian empty price catalogue')
+  await user.click(screen.getByRole('tab', { name: /Fetch models/ }))
+
+  await user.click(screen.getByRole('button', { name: 'Fetch from Upstream' }))
+
+  expect(
+    await screen.findByRole('checkbox', { name: 'upstream-model' })
+  ).toBeVisible()
+  expect(
+    screen.queryByText('Models without a usable price are hidden.')
+  ).toBeNull()
 })
 
 // ── 手动同步：refresh / apply ───────────────────────────────────

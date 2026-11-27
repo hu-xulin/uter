@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
-import { ArrowUpDown, Check, Filter } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -29,13 +29,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -45,7 +38,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 
-import { getSortLabels, type SortOption, type ViewMode } from '../constants'
+import { SORT_OPTIONS, type ViewMode } from '../constants'
 import type {
   PricingChannel,
   PricingFacetModels,
@@ -69,6 +62,45 @@ const primarySelectedToggleClass =
 // 值，密度切换时会再次错位），而是直接钉到按钮的高度 Token 上，三种控件跟随
 // 同一档密度。
 const toolbarSegmentClass = 'h-(--ds-button-height-sm)'
+
+type SortDirectionButtonProps = {
+  /** 可见文案（随界面语言）。 */
+  label: string
+  /** 无障碍名用固定英文「维度 + 方向」，不随语言变化，便于稳定定位。 */
+  ariaLabel: string
+  active: boolean
+  ascending: boolean
+  onClick: () => void
+}
+
+/**
+ * 排序维度按钮：文案固定为维度名，箭头随当前方向切换
+ * （升序 ArrowUp、降序 ArrowDown，未选中该维度时显示双向 ArrowUpDown）。
+ */
+function SortDirectionButton(props: SortDirectionButtonProps) {
+  let Icon = ArrowUpDown
+  if (props.active) {
+    Icon = props.ascending ? ArrowUp : ArrowDown
+  }
+  return (
+    <Button
+      type='button'
+      variant='outline'
+      size='sm'
+      aria-label={props.ariaLabel}
+      aria-pressed={props.active}
+      onClick={props.onClick}
+      className={cn(
+        'gap-1.5 px-3 text-sm',
+        toolbarSegmentClass,
+        props.active && primarySelectedToggleClass
+      )}
+    >
+      <Icon className='size-4.5' />
+      <span>{props.label}</span>
+    </Button>
+  )
+}
 
 export interface PricingToolbarProps {
   filteredCount: number
@@ -105,7 +137,6 @@ export interface PricingToolbarProps {
 export function PricingToolbar(props: PricingToolbarProps) {
   const { t } = useTranslation()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  const sortLabels = getSortLabels(t)
 
   return (
     <div className='bg-card rounded-lg border p-3'>
@@ -191,40 +222,87 @@ export function PricingToolbar(props: PricingToolbarProps) {
             </ToggleGroupItem>
           </ToggleGroup>
 
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  className='gap-1.5 px-3 text-sm'
-                />
-              }
-            >
-              <ArrowUpDown className='size-4.5' />
-              <span>{sortLabels[props.sortBy as SortOption] || t('Sort')}</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end' className='w-44'>
-              <DropdownMenuGroup>
-                {Object.entries(sortLabels).map(([value, label]) => (
-                  <DropdownMenuItem
-                    key={value}
-                    onClick={() => props.onSortChange(value)}
-                    className='gap-2'
-                  >
-                    <Check
-                      className={cn(
-                        'size-4 shrink-0',
-                        props.sortBy === value ? 'opacity-100' : 'opacity-0'
-                      )}
-                    />
-                    {label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <SortDirectionButton
+            label={t('Price discount')}
+            ariaLabel={
+              props.sortBy === SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW
+                ? 'Discount High to Low'
+                : 'Discount Low to High'
+            }
+            active={
+              props.sortBy === SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH ||
+              props.sortBy === SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW
+            }
+            ascending={props.sortBy !== SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW}
+            onClick={() =>
+              props.onSortChange(
+                props.sortBy === SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH
+                  ? SORT_OPTIONS.DISCOUNT_HIGH_TO_LOW
+                  : SORT_OPTIONS.DISCOUNT_LOW_TO_HIGH
+              )
+            }
+          />
+          <SortDirectionButton
+            label={t('Time')}
+            ariaLabel={
+              props.sortBy === SORT_OPTIONS.TIME_OLDEST_TO_NEWEST
+                ? 'Time Oldest to Newest'
+                : 'Time Newest to Oldest'
+            }
+            active={
+              props.sortBy === SORT_OPTIONS.TIME_NEWEST_TO_OLDEST ||
+              props.sortBy === SORT_OPTIONS.TIME_OLDEST_TO_NEWEST
+            }
+            ascending={props.sortBy !== SORT_OPTIONS.TIME_OLDEST_TO_NEWEST}
+            onClick={() =>
+              props.onSortChange(
+                props.sortBy === SORT_OPTIONS.TIME_NEWEST_TO_OLDEST
+                  ? SORT_OPTIONS.TIME_OLDEST_TO_NEWEST
+                  : SORT_OPTIONS.TIME_NEWEST_TO_OLDEST
+              )
+            }
+          />
+
+          <SortDirectionButton
+            label={t('Name')}
+            ariaLabel={
+              props.sortBy === SORT_OPTIONS.NAME_DESC
+                ? 'Name Z to A'
+                : 'Name A to Z'
+            }
+            active={
+              props.sortBy === SORT_OPTIONS.NAME ||
+              props.sortBy === SORT_OPTIONS.NAME_DESC
+            }
+            ascending={props.sortBy !== SORT_OPTIONS.NAME_DESC}
+            onClick={() =>
+              props.onSortChange(
+                props.sortBy === SORT_OPTIONS.NAME
+                  ? SORT_OPTIONS.NAME_DESC
+                  : SORT_OPTIONS.NAME
+              )
+            }
+          />
+          <SortDirectionButton
+            label={t('Sort price')}
+            ariaLabel={
+              props.sortBy === SORT_OPTIONS.INPUT_PRICE_HIGH
+                ? 'Input Price High to Low'
+                : 'Input Price Low to High'
+            }
+            active={
+              props.sortBy === SORT_OPTIONS.INPUT_PRICE_LOW ||
+              props.sortBy === SORT_OPTIONS.INPUT_PRICE_HIGH
+            }
+            ascending={props.sortBy !== SORT_OPTIONS.INPUT_PRICE_HIGH}
+            onClick={() =>
+              props.onSortChange(
+                props.sortBy === SORT_OPTIONS.INPUT_PRICE_LOW
+                  ? SORT_OPTIONS.INPUT_PRICE_HIGH
+                  : SORT_OPTIONS.INPUT_PRICE_LOW
+              )
+            }
+          />
 
           <DataTableViewModeToggle
             value={props.viewMode}

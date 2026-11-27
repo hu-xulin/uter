@@ -23,8 +23,8 @@ import { useDebounce } from '@/hooks/use-debounce'
 
 import {
   DEFAULT_CHANNEL_FILTER,
+  DEFAULT_SORT_OPTION,
   FILTER_ALL,
-  SORT_OPTIONS,
   QUOTA_TYPES,
   ENDPOINT_TYPES,
   DEFAULT_TOKEN_UNIT,
@@ -73,7 +73,7 @@ export function useFilters(models: PricingModel[]) {
 
   const searchInput = filterState.search || ''
   const debouncedSearchInput = useDebounce(searchInput, 200)
-  const sortBy = filterState.sort || SORT_OPTIONS.NAME
+  const sortBy = filterState.sort || DEFAULT_SORT_OPTION
   const vendorFilter = filterState.vendor || FILTER_ALL
   // 默认渠道在目录中不存在（渠道尚未创建或被停用）时降级为「所有渠道」，
   // 避免访客看到空白列表；URL 显式指定的渠道不受影响。
@@ -115,7 +115,7 @@ export function useFilters(models: PricingModel[]) {
   )
   const setSortBy = useCallback(
     (v: string) =>
-      updateFilters({ sort: v === SORT_OPTIONS.NAME ? undefined : v }),
+      updateFilters({ sort: v === DEFAULT_SORT_OPTION ? undefined : v }),
     [updateFilters]
   )
   const setVendorFilter = useCallback(
