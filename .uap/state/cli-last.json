@@ -1,11 +1,11 @@
 {
   "status": "PASS",
   "exit_code": 0,
-  "summary": "UAP 1.0.0: IMPLEMENTED_NOT_VERIFIED (0/538 requirements verified), claim_allowed=false, execution=UAP-EXEC-20261126134821-a26d0967",
+  "summary": "UAP 1.0.0: IMPLEMENTED_NOT_VERIFIED (0/538 requirements verified), claim_allowed=false, execution=UAP-EXEC-20261127120252-eea13c10",
   "data": {
     "platform": "UAP",
     "version": "1.0.0",
-    "generated_at": "2026-11-26T13:48:28.936Z",
+    "generated_at": "2026-11-27T12:03:06.362Z",
     "root": "/Users/lincolnhu/uter",
     "registry": {
       "ok": true,
@@ -19,7 +19,7 @@
       "checks_passed": 7,
       "checks_total": 7,
       "failed_checks": [],
-      "generated_at": "2026-11-26T13:48:20.153Z"
+      "generated_at": "2026-11-27T12:03:02.700Z"
     },
     "runtime": {
       "status": "NOT_FULLY_VERIFIED",
@@ -28,31 +28,31 @@
         "components_healthy": true,
         "registry_integrity": true,
         "full_validation_run": true,
-        "no_validator_failure": true,
+        "no_validator_failure": false,
         "no_unexplained_block": true,
         "uap_tests_run": true,
         "recovery_verified": true
       },
-      "checks_passed": 8,
+      "checks_passed": 7,
       "checks_total": 8,
-      "all_validators_passed": true,
-      "validators_pass": 32,
+      "all_validators_passed": false,
+      "validators_pass": 31,
       "validators_total": 32,
       "restricted_blocked_items": [],
-      "checked_at": "2026-11-26T12:05:02.638Z"
+      "checked_at": "2026-11-27T11:09:38.750Z"
     },
     "uter_compliance": {
       "status": "NOT_FULLY_VERIFIED",
       "checks": {
         "audit_executed": true,
         "defect_registry_built": true,
-        "all_validators_pass": true,
+        "all_validators_pass": false,
         "financial_checks_pass": true,
         "quality_gates_pass": true,
         "no_open_p0": true,
         "no_open_p1": true
       },
-      "checks_passed": 7,
+      "checks_passed": 6,
       "checks_total": 7,
       "open_p0": 0,
       "open_p1": 0
@@ -65,9 +65,9 @@
     "final_status": {
       "overall_status": "IMPLEMENTED_NOT_VERIFIED",
       "computed_by": "runtime.status-engine/computeFinalStatus",
-      "computed_at": "2026-11-26T13:48:22.116Z",
-      "execution_id": "UAP-EXEC-20261126134821-a26d0967",
-      "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+      "computed_at": "2026-11-27T12:03:03.964Z",
+      "execution_id": "UAP-EXEC-20261127120252-eea13c10",
+      "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
       "counts": {
         "requirements_total": 538,
         "applicable": 538,
@@ -101,8 +101,8 @@
       "reasons": [
         "stale artefacts not bound to current execution/HEAD: tests,validators",
         "538/538 applicable requirements lack current valid evidence",
-        "415 requirement(s) have no evidence record",
-        "2 unresolved P0 blocker(s)"
+        "416 requirement(s) have no evidence record",
+        "6 unresolved P0 blocker(s)"
       ],
       "claim_allowed": false,
       "three_independent_results": {
@@ -117,15 +117,15 @@
       "evidence_chain": {
         "ok": true,
         "problems": [],
-        "checked": 0
+        "checked": 1
       },
       "diagnostics": {
         "matrix_present": true,
-        "matrix_generated_at": "2026-11-24T08:00:40.763Z",
+        "matrix_generated_at": "2026-11-27T11:12:33.086Z",
         "tests_card_present": true,
-        "tests_card_generated_at": "2026-11-26T12:05:34.479Z",
+        "tests_card_generated_at": "2026-11-27T11:10:45.736Z",
         "validation_card_present": true,
-        "validation_card_generated_at": "2026-11-26T12:08:06.773Z",
+        "validation_card_generated_at": "2026-11-27T11:13:12.033Z",
         "index_block_present": true,
         "auto_repair_business_code_untouched": null,
         "financial_simulated_only": true,
@@ -135,12 +135,12 @@
       }
     },
     "execution": {
-      "execution_id": "UAP-EXEC-20261126134821-a26d0967",
-      "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
-      "worktree_fingerprint": "78ccf293acf0963ebb7a8a451c9a98dec52c0d1cbd33292ed74d7394b5fe2a12",
-      "started_at": "2026-11-26T13:48:21.667Z",
+      "execution_id": "UAP-EXEC-20261127120252-eea13c10",
+      "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+      "worktree_fingerprint": "4a2603269b141c214e8e33cc9a5974a82ded4599cd18ddca839f31f15d676e76",
+      "started_at": "2026-11-27T12:02:52.578Z",
       "started_by": "code-version-changed",
-      "ledger_entries": 466
+      "ledger_entries": 472
     },
     "machine_configs": [
       {
@@ -195,7 +195,7 @@
       "implementation_files_present": 32,
       "domains": 10,
       "mapping_complete": true,
-      "generated_at": "2026-11-26T13:48:27.799Z"
+      "generated_at": "2026-11-27T12:03:05.436Z"
     },
     "agents": {
       "registered": 11,
@@ -206,21 +206,21 @@
       "runs": 113
     },
     "tasks": {
-      "total": 3853,
+      "total": 3959,
       "by_state": {
-        "SUCCEEDED": 1359,
-        "RUNNING": 315,
-        "FAILED": 152,
-        "CREATED": 1388,
+        "SUCCEEDED": 1379,
+        "RUNNING": 327,
+        "FAILED": 153,
+        "CREATED": 1437,
         "BLOCKED": 19,
-        "WAITING_RECOVERY": 310,
-        "CANCELLED": 155,
-        "PAUSED": 155
+        "WAITING_RECOVERY": 322,
+        "CANCELLED": 161,
+        "PAUSED": 161
       }
     },
     "evidence": {
-      "total": 12690,
-      "hash_verified": 12690,
+      "total": 12853,
+      "hash_verified": 12853,
       "hash_invalid": 0
     },
     "reports_present": 18,
@@ -229,7 +229,7 @@
     "defects": 7
   },
   "command": "status",
-  "duration_ms": 8997,
-  "generated_at": "2026-11-26T13:48:28.944Z",
-  "evidence_ref": "UAP-EV-20261126134828-fe2ce20a"
+  "duration_ms": 3797,
+  "generated_at": "2026-11-27T12:03:06.367Z",
+  "evidence_ref": "UAP-EV-20261127120306-4da6e41b"
 }

@@ -463,3 +463,9 @@
 {"execution_id":"UAP-EXEC-20261126115702-0176c137","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261126120450-168a4daa","closed_at":"2026-11-26T12:04:50.975Z"}
 {"execution_id":"UAP-EXEC-20261126120450-168a4daa","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261126120746-faa1aa0f","closed_at":"2026-11-26T12:07:47.063Z"}
 {"execution_id":"UAP-EXEC-20261126120746-faa1aa0f","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261126134821-a26d0967","closed_at":"2026-11-26T13:48:21.888Z"}
+{"execution_id":"UAP-EXEC-20261126134821-a26d0967","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127110418-72a16752","closed_at":"2026-11-27T11:04:19.070Z"}
+{"execution_id":"UAP-EXEC-20261127110418-72a16752","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127110732-a309074b","closed_at":"2026-11-27T11:07:32.556Z"}
+{"execution_id":"UAP-EXEC-20261127110732-a309074b","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127110847-3c218810","closed_at":"2026-11-27T11:08:47.938Z"}
+{"execution_id":"UAP-EXEC-20261127110847-3c218810","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127111226-9e06fded","closed_at":"2026-11-27T11:12:26.686Z"}
+{"execution_id":"UAP-EXEC-20261127111226-9e06fded","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127111230-7db3e2c5","closed_at":"2026-11-27T11:12:30.667Z"}
+{"execution_id":"UAP-EXEC-20261127111230-7db3e2c5","final_status":"SUPERSEDED","reason":"superseded-by-new-execution: UAP-EXEC-20261127120252-eea13c10","closed_at":"2026-11-27T12:02:52.908Z"}

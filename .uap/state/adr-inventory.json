@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-26T11:15:46.101Z",
-  "generated_for_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "generated_at": "2026-11-27T11:07:23.660Z",
+  "generated_for_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
   "executor_ids": [
     "architecture.adr"
   ],
@@ -424,7 +424,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.476Z",
+      "updated_at": "2026-11-26T14:41:12.531Z",
       "hash": "b874dd8b98d9e1fc2dfc593247ed0b3c29769f4fd576cb6c4c8278414e864679",
       "size": 5251
     },
@@ -440,7 +440,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.477Z",
+      "updated_at": "2026-11-26T14:41:12.532Z",
       "hash": "8600667b3acf02bbcf0e23c1267829760ec00a4060c97cb2fa5872c676e25e67",
       "size": 6210
     },
@@ -456,7 +456,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.478Z",
+      "updated_at": "2026-11-26T14:41:12.533Z",
       "hash": "ec3c9809e9ba7b017d310c9c4dac12ee0d914f74d288ea950c483660fbe11b35",
       "size": 4821
     },
@@ -472,7 +472,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.481Z",
+      "updated_at": "2026-11-26T14:41:12.533Z",
       "hash": "87d153c7a244ed4017b91c974da29ec95e32f96eecbaf2f236ef75fab1763234",
       "size": 5847
     },
@@ -488,7 +488,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.482Z",
+      "updated_at": "2026-11-26T14:41:12.534Z",
       "hash": "6f39846e1b54c543064b366e2e78287d898e7a5d3e4f27b269b4b11c98fd7fc4",
       "size": 6541
     },
@@ -504,7 +504,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.482Z",
+      "updated_at": "2026-11-26T14:41:12.534Z",
       "hash": "301e132245df85a391782aecb5708beb4b157fba6dbf20f9632bbaa8b2a4dd67",
       "size": 4905
     },
@@ -520,7 +520,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.482Z",
+      "updated_at": "2026-11-26T14:41:12.535Z",
       "hash": "d26f9a4631b627b46545b8f140e0c157bc3d6af7a94a99e01325ec2d78530b33",
       "size": 5193
     },
@@ -536,7 +536,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.483Z",
+      "updated_at": "2026-11-26T14:41:12.535Z",
       "hash": "aa197975cd607ae6b4db77bdd9baa781b7c3799525075af34d3ffc1aef64148f",
       "size": 4500
     },
@@ -552,7 +552,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.483Z",
+      "updated_at": "2026-11-26T14:41:12.536Z",
       "hash": "64d840c1ffff6c744ea42f55d31798d61efb1f37496c4dbe0424db893443a400",
       "size": 5204
     },
@@ -568,7 +568,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.483Z",
+      "updated_at": "2026-11-26T14:41:12.537Z",
       "hash": "cbaad83e469e56352fe7ef363376332730ecdcc506639446239954901bb026dd",
       "size": 4992
     },
@@ -584,7 +584,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.484Z",
+      "updated_at": "2026-11-26T14:41:12.537Z",
       "hash": "a051106891232024b5895a0b932c6a16acd44ae659f99d6146d29b7afea2da2b",
       "size": 4406
     },
@@ -600,7 +600,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.484Z",
+      "updated_at": "2026-11-26T14:41:12.537Z",
       "hash": "0405b9fec66ce03b4307aa9866da6f7cd0f59b5c461c6ad15e3c64eec0d7362e",
       "size": 5112
     },
@@ -616,7 +616,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.484Z",
+      "updated_at": "2026-11-26T14:41:12.538Z",
       "hash": "40e5d0e7313e2647a491d903cdf53257e26d23b3779ed32a49c67227af3b6597",
       "size": 4983
     },
@@ -632,7 +632,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.485Z",
+      "updated_at": "2026-11-26T14:41:12.538Z",
       "hash": "e610ce2e3c8c1434d5f2056f750c96b5184125117a4592c4fe9623fce0d029b3",
       "size": 4728
     },
@@ -648,7 +648,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.485Z",
+      "updated_at": "2026-11-26T14:41:12.539Z",
       "hash": "9667272048e69309a5d3dbe8c81da81568e6e0922f5664068146a197086f1893",
       "size": 5127
     },
@@ -664,7 +664,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.485Z",
+      "updated_at": "2026-11-26T14:41:12.539Z",
       "hash": "f46e12b9936318bbaa1fd80fb28e20d434f195a9a6aad9cc415b54655761cd1d",
       "size": 5096
     },
@@ -680,7 +680,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.485Z",
+      "updated_at": "2026-11-26T14:41:12.540Z",
       "hash": "585a3425a3878b71c21e944a193d100dc87a6daa2200d632bb3f0b4fa89fa12b",
       "size": 4611
     },
@@ -696,7 +696,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.486Z",
+      "updated_at": "2026-11-26T14:41:12.540Z",
       "hash": "d0f536bd4c01e58f410fa51b8bc934912236e4905d47cfc952c6b10ba3bfe1f8",
       "size": 4889
     },
@@ -712,7 +712,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.486Z",
+      "updated_at": "2026-11-26T14:41:12.541Z",
       "hash": "9e98ca3fb5c4c07a4610576353ae8ee6f7cff741cd3ca47f3d53934ec118bbea",
       "size": 5537
     },
@@ -728,7 +728,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.486Z",
+      "updated_at": "2026-11-26T14:41:12.542Z",
       "hash": "09c516bf592ea5aef53869e4756008a7fc78f7feea4592bfa46b46a18bf3f71d",
       "size": 5541
     },
@@ -744,7 +744,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.487Z",
+      "updated_at": "2026-11-26T14:41:12.543Z",
       "hash": "16fe76d1a7274bce8f6f57b5edc8abed6050e0334b49b6d4d40b2a433cf76847",
       "size": 4983
     },
@@ -760,7 +760,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.487Z",
+      "updated_at": "2026-11-26T14:41:12.543Z",
       "hash": "ba2c33820cc65c818136df3e51d91d59775bc18bac75fc472f8819a85c20d2fd",
       "size": 6575
     },
@@ -776,7 +776,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.487Z",
+      "updated_at": "2026-11-26T14:41:12.547Z",
       "hash": "8174b5fb8329e1b3e56328f577f81505ee342c5ce50f31c09077fe9c8bfb0279",
       "size": 5172
     },
@@ -792,7 +792,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.487Z",
+      "updated_at": "2026-11-26T14:41:12.548Z",
       "hash": "dfce56e3fd608c0f158368d5a6fc9d616d811fe29c088909d353e214a4157ffa",
       "size": 5400
     },
@@ -812,7 +812,7 @@
         "web/src/components/ui/markdown.tsx",
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.488Z",
+      "updated_at": "2026-11-26T14:41:12.549Z",
       "hash": "4fb4f761524c8c2c1586e7de8c800525a327fabd4a61b639890fb8b405703196",
       "size": 7093
     },
@@ -828,7 +828,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.488Z",
+      "updated_at": "2026-11-26T14:41:12.551Z",
       "hash": "f3abc391c0eaae950f77c0e697547b0b183168bfcb6f975c21d9572d46f7f3f2",
       "size": 4780
     },
@@ -844,7 +844,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.488Z",
+      "updated_at": "2026-11-26T14:41:12.552Z",
       "hash": "6fac676c9559b2df8778449b3fc6a374220500885c28aa5a7fa653e5de6578e8",
       "size": 4603
     },
@@ -860,7 +860,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.489Z",
+      "updated_at": "2026-11-26T14:41:12.552Z",
       "hash": "810bdbb34ab24deddedf7af3d77c57aa5e615741874d6b5b8a3415b16f6a0e91",
       "size": 5424
     },
@@ -876,7 +876,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.489Z",
+      "updated_at": "2026-11-26T14:41:12.552Z",
       "hash": "ffdf717cec1e05c261eadf7d72549528e38ad31e3166853188f21f72525b3c7e",
       "size": 5155
     },
@@ -892,7 +892,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.489Z",
+      "updated_at": "2026-11-26T14:41:12.553Z",
       "hash": "38f5712390eaa0fa7f2eeb8976aa5be82e6a94267e5ea39291d3a89c3f778466",
       "size": 5072
     },
@@ -908,7 +908,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.490Z",
+      "updated_at": "2026-11-26T14:41:12.553Z",
       "hash": "fe8e9d5ec4b280b6f68641431b445da52f69e79dac35a68cb5e1e3807c198661",
       "size": 4864
     },
@@ -925,7 +925,7 @@
         "web/src/routes/",
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.490Z",
+      "updated_at": "2026-11-26T14:41:12.554Z",
       "hash": "db065e29dfe238bc9ec7e0f3c1ccb51b1a427aa98fec5c0592762a6ea7209c8c",
       "size": 4978
     },
@@ -941,7 +941,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.490Z",
+      "updated_at": "2026-11-26T14:41:12.554Z",
       "hash": "867b9342f4bb0088ddce9bc13874473c52b1cf1ced4794952c4e2655565064c9",
       "size": 5128
     },
@@ -957,7 +957,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.490Z",
+      "updated_at": "2026-11-26T14:41:12.554Z",
       "hash": "801fc2331eefb6988e0883af32592e1add9ffb6265e04ffd28528851cca2245f",
       "size": 5086
     },
@@ -973,7 +973,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.491Z",
+      "updated_at": "2026-11-26T14:41:12.555Z",
       "hash": "3129fb7d93c9ada46d1b7fa8e58dd546194e1e4200e5d7cce3060a3f8851a691",
       "size": 4259
     },
@@ -989,7 +989,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.491Z",
+      "updated_at": "2026-11-26T14:41:12.555Z",
       "hash": "a3f7afcb6d1cdac1e165dcc1a980efdca871dbdfc2f1359dd3ba96496ba6ae46",
       "size": 4734
     },
@@ -1005,7 +1005,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.488Z",
+      "updated_at": "2026-11-26T14:41:12.550Z",
       "hash": "027e2ea7ebefb0d6b5dd2aeaaafa972d3736207fd35e4e6175c8e126ef3053b1",
       "size": 7127
     },
@@ -1021,8 +1021,8 @@
       "sources": [
         "docs/design-system/registry/build.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:48.637Z",
-      "hash": "5244a7643a5fcbdd648c4a11c458901557259bafef7e9943b765e40421d6be77",
+      "updated_at": "2026-11-26T14:41:14.378Z",
+      "hash": "d13df9d982cb85a286c790b0841c65cc4738fbec5160a3cfac42f9b6ba39bf92",
       "size": 6279
     },
     {
@@ -1037,7 +1037,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.491Z",
+      "updated_at": "2026-11-26T14:41:12.555Z",
       "hash": "71affc75ac666bb31d922572b29612884eebd6551b83c88a0a029f614bc8d905",
       "size": 6224
     },

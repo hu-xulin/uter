@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-26T11:15:46.101Z",
-  "generated_for_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "generated_at": "2026-11-27T11:07:23.660Z",
+  "generated_for_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
   "executor_ids": [
     "architecture.analyzer",
     "architecture.api_database"
@@ -2023,654 +2023,702 @@
     },
     {
       "method": "GET",
+      "path": "/channels",
+      "handler": "GetUpstreamMonitorChannels",
+      "line": 359
+    },
+    {
+      "method": "POST",
+      "path": "/models",
+      "handler": "FetchUpstreamMonitorModels",
+      "line": 360
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetUpstreamMonitorTask",
+      "line": 361
+    },
+    {
+      "method": "PUT",
+      "path": "/:id",
+      "handler": "UpdateUpstreamMonitorTask",
+      "line": 363
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteUpstreamMonitorTask",
+      "line": 364
+    },
+    {
+      "method": "POST",
+      "path": "/:id/run",
+      "handler": "RunUpstreamMonitorNow",
+      "line": 365
+    },
+    {
+      "method": "GET",
+      "path": "/:id/reports",
+      "handler": "GetUpstreamMonitorReports",
+      "line": 366
+    },
+    {
+      "method": "GET",
+      "path": "/reports/:id",
+      "handler": "GetUpstreamMonitorReport",
+      "line": 367
+    },
+    {
+      "method": "GET",
       "path": "/instances",
       "handler": "GetRequestPluginInstances",
-      "line": 358
+      "line": 372
     },
     {
       "method": "PUT",
       "path": "/instances",
       "handler": "UpdateRequestPluginInstances",
-      "line": 359
+      "line": 373
     },
     {
       "method": "POST",
       "path": "/dry_run",
       "handler": "DryRunRequestPlugins",
-      "line": 360
+      "line": 374
     },
     {
       "method": "GET",
       "path": "/runtime/status",
       "handler": "GetTaskPluginRuntime",
-      "line": 368
+      "line": 382
     },
     {
       "method": "GET",
       "path": "/marketplace/sources",
       "handler": "GetTaskPluginMarketplaceSources",
-      "line": 369
+      "line": 383
     },
     {
       "method": "PUT",
       "path": "/marketplace/sources",
       "handler": "UpdateTaskPluginMarketplaceSources",
-      "line": 370
+      "line": 384
     },
     {
       "method": "GET",
       "path": "/marketplace/fetch",
       "handler": "FetchTaskPluginMarketplaceIndex",
-      "line": 371
+      "line": 385
     },
     {
       "method": "GET",
       "path": "/:key",
       "handler": "GetTaskPlugin",
-      "line": 372
+      "line": 386
     },
     {
       "method": "GET",
       "path": "/:key/icon",
       "handler": "GetTaskPluginIcon",
-      "line": 373
+      "line": 387
     },
     {
       "method": "GET",
       "path": "/:key/versions",
       "handler": "GetTaskPluginVersions",
-      "line": 374
+      "line": 388
     },
     {
       "method": "POST",
       "path": "/:key/activate",
       "handler": "ActivateTaskPlugin",
-      "line": 375
+      "line": 389
     },
     {
       "method": "POST",
       "path": "/:key/status",
       "handler": "SetTaskPluginStatus",
-      "line": 376
+      "line": 390
     },
     {
       "method": "POST",
       "path": "/:key/dryrun",
       "handler": "DryRunTaskPlugin",
-      "line": 377
+      "line": 391
     },
     {
       "method": "DELETE",
       "path": "/:key/versions/:version",
       "handler": "DeleteTaskPluginVersion",
-      "line": 378
+      "line": 392
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllTokens",
-      "line": 387
+      "line": 401
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchTokens",
-      "line": 388
+      "line": 402
     },
     {
       "method": "POST",
       "path": "/search",
       "handler": "SearchTokensPost",
-      "line": 389
+      "line": 403
     },
     {
       "method": "GET",
       "path": "/auto-groups",
       "handler": "GetTokenAutoGroups",
-      "line": 390
+      "line": 404
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetToken",
-      "line": 391
+      "line": 405
     },
     {
       "method": "POST",
       "path": "/:id/key",
       "handler": "GetTokenKey",
-      "line": 392
+      "line": 406
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "AddToken",
-      "line": 393
+      "line": 407
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateToken",
-      "line": 394
+      "line": 408
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteToken",
-      "line": 395
+      "line": 409
     },
     {
       "method": "POST",
       "path": "/batch",
       "handler": "DeleteTokenBatch",
-      "line": 396
+      "line": 410
     },
     {
       "method": "POST",
       "path": "/batch/keys",
       "handler": "GetTokenKeysBatch",
-      "line": 397
+      "line": 411
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetTokenUsage",
-      "line": 406
+      "line": 420
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllRedemptions",
-      "line": 413
+      "line": 427
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchRedemptions",
-      "line": 414
+      "line": 428
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetRedemption",
-      "line": 415
+      "line": 429
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "AddRedemption",
-      "line": 416
+      "line": 430
     },
     {
       "method": "POST",
       "path": "/batch",
       "handler": "DeleteRedemptionBatch",
-      "line": 417
+      "line": 431
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateRedemption",
-      "line": 418
+      "line": 432
     },
     {
       "method": "DELETE",
       "path": "/invalid",
       "handler": "DeleteInvalidRedemption",
-      "line": 419
+      "line": 433
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteRedemption",
-      "line": 420
+      "line": 434
     },
     {
       "method": "GET",
       "path": "/audit/self",
       "handler": "GetAuditLogs",
-      "line": 423
+      "line": 437
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllLogs",
-      "line": 425
+      "line": 439
     },
     {
       "method": "GET",
       "path": "/stat",
       "handler": "GetLogsStat",
-      "line": 426
+      "line": 440
     },
     {
       "method": "GET",
       "path": "/self/stat",
       "handler": "GetLogsSelfStat",
-      "line": 427
+      "line": 441
     },
     {
       "method": "GET",
       "path": "/channel_affinity_usage_cache",
       "handler": "GetChannelAffinityUsageCacheStats",
-      "line": 428
+      "line": 442
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchAllLogs",
-      "line": 429
+      "line": 443
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserLogs",
-      "line": 430
+      "line": 444
     },
     {
       "method": "GET",
       "path": "/export",
       "handler": "ExportAllLogs",
-      "line": 431
+      "line": 445
     },
     {
       "method": "GET",
       "path": "/self/export",
       "handler": "ExportUserLogs",
-      "line": 432
+      "line": 446
     },
     {
       "method": "GET",
       "path": "/self/search",
       "handler": "SearchUserLogs",
-      "line": 433
+      "line": 447
     },
     {
       "method": "POST",
       "path": "/log-cleanup",
       "handler": "CreateLogCleanupSystemTask",
-      "line": 438
+      "line": 452
     },
     {
       "method": "GET",
       "path": "/list",
       "handler": "ListSystemTasks",
-      "line": 439
+      "line": 453
     },
     {
       "method": "DELETE",
       "path": "/history",
       "handler": "DeleteSystemTaskHistory",
-      "line": 440
+      "line": 454
     },
     {
       "method": "GET",
       "path": "/current",
       "handler": "GetCurrentSystemTask",
-      "line": 441
+      "line": 455
     },
     {
       "method": "GET",
       "path": "/:task_id",
       "handler": "GetSystemTask",
-      "line": 442
+      "line": 456
     },
     {
       "method": "GET",
       "path": "/instances",
       "handler": "ListSystemInstances",
-      "line": 447
+      "line": 461
     },
     {
       "method": "GET",
       "path": "/sync",
       "handler": "GetNodeSync",
-      "line": 448
+      "line": 462
     },
     {
       "method": "DELETE",
       "path": "/stale-instances",
       "handler": "DeleteStaleSystemInstances",
-      "line": 449
+      "line": 463
     },
     {
       "method": "DELETE",
       "path": "/instances/:node_name",
       "handler": "DeleteStaleSystemInstance",
-      "line": 450
+      "line": 464
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllQuotaDates",
-      "line": 454
+      "line": 468
     },
     {
       "method": "GET",
       "path": "/users",
       "handler": "GetQuotaDatesByUser",
-      "line": 455
+      "line": 469
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserQuotaDates",
-      "line": 456
+      "line": 470
     },
     {
       "method": "GET",
       "path": "/flow",
       "handler": "GetAllFlowQuotaDates",
-      "line": 457
+      "line": 471
     },
     {
       "method": "GET",
       "path": "/flow/self",
       "handler": "GetUserFlowQuotaDates",
-      "line": 458
+      "line": 472
     },
     {
       "method": "GET",
       "path": "/token",
       "handler": "GetLogByKey",
-      "line": 462
+      "line": 476
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetGroups",
-      "line": 467
+      "line": 481
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetPrefillGroups",
-      "line": 473
+      "line": 487
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreatePrefillGroup",
-      "line": 474
+      "line": 488
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdatePrefillGroup",
-      "line": 475
+      "line": 489
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeletePrefillGroup",
-      "line": 476
+      "line": 490
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserMidjourney",
-      "line": 480
-    },
-    {
-      "method": "GET",
-      "path": "/",
-      "handler": "GetAllMidjourney",
-      "line": 481
-    },
-    {
-      "method": "GET",
-      "path": "/self",
-      "handler": "GetUserTask",
-      "line": 485
-    },
-    {
-      "method": "GET",
-      "path": "/:task_id/artifacts",
-      "handler": "GetDashboardTaskArtifacts",
-      "line": 487
-    },
-    {
-      "method": "POST",
-      "path": "/operations/preview",
-      "handler": "PreviewVendorOperation",
-      "line": 493
-    },
-    {
-      "method": "POST",
-      "path": "/operations",
-      "handler": "ApplyVendorOperation",
       "line": 494
     },
     {
       "method": "GET",
       "path": "/",
-      "handler": "GetAllVendors",
+      "handler": "GetAllMidjourney",
       "line": 495
+    },
+    {
+      "method": "GET",
+      "path": "/self",
+      "handler": "GetUserTask",
+      "line": 499
+    },
+    {
+      "method": "GET",
+      "path": "/:task_id/artifacts",
+      "handler": "GetDashboardTaskArtifacts",
+      "line": 501
+    },
+    {
+      "method": "POST",
+      "path": "/operations/preview",
+      "handler": "PreviewVendorOperation",
+      "line": 507
+    },
+    {
+      "method": "POST",
+      "path": "/operations",
+      "handler": "ApplyVendorOperation",
+      "line": 508
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllVendors",
+      "line": 509
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchVendors",
-      "line": 496
+      "line": 510
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetVendorMeta",
-      "line": 497
+      "line": 511
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateVendorMeta",
-      "line": 498
+      "line": 512
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateVendorMeta",
-      "line": 499
+      "line": 513
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteVendorMeta",
-      "line": 500
+      "line": 514
     },
     {
       "method": "GET",
       "path": "/merge-rules",
       "handler": "ListVendorMergeRules",
-      "line": 501
+      "line": 515
     },
     {
       "method": "DELETE",
       "path": "/merge-rules/:id",
       "handler": "DeleteVendorMergeRule",
-      "line": 502
+      "line": 516
     },
     {
       "method": "GET",
       "path": "/sync_upstream/preview",
       "handler": "SyncUpstreamPreview",
-      "line": 508
+      "line": 522
     },
     {
       "method": "POST",
       "path": "/sync_upstream",
       "handler": "SyncUpstreamModels",
-      "line": 509
+      "line": 523
     },
     {
       "method": "POST",
       "path": "/delete",
       "handler": "BatchDeleteModelMeta",
-      "line": 510
+      "line": 524
     },
     {
       "method": "GET",
       "path": "/missing",
       "handler": "GetMissingModels",
-      "line": 511
-    },
-    {
-      "method": "GET",
-      "path": "/",
-      "handler": "GetAllModelsMeta",
-      "line": 512
-    },
-    {
-      "method": "GET",
-      "path": "/search",
-      "handler": "SearchModelsMeta",
-      "line": 513
-    },
-    {
-      "method": "GET",
-      "path": "/:id",
-      "handler": "GetModelMeta",
-      "line": 514
-    },
-    {
-      "method": "POST",
-      "path": "/",
-      "handler": "CreateModelMeta",
-      "line": 515
-    },
-    {
-      "method": "PUT",
-      "path": "/",
-      "handler": "UpdateModelMeta",
-      "line": 516
-    },
-    {
-      "method": "DELETE",
-      "path": "/:id",
-      "handler": "DeleteModelMeta",
-      "line": 517
-    },
-    {
-      "method": "GET",
-      "path": "/settings",
-      "handler": "GetModelDeploymentSettings",
-      "line": 524
-    },
-    {
-      "method": "POST",
-      "path": "/settings/test-connection",
-      "handler": "TestIoNetConnection",
       "line": 525
     },
     {
       "method": "GET",
       "path": "/",
-      "handler": "GetAllDeployments",
+      "handler": "GetAllModelsMeta",
       "line": 526
     },
     {
       "method": "GET",
       "path": "/search",
-      "handler": "SearchDeployments",
+      "handler": "SearchModelsMeta",
       "line": 527
+    },
+    {
+      "method": "GET",
+      "path": "/:id",
+      "handler": "GetModelMeta",
+      "line": 528
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "handler": "CreateModelMeta",
+      "line": 529
+    },
+    {
+      "method": "PUT",
+      "path": "/",
+      "handler": "UpdateModelMeta",
+      "line": 530
+    },
+    {
+      "method": "DELETE",
+      "path": "/:id",
+      "handler": "DeleteModelMeta",
+      "line": 531
+    },
+    {
+      "method": "GET",
+      "path": "/settings",
+      "handler": "GetModelDeploymentSettings",
+      "line": 538
+    },
+    {
+      "method": "POST",
+      "path": "/settings/test-connection",
+      "handler": "TestIoNetConnection",
+      "line": 539
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "handler": "GetAllDeployments",
+      "line": 540
+    },
+    {
+      "method": "GET",
+      "path": "/search",
+      "handler": "SearchDeployments",
+      "line": 541
     },
     {
       "method": "POST",
       "path": "/test-connection",
       "handler": "TestIoNetConnection",
-      "line": 528
+      "line": 542
     },
     {
       "method": "GET",
       "path": "/hardware-types",
       "handler": "GetHardwareTypes",
-      "line": 529
+      "line": 543
     },
     {
       "method": "GET",
       "path": "/locations",
       "handler": "GetLocations",
-      "line": 530
+      "line": 544
     },
     {
       "method": "GET",
       "path": "/available-replicas",
       "handler": "GetAvailableReplicas",
-      "line": 531
+      "line": 545
     },
     {
       "method": "POST",
       "path": "/price-estimation",
       "handler": "GetPriceEstimation",
-      "line": 532
+      "line": 546
     },
     {
       "method": "GET",
       "path": "/check-name",
       "handler": "CheckClusterNameAvailability",
-      "line": 533
+      "line": 547
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateDeployment",
-      "line": 534
+      "line": 548
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetDeployment",
-      "line": 536
+      "line": 550
     },
     {
       "method": "POST",
       "path": "/:id/registry-secret/reveal",
       "handler": "RevealDeploymentRegistrySecret",
-      "line": 537
+      "line": 551
     },
     {
       "method": "GET",
       "path": "/:id/logs",
       "handler": "GetDeploymentLogs",
-      "line": 538
+      "line": 552
     },
     {
       "method": "GET",
       "path": "/:id/containers",
       "handler": "ListDeploymentContainers",
-      "line": 539
+      "line": 553
     },
     {
       "method": "GET",
       "path": "/:id/containers/:container_id",
       "handler": "GetContainerDetails",
-      "line": 540
+      "line": 554
     },
     {
       "method": "PUT",
       "path": "/:id",
       "handler": "UpdateDeployment",
-      "line": 541
+      "line": 555
     },
     {
       "method": "PUT",
       "path": "/:id/name",
       "handler": "UpdateDeploymentName",
-      "line": 542
+      "line": 556
     },
     {
       "method": "POST",
       "path": "/:id/extend",
       "handler": "ExtendDeployment",
-      "line": 543
+      "line": 557
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteDeployment",
-      "line": 544
+      "line": 558
     }
   ],
-  "api_count": 315,
+  "api_count": 323,
   "database_anchors": {
     "go_mod_drivers": [
       "ClickHouse/ch-go",
@@ -2684,7 +2732,7 @@
       "gorm.io/driver/postgres",
       "gorm.io/gorm"
     ],
-    "model_file_count": 124,
+    "model_file_count": 126,
     "model_sample": [
       "model/ability.go",
       "model/account_security.go",

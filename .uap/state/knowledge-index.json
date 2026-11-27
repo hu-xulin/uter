@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-26T11:15:46.439Z",
-  "generated_for_head": "0dca382852b892226dc6c198c301646bb734bfec",
+  "generated_at": "2026-11-27T11:07:23.974Z",
+  "generated_for_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
   "executor_ids": [
     "evolution.knowledge",
     "evolution.continuous"
@@ -1417,7 +1417,7 @@
       "sources": [
         "web/scripts/check-design-system-8.0.0.mjs"
       ],
-      "updated_at": "2026-11-23T08:34:47.476Z",
+      "updated_at": "2026-11-26T14:41:12.531Z",
       "hash": "b874dd8b98d9e1fc2dfc593247ed0b3c29769f4fd576cb6c4c8278414e864679",
       "size": 5251,
       "title": "UTER DESIGN SYSTEM 8.0.0 · 00 Design System Overview",
@@ -1448,7 +1448,7 @@
         "web/src/design-system/tokens/brand-colors.ts",
         "web/src/components/ai-elements/code-block.tsx"
       ],
-      "updated_at": "2026-11-24T15:24:51.360Z",
+      "updated_at": "2026-11-26T14:41:12.249Z",
       "hash": "c491547268715b18ae08aa59706ce38f71d9cc2786e774d718cfcbb1b814176e",
       "size": 317799,
       "title": null,
@@ -1509,8 +1509,8 @@
         "web/src/components/json-editor.tsx",
         "web/src/components/ui/markdown.tsx"
       ],
-      "updated_at": "2026-11-23T08:34:48.613Z",
-      "hash": "10e0fa54ac097b096d14bc08f5ed4bafe93f93fb2f01e83ea6c6add0d215a429",
+      "updated_at": "2026-11-26T14:41:14.366Z",
+      "hash": "a5fadbc256b30a58a264f704e8b8d0d77c03cc99d63dcafcf104c266fb1c883f",
       "size": 914163,
       "title": null,
       "section_hints": []
@@ -1536,7 +1536,7 @@
     "docs/design-system/SHOWCASE-8.0.0.html"
   ],
   "retired_runtime_dependency_scan": {
-    "scanned_file_count": 198,
+    "scanned_file_count": 199,
     "runtime_dependency_count": 0,
     "runtime_dependencies": [],
     "retirement_notes_ignored": 14,

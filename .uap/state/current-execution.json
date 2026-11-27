@@ -1,9 +1,9 @@
 {
-  "execution_id": "UAP-EXEC-20261126134821-a26d0967",
-  "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
-  "worktree_fingerprint": "78ccf293acf0963ebb7a8a451c9a98dec52c0d1cbd33292ed74d7394b5fe2a12",
+  "execution_id": "UAP-EXEC-20261127120252-eea13c10",
+  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "worktree_fingerprint": "4a2603269b141c214e8e33cc9a5974a82ded4599cd18ddca839f31f15d676e76",
   "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
-  "started_at": "2026-11-26T13:48:21.667Z",
+  "started_at": "2026-11-27T12:02:52.578Z",
   "started_by": "code-version-changed",
   "status": "RUNNING"
 }
