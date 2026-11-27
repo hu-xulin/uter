@@ -320,7 +320,36 @@ async function main() {
     out({ generated_at: new Date().toISOString(), target: TARGET, blocked: true, reason: `playwright unavailable: ${e.message}`, verdict: {} }, 2);
   }
 
-  const browser = await pw.chromium.launch({ headless: true });
+  // Launch a REAL browser. Prefer Playwright's bundled Chromium; when that
+  // binary is missing (offline / not installed), fall back to the system
+  // Chrome channel — the same convention scripts/quality/uter-quality.sh
+  // uses via PLAYWRIGHT_CHANNEL=chrome. Still a real browser, still measured;
+  // only if NO browser can launch is this reported as BLOCKED (exit 2), never
+  // as a tool failure (exit 1) and never as a pass.
+  const launchErrors = [];
+  let browser = null;
+  let browserLabel = null;
+  const channels = process.env.PLAYWRIGHT_CHANNEL
+    ? [process.env.PLAYWRIGHT_CHANNEL]
+    : [undefined, 'chrome'];
+  for (const channel of channels) {
+    try {
+      browser = await pw.chromium.launch({ headless: true, ...(channel ? { channel } : {}) });
+      browserLabel = channel
+        ? `system ${channel} via playwright (headless, real render)`
+        : 'playwright bundled chromium (headless, real render)';
+      break;
+    } catch (e) {
+      launchErrors.push(`${channel || 'bundled chromium'}: ${String(e.message || e).slice(0, 200)}`);
+    }
+  }
+  if (!browser) {
+    out({
+      generated_at: new Date().toISOString(), target: TARGET, blocked: true,
+      reason: `no browser available (${launchErrors.join(' | ')}) — matrix NOT executed, never reported as pass (service-gate convention)`,
+      verdict: { h5_build: 'BLOCKED', viewport: 'BLOCKED', touch: 'BLOCKED', mobile_tests: 'BLOCKED' },
+    }, 2);
+  }
   const matrix = [];
   const consoleErrors = [];
   try {
@@ -409,7 +438,7 @@ async function main() {
     generated_at: new Date().toISOString(),
     target: TARGET,
     blocked: false,
-    browser: 'playwright chromium (headless, real render)',
+    browser: browserLabel,
     viewports: VIEWPORTS.map((v) => `${v.name} ${v.width}x${v.height} touch=${v.hasTouch}`),
     routes: ROUTES,
     matrix_rows: matrix.length,

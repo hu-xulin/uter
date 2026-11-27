@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-25T06:42:03.062Z",
-  "generated_for_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "generated_at": "2026-11-26T11:15:46.101Z",
+  "generated_for_head": "0dca382852b892226dc6c198c301646bb734bfec",
   "executor_ids": [
     "architecture.analyzer",
     "architecture.api_database"
@@ -1386,1267 +1386,1291 @@
       "line": 171
     },
     {
+      "method": "POST",
+      "path": "/secret/:key/reveal",
+      "handler": "RevealUserSecret",
+      "line": 172
+    },
+    {
       "method": "GET",
       "path": "/2fa/status",
       "handler": "Get2FAStatus",
-      "line": 174
+      "line": 175
     },
     {
       "method": "POST",
       "path": "/2fa/setup",
       "handler": "Setup2FA",
-      "line": 175
+      "line": 176
     },
     {
       "method": "POST",
       "path": "/2fa/enable",
       "handler": "Enable2FA",
-      "line": 176
+      "line": 177
     },
     {
       "method": "POST",
       "path": "/2fa/disable",
       "handler": "Disable2FA",
-      "line": 177
+      "line": 178
     },
     {
       "method": "POST",
       "path": "/2fa/backup_codes",
       "handler": "RegenerateBackupCodes",
-      "line": 178
+      "line": 179
     },
     {
       "method": "GET",
       "path": "/checkin",
       "handler": "GetCheckinStatus",
-      "line": 181
+      "line": 182
     },
     {
       "method": "POST",
       "path": "/checkin",
       "handler": "DoCheckin",
-      "line": 182
+      "line": 183
     },
     {
       "method": "GET",
       "path": "/oauth/bindings",
       "handler": "GetUserOAuthBindings",
-      "line": 185
+      "line": 186
     },
     {
       "method": "DELETE",
       "path": "/oauth/bindings/:provider_id",
       "handler": "UnbindCustomOAuth",
-      "line": 186
+      "line": 187
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllUsers",
-      "line": 192
+      "line": 193
     },
     {
       "method": "GET",
       "path": "/topup",
       "handler": "GetAllTopUps",
-      "line": 193
+      "line": 194
     },
     {
       "method": "POST",
       "path": "/topup/complete",
       "handler": "AdminCompleteTopUp",
-      "line": 194
+      "line": 195
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchUsers",
-      "line": 195
+      "line": 196
     },
     {
       "method": "GET",
       "path": "/:id/oauth/bindings",
       "handler": "GetUserOAuthBindingsByAdmin",
-      "line": 196
+      "line": 197
     },
     {
       "method": "DELETE",
       "path": "/:id/oauth/bindings/:provider_id",
       "handler": "UnbindCustomOAuthByAdmin",
-      "line": 197
+      "line": 198
     },
     {
       "method": "DELETE",
       "path": "/:id/bindings/:binding_type",
       "handler": "AdminClearUserBinding",
-      "line": 198
+      "line": 199
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetUser",
-      "line": 199
+      "line": 200
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateUser",
-      "line": 200
+      "line": 201
     },
     {
       "method": "POST",
       "path": "/manage",
       "handler": "ManageUser",
-      "line": 201
+      "line": 202
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateUser",
-      "line": 202
+      "line": 203
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteUser",
-      "line": 203
+      "line": 204
     },
     {
       "method": "DELETE",
       "path": "/:id/reset_passkey",
       "handler": "AdminResetPasskey",
-      "line": 204
+      "line": 205
     },
     {
       "method": "GET",
       "path": "/2fa/stats",
       "handler": "Admin2FAStats",
-      "line": 207
+      "line": 208
     },
     {
       "method": "DELETE",
       "path": "/:id/2fa",
       "handler": "AdminDisable2FA",
-      "line": 208
+      "line": 209
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetMyOrganization",
-      "line": 223
+      "line": 224
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetOrganization",
-      "line": 228
+      "line": 229
     },
     {
       "method": "GET",
       "path": "/:id/stats",
       "handler": "GetOrganizationStats",
-      "line": 229
+      "line": 230
     },
     {
       "method": "GET",
       "path": "/:id/members",
       "handler": "GetOrganizationMembers",
-      "line": 230
+      "line": 231
     },
     {
       "method": "POST",
       "path": "/:id/members",
       "handler": "AddOrganizationMembers",
-      "line": 231
+      "line": 232
     },
     {
       "method": "PUT",
       "path": "/:id/members/:uid",
       "handler": "UpdateOrganizationMember",
-      "line": 232
+      "line": 233
     },
     {
       "method": "DELETE",
       "path": "/:id/members/:uid",
       "handler": "RemoveOrganizationMember",
-      "line": 233
+      "line": 234
     },
     {
       "method": "PUT",
       "path": "/:id",
       "handler": "UpdateOrganization",
-      "line": 234
+      "line": 235
     },
     {
       "method": "GET",
       "path": "/:id/logs",
       "handler": "GetOrganizationLogs",
-      "line": 235
+      "line": 236
     },
     {
       "method": "GET",
       "path": "/:id/logs/stat",
       "handler": "GetOrganizationLogsStat",
-      "line": 236
+      "line": 237
     },
     {
       "method": "GET",
       "path": "/:id/quota-dates",
       "handler": "GetOrganizationQuotaDates",
-      "line": 237
+      "line": 238
     },
     {
       "method": "GET",
       "path": "/:id/quota-dates/users",
       "handler": "GetOrganizationQuotaDatesByUser",
-      "line": 238
+      "line": 239
     },
     {
       "method": "GET",
       "path": "/:id/flow",
       "handler": "GetOrganizationFlow",
-      "line": 239
+      "line": 240
     },
     {
       "method": "GET",
       "path": "/:id/tasks",
       "handler": "GetOrganizationTasks",
-      "line": 240
+      "line": 241
     },
     {
       "method": "GET",
       "path": "/:id/drawings",
       "handler": "GetOrganizationMidjourney",
-      "line": 241
+      "line": 242
     },
     {
       "method": "GET",
       "path": "/:id/audit",
       "handler": "GetOrganizationAuditLogs",
-      "line": 242
+      "line": 243
     },
     {
       "method": "GET",
       "path": "/plans",
       "handler": "GetSubscriptionPlans",
-      "line": 258
+      "line": 259
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetSubscriptionSelf",
-      "line": 259
+      "line": 260
     },
     {
       "method": "PUT",
       "path": "/self/preference",
       "handler": "UpdateSubscriptionPreference",
-      "line": 260
+      "line": 261
     },
     {
       "method": "POST",
       "path": "/balance/pay",
       "handler": "SubscriptionRequestBalancePay",
-      "line": 261
+      "line": 262
     },
     {
       "method": "POST",
       "path": "/epay/pay",
       "handler": "SubscriptionRequestEpay",
-      "line": 262
+      "line": 263
     },
     {
       "method": "POST",
       "path": "/stripe/pay",
       "handler": "SubscriptionRequestStripePay",
-      "line": 263
+      "line": 264
     },
     {
       "method": "POST",
       "path": "/creem/pay",
       "handler": "SubscriptionRequestCreemPay",
-      "line": 264
+      "line": 265
     },
     {
       "method": "POST",
       "path": "/waffo-pancake/pay",
       "handler": "SubscriptionRequestWaffoPancakePay",
-      "line": 265
+      "line": 266
     },
     {
       "method": "GET",
       "path": "/plans",
       "handler": "AdminListSubscriptionPlans",
-      "line": 270
+      "line": 271
     },
     {
       "method": "POST",
       "path": "/plans",
       "handler": "AdminCreateSubscriptionPlan",
-      "line": 271
+      "line": 272
     },
     {
       "method": "PUT",
       "path": "/plans/:id",
       "handler": "AdminUpdateSubscriptionPlan",
-      "line": 272
+      "line": 273
     },
     {
       "method": "PATCH",
       "path": "/plans/:id",
       "handler": "AdminUpdateSubscriptionPlanStatus",
-      "line": 273
+      "line": 274
     },
     {
       "method": "POST",
       "path": "/bind",
       "handler": "AdminBindSubscription",
-      "line": 274
+      "line": 275
     },
     {
       "method": "POST",
       "path": "/plans/:id/subscriptions/reset",
       "handler": "AdminResetPlanSubscriptions",
-      "line": 275
+      "line": 276
     },
     {
       "method": "GET",
       "path": "/users/:id/subscriptions",
       "handler": "AdminListUserSubscriptions",
-      "line": 278
+      "line": 279
     },
     {
       "method": "POST",
       "path": "/users/:id/subscriptions",
       "handler": "AdminCreateUserSubscription",
-      "line": 279
+      "line": 280
     },
     {
       "method": "POST",
       "path": "/users/:id/subscriptions/reset",
       "handler": "AdminResetUserSubscriptionsByPlan",
-      "line": 280
+      "line": 281
     },
     {
       "method": "POST",
       "path": "/user_subscriptions/:id/invalidate",
       "handler": "AdminInvalidateUserSubscription",
-      "line": 281
+      "line": 282
     },
     {
       "method": "DELETE",
       "path": "/user_subscriptions/:id",
       "handler": "AdminDeleteUserSubscription",
-      "line": 282
+      "line": 283
     },
     {
       "method": "POST",
-      "path": "/subscription/epay/notify",
-      "handler": "SubscriptionEpayNotify",
-      "line": 286
-    },
-    {
-      "method": "GET",
       "path": "/subscription/epay/notify",
       "handler": "SubscriptionEpayNotify",
       "line": 287
     },
     {
       "method": "GET",
-      "path": "/subscription/epay/return",
-      "handler": "SubscriptionEpayReturn",
+      "path": "/subscription/epay/notify",
+      "handler": "SubscriptionEpayNotify",
       "line": 288
     },
     {
-      "method": "POST",
+      "method": "GET",
       "path": "/subscription/epay/return",
       "handler": "SubscriptionEpayReturn",
       "line": 289
     },
     {
+      "method": "POST",
+      "path": "/subscription/epay/return",
+      "handler": "SubscriptionEpayReturn",
+      "line": 290
+    },
+    {
       "method": "GET",
       "path": "/",
       "handler": "GetOptions",
-      "line": 293
+      "line": 294
     },
     {
       "method": "GET",
       "path": "/request_policy",
       "handler": "GetRequestPolicy",
-      "line": 294
+      "line": 295
     },
     {
       "method": "PATCH",
       "path": "/request_policy",
       "handler": "UpdateRequestPolicy",
-      "line": 295
+      "line": 296
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateOption",
-      "line": 296
+      "line": 297
     },
     {
       "method": "POST",
       "path": "/exchange_rate/sync",
       "handler": "SyncExchangeRate",
-      "line": 297
+      "line": 298
     },
     {
       "method": "PUT",
       "path": "/passkey/domains",
       "handler": "UpdatePasskeyDomains",
-      "line": 298
+      "line": 299
     },
     {
       "method": "GET",
       "path": "/model_pricing",
       "handler": "GetModelPricingConfig",
-      "line": 299
+      "line": 300
     },
     {
       "method": "PATCH",
       "path": "/model_pricing",
       "handler": "UpdateModelPricingConfig",
-      "line": 300
+      "line": 301
     },
     {
       "method": "POST",
       "path": "/model_pricing/convert",
       "handler": "PreviewModelPricingConversion",
-      "line": 301
+      "line": 302
     },
     {
       "method": "POST",
       "path": "/model_pricing/preview",
       "handler": "PreviewModelPricing",
-      "line": 302
+      "line": 303
     },
     {
       "method": "POST",
       "path": "/payment_compliance",
       "handler": "ConfirmPaymentCompliance",
-      "line": 303
+      "line": 304
+    },
+    {
+      "method": "POST",
+      "path": "/channel-provider/:key/reveal",
+      "handler": "RevealChannelProviderCredential",
+      "line": 305
+    },
+    {
+      "method": "POST",
+      "path": "/:key/secret/reveal",
+      "handler": "RevealSystemSecret",
+      "line": 306
     },
     {
       "method": "GET",
       "path": "/channel_affinity_cache",
       "handler": "GetChannelAffinityCacheStats",
-      "line": 304
+      "line": 307
     },
     {
       "method": "DELETE",
       "path": "/channel_affinity_cache",
       "handler": "ClearChannelAffinityCache",
-      "line": 305
+      "line": 308
     },
     {
       "method": "POST",
       "path": "/rest_model_ratio",
       "handler": "ResetModelRatio",
-      "line": 306
+      "line": 309
     },
     {
       "method": "GET",
       "path": "/waffo-pancake/catalog",
       "handler": "ListWaffoPancakeCatalog",
-      "line": 307
+      "line": 310
     },
     {
       "method": "POST",
       "path": "/waffo-pancake/pair",
       "handler": "CreateWaffoPancakePair",
-      "line": 308
+      "line": 311
     },
     {
       "method": "POST",
       "path": "/waffo-pancake/save",
       "handler": "SaveWaffoPancake",
-      "line": 309
+      "line": 312
     },
     {
       "method": "POST",
       "path": "/waffo-pancake/subscription-product",
       "handler": "CreateWaffoPancakeSubscriptionProduct",
-      "line": 310
+      "line": 313
     },
     {
       "method": "GET",
       "path": "/waffo-pancake/subscription-product-options",
       "handler": "ListWaffoPancakeSubscriptionProductOptions",
-      "line": 311
+      "line": 314
     },
     {
       "method": "POST",
       "path": "/discovery",
       "handler": "FetchCustomOAuthDiscovery",
-      "line": 318
+      "line": 321
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetCustomOAuthProviders",
-      "line": 319
+      "line": 322
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetCustomOAuthProvider",
-      "line": 320
+      "line": 323
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateCustomOAuthProvider",
-      "line": 321
+      "line": 324
     },
     {
       "method": "PUT",
       "path": "/:id",
       "handler": "UpdateCustomOAuthProvider",
-      "line": 322
+      "line": 325
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteCustomOAuthProvider",
-      "line": 323
+      "line": 326
     },
     {
       "method": "GET",
       "path": "/stats",
       "handler": "GetPerformanceStats",
-      "line": 328
+      "line": 331
     },
     {
       "method": "DELETE",
       "path": "/disk_cache",
       "handler": "ClearDiskCache",
-      "line": 329
+      "line": 332
     },
     {
       "method": "POST",
       "path": "/reset_stats",
       "handler": "ResetPerformanceStats",
-      "line": 330
+      "line": 333
     },
     {
       "method": "POST",
       "path": "/gc",
       "handler": "ForceGC",
-      "line": 331
+      "line": 334
     },
     {
       "method": "GET",
       "path": "/logs",
       "handler": "GetLogFiles",
-      "line": 332
+      "line": 335
     },
     {
       "method": "DELETE",
       "path": "/logs",
       "handler": "CleanupLogFiles",
-      "line": 333
+      "line": 336
     },
     {
       "method": "GET",
       "path": "/channels",
       "handler": "GetSyncableChannels",
-      "line": 338
+      "line": 341
     },
     {
       "method": "POST",
       "path": "/fetch",
       "handler": "FetchUpstreamRatios",
-      "line": 339
+      "line": 342
     },
     {
       "method": "GET",
       "path": "/preset_prices",
       "handler": "GetPresetPrices",
-      "line": 340
+      "line": 343
     },
     {
       "method": "POST",
       "path": "/bailian/catalog/refresh",
       "handler": "RefreshBailianCatalog",
-      "line": 341
+      "line": 344
     },
     {
       "method": "POST",
       "path": "/bailian/catalog/apply",
       "handler": "ApplyBailianCatalog",
-      "line": 342
+      "line": 345
     },
     {
       "method": "GET",
       "path": "/bailian/status",
       "handler": "GetBailianSyncStatus",
-      "line": 343
+      "line": 346
     },
     {
       "method": "POST",
       "path": "/uterroute/sync",
       "handler": "SyncUterRouteUpstream",
-      "line": 348
+      "line": 351
     },
     {
       "method": "GET",
       "path": "/uterroute/snapshot",
       "handler": "GetUterRouteUpstreamSnapshot",
-      "line": 349
+      "line": 352
     },
     {
       "method": "GET",
       "path": "/uterroute/endpoint",
       "handler": "GetUterRouteEndpoint",
-      "line": 350
+      "line": 353
     },
     {
       "method": "GET",
       "path": "/instances",
       "handler": "GetRequestPluginInstances",
-      "line": 355
+      "line": 358
     },
     {
       "method": "PUT",
       "path": "/instances",
       "handler": "UpdateRequestPluginInstances",
-      "line": 356
+      "line": 359
     },
     {
       "method": "POST",
       "path": "/dry_run",
       "handler": "DryRunRequestPlugins",
-      "line": 357
+      "line": 360
     },
     {
       "method": "GET",
       "path": "/runtime/status",
       "handler": "GetTaskPluginRuntime",
-      "line": 365
+      "line": 368
     },
     {
       "method": "GET",
       "path": "/marketplace/sources",
       "handler": "GetTaskPluginMarketplaceSources",
-      "line": 366
+      "line": 369
     },
     {
       "method": "PUT",
       "path": "/marketplace/sources",
       "handler": "UpdateTaskPluginMarketplaceSources",
-      "line": 367
+      "line": 370
     },
     {
       "method": "GET",
       "path": "/marketplace/fetch",
       "handler": "FetchTaskPluginMarketplaceIndex",
-      "line": 368
+      "line": 371
     },
     {
       "method": "GET",
       "path": "/:key",
       "handler": "GetTaskPlugin",
-      "line": 369
+      "line": 372
     },
     {
       "method": "GET",
       "path": "/:key/icon",
       "handler": "GetTaskPluginIcon",
-      "line": 370
+      "line": 373
     },
     {
       "method": "GET",
       "path": "/:key/versions",
       "handler": "GetTaskPluginVersions",
-      "line": 371
+      "line": 374
     },
     {
       "method": "POST",
       "path": "/:key/activate",
       "handler": "ActivateTaskPlugin",
-      "line": 372
+      "line": 375
     },
     {
       "method": "POST",
       "path": "/:key/status",
       "handler": "SetTaskPluginStatus",
-      "line": 373
+      "line": 376
     },
     {
       "method": "POST",
       "path": "/:key/dryrun",
       "handler": "DryRunTaskPlugin",
-      "line": 374
+      "line": 377
     },
     {
       "method": "DELETE",
       "path": "/:key/versions/:version",
       "handler": "DeleteTaskPluginVersion",
-      "line": 375
+      "line": 378
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllTokens",
-      "line": 384
+      "line": 387
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchTokens",
-      "line": 385
+      "line": 388
     },
     {
       "method": "POST",
       "path": "/search",
       "handler": "SearchTokensPost",
-      "line": 386
+      "line": 389
     },
     {
       "method": "GET",
       "path": "/auto-groups",
       "handler": "GetTokenAutoGroups",
-      "line": 387
+      "line": 390
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetToken",
-      "line": 388
+      "line": 391
     },
     {
       "method": "POST",
       "path": "/:id/key",
       "handler": "GetTokenKey",
-      "line": 389
+      "line": 392
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "AddToken",
-      "line": 390
+      "line": 393
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateToken",
-      "line": 391
+      "line": 394
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteToken",
-      "line": 392
+      "line": 395
     },
     {
       "method": "POST",
       "path": "/batch",
       "handler": "DeleteTokenBatch",
-      "line": 393
+      "line": 396
     },
     {
       "method": "POST",
       "path": "/batch/keys",
       "handler": "GetTokenKeysBatch",
-      "line": 394
+      "line": 397
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetTokenUsage",
-      "line": 403
+      "line": 406
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllRedemptions",
-      "line": 410
+      "line": 413
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchRedemptions",
-      "line": 411
+      "line": 414
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetRedemption",
-      "line": 412
+      "line": 415
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "AddRedemption",
-      "line": 413
+      "line": 416
     },
     {
       "method": "POST",
       "path": "/batch",
       "handler": "DeleteRedemptionBatch",
-      "line": 414
+      "line": 417
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateRedemption",
-      "line": 415
+      "line": 418
     },
     {
       "method": "DELETE",
       "path": "/invalid",
       "handler": "DeleteInvalidRedemption",
-      "line": 416
+      "line": 419
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteRedemption",
-      "line": 417
+      "line": 420
     },
     {
       "method": "GET",
       "path": "/audit/self",
       "handler": "GetAuditLogs",
-      "line": 420
+      "line": 423
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllLogs",
-      "line": 422
+      "line": 425
     },
     {
       "method": "GET",
       "path": "/stat",
       "handler": "GetLogsStat",
-      "line": 423
+      "line": 426
     },
     {
       "method": "GET",
       "path": "/self/stat",
       "handler": "GetLogsSelfStat",
-      "line": 424
+      "line": 427
     },
     {
       "method": "GET",
       "path": "/channel_affinity_usage_cache",
       "handler": "GetChannelAffinityUsageCacheStats",
-      "line": 425
+      "line": 428
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchAllLogs",
-      "line": 426
+      "line": 429
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserLogs",
-      "line": 427
+      "line": 430
     },
     {
       "method": "GET",
       "path": "/export",
       "handler": "ExportAllLogs",
-      "line": 428
+      "line": 431
     },
     {
       "method": "GET",
       "path": "/self/export",
       "handler": "ExportUserLogs",
-      "line": 429
+      "line": 432
     },
     {
       "method": "GET",
       "path": "/self/search",
       "handler": "SearchUserLogs",
-      "line": 430
+      "line": 433
     },
     {
       "method": "POST",
       "path": "/log-cleanup",
       "handler": "CreateLogCleanupSystemTask",
-      "line": 435
+      "line": 438
     },
     {
       "method": "GET",
       "path": "/list",
       "handler": "ListSystemTasks",
-      "line": 436
+      "line": 439
     },
     {
       "method": "DELETE",
       "path": "/history",
       "handler": "DeleteSystemTaskHistory",
-      "line": 437
+      "line": 440
     },
     {
       "method": "GET",
       "path": "/current",
       "handler": "GetCurrentSystemTask",
-      "line": 438
+      "line": 441
     },
     {
       "method": "GET",
       "path": "/:task_id",
       "handler": "GetSystemTask",
-      "line": 439
+      "line": 442
     },
     {
       "method": "GET",
       "path": "/instances",
       "handler": "ListSystemInstances",
-      "line": 444
+      "line": 447
     },
     {
       "method": "GET",
       "path": "/sync",
       "handler": "GetNodeSync",
-      "line": 445
+      "line": 448
     },
     {
       "method": "DELETE",
       "path": "/stale-instances",
       "handler": "DeleteStaleSystemInstances",
-      "line": 446
+      "line": 449
     },
     {
       "method": "DELETE",
       "path": "/instances/:node_name",
       "handler": "DeleteStaleSystemInstance",
-      "line": 447
+      "line": 450
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllQuotaDates",
-      "line": 451
+      "line": 454
     },
     {
       "method": "GET",
       "path": "/users",
       "handler": "GetQuotaDatesByUser",
-      "line": 452
+      "line": 455
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserQuotaDates",
-      "line": 453
+      "line": 456
     },
     {
       "method": "GET",
       "path": "/flow",
       "handler": "GetAllFlowQuotaDates",
-      "line": 454
+      "line": 457
     },
     {
       "method": "GET",
       "path": "/flow/self",
       "handler": "GetUserFlowQuotaDates",
-      "line": 455
+      "line": 458
     },
     {
       "method": "GET",
       "path": "/token",
       "handler": "GetLogByKey",
-      "line": 459
+      "line": 462
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetGroups",
-      "line": 464
+      "line": 467
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetPrefillGroups",
-      "line": 470
+      "line": 473
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreatePrefillGroup",
-      "line": 471
+      "line": 474
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdatePrefillGroup",
-      "line": 472
+      "line": 475
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeletePrefillGroup",
-      "line": 473
+      "line": 476
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserMidjourney",
-      "line": 477
+      "line": 480
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllMidjourney",
-      "line": 478
+      "line": 481
     },
     {
       "method": "GET",
       "path": "/self",
       "handler": "GetUserTask",
-      "line": 482
+      "line": 485
     },
     {
       "method": "GET",
       "path": "/:task_id/artifacts",
       "handler": "GetDashboardTaskArtifacts",
-      "line": 484
+      "line": 487
     },
     {
       "method": "POST",
       "path": "/operations/preview",
       "handler": "PreviewVendorOperation",
-      "line": 490
+      "line": 493
     },
     {
       "method": "POST",
       "path": "/operations",
       "handler": "ApplyVendorOperation",
-      "line": 491
+      "line": 494
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllVendors",
-      "line": 492
+      "line": 495
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchVendors",
-      "line": 493
+      "line": 496
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetVendorMeta",
-      "line": 494
+      "line": 497
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateVendorMeta",
-      "line": 495
+      "line": 498
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateVendorMeta",
-      "line": 496
+      "line": 499
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteVendorMeta",
-      "line": 497
+      "line": 500
     },
     {
       "method": "GET",
       "path": "/merge-rules",
       "handler": "ListVendorMergeRules",
-      "line": 498
+      "line": 501
     },
     {
       "method": "DELETE",
       "path": "/merge-rules/:id",
       "handler": "DeleteVendorMergeRule",
-      "line": 499
+      "line": 502
     },
     {
       "method": "GET",
       "path": "/sync_upstream/preview",
       "handler": "SyncUpstreamPreview",
-      "line": 505
+      "line": 508
     },
     {
       "method": "POST",
       "path": "/sync_upstream",
       "handler": "SyncUpstreamModels",
-      "line": 506
+      "line": 509
     },
     {
       "method": "POST",
       "path": "/delete",
       "handler": "BatchDeleteModelMeta",
-      "line": 507
+      "line": 510
     },
     {
       "method": "GET",
       "path": "/missing",
       "handler": "GetMissingModels",
-      "line": 508
+      "line": 511
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllModelsMeta",
-      "line": 509
+      "line": 512
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchModelsMeta",
-      "line": 510
+      "line": 513
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetModelMeta",
-      "line": 511
+      "line": 514
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateModelMeta",
-      "line": 512
+      "line": 515
     },
     {
       "method": "PUT",
       "path": "/",
       "handler": "UpdateModelMeta",
-      "line": 513
+      "line": 516
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteModelMeta",
-      "line": 514
+      "line": 517
     },
     {
       "method": "GET",
       "path": "/settings",
       "handler": "GetModelDeploymentSettings",
-      "line": 521
+      "line": 524
     },
     {
       "method": "POST",
       "path": "/settings/test-connection",
       "handler": "TestIoNetConnection",
-      "line": 522
+      "line": 525
     },
     {
       "method": "GET",
       "path": "/",
       "handler": "GetAllDeployments",
-      "line": 523
+      "line": 526
     },
     {
       "method": "GET",
       "path": "/search",
       "handler": "SearchDeployments",
-      "line": 524
+      "line": 527
     },
     {
       "method": "POST",
       "path": "/test-connection",
       "handler": "TestIoNetConnection",
-      "line": 525
+      "line": 528
     },
     {
       "method": "GET",
       "path": "/hardware-types",
       "handler": "GetHardwareTypes",
-      "line": 526
+      "line": 529
     },
     {
       "method": "GET",
       "path": "/locations",
       "handler": "GetLocations",
-      "line": 527
+      "line": 530
     },
     {
       "method": "GET",
       "path": "/available-replicas",
       "handler": "GetAvailableReplicas",
-      "line": 528
+      "line": 531
     },
     {
       "method": "POST",
       "path": "/price-estimation",
       "handler": "GetPriceEstimation",
-      "line": 529
+      "line": 532
     },
     {
       "method": "GET",
       "path": "/check-name",
       "handler": "CheckClusterNameAvailability",
-      "line": 530
+      "line": 533
     },
     {
       "method": "POST",
       "path": "/",
       "handler": "CreateDeployment",
-      "line": 531
+      "line": 534
     },
     {
       "method": "GET",
       "path": "/:id",
       "handler": "GetDeployment",
-      "line": 533
+      "line": 536
+    },
+    {
+      "method": "POST",
+      "path": "/:id/registry-secret/reveal",
+      "handler": "RevealDeploymentRegistrySecret",
+      "line": 537
     },
     {
       "method": "GET",
       "path": "/:id/logs",
       "handler": "GetDeploymentLogs",
-      "line": 534
+      "line": 538
     },
     {
       "method": "GET",
       "path": "/:id/containers",
       "handler": "ListDeploymentContainers",
-      "line": 535
+      "line": 539
     },
     {
       "method": "GET",
       "path": "/:id/containers/:container_id",
       "handler": "GetContainerDetails",
-      "line": 536
+      "line": 540
     },
     {
       "method": "PUT",
       "path": "/:id",
       "handler": "UpdateDeployment",
-      "line": 537
+      "line": 541
     },
     {
       "method": "PUT",
       "path": "/:id/name",
       "handler": "UpdateDeploymentName",
-      "line": 538
+      "line": 542
     },
     {
       "method": "POST",
       "path": "/:id/extend",
       "handler": "ExtendDeployment",
-      "line": 539
+      "line": 543
     },
     {
       "method": "DELETE",
       "path": "/:id",
       "handler": "DeleteDeployment",
-      "line": 540
+      "line": 544
     }
   ],
-  "api_count": 311,
+  "api_count": 315,
   "database_anchors": {
     "go_mod_drivers": [
       "ClickHouse/ch-go",

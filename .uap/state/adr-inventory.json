@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-11-25T06:42:03.062Z",
-  "generated_for_head": "4189503ad246decc363e9e3cb4971c92f117b307",
+  "generated_at": "2026-11-26T11:15:46.101Z",
+  "generated_for_head": "0dca382852b892226dc6c198c301646bb734bfec",
   "executor_ids": [
     "architecture.adr"
   ],
@@ -3788,9 +3788,9 @@
         ".uap/architecture/UAP-02-003-TECHNICAL-DECISIONS.md",
         ".uap/agents/UAP-03-001-AGENT-ARCHITECTURE.md"
       ],
-      "updated_at": "2026-11-24T07:46:11.467Z",
-      "hash": "056ef11ea3526ebf6faac308e1a6fe64419cd1903bee1842037655abca289f71",
-      "size": 14983
+      "updated_at": "2026-11-26T11:12:28.416Z",
+      "hash": "e02e16c9865fcba0f4bd1c1a8cb0c6af364d9140eb834f2f8c5d7dd46e81104c",
+      "size": 15002
     },
     {
       "id": "ADR-CANDIDATE-a58a3483",

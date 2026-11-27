@@ -1,97 +1,235 @@
 {
-  "status": "FAIL",
-  "exit_code": 1,
-  "summary": "test: node --test exited 1 (21 files)",
+  "status": "PASS",
+  "exit_code": 0,
+  "summary": "UAP 1.0.0: IMPLEMENTED_NOT_VERIFIED (0/538 requirements verified), claim_allowed=false, execution=UAP-EXEC-20261126134821-a26d0967",
   "data": {
-    "generated_at": "2026-11-25T06:47:35.107Z",
-    "mode": "all",
-    "test_files": [
-      ".uap/tests/architecture-adr-traceability.test.mjs",
-      ".uap/tests/ci-workflow-evidence.test.mjs",
-      ".uap/tests/deployment-drill-classification.test.mjs",
-      ".uap/tests/execution-identity-race.test.mjs",
-      ".uap/tests/execution-lifecycle.test.mjs",
-      ".uap/tests/final-acceptance-capabilities.test.mjs",
-      ".uap/tests/final-acceptance-negative.test.mjs",
-      ".uap/tests/final-remediation-regression.test.mjs",
-      ".uap/tests/independent-repair-review.test.mjs",
-      ".uap/tests/independent-verification.test.mjs",
-      ".uap/tests/phase2-requirement-verification.test.mjs",
-      ".uap/tests/phase2-security-negative.test.mjs",
-      ".uap/tests/real-code-repair-boundaries.test.mjs",
-      ".uap/tests/real-repair-e2e.test.mjs",
-      ".uap/tests/requirement-behavior-suite.test.mjs",
-      ".uap/tests/requirement-honesty.test.mjs",
-      ".uap/tests/runtime.test.mjs",
-      ".uap/tests/status-consistency.test.mjs",
-      ".uap/tests/status-snapshot.test.mjs",
-      ".uap/tests/test-collector.test.mjs",
-      ".uap/tests/worktree-fingerprint-exclusions.test.mjs"
-    ],
-    "command": "node --test --test-reporter=tap --test-concurrency=1 .uap/tests/architecture-adr-traceability.test.mjs .uap/tests/ci-workflow-evidence.test.mjs .uap/tests/deployment-drill-classification.test.mjs .uap/tests/execution-identity-race.test.mjs .uap/tests/execution-lifecycle.test.mjs .uap/tests/final-acceptance-capabilities.test.mjs .uap/tests/final-acceptance-negative.test.mjs .uap/tests/final-remediation-regression.test.mjs .uap/tests/independent-repair-review.test.mjs .uap/tests/independent-verification.test.mjs .uap/tests/phase2-requirement-verification.test.mjs .uap/tests/phase2-security-negative.test.mjs .uap/tests/real-code-repair-boundaries.test.mjs .uap/tests/real-repair-e2e.test.mjs .uap/tests/requirement-behavior-suite.test.mjs .uap/tests/requirement-honesty.test.mjs .uap/tests/runtime.test.mjs .uap/tests/status-consistency.test.mjs .uap/tests/status-snapshot.test.mjs .uap/tests/test-collector.test.mjs .uap/tests/worktree-fingerprint-exclusions.test.mjs",
-    "exit_code": 1,
-    "timed_out": false,
-    "duration_ms": 332461,
-    "failed_tests": [
+    "platform": "UAP",
+    "version": "1.0.0",
+    "generated_at": "2026-11-26T13:48:28.936Z",
+    "root": "/Users/lincolnhu/uter",
+    "registry": {
+      "ok": true,
+      "summary": "37/37 registry checks passed, 0 blocking findings",
+      "checks_passed": 37,
+      "checks_total": 37,
+      "blocking_findings": 0
+    },
+    "specifications": {
+      "status": "COMPLETE",
+      "checks_passed": 7,
+      "checks_total": 7,
+      "failed_checks": [],
+      "generated_at": "2026-11-26T13:48:20.153Z"
+    },
+    "runtime": {
+      "status": "NOT_FULLY_VERIFIED",
+      "checks": {
+        "health_check_passed": true,
+        "components_healthy": true,
+        "registry_integrity": true,
+        "full_validation_run": true,
+        "no_validator_failure": true,
+        "no_unexplained_block": true,
+        "uap_tests_run": true,
+        "recovery_verified": true
+      },
+      "checks_passed": 8,
+      "checks_total": 8,
+      "all_validators_passed": true,
+      "validators_pass": 32,
+      "validators_total": 32,
+      "restricted_blocked_items": [],
+      "checked_at": "2026-11-26T12:05:02.638Z"
+    },
+    "uter_compliance": {
+      "status": "NOT_FULLY_VERIFIED",
+      "checks": {
+        "audit_executed": true,
+        "defect_registry_built": true,
+        "all_validators_pass": true,
+        "financial_checks_pass": true,
+        "quality_gates_pass": true,
+        "no_open_p0": true,
+        "no_open_p1": true
+      },
+      "checks_passed": 7,
+      "checks_total": 7,
+      "open_p0": 0,
+      "open_p1": 0
+    },
+    "three_independent_results": {
+      "specification_completeness": "COMPLETE",
+      "uap_runtime_capability": "NOT_FULLY_VERIFIED",
+      "uter_real_compliance": "NOT_FULLY_VERIFIED"
+    },
+    "final_status": {
+      "overall_status": "IMPLEMENTED_NOT_VERIFIED",
+      "computed_by": "runtime.status-engine/computeFinalStatus",
+      "computed_at": "2026-11-26T13:48:22.116Z",
+      "execution_id": "UAP-EXEC-20261126134821-a26d0967",
+      "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+      "counts": {
+        "requirements_total": 538,
+        "applicable": 538,
+        "not_applicable": 0,
+        "not_implemented": 0,
+        "partially_implemented": 0,
+        "implemented": 538,
+        "implemented_not_verified": 0,
+        "not_built": 0,
+        "partially_built": 0,
+        "partially_verified": 0,
+        "verified": 0,
+        "blocked_requirements": 0
+      },
+      "capabilities": {
+        "real_code_repair": false,
+        "independent_regression": false,
+        "recovery": false,
+        "e2e": false,
+        "database_integration": false,
+        "financial_integrity": false
+      },
+      "capability_gaps": [
+        "real_code_repair",
+        "independent_regression",
+        "recovery",
+        "e2e",
+        "database_integration",
+        "financial_integrity"
+      ],
+      "reasons": [
+        "stale artefacts not bound to current execution/HEAD: tests,validators",
+        "538/538 applicable requirements lack current valid evidence",
+        "415 requirement(s) have no evidence record",
+        "2 unresolved P0 blocker(s)"
+      ],
+      "claim_allowed": false,
+      "three_independent_results": {
+        "specification_completeness": "COMPLETE",
+        "uap_runtime_capability": "NOT_FULLY_VERIFIED",
+        "uter_real_compliance": "NOT_FULLY_VERIFIED"
+      },
+      "specification_verification": {
+        "verified_specs": 0,
+        "total_specs": 32
+      },
+      "evidence_chain": {
+        "ok": true,
+        "problems": [],
+        "checked": 0
+      },
+      "diagnostics": {
+        "matrix_present": true,
+        "matrix_generated_at": "2026-11-24T08:00:40.763Z",
+        "tests_card_present": true,
+        "tests_card_generated_at": "2026-11-26T12:05:34.479Z",
+        "validation_card_present": true,
+        "validation_card_generated_at": "2026-11-26T12:08:06.773Z",
+        "index_block_present": true,
+        "auto_repair_business_code_untouched": null,
+        "financial_simulated_only": true,
+        "recovery_has_binding": true,
+        "real_repair_e2e_card": false,
+        "independent_regression_e2e_card": false
+      }
+    },
+    "execution": {
+      "execution_id": "UAP-EXEC-20261126134821-a26d0967",
+      "git_head": "0ef3aa41fb10d5777636f6437aaf3648353e56c5",
+      "worktree_fingerprint": "78ccf293acf0963ebb7a8a451c9a98dec52c0d1cbd33292ed74d7394b5fe2a12",
+      "started_at": "2026-11-26T13:48:21.667Z",
+      "started_by": "code-version-changed",
+      "ledger_entries": 466
+    },
+    "machine_configs": [
       {
-        "index": 10,
-        "name": "the final gate fails closed when required UAP prerequisites are skipped",
-        "failure_type": "testCodeFailure",
-        "error_class": "UAP_BACKEND_BUILD_OUTCOME",
-        "code": "ERR_ASSERTION"
+        "name": "specification-registry",
+        "parsed": true,
+        "bytes": 7813
       },
       {
-        "index": 3,
-        "name": "如实记录证据缺口：不得把无当前证据的要求算作已验证",
-        "failure_type": "testCodeFailure",
-        "error_class": null,
-        "code": "ERR_ASSERTION"
+        "name": "execution-mapping",
+        "parsed": true,
+        "bytes": 4357
       },
       {
-        "index": 70,
-        "name": "独立验收：规范与追踪矩阵（不依赖 UAP 自身实现）",
-        "failure_type": "subtestsFailed",
-        "error_class": null,
-        "code": "ERR_TEST_FAILURE"
+        "name": "agent-registry",
+        "parsed": true,
+        "bytes": 3462
       },
       {
-        "index": 1,
-        "name": "独立重算的 verified 数必须与 FINAL-STATUS.json 一致",
-        "failure_type": "testCodeFailure",
-        "error_class": null,
-        "code": "ERR_ASSERTION"
+        "name": "permission-policy",
+        "parsed": true,
+        "bytes": 1795
       },
       {
-        "index": 4,
-        "name": "P0 阻断项与能力缺口一致，且不得被隐藏或静默关闭",
-        "failure_type": "testCodeFailure",
-        "error_class": null,
-        "code": "ERR_ASSERTION"
+        "name": "workflow-registry",
+        "parsed": true,
+        "bytes": 3117
       },
       {
-        "index": 71,
-        "name": "独立验收：状态口径（独立重算，不调用 computeFinalStatus）",
-        "failure_type": "subtestsFailed",
-        "error_class": null,
-        "code": "ERR_TEST_FAILURE"
-      },
-      {
-        "index": 95,
-        "name": "② PASS 行数量与真实执行次数一致",
-        "failure_type": "testCodeFailure",
-        "error_class": null,
-        "code": "ERR_ASSERTION"
+        "name": "validator-registry",
+        "parsed": true,
+        "bytes": 5984
       }
     ],
-    "stdout_tail": "部 DENY；default_effect=deny；DENY 写入 policy-audit.jsonl\n    ok 1 - 高危权限、未注册 Agent、未声明权限、curl 命令全部 DENY；default_effect=deny；DENY 写入 policy-audit.jsonl\n      ---\n      duration_ms: 98.703944\n      type: 'test'\n      ...\n    1..1\nok 106 - 类别5 权限拒绝\n  ---\n  duration_ms: 99.135371\n  type: 'suite'\n  ...\n# Subtest: 类别6 任务创建\n    # Subtest: createTask() 缺必需字段抛 ContractError；成功任务含 task_id/trace_id/state/steps/history\n    ok 1 - createTask() 缺必需字段抛 ContractError；成功任务含 task_id/trace_id/state/steps/history\n      ---\n      duration_ms: 295.360603\n      type: 'test'\n      ...\n    1..1\nok 107 - 类别6 任务创建\n  ---\n  duration_ms: 295.639365\n  type: 'suite'\n  ...\n# Subtest: 类别7 依赖调度\n    # Subtest: topologicalLevels() 对 DAG 返回正确层级\n    ok 1 - topologicalLevels() 对 DAG 返回正确层级\n      ---\n      duration_ms: 0.635366\n      type: 'test'\n      ...\n    # Subtest: 有环时 detectCycle 返回环信息；registryIntegrity 的 dependencies_acyclic 判 FAIL\n    ok 2 - 有环时 detectCycle 返回环信息；registryIntegrity 的 dependencies_acyclic 判 FAIL\n      ---\n      duration_ms: 11.319761\n      type: 'test'\n      ...\n    1..2\nok 108 - 类别7 依赖调度\n  ---\n  duration_ms: 12.134934\n  type: 'suite'\n  ...\n# Subtest: 类别8 并行执行\n    # Subtest: MAX_CONCURRENCY=4；第 5 个并发与重叠写集均抛 ResourceConflictError\n    ok 1 - MAX_CONCURRENCY=4；第 5 个并发与重叠写集均抛 ResourceConflictError\n      ---\n      duration_ms: 6.078404\n      type: 'test'\n      ...\n    # Subtest: runGraph() 按层级并行并检测重叠写集冲突\n    ok 2 - runGraph() 按层级并行并检测重叠写集冲突\n      ---\n      duration_ms: 9.639426\n      type: 'test'\n      ...\n    1..2\nok 109 - 类别8 并行执行\n  ---\n  duration_ms: 15.930828\n  type: 'suite'\n  ...\n# Subtest: 类别9 中断恢复\n    # Subtest: simulateInterruption 起独立进程在 step2 崩溃(exit 7)；recover 后 SUCCEEDED、已完成步骤不重复、写 2 条证据\n    ok 1 - simulateInterruption 起独立进程在 step2 崩溃(exit 7)；recover 后 SUCCEEDED、已完成步骤不重复、写 2 条证据\n      ---\n      duration_ms: 14914.203549\n      type: 'test'\n      ...\n    1..1\nok 110 - 类别9 中断恢复\n  ---\n  duration_ms: 14914.358152\n  type: 'suite'\n  ...\n# Subtest: 类别10 重试上限\n    # Subtest: MAX_RETRIES===2；前两次抛错第三次成功时 attempts===3；永远抛错仍 attempts===3 且任务不 SUCCEEDED\n    ok 1 - MAX_RETRIES===2；前两次抛错第三次成功时 attempts===3；永远抛错仍 attempts===3 且任务不 SUCCEEDED\n      ---\n      duration_ms: 8693.001135\n      type: 'test'\n      ...\n    1..1\nok 111 - 类别10 重试上限\n  ---\n  duration_ms: 8693.207746\n  type: 'suite'\n  ...\n# Subtest: 类别11 执行器/验证器映射\n    # Subtest: executorResult 强制 validation_results=[]；assertExecutorResult 拒绝自报非空 validation_results\n    ok 1 - executorResult 强制 validation_results=[]；assertExecutorResult 拒绝自报非空 validation_results\n      ---\n      duration_ms: 0.772521\n      type: 'test'\n      ...\n    # Subtest: validatorResult 在 executed=false / exit_code!==0 / BLOCKER finding 时把 PASS 降为 FAIL\n    ok 2 - validatorResult 在 executed=false / exit_code!==0 / BLOCKER finding 时把 PASS 降为 FAIL\n      ---\n      duration_ms: 0.157185\n      type: 'test'\n      ...\n    1..2\nok 112 - 类别11 执行器/验证器映射\n  ---\n  duration_ms: 1.072866\n  type: 'suite'\n  ...\n# Subtest: 类别12 证据完整性\n    # Subtest: record 生成 content_hash 且 verify 通过；同 ID 二次写入抛错；redact 脱敏 token\n    ok 1 - record 生成 content_hash 且 verify 通过；同 ID 二次写入抛错；redact 脱敏 token\n      ---\n      duration_ms: 2784.975717\n      type: 'test'\n      ...\n    1..1\nok 113 - 类别12 证据完整性\n  ---\n  duration_ms: 2785.060725\n  type: 'suite'\n  ...\n# Subtest: 类别13 工作流端到端\n    # Subtest: listWorkflows() 为 7 个；stepExecutor 对 validate_environment 返回真实工具链版本与 exit_code\n    ok 1 - listWorkflows() 为 7 个；stepExecutor 对 validate_environment 返回真实工具链版本与 exit_code\n      ---\n      duration_ms: 1200.494596\n      type: 'test'\n      ...\n    # Subtest: runWorkflow(uap-financial-verification) 返回含 evidence 的 run 记录，state 与内部证据一致\n    ok 2 - runWorkflow(uap-financial-verification) 返回含 evidence 的 run 记录，state 与内部证据一致\n      ---\n      duration_ms: 23844.078311\n      type: 'test'\n      ...\n    1..2\nok 114 - 类别13 工作流端到端\n  ---\n  duration_ms: 25044.857603\n  type: 'suite'\n  ...\n# Subtest: 类别14 安全边界\n    # Subtest: 12 个 mustDeny 权限组全为 deny；配置无 AES/UAES 引用；COMMAND_ALLOWLIST 不含 curl\n    ok 1 - 12 个 mustDeny 权限组全为 deny；配置无 AES/UAES 引用；COMMAND_ALLOWLIST 不含 curl\n      ---\n      duration_ms: 10.51881\n      type: 'test'\n      ...\n    1..1\nok 115 - 类别14 安全边界\n  ---\n  duration_ms: 10.73202\n  type: 'suite'\n  ...\n# Subtest: 类别15 质量门禁阻断\n    # Subtest: defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS\n    ok 1 - defaultValidator 对未成功步骤/无证据步骤返回 FAIL；合规任务返回 PASS\n      ---\n      duration_ms: 0.432507\n      type: 'test'\n      ...\n    # Subtest: assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）\n    ok 2 - assertTransition(CREATED,SUCCEEDED) 抛 IllegalTransitionError（fail-closed）\n      ---\n      duration_ms: 0.763951\n      type: 'test'\n      ...\n    1..2\nok 116 - 类别15 质量门禁阻断\n  ---\n  duration_ms: 1.395368\n  type: 'suite'\n  ...\n# Subtest: 类别16 模拟支付退款\n    # Subtest: financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用\n    ok 1 - financialSimulation()：simulated_only=true、>=13 检查、PASS 检查有 evidence 且可追溯真实源码、无真实外部调用\n      ---\n      duration_ms: 23.689063\n      type: 'test'\n      ...\n    1..1\nok 117 - 类别16 模拟支付退款\n  ---\n  duration_ms: 23.822888\n  type: 'suite'\n  ...\n# Subtest: 类别17 自动修复闭环\n    # Subtest: normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等\n    ok 1 - normalizeSpecHeaders({dryRun:true}) 返回 scanned/fixed/already_ok/unfixable 且连续两次幂等\n      ---\n      duration_ms: 23.114249\n      type: 'test'\n      ...\n    1..1\nok 118 - 类别17 自动修复闭环\n  ---\n  duration_ms: 23.223975\n  type: 'suite'\n  ...\n# Subtest: 类别18 状态机\n    # Subtest: TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history\n    ok 1 - TASK_STATES 9 个；legalNext(SUCCEEDED) 为空；canTransition(RUNNING,WAITING_RECOVERY)=true；transition 原地更新并追加合法 history\n      ---\n      duration_ms: 0.701243\n      type: 'test'\n      ...\n    1..1\nok 119 - 类别18 状态机\n  ---\n  duration_ms: 0.78768\n  type: 'suite'\n  ...\n# Subtest: §3.4 状态一致性 — 8 个必须正确的场景\n    # Subtest: 1. 32 项全部通过 → FULLY_OPERATIONAL（且可声明成功）\n    ok 1 - 1. 32 项全部通过 → FULLY_OPERATIONAL（且可声明成功）\n      ---\n      duration_ms: 5.416429\n      type: 'test'\n      ...\n    # Subtest: 2. 存在一项未验证 → 不得 FULLY_VERIFIED / FULLY_OPERATIONAL\n    ok 2 - 2. 存在一项未验证 → 不得 FULLY_VERIFIED / FULLY_OPERATIONAL\n      ---\n      duration_ms: 0.731855\n      type: 'test'\n      ...\n    # Subtest: 3. 存在一项未实现 → PARTIALLY_BUILT 或更低，不得 FULLY_*\n    ok 3 - 3. 存在一项未实现 → PARTIALLY_BUILT 或更低，不得 FULLY_*\n      ---\n      duration_ms: 0.4116\n      type: 'test'\n      ...\n    # Subtest: 4. 存在一项阻断 → 不得 FULLY_*；关键依赖阻断判定 BLOCKED\n    ok 4 - 4. 存在一项阻断 → 不得 FULLY_*；关键依赖阻断判定 BLOCKED\n      ---\n      duration_ms: 1.753717\n      type: 'test'\n      ...\n    # Subtest: 5. 存在测试失败 → 不得 FULLY_*\n    ok 5 - 5. 存在测试失败 → 不得 FULLY_*\n      ---\n      duration_ms: 0.350668\n      type: 'test'\n      ...\n    # Subtest: 6. 存在缺失证据 → 不得 FULLY_*\n    ok 6 - 6. 存在缺失证据 → 不得 FULLY_*\n      ---\n      duration_ms: 0.33832\n      type: 'test'\n      ...\n    # Subtest: 7. 历史通过但当前失败（execution_id / HEAD 不匹配）→ 不得算通过\n    ok 7 - 7. 历史通过但当前失败（execution_id / HEAD 不匹配）→ 不得算通过\n      ---\n      duration_ms: 0.399754\n      type: 'test'\n      ...\n    # Subtest: 8. 规范索引与最终报告不一致 → 不得 FULLY_*\n    ok 8 - 8. 规范索引与最终报告不一致 → 不得 FULLY_*\n      ---\n      duration_ms: 0.488913\n      type: 'test'\n      ...\n    1..8\nok 120 - §3.4 状态一致性 — 8 个必须正确的场景\n  ---\n  duration_ms: 11.789607\n  type: 'suite'\n  ...\n# Subtest: 状态引擎附加不变量\n    # Subtest: 跳过的测试永不算通过\n    ok 1 - 跳过的测试永不算通过\n      ---\n      duration_ms: 0.605883\n      type: 'test'\n      ...\n    # Subtest: 真实业务代码修复闭环缺失 → 最高只能 FULLY_VERIFIED，不能 FULLY_OPERATIONAL\n    ok 2 - 真实业务代码修复闭环缺失 → 最高只能 FULLY_VERIFIED，不能 FULLY_OPERATIONAL\n      ---\n      duration_ms: 0.548723\n      type: 'test'\n      ...\n    # Subtest: NOT_APPLICABLE 无理由与审批 → 不得 FULLY_*\n    ok 3 - NOT_APPLICABLE 无理由与审批 → 不得 FULLY_*\n      ---\n      duration_ms: 0.298072\n      type: 'test'\n      ...\n    # Subtest: 无执行身份 / 无要求 → NOT_BUILT\n    ok 4 - 无执行身份 / 无要求 → NOT_BUILT\n      ---\n      duration_ms: 0.182318\n      type: 'test'\n      ...\n    # Subtest: 所有状态都在状态机枚举内\n    ok 5 - 所有状态都在状态机枚举内\n      ---\n      duration_ms: 0.273831\n      type: 'test'\n      ...\n    # Subtest: 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n    ok 6 - 证据链校验：ID/HEAD/哈希/篡改任一项不合格即失败\n      ---\n      duration_ms: 0.383963\n      type: 'test'\n      ...\n    1..6\nok 121 - 状态引擎附加不变量\n  ---\n  duration_ms: 2.652662\n  type: 'suite'\n  ...\n# Subtest: 执行身份绑定\n    # Subtest: git HEAD 来自真实仓库且是 40 位 sha\n    ok 1 - git HEAD 来自真实仓库且是 40 位 sha\n      ---\n      duration_ms: 19.933242\n      type: 'test'\n      ...\n    # Subtest: worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n    ok 2 - worktree 指纹绑定真实文件内容（不再只是路径集合 / 空串哈希）\n      ---\n      duration_ms: 14130.908793\n      type: 'test'\n      ...\n    # Subtest: 生成验证报告与构建缓存被排除，审计源文档仍被绑定\n    ok 3 - 生成验证报告与构建缓存被排除，审计源文档仍被绑定\n      ---\n      duration_ms: 22250.173221\n      type: 'test'\n      ...\n    # Subtest: currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n    ok 4 - currentExecution 返回同一身份，且绑定字段不可被调用方伪造\n      ---\n      duration_ms: 3643.738853\n      type: 'test'\n      ...\n    1..4\nok 122 - 执行身份绑定\n  ---\n  duration_ms: 40047.000157\n  type: 'suite'\n  ...\n# Subtest: 真实快照适配器\n    # Subtest: 从真实追踪矩阵构造 538 条要求与 32 份规范\n    ok 1 - 从真实追踪矩阵构造 538 条要求与 32 份规范\n      ---\n      duration_ms: 1263.885551\n      type: 'test'\n      ...\n    # Subtest: stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n    ok 2 - stale 判定与卡片绑定状态严格一致，且绝不提升为 PASS\n      ---\n      duration_ms: 1290.434198\n      type: 'test'\n      ...\n    # Subtest: 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n    ok 3 - 伪造旧 execution_id / HEAD 的真实快照一律判为 stale\n      ---\n      duration_ms: 1300.496798\n      type: 'test'\n      ...\n    # Subtest: statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n    ok 4 - statusVerdict 与 FINAL-STATUS.json / 索引同源，且不得自行宣称成功\n      ---\n      duration_ms: 4120.467939\n      type: 'test'\n      ...\n    # Subtest: 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n    ok 5 - 注入 indexDeclaration 只影响一致性比对，不伪造通过数\n      ---\n      duration_ms: 4153.969835\n      type: 'test'\n      ...\n    # Subtest: 状态块是可机读 JSON，字段与 verdict 一致\n    ok 6 - 状态块是可机读 JSON，字段与 verdict 一致\n      ---\n      duration_ms: 1827.78255\n      type: 'test'\n      ...\n    1..6\nok 123 - 真实快照适配器\n  ---\n  duration_ms: 13958.514902\n  type: 'suite'\n  ...\n# Subtest: 证据链 fail-closed\n    # Subtest: 缺少绑定字段或哈希未校验的证据一律失败\n    ok 1 - 缺少绑定字段或哈希未校验的证据一律失败\n      ---\n      duration_ms: 0.182146\n      type: 'test'\n      ...\n    1..1\nok 124 - 证据链 fail-closed\n  ---\n  duration_ms: 0.399911\n  type: 'suite'\n  ...\n# Subtest: fixtures are excluded, real self-tests are kept\nok 125 - fixtures are excluded, real self-tests are kept\n  ---\n  duration_ms: 2.37\n  type: 'test'\n  ...\n# Subtest: the intentionally failing repair canaries are never collected\nok 126 - the intentionally failing repair canaries are never collected\n  ---\n  duration_ms: 0.306226\n  type: 'test'\n  ...\n# Subtest: discovery is fail-closed on non-test / malformed paths\nok 127 - discovery is fail-closed on non-test / malformed paths\n  ---\n  duration_ms: 0.691547\n  type: 'test'\n  ...\n# Subtest: the CLI actually uses the shared collector (no re-introduced inline filter)\nok 128 - the CLI actually uses the shared collector (no re-introduced inline filter)\n  ---\n  duration_ms: 3.004317\n  type: 'test'\n  ...\n# Subtest: generated Playwright reports do not invalidate a UAP execution batch\nok 129 - generated Playwright reports do not invalidate a UAP execution batch\n  ---\n  duration_ms: 1.129312\n  type: 'test'\n  ...\n# Subtest: Playwright test sources and frozen visual baselines remain fingerprint-bound\nok 130 - Playwright test sources and frozen visual baselines remain fingerprint-bound\n  ---\n  duration_ms: 0.192472\n  type: 'test'\n  ...\n# Subtest: visual baseline generation is disabled by default and requires the explicit update command\nok 131 - visual baseline generation is disabled by default and requires the explicit update command\n  ---\n  duration_ms: 1.120674\n  type: 'test'\n  ...\n1..131\n# tests 225\n# suites 32\n# pass 220\n# fail 5\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 332340.042681\n",
-    "stderr_tail": "",
-    "execution_id": "UAP-EXEC-20261125064415-c7ca9be1",
-    "git_head": "4189503ad246decc363e9e3cb4971c92f117b307",
-    "worktree_fingerprint": "a75875373d1456af94d685dd77f346da7cc763deede5944748f7f3f0374dd059",
-    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a"
+    "system_entrypoints": [
+      {
+        "name": "AGENTS.md",
+        "exists": true,
+        "has_uap_entry": true
+      },
+      {
+        "name": "CLAUDE.md",
+        "exists": true,
+        "has_uap_entry": true
+      }
+    ],
+    "executors": {
+      "registered": 32,
+      "implemented": 32
+    },
+    "validators": {
+      "registered": 32,
+      "implementation_files_present": 32,
+      "domains": 10,
+      "mapping_complete": true,
+      "generated_at": "2026-11-26T13:48:27.799Z"
+    },
+    "agents": {
+      "registered": 11,
+      "implemented": 11
+    },
+    "workflows": {
+      "registered": 7,
+      "runs": 113
+    },
+    "tasks": {
+      "total": 3853,
+      "by_state": {
+        "SUCCEEDED": 1359,
+        "RUNNING": 315,
+        "FAILED": 152,
+        "CREATED": 1388,
+        "BLOCKED": 19,
+        "WAITING_RECOVERY": 310,
+        "CANCELLED": 155,
+        "PAUSED": 155
+      }
+    },
+    "evidence": {
+      "total": 12690,
+      "hash_verified": 12690,
+      "hash_invalid": 0
+    },
+    "reports_present": 18,
+    "reports_total": 18,
+    "reports_missing": [],
+    "defects": 7
   },
-  "command": "test --all --json",
-  "duration_ms": 334926,
-  "generated_at": "2026-11-25T06:47:37.566Z",
-  "evidence_ref": "UAP-EV-20261125064737-f35f32fd"
+  "command": "status",
+  "duration_ms": 8997,
+  "generated_at": "2026-11-26T13:48:28.944Z",
+  "evidence_ref": "UAP-EV-20261126134828-fe2ce20a"
 }

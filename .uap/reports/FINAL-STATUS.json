@@ -5,9 +5,9 @@
   "claim_allowed": false,
   "status_engine": {
     "computed_by": "runtime.status-engine/computeFinalStatus",
-    "execution_id": "UAP-EXEC-20261124074603-4ad7593d",
-    "git_head": "33def7a5a7585779965e85e5854596c4ca7f79e0",
-    "worktree_fingerprint": "8434a69f08ce6bab9403102171f26b57f6bdce9ef76028c39162896c38c2a33d",
+    "execution_id": "UAP-EXEC-20261126111216-453dee92",
+    "git_head": "0dca382852b892226dc6c198c301646bb734bfec",
+    "worktree_fingerprint": "b8f69c1ec658e648a270c2c46ec7440411cf06fac66d4f9bf009e7615a565ed4",
     "counts": {
       "requirements_total": 538,
       "applicable": 538,
@@ -40,6 +40,7 @@
     ],
     "reasons": [
       "stale artefacts not bound to current execution/HEAD: tests,validators",
+      "5 test(s) failed",
       "538/538 applicable requirements lack current valid evidence",
       "415 requirement(s) have no evidence record",
       "2 unresolved P0 blocker(s)"
@@ -68,14 +69,14 @@
       "stale artefacts not bound to current execution/HEAD: tests,validators"
     ]
   },
-  "generated_at": "2026-11-24T07:46:11.450Z",
+  "generated_at": "2026-11-26T11:12:28.394Z",
   "generated_from": "uap report (real command results, never copied from the template)",
   "specifications": {
     "total": 32,
     "complete": 32,
     "verified": 0,
     "blocked": 0,
-    "failed": 0
+    "failed": 2
   },
   "machine_configs": {
     "total": 6,
@@ -109,7 +110,7 @@
   "validators": {
     "registered": 32,
     "implemented": 32,
-    "verified": 32
+    "verified": 30
   },
   "agents": {
     "registered": 11,
@@ -135,15 +136,15 @@
         "health_check_passed": true,
         "components_healthy": 10,
         "components_total": 10,
-        "validators_pass": 32,
-        "validators_fail": 0,
+        "validators_pass": 30,
+        "validators_fail": 2,
         "validators_total": 32,
         "validators_blocked_restricted": 0,
         "validators_blocked_undeclared": 0,
-        "uap_tests_exit_code": 0,
+        "uap_tests_exit_code": 1,
         "tests_bound_to_current_execution": false,
         "validators_bound_to_current_execution": false,
-        "verdict_detail": "Runtime 健康组件 10/10; 验证器 32 PASS / 0 FAIL / 未声明受限的 BLOCKED 0 项; 当前执行绑定 validators=false tests=false（历史卡片不计为当前能力证据）"
+        "verdict_detail": "Runtime 健康组件 10/10; 验证器 30 PASS / 2 FAIL / 未声明受限的 BLOCKED 0 项; 当前执行绑定 validators=false tests=false（历史卡片不计为当前能力证据）"
       }
     },
     "uter_real_compliance": {
@@ -156,13 +157,13 @@
         "quality_gates_failed": 0,
         "open_p0": 0,
         "open_p1": 0,
-        "validators_pass": 32,
-        "validators_fail": 0,
+        "validators_pass": 30,
+        "validators_fail": 2,
         "validators_total": 32,
         "restricted_blocked_items": [],
         "financial_simulated_only": true,
         "validators_bound_to_current_execution": false,
-        "verdict_detail": "可执行检查: 验证器 32/32 PASS, 0 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=false tests=false; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
+        "verdict_detail": "可执行检查: 验证器 30/32 PASS, 2 FAIL; 质量门禁失败数=0; 开放 P0=0 P1=0; 资金验证 simulated_only=true; 当前执行绑定 validators=false tests=false; 受限未执行 0 项 -> 见 BLOCKED-ITEMS.md。历史/模拟结果不得冒充真实业务合规。"
       }
     }
   },
@@ -178,6 +179,18 @@
   "critical_defects": 0,
   "open_defects": 0,
   "blocked_items": [
+    {
+      "id": "VALIDATOR:development.dependency_integrity",
+      "severity": "BLOCKER",
+      "reason": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=FAIL(Knip 已执行=true; 零发现/干净退出=false (exit=1, timeout=false, spawn_error=none); 报告尾部=},{\"name\":\"ModelDetails\",\"line\":27,\"col\":3,\"pos\":1070},{\"name\":\"ModelDetailsContent\",\"line\":28,\"col\":3,\"pos\":1086}],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/stores/auth-store.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[{\"name\":\"PendingLoginVerification\",\"line\":35,\"col\":3,\"pos\":1042}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/auth/types.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[{\"name\":\"AuthBundle\",\"line\":21,\"col\":15,\"pos\":807},{\"name\":\"CustomOAuthProviderInfo\",\"line\":22,\"col\":29,\"pos\":868}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/usage-logs/components/dialogs/audio-preview-dialog.tsx\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[{\"name\":\"AudioClip\",\"line\":33,\"col\":15,\"pos\":1275}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/features/organization/api.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[{\"name\":\"OrgMember\",\"line\":127,\"col\":15,\"pos\":3250}],\"unlisted\":[],\"unresolved\":[]},{\"file\":\"src/design-system/components/typography/index.ts\",\"binaries\":[],\"catalog\":[],\"catalogReferences\":[],\"dependencies\":[],\"devDependencies\":[],\"duplicates\":[],\"enumMembers\":[],\"exports\":[],\"files\":[],\"namespaceMembers\":[],\"optionalPeerDependencies\":[],\"subpaths\":[],\"types\":[{\"name\":\"HeadingLevel\",\"line\":20,\"col\":15,\"pos\":779},{\"name\":\"HeadingProps\",\"line\":20,\"col\":29,\"pos\":793},{\"name\":\"HeadingVariant\",\"line\":20,\"col\":43,\"pos\":807},{\"name\":\"TextColor\",\"line\":22,\"col\":15,\"pos\":885},{\"name\":\"TextProps\",\"line\":22,\"col\":26,\"pos\":896},{\"name\":\"TextVariant\",\"line\":22,\"col\":37,\"pos\":907},{\"name\":\"TextWeight\",\"line\":22,\"col\":50,\"pos\":920}],\"unlisted\":[],\"unresolved\":[]}]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12204 个 | 真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖",
+      "source": "VALIDATION-RESULTS.json"
+    },
+    {
+      "id": "VALIDATOR:cross_platform.h5_integrity",
+      "severity": "BLOCKER",
+      "reason": "cross_platform.h5_integrity 实检: h5_build=FAIL(矩阵工具自身故障(exit=1, stderr=) — fail-closed) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12213 个 | FAIL: 工具故障视为能力失败( fail-closed ), 不归为环境受限",
+      "source": "VALIDATION-RESULTS.json"
+    },
     {
       "id": "AUTH:production_deploy",
       "severity": "BLOCKED_BY_DESIGN",

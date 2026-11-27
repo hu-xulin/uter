@@ -1,8 +1,8 @@
 # UAP 1.0 — 规范索引
 
-<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261124074603-4ad7593d","git_head":"33def7a5a7585779965e85e5854596c4ca7f79e0","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-24T07:46:11.460Z"} -->
+<!-- UAP-STATUS-BLOCK {"computed_by":"runtime.status-engine/computeFinalStatus","execution_id":"UAP-EXEC-20261126111216-453dee92","git_head":"0dca382852b892226dc6c198c301646bb734bfec","overall_status":"IMPLEMENTED_NOT_VERIFIED","claim_allowed":false,"requirements_total":538,"requirements_verified":0,"specifications_verified":0,"specifications_total":32,"generated_at":"2026-11-26T11:12:28.409Z"} -->
 
-- 生成时间：2026-11-24T07:46:11.460Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
+- 生成时间：2026-11-26T11:12:28.409Z（由 `node .uap/tools/generate-index.mjs` 依据真实注册表生成）
 - 规范总数：**32**
 - 注册表完整性：**PASS**（37/37 项检查，0 条阻断发现）
 
@@ -11,8 +11,8 @@
 | 字段 | 值 |
 | --- | --- |
 | 计算函数 | `runtime.status-engine/computeFinalStatus` |
-| execution_id | `UAP-EXEC-20261124074603-4ad7593d` |
-| git_head | `33def7a5a7585779965e85e5854596c4ca7f79e0` |
+| execution_id | `UAP-EXEC-20261126111216-453dee92` |
+| git_head | `0dca382852b892226dc6c198c301646bb734bfec` |
 | **overall_status** | **IMPLEMENTED_NOT_VERIFIED** |
 | claim_allowed | false |
 | 适用要求 / 已验证 | 538 / 0 |
@@ -21,7 +21,7 @@
 
 > 状态口径由状态机给出：`NOT_BUILT` / `PARTIALLY_BUILT` / `IMPLEMENTED_NOT_VERIFIED` / `PARTIALLY_VERIFIED` / `FULLY_VERIFIED` / `FULLY_OPERATIONAL` / `BLOCKED` / `FAILED`。
 > 规范文件头的 `ACTIVE` 只表示「规范已建成」，不表示「已验证」；`IMPLEMENTED_NOT_VERIFIED` 不得自动改成 PASS。
-> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`538/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
+> 判定原因：`stale artefacts not bound to current execution/HEAD: tests,validators`；`5 test(s) failed`；`538/538 applicable requirements lack current valid evidence`；`415 requirement(s) have no evidence record`；`2 unresolved P0 blocker(s)`
 
 ## 统一章节要求
 

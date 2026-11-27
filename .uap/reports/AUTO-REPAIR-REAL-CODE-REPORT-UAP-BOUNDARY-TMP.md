@@ -1,10 +1,10 @@
 # 真实业务代码自动修复验证报告
 
-- **Execution ID**：`UAP-RREPAIR-1795589009747-bd9e08`
+- **Execution ID**：`UAP-RREPAIR-1795691849383-229392`
 - **Task ID**：`UAP-BOUNDARY-TMP`
 - **Workflow**：`uap-defect-repair` / `uap-final-verification`（本引擎为真实代码分支）
-- **Git HEAD**：`4189503ad246decc363e9e3cb4971c92f117b307`
-- **开始 / 结束**：2026-11-25T06:43:29.747Z → 2026-11-25T06:43:36.789Z
+- **Git HEAD**：`0dca382852b892226dc6c198c301646bb734bfec`
+- **开始 / 结束**：2026-11-26T11:17:29.383Z → 2026-11-26T11:17:35.424Z
 - **最终结论**：**BLOCKED**（attempts=0/5，失败升级=NO）
 - **修复对象**：`common/request_path.go`
 - **修复前 SHA256**：`null`
@@ -44,9 +44,9 @@
 
 | 命令 | 阶段 | 退出码 | 耗时(ms) |
 |---|---|---:|---:|
-| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 30 |
-| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 54 |
-| `go test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1 test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1` | reproduction_before | 0 | 6954 |
+| `git rev-parse HEAD rev-parse HEAD` | baseline | 0 | 18 |
+| `git status --short -- common/request_path.go status --short -- common/request_path.go` | baseline | 0 | 44 |
+| `go test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1 test ./model/ -run ^TestReproTrailingSlashCanonicalPathBreaksChannelMatching$ -count=1` | reproduction_before | 0 | 5976 |
 
 ## 证据
 
