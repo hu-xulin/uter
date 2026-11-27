@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127150025-589bb734",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T15:00:25.837Z",
+  "started_at": "2026-11-27T15:00:25.837Z",
+  "finished_at": "2026-11-27T15:00:25.837Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127150013-433f2957",
+    "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+    "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127150013-433f2957",
+  "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+  "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate core.evidence_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"core.evidence_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "core.evidence_integrity 实检: evidence_exists=PASS(list()=12857 条, verify().valid=true 的=12857 条); state_validity=PASS(对已存在证据重复 record() 覆盖被拒绝(append-only)=true; content_hash 由 verify() 重算比对); traceability=PASS(证据记录含 environment.node/recorded_at 可追溯字段=1/12857) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12857 个(UAP-EV-20261112104051-2475b437,UAP-EV-20261112104051-4688c9b8…) | evidence-engine.list()/verify()/get()/record(覆盖) 真实调用, 验证 12857 条 hash",
+  "content_hash": "ea755b85e1e92706fb72f45d6c1a765c1b5df2f9f7d9370873eb10b67a787228"
+}

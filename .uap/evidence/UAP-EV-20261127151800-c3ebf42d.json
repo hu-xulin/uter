@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127151800-c3ebf42d",
+  "kind": "capability_card",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T15:18:00.059Z",
+  "started_at": "2026-11-27T15:18:00.059Z",
+  "finished_at": "2026-11-27T15:18:00.059Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127151759-308b89e0",
+    "git_head": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
+    "worktree_fingerprint": "f1b663bd4b7d8b204778be328a5e2a1288441e5c995aa9f9eed5741f26485c6a",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127151759-308b89e0",
+  "git_head": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
+  "worktree_fingerprint": "f1b663bd4b7d8b204778be328a5e2a1288441e5c995aa9f9eed5741f26485c6a",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap verify-visual (npx playwright test --config e2e/visual/playwright.config.ts)",
+  "exit_code": 1,
+  "duration_ms": null,
+  "inputs": "{}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "visual: 13 pass / 16 fail / 0 blocked, 16 classified",
+  "content_hash": "362d0d6316bc397c274cb237f92a3577ee1feb3eba15b5c0950a3ed01d6b42ba"
+}

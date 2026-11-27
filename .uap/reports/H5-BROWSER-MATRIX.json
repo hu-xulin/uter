@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T11:12:57.364Z",
+  "generated_at": "2026-11-27T15:02:57.772Z",
   "target": "http://localhost:3000",
   "blocked": false,
   "browser": "system chrome via playwright (headless, real render)",
@@ -65,9 +65,7 @@
         "touchstart": 1,
         "pointerdown": 1
       },
-      "console_errors": [
-        "Failed to load resource: net::ERR_NETWORK_CHANGED"
-      ],
+      "console_errors": [],
       "http_failures": [],
       "page_errors": []
     },

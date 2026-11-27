@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-11-27T11:13:08.635Z",
+  "generated_at": "2026-11-27T15:03:19.137Z",
   "target": "http://localhost:3000",
   "mode": "dry-run rehearsal (authorized by AUTH-DEPLOY-2026-11-12; local artifacts only)",
   "version": {
-    "current": "v1.7.94",
-    "next_computed": "v1.7.95"
+    "current": "v1.7.95",
+    "next_computed": "v1.7.96"
   },
   "artifacts": {
     "dist_files": 2962,
-    "binary_sha256": "b609eea554c95f18d79fd52b012d2b52f5095c732125ad42cc71decda8115b76"
+    "binary_sha256": "2661222b142a10c5ecd9a29d238d88d683dd6ef786ba363dd1b9d391192467e9"
   },
   "steps": [
     {
       "name": "preflight_artifacts",
       "ok": true,
-      "detail": "VERSION=v1.7.94; web/dist 清单=2962 个文件; release 二进制 sha256=b609eea554c95f18…"
+      "detail": "VERSION=v1.7.95; web/dist 清单=2962 个文件; release 二进制 sha256=2661222b142a10c5…"
     },
     {
       "name": "version_advance_computed",
       "ok": true,
-      "detail": "current=v1.7.94 -> next=v1.7.95 (仅计算, 不回写仓库 VERSION)"
+      "detail": "current=v1.7.95 -> next=v1.7.96 (仅计算, 不回写仓库 VERSION)"
     },
     {
       "name": "publish_manifest_integrity",
@@ -39,7 +39,7 @@
     {
       "name": "boundary_temp_only",
       "ok": true,
-      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-ZyEg2L (os.tmpdir), 仓库无演练产物"
+      "detail": "全部演练写入限于 /var/folders/9x/__ct7ypd0zlfyg6z46v8_7800000gn/T/uap-deploy-rehearsal-9KYyNq (os.tmpdir), 仓库无演练产物"
     }
   ],
   "verdict": {

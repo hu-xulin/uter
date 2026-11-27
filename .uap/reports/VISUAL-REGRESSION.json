@@ -8,12 +8,12 @@
     {
       "id": "visual_0_登录链路冒烟：凭据可登录",
       "title": "登录链路冒烟：凭据可登录",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
@@ -21,8 +21,8 @@
       "id": "visual_1_鉴权页面基线 - desktop",
       "title": "鉴权页面基线 - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -33,8 +33,8 @@
       "id": "visual_2_鉴权页面基线 - mobile",
       "title": "鉴权页面基线 - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -44,24 +44,24 @@
     {
       "id": "visual_3_home - desktop",
       "title": "home - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_4_home - mobile",
       "title": "home - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
@@ -69,8 +69,8 @@
       "id": "visual_5_about - desktop",
       "title": "about - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -81,8 +81,8 @@
       "id": "visual_6_about - mobile",
       "title": "about - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -93,8 +93,8 @@
       "id": "visual_7_pricing - desktop",
       "title": "pricing - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -105,8 +105,8 @@
       "id": "visual_8_pricing - mobile",
       "title": "pricing - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -117,8 +117,8 @@
       "id": "visual_9_rankings - desktop",
       "title": "rankings - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -129,8 +129,8 @@
       "id": "visual_10_rankings - mobile",
       "title": "rankings - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -140,24 +140,24 @@
     {
       "id": "visual_11_docs - desktop",
       "title": "docs - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_12_docs - mobile",
       "title": "docs - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
@@ -165,8 +165,8 @@
       "id": "visual_13_sign-in - desktop",
       "title": "sign-in - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -177,8 +177,8 @@
       "id": "visual_14_sign-in - mobile",
       "title": "sign-in - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -188,72 +188,72 @@
     {
       "id": "visual_15_sign-up - desktop",
       "title": "sign-up - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_16_sign-up - mobile",
       "title": "sign-up - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_17_forgot-password - desktop",
       "title": "forgot-password - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_18_forgot-password - mobile",
       "title": "forgot-password - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_19_error-404 - desktop",
       "title": "error-404 - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_20_error-404 - mobile",
       "title": "error-404 - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
@@ -261,8 +261,8 @@
       "id": "visual_21_error-500 - desktop",
       "title": "error-500 - desktop",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -273,8 +273,8 @@
       "id": "visual_22_error-500 - mobile",
       "title": "error-500 - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -284,12 +284,12 @@
     {
       "id": "visual_23_privacy-policy - desktop",
       "title": "privacy-policy - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
@@ -297,8 +297,8 @@
       "id": "visual_24_privacy-policy - mobile",
       "title": "privacy-policy - mobile",
       "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
+      "reason": "用例执行异常：failed",
+      "source": "annotation",
       "runner_ok": false,
       "runner_statuses": [
         "failed"
@@ -308,78 +308,78 @@
     {
       "id": "visual_25_user-agreement - desktop",
       "title": "user-agreement - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_26_user-agreement - mobile",
       "title": "user-agreement - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_27_recharge-agreement - desktop",
       "title": "recharge-agreement - desktop",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     },
     {
       "id": "visual_28_recharge-agreement - mobile",
       "title": "recharge-agreement - mobile",
-      "status": "FAIL",
-      "reason": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated. ",
-      "source": "runner",
-      "runner_ok": false,
+      "status": "PASS",
+      "reason": null,
+      "source": "annotation",
+      "runner_ok": true,
       "runner_statuses": [
-        "failed"
+        "passed"
       ],
       "evidence_ref": null
     }
   ],
   "counts": {
-    "PASS": 0,
-    "FAIL": 29,
+    "PASS": 16,
+    "FAIL": 13,
     "SKIPPED": 0,
     "BLOCKED": 0,
     "NOT_RUN": 0,
     "NOT_APPLICABLE": 0
   },
   "total": 29,
-  "pass": 0,
-  "fail": 29,
+  "pass": 16,
+  "fail": 13,
   "blocked": 0,
   "skipped": 0,
   "not_run": 0,
   "not_applicable": 0,
   "total_specs": 29,
-  "passed": 0,
-  "total_diffs": 29,
-  "classified": 29,
+  "passed": 16,
+  "total_diffs": 13,
+  "classified": 13,
   "unclassified": 0,
   "classification_categories": {
-    "REAL_UI_REGRESSION": 0,
-    "TEST_ENVIRONMENT": 0,
+    "REAL_UI_REGRESSION": 11,
+    "TEST_ENVIRONMENT": 2,
     "FONT_RENDERING": 0,
     "ANIMATION": 0,
-    "DYNAMIC_CONTENT": 29,
+    "DYNAMIC_CONTENT": 0,
     "AUTHENTICATION": 0,
     "BASELINE_MISMATCH": 0,
     "OTHER": 0
@@ -407,7 +407,7 @@
     },
     {
       "id": "visual_3_home - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_5_about - desktop",
@@ -423,7 +423,7 @@
     },
     {
       "id": "visual_11_docs - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_13_sign-in - desktop",
@@ -431,15 +431,15 @@
     },
     {
       "id": "visual_15_sign-up - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_17_forgot-password - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_19_error-404 - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_21_error-500 - desktop",
@@ -447,15 +447,15 @@
     },
     {
       "id": "visual_23_privacy-policy - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_25_user-agreement - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_27_recharge-agreement - desktop",
-      "status": "FAIL"
+      "status": "PASS"
     }
   ],
   "mobile_evidence": [
@@ -465,7 +465,7 @@
     },
     {
       "id": "visual_4_home - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_6_about - mobile",
@@ -481,7 +481,7 @@
     },
     {
       "id": "visual_12_docs - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_14_sign-in - mobile",
@@ -489,15 +489,15 @@
     },
     {
       "id": "visual_16_sign-up - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_18_forgot-password - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_20_error-404 - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_22_error-500 - mobile",
@@ -509,244 +509,244 @@
     },
     {
       "id": "visual_26_user-agreement - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     },
     {
       "id": "visual_28_recharge-agreement - mobile",
-      "status": "FAIL"
+      "status": "PASS"
     }
   ],
   "legacy_items": [
     {
       "title": "登录链路冒烟：凭据可登录",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "鉴权页面基线 - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  22558 pixels (ratio 0.02 of all image pixels) are different.\n\n  Snapshot: dashboard-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(dashboard-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[2",
       "has_evidence": true
     },
     {
       "title": "鉴权页面基线 - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  2597 pixels (ratio 0.01 of all image pixels) are different.\n\n  Snapshot: keys-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(keys-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  - 25",
       "has_evidence": true
     },
     {
       "title": "home - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "home - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "about - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  35059 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: about-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m ",
       "has_evidence": true
     },
     {
       "title": "about - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  20450 pixels (ratio 0.07 of all image pixels) are different.\n\n  Snapshot: about-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(about-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2m  -",
       "has_evidence": true
     },
     {
       "title": "pricing - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  35492 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: pricing-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b",
       "has_evidence": true
     },
     {
       "title": "pricing - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  27695 pixels (ratio 0.09 of all image pixels) are different.\n\n  Snapshot: pricing-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(pricing-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2",
       "has_evidence": true
     },
     {
       "title": "rankings - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  35492 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: rankings-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m",
       "has_evidence": true
     },
     {
       "title": "rankings - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  27695 pixels (ratio 0.09 of all image pixels) are different.\n\n  Snapshot: rankings-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(rankings-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b",
       "has_evidence": true
     },
     {
       "title": "docs - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "docs - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "sign-in - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  35492 pixels (ratio 0.03 of all image pixels) are different.\n\n  Snapshot: sign-in-desktop.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-desktop.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b",
       "has_evidence": true
     },
     {
       "title": "sign-in - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  27695 pixels (ratio 0.09 of all image pixels) are different.\n\n  Snapshot: sign-in-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(sign-in-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\u001b[2",
       "has_evidence": true
     },
     {
       "title": "sign-up - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "sign-up - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "forgot-password - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "forgot-password - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "error-404 - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "error-404 - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "error-500 - desktop",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "TEST_ENVIRONMENT",
+      "evidence_basis": "message carries service/browser/environment failure evidence",
+      "message_excerpt": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/500\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/500\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n   at lib/harness.ts:74\n\n  72 |   options: OpenOptions = {}\n  73 | ): Promise<void> {\n> 74 |   await page.goto(route, { waitUntil: 'domcontentloaded' })\n     |              ^\n  75 |   await page.evaluate(() => document.fonts.ready)\n  76 |   await page.addStyleTag({ content: STABILIZE_CSS })\n  77 |   await page.evaluate(() ",
       "has_evidence": true
     },
     {
       "title": "error-500 - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "TEST_ENVIRONMENT",
+      "evidence_basis": "message carries service/browser/environment failure evidence",
+      "message_excerpt": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/500\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/500\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n   at lib/harness.ts:74\n\n  72 |   options: OpenOptions = {}\n  73 | ): Promise<void> {\n> 74 |   await page.goto(route, { waitUntil: 'domcontentloaded' })\n     |              ^\n  75 |   await page.evaluate(() => document.fonts.ready)\n  76 |   await page.addStyleTag({ content: STABILIZE_CSS })\n  77 |   await page.evaluate(() ",
       "has_evidence": true
     },
     {
       "title": "privacy-policy - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "privacy-policy - mobile",
       "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "category": "REAL_UI_REGRESSION",
+      "evidence_basis": "message carries a real screenshot pixel-diff assertion",
+      "message_excerpt": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n  14495 pixels (ratio 0.05 of all image pixels) are different.\n\n  Snapshot: privacy-policy-mobile.png\n\nCall log:\n\u001b[2m  - Expect \"toHaveScreenshot(privacy-policy-mobile.png)\" with timeout 5000ms\u001b[22m\n\u001b[2m    - verifying given screenshot expectation\u001b[22m\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m    - disabled all CSS animations\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts l",
       "has_evidence": true
     },
     {
       "title": "user-agreement - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "user-agreement - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "recharge-agreement - desktop",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     },
     {
       "title": "recharge-agreement - mobile",
-      "ok": false,
-      "category": "DYNAMIC_CONTENT",
-      "evidence_basis": "message carries dynamic/time-varying content evidence",
-      "message_excerpt": "Error: browserType.launch: Executable doesn't exist at /Users/lincolnhu/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-x64/chrome-headless-shell\n╔════════════════════════════════════════════════════════════╗\n║ Looks like Playwright was just installed or updated.       ║\n║ Please run the following command to download new browsers: ║\n║                                                            ║\n║     npx playwright install                                 ║\n║  ",
+      "ok": true,
+      "category": "PASS",
+      "evidence_basis": "screenshot comparison passed",
+      "message_excerpt": "REPORTER_STATUS test: passed",
       "has_evidence": true
     }
   ],
@@ -757,13 +757,13 @@
     "accounts_created": 0,
     "production_build_modified": false
   },
-  "stdout_tail": "omium] › e2e/visual/public.spec.ts:26:5 › error-500 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-500 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - desktop ─────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › user-agreement - mobile ──────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - desktop ─────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › recharge-agreement - mobile ──────────────────────\n",
+  "stdout_tail": "/public.spec.ts:26:5 › pricing - mobile ─────────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › rankings - desktop ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › rankings - mobile ────────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › sign-in - desktop ────────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › sign-in - mobile ─────────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-500 - desktop ──────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › error-500 - mobile ───────────────────────────────\n    [chromium] › e2e/visual/public.spec.ts:26:5 › privacy-policy - mobile ──────────────────────────\n  16 passed (4.0m)\n",
   "stderr_tail": "",
   "json_parsed": true,
-  "generated_at": "2026-11-27T11:13:53.298Z",
+  "generated_at": "2026-11-27T15:22:06.169Z",
   "repository": "git@github-huxulin:hu-xulin/uter.git",
   "branch": "main",
-  "commit_sha": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
+  "commit_sha": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
   "test_environment": {
     "platform": "darwin",
     "node": "v22.22.2",
@@ -771,9 +771,9 @@
     "isolated": true
   },
   "requirement_ids": [],
-  "execution_id": "UAP-EXEC-20261127111230-7db3e2c5",
-  "git_head": "f7574ea66fda78b10a6eedb24a8ad10279fe9a9d",
-  "worktree_fingerprint": "9e9a3218078376aef5634517280a735b559a526b1b036776ed32a55fe9c64874",
+  "execution_id": "UAP-EXEC-20261127152206-1feae870",
+  "git_head": "c2501271bdeddd1056a6c63ae6efccba67c7374f",
+  "worktree_fingerprint": "8e4492da8f32810d12e65cb6f23b3d0ff38af28f0752f4a95423b17fae4d709c",
   "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
-  "evidence_ref": "UAP-EV-20261127111353-4e893ccc"
+  "evidence_ref": "UAP-EV-20261127152207-f8174f9d"
 }

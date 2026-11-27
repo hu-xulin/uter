@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127150053-633aa99e",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T15:00:53.647Z",
+  "started_at": "2026-11-27T15:00:53.647Z",
+  "finished_at": "2026-11-27T15:00:53.647Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127150013-433f2957",
+    "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+    "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127150013-433f2957",
+  "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+  "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate quality.gate_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"quality.gate_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "quality.gate_integrity 实检: gate_execution=PASS(QUALITY-GATES.json 1 条; 每条含 command=true; exit_code 均为数值=true); blocking=PASS(子进程复验 BLOCKER 降级 PASS->FAIL / MAJOR 不阻断=true; 报告中非零 exit_code 被伪装为 PASS 的=0 条); bypass_detection=PASS(policy 声明两个绕过权限 deny=true; check() 实判 quality_gate_disable=DENY test_deletion_to_force_pass=DENY; fail_closed=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12874 个 | 逐条校验 command + 数值 exit_code; 真实复验 BLOCKER 阻断 + policy check() 拒绝门禁绕过",
+  "content_hash": "e36d487ba656b27a41c294dfe2e08d5af677c1477c72116805e9945162405ce7"
+}

@@ -1,0 +1,40 @@
+{
+  "evidence_id": "UAP-EV-20261127150050-a5df6e3c",
+  "kind": "validator_result",
+  "task_id": null,
+  "trace_id": null,
+  "specification_ids": [],
+  "requirement_ids": [],
+  "recorded_at": "2026-11-27T15:00:50.279Z",
+  "started_at": "2026-11-27T15:00:50.279Z",
+  "finished_at": "2026-11-27T15:00:50.279Z",
+  "execution": {
+    "execution_id": "UAP-EXEC-20261127150013-433f2957",
+    "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+    "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+    "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+    "binding_status": "BOUND",
+    "binding_error": null
+  },
+  "execution_id": "UAP-EXEC-20261127150013-433f2957",
+  "git_head": "3afbe2b102e5f5ed45c46a7271a35822e0692789",
+  "worktree_fingerprint": "202ba39c0d026ca797a30e32bb83cfce24f36a756535f01fa0c77d6b80d9caf9",
+  "environment_fingerprint": "1df5a854a84ec20bd7bf0a826c440470783b2785a8130ce284b2ba986ad1343a",
+  "modified_files": [],
+  "environment": {
+    "platform": "darwin",
+    "node": "v22.22.2",
+    "cwd": "/Users/lincolnhu/uter",
+    "uap_root": null
+  },
+  "command": "uap validate development.dependency_integrity",
+  "exit_code": 0,
+  "duration_ms": null,
+  "inputs": "{\"validator_id\":\"development.dependency_integrity\"}",
+  "stdout": "",
+  "stderr": "",
+  "artifacts": [],
+  "findings": [],
+  "summary": "development.dependency_integrity 实检: lockfile=PASS(go.sum=true; go.mod 声明 module=true; web/package.json 可解析=true); vulnerabilities=PASS(本地配置明文密钥命中=0; policy secret_export=deny=true; fail_closed=true; 未运行外部 CVE 库扫描(离线), 不声称无 CVE); unused_dependencies=PASS(Knip 已执行=true; 零发现/干净退出=true (exit=0, timeout=false, spawn_error=none); 报告尾部={\"issues\":[]}; BASELINE.new_dependencies_installed=0(零新增); 无退役 AES/UAES 治理引用=true; go.mod 含 require=true; web scripts 存在=true) | registryIntegrity 37/37 checks / 0 findings | evidence_refs 12870 个 | 真实执行 web/package.json 的 Knip + 读取 Go/前端锁文件与 UAP baseline + 配置明文密钥正则扫描; 未自动删除任何依赖",
+  "content_hash": "4f08c20e61e6b386574ff65e77c3528a3e5d6b35cc851b384cb402143e4c1279"
+}
