@@ -17,9 +17,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@uter.ai
 */
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -59,10 +59,12 @@ import {
 } from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
 import { UpstreamModelSelection } from '@/features/channels/components/upstream-model-selection'
+import { sortByPinnedChannelOrder } from '@/lib/channel-order'
 import { getServerErrorMessage } from '@/lib/server-error-message'
 
 import {
   createUpstreamMonitorTask,
+  fetchUpstreamMonitorChannels,
   fetchUpstreamMonitorModels,
   updateUpstreamMonitorTask,
 } from '../api'
@@ -93,9 +95,15 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
         : UPSTREAM_MONITOR_FORM_DEFAULTS,
     [props.currentRow]
   )
-  const [availableModels, setAvailableModels] = useState<string[]>(
-    defaults.models
+  const [selectedGroup, setSelectedGroup] = useState(
+    defaults.channel_group || ''
   )
+  // A task with no channel reference is an operator-managed manual endpoint.
+  // Preserve that path alongside channel-backed tasks.
+  const [endpointSource, setEndpointSource] = useState<'channel' | 'manual'>(
+    defaults.channel_id === null ? 'manual' : 'channel'
+  )
+  const [manualModels, setManualModels] = useState<string[]>(defaults.models)
   const [isFetchingModels, setIsFetchingModels] = useState(false)
   const schema = useMemo(
     () => createUpstreamMonitorFormSchema((key) => t(key)),
@@ -110,6 +118,70 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
     resolver,
     defaultValues: defaults,
   })
+
+  // Channels come from channel management. The browser only ever receives
+  // masked keys; the plaintext key is read server-side at probe time.
+  const { data: channels = [] } = useQuery({
+    queryKey: upstreamMonitorQueryKeys.channels(),
+    queryFn: fetchUpstreamMonitorChannels,
+  })
+
+  const groups = useMemo(() => {
+    const values = new Set<string>(channels.map((channel) => channel.group))
+    if (defaults.channel_group) values.add(defaults.channel_group)
+    return [...values].filter(Boolean).sort()
+  }, [channels, defaults.channel_group])
+
+  // 与定价页左侧渠道使用同一排序真源：固定渠道置顶，其余按承载模型数降序。
+  const orderedChannels = useMemo(
+    () =>
+      sortByPinnedChannelOrder(
+        channels,
+        (channel) => channel.name,
+        (channel) => channel.models.length
+      ),
+    [channels]
+  )
+
+  const visibleChannels = useMemo(
+    () =>
+      selectedGroup
+        ? orderedChannels.filter((channel) => channel.group === selectedGroup)
+        : orderedChannels,
+    [orderedChannels, selectedGroup]
+  )
+
+  const channelId = useWatch({ control: form.control, name: 'channel_id' })
+  const selectedChannel = useMemo(
+    () => channels.find((channel) => channel.id === channelId) ?? null,
+    [channels, channelId]
+  )
+  const availableModels =
+    endpointSource === 'manual'
+      ? manualModels
+      : (selectedChannel?.models ?? defaults.models)
+
+  const switchSource = (source: 'channel' | 'manual') => {
+    setEndpointSource(source)
+    if (source === 'manual') {
+      form.setValue('channel_id', null, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+      form.setValue('channel_group', '', { shouldDirty: true })
+      form.setValue('models', manualModels, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    } else {
+      form.setValue('base_url', '', { shouldDirty: true })
+      form.setValue('api_key', '', { shouldDirty: true })
+      form.setValue('models', [], {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    }
+  }
 
   const handleFetchModels = async () => {
     const values = form.getValues()
@@ -129,12 +201,39 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
         api_key: values.api_key.trim() || undefined,
         task_id: isUpdate ? props.currentRow?.id : undefined,
       })
-      setAvailableModels(models)
+      setManualModels(models)
+      form.setValue('models', models, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
       toast.success(t('Fetched {{count}} models', { count: models.length }))
     } catch (error) {
       toast.error(getServerErrorMessage(error, t('Failed to fetch models')))
     } finally {
       setIsFetchingModels(false)
+    }
+  }
+
+  const applyChannel = (id: number) => {
+    const channel = channels.find((item) => item.id === id)
+    if (!channel) return
+    form.setValue('channel_id', channel.id, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    form.setValue('channel_group', channel.group, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    form.setValue('base_url', channel.base_url, { shouldDirty: true })
+    form.setValue('protocol', channel.protocol, { shouldDirty: true })
+    form.setValue('channel_key_index', 0, { shouldDirty: true })
+    form.setValue('models', channel.models, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+    if (!form.getValues('name')) {
+      form.setValue('name', channel.name, { shouldDirty: true })
     }
   }
 
@@ -204,47 +303,199 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='base_url'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('Base URL')}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder='https://api.example.com/v1'
-                      />
-                    </FormControl>
+              <div className='space-y-2'>
+                <FormLabel>{t('Endpoint source')}</FormLabel>
+                <Select
+                  value={endpointSource}
+                  onValueChange={(value) =>
+                    switchSource(value === 'manual' ? 'manual' : 'channel')
+                  }
+                >
+                  <SelectTrigger aria-label={t('Endpoint source')}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='channel'>{t('From channel')}</SelectItem>
+                    <SelectItem value='manual'>
+                      {t('Enter manually')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {endpointSource === 'channel' ? (
+                <>
+                  <div className='space-y-2'>
+                    <FormLabel>{t('Group')}</FormLabel>
+                    <Select
+                      value={selectedGroup || 'all'}
+                      onValueChange={(value) =>
+                        setSelectedGroup(!value || value === 'all' ? '' : value)
+                      }
+                    >
+                      <SelectTrigger aria-label={t('Group')}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value='all'>{t('All Groups')}</SelectItem>
+                        {groups.map((group) => (
+                          <SelectItem key={group} value={group}>
+                            {group}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormDescription>
-                      {t(
-                        'OpenAI-compatible endpoints use /v1; Anthropic endpoints use the messages API.'
-                      )}
+                      {t('Filter channels by their channel management group.')}
                     </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='api_key'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t('API key')}</FormLabel>
-                    <FormControl>
-                      <Input {...field} type='password' autoComplete='off' />
-                    </FormControl>
-                    <FormDescription>
-                      {isUpdate
-                        ? t('Leave blank to keep the current key.')
-                        : t(
-                            'Encrypted at rest; a short fingerprint is shown after saving.'
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name='channel_id'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('Channel')}</FormLabel>
+                        <Select
+                          value={
+                            field.value !== null && field.value !== undefined
+                              ? String(field.value)
+                              : ''
+                          }
+                          onValueChange={(value) => applyChannel(Number(value))}
+                        >
+                          <FormControl>
+                            <SelectTrigger aria-label={t('Channel')}>
+                              <SelectValue
+                                placeholder={t('Choose a channel')}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {visibleChannels.map((channel) => (
+                              <SelectItem
+                                key={channel.id}
+                                value={String(channel.id)}
+                              >
+                                {channel.name} · #{channel.id}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t(
+                            'API address and key are read from channel management; the key is stored encrypted and never shown in full.'
                           )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {selectedChannel && (
+                    <>
+                      <div className='space-y-2'>
+                        <FormLabel>{t('API address')}</FormLabel>
+                        <Input value={selectedChannel.base_url} readOnly />
+                        <FormDescription>
+                          {t('Read from the selected channel.')}
+                        </FormDescription>
+                      </div>
+
+                      {selectedChannel.masked_keys.length > 1 && (
+                        <FormField
+                          control={form.control}
+                          name='channel_key_index'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('Key type')}</FormLabel>
+                              <Select
+                                value={String(field.value)}
+                                onValueChange={(value) =>
+                                  field.onChange(Number(value))
+                                }
+                              >
+                                <FormControl>
+                                  <SelectTrigger aria-label={t('Key type')}>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {selectedChannel.masked_keys.map(
+                                    (masked, index) => (
+                                      <SelectItem
+                                        key={masked}
+                                        value={String(index)}
+                                      >
+                                        {masked}
+                                      </SelectItem>
+                                    )
+                                  )}
+                                </SelectContent>
+                              </Select>
+                              <FormDescription>
+                                {t(
+                                  'Choose which stored key of this channel to probe.'
+                                )}
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <FormField
+                    control={form.control}
+                    name='base_url'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('Base URL')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder='https://api.example.com/v1'
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t(
+                            'OpenAI-compatible endpoints use /v1; Anthropic endpoints use the messages API.'
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='api_key'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('API key')}</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type='password'
+                            autoComplete='off'
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {isUpdate
+                            ? t('Leave blank to keep the current key.')
+                            : t(
+                                'Encrypted at rest; a short fingerprint is shown after saving.'
+                              )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
+
               <FormField
                 control={form.control}
                 name='models'
@@ -252,17 +503,19 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
                   <FormItem>
                     <FormLabel>{t('Models')}</FormLabel>
                     <div className='space-y-2'>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        disabled={isFetchingModels}
-                        onClick={() => void handleFetchModels()}
-                      >
-                        {isFetchingModels
-                          ? t('Fetching models...')
-                          : t('Fetch models')}
-                      </Button>
+                      {endpointSource === 'manual' && (
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          disabled={isFetchingModels}
+                          onClick={() => void handleFetchModels()}
+                        >
+                          {isFetchingModels
+                            ? t('Fetching models...')
+                            : t('Fetch models')}
+                        </Button>
+                      )}
                       <FormControl>
                         <UpstreamModelSelection
                           models={availableModels}
@@ -273,9 +526,13 @@ export function UpstreamMonitorMutateDrawer(props: Props) {
                         />
                       </FormControl>
                       <FormDescription>
-                        {t(
-                          'Fetch the upstream model list, then select individually or use Select all models.'
-                        )}
+                        {endpointSource === 'manual'
+                          ? t(
+                              'Fetch the upstream model list, then select individually or use Select all models.'
+                            )
+                          : t(
+                              'Models are read from the selected channel; choose which ones to monitor.'
+                            )}
                       </FormDescription>
                     </div>
                     <FormMessage />

@@ -23,6 +23,7 @@ import type {
   ApiResponse,
   UpstreamModelDiscovery,
   UpstreamModelsRequest,
+  UpstreamMonitorChannelOption,
   UpstreamMonitorReport,
   UpstreamMonitorRunSummary,
   UpstreamMonitorTask,
@@ -43,6 +44,15 @@ export async function getUpstreamMonitorTask(
 ): Promise<UpstreamMonitorTask> {
   const res = await api.get<ApiResponse<UpstreamMonitorTask>>(
     `/api/upstream-monitor/${id}`
+  )
+  return requireServerSuccess(res.data).data
+}
+
+export async function fetchUpstreamMonitorChannels(): Promise<
+  UpstreamMonitorChannelOption[]
+> {
+  const res = await api.get<ApiResponse<UpstreamMonitorChannelOption[]>>(
+    '/api/upstream-monitor/channels'
   )
   return requireServerSuccess(res.data).data
 }

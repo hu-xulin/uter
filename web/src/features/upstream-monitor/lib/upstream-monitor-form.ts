@@ -30,18 +30,32 @@ type UpstreamMonitorTranslate = (
 ) => string
 
 export function createUpstreamMonitorFormSchema(t: UpstreamMonitorTranslate) {
-  return z.object({
-    name: z.string().trim().min(1).max(128),
-    base_url: z.string().trim().min(1).max(512),
-    api_key: z.string().trim(),
-    models: z
-      .array(z.string().trim().min(1).max(256))
-      .min(1, t('Please select at least one model')),
-    protocol: z.enum(['openai', 'anthropic']),
-    check_interval_minute: z.number().int().min(1).max(10080),
-    probe_depth: z.enum(['quick', 'standard', 'full']),
-    enabled: z.boolean(),
-  })
+  return z
+    .object({
+      name: z.string().trim().min(1).max(128),
+      // A monitor references a channel from channel management. Legacy tasks
+      // (channel_id null) keep their embedded endpoint for editing only.
+      channel_id: z.number().int().positive().nullable(),
+      channel_group: z.string().trim().max(64),
+      channel_key_index: z.number().int().min(0),
+      base_url: z.string().trim().max(512),
+      api_key: z.string().trim(),
+      models: z
+        .array(z.string().trim().min(1).max(256))
+        .min(1, t('Please select at least one model')),
+      protocol: z.enum(['openai', 'anthropic']),
+      check_interval_minute: z.number().int().min(1).max(10080),
+      probe_depth: z.enum(['quick', 'standard', 'full']),
+      enabled: z.boolean(),
+    })
+    .refine(
+      (values) =>
+        values.channel_id !== null || values.base_url.trim().length > 0,
+      {
+        message: t('Please select a channel'),
+        path: ['channel_id'],
+      }
+    )
 }
 
 type UpstreamMonitorSchema = ReturnType<typeof createUpstreamMonitorFormSchema>
@@ -50,6 +64,9 @@ export type UpstreamMonitorFormInput = z.input<UpstreamMonitorSchema>
 
 export const UPSTREAM_MONITOR_FORM_DEFAULTS: UpstreamMonitorFormValues = {
   name: '',
+  channel_id: null,
+  channel_group: '',
+  channel_key_index: 0,
   base_url: '',
   api_key: '',
   models: [],
@@ -70,6 +87,9 @@ export function upstreamTaskToFormDefaults(
 ): UpstreamMonitorFormValues {
   return {
     name: task.name,
+    channel_id: task.channel_id > 0 ? task.channel_id : null,
+    channel_group: task.channel_group ?? '',
+    channel_key_index: task.channel_key_index ?? 0,
     base_url: task.base_url,
     api_key: '',
     models: taskModels(task),
@@ -86,7 +106,8 @@ export function transformUpstreamFormToPayload(
 ): UpstreamMonitorTaskPayload {
   const payload: UpstreamMonitorTaskPayload = {
     name: values.name,
-    base_url: values.base_url,
+    channel_group: values.channel_group,
+    channel_key_index: values.channel_key_index,
     model: values.models[0],
     models: values.models,
     protocol: values.protocol,
@@ -94,7 +115,15 @@ export function transformUpstreamFormToPayload(
     probe_depth: values.probe_depth,
     enabled: values.enabled,
   }
-  if (!isUpdate || values.api_key.trim() !== '') {
+  if (values.channel_id !== null) {
+    payload.channel_id = values.channel_id
+  } else {
+    // Legacy endpoint path kept for editing tasks created before channels
+    // were referenced.
+    payload.base_url = values.base_url
+    payload.api_key = values.api_key.trim()
+  }
+  if (isUpdate && values.api_key.trim() !== '') {
     payload.api_key = values.api_key.trim()
   }
   return payload

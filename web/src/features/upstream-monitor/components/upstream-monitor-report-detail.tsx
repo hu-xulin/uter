@@ -18,6 +18,8 @@ For commercial licensing, please contact support@uter.ai
 */
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
+import { ArrowLeft } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -26,6 +28,7 @@ import {
 } from '@/components/data-table'
 import { EmptyState } from '@/components/empty-state'
 import { ErrorState } from '@/components/error-state'
+import { SectionPageLayout } from '@/components/layout'
 import { LoadingState } from '@/components/loading-state'
 import { Button } from '@/components/ui/button'
 import {
@@ -35,7 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Heading } from '@/design-system'
+import { TitledCard } from '@/components/ui/titled-card'
 import { toIntlLocale } from '@/i18n/languages'
 
 import {
@@ -77,15 +80,38 @@ export function UpstreamMonitorReportDetail(props: Props) {
     enabled: selectedId > 0,
   })
 
+  // 页面壳与钱包页一致：标题区 + 内容区，加载/错误/空态也保留同样的外边距。
+  const shell = (children: ReactNode) => (
+    <SectionPageLayout>
+      <SectionPageLayout.Title>
+        {t('Upstream Monitor')}
+        <p className='text-muted-foreground mt-1 text-sm font-normal'>
+          {reportQuery.data?.model ?? props.model ?? t('All models')}
+        </p>
+      </SectionPageLayout.Title>
+      <SectionPageLayout.Actions>
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => void navigate({ to: '/upstream-monitor' })}
+        >
+          <ArrowLeft className='size-4' />
+          {t('Back')}
+        </Button>
+      </SectionPageLayout.Actions>
+      <SectionPageLayout.Content>{children}</SectionPageLayout.Content>
+    </SectionPageLayout>
+  )
+
   if (reportsQuery.isLoading || reportQuery.isLoading || taskQuery.isLoading) {
-    return <LoadingState />
+    return shell(<LoadingState />)
   }
   if (reportsQuery.isError || reportQuery.isError || taskQuery.isError) {
-    return <ErrorState />
+    return shell(<ErrorState />)
   }
   const report = reportQuery.data
   if (!report) {
-    return <EmptyState title={t('No reports yet')} />
+    return shell(<EmptyState title={t('No reports yet')} />)
   }
   const models = taskQuery.data?.models ?? []
   const changeModelFilter = (nextModel?: string) => {
@@ -147,97 +173,101 @@ export function UpstreamMonitorReportDetail(props: Props) {
     },
   ]
 
-  return (
-    <div className='space-y-6'>
-      <div className='flex flex-wrap items-center gap-2'>
-        <span className='text-muted-foreground text-sm'>{t('Model')}</span>
-        <Select
-          value={props.model ?? '__all__'}
-          onValueChange={(value) =>
-            changeModelFilter(value && value !== '__all__' ? value : undefined)
-          }
-        >
-          <SelectTrigger className='w-72'>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='__all__'>{t('All models')}</SelectItem>
-            {models.map((model) => (
-              <SelectItem key={model} value={model}>
-                {model}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className='flex items-center gap-6'>
-        <div className='bg-secondary rounded-lg p-4 text-center'>
-          <div className='text-muted-foreground text-sm'>
-            {t('Overall score')}
-          </div>
-          <div className='text-3xl font-medium'>{report.score}</div>
-          <div className='text-muted-foreground text-sm'>/ 100</div>
+  // 卡片自带边框，表格去掉自身边框，避免双线；间距沿用钱包页的
+  // gap-4 sm:gap-5（16 / 20px，均为 4px 网格档）。
+  return shell(
+    <div className='mx-auto flex w-full max-w-7xl flex-col gap-4 sm:gap-5'>
+      <TitledCard
+        title={t('Overview')}
+        disableHoverEffect
+        contentClassName='space-y-4 sm:space-y-6'
+      >
+        <div className='flex flex-wrap items-center gap-3'>
+          <span className='text-muted-foreground text-sm'>{t('Model')}</span>
+          <Select
+            value={props.model ?? '__all__'}
+            onValueChange={(value) =>
+              changeModelFilter(
+                value && value !== '__all__' ? value : undefined
+              )
+            }
+          >
+            <SelectTrigger className='w-72'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='__all__'>{t('All models')}</SelectItem>
+              {models.map((model) => (
+                <SelectItem key={model} value={model}>
+                  {model}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div>
-          <Heading variant='group-title' level={3}>
-            {t(report.verdict)}
-          </Heading>
-          <p className='text-muted-foreground text-sm'>
-            {report.model} ·{' '}
-            {new Date(report.created_at * 1000).toLocaleString(locale)}
-          </p>
-          {report.error ? <p className='text-sm'>{report.error}</p> : null}
-        </div>
-      </div>
 
-      <section className='space-y-2'>
-        <Heading variant='group-title' level={3}>
-          {t('Dimension scores')}
-        </Heading>
+        <div className='flex flex-wrap items-center gap-4 sm:gap-6'>
+          <div className='bg-secondary rounded-lg p-4 text-center'>
+            <div className='text-muted-foreground text-sm'>
+              {t('Overall score')}
+            </div>
+            <div className='text-3xl font-medium'>{report.score}</div>
+            <div className='text-muted-foreground text-sm'>/ 100</div>
+          </div>
+          <div>
+            <p className='font-medium'>{t(report.verdict)}</p>
+            <p className='text-muted-foreground mt-1 text-sm'>
+              {report.model} ·{' '}
+              {new Date(report.created_at * 1000).toLocaleString(locale)}
+            </p>
+            {report.error ? (
+              <p className='mt-1 text-sm'>{report.error}</p>
+            ) : null}
+          </div>
+        </div>
+      </TitledCard>
+
+      <TitledCard title={t('Dimension scores')} disableHoverEffect>
         <StaticDataTable
+          className='rounded-none border-0'
           data={report.dimensions ?? []}
           columns={dimensionColumns}
           getRowKey={(dimension, index) => dimension.key || index}
         />
-      </section>
+      </TitledCard>
 
-      <section className='space-y-2'>
-        <Heading variant='group-title' level={3}>
-          {t('Probe results')}
-        </Heading>
+      <TitledCard title={t('Probe results')} disableHoverEffect>
         <StaticDataTable
+          className='rounded-none border-0'
           data={report.probes ?? []}
           columns={probeColumns}
           getRowKey={(probe, index) => probe.key || index}
         />
-      </section>
+      </TitledCard>
 
-      <section className='space-y-2'>
-        <Heading variant='group-title' level={3}>
-          {t('Measured metrics')}
-        </Heading>
-        <div className='text-sm'>
-          <p>
-            {t('TTFT')}: {report.metrics?.ttft_ms ?? 0} ms
-          </p>
-          <p>
-            {t('TPOT')}: {report.metrics?.tpot_ms ?? 0} ms
-          </p>
-          <p>
-            {t('Throughput')}: {report.metrics?.tps ?? 0} tok/s
-          </p>
-          <p>
-            {t('Token inflation ratio')}:{' '}
-            {report.metrics?.token_inflation_ratio ?? 0}
-          </p>
-        </div>
-      </section>
+      <TitledCard
+        title={t('Measured metrics')}
+        disableHoverEffect
+        contentClassName='grid gap-4 sm:grid-cols-2'
+      >
+        <p className='text-sm'>
+          {t('TTFT')}: {report.metrics?.ttft_ms ?? 0} ms
+        </p>
+        <p className='text-sm'>
+          {t('TPOT')}: {report.metrics?.tpot_ms ?? 0} ms
+        </p>
+        <p className='text-sm'>
+          {t('Throughput')}: {report.metrics?.tps ?? 0} tok/s
+        </p>
+        <p className='text-sm'>
+          {t('Token inflation ratio')}:{' '}
+          {report.metrics?.token_inflation_ratio ?? 0}
+        </p>
+      </TitledCard>
 
-      <section className='space-y-2'>
-        <Heading variant='group-title' level={3}>
-          {t('History')}
-        </Heading>
+      <TitledCard title={t('History')} disableHoverEffect>
         <StaticDataTable
+          className='rounded-none border-0'
           data={(reportsQuery.data?.items ?? []) as UpstreamMonitorReport[]}
           columns={[
             {
@@ -277,7 +307,7 @@ export function UpstreamMonitorReportDetail(props: Props) {
           ]}
           getRowKey={(item) => item.id}
         />
-      </section>
+      </TitledCard>
     </div>
   )
 }

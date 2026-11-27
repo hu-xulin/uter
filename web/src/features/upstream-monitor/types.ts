@@ -23,6 +23,10 @@ export type UpstreamVerdict = 'pass' | 'marginal' | 'fail' | 'error' | 'unknown'
 export type UpstreamMonitorTask = {
   id: number
   name: string
+  channel_id: number
+  channel_name: string
+  channel_group: string
+  channel_key_index: number
   base_url: string
   api_key_fingerprint: string
   model: string
@@ -116,14 +120,33 @@ export type UpstreamModelDiscovery = {
 }
 
 export type UpstreamModelsRequest = {
-  base_url: string
+  base_url?: string
   api_key?: string
   protocol: UpstreamProtocol
   task_id?: number
+  channel_id?: number
+  channel_key_index?: number
+}
+
+// A channel exposed by channel management for monitor selection. Keys are
+// masked only; the plaintext key stays server-side.
+export type UpstreamMonitorChannelOption = {
+  id: number
+  name: string
+  group: string
+  type: number
+  base_url: string
+  models: string[]
+  protocol: UpstreamProtocol
+  masked_keys: string[]
+  is_multi_key: boolean
 }
 
 export type UpstreamMonitorFormValues = {
   name: string
+  channel_id: number | null
+  channel_group: string
+  channel_key_index: number
   base_url: string
   api_key: string
   models: string[]
@@ -135,8 +158,12 @@ export type UpstreamMonitorFormValues = {
 
 export type UpstreamMonitorTaskPayload = Omit<
   UpstreamMonitorFormValues,
-  'api_key'
+  'api_key' | 'channel_id' | 'base_url'
 > & {
+  channel_id?: number
+  channel_group?: string
+  channel_key_index?: number
+  base_url?: string
   api_key?: string
   model?: string
 }

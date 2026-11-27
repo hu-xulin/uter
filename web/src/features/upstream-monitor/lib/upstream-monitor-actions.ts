@@ -16,8 +16,13 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@uter.ai
 */
+import { sortByPinnedChannelOrder } from '@/lib/channel-order'
+
+import type { UpstreamMonitorTask } from '../types'
+
 export const upstreamMonitorQueryKeys = {
   all: ['upstream-monitor'] as const,
+  channels: () => [...upstreamMonitorQueryKeys.all, 'channels'] as const,
   tasks: () => [...upstreamMonitorQueryKeys.all, 'tasks'] as const,
   task: (id: number) => [...upstreamMonitorQueryKeys.all, 'task', id] as const,
   reports: (taskId: number, model?: string) =>
@@ -44,4 +49,19 @@ export function formatMonitorScore(
   lastRunAt: number
 ): string {
   return lastRunAt > 0 ? `${lastScore}/100` : '—'
+}
+
+/**
+ * 监测任务列表排序：渠道任务按定价页左侧的固定渠道顺序排列（同一真源），
+ * 手动任务（无关联渠道）排在最后。返回新数组，不修改入参。
+ */
+export function orderMonitorTasksByChannel(
+  tasks: readonly UpstreamMonitorTask[]
+): UpstreamMonitorTask[] {
+  const channelTasks = sortByPinnedChannelOrder(
+    tasks.filter((task) => task.channel_name),
+    (task) => task.channel_name,
+    (task) => task.models?.length ?? 0
+  )
+  return [...channelTasks, ...tasks.filter((task) => !task.channel_name)]
 }

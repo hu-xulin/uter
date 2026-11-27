@@ -19,7 +19,7 @@ For commercial licensing, please contact support@uter.ai
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { Activity, Eye, Loader2, Pencil, Play, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
@@ -40,6 +40,7 @@ import {
 } from '../api'
 import {
   formatMonitorScore,
+  orderMonitorTasksByChannel,
   upstreamMonitorQueryKeys,
 } from '../lib/upstream-monitor-actions'
 import type { UpstreamMonitorTask, UpstreamVerdict } from '../types'
@@ -68,6 +69,10 @@ export function UpstreamMonitorTable(props: UpstreamMonitorTableProps) {
     queryKey: upstreamMonitorQueryKeys.tasks(),
     queryFn: listUpstreamMonitorTasks,
   })
+
+  // 与定价页左侧渠道使用同一固定顺序：渠道任务按渠道顺序排列，
+  // 手动任务排在最后。
+  const orderedTasks = useMemo(() => orderMonitorTasksByChannel(tasks), [tasks])
 
   const runMutation = useMutation({
     mutationFn: (id: number) => runUpstreamMonitorNow(id),
@@ -131,7 +136,17 @@ export function UpstreamMonitorTable(props: UpstreamMonitorTableProps) {
     {
       id: 'base_url',
       header: t('Endpoint'),
-      cell: (task) => <span className='text-xs'>{task.base_url}</span>,
+      cell: (task) => (
+        <div className='flex flex-col'>
+          <span className='font-medium'>
+            {task.channel_name || t('Manual endpoint')}
+          </span>
+          <span className='text-muted-foreground text-xs'>
+            {task.channel_group ? `${task.channel_group} · ` : ''}
+            {task.base_url}
+          </span>
+        </div>
+      ),
     },
     {
       id: 'protocol',
@@ -215,7 +230,7 @@ export function UpstreamMonitorTable(props: UpstreamMonitorTableProps) {
     },
   ]
 
-  if (!isLoading && tasks.length === 0) {
+  if (!isLoading && orderedTasks.length === 0) {
     return (
       <EmptyState
         icon={Activity}
@@ -230,7 +245,7 @@ export function UpstreamMonitorTable(props: UpstreamMonitorTableProps) {
   return (
     <>
       <StaticDataTable
-        data={tasks}
+        data={orderedTasks}
         columns={columns}
         getRowKey={(task) => task.id}
         empty={isLoading}

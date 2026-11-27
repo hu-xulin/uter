@@ -18,7 +18,24 @@ For commercial licensing, please contact support@uter.ai
 */
 import { describe, expect, it } from 'vitest'
 
-import { formatMonitorScore } from '../upstream-monitor-actions'
+import type { UpstreamMonitorTask } from '../../types'
+import {
+  formatMonitorScore,
+  orderMonitorTasksByChannel,
+} from '../upstream-monitor-actions'
+
+function makeTask(
+  name: string,
+  channelName: string,
+  models: string[] = []
+): UpstreamMonitorTask {
+  return {
+    id: 0,
+    name,
+    channel_name: channelName,
+    models,
+  } as UpstreamMonitorTask
+}
 
 describe('formatMonitorScore', () => {
   it('shows a real 0 score for a completed run instead of hiding it', () => {
@@ -32,5 +49,31 @@ describe('formatMonitorScore', () => {
 
   it('shows the score for a normal completed run', () => {
     expect(formatMonitorScore(92, 1795736430)).toBe('92/100')
+  })
+})
+
+describe('orderMonitorTasksByChannel', () => {
+  it('渠道任务按定价页固定渠道顺序排列，手动任务排在最后', () => {
+    const tasks = [
+      makeTask('gpt-max', 'GPT-Max'),
+      makeTask('manual', ''),
+      makeTask('claude-basic', 'Claude-Basic'),
+      makeTask('ute-select', '优特-精选'),
+      makeTask('other', '其他渠道'),
+    ]
+    expect(orderMonitorTasksByChannel(tasks).map((task) => task.name)).toEqual([
+      'ute-select',
+      'claude-basic',
+      'gpt-max',
+      'other',
+      'manual',
+    ])
+  })
+
+  it('不修改传入的任务数组', () => {
+    const tasks = [makeTask('b', 'GPT-Pro'), makeTask('a', 'Claude-Basic')]
+    const original = [...tasks]
+    orderMonitorTasksByChannel(tasks)
+    expect(tasks).toEqual(original)
   })
 })
