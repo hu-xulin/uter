@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -389,6 +390,11 @@ const UterRouteDiscountGroupDefault = "default"
 // 此处以别名引用，保证单一定义来源。
 const UterRouteDiscountGroupOptionKey = model.UterRouteDiscountGroupOptionKey
 
+// The option stores one JSON object for every channel. A read-modify-write
+// without serialization loses another channel's group when two operators save
+// at the same time, so all writes share this process lock.
+var uterRouteDiscountGroupMu sync.Mutex
+
 // UterRouteDiscountGroups lists the billing groups the provider publishes.
 func UterRouteDiscountGroups(snapshot *UpstreamSnapshot) []string {
 	if snapshot == nil {
@@ -400,6 +406,25 @@ func UterRouteDiscountGroups(snapshot *UpstreamSnapshot) []string {
 	}
 	sort.Strings(groups)
 	return groups
+}
+
+// IsUterRouteDiscountGroup reports whether a group is published by the current
+// upstream snapshot. Validation must consider both the flat ratio table and the
+// per-group override table; a group present only in one of them is still a
+// valid settlement identity.
+func IsUterRouteDiscountGroup(snapshot *UpstreamSnapshot, group string) bool {
+	if snapshot == nil {
+		return false
+	}
+	group = strings.TrimSpace(group)
+	if group == "" {
+		return false
+	}
+	if _, ok := snapshot.GroupRatio[group]; ok {
+		return true
+	}
+	_, ok := snapshot.GroupGroupRatio[group]
+	return ok
 }
 
 // GetUterRouteDiscountGroup returns the selected upstream billing group for
@@ -433,6 +458,8 @@ func SetUterRouteDiscountGroup(channelID int, group string) error {
 	if group == "" {
 		return errors.New("discount group is required")
 	}
+	uterRouteDiscountGroupMu.Lock()
+	defer uterRouteDiscountGroupMu.Unlock()
 	groups := map[string]string{}
 	raw := strings.TrimSpace(common.GetOption(UterRouteDiscountGroupOptionKey))
 	if raw != "" {
@@ -468,8 +495,16 @@ func UterRouteDiscountForModel(
 	if group == "" {
 		group = UterRouteDiscountGroupDefault
 	}
-	if autoGroup, ratio, ok := resolveUterRouteAutoGroupChain(snapshot, item, group); ok {
+	autoGroup, ratio, chainHit, chainOK := resolveUterRouteAutoGroupChain(snapshot, item, group)
+	if chainOK {
 		return ratio, autoGroup, true
+	}
+	if chainHit {
+		// The pricing card points at a specific auto group, but that group
+		// publishes no usable ratio. This is a broken authoritative chain,
+		// not an absent one: falling through to another enabled group would
+		// guess a settlement identity and misstate the discount.
+		return 0, "", false
 	}
 	// Collect every positive, finite ratio among the model's enable_groups
 	// for this channel's group. Upstream serializes enable_groups in unstable
@@ -508,9 +543,9 @@ func resolveUterRouteAutoGroupChain(
 	snapshot *UpstreamSnapshot,
 	item UpstreamModelRecord,
 	group string,
-) (string, float64, bool) {
+) (autoGroup string, ratio float64, hit bool, ok bool) {
 	if snapshot == nil || len(snapshot.AutoGroups) == 0 || len(item.EnableGroups) == 0 {
-		return "", 0, false
+		return "", 0, false, false
 	}
 	enabled := make(map[string]bool, len(item.EnableGroups))
 	for _, modelGroup := range item.EnableGroups {
@@ -520,28 +555,30 @@ func resolveUterRouteAutoGroupChain(
 		}
 	}
 	groupTable := snapshot.GroupGroupRatio[group]
-	for _, autoGroup := range snapshot.AutoGroups {
-		autoGroup = strings.TrimSpace(autoGroup)
-		if autoGroup == "" || !enabled[autoGroup] {
+	for _, candidate := range snapshot.AutoGroups {
+		candidate = strings.TrimSpace(candidate)
+		if candidate == "" || !enabled[candidate] {
 			continue
 		}
-		if ratio, exists := groupTable[autoGroup]; exists {
-			if !validUpstreamRatio(ratio) {
-				return "", 0, false
+		// A hit makes this group authoritative. hit=true with ok=false is an
+		// explicit fail-closed signal; it must not be confused with "no chain
+		// hit at all", which may fall back to legacy deterministic resolution.
+		hit = true
+		if value, exists := groupTable[candidate]; exists {
+			if !validUpstreamRatio(value) {
+				return "", 0, true, false
 			}
-			return autoGroup, ratio, true
+			return candidate, value, true, true
 		}
-		if ratio, exists := snapshot.GroupRatio[autoGroup]; exists {
-			if !validUpstreamRatio(ratio) {
-				return "", 0, false
+		if value, exists := snapshot.GroupRatio[candidate]; exists {
+			if !validUpstreamRatio(value) {
+				return "", 0, true, false
 			}
-			return autoGroup, ratio, true
+			return candidate, value, true, true
 		}
-		// The first chain hit exists but publishes no usable ratio. Do not
-		// silently skip it for a later, cheaper group.
-		return "", 0, false
+		return "", 0, true, false
 	}
-	return "", 0, false
+	return "", 0, false, false
 }
 
 type uterRouteGroupResolution struct {
@@ -682,6 +719,7 @@ func uterRouteRatioValue(value *float64) float64 {
 // long-context requests at the short-context price.
 func uterRouteChannelExpressionPricing(
 	expr string,
+	modelName string,
 	group string,
 	modelGroup string,
 	factor float64,
@@ -694,6 +732,13 @@ func uterRouteChannelExpressionPricing(
 	// discount. A string-level "(expr) * factor" wrap leaves fixed() branches
 	// unscaled and is rejected by the billing engine for fixed expressions.
 	scaled, ok := scaleBillingExprByFactor(raw, factor)
+	if !ok {
+		return "", false
+	}
+	// A task plugin model settles from usage facts only: param()/header() probes
+	// are nil there and would silently select the fallback tier. Adapt them to
+	// usage conditions, and fail closed when the probe cannot be rewritten.
+	scaled, ok = uterRouteAdaptTaskExpr(scaled, modelName)
 	if !ok {
 		return "", false
 	}
@@ -821,17 +866,8 @@ func pruneHiddenUterRouteModels(channel *model.Channel, hidden []string) {
 	if channel == nil || len(hidden) == 0 {
 		return
 	}
-	hiddenSet := make(map[string]struct{}, len(hidden))
-	for _, name := range hidden {
-		hiddenSet[name] = struct{}{}
-	}
 	current := channel.GetModels()
-	kept := make([]string, 0, len(current))
-	for _, name := range current {
-		if _, drop := hiddenSet[name]; !drop {
-			kept = append(kept, name)
-		}
-	}
+	kept, dropped := pruneHiddenUterRouteModelNames(current, hidden, channel.GetModelMapping())
 	if len(kept) != len(current) {
 		channel.Models = strings.Join(kept, ",")
 		if err := channel.Update(); err != nil {
@@ -842,9 +878,55 @@ func pruneHiddenUterRouteModels(channel *model.Channel, hidden []string) {
 			model.BumpSyncTopic(model.SyncTopicChannels)
 		}
 	}
-	if err := model.DeleteChannelModelPricingForModels(channel.Id, hidden); err != nil {
+	// Delete rows under both the upstream hidden names and the request aliases
+	// that resolved to them: a redirected channel stores rows under aliases.
+	deleteNames := make([]string, 0, len(dropped)+len(hidden))
+	seen := make(map[string]struct{}, len(dropped)+len(hidden))
+	for _, name := range append(append([]string{}, dropped...), hidden...) {
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+		if _, exists := seen[name]; exists {
+			continue
+		}
+		seen[name] = struct{}{}
+		deleteNames = append(deleteNames, name)
+	}
+	if err := model.DeleteChannelModelPricingForModels(channel.Id, deleteNames); err != nil {
 		common.SysError(common.LogText("delete hidden uterroute pricing failed: channel_id=%d, error=%v", channel.Id, err))
 	}
+}
+
+// pruneHiddenUterRouteModelNames resolves each configured request name through
+// model_mapping before comparing it with the upstream hidden list. A batch
+// redirect stores aliases in channel.Models, so comparing raw names used to
+// leave hidden upstream models enabled under their aliases.
+func pruneHiddenUterRouteModelNames(current, hidden []string, modelMapping string) ([]string, []string) {
+	hiddenSet := make(map[string]struct{}, len(hidden))
+	for _, name := range hidden {
+		if key := normalizeUterRouteModelKey(name); key != "" {
+			hiddenSet[key] = struct{}{}
+		}
+	}
+	var mapping map[string]string
+	if strings.TrimSpace(modelMapping) != "" {
+		_ = common.UnmarshalJsonStr(modelMapping, &mapping)
+	}
+	kept := make([]string, 0, len(current))
+	dropped := make([]string, 0, len(current))
+	for _, name := range current {
+		upstream, cyclic := followUterRouteModelMapping(mapping, name)
+		if cyclic || upstream == "" {
+			upstream = name
+		}
+		if _, drop := hiddenSet[normalizeUterRouteModelKey(upstream)]; drop {
+			dropped = append(dropped, name)
+			continue
+		}
+		kept = append(kept, name)
+	}
+	return kept, dropped
 }
 
 // FetchUterRouteUpstream fetches the public pricing document and normalizes
@@ -1113,14 +1195,89 @@ type UpstreamPriceHistory struct {
 	Entries    []UpstreamPriceChange `json:"entries"`
 }
 
+func upstreamCanonicalFloatMap(input map[string]float64) map[string]float64 {
+	if len(input) == 0 {
+		return map[string]float64{}
+	}
+	out := make(map[string]float64, len(input))
+	for key, value := range input {
+		out[key] = value
+	}
+	return out
+}
+
+func upstreamCanonicalNestedFloatMap(input map[string]map[string]float64) map[string]map[string]float64 {
+	if len(input) == 0 {
+		return map[string]map[string]float64{}
+	}
+	out := make(map[string]map[string]float64, len(input))
+	for key, value := range input {
+		out[key] = upstreamCanonicalFloatMap(value)
+	}
+	return out
+}
+
+func upstreamCanonicalStringSlice(input []string) []string {
+	if len(input) == 0 {
+		return []string{}
+	}
+	out := make([]string, len(input))
+	copy(out, input)
+	return out
+}
+
+func upstreamConfigText(value any) string {
+	encoded, err := common.Marshal(value)
+	if err != nil {
+		return fmt.Sprint(value)
+	}
+	return string(encoded)
+}
+
 // DiffUterRouteUpstream compares two isolated snapshots. Only raw upstream
-// ratio fields are compared; an absolute price is never derived or stored.
+// configuration and ratio fields are compared; an absolute price is never
+// derived or stored.
 func DiffUterRouteUpstream(prev, next *UpstreamSnapshot) []UpstreamPriceChange {
 	if next == nil {
 		return nil
 	}
 	now := time.Now().UTC()
 	changes := make([]UpstreamPriceChange, 0)
+	appendConfigChange := func(modelID, field, oldText, newText string) {
+		if oldText == newText {
+			return
+		}
+		changes = append(changes, UpstreamPriceChange{
+			ProviderID: next.ProviderID, ModelID: modelID,
+			Kind: "config_changed", Field: field,
+			OldText: oldText, NewText: newText,
+			DetectedAt: now, PricingVersion: next.PricingVersion,
+		})
+	}
+
+	var prevGroupRatio map[string]float64
+	var prevGroupGroupRatio map[string]map[string]float64
+	var prevAutoGroups []string
+	var prevExcludedModels []string
+	if prev != nil {
+		prevGroupRatio = prev.GroupRatio
+		prevGroupGroupRatio = prev.GroupGroupRatio
+		prevAutoGroups = prev.AutoGroups
+		prevExcludedModels = prev.ExcludedModels
+	}
+	appendConfigChange("", "group_ratio",
+		upstreamConfigText(upstreamCanonicalFloatMap(prevGroupRatio)),
+		upstreamConfigText(upstreamCanonicalFloatMap(next.GroupRatio)))
+	appendConfigChange("", "group_group_ratio",
+		upstreamConfigText(upstreamCanonicalNestedFloatMap(prevGroupGroupRatio)),
+		upstreamConfigText(upstreamCanonicalNestedFloatMap(next.GroupGroupRatio)))
+	appendConfigChange("", "auto_groups",
+		upstreamConfigText(upstreamCanonicalStringSlice(prevAutoGroups)),
+		upstreamConfigText(upstreamCanonicalStringSlice(next.AutoGroups)))
+	appendConfigChange("", "excluded_models",
+		upstreamConfigText(upstreamCanonicalStringSlice(prevExcludedModels)),
+		upstreamConfigText(upstreamCanonicalStringSlice(next.ExcludedModels)))
+
 	prevByName := make(map[string]UpstreamModelRecord)
 	if prev != nil {
 		for _, item := range prev.Models {
@@ -1138,6 +1295,9 @@ func DiffUterRouteUpstream(prev, next *UpstreamSnapshot) []UpstreamPriceChange {
 			})
 			continue
 		}
+		appendConfigChange(item.ModelName, "enable_groups",
+			upstreamConfigText(upstreamCanonicalStringSlice(before.EnableGroups)),
+			upstreamConfigText(upstreamCanonicalStringSlice(item.EnableGroups)))
 		if strings.TrimSpace(before.BillingExpr) != strings.TrimSpace(item.BillingExpr) ||
 			strings.TrimSpace(before.BillingMode) != strings.TrimSpace(item.BillingMode) {
 			changes = append(changes, UpstreamPriceChange{
@@ -1198,12 +1358,38 @@ func upstreamRatioEqual(a, b *float64) bool {
 }
 
 // AppendUterRouteUpstreamHistory merges new changes into the bounded log.
+// upstreamPriceChangeDedupeKey identifies one logical change across retries.
+// DetectedAt is intentionally excluded: a sync that appends history before the
+// snapshot write fails must not create a second entry with a newer timestamp.
+func upstreamPriceChangeDedupeKey(change UpstreamPriceChange) string {
+	encoded, err := common.Marshal([]any{
+		change.ProviderID, change.ModelID, change.Region, change.DeploymentId,
+		change.Kind, change.Field, change.Old, change.New,
+		change.OldText, change.NewText, change.PricingVersion,
+	})
+	if err != nil {
+		return fmt.Sprintf("%s|%s|%s", change.ProviderID, change.ModelID, change.Kind)
+	}
+	return string(encoded)
+}
+
 func AppendUterRouteUpstreamHistory(providerID string, changes []UpstreamPriceChange) error {
 	history := LoadUterRouteUpstreamHistory()
 	if history == nil {
 		history = &UpstreamPriceHistory{ProviderID: providerID}
 	}
-	history.Entries = append(history.Entries, changes...)
+	seen := make(map[string]bool, len(history.Entries))
+	for _, entry := range history.Entries {
+		seen[upstreamPriceChangeDedupeKey(entry)] = true
+	}
+	for _, change := range changes {
+		key := upstreamPriceChangeDedupeKey(change)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		history.Entries = append(history.Entries, change)
+	}
 	if len(history.Entries) > upstreamHistoryLimit {
 		history.Entries = history.Entries[len(history.Entries)-upstreamHistoryLimit:]
 	}
@@ -1553,7 +1739,7 @@ func uterRouteChannelOfficialPricing(
 			}
 		}
 		internalPricing, priced := uterRouteChannelExpressionPricing(
-			item.BillingExpr, group, modelGroup, discount,
+			item.BillingExpr, item.ModelName, group, modelGroup, discount,
 		)
 		if !priced {
 			view.NeedsReview = true
@@ -1628,7 +1814,7 @@ func uterRouteChannelOfficialPricing(
 	priced := false
 	if expressionRule {
 		internalPricing, priced = uterRouteChannelExpressionPricing(
-			item.BillingExpr, group, modelGroup, discount,
+			item.BillingExpr, item.ModelName, group, modelGroup, discount,
 		)
 		if priced && !isUterRouteReferencePriceStatus(item.PriceStatus) {
 			// The complete, executable rule carries every tier, so the

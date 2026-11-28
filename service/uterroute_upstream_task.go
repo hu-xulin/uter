@@ -35,8 +35,20 @@ type UterRouteUpstreamSyncStatus struct {
 
 var uterRouteUpstreamSyncMu sync.Mutex
 
-// UterRouteUpstreamSyncTask runs the isolated catalog sync every five
-// minutes. It never writes global ModelRatio / ModelPrice / billing_expr.
+// AcquireUterRouteUpstreamSyncProcessLock serializes the manual panel sync
+// with the scheduled task. The distributed lock alone only excludes other
+// instances; without this process lock both paths can read the same previous
+// snapshot and write history/snapshot in an interleaved order.
+func AcquireUterRouteUpstreamSyncProcessLock() (func(), bool) {
+	if !uterRouteUpstreamSyncMu.TryLock() {
+		return nil, false
+	}
+	return uterRouteUpstreamSyncMu.Unlock, true
+}
+
+// UterRouteUpstreamSyncTask polls the isolated catalog sync every minute;
+// each channel is actually refreshed at its own model/official/channel
+// cadence. It never writes global ModelRatio / ModelPrice / billing_expr.
 func UterRouteUpstreamSyncTask() {
 	for range time.NewTicker(1 * time.Minute).C {
 		if _, err := runUterRouteUpstreamSync(context.Background(), false); err != nil {
@@ -98,13 +110,35 @@ func saveUterRouteChannelSyncState(setting uterRouteChannelSyncStateSetting) {
 	}
 }
 
+const maxUterRouteSyncBackoffMinutes = 60
+
+// advanceUterRouteChannelSyncState writes the failure counter and next attempt
+// that the scheduler already reads. Without it a broken channel retries every
+// minute forever and the sync status cannot explain the repeated attempts.
+func advanceUterRouteChannelSyncState(state *uterRouteChannelSyncState, succeeded bool, now time.Time) {
+	if state == nil {
+		return
+	}
+	if succeeded {
+		state.Failures = 0
+		state.NextAttemptAt = 0
+		return
+	}
+	state.Failures++
+	backoff := state.Failures
+	if backoff > maxUterRouteSyncBackoffMinutes {
+		backoff = maxUterRouteSyncBackoffMinutes
+	}
+	state.NextAttemptAt = now.Add(time.Duration(backoff) * time.Minute).Unix()
+}
+
 func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstreamSyncStatus, error) {
 	if !uterRouteUpstreamSyncMu.TryLock() {
 		return nil, fmt.Errorf("uterroute upstream sync is already running")
 	}
 	defer uterRouteUpstreamSyncMu.Unlock()
 
-	releaseLock, acquired, err := acquireUpstreamSyncLock(ctx, "uterroute-upstream")
+	releaseLock, acquired, err := AcquireUterRouteUpstreamSyncLock(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -175,13 +209,13 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 	if previous != nil {
 		changes = DiffUterRouteUpstream(previous, snapshot)
 		status.Changes = len(changes)
-		if err := AppendUterRouteUpstreamHistory(snapshot.ProviderID, changes); err != nil {
-			status.Errors = append(status.Errors, err.Error())
-		}
 	}
-	if err := SaveUterRouteUpstreamSnapshot(snapshot); err != nil {
-		status.FinishedAt = time.Now().UTC()
+	// Persist the snapshot and its audited history in one transaction: a
+	// partial write used to either hide these changes forever or re-emit them
+	// against the stale snapshot on the next diff.
+	if err := CommitUterRouteSnapshotAndHistory(snapshot, changes); err != nil {
 		status.Errors = append(status.Errors, err.Error())
+		status.FinishedAt = time.Now().UTC()
 		saveUterRouteUpstreamSyncStatus(status)
 		return status, err
 	}
@@ -202,6 +236,7 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 			if recordErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, recordErr))
 				RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), 0, 0, 0, 0, "", recordErr, model.ChannelSyncTypePrices)
+				advanceUterRouteChannelSyncState(&state, false, now)
 				continue
 			}
 			before := channelOfficialPriceSnapshot(channel.Id)
@@ -209,6 +244,7 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 			if upsertErr != nil {
 				status.Errors = append(status.Errors, fmt.Sprintf("channel %d: %v", channel.Id, upsertErr))
 				RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), len(records), 0, 0, 0, "", upsertErr, model.ChannelSyncTypePrices)
+				advanceUterRouteChannelSyncState(&state, false, now)
 				continue
 			}
 			written += count
@@ -218,9 +254,23 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 			// rule never overwrites a hand-edited price.
 			after := channelOfficialPriceSnapshot(channel.Id)
 			changed := channelOfficialPriceChanged(before, after, channel.GetModels())
+			// Second line of defence: UterRoute official prices are exempt from
+			// the strict sale-price cross-check, so an abnormal upstream unit
+			// price needs a drift alert + human confirmation before the
+			// scheduled rule may apply it.
+			driftReviews, driftErr := RecordUterRouteDriftReviews(
+				previous, snapshot, channel.Id, channel.GetModels(),
+				channel.GetModelMapping(), due.schedule.ThresholdPercent,
+			)
+			if driftErr != nil {
+				status.Errors = append(status.Errors, fmt.Sprintf("channel %d drift review: %v", channel.Id, driftErr))
+			}
+			if driftReviews > 0 {
+				status.Reviews += driftReviews
+			}
 			repriced := repriceChangedChannel(channel.Id, changed, due.schedule)
 			status.Repriced += repriced
-			RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), len(records), count, repriced, 0, "", nil, model.ChannelSyncTypePrices)
+			RecordChannelSyncOutcome(channel.Id, "uterroute", now.Unix(), len(records), count, repriced, driftReviews, "", nil, model.ChannelSyncTypePrices)
 			AutoVerifyChannelPricing(channel.Id)
 			if due.officialDue {
 				state.OfficialSyncAt = now.Unix()
@@ -228,6 +278,7 @@ func runUterRouteUpstreamSync(ctx context.Context, force bool) (*UterRouteUpstre
 			if due.channelDue {
 				state.ChannelSyncAt = now.Unix()
 			}
+			advanceUterRouteChannelSyncState(&state, true, now)
 		}
 		states.Channels[fmt.Sprintf("%d", channel.Id)] = state
 	}
@@ -285,8 +336,21 @@ func LoadUterRouteUpstreamSyncStatus() *UterRouteUpstreamSyncStatus {
 // tier and the discounted channel tier are captured, so a change in either the
 // official price or the channel quote triggers a sale-price recalculation.
 type channelOfficialPricePoint struct {
-	official float64
-	channel  float64
+	official    float64
+	channel     float64
+	fingerprint string
+}
+
+// channelOfficialPriceFingerprint serializes the full official and channel
+// tiers. Comparing only the primary input amount misses upstream changes to
+// completion/cache/cache-write coefficients, which change the charged total
+// without moving the headline price.
+func channelOfficialPriceFingerprint(official, channel *model.ChannelPricingTier) string {
+	encoded, err := common.Marshal([]any{official, channel})
+	if err != nil {
+		return ""
+	}
+	return string(encoded)
 }
 
 // officialTierPrimaryUSD extracts the primary USD amount of one official tier.
@@ -317,8 +381,9 @@ func channelOfficialPriceSnapshot(channelID int) map[string]channelOfficialPrice
 			continue
 		}
 		out[row.ModelName] = channelOfficialPricePoint{
-			official: officialTierPrimaryUSD(&view.Tiers[0]),
-			channel:  officialTierPrimaryUSD(view.ChannelPrice),
+			official:    officialTierPrimaryUSD(&view.Tiers[0]),
+			channel:     officialTierPrimaryUSD(view.ChannelPrice),
+			fingerprint: channelOfficialPriceFingerprint(&view.Tiers[0], view.ChannelPrice),
 		}
 	}
 	return out
@@ -346,8 +411,15 @@ func channelOfficialPriceChanged(
 			continue
 		}
 		was, existed := before[name]
-		if !existed || math.Abs(now.official-was.official) > 1e-12 ||
-			math.Abs(now.channel-was.channel) > 1e-12 {
+		if !existed || now.fingerprint != was.fingerprint {
+			changed = append(changed, name)
+			continue
+		}
+		// A failed fingerprint serialization must not silently disable change
+		// detection; fall back to the legacy primary-amount comparison.
+		if now.fingerprint == "" &&
+			(math.Abs(now.official-was.official) > 1e-12 ||
+				math.Abs(now.channel-was.channel) > 1e-12) {
 			changed = append(changed, name)
 		}
 	}
@@ -360,6 +432,12 @@ func channelOfficialPriceChanged(
 // is configured or ApplyOnSync is off. Returns the number of rows repriced.
 func repriceChangedChannel(channelID int, changed []string, schedule ChannelPricingSchedule) int {
 	if len(changed) == 0 || !schedule.ApplyOnSync {
+		return 0
+	}
+	// A model escalated to a human pricing review (drift above threshold,
+	// manual mode) must not be silently repriced before that human decides.
+	changed = excludeModelsAwaitingReview(changed, ListChannelPricingReviews(channelID))
+	if len(changed) == 0 {
 		return 0
 	}
 	mode := strings.TrimSpace(schedule.Mode)
