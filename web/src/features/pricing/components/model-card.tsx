@@ -202,7 +202,10 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
   // 模型卡片只渲染模型自己的产品 logo；没有自己的 logo 时显示首字母占位，
   // 绝不退化为供应商的公司 logo（运营在「模型-供应商」里设置的那个）。
   // GPT/OpenAI 使用透明底 Mono logo，避免 Avatar 的黑色品牌底。
-  const modelIconKey = pricingModelIconKey(props.model.icon, props.model.model_name)
+  const modelIconKey = pricingModelIconKey(
+    props.model.icon,
+    props.model.model_name
+  )
   const modelIcon = modelIconKey ? getLobeIcon(modelIconKey, 28) : null
   const initial = props.model.model_name?.charAt(0).toUpperCase() || '?'
   const isUnconfiguredTaskUsage = isUnconfiguredTaskUsageModel(props.model)
@@ -406,9 +409,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
     )
     // 分时官方基准取的是最低档（offpeak）；按当前时段比例缩放后再与优特价
     // 比较，角标（x1.1）和价格行倍率才一致，不会一个 1.1 一个 2.2。
-    return usd != null
-      ? { usd: usd * timeTierScale, perRequest: false }
-      : null
+    return usd != null ? { usd: usd * timeTierScale, perRequest: false } : null
   }
   let priceSummary: ReactNode
   // 按秒计费模型（wan3.0-video / qwen-audio-3.0-asr-flash 等 quota_type=2）
@@ -922,7 +923,7 @@ export const ModelCard = memo(function ModelCard(props: ModelCardProps) {
         </div>
         <div className='min-w-0 flex-1'>
           <Heading
-            variant='mono-title'
+            variant='mono-section-title'
             level={3}
             clamp={2}
             className='[overflow-wrap:anywhere]'

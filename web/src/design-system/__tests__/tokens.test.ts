@@ -79,7 +79,8 @@ const LADDER: Array<[string, number, number, string]> = [
   ['mono', 13, 20, 'mono 正文等宽文本'],
   ['mono-base', 14, 22, 'mono-base：代码、技术信息'],
   ['mono-code', 13, 20, '等宽代码展示区'],
-  ['mono-title', 16, 22, '等宽卡片标题'],
+  ['mono-page-title', 20, 26, '等宽页面标题（定价页模型详情）'],
+  ['mono-section-title', 16, 22, '等宽区块标题（定价页卡片模型名）'],
   ['dense', 13, 20, '密集数据：表格单元格 / 二级导航 / 分页（专用派生档）'],
   ['group', 16, 24, 'group-title 分组标题（专用派生档）'],
   ['base', 16, 24, '行标题 / 设置字段 / 指标数值'],
@@ -149,7 +150,8 @@ describe('语义 Token 指向正确的阶梯档位', () => {
     ['ds-text-dense', 'var(--text-dense)'],
     ['ds-text-mono', 'var(--text-mono)'],
     ['ds-text-mono-code', 'var(--text-mono-code)'],
-    ['ds-text-mono-title', 'var(--text-mono-title)'],
+    ['ds-text-mono-page-title', 'var(--text-mono-page-title)'],
+    ['ds-text-mono-section-title', 'var(--text-mono-section-title)'],
   ]
 
   it.each(MAPPING)('--%s → %s', (name, expected) => {
@@ -184,6 +186,12 @@ describe('语义 Token 指向正确的阶梯档位', () => {
       ['ds-line-section-title', 'text-3xl--line-height', 38],
       ['ds-line-card-title', 'text-lg--line-height', 26],
       ['ds-line-group-title', 'text-group--line-height', 24],
+      ['ds-line-mono-page-title', 'text-mono-page-title--line-height', 26],
+      [
+        'ds-line-mono-section-title',
+        'text-mono-section-title--line-height',
+        22,
+      ],
       ['ds-line-body', 'text-sm--line-height', 22],
       ['ds-line-long', 'text-long--line-height', 26],
       ['ds-line-body-sm', 'text-sm--line-height', 22],

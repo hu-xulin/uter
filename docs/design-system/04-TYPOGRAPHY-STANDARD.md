@@ -55,6 +55,8 @@
 | `--ds-text-3xl` | 30px | —（同值） | px | 分区标题 |
 | `--ds-text-4xl` | 36px | —（同值） | px | 页面主标题 |
 | `--ds-text-5xl` | 48px | —（同值） | px | 展示大标题（Hero 使用 4xl） |
+| `--ds-text-mono-page-title` | 20px | —（同值） | px | 等宽页面标题（定价页模型详情标题），行高 26px |
+| `--ds-text-mono-section-title` | 16px | —（同值） | px | 等宽区块标题（定价页卡片模型名），行高 22px |
 | `--ds-leading-body` | 22px | —（同值） | px | 14px 正文 |
 | `--ds-leading-long` | 26px | —（同值） | px | 16–18px 长文本 / h3 |
 | `--ds-leading-code` | 20px | —（同值） | px | 13px 代码 / 20px 控件 |
@@ -90,17 +92,36 @@ Showcase 中 `#mod-04` 分区提供本模块的真实渲染：色块、字号、
 }
 ```
 
+### 等宽标题层级（Heading 变体）
+
+模型 ID 类标识符需等宽显示时，用 Heading 的等宽标题族，按语义层级选档，**不得手写 `font-mono` 或裸字号补偿**：
+
+| Heading 变体 | Token | 字号 / 行高 / 字重 | 用途 | HTML 语义 |
+|---|---|---|---|---|
+| `mono-page-title` | `--ds-text-mono-page-title` / `--ds-line-mono-page-title` | 20 / 26 / 600 | 页面级，定价页**模型详情**标题 | `h1` |
+| `mono-section-title` | `--ds-text-mono-section-title` / `--ds-line-mono-section-title` | 16 / 22 / 600 | 区块级，定价页**模型卡片**标题 | `h3` |
+
+规则：
+
+1. 两档与无衬线族的 `page-title`（36px）、`section-title`（30px）**不是同一层级映射**——等宽字形视觉更宽，详情页标题从 36px 降为 20px 等宽后视觉重量才与正文协调；不要把等宽档当作无衬线档的等宽替换。
+2. 等宽由变体自带 `font-family: var(--font-mono)`，调用方不得再传 `className='font-mono'`。
+3. 语义层级由 `level` 显式声明（详情页 `h1`、卡片 `h3`），视觉档位与 HTML 层级分离。
+4. 字号与行高只能在 `tokens/typography.css` 的 `@theme` 声明（T1），经 `semantic.css` 派生 `--ds-*` 后由 `foundations/typography.css` 的 `.ds-heading--*` 消费；`tokens.test.ts` 的 LADDER / MAPPING / 行高兜底三方守卫必须同步更新。
+
 ## 7. Do
 
 - 保留现有中英文回退链
 - 长文本用 16px/26px
 - 所有数字列右对齐 + tabular-nums
+- 模型详情页标题用 `mono-page-title`（20px 等宽），模型卡片标题用 `mono-section-title`（16px 等宽）
 
 ## 8. Don't
 
 - 引入新字体替换 UI 栈
 - 在组件写死 `line-height: 20px`
 - 把 12px 用于正文段落
+- 在等宽标题上再手写 `className='font-mono'` 或裸字号，或使用已废弃的等宽标题档名
+- 把无衬线页面标题（36px）当作等宽详情页标题的替换档
 
 ## 9. Accessibility
 

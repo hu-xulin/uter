@@ -640,7 +640,7 @@ function ModelHeader(props: {
     <header className='pb-4'>
       <div className='flex items-center gap-2.5'>
         {modelIcon}
-        <Heading variant='page-title' level={1} className='font-mono'>
+        <Heading variant='mono-page-title' level={1}>
           {model.model_name}
           <DiscountTag
             model={model}

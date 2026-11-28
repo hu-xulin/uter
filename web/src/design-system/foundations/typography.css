@@ -187,14 +187,23 @@ For commercial licensing, please contact support@uter.ai
     line-height: var(--ds-line-group-title);
     font-weight: var(--ds-weight-semibold);
   }
-  /* 用等宽字形的卡片标题：16/22/600。与 `ds-heading--card-title` 同属
-   * 「卡片标题」这一语义层级，差别只在字形与补偿后的字号——16px 是因为
-   * 等宽字形在同等视觉重量下需要比 Inter 的 18px 小一档，行高也随之收紧。
+  /* 等宽标题族：两档共用等宽字形与 600 字重，按语义层级分档。
+   * - mono-page-title    20/26/600：页面级，定价页模型详情标题。
+   * - mono-section-title 16/22/600：区块级，定价页卡片模型名。与
+   *   `ds-heading--card-title` 同属「卡片标题」层级，差别只在字形与补偿
+   *   后的字号——16px 是因为等宽字形在同等视觉重量下需要比 Inter 的
+   *   18px 小一档，行高也随之收紧。
    * 放在最后，靠层叠顺序压过前面各档。 */
-  .ds-heading--mono-title {
+  .ds-heading--mono-page-title {
     font-family: var(--font-mono);
-    font-size: var(--ds-text-mono-title);
-    line-height: var(--ds-line-mono-title);
+    font-size: var(--ds-text-mono-page-title);
+    line-height: var(--ds-line-mono-page-title);
+    font-weight: var(--ds-weight-semibold);
+  }
+  .ds-heading--mono-section-title {
+    font-family: var(--font-mono);
+    font-size: var(--ds-text-mono-section-title);
+    line-height: var(--ds-line-mono-section-title);
     font-weight: var(--ds-weight-semibold);
   }
 }
