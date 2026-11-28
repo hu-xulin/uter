@@ -182,3 +182,25 @@
 3. 对 `normalizeModelMatchName` 冲突生成可导出的别名冲突清单，按“精确 ID > 白名单别名 > 跳过”分级处理，避免静默丢基线。
 4. 为 `needs_review` 历史行提供只读预览 + 显式确认的修复工具，沿用现有 `RejudgeBailianOfficialListCrossCheck` 的审计字段约束，但不得自动改库。
 5. 将 UterAPI 渠道发现的计费组配置修复单独立项，先让 controller 测试集恢复全绿，再做本轮定价修复的浏览器端最终验收。
+
+---
+
+## 七、待执行事项落地记录（2026-11-28 13:50 GMT+8）
+
+本节替代 6.4 中已完成的第 1、5 项和已执行的第 5 条“生效条件”。
+
+### 7.1 已完成
+
+| 事项 | 结果 | 证据 |
+|---|---|---|
+| controller 4 个 UterAPI 测试失败 | 已恢复全绿。单独运行、四例组合运行、全量 `go test ./controller/ -count=1 -v` 均通过（150.706s，退出码 0） | 失败在工作区并发改动期间出现，重跑后消失；未放宽或删除断言 |
+| 历史 `needs_review` 数据清理 | 备份 `one-api.db.pre-uterroute-review-fix-20261128-133814`（`integrity_check=ok`）后，按 10 行/批清理 43 行：移除 crosscheck 原因，保留 `DERIVED_FROM_RATIOS` 作为审计来源。最终 `needs_review=0`、crosscheck 原因=0 | 逐批校验；`internal_pricing / pricing_status / pricing_owner / pricing_source / purchase_pricing` 与备份逐行一致；`pricing_version` 已重算；`integrity_check=ok` |
+| 前端与后端重建 | `bun run --cwd web build` 成功；`go build -o /tmp/uter-verify-bin .` 成功 | 前端构建退出码 0；后端二进制 206MB |
+| 隔离实例验证 | 在 `127.0.0.1:3001` 启动新二进制，未 kill/restart 3000；`/` 与 `/api/status` 返回 200，`/api/pricing` 按预期返回 401；数据库 85 行误标为 0 | 启动日志无异常；验证后已停止 3001；3000 原 PID 18605 仍在监听 |
+| 提交 | commit `72707ed86`，仅含本次 9 个明确文件 | `git show --stat` 已核对；工作区其他并发改动未纳入 |
+
+### 7.2 仍未执行 / 需业务确认
+
+1. **默认参考价授权未反转**：仍沿用 2026-11-25 运营决策；非法配置值已 fail-closed。反转会影响 32 个 `RATIO_ONLY` 模型自动计费，需明确业务确认。
+2. **UterRoute 漂移阈值告警**与**别名白名单治理**属于中期改进，未在本轮实现。
+3. **3000 服务仍运行旧二进制**：本轮按要求未 restart/kill launchd 托管服务；新代码已通过 3001 隔离实例验证，正式生效仍需在运维窗口重启 3000。
