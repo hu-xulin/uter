@@ -68,6 +68,29 @@ describe('readSubscriptionKeyMask', () => {
     expect(readSubscriptionKeyMask([])).toEqual([])
   })
 
+  it('reads grouped slot masks when the top-level api_key is empty', () => {
+    const grouped: SystemOption[] = [
+      {
+        key: 'ChannelProviderCredentialMasks',
+        value: JSON.stringify({
+          subscription: {
+            password: 'pw****word',
+            api_key: '',
+            slots: [
+              { id: 'default', api_key: 'slot1****key' },
+              { id: 'vip', api_key: 'slot2****key\nslot3****key' },
+            ],
+          },
+        }),
+      },
+    ]
+    expect(readSubscriptionKeyMask(grouped)).toEqual([
+      'slot1****key',
+      'slot2****key',
+      'slot3****key',
+    ])
+  })
+
   it('returns empty on invalid JSON or wrong shape', () => {
     expect(
       readSubscriptionKeyMask([

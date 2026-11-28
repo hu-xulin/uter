@@ -129,12 +129,32 @@ export function sanitizeMultilineSecret(value: string): string {
 }
 
 /**
- * 判断一个值是否是掩码串（含 `*`），即「后端下发的展示值」而不是真实密钥。
+ * 判断一个值是否形如掩码串，即「后端下发的展示值」而不是真实密钥。
  *
  * 用途：保存前拦截。若把掩码串当新值提交，真实密钥会被 `abcd****wxyz`
  * 覆盖（后端同样会识别并保留原值，但前端应当先拦住，避免无谓请求与误导）。
- * 规则与后端 common.IsMaskedSecret 保持一致：含星号即视为掩码串。
+ *
+ * 只识别本模块实际生成的三种形态：全星号、前4+尾随星号、前4+中缀星号+后4。
+ * 「含任意星号即掩码」会把 p*ssw0rd 这类合法密码判为未修改，导致保存无效。
+ * 规则与后端 common.IsMaskedSecret 保持一致。
  */
 export function isMaskedSecret(value: string): boolean {
-  return value.includes('*')
+  const chars = [...value]
+  const length = chars.length
+  if (length === 0) return false
+  if (chars.every((char) => char === '*')) return true
+  if (length <= 4) return false
+  if (chars.slice(0, 4).some((char) => char === '*')) return false
+  if (length <= 8) {
+    return (
+      chars.slice(4).length > 0 && chars.slice(4).every((char) => char === '*')
+    )
+  }
+  if (chars.slice(-4).some((char) => char === '*')) return false
+  const middle = chars.slice(4, -4)
+  return (
+    middle.length >= 1 &&
+    middle.length <= 12 &&
+    middle.every((char) => char === '*')
+  )
 }

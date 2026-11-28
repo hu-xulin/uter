@@ -18,7 +18,11 @@ For commercial licensing, please contact support@uter.ai
 */
 import type { SystemOption } from '@/features/system-settings/types'
 
-type MaskGroup = { password?: string; api_key?: string }
+type MaskGroup = {
+  password?: string
+  api_key?: string
+  slots?: Array<{ id?: string; api_key?: string }>
+}
 export type ChannelProviderCredentialGroup =
   | 'featured'
   | 'bailian'
@@ -51,12 +55,23 @@ export function readChannelProviderKeyMask(
   }
   if (!view || typeof view !== 'object' || Array.isArray(view)) return []
 
-  const secret = (view as MaskView)[group]?.[field]
-  if (typeof secret !== 'string' || secret.trim() === '') return []
-  return secret
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
+  const credential = (view as MaskView)[group]
+  const masks: string[] = []
+  const append = (value: unknown) => {
+    if (typeof value !== 'string') return
+    for (const line of value.split('\n')) {
+      const trimmed = line.trim()
+      if (trimmed && !masks.includes(trimmed)) masks.push(trimmed)
+    }
+  }
+  append(credential?.[field])
+  // Grouped credentials store one key (or one newline-separated key list) per
+  // slot. Reading only the top-level api_key makes a settings-only deployment
+  // look empty and blocks the wizard's "leave blank to reuse saved key" path.
+  if (field === 'api_key') {
+    for (const slot of credential?.slots ?? []) append(slot?.api_key)
+  }
+  return masks
 }
 
 /** 保留原调用名：Uter.api（优特订阅）已存密钥掩码。 */
