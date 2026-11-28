@@ -51,7 +51,7 @@ func TestUterAPIEffectiveBaseURLPrefersSystemSettings(t *testing.T) {
 	common.OptionMapRWMutex.Lock()
 	previous := common.OptionMap
 	common.OptionMap = map[string]string{
-		UterAPIUpstreamURLOption:               "https://legacy-uterapi.test",
+		UterAPIUpstreamURLOption:                "https://legacy-uterapi.test",
 		ChannelProviderSubscriptionAPIURLOption: "https://settings-uterapi.test",
 	}
 	common.OptionMapRWMutex.Unlock()

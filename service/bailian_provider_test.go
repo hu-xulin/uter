@@ -302,7 +302,7 @@ func TestBailianCombinedAndPageUnitPricesBecomeExecutable(t *testing.T) {
 	price := func(priceType, unit string) []BailianPriceRange {
 		return []BailianPriceRange{{
 			RangeName: "Default",
-			Prices: []BailianPrice{{Type: priceType, Price: "7.3", PriceUnit: unit, TimeBand: "standard"}},
+			Prices:    []BailianPrice{{Type: priceType, Price: "7.3", PriceUnit: unit, TimeBand: "standard"}},
 		}}
 	}
 	catalog := &BailianCatalog{

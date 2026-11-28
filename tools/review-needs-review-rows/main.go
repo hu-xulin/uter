@@ -23,7 +23,7 @@ import (
 )
 
 type output struct {
-	Inspection service.NeedsReviewInspection `json:"inspection"`
+	Inspection service.NeedsReviewInspection           `json:"inspection"`
 	Applied    *service.BailianCrossCheckRejudgeResult `json:"applied,omitempty"`
 }
 
