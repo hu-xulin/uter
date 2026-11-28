@@ -10,6 +10,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -27,6 +28,30 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+// controllerBackgroundTasks tracks the short-lived goroutines started by
+// channel CRUD. Tests replace the global database between cases; without a
+// way to join these tasks, an async price refresh from the previous case can
+// keep writing to a database that the next case has already closed. The
+// tracker preserves production behaviour (the work remains asynchronous)
+// while making the lifecycle observable to tests.
+type controllerBackgroundTaskTracker struct {
+	inFlight atomic.Int64
+}
+
+var controllerBackgroundTasks controllerBackgroundTaskTracker
+
+func goControllerTask(fn func()) {
+	controllerBackgroundTasks.inFlight.Add(1)
+	go func() {
+		defer controllerBackgroundTasks.inFlight.Add(-1)
+		fn()
+	}()
+}
+
+func (t *controllerBackgroundTaskTracker) active() int {
+	return int(t.inFlight.Load())
+}
 
 type OpenAIModel struct {
 	ID         string         `json:"id"`
@@ -660,6 +685,12 @@ func validateChannel(channel *model.Channel, isAdd bool) error {
 			)
 		}
 	}
+	if channel.Type == constant.ChannelTypeAli && strings.TrimSpace(channel.GetBaseURL()) == "" {
+		// Without a workspace endpoint the sync resolves to an Unspecified
+		// region and silently produces zero price rows, leaving a channel that
+		// can be enabled but never bills correctly.
+		return fmt.Errorf("Alibaba Bailian base URL cannot be empty")
+	}
 
 	// 校验 channel settings
 	if err := channel.ValidateSettings(); err != nil {
@@ -932,6 +963,15 @@ func AddChannel(c *gin.Context) {
 		return
 	}
 
+	// Uter.api channels created through the generic endpoint must start in the
+	// same pending, disabled state as the dedicated wizard. Without this they
+	// are inserted with GORM's enabled default and can be routed before any
+	// channel-scoped price exists.
+	if addChannelRequest.Channel.Type == constant.ChannelTypeUterAPI {
+		settings := addChannelRequest.Channel.GetOtherSettings()
+		settings.PricingMode = dto.ChannelPricingModeScopedPending
+		addChannelRequest.Channel.SetOtherSettings(settings)
+	}
 	addChannelRequest.Channel.CreatedTime = common.GetTimestamp()
 	keys := make([]string, 0)
 	inputIndices := make([]int, 0)
@@ -1028,6 +1068,29 @@ func AddChannel(c *gin.Context) {
 			results = append(results, gin.H{"input_index": inputIndex, "channel_id": channel.Id})
 		}
 	}
+	// A generic type-64 create has no price gate of its own. Force the freshly
+	// inserted rows into the disabled pending state, then let the same pricing
+	// gate the wizard uses verify and enable them. An upstream failure leaves
+	// the channel disabled instead of exposing a free route.
+	uterAPIIDs := make([]int, 0, len(ids))
+	for i, created := range channels {
+		if created.Type != constant.ChannelTypeUterAPI || ids[i] <= 0 {
+			continue
+		}
+		if err := model.DB.Model(&model.Channel{}).Where("id = ?", ids[i]).
+			Update("status", 0).Error; err != nil {
+			common.SysError(common.LogText("disable new Uter.api channel failed: channel_id=%d, error=%v", ids[i], err))
+		}
+		if err := model.UpdateAbilityStatus(ids[i], false); err != nil {
+			common.SysError(common.LogText("disable new Uter.api abilities failed: channel_id=%d, error=%v", ids[i], err))
+		}
+		uterAPIIDs = append(uterAPIIDs, ids[i])
+	}
+	if len(uterAPIIDs) > 0 {
+		goControllerTask(func() {
+			syncUterAPIPricingAfterGenericCreate(c.Request.Context(), uterAPIIDs, addChannelRequest.Channel.Group)
+		})
+	}
 	data := gin.H{"ids": ids, "results": results}
 	if len(ids) == 1 {
 		data["id"] = ids[0]
@@ -1042,7 +1105,10 @@ func AddChannel(c *gin.Context) {
 	syncUpstreamMonitorForChannels(ids)
 	for i, channel := range channels {
 		if channel.Type == constant.ChannelTypeAli && ids[i] > 0 {
-			go syncBailianAfterCreate(ids[i])
+			channelID := ids[i]
+			goControllerTask(func() {
+				syncBailianAfterCreate(channelID)
+			})
 		}
 	}
 	return
@@ -1520,18 +1586,73 @@ func UpdateChannel(c *gin.Context) {
 			return
 		}
 	}
+	// A verified Uter.api channel is bound to the key, endpoint and alias set
+	// that produced its price rows. Changing any of them invalidates that
+	// verification: park the channel in the pending state until the edit path
+	// has re-fetched and re-checked every served model.
+	var uterAPIEditPending bool
+	var uterAPIEditRestoreStatus int
+	if keptType == constant.ChannelTypeUterAPI && channel.Id > 0 &&
+		!originChannel.GetOtherSettings().Draft &&
+		uterAPIPricingInputsChanged(&channel, originChannel, requestData) {
+		uterAPIEditPending = true
+		uterAPIEditRestoreStatus = originChannel.Status
+		settings := originChannel.GetOtherSettings()
+		if settingsProvided {
+			settings = channel.GetOtherSettings()
+		}
+		settings.PricingMode = dto.ChannelPricingModeScopedPending
+		channel.SetOtherSettings(settings)
+	}
 	err = channel.Update()
 	if err != nil {
 		common.ApiError(c, err)
 		return
 	}
 	model.InitChannelCache()
+	if uterAPIEditPending {
+		// Status is a read-only request field, so the normal update cannot
+		// disable the channel. Force the same unverified state used by create.
+		if err := model.DB.Model(&model.Channel{}).Where("id = ?", channel.Id).
+			Update("status", 0).Error; err != nil {
+			common.SysError(common.LogText("disable Uter.api channel for price re-verification failed: channel_id=%d, error=%v", channel.Id, err))
+		}
+		if err := model.UpdateAbilityStatus(channel.Id, false); err != nil {
+			common.SysError(common.LogText("disable Uter.api abilities for price re-verification failed: channel_id=%d, error=%v", channel.Id, err))
+		}
+		goControllerTask(func() {
+			syncUterAPIPricingAfterEdit(c.Request.Context(), channel.Id, uterAPIEditRestoreStatus)
+		})
+	}
 	if proxyChanged {
 		service.InvalidateProxyClient(originProxy)
 	}
 	// Re-read the persisted channel (the request object has its key cleared)
 	// so the monitor snapshot mirrors the exact stored parameters.
 	syncUpstreamMonitorForChannels([]int{channel.Id})
+	// Editing a Bailian channel can add task-plugin models that are absent from
+	// the workspace model list. Re-price the saved model list without changing
+	// it, so plugin extensions get official/channel prices immediately.
+	if keptType == constant.ChannelTypeAli && channel.Id > 0 {
+		goControllerTask(func() {
+			syncBailianPricingAfterUpdate(channel.Id)
+		})
+	}
+	// Editing a Uter Route channel can change its batch model_mapping. Price
+	// rows are keyed by the request alias the relay bills against, so a new
+	// alias must inherit the upstream price before the edit becomes effective.
+	// PublishChannelDraft does the same for drafts, but edits never pass through
+	// that gate and used to leave every renamed model unpriced.
+	if keptType == constant.ChannelTypeUterRoute && channel.Id > 0 {
+		created, unresolved, aliasErr := service.EnsureRedirectAliasPricing(channel.Id)
+		if aliasErr != nil {
+			common.SysError(common.LogText("Uter Route alias pricing after edit failed: channel_id=%d, error=%v", channel.Id, aliasErr))
+		} else if len(unresolved) > 0 {
+			common.SysError(common.LogText("Uter Route alias pricing after edit unresolved: channel_id=%d, aliases=%s", channel.Id, strings.Join(unresolved, ",")))
+		} else if created > 0 {
+			model.InitChannelCache()
+		}
+	}
 	// 记录变更的字段名（语言无关的字段标识），密钥仅记录"已更换"绝不记录内容。
 	changedFields := make([]string, 0)
 	if channel.Models != originChannel.Models {

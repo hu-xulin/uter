@@ -258,7 +258,9 @@ func ApplyBailianCatalog(c *gin.Context) {
 	if pricingErr != nil {
 		common.SysError("persist bailian channel pricing: " + pricingErr.Error())
 	}
-	go syncLocalizedDescriptions(context.Background(), channel.GetModels())
+	goControllerTask(func() {
+		syncLocalizedDescriptions(context.Background(), channel.GetModels())
+	})
 	_ = service.UpdateBailianSyncStatus(channel.Id, func(status *service.BailianSyncStatus) {
 		status.MatchedModels = result.MatchedModels
 		status.UnmatchedModels = result.UnmatchedModels
@@ -415,7 +417,9 @@ func syncBailianAfterCreate(channelID int) {
 		status.PricingRecords = records
 		mark("apply_prices", "ok", "")
 	}
-	go syncLocalizedDescriptions(context.Background(), channel.GetModels())
+	goControllerTask(func() {
+		syncLocalizedDescriptions(context.Background(), channel.GetModels())
+	})
 	status.MatchedModels = result.MatchedModels
 	status.UnmatchedModels = result.UnmatchedModels
 	if result.Metadata != nil {

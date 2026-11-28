@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
@@ -57,8 +58,19 @@ func setupModelListControllerTestDB(t *testing.T) *gorm.DB {
 			_ = sqlDB.Close()
 		}
 	})
+	// Cleanups run in reverse order: join asynchronous channel sidecars before
+	// this case's database is closed and before the next case replaces model.DB.
+	t.Cleanup(func() { waitForControllerBackgroundTasks(t) })
 
 	return db
+}
+
+func waitForControllerBackgroundTasks(t *testing.T) {
+	t.Helper()
+	require.Eventually(t, func() bool {
+		return controllerBackgroundTasks.active() == 0
+	}, 60*time.Second, 10*time.Millisecond,
+		"controller background tasks did not finish before test cleanup")
 }
 
 func initModelListColumnNames(t *testing.T) {
