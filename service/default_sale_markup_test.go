@@ -124,3 +124,53 @@ func TestDefaultSaleMarkupAppliedOnceInProductionPaths(t *testing.T) {
 	require.True(t, applyDefaultSaleMarkup(&pricing))
 	assert.Equal(t, "2.2", pricing.InputUSDPerMillion.String())
 }
+
+// Bailian video models (e.g. HappyHorse) express per-second prices as
+// `u("seconds") * (u("resolution") == ... ? 0.16 : ...)`. The price literals
+// sit in ternary branches, not behind an identifier `*`, so the token/duration
+// coefficient regexes do not see them. Without scaling them the default markup
+// fails closed and the model is left with no internal price (bills zero).
+func TestScaleBillingExprByFactorSecondsResolutionBranches(t *testing.T) {
+	const expr = `tier("bailian-video", u("seconds") * (u("resolution") == "1080P" ? 0.165026 : u("resolution") == "720P" ? 0.123769 : 0.0618845))`
+	scaled, ok := scaleBillingExprByFactor(expr, 1.1)
+	require.True(t, ok, "seconds-resolution price expression must be scalable")
+	require.NotEqual(t, expr, scaled)
+
+	in1080 := billingexpr.RequestInput{Usage: map[string]any{"seconds": 3.0, "resolution": "1080P"}}
+	in720 := billingexpr.RequestInput{Usage: map[string]any{"seconds": 3.0, "resolution": "720P"}}
+	for _, in := range []billingexpr.RequestInput{in1080, in720} {
+		base, _, baseErr := billingexpr.RunExprWithRequest(expr, billingexpr.TokenParams{}, in)
+		got, _, gotErr := billingexpr.RunExprWithRequest(scaled, billingexpr.TokenParams{}, in)
+		require.NoError(t, baseErr)
+		require.NoError(t, gotErr)
+		assert.InDelta(t, base*1.1, got, 1e-6, "scaled=%s", scaled)
+	}
+}
+
+// TestBailianVideoSaleMarkupEndToEnd covers the full chain that previously
+// billed zero: official per-second rates -> normalized view -> internal expr
+// -> default markup. The markup must scale the enabled internal pricing so
+// SeedBailianInternalPricing writes a billable price instead of failing closed.
+func TestBailianVideoSaleMarkupEndToEnd(t *testing.T) {
+	catalog := &BailianCatalog{
+		Region: BailianRegionBeijing,
+		Models: []BailianModel{{Model: "happyhorse-1.1-t2v"}},
+	}
+	applyHappyhorseOfficialPricing(catalog)
+	view := bailianOfficialPricing(catalog.Models[0], BailianRegionBeijing, 7.2, 1700000000)
+	encoded := bailianInternalPricing(view)
+	require.NotEmpty(t, encoded, "injected rates must produce internal pricing")
+
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(encoded, &pricing))
+	require.NotEmpty(t, pricing.BillingExpr, "per-second tier expression expected")
+
+	in720 := billingexpr.RequestInput{Usage: map[string]any{"seconds": 3.0, "resolution": "720P"}}
+	base, _, err := billingexpr.RunExprWithRequest(pricing.BillingExpr, billingexpr.TokenParams{}, in720)
+	require.NoError(t, err)
+	require.Greater(t, base, 0.0)
+	require.True(t, applyDefaultSaleMarkup(&pricing), "default markup must accept the per-second expression")
+	got, _, err := billingexpr.RunExprWithRequest(pricing.BillingExpr, billingexpr.TokenParams{}, in720)
+	require.NoError(t, err)
+	assert.InDelta(t, base*DefaultUterSaleMarkup, got, 1e-6, "scaled=%s", pricing.BillingExpr)
+}

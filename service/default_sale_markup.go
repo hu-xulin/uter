@@ -43,6 +43,64 @@ var defaultUterSaleMarkupDecimal = decimal.RequireFromString("1.10")
 // in "1e-5") and leave a partially scaled expression behind.
 var uterRouteScientificNotation = regexp.MustCompile(`[0-9]+(?:\.[0-9]+)?[eE][+-]?[0-9]+`)
 
+// Task-usage billing expressions for Bailian video models put the per-second
+// USD price inside a ternary chain that is the right operand of `u("seconds") *`:
+//
+//	u("seconds") * (u("resolution") == "1080P" ? 0.165026 : u("resolution") == "720P" ? 0.123769 : 0.0618845)
+//
+// The literals following ?/:/ are real prices here, unlike the bare discount
+// multipliers deliberately left alone by the unit-coefficient pass. This
+// regex is anchored to the `u("seconds") * (` prefix so no other ternary
+// constant in the expression can be touched.
+var usageSecondsMultiplyPrefix = regexp.MustCompile(`u\(\s*"seconds"\s*\)\s*\*\s*\(`)
+var usageTernaryPriceLiteral = regexp.MustCompile(`([?:]\s*)([0-9]+(?:\.[0-9]+)?)`)
+
+// scaleUsageSecondsPriceBranches scales only the ternary price literals under
+// a `u("seconds") * (...)` operand. It returns false when either the operand
+// is absent or its parentheses are unbalanced, so callers fail closed instead
+// of rewriting a partially parsed expression.
+func scaleUsageSecondsPriceBranches(expr string, factor float64) (string, bool) {
+	locations := usageSecondsMultiplyPrefix.FindAllStringIndex(expr, -1)
+	if len(locations) == 0 {
+		return expr, false
+	}
+	var builder strings.Builder
+	last := 0
+	scaledAny := false
+	for _, location := range locations {
+		depth := 1
+		end := location[1]
+		for end < len(expr) && depth > 0 {
+			switch expr[end] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+			}
+			end++
+		}
+		if depth != 0 {
+			return expr, false
+		}
+		inner := expr[location[1] : end-1]
+		newInner := usageTernaryPriceLiteral.ReplaceAllStringFunc(inner, func(term string) string {
+			match := usageTernaryPriceLiteral.FindStringSubmatch(term)
+			value, err := strconv.ParseFloat(match[2], 64)
+			if err != nil {
+				return term
+			}
+			scaledAny = true
+			return match[1] + strconv.FormatFloat(roundRatioValue(value*factor), 'f', -1, 64)
+		})
+		builder.WriteString(expr[last:location[1]])
+		builder.WriteString(newInner)
+		builder.WriteString(")")
+		last = end
+	}
+	builder.WriteString(expr[last:])
+	return builder.String(), scaledAny
+}
+
 // scaleBillingExprByFactor multiplies every price coefficient in an upstream
 // billing expression by factor, preserving the complete tier structure.
 //
@@ -97,6 +155,11 @@ func scaleBillingExprByFactor(expr string, factor float64) (string, bool) {
 		}
 		return "(" + match[1] + ") * " + scaledValue
 	})
+	// Task-usage prices (`u("seconds") * (ternary resolution prices)`) have no
+	// identifier or fixed() coefficient for the passes above. Scale only the
+	// price literals inside that operand; conditions and thresholds stay put.
+	scaled, usageScaled := scaleUsageSecondsPriceBranches(scaled, factor)
+	scaledAny = scaledAny || usageScaled
 	// Scale per-unit token coefficients in place. A bare request quantity such
 	// as `tier(...) * image_count` has no numeric coefficient and is left
 	// untouched; `image_count * 5` is a per-image price and must be scaled.
