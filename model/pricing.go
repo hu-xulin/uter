@@ -441,7 +441,13 @@ func loadChannelInternalPrices(abilities []AbilityWithChannel) (map[string]chann
 		if !enabled {
 			continue
 		}
-		if strings.TrimSpace(row.InternalPricing) == "" {
+		// A needs_review row is not billable even when an older sync left an
+		// internal price behind (batch/operator-owned rows are preserved in the
+		// database). The shared billing gate already rejects it; the pricing
+		// display must apply the same rule or the card would advertise a price
+		// that billing will refuse.
+		if strings.TrimSpace(row.InternalPricing) == "" ||
+			row.PricingStatus == ChannelPricingStatusNeedsReview {
 			if row.PricingStatus == ChannelPricingStatusConfigured {
 				continue
 			}

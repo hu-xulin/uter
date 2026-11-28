@@ -541,10 +541,17 @@ function getDynamicInputPriceUSD(model: PricingModel): number | null {
 function getTaskPerSecondUSD(model: PricingModel): number | null {
   const expression = model.billing_expr
   if (!expression) return null
+  // 与后端 `service/uterroute_pricing_expr.go` 的 `uterRouteExprDurationTerm`
+  // 逐字同口径：`(…duration…) * <单价>` 与裸 `duration * <单价>` 都要匹配。
+  // 上游 2026-11 起把括号省掉（MiniMax-H3 / H3-Max 的真实表达式即裸写法），
+  // 只认带括号形式会让这些模型的按秒单价解析失败、角标静默消失；而价格行
+  // 走另一条路径仍能显示折扣，于是卡片上就出现「有 -45% 却没角标」的分叉。
   const durationTerm =
-    /\(([^()]*\bduration\b[^()]*)\)\s*\*\s*([0-9]+(?:\.[0-9]+)?)/g
+    /(?:\(([^()]*\bduration\b[^()]*)\)|\bduration\b)\s*\*\s*([0-9]+(?:\.[0-9]+)?)/g
   let perSecond: number | null = null
   for (const match of expression.matchAll(durationTerm)) {
+    // 带括号写法：group 1 是括号内容，单价在 group 2；裸写法没有 group 1，
+    // 单价同样落在 group 2。两种形态共用 group 2，与后端取 match[2] 一致。
     const value = Number(match[2])
     if (Number.isFinite(value) && value > 0) perSecond = value
   }

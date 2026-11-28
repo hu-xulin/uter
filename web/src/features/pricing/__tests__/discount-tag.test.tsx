@@ -200,6 +200,57 @@ describe('DiscountTag', () => {
   })
 
   /**
+   * 回归背景（2026-11-28 用户反馈）：MiniMax-H3 / MiniMax-H3-Max 卡片价格行有
+   * -45%，但模型名后没有角标。上游 2026-11 起把按秒表达式写成裸
+   * `duration * <单价>`（省略括号），后端解析器已同时支持两种写法，前端
+   * getTaskPerSecondUSD 却只认带括号形式，按秒单价解析失败后角标静默消失。
+   * 这里用真实表达式与官方秒价锁住修复，并校验角标倍率与价格行一致。
+   */
+  it.each([
+    {
+      name: 'MiniMax-H3',
+      expr: 'has(lower(param("metadata.parameters.resolution")), "2k") || has(lower(param("metadata.resolution")), "2k") || has(lower(param("size")), "2k") ? tier("2k", duration * 0.0656716419) : tier("768p", duration * 0.0410447762)',
+    },
+    {
+      name: 'MiniMax-H3-Max',
+      expr: 'has(lower(param("metadata.parameters.resolution")), "480") || has(lower(param("metadata.resolution")), "480") || has(lower(param("size")), "480") ? tier("480p", duration * 0.0270895523) : tier("768p", duration * 0.0410447762)',
+    },
+  ])(
+    'renders the per-second badge for bare-duration model $name',
+    ({ name, expr }) => {
+      // 完全复刻接口真实下发：model_ratio=0、default 分组倍率=1、裸 duration
+      // 兜底档 0.0410447762、官方秒价 0.0746268657。future 若把倍率做进 group_ratio，
+      // 本用例会失去对裸 duration 解析的覆盖，因此刻意保持真实字段形态。
+      const perSecondModel = pricingModel({
+        model_name: name,
+        model_ratio: 0,
+        model_price: 0,
+        billing_mode: 'tiered_expr',
+        billing_expr: expr,
+        billing_usage_schema: {
+          seconds: { type: 'number', unit: 'second' },
+          resolution: { type: 'string', enum: ['480P', '768P', '2K'] },
+        },
+        enable_groups: ['default'],
+        group_ratio: { default: 1 },
+      })
+      render(
+        <DiscountTag
+          model={perSecondModel}
+          officialPrices={{
+            [name]: { official_price_per_second: 0.0746268657 },
+          }}
+          selectedGroup='default'
+        />
+      )
+      // 兜底档 0.0410447762 / 官方 0.0746268657 ≈ 0.55 → x0.55 / -45%。
+      const badge = screen.getByText('x0.55')
+      expect(badge).toBeVisible()
+      expect(badge).toHaveAttribute('title', '-45%')
+    }
+  )
+
+  /**
    * 没有官方秒价时不得退化成拿 model_ratio 硬比（那会重现 ×586 的荒谬值）。
    */
   it('never falls back to the token ratio for a per-second model without an official per-second price', () => {

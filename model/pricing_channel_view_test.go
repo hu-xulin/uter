@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -33,6 +34,7 @@ func TestPricingChannelViewsShareOnePriceContract(t *testing.T) {
 	// while the channel filter shows the real discounted channel expression.
 	insertPricingEndpointAbility(t, 1234, "gpt-6-astra")
 	insertPricingEndpointAbility(t, 1234, "review-model")
+	insertPricingEndpointAbility(t, 1234, "review-model-with-stale-price")
 	insertPricingEndpointAbility(t, 1234, "token-model")
 
 	encodedExpr, err := common.Marshal(ChannelInternalPricing{
@@ -55,6 +57,23 @@ func TestPricingChannelViewsShareOnePriceContract(t *testing.T) {
 		Provider:      "uterroute",
 		ModelName:     "review-model",
 		PricingStatus: ChannelPricingStatusNeedsReview,
+	}).Error)
+	// Batch-synced review rows may still carry a stale internal price in the
+	// database. The pricing view must ignore it just like an empty review row.
+	staleReviewPrice, err := common.Marshal(ChannelInternalPricing{
+		Mode:                ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  MoneyFromFloatPtr(float64Ptr(1)),
+		OutputUSDPerMillion: MoneyFromFloatPtr(float64Ptr(4)),
+		Source:              "batch",
+	})
+	require.NoError(t, err)
+	require.NoError(t, DB.Create(&ChannelModelPricing{
+		ChannelId:         1234,
+		Provider:          "uterroute",
+		ModelName:         "review-model-with-stale-price",
+		InternalPricing:   string(staleReviewPrice),
+		NormalizedPricing: normalized,
+		PricingStatus:     ChannelPricingStatusNeedsReview,
 	}).Error)
 	encodedToken, err := common.Marshal(ChannelInternalPricing{
 		Mode:                     ChannelPricingModePerMillionTokens,
@@ -119,6 +138,63 @@ func TestPricingChannelViewsShareOnePriceContract(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, -1, reviewEntry.QuotaType)
 	assert.Equal(t, ChannelPricingStatusNeedsReview, reviewEntry.Status, "review status must reach the channel view")
+
+	staleReview := byName["review-model-with-stale-price"]
+	staleEntry, ok := staleReview.ChannelPrices["优特精选"]
+	require.True(t, ok)
+	assert.Equal(t, -1, staleEntry.QuotaType, "a review row's stale internal price must not become billable")
+	assert.Zero(t, staleEntry.ModelRatio)
+	assert.Equal(t, ChannelPricingStatusNeedsReview, staleEntry.Status)
+}
+
+func TestPricingTopLevelUsesBestConfiguredChannelPriceView(t *testing.T) {
+	resetPricingEndpointTestTables(t)
+	require.NoError(t, DB.AutoMigrate(&ChannelModelPricing{}))
+	for _, channel := range []struct {
+		id   int
+		name string
+	}{
+		{1401, "渠道 A"},
+		{1402, "渠道 B"},
+	} {
+		require.NoError(t, DB.Create(&Channel{
+			Id: channel.id, Type: constant.ChannelTypeUterRoute,
+			Key: fmt.Sprintf("key-%d", channel.id), Status: common.ChannelStatusEnabled,
+			Name: channel.name,
+		}).Error)
+		insertPricingEndpointAbility(t, channel.id, "best-channel-price-model")
+	}
+	encoded := func(input, output float64) string {
+		raw, err := common.Marshal(ChannelInternalPricing{
+			Mode:                ChannelPricingModePerMillionTokens,
+			InputUSDPerMillion:  MoneyFromFloatPtr(float64Ptr(input)),
+			OutputUSDPerMillion: MoneyFromFloatPtr(float64Ptr(output)),
+			Source:              "uterroute-discount",
+		})
+		require.NoError(t, err)
+		return string(raw)
+	}
+	for _, row := range []ChannelModelPricing{
+		{ChannelId: 1401, Provider: "uterroute", ModelName: "best-channel-price-model",
+			InternalPricing: encoded(2, 8), PricingStatus: ChannelPricingStatusConfigured},
+		{ChannelId: 1402, Provider: "uterroute", ModelName: "best-channel-price-model",
+			InternalPricing: encoded(1, 4), PricingStatus: ChannelPricingStatusConfigured},
+	} {
+		require.NoError(t, DB.Create(&row).Error)
+	}
+	InvalidatePricingCache()
+
+	byName := map[string]Pricing{}
+	for _, pricing := range GetPricing() {
+		byName[pricing.ModelName] = pricing
+	}
+	pricing, ok := byName["best-channel-price-model"]
+	require.True(t, ok)
+	require.Len(t, pricing.ChannelPrices, 2)
+	assert.Equal(t, "渠道 B", pricing.ChannelPriceName)
+	assert.Equal(t, 0.5, pricing.ModelRatio)
+	assert.Equal(t, 0.5, pricing.ChannelPrices["渠道 B"].ModelRatio)
+	assert.Equal(t, 1.0, pricing.ChannelPrices["渠道 A"].ModelRatio)
 }
 
 func float64Ptr(v float64) *float64 {

@@ -71,6 +71,35 @@ func TestCrossCheckOfficialPriceAgainstSynchronizedPricing(t *testing.T) {
 	require.Empty(t, reason)
 }
 
+func TestSynchronizedBaselineDropsAmbiguousNormalizedNames(t *testing.T) {
+	entry := func(name string, ratio float64) ModelPricingEntry {
+		return ModelPricingEntry{
+			ModelName: name,
+			ModelPricingDescription: ModelPricingDescription{
+				Effective: PricingValues{"ModelRatio": ratio},
+			},
+		}
+	}
+	baseline, conflicts := buildSynchronizedOfficialBaseline([]ModelPricingEntry{
+		entry("DeepSeek-V4-1-Flash-fast", 0.125),
+		entry("DeepSeek-V4-1-Flash-Fast", 0.3),
+		entry("stable-model", 1),
+		// 同一价格的不同写法不是冲突，仍可安全比较。
+		entry("alias-one", 2),
+		entry("alias-one-variant", 2),
+	})
+	require.Len(t, conflicts, 1, "the conflicting alias pair must be reported once")
+
+	_, ambiguous := baseline[normalizeModelMatchName("DeepSeek-V4-1-Flash-fast")]
+	require.False(t, ambiguous, "conflicting normalized names must not resolve to an arbitrary first row")
+	stable, ok := baseline[normalizeModelMatchName("stable-model")]
+	require.True(t, ok)
+	require.InDelta(t, 2.0, stable.Input, 1e-9)
+	alias, ok := baseline[normalizeModelMatchName("alias-one")]
+	require.True(t, ok, "identical duplicate prices are not ambiguous")
+	require.InDelta(t, 4.0, alias.Input, 1e-9)
+}
+
 func TestSynchronizedPricingBaselineUsesRatioOptions(t *testing.T) {
 	withSynchronizedPricing(t, map[string]map[string]any{
 		"ModelRatio":       {"claude-fable-5-1": 5.0},
@@ -245,6 +274,93 @@ func TestCrossCheckOfficialPriceConvertsCNYWithExchangeRate(t *testing.T) {
 	view.Tiers[0].InputPerMillionUSD = moneyFromFloat(80)
 	reason, ok = crossCheckOfficialPrice(view, "cny-model", baseline)
 	require.False(t, ok)
+	require.Contains(t, reason, "input price")
+}
+
+func TestCrossCheckOfficialPriceRateSnapshotDriftIsNotDisagreement(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 6.67
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	// 同步定价系数是旧汇率(约 6.975)冻结的 USD 值：54 CNY / 6.975 = 7.742 USD。
+	// 百炼官网价以当前汇率 6.67 折算：54 CNY / 6.67 = 8.096 USD。两者同源，
+	// 仅汇率快照不同，不应判为价格分歧。
+	baseline := map[string]synchronizedOfficialPrice{
+		"qwen:deep:research": {Input: 7.742, Output: 23.367},
+	}
+	officialList := ChannelOfficialPricing{
+		Unit: "per_1m_token", SourceCurrency: "CNY", NormalizedCurrency: "USD", FXRateToUSD: 6.67,
+		PriceKind: "OFFICIAL_LIST", Source: "https://help.aliyun.com/zh/model-studio/model-pricing",
+		Tiers: []ChannelPricingTier{{
+			InputPerMillionUSD: moneyFromFloat(54 / 6.67), OutputPerMillionUSD: moneyFromFloat(163 / 6.67),
+			RawComponents: []ChannelPricingRawComponent{{
+				Type: "input_token", RawAmount: *moneyFromFloat(54), RawCurrency: "CNY",
+				SourceCurrency: "CNY", NormalizedUSD: *moneyFromFloat(54 / 6.67), FXRate: 6.67,
+			}},
+		}},
+	}
+	reason, ok := crossCheckOfficialPrice(officialList, "qwen-deep-research", baseline)
+	require.True(t, ok, "authoritative official list price must not be flagged; got %q", reason)
+	require.Empty(t, reason)
+
+	// 缺少官方来源 URL 的派生价仍必须严格比对、fail-closed。
+	noURL := officialList
+	noURL.Source = "bailian-channel"
+	reason, ok = crossCheckOfficialPrice(noURL, "qwen-deep-research", baseline)
+	require.False(t, ok, "derived price without official URL keeps strict comparison")
+	require.Contains(t, reason, "input price")
+
+	// UterRoute 参考价（BILLING_EXPRESSION）即使数值相同也不得借豁免绕过门禁。
+	billingExpr := officialList
+	billingExpr.PriceKind = "BILLING_EXPRESSION"
+	reason, ok = crossCheckOfficialPrice(billingExpr, "qwen-deep-research", baseline)
+	require.False(t, ok, "billing-expression price keeps strict comparison")
+}
+
+func TestCrossCheckOfficialPriceUterRoutePriceIsDifferentMeasure(t *testing.T) {
+	// UterRoute 的官方价来自上游原价/表达式系数/比值重建，而 baseline 是
+	// 管理员「同步定价」的 Uter 售卖价。二者允许有意加价或汇率快照不同，
+	// 不能因为数值不等就判成价格分歧。
+	baseline := map[string]synchronizedOfficialPrice{
+		"deepseek:v4:flash:0731": {Input: 0.44},
+	}
+	cases := []struct {
+		name      string
+		priceKind string
+		source    string
+	}{
+		{"expression", "BILLING_EXPRESSION", "uterroute-expression"},
+		{"ratio reference", "RATIO_ONLY", "uterroute-ratio-reference"},
+		{"historical snapshot", "HISTORICAL_SNAPSHOT", "uterroute-historical-snapshot"},
+		{"official api", "OFFICIAL_ABSOLUTE", "uterroute-official-api"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			view := ChannelOfficialPricing{
+				PriceKind: tc.priceKind,
+				Source:    tc.source,
+				Tiers: []ChannelPricingTier{{
+					Unit:               "per_1m_token",
+					InputPerMillionUSD: moneyFromFloat(0.445),
+				}},
+			}
+			reason, ok := crossCheckOfficialPrice(view, "deepseek-v4-flash-0731", baseline)
+			require.True(t, ok, "UterRoute %s is a different measure; got %q", tc.priceKind, reason)
+			require.Empty(t, reason)
+		})
+	}
+
+	// 非 UterRoute 的派生价没有官方来源证明，仍必须与同步定价严格比对。
+	derived := ChannelOfficialPricing{
+		PriceKind: "BILLING_EXPRESSION",
+		Source:    "generic-channel",
+		Tiers: []ChannelPricingTier{{
+			Unit:               "per_1m_token",
+			InputPerMillionUSD: moneyFromFloat(0.445),
+		}},
+	}
+	reason, ok := crossCheckOfficialPrice(derived, "deepseek-v4-flash-0731", baseline)
+	require.False(t, ok, "derived non-UterRoute price keeps strict comparison")
 	require.Contains(t, reason, "input price")
 }
 

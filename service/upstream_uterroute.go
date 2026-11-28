@@ -124,19 +124,27 @@ const UterRouteUpstreamURLOption = "UterRouteUpstreamBaseURL"
 // (`common.QuotaPerUnit = 500000`, i.e. $2/1M at ratio 1), so the reconstructed
 // price equals what the gateway actually charges, not a guess.
 //
-// Authorized by default (2026-11-25 operator decision); setting the option to
-// the exact value "false" restores the fail-closed review gate. The flag only
-// affects reference rows — it never rewrites an operator-entered price, an
-// expression price, or any other option, and `NO_UPSTREAM_DISCOUNT` and other
-// hard gates remain in force.
+// Authorized by default (2026-11-25 operator decision); an explicit recognized
+// truthy value keeps that authorization and an explicit falsy value restores
+// the fail-closed review gate. Any unrecognized value is treated as a
+// configuration error and fails closed rather than silently authorizing
+// reconstructed prices. The flag only affects reference rows — it never
+// rewrites an operator-entered price, an expression price, or any other option,
+// and `NO_UPSTREAM_DISCOUNT` and other hard gates remain in force.
 const UterRouteReferencePriceBillingOption = "UterRouteReferencePriceBillingAuthorized"
 
 // uterRouteReferencePriceBillingAuthorized reports whether billing from
-// ratio-derived / historical reference prices is authorized. Enabled unless
-// the operator explicitly sets the option to "false".
+// ratio-derived / historical reference prices is authorized. The documented
+// default is enabled; only an explicitly recognized value may change it.
 func uterRouteReferencePriceBillingAuthorized() bool {
 	value := strings.ToLower(strings.TrimSpace(common.GetOption(UterRouteReferencePriceBillingOption)))
-	return value != "false" && value != "0"
+	switch value {
+	case "", "1", "true", "yes", "on":
+		return true
+	default:
+		// Includes false/0/no/off and any typo: fail closed on ambiguity.
+		return false
+	}
 }
 
 // UterRouteUpstreamBaseURL returns the configured endpoint or "" when the

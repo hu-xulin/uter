@@ -124,22 +124,125 @@ func synchronizedOfficialBaseline() map[string]synchronizedOfficialPrice {
 	if err != nil || snapshot == nil {
 		return nil
 	}
-	baseline := make(map[string]synchronizedOfficialPrice, len(snapshot.Entries))
-	for _, entry := range snapshot.Entries {
-		key := normalizeModelMatchName(entry.ModelName)
-		if key == "" {
-			continue
+	baseline, conflicts := buildSynchronizedOfficialBaseline(snapshot.Entries)
+	if len(conflicts) > 0 {
+		shown := conflicts
+		if len(shown) > 10 {
+			shown = shown[:10]
 		}
-		if _, exists := baseline[key]; exists {
+		common.SysLog(common.LogText(
+			"skipped %d ambiguous synchronized pricing baseline names (normalized aliases disagree): %s",
+			len(conflicts), strings.Join(shown, ", "),
+		))
+	}
+	return baseline
+}
+
+// buildSynchronizedOfficialBaseline is the DB-free baseline builder. Names that
+// normalize to the same key but carry different prices are dropped entirely:
+// silently taking the first row made the cross-check depend on option ordering
+// and could compare a channel price against an obsolete alias. Identical
+// duplicates are harmless and keep the baseline entry.
+func buildSynchronizedOfficialBaseline(entries []ModelPricingEntry) (map[string]synchronizedOfficialPrice, []string) {
+	baseline := make(map[string]synchronizedOfficialPrice, len(entries))
+	ambiguous := make(map[string]bool)
+	conflicts := make([]string, 0)
+	for _, entry := range entries {
+		key := normalizeModelMatchName(entry.ModelName)
+		if key == "" || ambiguous[key] {
 			continue
 		}
 		price := officialFromSynchronizedEffective(entry.Effective)
 		if price.Input <= 0 && price.PerCall <= 0 {
 			continue
 		}
+		if existing, exists := baseline[key]; exists {
+			if synchronizedOfficialPricesEqual(existing, price) {
+				continue
+			}
+			delete(baseline, key)
+			ambiguous[key] = true
+			conflicts = append(conflicts, entry.ModelName)
+			continue
+		}
 		baseline[key] = price
 	}
-	return baseline
+	return baseline, conflicts
+}
+
+func synchronizedOfficialPricesEqual(a, b synchronizedOfficialPrice) bool {
+	return synchronizedOfficialPriceEqual(a.Input, b.Input) &&
+		synchronizedOfficialPriceEqual(a.Output, b.Output) &&
+		synchronizedOfficialPriceEqual(a.Cache, b.Cache) &&
+		synchronizedOfficialPriceEqual(a.CreateCache, b.CreateCache) &&
+		synchronizedOfficialPriceEqual(a.PerCall, b.PerCall) &&
+		synchronizedOfficialPriceEqual(a.PerSecond, b.PerSecond)
+}
+
+func synchronizedOfficialPriceEqual(a, b float64) bool {
+	if a == b {
+		return true
+	}
+	scale := math.Max(math.Abs(a), math.Abs(b))
+	return scale > 0 && math.Abs(a-b) <= 1e-9*scale
+}
+
+// authoritativeOfficialList reports whether this row is an authoritative
+// vendor list price rather than a derived/quote figure. Only the Bailian
+// help-center importer emits PriceKind=OFFICIAL_LIST with an http(s) source and
+// auditable RawComponents; UterRoute ratio/snapshot rows use other kinds. Such
+// a row is the provider's published price at its own rate snapshot, while the
+// synchronized billing expression is Uter's sale-price contract (which may
+// carry an intentional markup). They are different measures and must not be
+// compared for numeric equality — doing so marked every such model
+// needs_review after any exchange-rate or markup change.
+//
+// This is deliberately narrow: derived/quote rows (empty PriceKind, RATIO_ONLY,
+// BILLING_EXPRESSION, HISTORICAL_SNAPSHOT, OFFICIAL_ABSOLUTE without a URL)
+// keep the strict cross-check and remain fail-closed.
+func authoritativeOfficialList(view ChannelOfficialPricing) bool {
+	if !strings.EqualFold(strings.TrimSpace(view.PriceKind), "OFFICIAL_LIST") {
+		return false
+	}
+	source := strings.ToLower(strings.TrimSpace(view.Source))
+	if !strings.HasPrefix(source, "https://") && !strings.HasPrefix(source, "http://") {
+		return false
+	}
+	if len(view.Tiers) == 0 {
+		return false
+	}
+	for _, component := range view.Tiers[0].RawComponents {
+		if strings.TrimSpace(component.RawCurrency) != "" &&
+			component.RawAmount.Float64() > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// IsAuthoritativeOfficialList exposes the narrow list-price classification to
+// controlled data-remediation tools. It is not a general-purpose pricing
+// shortcut: callers must still prove the row carries only the known erroneous
+// cross-check reason before rebuilding an internal sale price.
+func IsAuthoritativeOfficialList(view ChannelOfficialPricing) bool {
+	return authoritativeOfficialList(view)
+}
+
+// differentMeasureUpstreamOfficialPrice identifies UterRoute rows whose
+// "official" tier is not the same measure as the synchronized Uter sale price.
+// The upstream publishes vendor list prices, executable expression
+// coefficients, ratio-derived references or historical snapshots; the baseline
+// is the operator's configured Uter sale price and may intentionally differ by
+// markup or exchange-rate snapshot. Comparing those numbers for equality
+// produced mass needs_review flags on channel 1262.
+//
+// The exemption is keyed on the importer's source prefix so generic channels,
+// operator-entered rows and derived quotes keep the strict numeric check. The
+// upstream's own gates ( executable expression, discount group, reference-price
+// authorization ) still decide whether automatic billing is allowed.
+func differentMeasureUpstreamOfficialPrice(view ChannelOfficialPricing) bool {
+	source := strings.ToLower(strings.TrimSpace(view.Source))
+	return strings.HasPrefix(source, "uterroute-")
 }
 
 // crossCheckOfficialPrice compares one normalized official view against the
@@ -155,6 +258,13 @@ func crossCheckOfficialPrice(
 	}
 	row, ok := baseline[normalizeModelMatchName(modelName)]
 	if !ok {
+		return "", true
+	}
+	// An authoritative vendor list price (official URL + auditable raw amount)
+	// or a UterRoute upstream reference is a different measure from Uter's
+	// sale-price billing expression. Never mark it needs_review merely because
+	// the two snapshots disagree numerically.
+	if authoritativeOfficialList(view) || differentMeasureUpstreamOfficialPrice(view) {
 		return "", true
 	}
 	tier := view.Tiers[0]

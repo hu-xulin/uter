@@ -285,6 +285,27 @@ func TestUterRouteAutoGroupChainIsAuthoritative(t *testing.T) {
 	}
 }
 
+func TestUterRouteAutoGroupChainFallsBackWithoutSearchingLaterGroups(t *testing.T) {
+	// 首个交集分组在 group_group_ratio 缺项时允许回退到 group_ratio，但不得
+	// 继续向后寻找更便宜的分组。
+	snapshot := &UpstreamSnapshot{
+		AutoGroups:      []string{"vip", "default"},
+		GroupRatio:      map[string]float64{"vip": 0.5, "default": 0.8},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"default": 0.8}},
+	}
+	for _, groups := range [][]string{
+		{"default", "vip"},
+		{"vip", "default"},
+	} {
+		discount, modelGroup, ok := UterRouteDiscountForModel(
+			snapshot, UpstreamModelRecord{EnableGroups: groups}, "default",
+		)
+		require.True(t, ok)
+		require.Equal(t, 0.5, discount)
+		require.Equal(t, "vip", modelGroup)
+	}
+}
+
 func TestUterRouteAutoGroupChainFailsClosedOnUnusableFirstHit(t *testing.T) {
 	snapshot := &UpstreamSnapshot{
 		AutoGroups:      []string{"bad", "fallback"},
@@ -509,6 +530,28 @@ func TestUterRouteRatioDerivedPriceStaysReviewOnly(t *testing.T) {
 	require.Empty(t, internal, "review-only rows must never carry an auto sale price")
 }
 
+func TestUterRouteReferencePriceAuthorizationRejectsInvalidValue(t *testing.T) {
+	// A typo in the option must never silently authorize reconstructed prices.
+	// Only an explicitly recognized value may override the documented default.
+	withReferenceBillingAuthorization(t, "yes-please")
+	ratio := 5.0
+	snapshot := &UpstreamSnapshot{
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"gemini": 0.6}},
+	}
+	item := UpstreamModelRecord{
+		ModelName: "ratio-typo", EnableGroups: []string{"gemini"},
+		PriceStatus: "DERIVED_FROM_RATIOS",
+		OfficialPrice: &UpstreamPriceLine{
+			Input: &ratio, Currency: "USD", Unit: "per_1m_token",
+		},
+	}
+	view, internal := uterRouteChannelOfficialPricing(snapshot, item, 100, "default")
+	require.True(t, view.NeedsReview, "unrecognized authorization value must fail closed")
+	require.Contains(t, view.ReviewReasons, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
+	require.Empty(t, internal)
+}
+
 func TestDiffUterRouteUpstreamDetectsBillingExpressionChange(t *testing.T) {
 	prev := &UpstreamSnapshot{Models: []UpstreamModelRecord{{
 		ModelName: "gpt-a", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 1)`,
@@ -554,7 +597,7 @@ func TestUterRouteHistoricalSnapshotStaysReviewOnly(t *testing.T) {
 // basis). Both the default state and an explicit "true" must make those rows
 // billable, while the provenance reason stays for audit.
 func TestUterRouteReferencePricesBillWhenAuthorized(t *testing.T) {
-	for _, optionValue := range []string{"", "true"} {
+	for _, optionValue := range []string{"", "true", "1", "yes", "on"} {
 		t.Run("option="+optionValue, func(t *testing.T) {
 			withReferenceBillingAuthorization(t, optionValue)
 
