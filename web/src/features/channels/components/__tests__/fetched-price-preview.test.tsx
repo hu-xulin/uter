@@ -267,3 +267,49 @@ test('needs_review row never renders the official price as the channel price', a
   expect(screen.queryByText('$10.0000 / $50.0000')).not.toBeInTheDocument()
   expect(screen.getByText('Not available')).toBeVisible()
 })
+
+// In the create wizard, no draft channel exists until the operator explicitly
+// asks for one. The preview must expose that action in the idle state instead
+// of showing a permanent "Preparing the draft channel..." message with no
+// way forward (channelId 0 means "not created yet").
+test('idle preview without a draft channel exposes a create-draft action', () => {
+  const onRetrySetup = vi.fn()
+  renderPreview({ channelId: 0, setupState: 'idle', onRetrySetup })
+
+  expect(
+    screen.queryByText('Preparing the draft channel...')
+  ).not.toBeInTheDocument()
+  const button = screen.getByRole('button', { name: 'Create draft channel' })
+  button.click()
+  expect(onRetrySetup).toHaveBeenCalledTimes(1)
+})
+
+// Editing a channel: after the operator reselects models in the "fetch models"
+// step, the price preview must re-fetch for the new selection. A queryKey that
+// only contains channelId leaves the old cached rows in place, so the new
+// models are silently shown as "Not available".
+test('fetched price preview re-queries when the selected models change', async () => {
+  const getSpy = vi.spyOn(api, 'get').mockResolvedValue({
+    data: { success: true, data: { channel_id: 7, items: [pricingItem()] } },
+  })
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  const { rerender } = render(
+    <QueryClientProvider client={client}>
+      <FetchedPricePreview channelId={7} models={['qwen-plus']} />
+    </QueryClientProvider>
+  )
+  expect(await screen.findByText('qwen-plus')).toBeVisible()
+  const callsAfterFirst = getSpy.mock.calls.length
+
+  rerender(
+    <QueryClientProvider client={client}>
+      <FetchedPricePreview channelId={7} models={['qwen-plus', 'new-model']} />
+    </QueryClientProvider>
+  )
+
+  await vi.waitFor(() => {
+    expect(getSpy.mock.calls.length).toBeGreaterThan(callsAfterFirst)
+  })
+})

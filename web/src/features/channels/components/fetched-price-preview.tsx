@@ -149,8 +149,19 @@ export function PricePreviewTable({
 export function FetchedPricePreview(props: FetchedPricePreviewProps) {
   const { t } = useTranslation()
   const ready = props.channelId > 0
+  // Include the model selection in the key: in the edit wizard the operator
+  // can reselect models in the previous step, and the pricing rows are only a
+  // client-side filter over this cached query. Without the signature the new
+  // selection keeps showing stale rows and the newly picked models look
+  // permanently unavailable until the channel is reopened.
+  // Sort so a pure reordering of the same set does not refetch.
+  const modelSignature = (props.models ?? [])
+    .map((name) => String(name).trim())
+    .filter(Boolean)
+    .sort()
+    .join(',')
   const query = useQuery({
-    queryKey: ['channel-model-pricing', props.channelId],
+    queryKey: ['channel-model-pricing', props.channelId, modelSignature],
     queryFn: () => getChannelModelPricing(props.channelId),
     enabled: ready,
     retry: false,
@@ -190,10 +201,26 @@ export function FetchedPricePreview(props: FetchedPricePreviewProps) {
       </div>
     )
   } else if (!ready) {
+    // channelId 0 means no draft exists yet. The create wizard deliberately
+    // never writes a channel behind the operator's back, so expose that
+    // explicit action here; otherwise this step is a dead end with only a
+    // permanent "Preparing..." message and no way to proceed.
     body = (
-      <p className='text-muted-foreground text-sm'>
-        {t('Preparing the draft channel...')}
-      </p>
+      <div className='space-y-2 rounded-lg border border-dashed p-4 text-sm'>
+        <p className='text-muted-foreground'>
+          {t('Create a draft channel to fetch prices.')}
+        </p>
+        {props.onRetrySetup ? (
+          <Button
+            type='button'
+            size='sm'
+            variant='outline'
+            onClick={props.onRetrySetup}
+          >
+            {t('Create draft channel')}
+          </Button>
+        ) : null}
+      </div>
     )
   } else if (props.fetchState === 'running') {
     body = <p className='text-muted-foreground text-sm'>{t('Syncing...')}</p>
