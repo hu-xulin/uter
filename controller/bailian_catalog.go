@@ -16,6 +16,69 @@ import (
 	"github.com/uter-ai/uter/service"
 )
 
+// bailianIncludeCatalogModelsKey controls whether the official model catalog
+// is merged into a Bailian channel's selectable model list. It is on by default
+// so every model the console market publishes (including happyhorse) appears
+// in the channel; set it to "false" to keep the old workspace-only list.
+const bailianIncludeCatalogModelsKey = "BailianIncludeCatalogModels"
+
+// bailianCatalogModelsEnabled reports whether catalog-only models should be
+// merged into the channel's model list. Default on; only an explicit "false"
+// disables it.
+func bailianCatalogModelsEnabled() bool {
+	return bailianCatalogModelsEnabledFrom(common.GetOption(bailianIncludeCatalogModelsKey))
+}
+
+// bailianCatalogModelsEnabledFrom is the pure switch predicate, kept separate
+// from option-store access so it can be unit-tested without a database.
+func bailianCatalogModelsEnabledFrom(value string) bool {
+	value = strings.TrimSpace(value)
+	return value == "" || !strings.EqualFold(value, "false")
+}
+
+// bailianMergedModelNames computes the catalog-merged model list without any
+// database access. It preserves every local (workspace) model, appends
+// catalog-only names, dedups, and reports whether anything changed.
+func bailianMergedModelNames(localModels []string, catalog *service.BailianCatalog) (merged []string, changed bool) {
+	if catalog == nil {
+		return localModels, false
+	}
+	catalogNames := make([]string, 0, len(catalog.Models))
+	for _, item := range catalog.Models {
+		name := strings.TrimSpace(item.Model)
+		if name != "" {
+			catalogNames = append(catalogNames, name)
+		}
+	}
+	if len(catalogNames) == 0 {
+		return localModels, false
+	}
+	merged = mergeModelNames(localModels, catalogNames)
+	return merged, len(merged) != len(localModels)
+}
+
+// mergeBailianCatalogModels merges the official catalog model names into the
+// channel's model list so console-market models are selectable. It is
+// idempotent (mergeModelNames dedups), never removes a workspace model, and
+// reports whether the channel was changed. When the option is off it is a
+// no-op.
+func mergeBailianCatalogModels(channel *model.Channel, catalog *service.BailianCatalog) (bool, error) {
+	if channel == nil || !bailianCatalogModelsEnabled() {
+		return false, nil
+	}
+	local := channel.GetModels()
+	merged, changed := bailianMergedModelNames(local, catalog)
+	if !changed {
+		return false, nil
+	}
+	channel.Models = strings.Join(merged, ",")
+	if err := channel.Update(); err != nil {
+		return false, err
+	}
+	model.InitChannelCache()
+	return true, nil
+}
+
 type bailianCatalogSummary struct {
 	Synced          bool     `json:"synced"`
 	FetchedAt       string   `json:"fetched_at,omitempty"`
@@ -63,6 +126,11 @@ func RefreshBailianCatalog(c *gin.Context) {
 	if err := service.SaveBailianCatalogSnapshot(catalog); err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return
+	}
+	// Make every catalog model selectable on this channel. Idempotent; a no-op
+	// when BailianIncludeCatalogModels is explicitly disabled.
+	if _, mergeErr := mergeBailianCatalogModels(channel, catalog); mergeErr != nil {
+		common.SysError("merge bailian catalog models: " + mergeErr.Error())
 	}
 	// Keep the status panel in sync with the manual refresh. The UI invalidates
 	// `bailian-sync-status` after this action and reads its counts from there;
@@ -295,6 +363,20 @@ func syncBailianAfterCreate(channelID int) {
 	if err := service.SaveBailianCatalogSnapshot(catalog); err != nil {
 		mark("fetch_catalog", "failed", err.Error())
 		return
+	}
+	// Merge official catalog models (happyhorse, wan video, TTS/ASR, etc.) into
+	// the channel so every console-market model is selectable. The workspace
+	// discovery list is preserved; only new names are appended.
+	if merged, mergeErr := mergeBailianCatalogModels(channel, catalog); mergeErr != nil {
+		common.SysError("merge bailian catalog models: " + mergeErr.Error())
+		mark("merge_catalog_models", "failed", mergeErr.Error())
+	} else {
+		mark("merge_catalog_models", "ok", "")
+		if merged {
+			// ActualModels reflects what the channel now serves, not just the
+			// workspace discovery subset.
+			status.ActualModels = len(channel.GetModels())
+		}
 	}
 	status.CatalogModels = len(catalog.Models)
 	status.ReferencePrices = len(catalog.ReferencePrice)

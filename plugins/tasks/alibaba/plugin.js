@@ -1,5 +1,20 @@
 // Protocol capabilities, not prices. Keep defaults and validation shared by
 // native requests, compatibility protocols, and submission billing facts.
+// HappyHorse shares the DashScope video-generation wire format with Wan but
+// has its own modality rules: t2v (text), i2v (first frame), r2v (1-9 reference
+// images), and video-edit (one input video + 0-5 reference images). Resolution
+// is 720P/1080P and duration 3-15s; video-edit follows the input length.
+// These are protocols only; prices come from the Bailian official catalog.
+const HAPPYHORSE_MODELS = {
+  "happyhorse-1.0-t2v": { kind: "t2v", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+  "happyhorse-1.0-i2v": { kind: "image", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+  "happyhorse-1.0-r2v": { kind: "reference", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+  "happyhorse-1.0-video-edit": { kind: "videoedit", resolutions: ["720P", "1080P"], defaultResolution: "1080P" },
+  "happyhorse-1.1-t2v": { kind: "t2v", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+  "happyhorse-1.1-i2v": { kind: "image", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+  "happyhorse-1.1-r2v": { kind: "reference", resolutions: ["720P", "1080P"], defaultResolution: "1080P", maxDuration: 15, minDuration: 3 },
+};
+
 const WAN_MODELS = {
   "wan3.0-video": { kind: "all", resolutions: ["480P", "720P", "1080P"], defaultResolution: "1080P", maxDuration: 30 },
   "wan3.0-video-prime": { kind: "all", resolutions: ["480P", "720P", "1080P"], defaultResolution: "1080P", maxDuration: 30 },
@@ -198,9 +213,10 @@ const WAN_VIDEO_RESOLUTIONS = ["480P", "720P", "1080P"];
 // One usage profile per distinct resolution set and audio option.
 function wanVideoUsageProfiles() {
   const profiles = [];
-  for (const model of Object.keys(WAN_MODELS).concat(WAN_VIDEO_SNAPSHOTS)) {
+  for (const model of Object.keys(WAN_MODELS).concat(WAN_VIDEO_SNAPSHOTS).concat(Object.keys(HAPPYHORSE_MODELS))) {
     const key = modelKey(model);
-    const resolutions = WAN_MODELS[key].resolutions;
+    const modelProfileDef = Object.prototype.hasOwnProperty.call(HAPPYHORSE_MODELS, key) ? HAPPYHORSE_MODELS[key] : WAN_MODELS[key];
+    const resolutions = modelProfileDef.resolutions;
     const audio = WAN_AUDIO_VIDEO_MODELS.includes(key);
     const shape = resolutions.join("/") + (audio ? "+audio" : "");
     let profile = profiles.find((entry) => entry.shape === shape);
@@ -222,7 +238,7 @@ export const meta = {
     en: "Alibaba Cloud Bailian image and video generation (Wan, Qwen-Image, Z-Image)",
     zh: "阿里云百炼图片与视频生成（万相、千问图像、Z-Image）",
   },
-  version: "1.4.2",
+  version: "1.5.0",
   author: { name: "Uter.ai" },
   channelTypes: [17],
   // Literal metadata also supports the dashboard's static script preview.
@@ -250,6 +266,13 @@ export const meta = {
     "wanx2.1-t2v-turbo",
     "wanx2.1-i2v-plus",
     "wanx2.1-i2v-turbo",
+    "happyhorse-1.0-t2v",
+    "happyhorse-1.0-i2v",
+    "happyhorse-1.0-r2v",
+    "happyhorse-1.0-video-edit",
+    "happyhorse-1.1-t2v",
+    "happyhorse-1.1-i2v",
+    "happyhorse-1.1-r2v",
     "wan2.7-image-pro",
     "wan2.7-image",
     "wan2.6-image",
@@ -331,7 +354,7 @@ export const meta = {
   ],
   protocols: [
     { name: "openai_responses", supports: ["stream", "sync", "background"] },
-    { name: "openai_video", models: Object.keys(WAN_MODELS).concat(["wan2.7-t2v-2026-04-25", "wan2.7-t2v-2026-06-12", "wan2.7-i2v-2026-04-25"]) },
+    { name: "openai_video", models: Object.keys(WAN_MODELS).concat(Object.keys(HAPPYHORSE_MODELS), ["wan2.7-t2v-2026-04-25", "wan2.7-t2v-2026-06-12", "wan2.7-i2v-2026-04-25"]) },
     { name: "openai_image", models: Object.keys(IMAGE_MODELS).concat(IMAGE_MODEL_SNAPSHOTS) },
   ],
 };
@@ -387,8 +410,9 @@ function modelKey(model) {
 
 function modelProfile(model) {
   const key = modelKey(model);
-  if (!Object.prototype.hasOwnProperty.call(WAN_MODELS, key)) throw new Error("unsupported Wan model: " + model);
-  return WAN_MODELS[key];
+  if (Object.prototype.hasOwnProperty.call(HAPPYHORSE_MODELS, key)) return HAPPYHORSE_MODELS[key];
+  if (Object.prototype.hasOwnProperty.call(WAN_MODELS, key)) return WAN_MODELS[key];
+  throw new Error("unsupported Wan model: " + model);
 }
 
 function imageModel(ctx) {
@@ -777,6 +801,8 @@ function convert(ctx) {
   }
   const image = firstImage(req);
   if (image && input.img_url === undefined) input.img_url = image;
+  // HappyHorse i2v accepts a top-level input_reference for the first frame.
+  if (trimmed(req.input_reference) && input.img_url === undefined) input.img_url = trimmed(req.input_reference);
   Object.assign(input, objectValue(metadata.input, "metadata.input"));
   const nativeParameters = objectValue(metadata.parameters, "metadata.parameters");
   const parameters = profile.kind === "speech" ? {} : { prompt_extend: true };
@@ -800,7 +826,7 @@ function convert(ctx) {
     ratio = size.ratio ?? parameters.ratio ?? "16:9";
   }
   if (!profile.resolutions.includes(resolution)) throw new Error(upstreamModel + " resolution must be one of " + profile.resolutions.join(", "));
-  if (profile.kind === "size" || profile.kind === "t2v" || profile.kind === "all") {
+  if (profile.kind === "size" || profile.kind === "t2v" || profile.kind === "all" || profile.kind === "reference") {
     const ratios = ["16:9", "9:16", "1:1", "4:3", "3:4"];
     if (profile.kind === "all") ratios.push("adaptive");
     if (!ratios.includes(ratio)) throw new Error(upstreamModel + " ratio must be one of " + ratios.join(", "));
@@ -814,8 +840,8 @@ function convert(ctx) {
   } else {
     parameters.resolution = resolution;
     delete parameters.size;
-    if (profile.kind === "t2v" || profile.kind === "all") parameters.ratio = ratio;
-    else delete parameters.ratio; // Image-derived aspect ratios are not configurable.
+    if (profile.kind === "t2v" || profile.kind === "all" || profile.kind === "reference") parameters.ratio = ratio;
+    else delete parameters.ratio; // Image/video-derived aspect ratios are not configurable.
   }
 
   const rawDuration = nativeParameters.duration ?? (req.auto_duration === true ? -1 : (req.duration ?? req.seconds));
@@ -823,20 +849,48 @@ function convert(ctx) {
     throw new Error("duration must be a number");
   const duration = rawDuration == null ? 5 : Number(rawDuration);
   if (duration === -1 && profile.kind !== "all") throw new Error("duration -1 (smart duration) is only supported by wan3.0 models");
-  if (profile.kind === "speech") {
+  if (profile.kind === "videoedit") {
+    // video-edit follows the input video length and does not accept a new duration.
+    delete parameters.duration;
+  } else if (profile.kind === "speech") {
     if (rawDuration != null && (!Number.isFinite(duration) || duration <= 0 || duration >= 20))
       throw new Error("wan2.2-s2v duration must be positive and less than 20 seconds; output follows the audio");
     delete parameters.duration;
   } else {
     if (profile.durations) {
       if (!profile.durations.includes(duration)) throw new Error(upstreamModel + " duration must be one of " + profile.durations.join(", "));
-    } else if (!(profile.kind === "all" && duration === -1) && (!Number.isInteger(duration) || duration < 2 || duration > profile.maxDuration)) {
-      throw new Error(upstreamModel + " duration must be " + (profile.kind === "all" ? "-1 or " : "") + "an integer between 2 and " + profile.maxDuration);
+    } else {
+      const minDuration = profile.minDuration ?? 2;
+      if (!(profile.kind === "all" && duration === -1) && (!Number.isInteger(duration) || duration < minDuration || duration > profile.maxDuration)) {
+        throw new Error(upstreamModel + " duration must be " + (profile.kind === "all" ? "-1 or " : "") + "an integer between " + minDuration + " and " + profile.maxDuration);
+      }
     }
     parameters.duration = duration;
   }
 
-  if (profile.kind === "media" || profile.kind === "all") {
+  if (profile.kind === "reference" || profile.kind === "videoedit") {
+    // HappyHorse r2v/video-edit carry media through metadata.input.media.
+    if (input.media !== undefined && !Array.isArray(input.media)) throw new Error("input.media must be an array");
+    const media = Array.isArray(input.media) ? input.media : [];
+    const limits = profile.kind === "reference" ? { reference_image: 9 } : { video: 1, reference_image: 5 };
+    const counts = {};
+    for (const item of media) {
+      if (!item || !Object.prototype.hasOwnProperty.call(limits, item.type) || !trimmed(item.url))
+        throw new Error("invalid input.media type or url for " + upstreamModel);
+      counts[item.type] = (counts[item.type] || 0) + 1;
+      if (counts[item.type] > limits[item.type]) throw new Error("too many input.media entries for " + upstreamModel);
+    }
+    if (profile.kind === "reference" && !counts.reference_image)
+      throw new Error(upstreamModel + " requires at least one reference_image");
+    if (profile.kind === "videoedit" && !counts.video)
+      throw new Error(upstreamModel + " requires exactly one video to edit");
+    if (!trimmed(input.prompt)) throw new Error(upstreamModel + " requires prompt");
+    if (!media.length) delete input.media;
+    delete input.img_url;
+    delete input.first_frame_url;
+    delete input.last_frame_url;
+    delete input.audio_url;
+  } else if (profile.kind === "media" || profile.kind === "all") {
     if (input.media !== undefined && !Array.isArray(input.media)) throw new Error("input.media must be an array");
     if (!input.media || input.media.length === 0) {
       input.media = [];
@@ -1090,6 +1144,7 @@ export function extractUsage(ctx) {
   });
   let seconds = body.parameters.duration;
   if (kind === "speech") seconds = 20;
+  else if (kind === "videoedit") seconds = 15; // follows input length; reserve the 15s cap
   else if (kind === "all" && (hasVideo || seconds === -1)) seconds = 30;
   if (ctx.usagePurpose === "billing_ratios") {
     const ratios = { seconds: seconds };

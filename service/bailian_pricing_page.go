@@ -135,6 +135,10 @@ func ApplyBailianOfficialPricingPage(ctx context.Context, catalog *BailianCatalo
 		return fmt.Errorf("bailian official pricing page matched none of the catalog models")
 	}
 	catalog.OfficialPricingSource = bailianOfficialPricingPageURL
+	// The aggregate pricing page omits per-second video prices. Fill HappyHorse
+	// rates from their verified model-info page; this only adds prices for
+	// models the page left empty and never overwrites a published quote.
+	applyHappyhorseOfficialPricing(catalog)
 	return nil
 }
 

@@ -802,7 +802,10 @@ func bailianSupportsVideoResolutionPricing(modelName string) bool {
 		"wan2.5-t2v-preview", "wan2.5-i2v-preview",
 		"wan2.2-t2v-plus", "wan2.2-i2v-flash", "wan2.2-i2v-plus",
 		"wan2.2-kf2v-flash", "wan2.2-s2v",
-		"wanx2.1-t2v-plus", "wanx2.1-t2v-turbo", "wanx2.1-i2v-plus", "wanx2.1-i2v-turbo":
+		"wanx2.1-t2v-plus", "wanx2.1-t2v-turbo", "wanx2.1-i2v-plus", "wanx2.1-i2v-turbo",
+		// HappyHorse shares the plugin's resolution/duration usage facts.
+		"happyhorse-1.0-t2v", "happyhorse-1.0-i2v", "happyhorse-1.0-r2v", "happyhorse-1.0-video-edit",
+		"happyhorse-1.1-t2v", "happyhorse-1.1-i2v", "happyhorse-1.1-r2v":
 		return true
 	default:
 		return false

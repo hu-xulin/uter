@@ -732,15 +732,21 @@ func TestBailianVideoResolutionPricesBecomeUsageExpression(t *testing.T) {
 	_, err = billingexpr.CompileFromCache(pricing.BillingExpr)
 	require.NoError(t, err)
 
-	unsupported := BailianModel{Model: "happyhorse-1.1-t2v", Prices: []BailianPriceRange{{
+	happyhorse := BailianModel{Model: "happyhorse-1.1-t2v", Prices: []BailianPriceRange{{
 		RangeName: "Default", Prices: []BailianPrice{
 			{Type: "video_ratio_720p", Price: "0.9", PriceUnit: "每秒"},
 			{Type: "video_ratio_1080p", Price: "1.2", PriceUnit: "每秒"},
 		},
 	}}}
-	view = bailianOfficialPricing(unsupported, BailianRegionBeijing, 1, 100)
-	assert.Contains(t, view.ReviewReasons, "multiple per-unit prices")
-	assert.Empty(t, bailianInternalPricing(view), "models outside the alibaba task plugin stay review-only")
+	view = bailianOfficialPricing(happyhorse, BailianRegionBeijing, 1, 100)
+	require.Empty(t, view.ReviewReasons, view.ReviewReasons)
+	internal = bailianInternalPricing(view)
+	require.NotEmpty(t, internal, "happyhorse is in the alibaba task plugin and gets a per-second expression")
+	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
+	assert.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
+	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "1080P" ? 1.2 : 0.9`)
+	_, err = billingexpr.CompileFromCache(pricing.BillingExpr)
+	require.NoError(t, err)
 }
 
 func TestBailianSilentNonBillableRowsAreFlagged(t *testing.T) {
