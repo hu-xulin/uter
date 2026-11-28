@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -61,6 +62,16 @@ func TestGetOptionsBailianAccessKeyMaskNeverLeaksCiphertext(t *testing.T) {
 	assert.Contains(t, maskView, "access_key_secret")
 }
 
+func TestBailianCatalogFetchFailsClosedWithoutCredentials(t *testing.T) {
+	withOptionMap(t, map[string]string{
+		service.ChannelProviderBailianAccessKeyIDOption:     "",
+		service.ChannelProviderBailianAccessKeySecretOption: "",
+	})
+	catalog, err := service.FetchBailianCatalog(context.Background(), "", "")
+	require.Error(t, err)
+	assert.Nil(t, catalog)
+}
+
 func TestBailianAccessKeysAreRevealableSecretOptions(t *testing.T) {
 	for _, key := range []string{
 		service.ChannelProviderBailianAccessKeyIDOption,
@@ -70,13 +81,4 @@ func TestBailianAccessKeysAreRevealableSecretOptions(t *testing.T) {
 		assert.True(t, common.IsSystemSecretReadKey(key), key)
 		assert.True(t, service.IsChannelProviderSecretOptionKey(key), key)
 	}
-}
-
-func TestFetchBailianAKModelIDsFailsClosedWithoutCredentials(t *testing.T) {
-	withOptionMap(t, map[string]string{
-		service.ChannelProviderBailianAccessKeyIDOption:     "",
-		service.ChannelProviderBailianAccessKeySecretOption: "",
-	})
-	_, err := fetchBailianAKModelIDs(nil)
-	require.Error(t, err)
 }
