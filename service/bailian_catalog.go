@@ -66,14 +66,16 @@ type BailianModel struct {
 
 // BailianCatalog is the persisted snapshot of the official catalog.
 type BailianCatalog struct {
-	FetchedAt             time.Time               `json:"fetched_at"`
-	ChannelID             int                     `json:"channel_id"`
-	BaseURL               string                  `json:"base_url"`
-	Region                BailianRegion           `json:"region,omitempty"`
-	Total                 int                     `json:"total"`
-	Models                []BailianModel          `json:"models"`
-	ReferencePrice        []BailianReferencePrice `json:"reference_prices,omitempty"`
-	OfficialPricingSource string                  `json:"official_pricing_source,omitempty"`
+	FetchedAt                time.Time               `json:"fetched_at"`
+	ChannelID                int                     `json:"channel_id"`
+	BaseURL                  string                  `json:"base_url"`
+	Region                   BailianRegion           `json:"region,omitempty"`
+	Total                    int                     `json:"total"`
+	Models                   []BailianModel          `json:"models"`
+	ReferencePrice           []BailianReferencePrice `json:"reference_prices,omitempty"`
+	OfficialPricingSource    string                  `json:"official_pricing_source,omitempty"`
+	OfficialPricingSourceURL string                  `json:"official_pricing_source_url,omitempty"`
+	OfficialPricingHash      string                  `json:"official_pricing_hash,omitempty"`
 }
 
 type bailianModelsResponse struct {
