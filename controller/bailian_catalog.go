@@ -57,6 +57,17 @@ func bailianMergedModelNames(localModels []string, catalog *service.BailianCatal
 	return merged, len(merged) != len(localModels)
 }
 
+// bailianModelsAfterDiscovery merges freshly discovered workspace models into
+// the operator-specified model list. The post-create discovery pass must never
+// replace channel.Models: operators add task-plugin models (happyhorse/wan) and
+// third-party aliases that the workspace catalog does not return, and dropping
+// them would make those models silently unrouteable. Pure helper so the merge
+// contract is testable without a live workspace endpoint.
+func bailianModelsAfterDiscovery(operatorModels, discovered []string) (merged []string, changed bool) {
+	merged = mergeModelNames(operatorModels, discovered)
+	return merged, len(merged) != len(operatorModels)
+}
+
 // mergeBailianCatalogModels merges the official catalog model names into the
 // channel's model list so console-market models are selectable. It is
 // idempotent (mergeModelNames dedups), never removes a workspace model, and
@@ -136,19 +147,14 @@ func RefreshBailianCatalog(c *gin.Context) {
 	// `bailian-sync-status` after this action and reads its counts from there;
 	// without this update the panel kept showing the stale post-create result.
 	channelModels := channel.GetModels()
-	matched := 0
-	for _, model := range channelModels {
-		for _, item := range catalog.Models {
-			if item.Model == model {
-				matched++
-				break
-			}
-		}
-	}
+	// One matcher for every reported count. Exact-name loops here used to
+	// disagree with the summary and apply steps for cmaas- prefixed, scoped
+	// and dated model spellings.
+	matched := service.BailianSeenChannelModels(catalog, channelModels)
 	_ = service.UpdateBailianSyncStatus(channelID, func(status *service.BailianSyncStatus) {
 		status.ActualModels = len(channelModels)
 		status.CatalogModels = len(catalog.Models)
-		status.MatchedModels = matched
+		status.MatchedModels = len(matched)
 		status.ReferencePrices = len(catalog.ReferencePrice)
 		status.Steps["fetch_catalog"] = service.BailianSyncStep{
 			Status: "ok", Finished: time.Now().UTC(),
@@ -207,16 +213,14 @@ func buildBailianCatalogSummary(catalog *service.BailianCatalog) bailianCatalogS
 		return summary
 	}
 	summary.ChannelName = channel.Name
-	priced := make(map[string]struct{}, len(catalog.Models))
-	for _, item := range catalog.Models {
-		if len(item.Prices) > 0 {
-			priced[item.Model] = struct{}{}
-		}
-	}
 	channelModels := channel.GetModels()
+	seen := make(map[string]struct{})
+	for _, name := range service.BailianSeenChannelModels(catalog, channelModels) {
+		seen[name] = struct{}{}
+	}
 	summary.ChannelModels = len(channelModels)
 	for _, name := range channelModels {
-		if _, ok := priced[name]; ok {
+		if _, ok := seen[name]; ok {
 			summary.MatchedModels++
 			continue
 		}
@@ -272,11 +276,21 @@ func ApplyBailianCatalog(c *gin.Context) {
 			Finished: time.Now().UTC(),
 		}
 	})
-	c.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
-		"apply":           result,
-		"pricing_records": pricingRecords,
-		"pricing_error":   errorText(pricingErr),
-	}})
+	response := gin.H{
+		"success": pricingErr == nil,
+		"data": gin.H{
+			"apply":           result,
+			"pricing_records": pricingRecords,
+			"pricing_error":   errorText(pricingErr),
+		},
+	}
+	if pricingErr != nil {
+		// Metadata was applied but the channel has no verified sale price.
+		// The UI must not report "Synced" and leave the operator assuming the
+		// channel can bill requests.
+		response["message"] = common.LogText("Bailian pricing was not persisted: %v", pricingErr)
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func successOrFailedText(err error) string {
@@ -331,12 +345,20 @@ func syncBailianAfterCreate(channelID int) {
 	if discovered, err := fetchChannelUpstreamModelIDs(channel); err != nil {
 		mark("discover_models", "failed", err.Error())
 	} else if len(discovered) > 0 {
-		channel.Models = strings.Join(discovered, ",")
-		if err := channel.Update(); err != nil {
-			mark("discover_models", "failed", err.Error())
+		// Merge, never replace: the create request may already carry task-plugin
+		// models (happyhorse/wan) or third-party aliases the workspace catalog
+		// cannot return. Overwriting would silently drop them from routing.
+		merged, changed := bailianModelsAfterDiscovery(channel.GetModels(), discovered)
+		status.ActualModels = len(merged)
+		if changed {
+			channel.Models = strings.Join(merged, ",")
+			if err := channel.Update(); err != nil {
+				mark("discover_models", "failed", err.Error())
+			} else {
+				model.InitChannelCache()
+				mark("discover_models", "ok", "")
+			}
 		} else {
-			model.InitChannelCache()
-			status.ActualModels = len(discovered)
 			mark("discover_models", "ok", "")
 		}
 	} else {
@@ -403,6 +425,94 @@ func syncBailianAfterCreate(channelID int) {
 	mark("apply_metadata", "ok", "")
 }
 
+// syncBailianPricingAfterUpdate refreshes prices for the model list that was
+// just saved. Unlike syncBailianAfterCreate it never discovers or rewrites
+// channel.Models: an operator may have just added task-plugin models that the
+// workspace list does not return, and removing them would be worse than a
+// stale price. Failures are logged only; the channel edit itself has already
+// succeeded and the scheduled upstream task will retry.
+func syncBailianPricingAfterUpdate(channelID int) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil || channel.Type != constant.ChannelTypeAli {
+		return
+	}
+	mark := func(state, message string) {
+		_ = service.UpdateBailianSyncStatus(channelID, func(status *service.BailianSyncStatus) {
+			status.Steps["pricing_refresh"] = service.BailianSyncStep{
+				Status: state, Message: message, Finished: time.Now().UTC(),
+			}
+		})
+	}
+	// The drawer invalidates `bailian-sync-status` after a save. Without a
+	// step update here the panel kept showing the post-create result even
+	// though this edit refreshed a different model set.
+	mark("running", "")
+	key, _, err := channel.GetNextEnabledKey()
+	if err != nil {
+		message := strings.TrimSpace(err.Error())
+		if message == "" {
+			message = "no enabled API key"
+		}
+		common.SysError(common.LogText("bailian update pricing skipped for channel %d: %s", channelID, message))
+		mark("failed", message)
+		return
+	}
+	catalog, err := service.FetchBailianCatalog(ctx, channel.GetBaseURL(), strings.TrimSpace(key))
+	if err != nil {
+		common.SysError(common.LogText("bailian update catalog failed for channel %d: %s", channelID, err.Error()))
+		mark("failed", err.Error())
+		return
+	}
+	catalog.ChannelID = channelID
+	catalog.Region = service.BailianRegionOf(channel.GetBaseURL())
+	if err := service.ApplyBailianOfficialPricingPage(ctx, catalog); err != nil {
+		common.SysError(common.LogText("bailian update pricing page failed for channel %d: %s", channelID, err.Error()))
+		mark("failed", err.Error())
+		return
+	}
+	catalog.ReferencePrice = service.NormalizeBailianPrices(catalog)
+	if err := service.SaveBailianCatalogSnapshot(catalog); err != nil {
+		common.SysError(common.LogText("bailian update snapshot failed for channel %d: %s", channelID, err.Error()))
+		mark("failed", err.Error())
+		return
+	}
+	applyResult, metadataErr := service.ApplyBailianCatalog(catalog, channel.GetModels())
+	if metadataErr != nil {
+		common.SysError(common.LogText("bailian update metadata failed for channel %d: %s", channelID, metadataErr.Error()))
+	}
+	pricingRecords, pricingErr := applyBailianChannelPricing(catalog, channel.GetModels())
+	if pricingErr != nil {
+		common.SysError(common.LogText("bailian update prices failed for channel %d: %s", channelID, pricingErr.Error()))
+		mark("failed", pricingErr.Error())
+		return
+	}
+	matched := service.BailianSeenChannelModels(catalog, channel.GetModels())
+	_ = service.UpdateBailianSyncStatus(channelID, func(status *service.BailianSyncStatus) {
+		status.ActualModels = len(channel.GetModels())
+		status.CatalogModels = len(catalog.Models)
+		status.MatchedModels = len(matched)
+		status.ReferencePrices = len(catalog.ReferencePrice)
+		status.PricingRecords = pricingRecords
+		if applyResult.Metadata != nil {
+			status.MetadataCreated = len(applyResult.Metadata.CreatedModels)
+			status.MetadataUpdated = len(applyResult.Metadata.UpdatedModels)
+		}
+		status.Steps["fetch_catalog"] = service.BailianSyncStep{
+			Status: "ok", Finished: time.Now().UTC(),
+		}
+		status.Steps["apply_metadata"] = service.BailianSyncStep{
+			Status: successOrFailedText(metadataErr), Message: errorText(metadataErr), Finished: time.Now().UTC(),
+		}
+		status.Steps["pricing_refresh"] = service.BailianSyncStep{
+			Status: "ok", Finished: time.Now().UTC(),
+		}
+	})
+	service.AutoVerifyChannelPricing(channelID)
+}
+
 func errorText(err error) string {
 	if err == nil {
 		return ""
@@ -415,15 +525,20 @@ func errorText(err error) string {
 // model that has one unambiguous price, so no operator click is required.
 // Operator, batch and scheduled prices are never overwritten.
 func applyBailianChannelPricing(catalog *service.BailianCatalog, channelModels []string) (int, error) {
-	if _, err := model.ClearAutoDerivedChannelPricing(catalog.ChannelID, "bailian-"); err != nil {
-		return 0, err
-	}
 	records := service.BailianPricingRecords(catalog, channelModels)
 	written, err := model.UpsertChannelOfficialPricing(records)
 	if err != nil {
 		return 0, err
 	}
 	if _, _, err := service.SeedBailianInternalPricing(catalog.ChannelID, channelModels, false); err != nil {
+		return written, err
+	}
+	// Clear only auto-derived prices for models the channel no longer serves.
+	// Doing this after a successful upsert/seed keeps a failed sync from wiping
+	// every billable Bailian price, and never touches operator/batch prices.
+	if _, err := model.ClearAutoDerivedInternalExcept(
+		catalog.ChannelID, "alibaba-bailian", channelModels, "bailian-",
+	); err != nil {
 		return written, err
 	}
 	return written, nil

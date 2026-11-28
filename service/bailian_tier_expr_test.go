@@ -234,3 +234,35 @@ func TestBailianImageTaskExpressionsUsePluginFacts(t *testing.T) {
 	require.NoError(t, err)
 	require.InDelta(t, 3*0.2, cost, 1e-9)
 }
+
+// The official help page writes context ranges with a Unicode ≤ (for example
+// `0<Token≤32K`). If the range parser misses it, every tier gets MaxInputTokens
+// 0 and the generated expression is `true ? cheapest : ...`, silently billing
+// every long-context request at the cheapest tier.
+func TestBailianOfficialUnicodeRangeNamesSelectTheRightTier(t *testing.T) {
+	item := BailianModel{Model: "qwen-plus", Prices: []BailianPriceRange{
+		{RangeName: "0<Token≤32K", Prices: []BailianPrice{
+			{Type: "input_token", Price: "2", PriceUnit: "每百万tokens", Currency: "CNY"},
+			{Type: "output_token", Price: "8", PriceUnit: "每百万tokens", Currency: "CNY"},
+		}},
+		{RangeName: "32K<Token≤128K", Prices: []BailianPrice{
+			{Type: "input_token", Price: "4", PriceUnit: "每百万tokens", Currency: "CNY"},
+			{Type: "output_token", Price: "16", PriceUnit: "每百万tokens", Currency: "CNY"},
+		}},
+	}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 1, 100)
+	require.Empty(t, view.ReviewReasons, view.ReviewReasons)
+	require.Len(t, view.Tiers, 2)
+	require.EqualValues(t, 32*1024, view.Tiers[0].MaxInputTokens)
+	require.EqualValues(t, 128*1024, view.Tiers[1].MaxInputTokens)
+
+	expr := bailianTierExpression(view.Tiers)
+	require.NotEmpty(t, expr)
+	snap := &billingexpr.BillingSnapshot{
+		ExprString: expr, ExprHash: billingexpr.ExprHashString(expr),
+		QuotaPerUnit: common.QuotaPerUnit, ExprVersion: billingexpr.ExprVersion(expr),
+	}
+	long, err := billingexpr.ComputeTieredQuotaWithRequest(snap, billingexpr.TokenParams{P: 1000, C: 1000, Len: 50000}, billingexpr.RequestInput{})
+	require.NoError(t, err)
+	assert.Equal(t, "32K<Token≤128K", long.MatchedTier)
+}

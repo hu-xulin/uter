@@ -182,6 +182,35 @@ func TestApplyBailianCatalogKeepsManualFieldsAndChannelScope(t *testing.T) {
 	assert.Zero(t, len(second.Metadata.UpdatedModels), "repeat apply must be idempotent")
 }
 
+func TestApplyBailianCatalogCountsAliasesWithStatusPanel(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.Model{}, &model.Vendor{}, &model.Option{}, &model.VendorMergeRule{}, &model.Ability{}, &model.Channel{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+
+	catalog := &BailianCatalog{
+		Region: BailianRegionBeijing,
+		Models: []BailianModel{{
+			Model: "qwen-max", Provider: "qwen", Description: "官方描述",
+			InferenceMetadata: map[string]any{"request_modality": []any{"Text"}},
+		}},
+	}
+	channelModels := []string{"cmaas-qwen-max", "missing-model"}
+
+	result, err := ApplyBailianCatalog(catalog, channelModels)
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.MatchedModels, "wrapped alias must count as matched")
+	assert.Equal(t, []string{"missing-model"}, result.UnmatchedModels)
+	assert.Equal(
+		t,
+		BailianSeenChannelModels(catalog, channelModels),
+		[]string{"cmaas-qwen-max"},
+		"status panel and apply step must use one matcher",
+	)
+}
+
 func TestBailianPricingRecordsStayChannelScoped(t *testing.T) {
 	previousRate := operation_setting.USDExchangeRate
 	operation_setting.USDExchangeRate = 7.3
@@ -263,6 +292,58 @@ func TestBailianPricingRecordsPreserveTiersAndRanges(t *testing.T) {
 	assert.Equal(t, int64(32*1024), bailianTestTiers(normalized)[0].MaxInputTokens)
 	assert.Equal(t, int64(32*1024), bailianTestTiers(normalized)[1].MinInputTokens)
 	assert.Equal(t, int64(128*1024), bailianTestTiers(normalized)[1].MaxInputTokens)
+}
+
+func TestBailianCombinedAndPageUnitPricesBecomeExecutable(t *testing.T) {
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 7.3
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
+
+	price := func(priceType, unit string) []BailianPriceRange {
+		return []BailianPriceRange{{
+			RangeName: "Default",
+			Prices: []BailianPrice{{Type: priceType, Price: "7.3", PriceUnit: unit, TimeBand: "standard"}},
+		}}
+	}
+	catalog := &BailianCatalog{
+		ChannelID: 17,
+		Region:    BailianRegionBeijing,
+		FetchedAt: time.Now(),
+		Models: []BailianModel{
+			{Model: "combined-token", Prices: price("combined_input_output", "每百万tokens")},
+			{Model: "page-token", Prices: price("page_unit_price", "每千tokens")},
+			{Model: "page-call", Prices: price("page_unit_price", "每次")},
+		},
+	}
+	names := []string{"combined-token", "page-token", "page-call"}
+	records := BailianPricingRecords(catalog, names)
+	require.Len(t, records, 3)
+
+	for index, name := range names {
+		var normalized model.ChannelOfficialPricing
+		require.NoError(t, common.UnmarshalJsonStr(records[index].NormalizedPricing, &normalized))
+		require.False(t, normalized.NeedsReview, "%s stayed review-only: %v", name, normalized.ReviewReasons)
+	}
+
+	var combined model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[0].NormalizedPricing, &combined))
+	require.NotNil(t, bailianTestTiers(combined)[0].InputPerMillionUSD)
+	require.NotNil(t, bailianTestTiers(combined)[0].OutputPerMillionUSD)
+	assert.InDelta(t, 1, bailianTestTiers(combined)[0].InputPerMillionUSD.Float64(), 1e-9)
+	assert.InDelta(t, 1, bailianTestTiers(combined)[0].OutputPerMillionUSD.Float64(), 1e-9)
+
+	// 7.3 CNY per 1k tokens is 1 USD per 1k tokens, i.e. 1000 USD per 1M.
+	// The parser must keep the per-thousand unit so this scaling actually runs
+	// instead of leaving a unitless CNY amount.
+	var pageToken model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[1].NormalizedPricing, &pageToken))
+	require.NotNil(t, bailianTestTiers(pageToken)[0].InputPerMillionUSD)
+	assert.InDelta(t, 1000, bailianTestTiers(pageToken)[0].InputPerMillionUSD.Float64(), 1e-9)
+
+	var pageCall model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(records[2].NormalizedPricing, &pageCall))
+	require.NotNil(t, bailianTestTiers(pageCall)[0].PerUnitUSD)
+	assert.Equal(t, "per_call", bailianTestTiers(pageCall)[0].Unit)
 }
 
 func TestBailianTTSUnitsBecomeExecutablePrices(t *testing.T) {
@@ -710,7 +791,7 @@ func TestBailianVideoResolutionPricesBecomeUsageExpression(t *testing.T) {
 	var pricing model.ChannelInternalPricing
 	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
 	assert.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
-	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "1080P" ? 1 : 0.6`)
+	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "720P" ? 0.6 : 1`)
 	_, err := billingexpr.CompileFromCache(pricing.BillingExpr)
 	require.NoError(t, err)
 
@@ -744,9 +825,27 @@ func TestBailianVideoResolutionPricesBecomeUsageExpression(t *testing.T) {
 	require.NotEmpty(t, internal, "happyhorse is in the alibaba task plugin and gets a per-second expression")
 	require.NoError(t, common.UnmarshalJsonStr(internal, &pricing))
 	assert.Equal(t, model.ChannelPricingModeTieredExpr, pricing.Mode)
-	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "1080P" ? 1.2 : 0.9`)
+	assert.Contains(t, pricing.BillingExpr, `u("resolution") == "720P" ? 0.9 : 1.2`)
 	_, err = billingexpr.CompileFromCache(pricing.BillingExpr)
 	require.NoError(t, err)
+
+	// When the plugin omits `resolution`, the conservative default must be the
+	// highest published tier. Falling back to the cheapest tier undercharges.
+	request := func(resolution string) billingexpr.RequestInput {
+		usage := map[string]any{"seconds": 3.0}
+		if resolution != "" {
+			usage["resolution"] = resolution
+		}
+		return billingexpr.RequestInput{Usage: usage}
+	}
+	withoutResolution, _, err := billingexpr.RunExprWithRequest(pricing.BillingExpr, billingexpr.TokenParams{}, request(""))
+	require.NoError(t, err)
+	at720, _, err := billingexpr.RunExprWithRequest(pricing.BillingExpr, billingexpr.TokenParams{}, request("720P"))
+	require.NoError(t, err)
+	at1080, _, err := billingexpr.RunExprWithRequest(pricing.BillingExpr, billingexpr.TokenParams{}, request("1080P"))
+	require.NoError(t, err)
+	assert.InDelta(t, at1080, withoutResolution, 1e-6, "missing resolution must use the highest published price")
+	assert.Greater(t, withoutResolution, at720)
 }
 
 func TestBailianSilentNonBillableRowsAreFlagged(t *testing.T) {
@@ -762,14 +861,22 @@ func TestBailianSilentNonBillableRowsAreFlagged(t *testing.T) {
 	view := bailianOfficialPricing(inputOnly, BailianRegionBeijing, 1, 100)
 	assert.Contains(t, view.ReviewReasons, "no executable price can be derived")
 
-	batchOnly := BailianModel{Model: "wan2.6-t2v", Prices: []BailianPriceRange{{
+	batchOnly := BailianModel{Model: "non-plugin-batch-model", Prices: []BailianPriceRange{{
 		RangeName: "Default", Prices: []BailianPrice{
 			{Type: "720P_batch", Price: "0.6", PriceUnit: "每秒"},
 			{Type: "1080P_batch", Price: "1", PriceUnit: "每秒"},
 		},
 	}}}
 	view = bailianOfficialPricing(batchOnly, BailianRegionBeijing, 1, 100)
-	assert.Contains(t, view.ReviewReasons, "no executable price can be derived")
+	assert.True(t, view.NeedsReview, "unknown batch-only rows must stay review-only")
+	assert.Empty(t, bailianInternalPricing(view))
+
+	// The Alibaba task plugin calls the async Batch Chat service, so the same
+	// batch-resolution rows are executable for its declared video models.
+	pluginBatch := BailianModel{Model: "wan2.6-t2v", Prices: batchOnly.Prices}
+	view = bailianOfficialPricing(pluginBatch, BailianRegionBeijing, 1, 100)
+	assert.Empty(t, view.ReviewReasons, view.ReviewReasons)
+	assert.NotEmpty(t, bailianInternalPricing(view))
 }
 
 func TestBailianImageDimensionPricesBecomeTaskExpression(t *testing.T) {
@@ -1220,4 +1327,176 @@ func TestBailianCacheCreationOrderIndependent(t *testing.T) {
 	require.NotNil(t, bailianTestTiers(view)[0].CreateCachePerMillionUSD)
 	assert.InDelta(t, 12.5, bailianTestTiers(view)[0].CreateCachePerMillionUSD.Float64(), 1e-9)
 	assert.NotEmpty(t, bailianInternalPricing(view))
+}
+
+func setupBailianRejudgeTestDB(t *testing.T) *gorm.DB {
+	t.Helper()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	require.NoError(t, err)
+	require.NoError(t, db.AutoMigrate(&model.ChannelModelPricing{}))
+	previous := model.DB
+	model.DB = db
+	t.Cleanup(func() { model.DB = previous })
+	return db
+}
+
+func bailianRejudgeNormalizedPricing(t *testing.T, priceKind string, source string, reasons []string) string {
+	t.Helper()
+	input := model.MoneyFromFloat(1)
+	output := model.MoneyFromFloat(2)
+	raw := model.MoneyFromFloat(10)
+	view := model.ChannelOfficialPricing{
+		Currency:           "CNY",
+		NormalizedCurrency: "USD",
+		Unit:               "per_1m_token",
+		PriceKind:          priceKind,
+		Source:             source,
+		FetchedAt:          1,
+		NeedsReview:        true,
+		ReviewReasons:      reasons,
+		Tiers: []model.ChannelPricingTier{{
+			RangeName:           "Default",
+			Unit:                "per_1m_tokens",
+			InputPerMillionUSD:  &input,
+			OutputPerMillionUSD: &output,
+			RawComponents: []model.ChannelPricingRawComponent{{
+				Type: "input_token", RawAmount: raw,
+				RawCurrency: "CNY", RawUnit: "每百万tokens",
+			}},
+		}},
+	}
+	encoded, err := common.Marshal(view)
+	require.NoError(t, err)
+	return string(encoded)
+}
+
+func insertBailianRejudgeRow(t *testing.T, db *gorm.DB, modelName string, normalized string) model.ChannelModelPricing {
+	t.Helper()
+	row := model.ChannelModelPricing{
+		ChannelId:         1273,
+		Provider:          "alibaba-bailian",
+		ModelName:         modelName,
+		Currency:          "CNY",
+		NormalizedPricing: normalized,
+		OfficialPricing:   `{}`,
+		PricingSource:     "https://help.aliyun.com/zh/model-studio/model-pricing",
+		PricingStatus:     model.ChannelPricingStatusNeedsReview,
+		FetchedAt:         1,
+	}
+	require.NoError(t, db.Create(&row).Error)
+	return row
+}
+
+func TestRejudgeBailianOfficialListCrossCheckDryRunDoesNotWrite(t *testing.T) {
+	db := setupBailianRejudgeTestDB(t)
+	normalized := bailianRejudgeNormalizedPricing(t, "OFFICIAL_LIST",
+		"https://help.aliyun.com/zh/model-studio/model-pricing",
+		[]string{bailianCrossCheckInputDisagreementReason})
+	insertBailianRejudgeRow(t, db, "qwen-dry-run", normalized)
+
+	result, err := RejudgeBailianOfficialListCrossCheck(1273, false)
+	require.NoError(t, err)
+	assert.Equal(t, 1, result.Scanned)
+	assert.Equal(t, 1, result.Eligible)
+	assert.Equal(t, []string{"qwen-dry-run"}, result.WouldApply)
+	assert.Empty(t, result.Rejudged)
+
+	var row model.ChannelModelPricing
+	require.NoError(t, db.Where("model_name = ?", "qwen-dry-run").First(&row).Error)
+	assert.Equal(t, model.ChannelPricingStatusNeedsReview, row.PricingStatus)
+	assert.Empty(t, row.InternalPricing)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.NormalizedPricing, &view))
+	assert.True(t, view.NeedsReview)
+}
+
+func TestRejudgeBailianOfficialListCrossCheckRestoresConfiguredPrice(t *testing.T) {
+	db := setupBailianRejudgeTestDB(t)
+	normalized := bailianRejudgeNormalizedPricing(t, "OFFICIAL_LIST",
+		"https://help.aliyun.com/zh/model-studio/model-pricing",
+		[]string{bailianCrossCheckInputDisagreementReason})
+	insertBailianRejudgeRow(t, db, "qwen-restored", normalized)
+
+	result, err := RejudgeBailianOfficialListCrossCheck(1273, true)
+	require.NoError(t, err)
+	assert.Equal(t, []string{"qwen-restored"}, result.Rejudged)
+	assert.Empty(t, result.Skipped)
+
+	var row model.ChannelModelPricing
+	require.NoError(t, db.Where("model_name = ?", "qwen-restored").First(&row).Error)
+	assert.Equal(t, model.ChannelPricingStatusConfigured, row.PricingStatus)
+	assert.Equal(t, model.ChannelPricingOwnerAuto, row.PricingOwner)
+	var view model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.NormalizedPricing, &view))
+	assert.False(t, view.NeedsReview)
+	assert.Empty(t, view.ReviewReasons)
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(row.InternalPricing, &internal))
+	require.NotNil(t, internal.InputUSDPerMillion)
+	assert.InDelta(t, 1.1, internal.InputUSDPerMillion.Float64(), 1e-9)
+	assert.Equal(t, bailianCatalogSource, internal.Source)
+}
+
+func TestRejudgeBailianOfficialListCrossCheckKeepsIndependentReviewReason(t *testing.T) {
+	db := setupBailianRejudgeTestDB(t)
+	normalized := bailianRejudgeNormalizedPricing(t, "OFFICIAL_LIST",
+		"https://help.aliyun.com/zh/model-studio/model-pricing",
+		[]string{bailianCrossCheckInputDisagreementReason, "catalog lists no price"})
+	insertBailianRejudgeRow(t, db, "qwen-other-review", normalized)
+
+	result, err := RejudgeBailianOfficialListCrossCheck(1273, true)
+	require.NoError(t, err)
+	assert.Equal(t, 0, result.Eligible)
+	assert.Empty(t, result.Rejudged)
+
+	var row model.ChannelModelPricing
+	require.NoError(t, db.Where("model_name = ?", "qwen-other-review").First(&row).Error)
+	assert.Equal(t, model.ChannelPricingStatusNeedsReview, row.PricingStatus)
+	assert.Empty(t, row.InternalPricing)
+}
+
+func TestRejudgeBailianOfficialListCrossCheckSkipsDerivedPricing(t *testing.T) {
+	db := setupBailianRejudgeTestDB(t)
+	normalized := bailianRejudgeNormalizedPricing(t, "BILLING_EXPRESSION", "bailian-channel",
+		[]string{bailianCrossCheckInputDisagreementReason})
+	insertBailianRejudgeRow(t, db, "qwen-derived", normalized)
+
+	result, err := RejudgeBailianOfficialListCrossCheck(1273, true)
+	require.NoError(t, err)
+	assert.Equal(t, 0, result.Eligible)
+	assert.Empty(t, result.Rejudged)
+
+	var row model.ChannelModelPricing
+	require.NoError(t, db.Where("model_name = ?", "qwen-derived").First(&row).Error)
+	assert.Equal(t, model.ChannelPricingStatusNeedsReview, row.PricingStatus)
+}
+
+// Video task models publish several per-second resolution prices as distinct
+// ranges. These are exactly selectable by the plugin's `resolution` usage
+// fact, so they must not be flagged as ambiguous mixed-unit / unparseable-
+// context prices — that would leave every video model needs_review with an
+// empty sale price. This is the root cause of HappyHorse rows staying
+// unbillable even after a fresh official-page sync.
+func TestBailianVideoResolutionTiersAreNotFalseReview(t *testing.T) {
+	item := BailianModel{Model: "happyhorse-1.1-t2v", Prices: []BailianPriceRange{
+		{RangeName: "Default|480P", Prices: []BailianPrice{
+			{Type: "video_ratio_480p", Price: "0.45", PriceUnit: "每秒", Currency: "CNY"},
+		}},
+		{RangeName: "Default|720P", Prices: []BailianPrice{
+			{Type: "video_ratio_720p", Price: "0.9", PriceUnit: "每秒", Currency: "CNY"},
+		}},
+		{RangeName: "Default|1080P", Prices: []BailianPrice{
+			{Type: "video_ratio_1080p", Price: "1.2", PriceUnit: "每秒", Currency: "CNY"},
+		}},
+	}}
+	view := bailianOfficialPricing(item, BailianRegionBeijing, 7, 1700000000)
+	assert.NotContains(t, view.ReviewReasons, "mixed price units across tiers need manual pricing")
+	assert.NotContains(t, view.ReviewReasons, "context tier ranges could not be parsed")
+	assert.False(t, view.NeedsReview, "resolution tiers are executable, review=%v", view.ReviewReasons)
+
+	encoded := bailianInternalPricing(view)
+	require.NotEmpty(t, encoded, "resolution tiers must produce a sale price")
+	var internal model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(encoded, &internal))
+	assert.Contains(t, internal.BillingExpr, `u("resolution")`)
 }
