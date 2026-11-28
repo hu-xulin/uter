@@ -26,6 +26,14 @@ return 0
 
 // acquireUpstreamSyncLock prevents duplicate provider syncs across instances.
 // Without Redis the caller's in-process mutex remains the only guard.
+// AcquireUterRouteUpstreamSyncLock is the single cross-instance guard used by
+// both the scheduled Uter Route task and the manual sync endpoint. The manual
+// path previously relied on a process-local mutex only, so two instances could
+// race on the read-modify-write audit history and lose change records.
+func AcquireUterRouteUpstreamSyncLock(ctx context.Context) (func(), bool, error) {
+	return acquireUpstreamSyncLock(ctx, "uterroute-upstream")
+}
+
 func acquireUpstreamSyncLock(ctx context.Context, name string) (func(), bool, error) {
 	if !common.RedisEnabled || common.RDB == nil {
 		return func() {}, true, nil

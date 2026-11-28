@@ -42,6 +42,37 @@ func IsUterRouteHost(raw string) bool {
 	return MatchesUpstreamHost(raw, host)
 }
 
+// IsUterRouteEndpoint requires the full configured origin (scheme + host +
+// port), not just the hostname. Host-only matching would let a manual sync
+// aimed at the same loopback host but an arbitrary local port be treated as
+// the configured upstream.
+func IsUterRouteEndpoint(raw string) bool {
+	configured := strings.TrimSpace(UterRouteUpstreamBaseURL())
+	if configured == "" || strings.TrimSpace(raw) == "" {
+		return false
+	}
+	parse := func(value string) (*url.URL, bool) {
+		if !strings.Contains(value, "://") {
+			value = "https://" + value
+		}
+		parsed, err := url.Parse(strings.TrimSpace(value))
+		if err != nil || parsed.Scheme == "" || parsed.Host == "" {
+			return nil, false
+		}
+		return parsed, true
+	}
+	want, ok := parse(configured)
+	if !ok {
+		return false
+	}
+	got, ok := parse(raw)
+	if !ok {
+		return false
+	}
+	return strings.EqualFold(want.Scheme, got.Scheme) &&
+		strings.EqualFold(strings.TrimSuffix(want.Host, "."), strings.TrimSuffix(got.Host, "."))
+}
+
 // IsUterAPIHost reports whether the channel address belongs to Uter.api.
 func IsUterAPIHost(raw string) bool {
 	host := UterAPIUpstreamHost()
