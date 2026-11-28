@@ -229,10 +229,22 @@ func TestSyncUterAPIChannelPricingHighClaudeGroupResolvesRedirectAliases(t *test
 	encodedMapping, err := common.Marshal(mapping)
 	require.NoError(t, err)
 
+	modelItems := make([]map[string]string, 0, len(upstream))
+	for _, name := range upstream {
+		modelItems = append(modelItems, map[string]string{"id": name})
+	}
+	modelsPayload, err := common.Marshal(map[string]any{"data": modelItems})
+	require.NoError(t, err)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		require.Equal(t, "/api/pricing", r.URL.Path)
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write(raw)
+		switch r.URL.Path {
+		case "/api/pricing":
+			_, _ = w.Write(raw)
+		case "/v1/models":
+			_, _ = w.Write(modelsPayload)
+		default:
+			http.NotFound(w, r)
+		}
 	}))
 	t.Cleanup(server.Close)
 

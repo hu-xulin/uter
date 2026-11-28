@@ -244,15 +244,35 @@ func collectPendingUpstreamModelChangesFromModels(
 }
 
 func collectPendingUpstreamModelChanges(channel *model.Channel, settings dto.ChannelOtherSettings) (pendingAddModels []string, pendingRemoveModels []string, err error) {
-	upstreamModels, err := fetchChannelUpstreamModelIDs(channel)
+	return collectPendingUpstreamModelChangesWithContext(context.Background(), channel, settings)
+}
+
+func collectPendingUpstreamModelChangesWithContext(ctx context.Context, channel *model.Channel, settings dto.ChannelOtherSettings) (pendingAddModels []string, pendingRemoveModels []string, err error) {
+	var upstreamModels []string
+	if channel.Type == constant.ChannelTypeUterAPI {
+		// Auto-update must use the same authorization contract as creation:
+		// every enabled key's model list intersected with enable_groups.
+		upstreamModels, err = fetchAuthorizedUterAPIUpdateModelIDsWithContext(ctx, channel)
+	} else {
+		upstreamModels, err = fetchChannelUpstreamModelIDs(channel)
+	}
 	if err != nil {
 		return nil, nil, err
 	}
 	// A group-bound channel serves one model family; upstream occasionally
 	// answers /v1/models with the whole account catalogue, so never merge
-	// models the group key cannot call.
-	if group := service.GetGenericUpstreamBillingGroup(channel.Id); group != "" {
-		upstreamModels = service.FilterModelNamesByUpstreamGroup(group, upstreamModels)
+	// models the group key cannot call. fetchChannelUpstreamModelIDs already
+	// applies the same guard; keep this as a defensive second pass for callers
+	// that inject a custom upstream list in tests.
+	// Uter.api discovery already intersects every enabled key's /v1/models
+	// with the pricing document's enable_groups. The name-prefix heuristic is
+	// both redundant and wrong for custom group names, so skip it here.
+	if channel.Type != constant.ChannelTypeUterAPI {
+		if group := service.GetGenericUpstreamBillingGroup(channel.Id); group != "" {
+			upstreamModels = service.FilterModelNamesByUpstreamGroup(group, upstreamModels)
+		} else {
+			upstreamModels = service.FilterModelNamesByChannelName(channel.Name, upstreamModels)
+		}
 	}
 	pendingAddModels, pendingRemoveModels = collectPendingUpstreamModelChangesFromModels(
 		channel.GetModels(),
@@ -435,48 +455,34 @@ func fetchChannelUpstreamModelIDs(channel *model.Channel) ([]string, error) {
 	// URL or a throttled workspace endpoint was used. Surface the real result
 	// (including its error) so operators can correct the workspace endpoint.
 	if channel != nil && channel.Type == constant.ChannelTypeAli {
-		if err != nil || len(names) == 0 {
-			// A saved RAM AccessKey is the unattended, region-scoped source of
-			// truth when the API-key based workspace request is unavailable.
-			// Never substitute the built-in catalogue here.
-			if akNames, akErr := fetchBailianAKModelIDs(channel); akErr == nil && len(akNames) > 0 {
-				return akNames, nil
-			}
-		}
+		// Bailian has one model source: the workspace-scoped /api/v1/models
+		// catalog. No RAM OpenAPI or built-in catalogue fallback is allowed,
+		// because a second source would reintroduce conflicting model lists.
 		if err != nil {
 			return nil, err
 		}
+		if len(names) == 0 {
+			return nil, errors.New("bailian catalog returned no models")
+		}
 		return names, nil
 	}
-	return resolveCatalogModelFallback(names, err, model.BuiltinCatalogModelNames())
-}
-
-// fetchBailianAKModelIDs discovers region-scoped models with the RAM
-// AccessKey pair saved in System Settings → Channels → Uter Bailian. The
-// console login URL is read only as a region hint and never used as an API
-// endpoint; a missing region or invalid credential fails closed.
-func fetchBailianAKModelIDs(channel *model.Channel) ([]string, error) {
-	if channel == nil {
-		return nil, errors.New("bailian channel is required")
+	resolved, resolveErr := resolveCatalogModelFallback(names, err, model.BuiltinCatalogModelNames())
+	if channel != nil {
+		// Tiered channels (Claude-Basic/Pro/Max/Ultra, GPT-Pro/Max/Ultra) can be
+		// bound to the `default` group without an explicit upstream group, so
+		// the group-based guard in collectPendingUpstreamModelChanges never
+		// applies. A shared upstream key may answer /v1/models with the whole
+		// account catalogue, and the built-in fallback spans every family —
+		// either would let claude-* names leak into a GPT tier and vice versa.
+		// Guard at the single discovery entry point so creation, manual
+		// refresh and auto-sync all stay on the same model family.
+		if group := service.GetGenericUpstreamBillingGroup(channel.Id); group != "" {
+			resolved = service.FilterModelNamesByUpstreamGroup(group, resolved)
+		} else {
+			resolved = service.FilterModelNamesByChannelName(channel.Name, resolved)
+		}
 	}
-	credentials := service.BailianChannelProviderCredentials()
-	if err := service.ValidateBailianAccessKey(
-		credentials.AccessKeyID, credentials.AccessKeySecret,
-	); err != nil {
-		return nil, err
-	}
-	_, region, workspaceScoped := service.ParseBailianWorkspace(channel.GetBaseURL())
-	if !workspaceScoped || region == service.BailianRegionUnspecified {
-		region = service.BailianRegionFromConsoleURL(credentials.LoginURL)
-	}
-	if region == service.BailianRegionUnspecified {
-		return nil, service.ErrBailianRegionUnknown
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Second)
-	defer cancel()
-	return service.ListBailianOpenAPIModels(
-		ctx, region, credentials.AccessKeyID, credentials.AccessKeySecret,
-	)
+	return resolved, resolveErr
 }
 
 // resolveCatalogModelFallback keeps the live discovery result when it exists,
@@ -539,6 +545,24 @@ func fetchChannelUpstreamModelIDsFromUpstream(channel *model.Channel) ([]string,
 				ErrBailianWorkspaceEndpointRequired,
 			)
 		}
+		// One source for Bailian model identities: the workspace-scoped
+		// catalog. It is the same response used for metadata and prices, so
+		// discovery can never disagree with sync.
+		key, _, apiErr := channel.GetNextEnabledKey()
+		if apiErr != nil {
+			return nil, fmt.Errorf("failed to get channel key: %w", apiErr)
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		catalog, catalogErr := service.FetchBailianCatalog(ctx, baseURL, strings.TrimSpace(key))
+		if catalogErr != nil {
+			return nil, catalogErr
+		}
+		names := make([]string, 0, len(catalog.Models))
+		for _, item := range catalog.Models {
+			names = append(names, item.Model)
+		}
+		return normalizeModelNames(names), nil
 	}
 
 	if channel.Type == constant.ChannelTypeOllama {
@@ -599,8 +623,6 @@ func fetchChannelUpstreamModelIDsFromUpstream(channel *model.Channel) ([]string,
 
 	var url string
 	switch channel.Type {
-	case constant.ChannelTypeAli:
-		url = fmt.Sprintf("%s/compatible-mode/v1/models", baseURL)
 	case constant.ChannelTypeZhipu_v4:
 		if plan, ok := constant.ChannelSpecialBases[baseURL]; ok && plan.OpenAIBaseURL != "" {
 			url = fmt.Sprintf("%s/models", plan.OpenAIBaseURL)
@@ -660,6 +682,10 @@ func fetchChannelUpstreamModelIDsFromUpstream(channel *model.Channel) ([]string,
 // to send the key to an obsolete or attacker-supplied host. Existing channels
 // remain usable when the option is unset by falling back to their saved base.
 func fetchUterAPIModelIDs(channel *model.Channel) ([]string, error) {
+	return fetchUterAPIModelIDsWithContext(context.Background(), channel)
+}
+
+func fetchUterAPIModelIDsWithContext(ctx context.Context, channel *model.Channel) ([]string, error) {
 	if channel == nil {
 		return nil, errors.New("Uter.api channel is required")
 	}
@@ -675,9 +701,39 @@ func fetchUterAPIModelIDs(channel *model.Channel) ([]string, error) {
 		return nil, fmt.Errorf("failed to get channel key: %w", apiErr)
 	}
 	key = strings.TrimSpace(key)
-	models, err := service.OpenAIModelIDs(context.Background(), base, key)
+	models, err := service.OpenAIModelIDsWithUterAPICache(ctx, base, key)
 	if err != nil {
 		return nil, sanitizeFetchModelsError(err, key)
+	}
+	return normalizeModelNames(models), nil
+}
+
+// fetchAuthorizedUterAPIUpdateModelIDs is the auto-update-only discovery path.
+// Unlike the manual "fetch models" dialog it requires group authorization from
+// every enabled key, so automatic model additions cannot outrun the pricing
+// contract verified at channel creation.
+func fetchAuthorizedUterAPIUpdateModelIDs(channel *model.Channel) ([]string, error) {
+	return fetchAuthorizedUterAPIUpdateModelIDsWithContext(context.Background(), channel)
+}
+
+func fetchAuthorizedUterAPIUpdateModelIDsWithContext(ctx context.Context, channel *model.Channel) ([]string, error) {
+	if channel == nil {
+		return nil, errors.New("Uter.api channel is required")
+	}
+	base := strings.TrimSpace(uterapiBaseURL())
+	if base == "" {
+		base = strings.TrimSpace(channel.GetBaseURL())
+	}
+	if base == "" {
+		return nil, errors.New("Uter.api upstream endpoint is not configured")
+	}
+	group := strings.TrimSpace(service.GetGenericUpstreamBillingGroup(channel.Id))
+	if group == "" {
+		return nil, errors.New("Uter.api upstream billing group is not configured")
+	}
+	models, err := service.DiscoverAuthorizedUterAPIModels(ctx, base, group, channel.GetKeys())
+	if err != nil {
+		return nil, err
 	}
 	return normalizeModelNames(models), nil
 }
@@ -734,6 +790,17 @@ func checkAndPersistChannelUpstreamModelUpdates(
 	force bool,
 	allowAutoApply bool,
 ) (modelsChanged bool, autoAdded int, err error) {
+	return checkAndPersistChannelUpstreamModelUpdatesWithContext(context.Background(), channel, settings, force, allowAutoApply)
+}
+
+func checkAndPersistChannelUpstreamModelUpdatesWithContext(
+	ctx context.Context,
+	channel *model.Channel,
+	settings *dto.ChannelOtherSettings,
+	force bool,
+	allowAutoApply bool,
+) (modelsChanged bool, autoAdded int, err error) {
+	ctx, _ = service.WithUterAPIUpstreamCache(ctx)
 	now := common.GetTimestamp()
 	if !force {
 		minInterval := getUpstreamModelUpdateMinCheckIntervalSeconds()
@@ -743,7 +810,7 @@ func checkAndPersistChannelUpstreamModelUpdates(
 		}
 	}
 
-	pendingAddModels, pendingRemoveModels, fetchErr := collectPendingUpstreamModelChanges(channel, *settings)
+	pendingAddModels, pendingRemoveModels, fetchErr := collectPendingUpstreamModelChangesWithContext(ctx, channel, *settings)
 	settings.UpstreamModelUpdateLastCheckTime = now
 	if fetchErr != nil {
 		if err = updateChannelUpstreamModelSettings(channel, *settings, false); err != nil {
@@ -756,6 +823,23 @@ func checkAndPersistChannelUpstreamModelUpdates(
 		originModels := normalizeModelNames(channel.GetModels())
 		mergedModels := mergeModelNames(originModels, pendingAddModels)
 		if len(mergedModels) > len(originModels) {
+			// A newly adopted Uter.api model must be priced and proven billable
+			// before it can become part of the channel. Sync only the newly
+			// adopted models so existing auto-derived prices are not re-derived.
+			if channel.Type == constant.ChannelTypeUterAPI {
+				group := strings.TrimSpace(service.GetGenericUpstreamBillingGroup(channel.Id))
+				if group == "" {
+					return false, 0, errors.New("Uter.api upstream billing group is not configured")
+				}
+				pricingChannel := *channel
+				pricingChannel.Models = strings.Join(pendingAddModels, ",")
+				if _, _, _, priceErr := service.SyncUterAPIChannelPricing(ctx, &pricingChannel, group); priceErr != nil {
+					return false, 0, priceErr
+				}
+				if missing := unbillableChannelModels(channel.Id, mergedModels); len(missing) > 0 {
+					return false, 0, fmt.Errorf("pricing verification failed for models: %s", strings.Join(missing, ","))
+				}
+			}
 			channel.Models = strings.Join(mergedModels, ",")
 			autoAdded = len(mergedModels) - len(originModels)
 			modelsChanged = true
@@ -989,7 +1073,7 @@ scanLoop:
 			}
 
 			checkedChannels++
-			modelsChanged, autoAdded, err := checkAndPersistChannelUpstreamModelUpdates(channel, &settings, force, allowAutoApply)
+			modelsChanged, autoAdded, err := checkAndPersistChannelUpstreamModelUpdatesWithContext(ctx, channel, &settings, force, allowAutoApply)
 			if err != nil {
 				failedChannels++
 				failedChannelIDs = append(failedChannelIDs, channel.Id)
@@ -1172,7 +1256,7 @@ func DetectChannelUpstreamModelUpdates(c *gin.Context) {
 	}
 
 	settings := channel.GetOtherSettings()
-	modelsChanged, autoAdded, err := checkAndPersistChannelUpstreamModelUpdates(channel, &settings, true, false)
+	modelsChanged, autoAdded, err := checkAndPersistChannelUpstreamModelUpdatesWithContext(c.Request.Context(), channel, &settings, true, false)
 	if err != nil {
 		common.ApiError(c, err)
 		return

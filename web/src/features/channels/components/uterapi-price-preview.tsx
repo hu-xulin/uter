@@ -86,10 +86,19 @@ export function UterApiPricePreview({
           )}
         </p>
         {preview ? (
-          <p className='text-muted-foreground text-sm'>
-            {t('Group')}: {preview.group_name || preview.group} · {t('Ratio')}:{' '}
-            {preview.ratio}
-          </p>
+          <>
+            <p className='text-muted-foreground text-sm'>
+              {t('Group')}: {preview.group_name || preview.group} · {t('Ratio')}
+              : {preview.ratio}
+            </p>
+            {preview.authenticated === false ? (
+              <p className='border-warning-soft bg-warning-soft text-warning-soft-foreground rounded-lg border p-2 text-sm'>
+                {t(
+                  'Public catalog reference prices: no upstream credential was available, so model availability is unverified.'
+                )}
+              </p>
+            ) : null}
+          </>
         ) : null}
       </div>
       {body}

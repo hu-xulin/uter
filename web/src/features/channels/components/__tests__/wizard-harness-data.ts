@@ -227,6 +227,7 @@ export function setupWizardApiMocks(
             ratio: groups.find((g) => g.key === group)?.ratio ?? 1,
             currency: 'USD',
             fetched_at: 1,
+            authenticated: true,
             items: items ?? [],
           },
         },

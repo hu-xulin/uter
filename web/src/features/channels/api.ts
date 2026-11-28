@@ -299,6 +299,7 @@ export type UterAPIPricePreview = {
   ratio: number
   currency: string
   fetched_at: number
+  authenticated: boolean
   items: ChannelModelPricingRecord[]
 }
 

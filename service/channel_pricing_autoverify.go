@@ -21,8 +21,18 @@ const (
 // failed rule is surfaced as a system error; the review gate already prevents
 // an automatic price from billing.
 func AutoVerifyChannelPricing(channelID int) {
+	AutoVerifyChannelPricingWithContext(context.Background(), channelID)
+}
+
+// AutoVerifyChannelPricingWithContext is the context-aware form used by
+// Uter.api operations. An operation-scoped Uter.api cache in ctx is reused by
+// catalog parity so the sync and its verification inspect one snapshot.
+func AutoVerifyChannelPricingWithContext(ctx context.Context, channelID int) {
 	if channelID <= 0 {
 		return
+	}
+	if ctx == nil {
+		ctx = context.Background()
 	}
 	report, err := ReconcileChannelUpstreamBilling(channelID)
 	if err != nil {
@@ -42,13 +52,20 @@ func AutoVerifyChannelPricing(channelID int) {
 			channelID, report.Status, report.Summary[UpstreamReconcileRuleFailed],
 		))
 	}
-	autoVerifyChannelCatalog(channelID)
+	autoVerifyChannelCatalogWithContext(ctx, channelID)
 }
 
 // autoVerifyChannelCatalog compares the provider's complete catalog with Uter's
 // rows after each successful sync and persists the result for audit. A provider
 // without a catalog adapter records no completeness claim.
 func autoVerifyChannelCatalog(channelID int) {
+	autoVerifyChannelCatalogWithContext(context.Background(), channelID)
+}
+
+func autoVerifyChannelCatalogWithContext(ctx context.Context, channelID int) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	channel, err := model.GetChannelById(channelID, true)
 	if err != nil || channel == nil {
 		return
@@ -62,17 +79,44 @@ func autoVerifyChannelCatalog(channelID int) {
 	if key, _, keyErr := channel.GetNextEnabledKey(); keyErr == nil {
 		apiKey = strings.TrimSpace(key)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), channelPricingCatalogVerifyTimeout)
+	ctx, cancel := context.WithTimeout(ctx, channelPricingCatalogVerifyTimeout)
 	defer cancel()
 	models, catalogErr := FetchUpstreamModelNames(ctx, provider.ID, UpstreamFetchConfig{
 		BaseURL: baseURL, APIKey: apiKey, ChannelID: channelID,
 	})
+	// Uter.api group keys see a subset of the account-wide pricing document.
+	// Completeness must be measured against that authorized subset, otherwise
+	// every other group's model is falsely reported as MODEL_MISSING.
+	if provider.ID == "uterapi" {
+		group := GetGenericUpstreamBillingGroup(channelID)
+		if group == "" {
+			return
+		}
+		models, catalogErr = DiscoverAuthorizedUterAPIModels(ctx, baseURL, group, enabledUterAPIKeys(channel))
+	}
 	if catalogErr != nil {
 		return
 	}
 	rows, err := model.ListChannelModelPricing(channelID)
 	if err != nil {
 		return
+	}
+	// Uter.api redirected channels store price rows under request aliases while
+	// the authorization catalogue uses upstream names. Compare both on the
+	// upstream identity so aliases are not misread as missing models.
+	if provider.ID == "uterapi" {
+		var mapping map[string]string
+		if raw := strings.TrimSpace(channel.GetModelMapping()); raw != "" {
+			_ = common.UnmarshalJsonStr(raw, &mapping)
+		}
+		parityRows := make([]model.ChannelModelPricing, len(rows))
+		copy(parityRows, rows)
+		for i := range parityRows {
+			if resolved, cyclic := followUterRouteModelMapping(mapping, parityRows[i].ModelName); !cyclic && resolved != "" {
+				parityRows[i].ModelName = resolved
+			}
+		}
+		rows = parityRows
 	}
 	parity := BuildUpstreamParityReportWithCatalog(channelID, channel.Name, rows, models, time.Now().UTC())
 	encoded, err := common.Marshal(parity)

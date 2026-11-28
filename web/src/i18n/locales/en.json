@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Endpoint source": "Endpoint source",
     "From channel": "From channel",
     "Enter manually": "Enter manually",
@@ -12,9 +15,6 @@
     "API address and key are read from channel management; the key is stored encrypted and never shown in full.": "API address and key are read from channel management; the key is stored encrypted and never shown in full.",
     "Choose a channel": "Choose a channel",
     "Manual endpoint": "Manual endpoint",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "No saved credentials for this provider in System Settings": "No saved credentials for this provider in System Settings",
     "Auto fill from settings": "Auto fill from settings",
     "System settings are still loading": "System settings are still loading",
@@ -3105,6 +3105,8 @@
     "Fetch": "Fetch",
     "Fetch available models for:": "Fetch available models for:",
     "Fetch available models from upstream": "Fetch available models from upstream",
+    "No official price (confirmed)": "No official price (confirmed)",
+    "No channel price (confirmed)": "No channel price (confirmed)",
     "Fetch from Upstream": "Fetch from Upstream",
     "Fetch mode": "Fetch mode",
     "Fetch Models": "Fetch Models",
@@ -8713,6 +8715,7 @@
     "Could not preview prices for this group.": "Could not preview prices for this group.",
     "No published prices for this group.": "No published prices for this group.",
     "Official and channel prices from the Uter.api catalog for the selected group.": "Official and channel prices from the Uter.api catalog for the selected group.",
+    "Public catalog reference prices: no upstream credential was available, so model availability is unverified.": "Public catalog reference prices: no upstream credential was available, so model availability is unverified.",
     "Automatic price fetch is unavailable": "Automatic price fetch is unavailable",
     "This channel type does not publish machine-readable prices. Configure official and sale prices manually after creation.": "This channel type does not publish machine-readable prices. Configure official and sale prices manually after creation.",
     "Updates follow the created channels": "Updates follow the created channels",
@@ -8948,6 +8951,10 @@
     "Discount: Low to High": "Discount: Low to High",
     "Discount: High to Low": "Discount: High to Low",
     "Time: Newest to Oldest": "Time: Newest to Oldest",
-    "Time: Oldest to Newest": "Time: Oldest to Newest"
+    "Time: Oldest to Newest": "Time: Oldest to Newest",
+    "Low to High": "Low to High",
+    "High to Low": "High to Low",
+    "Newest to Oldest": "Newest to Oldest",
+    "Oldest to Newest": "Oldest to Newest"
   }
 }

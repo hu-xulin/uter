@@ -146,27 +146,54 @@ func SetGenericUpstreamBillingGroup(channelID int, group string) error {
 	return model.UpdateOption(GenericUpstreamBillingGroupKey, string(encoded))
 }
 
+// upstreamModelFamily 从 upstream 分组名或渠道展示名推断该渠道服务的模型族。
+// Claude 档位渠道（Claude-Basic/Pro/Max/Ultra）只能看到 claude-* 模型，
+// GPT/Codex 档位渠道只能看到 gpt-* 模型。返回空表示无法判断，不做过滤。
+func upstreamModelFamily(name string) string {
+	lower := strings.ToLower(strings.TrimSpace(name))
+	switch {
+	case strings.HasPrefix(lower, "claude"):
+		return "claude"
+	case strings.HasPrefix(lower, "codex"), strings.HasPrefix(lower, "gpt"):
+		return "gpt"
+	default:
+		return ""
+	}
+}
+
 // FilterModelNamesByUpstreamGroup keeps only the model family an upstream
 // group can serve: Claude groups see Claude models, Codex/GPT groups see GPT
 // models. Groups outside those families, and answers that match nothing, keep
 // every name so an upstream rename cannot silently empty a channel.
 func FilterModelNamesByUpstreamGroup(group string, models []string) []string {
-	lower := strings.ToLower(strings.TrimSpace(group))
-	var family string
-	switch {
-	case strings.HasPrefix(lower, "claude"):
-		family = "claude"
-	case strings.HasPrefix(lower, "codex"), strings.HasPrefix(lower, "gpt"):
-		family = "gpt"
-	default:
+	family := upstreamModelFamily(group)
+	if family == "" {
 		return models
 	}
+	return filterModelNamesByFamily(family, models)
+}
+
+// FilterModelNamesByChannelName applies the same family guard using the
+// channel's display name. Tiered channels such as Claude-Pro / GPT-Max are
+// bound to the `default` group, so the group-based guard alone cannot stop an
+// account-wide /v1/models answer (or the built-in catalog fallback) from
+// polluting one family's channel with the other family's models.
+func FilterModelNamesByChannelName(channelName string, models []string) []string {
+	family := upstreamModelFamily(channelName)
+	if family == "" {
+		return models
+	}
+	return filterModelNamesByFamily(family, models)
+}
+
+func filterModelNamesByFamily(family string, models []string) []string {
 	kept := make([]string, 0, len(models))
 	for _, name := range models {
 		if strings.Contains(strings.ToLower(name), family) {
 			kept = append(kept, name)
 		}
 	}
+	// 上游改名/族内无匹配时保留原列表，避免误把渠道清空。
 	if len(kept) == 0 {
 		return models
 	}
@@ -671,8 +698,19 @@ func SyncGenericChannelPricingWithModels(ctx context.Context, channel *model.Cha
 		if group == "" {
 			return 0, nil, errors.New("Uter.api channel has no upstream billing group; refuse catalogue-price sync")
 		}
-		written, _, _, err := SyncUterAPIChannelPricing(ctx, channel, group)
-		return written, nil, err
+		ctx, _ = WithUterAPIUpstreamCache(ctx)
+		written, discovered, _, _, err := RefreshUterAPIChannelPricing(ctx, channel, group)
+		if err != nil {
+			AppendUterAPIObservabilityEvent(
+				UterAPIEventSyncFailed, "error", channel.Id, group,
+				err.Error(), time.Now().UTC(),
+			)
+			return written, discovered, err
+		}
+		// The refresh kernel no longer verifies by itself: this manual/generic
+		// boundary owns the single verification after the price rows are saved.
+		AutoVerifyChannelPricingWithContext(ctx, channel.Id)
+		return written, discovered, nil
 	}
 	release, acquired, err := acquireChannelPricingSyncLock(channel.Id)
 	if err != nil {
@@ -951,7 +989,18 @@ func runGenericUpstreamSync(ctx context.Context, force bool) {
 const genericUpstreamSyncStateKey = "GenericUpstreamSyncState"
 
 func genericSyncStateFor(channelID int) int64 {
-	raw := strings.TrimSpace(common.GetOption(genericUpstreamSyncStateKey))
+	return syncStateFor(genericUpstreamSyncStateKey, channelID)
+}
+
+func setGenericSyncState(channelID int, at int64) {
+	setSyncState(genericUpstreamSyncStateKey, channelID, at)
+}
+
+// syncStateFor and setSyncState keep per-provider sync timestamps in separate
+// option keys while sharing one storage format. A provider must never clear or
+// advance another provider's cadence by reusing these helpers with its own key.
+func syncStateFor(optionKey string, channelID int) int64 {
+	raw := strings.TrimSpace(common.GetOption(optionKey))
 	if raw == "" {
 		return 0
 	}
@@ -962,15 +1011,15 @@ func genericSyncStateFor(channelID int) int64 {
 	return state[fmt.Sprintf("%d", channelID)]
 }
 
-func setGenericSyncState(channelID int, at int64) {
+func setSyncState(optionKey string, channelID int, at int64) {
 	state := map[string]int64{}
-	if raw := strings.TrimSpace(common.GetOption(genericUpstreamSyncStateKey)); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(optionKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &state)
 	}
 	state[fmt.Sprintf("%d", channelID)] = at
 	raw, err := common.Marshal(state)
 	if err == nil {
-		_ = model.UpdateOption(genericUpstreamSyncStateKey, string(raw))
+		_ = model.UpdateOption(optionKey, string(raw))
 	}
 }
 
@@ -1062,19 +1111,38 @@ type genericSyncBackoff struct {
 }
 
 func genericBackoffState() map[string]genericSyncBackoff {
+	return syncBackoffState(genericUpstreamBackoffKey)
+}
+
+func genericBackoffActive(channelID int, now time.Time) bool {
+	return backoffActive(genericUpstreamBackoffKey, channelID, now)
+}
+
+func recordGenericSyncFailure(channelID int, now time.Time) {
+	recordSyncFailure(genericUpstreamBackoffKey, channelID, now)
+}
+
+func clearGenericSyncFailure(channelID int) {
+	clearSyncFailure(genericUpstreamBackoffKey, channelID)
+}
+
+// syncBackoffState and its helpers share one exponential-backoff format across
+// providers. Callers must pass that provider's dedicated option key so a
+// failure in one upstream cannot throttle a different upstream.
+func syncBackoffState(optionKey string) map[string]genericSyncBackoff {
 	state := map[string]genericSyncBackoff{}
-	if raw := strings.TrimSpace(common.GetOption(genericUpstreamBackoffKey)); raw != "" {
+	if raw := strings.TrimSpace(common.GetOption(optionKey)); raw != "" {
 		_ = common.UnmarshalJsonStr(raw, &state)
 	}
 	return state
 }
 
-func genericBackoffActive(channelID int, now time.Time) bool {
-	return genericBackoffState()[fmt.Sprintf("%d", channelID)].NextAttempt > now.Unix()
+func backoffActive(optionKey string, channelID int, now time.Time) bool {
+	return syncBackoffState(optionKey)[fmt.Sprintf("%d", channelID)].NextAttempt > now.Unix()
 }
 
-func recordGenericSyncFailure(channelID int, now time.Time) {
-	state := genericBackoffState()
+func recordSyncFailure(optionKey string, channelID int, now time.Time) {
+	state := syncBackoffState(optionKey)
 	entry := state[fmt.Sprintf("%d", channelID)]
 	entry.Failures++
 	backoff := time.Minute << min(entry.Failures-1, 6)
@@ -1084,18 +1152,18 @@ func recordGenericSyncFailure(channelID int, now time.Time) {
 	entry.NextAttempt = now.Add(backoff).Unix()
 	state[fmt.Sprintf("%d", channelID)] = entry
 	if raw, err := common.Marshal(state); err == nil {
-		_ = model.UpdateOption(genericUpstreamBackoffKey, string(raw))
+		_ = model.UpdateOption(optionKey, string(raw))
 	}
 }
 
-func clearGenericSyncFailure(channelID int) {
-	state := genericBackoffState()
+func clearSyncFailure(optionKey string, channelID int) {
+	state := syncBackoffState(optionKey)
 	key := fmt.Sprintf("%d", channelID)
 	if _, ok := state[key]; !ok {
 		return
 	}
 	delete(state, key)
 	if raw, err := common.Marshal(state); err == nil {
-		_ = model.UpdateOption(genericUpstreamBackoffKey, string(raw))
+		_ = model.UpdateOption(optionKey, string(raw))
 	}
 }

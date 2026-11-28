@@ -90,6 +90,7 @@ test('Uter.api preview shows official and channel prices for the selected group'
         ratio: 0.5,
         currency: 'USD',
         fetched_at: 1,
+        authenticated: true,
         items: [previewItem()],
       },
     },
@@ -104,6 +105,31 @@ test('Uter.api preview shows official and channel prices for the selected group'
     String(url).includes('/uterapi/price-preview')
   )
   expect(call?.[1]).toMatchObject({ params: { group: 'Codex' } })
+})
+
+test('Uter.api preview labels public-catalog fallback as reference only', async () => {
+  vi.spyOn(api, 'get').mockResolvedValue({
+    data: {
+      success: true,
+      data: {
+        group: 'Codex',
+        group_name: 'Codex · Standard',
+        ratio: 0.5,
+        currency: 'USD',
+        fetched_at: 1,
+        authenticated: false,
+        items: [previewItem()],
+      },
+    },
+  })
+  renderPreview('Codex')
+
+  expect(
+    await screen.findByText(
+      'Public catalog reference prices: no upstream credential was available, so model availability is unverified.'
+    )
+  ).toBeVisible()
+  expect(await screen.findByText('gpt-a')).toBeVisible()
 })
 
 test('Uter.api preview asks for a group before querying', () => {

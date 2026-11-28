@@ -202,6 +202,7 @@ beforeEach(() => {
             ratio: 2.5,
             currency: 'USD',
             fetched_at: 1,
+            authenticated: true,
             items: [
               {
                 channel_id: 0,

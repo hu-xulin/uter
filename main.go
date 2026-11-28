@@ -218,6 +218,7 @@ func main() {
 	// 模型目录与折扣，只写该渠道的 channel_model_pricing。
 	go service.UterRouteUpstreamSyncTask()
 	go service.BailianUpstreamSyncTask()
+	go service.UterAPIUpstreamSyncTask()
 	go service.GenericUpstreamSyncTask()
 	go service.DraftChannelCleanupTask()
 

@@ -159,6 +159,10 @@ func CreateUterAPIChannels(c *gin.Context) {
 		common.ApiErrorMsg(c, "Uter.api upstream endpoint is not configured")
 		return
 	}
+	// One create request shares a single upstream snapshot across discovery,
+	// authorization, price sync and auto verification. The cache lives only in
+	// this request context, so the next operation still fetches fresh prices.
+	ctx, _ := service.WithUterAPIUpstreamCache(c.Request.Context())
 	// 优特订阅（Uter.api）也复用系统设置里的订阅密钥槽位：浏览器只拿到掩码，
 	// 无法把明文填进输入框，因此由服务端在 slot 没带 key 时按分组补齐，并沿用
 	// 该槽位保存的添加模式。与通用 AddChannel 使用同一真源（subscription 组），
@@ -173,7 +177,7 @@ func CreateUterAPIChannels(c *gin.Context) {
 		name := slot.Name
 		keys := slot.Keys
 		upstreamGroup := slot.Group
-		discovered, usableKeys, discoveryErr := discoverUterAPIModels(c.Request.Context(), keys)
+		discovered, usableKeys, discoveryErr := discoverUterAPIModels(ctx, keys)
 		if len(usableKeys) == 0 {
 			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": common.LogText("model discovery failed: %s", discoveryErr)})
 			lastErr = discoveryErr
@@ -182,7 +186,7 @@ func CreateUterAPIChannels(c *gin.Context) {
 		// 分组归属只依据上游 /api/pricing 的 enable_groups 和该 Key 实际可见的
 		// 模型目录，不再用模型名称中的 claude/gpt 关键字推断。
 		models, authErr := service.AuthorizedUterAPIModels(
-			c.Request.Context(), base, upstreamGroup, usableKeys, discovered,
+			ctx, base, upstreamGroup, usableKeys, discovered,
 		)
 		if authErr != nil || len(models) == 0 {
 			reason := "no model is authorized for the selected group"
@@ -280,7 +284,7 @@ func CreateUterAPIChannels(c *gin.Context) {
 		pricingErr := ""
 		priceRatio := 1.0
 		groupName := ""
-		if count, ratio, resolvedGroup, syncErr := service.SyncUterAPIChannelPricing(c.Request.Context(), createdChannel, upstreamGroup); syncErr != nil {
+		if count, ratio, resolvedGroup, syncErr := service.SyncUterAPIChannelPricing(ctx, createdChannel, upstreamGroup); syncErr != nil {
 			pricingErr = syncErr.Error()
 			common.SysError(common.LogText("Uter.api price sync failed after create: channel_id=%d, error=%v", channel.Id, syncErr))
 		} else {
@@ -453,7 +457,7 @@ func discoverUterAPIModels(ctx context.Context, keys []string) ([]string, []stri
 	lastErr := ""
 	perKey := make([][]string, 0, len(keys))
 	for _, key := range keys {
-		found, err := service.OpenAIModelIDs(ctx, uterapiBaseURL(), key)
+		found, err := service.OpenAIModelIDsWithUterAPICache(ctx, uterapiBaseURL(), key)
 		if err != nil {
 			lastErr = err.Error()
 			continue
@@ -494,7 +498,8 @@ func discoverUterAPIModels(ctx context.Context, keys []string) ([]string, []stri
 // GetUterAPIPricingGroups lists the upstream billing groups and their price
 // multipliers so the create flow can bind a key to the group it was issued for.
 func GetUterAPIPricingGroups(c *gin.Context) {
-	groups, err := service.FetchUterAPIPricingGroups(c.Request.Context())
+	ctx, _ := service.WithUterAPIUpstreamCache(c.Request.Context())
+	groups, err := service.FetchUterAPIPricingGroups(ctx)
 	if err != nil {
 		common.ApiErrorMsg(c, err.Error())
 		return

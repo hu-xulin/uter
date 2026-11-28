@@ -15,6 +15,7 @@ import (
 	"github.com/uter-ai/uter/model"
 	"github.com/uter-ai/uter/relaykit/dto"
 	"github.com/uter-ai/uter/service"
+	"github.com/uter-ai/uter/setting/operation_setting"
 )
 
 func setupUterAPIRecipeDB(t *testing.T) {
@@ -42,8 +43,8 @@ func newUterAPISlotServer(t *testing.T) *httptest.Server {
 		case r.URL.Path == "/api/pricing":
 			_, _ = w.Write([]byte(`{
 				"success": true,
-				"group_ratio": {"Claude-max": 2.5, "Codex Pro": 0.4},
-				"group_display": {"Claude-max": {"name":"Claude Code · 标准（稳定）"}, "Codex Pro": {"name":"Codex · 标准（稳定）"}},
+				"group_ratio": {"Claude-max": 2.5, "Codex Pro": 0.4, "Claude-kiro": 2.5, "Claude-稳定": 2.5, "Codex-企业稳定-专线毫秒响应": 0.4},
+				"group_display": {"Claude-max": {"name":"Claude Code · 标准（稳定）"}, "Codex Pro": {"name":"Codex · 标准（稳定）"}, "Claude-kiro": {"name":"Claude · Kiro"}, "Claude-稳定": {"name":"Claude · 稳定"}, "Codex-企业稳定-专线毫秒响应": {"name":"Codex · 企业专线"}},
 				"data": [
 					{"model_name":"claude-a","enable_groups":["Claude-max","Claude-kiro","Claude-稳定","Codex Pro"],"billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 1 + c * 2)"},
 					{"model_name":"gpt-a","enable_groups":["Codex Pro"],"billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 3 + c * 6)"}
@@ -121,25 +122,21 @@ func TestCreateUterAPIChannelsCreatesOneChannelPerSlot(t *testing.T) {
 // 价格同步失败时渠道必须保持禁用，且声明为渠道独立定价待验证状态。
 func TestCreateUterAPIChannelsKeepsChannelDisabledWhenPricingFails(t *testing.T) {
 	setupUterAPIRecipeDB(t)
-	// 第一次请求用于分组授权校验，第二次用于渠道价格同步；第二次失败模拟
+	// 授权校验沿用同一份上游快照；价格同步在汇率无效时失败，模拟
 	// “渠道已创建、价格同步失败”的真实场景。
-	pricingCalls := 0
+	previousRate := operation_setting.USDExchangeRate
+	operation_setting.USDExchangeRate = 0
+	t.Cleanup(func() { operation_setting.USDExchangeRate = previousRate })
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
 		case "/v1/models":
 			_, _ = w.Write([]byte(`{"data":[{"id":"claude-a"}]}`))
 		case "/api/pricing":
-			pricingCalls++
-			if pricingCalls != 2 {
-				_, _ = w.Write([]byte(`{"success":true,"data":[
-					{"model_name":"claude-a","enable_groups":["Claude-max"],
-					 "billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 1 + c * 2)"}
-				],"group_ratio":{"Claude-max":2}}`))
-				return
-			}
-			w.WriteHeader(http.StatusInternalServerError)
-			_, _ = w.Write([]byte(`{"error":"upstream down"}`))
+			_, _ = w.Write([]byte(`{"success":true,"data":[
+				{"model_name":"claude-a","enable_groups":["Claude-max"],
+				 "billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 1 + c * 2)"}
+			],"group_ratio":{"Claude-max":2}}`))
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}

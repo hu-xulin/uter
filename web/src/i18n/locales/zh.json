@@ -1,5 +1,8 @@
 {
   "translation": {
+    "360": "360",
+    "1000": "1000",
+    "10000": "10000",
     "Endpoint source": "端点来源",
     "From channel": "从渠道选择",
     "Enter manually": "手动填写",
@@ -12,9 +15,6 @@
     "API address and key are read from channel management; the key is stored encrypted and never shown in full.": "API 地址与密钥均从渠道管理读取；密钥加密存储，永不完整显示。",
     "Choose a channel": "选择渠道",
     "Manual endpoint": "手动填写的端点",
-    "360": "360",
-    "1000": "1000",
-    "10000": "10000",
     "No saved credentials for this provider in System Settings": "系统设置中未保存该提供商的凭证",
     "Auto fill from settings": "从系统设置自动填入",
     "System settings are still loading": "系统设置仍在加载中",
@@ -3105,6 +3105,8 @@
     "Fetch": "拉取",
     "Fetch available models for:": "获取可用模型：",
     "Fetch available models from upstream": "从上游获取可用模型",
+    "No official price (confirmed)": "已确认无官方价",
+    "No channel price (confirmed)": "已确认无渠道价",
     "Fetch from Upstream": "从上游获取",
     "Fetch mode": "拉取模式",
     "Fetch Models": "获取模型",
@@ -8713,6 +8715,7 @@
     "Could not preview prices for this group.": "无法预览该分组的价格。",
     "No published prices for this group.": "该分组没有已发布价格。",
     "Official and channel prices from the Uter.api catalog for the selected group.": "所选分组的 Uter.api 目录官方价格与渠道价格。",
+    "Public catalog reference prices: no upstream credential was available, so model availability is unverified.": "公开目录参考价：未获取到上游凭据，因此无法验证模型是否可调用。",
     "Automatic price fetch is unavailable": "暂无自动价格来源",
     "This channel type does not publish machine-readable prices. Configure official and sale prices manually after creation.": "该渠道类型不提供机器可读价格，请在创建后手动配置官方价与售价。",
     "Updates follow the created channels": "更新由创建后的渠道自动执行",
@@ -8948,6 +8951,10 @@
     "Discount: Low to High": "折扣：从低到高",
     "Discount: High to Low": "折扣：从高到低",
     "Time: Newest to Oldest": "时间：从新到旧",
-    "Time: Oldest to Newest": "时间：从旧到新"
+    "Time: Oldest to Newest": "时间：从旧到新",
+    "Low to High": "Low to High",
+    "High to Low": "High to Low",
+    "Newest to Oldest": "Newest to Oldest",
+    "Oldest to Newest": "Oldest to Newest"
   }
 }

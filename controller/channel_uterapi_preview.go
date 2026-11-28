@@ -33,7 +33,20 @@ import (
 // authoritative sync and verification.
 func GetUterAPIPricePreview(c *gin.Context) {
 	group := strings.TrimSpace(c.Query("group"))
-	preview, err := service.PreviewUterAPIPriceCatalog(c.Request.Context(), group)
+	// The create wizard must preview the authenticated catalogue the saved
+	// channel will actually price against. Keys stay server-side; the browser
+	// never receives them, only the resulting prices.
+	keys := make([]string, 0)
+	credentials := service.SubscriptionChannelProviderCredentials()
+	if slot, ok := credentials.SlotForGroup(group); ok {
+		keys = append(keys, slot.Keys...)
+	}
+	if len(keys) == 0 && strings.TrimSpace(credentials.APIKey) != "" {
+		keys = append(keys, credentials.APIKey)
+	}
+	base := uterapiBaseURL()
+	ctx, _ := service.WithUterAPIUpstreamCache(c.Request.Context())
+	preview, err := service.PreviewUterAPIPriceCatalogWithBaseURL(ctx, base, group, keys...)
 	if err != nil {
 		common.ApiError(c, err)
 		return
@@ -43,11 +56,12 @@ func GetUterAPIPricePreview(c *gin.Context) {
 		items = append(items, channelModelPricingToView(service.PreviewRecordToPricingRow(record)))
 	}
 	common.ApiSuccess(c, gin.H{
-		"group":      preview.Group,
-		"group_name": preview.GroupName,
-		"ratio":      preview.Ratio,
-		"currency":   preview.Currency,
-		"fetched_at": preview.FetchedAt,
-		"items":      items,
+		"group":         preview.Group,
+		"group_name":    preview.GroupName,
+		"ratio":         preview.Ratio,
+		"currency":      preview.Currency,
+		"fetched_at":    preview.FetchedAt,
+		"authenticated": preview.Authenticated,
+		"items":         items,
 	})
 }

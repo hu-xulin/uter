@@ -1322,6 +1322,65 @@ func ClearAutoDerivedChannelPricing(channelId int, sourcePrefix string) (int, er
 	return cleared, nil
 }
 
+// MarkChannelPricingNeedsReviewForModels parks channel-scoped rows whose
+// upstream group authorization has been withdrawn. Explicit operator/batch
+// prices are preserved for audit but made non-billable by the status change;
+// auto-derived prices are cleared so a later stale sync cannot revive them.
+func MarkChannelPricingNeedsReviewForModels(channelId int, modelNames []string, reason string) (int, error) {
+	if DB == nil || channelId <= 0 || len(modelNames) == 0 {
+		return 0, nil
+	}
+	reason = strings.TrimSpace(reason)
+	if reason == "" {
+		reason = "UPSTREAM_GROUP_AUTHORIZATION_REMOVED"
+	}
+	var rows []ChannelModelPricing
+	if err := DB.Where("channel_id = ? AND model_name IN ?", channelId, modelNames).Find(&rows).Error; err != nil {
+		return 0, err
+	}
+	updatedAt := time.Now().Unix()
+	updated := 0
+	for i := range rows {
+		row := &rows[i]
+		view := ChannelOfficialPricing{Currency: row.Currency, Source: row.PricingSource}
+		if strings.TrimSpace(row.NormalizedPricing) != "" {
+			if err := common.UnmarshalJsonStr(row.NormalizedPricing, &view); err != nil {
+				view = ChannelOfficialPricing{Currency: row.Currency, Source: row.PricingSource}
+			}
+		}
+		view.NeedsReview = true
+		found := false
+		for _, existing := range view.ReviewReasons {
+			if existing == reason {
+				found = true
+				break
+			}
+		}
+		if !found {
+			view.ReviewReasons = append(view.ReviewReasons, reason)
+		}
+		if encoded, err := common.Marshal(view); err == nil {
+			row.NormalizedPricing = string(encoded)
+		}
+		if pricingReplaceableByOwner(row.PricingOwner, row.InternalPricing) {
+			row.InternalPricing = ""
+			row.PricingOwner = ""
+		}
+		row.PricingStatus = ChannelPricingStatusNeedsReview
+		row.UpdatedAt = updatedAt
+		row.PricingVersion = channelPricingVersion(*row)
+		if err := DB.Save(row).Error; err != nil {
+			return updated, err
+		}
+		updated++
+	}
+	if updated > 0 {
+		InvalidateChannelPricingCache()
+		InvalidatePricingCache()
+	}
+	return updated, nil
+}
+
 // ErrChannelPricingIdentityRequired marks a write whose channel/model has more
 // than one region or deployment identity. The caller must state which identity
 // it edits instead of letting "configured first" pick one.

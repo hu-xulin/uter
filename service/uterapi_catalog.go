@@ -90,7 +90,7 @@ func FetchUterAPIPricingGroups(ctx context.Context) ([]UterAPIGroup, error) {
 	if pricingURL == "" {
 		return nil, errors.New("Uter.api upstream endpoint is not configured")
 	}
-	payload, err := fetchUterAPIPricingPayload(ctx, pricingURL, "")
+	payload, err := fetchCachedUterAPIPricingPayload(ctx, pricingURL, "")
 	if err != nil {
 		return nil, err
 	}
@@ -184,33 +184,19 @@ func uterapiPricingEndpointFor(baseURL string) (string, error) {
 	return parsed.String() + "/api/pricing", nil
 }
 
-// AuthorizedUterAPIModels intersects the models a key can actually call with
-// the models the selected upstream billing group is allowed to use. Group
+// AuthorizedUterAPIModels intersects the models every enabled key can call
+// with the models the selected upstream billing group is allowed to use. Group
 // membership comes from each pricing entry's enable_groups — never from model
 // name prefixes. A model whose group membership cannot be confirmed is excluded
 // so it cannot silently inherit another group's multiplier.
 func AuthorizedUterAPIModels(ctx context.Context, baseURL, group string, keys []string, discovered []string) ([]string, error) {
-	group = strings.TrimSpace(group)
-	if group == "" {
-		return nil, errors.New("billing group is required")
+	keys = normalizeUterAPIKeys(keys)
+	if len(keys) == 0 {
+		return nil, errors.New("Uter.api channel has no usable API key")
 	}
-	var payload *GenericPricingPayload
-	var lastErr error
-	for _, key := range keys {
-		key = strings.TrimSpace(key)
-		if key == "" {
-			continue
-		}
-		payload, lastErr = fetchUterAPIPricingPayload(ctx, baseURL, key)
-		if lastErr == nil && payload != nil {
-			break
-		}
-	}
-	if payload == nil {
-		if lastErr == nil {
-			lastErr = errors.New("Uter.api pricing is unavailable")
-		}
-		return nil, lastErr
+	_, _, allowed, err := fetchUterAPIAuthorizedCatalog(ctx, baseURL, group, keys)
+	if err != nil {
+		return nil, err
 	}
 	wanted := make(map[string]bool, len(discovered))
 	for _, name := range discovered {
@@ -218,80 +204,148 @@ func AuthorizedUterAPIModels(ctx context.Context, baseURL, group string, keys []
 			wanted[name] = true
 		}
 	}
-	allowed := make(map[string]bool)
-	for _, entry := range payload.Data {
-		name := strings.TrimSpace(entry.ModelName)
-		if name == "" || !wanted[name] {
-			continue
+	out := make([]string, 0, len(wanted))
+	for name := range wanted {
+		if allowed[name] {
+			out = append(out, name)
 		}
-		// No enable_groups means upstream did not publish group membership.
-		// Fail closed: the model must not receive this group's ratio without
-		// evidence that the group may call it.
-		for _, enabled := range entry.EnableGroups {
-			if strings.EqualFold(strings.TrimSpace(enabled), group) {
-				allowed[name] = true
-				break
-			}
-		}
-	}
-	out := make([]string, 0, len(allowed))
-	for name := range allowed {
-		out = append(out, name)
 	}
 	sort.Strings(out)
 	return out, nil
 }
 
-// SyncUterAPIChannelPricing syncs one channel's prices and applies the key's
-// group multiplier. The channel price is the upstream expression times the
-// group ratio, and the same expression becomes the unverified purchase cost.
+// SyncUterAPIChannelPricing is the creation-time path: it derives the default
+// sale price after the group discount and credit-dollar conversion.
 func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, group string) (int, float64, string, error) {
+	written, _, ratio, groupName, err := syncUterAPIChannelPricing(ctx, channel, group, true, true)
+	return written, ratio, groupName, err
+}
+
+// RefreshUterAPIChannelPricing is the recurring/manual refresh path. It keeps
+// the official and channel quotes current without re-deriving a sale price on
+// every poll; a configured pricing schedule remains the only automatic writer.
+func RefreshUterAPIChannelPricing(ctx context.Context, channel *model.Channel, group string) (int, []string, float64, string, error) {
+	return syncUterAPIChannelPricing(ctx, channel, group, false, false)
+}
+
+func syncUterAPIChannelPricing(
+	ctx context.Context,
+	channel *model.Channel,
+	group string,
+	deriveSalePrice bool,
+	verify bool,
+) (int, []string, float64, string, error) {
 	if channel == nil {
-		return 0, 0, "", errors.New("channel is required")
+		return 0, nil, 0, "", errors.New("channel is required")
 	}
 	release, acquired, lockErr := acquireChannelPricingSyncLock(channel.Id)
 	if lockErr != nil {
-		return 0, 0, "", lockErr
+		return 0, nil, 0, "", lockErr
 	}
 	if !acquired {
-		return 0, 0, "", ErrPricingSyncInProgress
+		return 0, nil, 0, "", ErrPricingSyncInProgress
 	}
 	defer release()
-	apiKey, _, keyErr := channel.GetNextEnabledKey()
-	if keyErr != nil || strings.TrimSpace(apiKey) == "" {
-		return 0, 0, "", errors.New("Uter.api channel has no usable API key")
+
+	now := time.Now().UTC()
+	keys := enabledUterAPIKeys(channel)
+	var payloads []*GenericPricingPayload
+	var ratio float64
+	var allowed map[string]bool
+	var visible []string
+	var err error
+	if deriveSalePrice {
+		// Creation and automatic model adoption must prove every enabled key
+		// can serve the model before a billable price is derived.
+		payloads, ratio, allowed, err = fetchUterAPIAuthorizedCatalog(ctx, channel.GetBaseURL(), group, keys)
+		if err == nil {
+			visible, err = discoverUterAPIModelIDsWithKeys(ctx, channel.GetBaseURL(), keys)
+		}
+	} else {
+		// An established channel may refresh from a recorded healthy subset,
+		// but only when that subset still agrees on authorization and models.
+		payloads, ratio, allowed, visible, err = fetchUterAPIRefreshCatalogWithKeyHealth(
+			ctx, channel.Id, channel.GetBaseURL(), group, keys, now,
+		)
 	}
-	payload, err := fetchUterAPIPricingPayload(ctx, channel.GetBaseURL(), apiKey)
 	if err != nil {
-		return 0, 0, "", err
+		return 0, nil, 0, "", err
 	}
-	group = strings.TrimSpace(group)
-	ratio := 1.0
-	groupName := ""
-	if group != "" {
-		published, ok := payload.GroupRatio[group]
-		if !ok || published <= 0 {
-			return 0, 0, "", fmt.Errorf("Uter.api group %q has no published ratio", group)
+	payload := payloads[0]
+	groupName := strings.TrimSpace(group)
+	if display, ok := payload.GroupDisplay[group]; ok && strings.TrimSpace(display.Name) != "" {
+		groupName = strings.TrimSpace(display.Name)
+	}
+
+	var mapping map[string]string
+	if raw := strings.TrimSpace(channel.GetModelMapping()); raw != "" {
+		_ = common.UnmarshalJsonStr(raw, &mapping)
+	}
+	upstreamName := func(requestName string) string {
+		if resolved, cyclic := followUterRouteModelMapping(mapping, requestName); !cyclic && resolved != "" {
+			return resolved
 		}
-		ratio = published
-		groupName = group
-		if display, ok := payload.GroupDisplay[group]; ok && strings.TrimSpace(display.Name) != "" {
-			groupName = strings.TrimSpace(display.Name)
+		return requestName
+	}
+
+	// Re-check group authorization on every refresh. A model that lost its
+	// enable_groups declaration must not keep a discounted, auto-derived price.
+	servedModels := channel.GetModels()
+	authorizedServed := make([]string, 0, len(servedModels))
+	unauthorized := make([]string, 0)
+	servedUpstream := make(map[string]bool, len(servedModels))
+	for _, requestName := range servedModels {
+		upstream := upstreamName(requestName)
+		servedUpstream[upstream] = true
+		if allowed[upstream] {
+			authorizedServed = append(authorizedServed, requestName)
+		} else {
+			unauthorized = append(unauthorized, requestName)
 		}
 	}
-	// Uter.api 是独立供应商，不能再写成通用的 newapi-compatible。
-	// UpsertChannelOfficialPricing 会按渠道+模型身份接管旧 Provider 的行，
-	// 避免同一模型出现两个身份；人工销售价不会被自动同步覆盖。
-	// Uter.api supports batch redirects too: the channel model list then holds
-	// request aliases while the catalogue publishes raw names. Resolve aliases
-	// before matching so a redirected channel still gets a channel-scoped price
-	// row under the request name relay bills against.
+	if len(unauthorized) > 0 {
+		if _, markErr := model.MarkChannelPricingNeedsReviewForModels(
+			channel.Id, unauthorized, "Uter.api group authorization removed",
+		); markErr != nil {
+			common.SysError(common.LogText("mark Uter.api unauthorized pricing failed: channel_id=%d, error=%v", channel.Id, markErr))
+		}
+		AppendUterAPIObservabilityEvent(
+			UterAPIEventAuthorizationRemoved, "warn", channel.Id,
+			strings.Join(unauthorized, ","),
+			fmt.Sprintf("%d served model(s) lost Uter.api group authorization; auto prices parked for review", len(unauthorized)),
+			now,
+		)
+	}
+	if len(authorizedServed) == 0 {
+		return 0, nil, ratio, groupName, errors.New("no channel model is authorized for the selected Uter.api group")
+	}
+
+	discovered := make([]string, 0)
+	for _, name := range visible {
+		if allowed[name] && !servedUpstream[name] {
+			discovered = append(discovered, name)
+		}
+	}
+	sort.Strings(discovered)
+	if len(discovered) > 0 {
+		AppendUterAPIObservabilityEvent(
+			UterAPIEventModelDiscovered, "info", channel.Id,
+			strings.Join(discovered, ","),
+			fmt.Sprintf("%d authorized Uter.api model(s) discovered upstream", len(discovered)),
+			now,
+		)
+	}
+
+	// Uter.api is an independent provider and must never write a generic
+	// newapi-compatible row. Resolve aliases through model_mapping so a
+	// redirected channel still prices the request name the relay bills against.
+	quota := genericQuotaPerUnit(GenericPricingEntry{}, payload)
 	records := GenericChannelPricingRecordsWithMapping(
-		channel.Id, channel.GetModels(), payload.Data, time.Now().UTC(),
-		0, true, "uterapi", channel.GetModelMapping(),
+		channel.Id, authorizedServed, payload.Data, now,
+		quota, deriveSalePrice, "uterapi", channel.GetModelMapping(),
 	)
 	if len(records) == 0 {
-		return 0, ratio, groupName, errors.New("no pricing entries matched the channel models")
+		return 0, discovered, ratio, groupName, errors.New("no pricing entries matched the channel models")
 	}
 	if ratio != 1 {
 		for i := range records {
@@ -303,11 +357,11 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 	// tiers stay untouched. A bad rate aborts the sync instead of writing a
 	// misleading price.
 	if err := applyUterAPICreditExchangeRate(records); err != nil {
-		return 0, ratio, groupName, err
+		return 0, discovered, ratio, groupName, err
 	}
 	written, err := model.UpsertChannelOfficialPricing(records)
 	if err != nil {
-		return written, ratio, groupName, err
+		return written, discovered, ratio, groupName, err
 	}
 	seen := make([]string, 0, len(records))
 	for _, record := range records {
@@ -316,17 +370,19 @@ func SyncUterAPIChannelPricing(ctx context.Context, channel *model.Channel, grou
 	if len(seen) > 0 {
 		_, _, _, _ = model.ApplyChannelLifecycleSnapshot(channel.Id, seen, time.Now().Unix(), model.ChannelModelMissingDisableThreshold)
 	}
-	if group != "" {
-		if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
-			common.SysError(common.LogText("persist Uter.api group failed: channel_id=%d, error=%v", channel.Id, err))
-		}
-		// The purchase contract must use the same real-USD basis as the
-		// converted channel price; otherwise profit would be measured against
-		// un-converted credit dollars.
-		applyGenericGroupPurchaseCost(channel.Id, payload, records, channel.GetModelMapping(), 1/operation_setting.USDExchangeRate)
+	if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
+		common.SysError(common.LogText("persist Uter.api group failed: channel_id=%d, error=%v", channel.Id, err))
 	}
-	AutoVerifyChannelPricing(channel.Id)
-	return written, ratio, groupName, nil
+	// The purchase contract must use the same real-USD basis as the converted
+	// channel price; otherwise profit would be measured against credit dollars.
+	applyGenericGroupPurchaseCost(channel.Id, payload, records, channel.GetModelMapping(), 1/operation_setting.USDExchangeRate)
+	// Verification belongs to the operation boundary, not the sync kernel.
+	// A scheduled refresh still has to apply its pricing schedule afterwards,
+	// so it verifies once at the end of that cycle instead.
+	if verify {
+		AutoVerifyChannelPricingWithContext(ctx, channel.Id)
+	}
+	return written, discovered, ratio, groupName, nil
 }
 
 // applyGroupRatioToRecord applies the group multiplier to the executable channel
