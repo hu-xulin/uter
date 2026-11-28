@@ -384,13 +384,33 @@ func ApplyBailianCatalog(catalog *BailianCatalog, channelModels []string) (*Bail
 		ReferencePrices: len(NormalizeBailianPrices(catalog)),
 	}
 	metadata := BailianCatalogMetadata(catalog)
+	byName, byAlias := bailianCatalogIndex(catalog)
+	// A channel may serve a canonical name, an official alias, or a wrapped
+	// spelling (cmaas- prefix, vendor scope, trailing date). Index the canonical
+	// metadata under each served spelling so the apply step and the status
+	// panel count the same set of models instead of disagreeing per endpoint.
+	fillMetadata := make(map[string]model.MetadataValues, len(metadata))
+	for key, value := range metadata {
+		fillMetadata[key] = value
+	}
 	matched := make([]string, 0, len(channelModels))
-	for _, name := range channelModels {
-		if _, ok := metadata[name]; ok {
-			matched = append(matched, name)
-		} else {
-			result.UnmatchedModels = append(result.UnmatchedModels, name)
+	for _, rawName := range channelModels {
+		name := strings.TrimSpace(rawName)
+		if name == "" {
+			continue
 		}
+		if _, ok := fillMetadata[name]; ok {
+			matched = append(matched, name)
+			continue
+		}
+		if item, ok := resolveBailianCatalogItem(name, byName, byAlias); ok {
+			if values, exists := metadata[item.Model]; exists {
+				fillMetadata[name] = values
+				matched = append(matched, name)
+				continue
+			}
+		}
+		result.UnmatchedModels = append(result.UnmatchedModels, rawName)
 	}
 	sort.Strings(result.UnmatchedModels)
 	sort.Strings(matched)
@@ -399,7 +419,7 @@ func ApplyBailianCatalog(catalog *BailianCatalog, channelModels []string) (*Bail
 		result.Metadata = &model.AutoFillMetadataResult{CreatedModels: []string{}, UpdatedModels: []string{}}
 		return result, nil
 	}
-	fill, err := model.AutoFillOfficialMetadata(matched, metadata, BailianCatalogVendors(catalog))
+	fill, err := model.AutoFillOfficialMetadata(matched, fillMetadata, BailianCatalogVendors(catalog))
 	if err != nil {
 		return result, err
 	}
@@ -436,7 +456,16 @@ func BailianPricingRecords(catalog *BailianCatalog, channelModels []string) []mo
 		seen[name] = true
 		item, ok := resolveBailianCatalogItem(name, byName, byAlias)
 		if !ok {
-			continue
+			if !isBailianTaskPluginModel(name) {
+				continue
+			}
+			// A plugin-declared model can be callable even when the catalog
+			// omits it. Keep an explicit review row instead of silently
+			// dropping the model: operators can see why no price was adopted.
+			item = BailianModel{
+				Model:             name,
+				InferenceProvider: "aliyun-bailian",
+			}
 		}
 		raw, err := common.Marshal(item)
 		if err != nil {
@@ -519,6 +548,133 @@ func SeedBailianInternalPricing(channelID int, models []string, overwrite bool) 
 		seeded++
 	}
 	return seeded, skipped, nil
+}
+
+// BailianCrossCheckRejudgeSkip records why one candidate row was not restored.
+type BailianCrossCheckRejudgeSkip struct {
+	Model  string `json:"model"`
+	Reason string `json:"reason"`
+}
+
+// BailianCrossCheckRejudgeResult is the auditable outcome of a narrow data
+// remediation. It never includes rows that were not positively identified as
+// the known official-list/markup comparison error.
+type BailianCrossCheckRejudgeResult struct {
+	Scanned    int                            `json:"scanned"`
+	Eligible   int                            `json:"eligible"`
+	Rejudged   []string                       `json:"rejudged"`
+	WouldApply []string                       `json:"would_apply,omitempty"`
+	Skipped    []BailianCrossCheckRejudgeSkip `json:"skipped,omitempty"`
+}
+
+// bailianCrossCheckInputDisagreementReason is the review reason written by the
+// old cross-check when an authoritative Bailian list price was compared with
+// Uter's sale-price billing expression. Only this exact reason is remediable.
+const bailianCrossCheckInputDisagreementReason = "official input price disagrees with Uter synchronized pricing"
+
+// RejudgeBailianOfficialListCrossCheck repairs rows that the old cross-check
+// wrongly parked in needs_review. It is intentionally narrow:
+//   - exact channel and exact review reason;
+//   - authoritative vendor list price with an official URL and raw amount;
+//   - no remaining independent review reason;
+//   - the sale price must still be derivable by the normal Bailian path.
+//
+// With apply=false it is a read-only preview. With apply=true it clears only
+// the erroneous review marker, rebuilds the auto-derived sale price including
+// the default markup, and returns the row to configured. Operator, batch and
+// approved prices are never candidates because needs_review rows have no such
+// surviving internal price.
+func RejudgeBailianOfficialListCrossCheck(channelID int, apply bool) (BailianCrossCheckRejudgeResult, error) {
+	result := BailianCrossCheckRejudgeResult{}
+	if channelID <= 0 {
+		return result, fmt.Errorf("channel id is required")
+	}
+	if model.DB == nil {
+		return result, fmt.Errorf("pricing database is not initialized")
+	}
+	rows, err := model.ListChannelModelPricing(channelID)
+	if err != nil {
+		return result, err
+	}
+	result.Scanned = len(rows)
+	for _, row := range rows {
+		if row.PricingStatus != model.ChannelPricingStatusNeedsReview {
+			continue
+		}
+		var view model.ChannelOfficialPricing
+		if err := common.UnmarshalJsonStr(row.NormalizedPricing, &view); err != nil {
+			continue
+		}
+		if !view.NeedsReview || !model.IsAuthoritativeOfficialList(view) {
+			continue
+		}
+		found := false
+		remaining := make([]string, 0, len(view.ReviewReasons))
+		for _, reason := range view.ReviewReasons {
+			if strings.TrimSpace(reason) == bailianCrossCheckInputDisagreementReason {
+				found = true
+				continue
+			}
+			if trimmed := strings.TrimSpace(reason); trimmed != "" {
+				remaining = append(remaining, trimmed)
+			}
+		}
+		if !found || len(remaining) > 0 {
+			continue
+		}
+		result.Eligible++
+		clean := view
+		clean.NeedsReview = false
+		clean.ReviewReasons = nil
+		encoded := bailianInternalPricing(clean)
+		if encoded == "" {
+			result.Skipped = append(result.Skipped, BailianCrossCheckRejudgeSkip{
+				Model: row.ModelName, Reason: "no executable price can be derived",
+			})
+			continue
+		}
+		var internal model.ChannelInternalPricing
+		if err := common.UnmarshalJsonStr(encoded, &internal); err != nil {
+			result.Skipped = append(result.Skipped, BailianCrossCheckRejudgeSkip{
+				Model: row.ModelName, Reason: "malformed derived price",
+			})
+			continue
+		}
+		if !applyDefaultSaleMarkup(&internal) {
+			result.Skipped = append(result.Skipped, BailianCrossCheckRejudgeSkip{
+				Model: row.ModelName, Reason: "default sale markup could not be applied",
+			})
+			continue
+		}
+		if !apply {
+			result.WouldApply = append(result.WouldApply, row.ModelName)
+			continue
+		}
+		// Clear the stale review marker first. If the subsequent sale-price
+		// write fails, the row stays fail-closed in needs_review instead of
+		// being billable while still carrying a review reason.
+		if err := model.UpdateChannelOfficialPricingView(channelID, row.ModelName, clean); err != nil {
+			result.Skipped = append(result.Skipped, BailianCrossCheckRejudgeSkip{
+				Model: row.ModelName, Reason: "official view update failed: " + err.Error(),
+			})
+			continue
+		}
+		identity := model.ChannelPricingIdentity{
+			ChannelId:    row.ChannelId,
+			Provider:     row.Provider,
+			Region:       row.Region,
+			DeploymentId: row.DeploymentId,
+			ModelName:    row.ModelName,
+		}
+		if err := model.SetChannelInternalPricingFor(identity, internal); err != nil {
+			result.Skipped = append(result.Skipped, BailianCrossCheckRejudgeSkip{
+				Model: row.ModelName, Reason: "sale price write failed: " + err.Error(),
+			})
+			continue
+		}
+		result.Rejudged = append(result.Rejudged, row.ModelName)
+	}
+	return result, nil
 }
 
 // BailianSeenChannelModels returns the channel's served model names that the
@@ -778,6 +934,12 @@ func parseBailianVideoPriceKey(priceType string) (bailianVideoPriceKey, bool) {
 		return bailianVideoPriceKey{resolution: "720P"}, true
 	case "video_ratio_1080p", "1080p":
 		return bailianVideoPriceKey{resolution: "1080P"}, true
+	case "480p_batch", "batch_480p":
+		return bailianVideoPriceKey{resolution: "480P"}, true
+	case "720p_batch", "batch_720p":
+		return bailianVideoPriceKey{resolution: "720P"}, true
+	case "1080p_batch", "batch_1080p":
+		return bailianVideoPriceKey{resolution: "1080P"}, true
 	case "480p_no_audio":
 		return bailianVideoPriceKey{resolution: "480P", noAudio: true}, true
 	case "720p_no_audio":
@@ -860,8 +1022,10 @@ func bailianVideoTaskExpression(components []model.ChannelPricingComponent) stri
 	}
 	// Highest published resolution is the conservative default if the usage
 	// vector ever omits the fact; normal traffic always supplies resolution.
-	priceExpr := choices[len(choices)-1]
-	for i := len(choices) - 2; i >= 0; i-- {
+	// `resolutions` is ordered high-to-low, so the first choice is the
+	// conservative fallback and later, cheaper tiers are explicit matches.
+	priceExpr := choices[0]
+	for i := 1; i < len(choices); i++ {
 		priceExpr = fmt.Sprintf(`u("resolution") == "%s" ? %s : %s`, selected[i], choices[i], priceExpr)
 	}
 	return fmt.Sprintf(`tier("bailian-video", u("seconds") * (%s))`, priceExpr)
@@ -933,6 +1097,12 @@ func bailianBandExpression(tiers []model.ChannelPricingTier, band string) string
 		}
 		return mi < mj
 	})
+	// A multi-tier expression needs a real upper bound on every tier except
+	// the last. Without one, every condition becomes `true` and every request
+	// is charged at the cheapest tier. Refuse to emit such an expression.
+	if len(sorted) > 1 && sorted[0].MaxInputTokens <= 0 {
+		return ""
+	}
 	parts := make([]string, 0, len(sorted))
 	for _, tier := range sorted {
 		if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
@@ -1093,7 +1263,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		Source:             source,
 		FetchedAt:          fetchedAt,
 	}
-	if isAlibabaFamilyBailianModel(item.Model) {
+	if isAlibabaFamilyBailianModel(item) {
 		result.PriceKind = "OFFICIAL_LIST"
 	}
 	if sourceCurrency == "CNY" {
@@ -1215,7 +1385,10 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			// Batch endpoints publish their own discounted price. They are a
 			// separate service, not the standard realtime price, so they must not
 			// overwrite or block the primary price used by the relay.
-			if strings.Contains(priceType, "_batch") {
+			// Async task models publish their only rates as "Batch Chat".
+			// The shipped plugin calls that service, so a recognized batch
+			// resolution tier is executable and must not be skipped.
+			if strings.Contains(priceType, "_batch") && !bailianVideoResolutionPriceType(priceType) {
 				continue
 			}
 			tier.RawPriceTypes = append(tier.RawPriceTypes, priceType)
@@ -1252,6 +1425,27 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 				default:
 					// Existing behaviour for untagged creation prices is kept.
 					setTokenPrice(target, usd, "cache creation")
+				}
+			case priceType == "combined_input_output":
+				// The official page publishes one rate for both directions.
+				// The relay reports input and output usage separately, so the
+				// single quote must populate both dimensions.
+				setTokenPrice(&tier.InputPerMillionUSD, usd, "input token")
+				setTokenPrice(&tier.OutputPerMillionUSD, usd, "output token")
+				result.Unit = "per_1m_token"
+			case priceType == "page_unit_price":
+				// A column-level price has no explicit direction. Only units
+				// that map to exactly one billable dimension are executable;
+				// anything else stays review-only instead of guessing.
+				switch normalizedUnit {
+				case "per_1k_tokens", "per_1m_tokens":
+					setTokenPrice(&tier.InputPerMillionUSD, usd, "input token")
+					setTokenPrice(&tier.OutputPerMillionUSD, usd, "output token")
+					result.Unit = "per_1m_token"
+				case "per_image", "per_second", "per_minute", "per_call":
+					addPerUnitPrice(tier, normalizedUnit, usd, price, priceType)
+				default:
+					unknownTypes[priceType] = true
 				}
 			case priceType == "input_token" || priceType == "input_tokens" || priceType == "text_input" ||
 				priceType == "text_input_token" || priceType == "thinking_text_input_token" ||
@@ -1389,7 +1583,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			}
 		}
 	}
-	alibabaFamily := isAlibabaFamilyBailianModel(item.Model)
+	alibabaFamily := isAlibabaFamilyBailianModel(item)
 	for _, key := range order {
 		tier := tiers[key]
 		// One model has one billable primary price. When the catalog also lists a
@@ -1413,6 +1607,15 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 		first := result.ChannelPriceTiers[0]
 		result.ChannelPrice = &first
 	}
+	// Task-plugin models publish a media dimension (video resolution, image
+	// variant) as distinct ComponentPrices that an executable expression can
+	// select exactly. Such tiers intentionally share one non-token unit across
+	// several ranges; they are neither a conflicting unit mix nor an
+	// unparseable context ladder. If an expression can be built from them, do
+	// not park the row in review for reasons meant for genuinely ambiguous
+	// flat prices — that would leave every video/image task model unbillable.
+	taskExprExecutable := bailianVideoTaskExpression(result.ComponentPrices) != "" ||
+		bailianImageTaskExpression(result.ComponentPrices) != ""
 	// Context-length ranges are executable when every tier is a token tier;
 	// the sale price then becomes one tiered expression. Mixed units or media
 	// dimensions cannot be flattened and are named below.
@@ -1423,7 +1626,7 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 			break
 		}
 	}
-	if len(countRanges) > 1 && !tokenTiersOnly {
+	if len(countRanges) > 1 && !tokenTiersOnly && !taskExprExecutable {
 		result.ReviewReasons = append(result.ReviewReasons, "multiple price ranges")
 	}
 	if len(countBands) > 1 {
@@ -1441,11 +1644,32 @@ func bailianOfficialPricing(item BailianModel, region BailianRegion, rate float6
 	// Multi-tier rows are only executable when every tier is a token tier.
 	// Media dimensions mixed into several ranges cannot be flattened into one
 	// expression, so name the reason instead of leaving a silent empty sale price.
-	if len(allTiers) > 1 {
+	// Exception: a task-plugin expression built from ComponentPrices can select
+	// the media dimension exactly, so those tiers are executable, not ambiguous.
+	if len(allTiers) > 1 && !taskExprExecutable {
 		for _, tier := range allTiers {
 			if tier.Unit != "per_1m_token" && tier.Unit != "per_1m_tokens" {
 				result.ReviewReasons = append(result.ReviewReasons, "mixed price units across tiers need manual pricing")
 				break
+			}
+		}
+		// A context ladder whose range names cannot be parsed produces an
+		// always-true tier condition and silently undercharges. Park it for
+		// review instead. Only the final, open-ended tier may lack a bound.
+		// Time bands reuse one range name, so they are not a context ladder.
+		ranges := make(map[string]bool, len(allTiers))
+		for _, tier := range allTiers {
+			ranges[strings.TrimSpace(tier.RangeName)] = true
+		}
+		if len(ranges) > 1 {
+			bounded := 0
+			for _, tier := range allTiers {
+				if tier.MaxInputTokens > 0 {
+					bounded++
+				}
+			}
+			if bounded < len(allTiers)-1 {
+				result.ReviewReasons = append(result.ReviewReasons, "context tier ranges could not be parsed")
 			}
 		}
 	}
@@ -1502,10 +1726,13 @@ func bailianTierNeedsExpression(tier model.ChannelPricingTier) bool {
 
 var (
 	bailianTokenRangePattern = regexp.MustCompile(`(?i)(\d+(?:\.\d+)?)\s*([km]?)\s*[-~至]\s*(\d+(?:\.\d+)?)\s*([km]?)`)
-	// "32k<输入<=128k"
-	bailianBoundedRangePattern = regexp.MustCompile(`(?i)^\s*(\d+(?:\.\d+)?)\s*([km]?)\s*<\s*(?:输入|tokens?)?\s*<=?\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
-	// "输入<=128k"
-	bailianUpperRangePattern = regexp.MustCompile(`(?i)^\s*(?:输入|tokens?)?\s*<=?\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
+	// The official help page writes ranges with a Unicode ≤ (`0<Token≤32K`),
+	// while older snapshots used ASCII `<=`. Accept both, otherwise every
+	// tier gets MaxInputTokens 0 and the tiered expression always matches the
+	// cheapest branch.
+	bailianBoundedRangePattern = regexp.MustCompile(`(?i)^\s*(\d+(?:\.\d+)?)\s*([km]?)\s*<\s*(?:输入|tokens?)?\s*(?:<=|≤)\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
+	// "输入≤128k" / "输入<=128k"
+	bailianUpperRangePattern = regexp.MustCompile(`(?i)^\s*(?:输入|tokens?)?\s*(?:<=|≤)\s*(\d+(?:\.\d+)?)\s*([km]?)\s*$`)
 )
 
 func parseBailianTokenRange(name string) (int64, int64) {
