@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -45,6 +46,7 @@ type probeChatBody struct {
 
 func newBudgetProbeServer(t *testing.T, budgets *[]int) *httptest.Server {
 	t.Helper()
+	var budgetsMu sync.Mutex
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case strings.HasSuffix(r.URL.Path, "/models"):
@@ -52,8 +54,14 @@ func newBudgetProbeServer(t *testing.T, budgets *[]int) *httptest.Server {
 			_, _ = w.Write([]byte(`{"data":[{"id":"test-model"}]}`))
 		case strings.HasSuffix(r.URL.Path, "/chat/completions"):
 			var body probeChatBody
-			require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
+			if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+				t.Errorf("decode upstream probe request: %v", err)
+				http.Error(w, "invalid request", http.StatusBadRequest)
+				return
+			}
+			budgetsMu.Lock()
 			*budgets = append(*budgets, body.MaxTokens)
+			budgetsMu.Unlock()
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte(`{"choices":[{"message":{"content":"391"},"finish_reason":"stop"}],"usage":{"prompt_tokens":8,"completion_tokens":2,"total_tokens":10}}`))
 		default:

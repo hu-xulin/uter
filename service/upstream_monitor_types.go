@@ -71,9 +71,9 @@ type UpstreamProbeConfig struct {
 	UterToken   string
 	// ChannelID/Group/KeyIndex carry platform-side identity for the
 	// observability dimension (log lookups by request id).
-	ChannelID   int
+	ChannelID    int
 	ChannelGroup string
-	KeyIndex    int
+	KeyIndex     int
 }
 
 type UpstreamDimension struct {

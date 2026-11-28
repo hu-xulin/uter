@@ -351,19 +351,15 @@ export function getLobeIcon(
   let IconComponent = LAZY_ICONS.get(cacheKey)
   if (!IconComponent) {
     // Load the selected SVG variant, avoiding the brand index's Avatar/UI dependencies.
-    // Use the installed package path directly: the package exports map has no
-    // directory entry for `@lobehub/icons/es`, which blocks a bare-specifier
-    // dynamic context in Rspack. Rspack applies webpackInclude before
-    // normalizing Windows path separators.
-    //
-    // `@lobehub/icons` publishes ES modules as `.mjs` only (no `.js` under
-    // `es/`). Both the webpackInclude filter and this template must keep the
-    // `.mjs` extension: a `.js` mismatch makes Rspack skip every chunk and
-    // every channel/provider/model/vendor logo degrades to the initial circle.
+    // Load the installed package per-brand variant entrypoint directly:
+    // `es/<Brand>/<Variant>.mjs`. The current package does not place variants
+    // under the older `components/` directory layout. Keep this filter aligned
+    // with the shipped files; Rspack normalizes Windows separators after
+    // applying webpackInclude.
     IconComponent = lazy(() =>
       import(
-        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/]components[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.mjs$/ */
-        `../../node_modules/@lobehub/icons/es/${baseKey}/components/${variant}.mjs`
+        /* webpackInclude: /[\\/]@lobehub[\\/]icons[\\/]es[\\/][^\\/]+[\\/](Mono|Avatar|Brand|BrandColor|Color|Combine|Text|TextCn|TextColor|Simple|Morden)\.mjs$/ */
+        `../../node_modules/@lobehub/icons/es/${baseKey}/${variant}.mjs`
       ).catch(() => ({
         default: (props: Record<string, unknown>) =>
           renderLobeIconFallback(
