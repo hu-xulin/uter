@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -318,6 +321,21 @@ func TestUterRouteAutoGroupChainFailsClosedOnUnusableFirstHit(t *testing.T) {
 	require.False(t, ok, "an unusable first chain hit must not fall through to a cheaper group")
 }
 
+func TestUterRouteAutoGroupChainFailsClosedWhenFirstHitHasNoRatioEntry(t *testing.T) {
+	// The first auto-group hit is authoritative even when BOTH ratio tables
+	// omit it. A later enabled group with a published ratio must never be used
+	// as a substitute: that would be the forbidden "guess a cheaper group".
+	snapshot := &UpstreamSnapshot{
+		AutoGroups:      []string{"primary", "fallback"},
+		GroupRatio:      map[string]float64{"fallback": 0.6},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"fallback": 0.5}},
+	}
+	_, _, ok := UterRouteDiscountForModel(
+		snapshot, UpstreamModelRecord{EnableGroups: []string{"fallback", "primary"}}, "default",
+	)
+	require.False(t, ok, "a first chain hit without any ratio entry must fail closed, not fall through")
+}
+
 func TestUterRouteSyncUsesAutoGroupChainAfterDataLayerFixIsOverwritten(t *testing.T) {
 	// A data-layer-only fix collapses enable_groups to one group, but the next
 	// upstream sync restores the upstream's multi-group list. Production sync
@@ -550,6 +568,120 @@ func TestUterRouteReferencePriceAuthorizationRejectsInvalidValue(t *testing.T) {
 	require.True(t, view.NeedsReview, "unrecognized authorization value must fail closed")
 	require.Contains(t, view.ReviewReasons, "REFERENCE_PRICE_BILLING_NOT_AUTHORIZED")
 	require.Empty(t, internal)
+}
+
+func TestDiffUterRouteUpstreamDetectsDiscountGroupChanges(t *testing.T) {
+	prev := &UpstreamSnapshot{
+		ProviderID: "uterroute", PricingVersion: "v1",
+		GroupRatio:      map[string]float64{"default": 1},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"claude": 0.6}},
+		AutoGroups:      []string{"default"},
+		Models: []UpstreamModelRecord{{
+			ModelName: "claude-a", EnableGroups: []string{"claude"},
+		}},
+	}
+	next := &UpstreamSnapshot{
+		ProviderID: "uterroute", PricingVersion: "v2",
+		GroupRatio:      map[string]float64{"default": 1, "vip": 0.5},
+		GroupGroupRatio: map[string]map[string]float64{"default": {"claude": 0.7}},
+		AutoGroups:      []string{"vip"},
+		Models: []UpstreamModelRecord{{
+			ModelName: "claude-a", EnableGroups: []string{"claude", "vip"},
+		}},
+	}
+	changes := DiffUterRouteUpstream(prev, next)
+	fields := map[string]bool{}
+	for _, change := range changes {
+		fields[change.Field] = true
+	}
+	require.True(t, fields["group_ratio"], "group ratio change must be auditable")
+	require.True(t, fields["group_group_ratio"], "group override change must be auditable")
+	require.True(t, fields["auto_groups"], "auto group chain change must be auditable")
+	require.True(t, fields["enable_groups"], "model group change must be auditable")
+}
+
+func TestAppendUterRouteUpstreamHistoryIsIdempotent(t *testing.T) {
+	setupBatchPricingDB(t)
+	previous := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previous })
+
+	change := UpstreamPriceChange{
+		ProviderID: "uterroute", ModelID: "model-a", Kind: "price_changed",
+		Field: "input", PricingVersion: "v1", DetectedAt: time.Now(),
+	}
+	require.NoError(t, AppendUterRouteUpstreamHistory("uterroute", []UpstreamPriceChange{change}))
+	change.DetectedAt = time.Now().Add(time.Hour)
+	require.NoError(t, AppendUterRouteUpstreamHistory("uterroute", []UpstreamPriceChange{change}))
+
+	history := LoadUterRouteUpstreamHistory()
+	require.NotNil(t, history)
+	require.Len(t, history.Entries, 1, "a retried sync must not duplicate a logical change")
+}
+
+func TestUterRouteChannelExpressionPricingAdaptsTaskProbes(t *testing.T) {
+	// 任务插件模型结算时不带请求 Body；生产落库路径必须把探测条件从
+	// param()/header() 改写成用量事实，否则 1080P 会静默按 720P 收费。
+	encoded, ok := uterRouteChannelExpressionPricing(
+		wan3VideoProbeExpr, "wan3.0-video", "default", "wan", 0.5,
+	)
+	require.True(t, ok)
+	var pricing model.ChannelInternalPricing
+	require.NoError(t, common.UnmarshalJsonStr(encoded, &pricing))
+	require.NotContains(t, pricing.BillingExpr, "param(")
+	require.Contains(t, pricing.BillingExpr, `u("resolution")`)
+	_, err := billingexpr.CompileFromCache(pricing.BillingExpr)
+	require.NoError(t, err)
+}
+
+func TestPruneHiddenUterRouteModelNamesResolvesMappingAliases(t *testing.T) {
+	kept, dropped := pruneHiddenUterRouteModelNames(
+		[]string{"hidden-direct", "hidden-alias", "kept-alias", "kept-direct"},
+		[]string{"hidden-direct", "hidden-upstream"},
+		`{"hidden-alias":"hidden-upstream","kept-alias":"kept-upstream"}`,
+	)
+	require.Equal(t, []string{"kept-alias", "kept-direct"}, kept)
+	require.Equal(t, []string{"hidden-direct", "hidden-alias"}, dropped)
+}
+
+func TestSetUterRouteDiscountGroupIsConcurrencySafe(t *testing.T) {
+	setupBatchPricingDB(t)
+	previous := common.OptionMap
+	common.OptionMap = map[string]string{}
+	t.Cleanup(func() { common.OptionMap = previous })
+
+	var wg sync.WaitGroup
+	errs := make(chan error, 20)
+	for i := 1; i <= 20; i++ {
+		wg.Add(1)
+		go func(channelID int) {
+			defer wg.Done()
+			errs <- SetUterRouteDiscountGroup(channelID, "vip")
+		}(i)
+	}
+	wg.Wait()
+	close(errs)
+	for err := range errs {
+		require.NoError(t, err)
+	}
+
+	groups := map[string]string{}
+	require.NoError(t, common.UnmarshalJsonStr(common.GetOption(UterRouteDiscountGroupOptionKey), &groups))
+	require.Len(t, groups, 20, "concurrent writes must not lose another channel's group")
+	for i := 1; i <= 20; i++ {
+		require.Equal(t, "vip", groups[fmt.Sprintf("%d", i)])
+	}
+}
+
+func TestNormalizeParityRowsForUterRouteMapping(t *testing.T) {
+	rows := []model.ChannelModelPricing{
+		{ModelName: "alias-a"},
+		{ModelName: "raw-b"},
+	}
+	normalized := normalizeParityRowsForModelMapping(rows, `{"alias-a":"upstream-a"}`)
+	require.Equal(t, "upstream-a", normalized[0].ModelName)
+	require.Equal(t, "raw-b", normalized[1].ModelName)
+	require.Equal(t, "alias-a", rows[0].ModelName, "the source rows must stay untouched")
 }
 
 func TestDiffUterRouteUpstreamDetectsBillingExpressionChange(t *testing.T) {

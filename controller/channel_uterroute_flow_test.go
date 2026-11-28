@@ -88,17 +88,23 @@ const flowPricingFixture = `{
     }
   ],
   "vendors": [{"id":1,"name":"A"},{"id":2,"name":"B"}],
-  "group_ratio": {"default": 1},
+  "group_ratio": {"default": 1, "vip": 0.8},
   "auto_groups": ["default"],
-  "usable_group": {"default": ""}
+  "usable_group": {"default": "", "vip": ""},
+  "group_group_ratio": {"default": {"default": 1}, "vip": {"default": 0.8}}
 }`
 
 func newFlowUpstream(t *testing.T) string {
 	t.Helper()
+	return newFlowUpstreamWithFixture(t, flowPricingFixture)
+}
+
+func newFlowUpstreamWithFixture(t *testing.T, fixture string) string {
+	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/api/pricing" {
 			w.Header().Set("Content-Type", "application/json")
-			_, _ = w.Write([]byte(flowPricingFixture))
+			_, _ = w.Write([]byte(fixture))
 			return
 		}
 		http.NotFound(w, r)
@@ -153,6 +159,142 @@ func postJSONWithParams(t *testing.T, handler gin.HandlerFunc, path, body string
 // TestUterRouteCreateFlow_StepByStep walks the full creation pipeline against
 // the current source: draft creation -> catalogue sync -> model catalogue ->
 // publish gate. Each step asserts its observable contract.
+func TestSyncUterRouteUpstreamRejectsUnconfiguredBaseURL(t *testing.T) {
+	setupUterRouteFlowTestDB(t)
+	upstream := newFlowUpstream(t)
+	setUterRouteFlowOption(t, upstream)
+
+	rec := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync",
+		`{"base_url":"http://127.0.0.1:9/api/pricing"}`)
+	require.NotContains(t, rec.Body.String(), `"success":true`)
+	require.Contains(t, rec.Body.String(), "configured Uter Route endpoint")
+}
+
+func TestSyncUterRouteUpstreamRejectsChannelOnWrongPort(t *testing.T) {
+	setupUterRouteFlowTestDB(t)
+	upstream := newFlowUpstream(t)
+	setUterRouteFlowOption(t, upstream)
+
+	// The configured catalogue and this channel share a hostname but not a
+	// port. Host-only validation accepted this and let the sync hit an
+	// arbitrary local service through a channel-scoped request.
+	createBody := fmt.Sprintf(`{"type":%d,"name":"wrong port","base_url":%q,"key":"sk-test","models":"","group":"default"}`,
+		constant.ChannelTypeUterRoute, "http://127.0.0.1:9")
+	created := postJSON(t, CreateChannelDraft, "/api/channel/draft", createBody)
+	require.Equal(t, http.StatusOK, created.Code, created.Body.String())
+	var draft struct {
+		Data struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(created.Body.Bytes(), &draft))
+	require.Positive(t, draft.Data.ID)
+
+	syncRec := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync",
+		fmt.Sprintf(`{"channel_id":%d}`, draft.Data.ID))
+	require.NotContains(t, syncRec.Body.String(), `"success":true`)
+	require.Contains(t, syncRec.Body.String(), "channel Base URL is not the configured Uter Route endpoint")
+}
+
+func TestSyncUterRouteUpstreamRejectsUnknownDiscountGroup(t *testing.T) {
+	setupUterRouteFlowTestDB(t)
+	upstream := newFlowUpstream(t)
+	setUterRouteFlowOption(t, upstream)
+
+	body := fmt.Sprintf(`{"base_url":%q,"discount_group":"typo"}`, upstream)
+	rec := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync", body)
+	require.NotContains(t, rec.Body.String(), `"success":true`)
+	require.Contains(t, rec.Body.String(), "discount group")
+}
+
+// Manual sync must apply the same hidden-model pruning as the scheduled task.
+// Otherwise a model explicitly hidden by upstream vendor_id:0 stays enabled and
+// gets a channel price row from the raw API payload.
+func TestSyncUterRouteUpstreamPrunesHiddenModels(t *testing.T) {
+	setupUterRouteFlowTestDB(t)
+	const fixture = `{
+	  "success": true,
+	  "pricing_version": "hidden-v1",
+	  "data": [
+	    {"model_name":"billable-a","vendor_id":1,"quota_type":0,"billing_mode":"tiered_expr","billing_expr":"tier(\"base\", p * 5)","model_ratio":2.5,"enable_groups":["default"],"supported_endpoint_types":["openai"],"pricing_version":"hidden-v1"},
+	    {"model_name":"hidden-a","vendor_id":0,"quota_type":0,"model_ratio":3,"enable_groups":["default"],"supported_endpoint_types":["openai"]}
+	  ],
+	  "vendors": [{"id":1,"name":"A"}],
+	  "group_ratio": {"default":1},
+	  "auto_groups": ["default"],
+	  "usable_group": {"default":""},
+	  "group_group_ratio": {"default":{"default":1}}
+	}`
+	upstream := newFlowUpstreamWithFixture(t, fixture)
+	setUterRouteFlowOption(t, upstream)
+
+	createBody := fmt.Sprintf(`{"type":%d,"name":"hidden prune","base_url":%q,"key":"sk-test","models":"billable-a,hidden-a","group":"default"}`,
+		constant.ChannelTypeUterRoute, upstream)
+	created := postJSON(t, CreateChannelDraft, "/api/channel/draft", createBody)
+	require.Equal(t, http.StatusOK, created.Code, created.Body.String())
+	var draft struct {
+		Data struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(created.Body.Bytes(), &draft))
+	require.Positive(t, draft.Data.ID)
+
+	syncRec := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync",
+		fmt.Sprintf(`{"channel_id":%d}`, draft.Data.ID))
+	require.Equal(t, http.StatusOK, syncRec.Code, syncRec.Body.String())
+	require.Contains(t, syncRec.Body.String(), `"success":true`)
+
+	channel, err := model.GetChannelById(draft.Data.ID, true)
+	require.NoError(t, err)
+	require.NotNil(t, channel)
+	assert.NotContains(t, channel.GetModels(), "hidden-a")
+	assert.Contains(t, channel.GetModels(), "billable-a")
+	_, err = model.GetChannelModelPricing(channel.Id, "hidden-a")
+	assert.Error(t, err, "hidden model must not keep a channel price row")
+}
+
+// A failed channel-price write must not advance the snapshot baseline. The next
+// sync has to still see this upstream revision in its diff instead of treating
+// the failed price rows as already absorbed.
+func TestSyncUterRouteUpstreamKeepsBaselineWhenChannelWriteFails(t *testing.T) {
+	db := setupUterRouteFlowTestDB(t)
+	upstream := newFlowUpstream(t)
+	setUterRouteFlowOption(t, upstream)
+
+	createBody := fmt.Sprintf(`{"type":%d,"name":"baseline guard","base_url":%q,"key":"sk-test","models":"billable-a","group":"default"}`,
+		constant.ChannelTypeUterRoute, upstream)
+	created := postJSON(t, CreateChannelDraft, "/api/channel/draft", createBody)
+	require.Equal(t, http.StatusOK, created.Code, created.Body.String())
+	var draft struct {
+		Data struct {
+			ID int `json:"id"`
+		} `json:"data"`
+	}
+	require.NoError(t, common.Unmarshal(created.Body.Bytes(), &draft))
+	require.Positive(t, draft.Data.ID)
+
+	first := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync",
+		fmt.Sprintf(`{"channel_id":%d}`, draft.Data.ID))
+	require.Equal(t, http.StatusOK, first.Code, first.Body.String())
+	require.Contains(t, first.Body.String(), `"success":true`)
+	baseline := service.LoadUterRouteUpstreamSnapshot()
+	require.NotNil(t, baseline)
+	require.Equal(t, "flow-v1", baseline.PricingVersion)
+
+	// A different catalogue revision makes a baseline advance observable.
+	secondURL := newFlowUpstreamWithFixture(t, strings.ReplaceAll(flowPricingFixture, "flow-v1", "flow-v2"))
+	setUterRouteFlowOption(t, secondURL)
+	require.NoError(t, db.Migrator().DropTable(&model.ChannelModelPricing{}))
+
+	second := postJSON(t, SyncUterRouteUpstream, "/api/upstream/uterroute/sync",
+		fmt.Sprintf(`{"base_url":%q,"channel_id":%d}`, secondURL, draft.Data.ID))
+	require.NotContains(t, second.Body.String(), `"success":true`)
+	after := service.LoadUterRouteUpstreamSnapshot()
+	require.NotNil(t, after)
+	require.Equal(t, "flow-v1", after.PricingVersion, "failed channel write must not commit a new snapshot baseline")
+}
+
 func TestUterRouteCreateFlow_StepByStep(t *testing.T) {
 	setupUterRouteFlowTestDB(t)
 	upstream := newFlowUpstream(t)
@@ -243,6 +385,52 @@ func TestUterRouteCreateFlow_StepByStep(t *testing.T) {
 // TestUterRouteEditFlow_StepByStep walks the edit pipeline: load an existing
 // channel, switch discount group, re-sync the catalogue and verify that a
 // manually configured sale price survives the re-sync.
+func TestUterRouteEditFlow_MappingChangeMaterializesAliasPricing(t *testing.T) {
+	setupUterRouteFlowTestDB(t)
+	upstream := newFlowUpstream(t)
+	setUterRouteFlowOption(t, upstream)
+
+	ch := model.Channel{
+		Type: constant.ChannelTypeUterRoute, Name: "mapping edit",
+		Status: common.ChannelStatusEnabled, BaseURL: ptrStr(upstream),
+		Key: "sk-test", Models: "billable-a", Group: "default",
+	}
+	require.NoError(t, model.DB.Create(&ch).Error)
+
+	f64 := func(v float64) *float64 { return &v }
+	encoded, err := common.Marshal(model.ChannelInternalPricing{
+		Mode:                model.ChannelPricingModePerMillionTokens,
+		InputUSDPerMillion:  model.MoneyFromFloatPtr(f64(1)),
+		OutputUSDPerMillion: model.MoneyFromFloatPtr(f64(2)),
+		Source:              "manual",
+	})
+	require.NoError(t, err)
+	require.NoError(t, model.DB.Create(&model.ChannelModelPricing{
+		ChannelId: ch.Id, Provider: "uterroute", ModelName: "billable-a",
+		NormalizedPricing: `{"currency":"USD","unit":"per_1m_token"}`,
+		InternalPricing:   string(encoded),
+		PricingStatus:     model.ChannelPricingStatusConfigured,
+		PricingOwner:      model.ChannelPricingOwnerOperator,
+	}).Error)
+
+	body := fmt.Sprintf(
+		`{"id":%d,"type":%d,"name":"mapping edit","key":"sk-test","base_url":%q,"models":"alias-a","model_mapping":"{\"alias-a\":\"billable-a\"}","group":"default"}`,
+		ch.Id, constant.ChannelTypeUterRoute, upstream,
+	)
+	rec := postJSON(t, UpdateChannel, "/api/channel", body)
+	require.Equal(t, http.StatusOK, rec.Code, rec.Body.String())
+
+	rows, err := model.ListChannelModelPricing(ch.Id)
+	require.NoError(t, err)
+	var aliasPriced bool
+	for _, row := range rows {
+		if row.ModelName == "alias-a" {
+			aliasPriced = true
+		}
+	}
+	require.True(t, aliasPriced, "editing model_mapping must materialize a price for the new request alias")
+}
+
 func TestUterRouteEditFlow_StepByStep(t *testing.T) {
 	setupUterRouteFlowTestDB(t)
 	upstream := newFlowUpstream(t)
