@@ -111,6 +111,45 @@ func stringValue(value any) string {
 	return ""
 }
 
+// BaselineAliasWhitelistOptionKey maps normalized baseline keys to one exact
+// model name, e.g. {"deepseek:v4:1:flash:fast": "DeepSeek-V4-1-Flash-Fast"}.
+// It is deliberately outside modelPricingOptionKeys so editing the whitelist
+// does not dirty the operator's synchronized-pricing snapshot.
+const BaselineAliasWhitelistOptionKey = "SynchronizedPricingBaselineAliasWhitelist"
+
+// BaselineAliasConflictsOptionKey is the exportable, JSON snapshot of every
+// normalized-alias group that disagrees on price. Operators read this option
+// (Root → System Settings → Options export) to decide whitelist entries.
+const BaselineAliasConflictsOptionKey = "SynchronizedPricingBaselineAliasConflicts"
+
+func loadBaselineAliasWhitelist() map[string]string {
+	whitelist := make(map[string]string)
+	raw := strings.TrimSpace(common.GetOption(BaselineAliasWhitelistOptionKey))
+	if raw == "" {
+		return whitelist
+	}
+	if err := common.UnmarshalJsonStr(raw, &whitelist); err != nil {
+		common.SysError(common.LogText("invalid %s option: %v", BaselineAliasWhitelistOptionKey, err))
+		return map[string]string{}
+	}
+	return whitelist
+}
+
+// publishBaselineAliasConflicts writes the auditable conflict list. A failed
+// write never blocks the cross-check: the baseline itself is already resolved.
+func publishBaselineAliasConflicts(conflicts []BaselineAliasConflict) {
+	raw, err := common.Marshal(conflicts)
+	if err != nil {
+		return
+	}
+	// This function runs on every cross-check; avoid a write on each sync when
+	// the operator's synchronized-pricing snapshot did not change.
+	if strings.TrimSpace(common.GetOption(BaselineAliasConflictsOptionKey)) == string(raw) {
+		return
+	}
+	_ = UpdateOption(BaselineAliasConflictsOptionKey, string(raw))
+}
+
 // synchronizedOfficialBaseline indexes the operator's synchronized pricing by
 // normalized model name so a channel name using separators differently
 // ("claude-fable-5.1" vs "claude-fable-5-1") still resolves to the same
@@ -124,18 +163,36 @@ func synchronizedOfficialBaseline() map[string]synchronizedOfficialPrice {
 	if err != nil || snapshot == nil {
 		return nil
 	}
-	baseline, conflicts := buildSynchronizedOfficialBaseline(snapshot.Entries)
+	baseline, conflicts, restorations := BuildBaselineWithAliasResolution(
+		snapshot.Entries, loadBaselineAliasWhitelist(),
+	)
+	publishBaselineAliasConflicts(conflicts)
 	if len(conflicts) > 0 {
 		shown := conflicts
 		if len(shown) > 10 {
 			shown = shown[:10]
 		}
+		names := make([]string, 0, len(shown))
+		for _, conflict := range shown {
+			names = append(names, conflict.NormalizedName)
+		}
 		common.SysLog(common.LogText(
-			"skipped %d ambiguous synchronized pricing baseline names (normalized aliases disagree): %s",
-			len(conflicts), strings.Join(shown, ", "),
+			"%d synchronized pricing baseline alias groups disagree (%d restored, %d skipped): %s",
+			len(conflicts), countBaselineRestorations(restorations, "exact_id")+countBaselineRestorations(restorations, "whitelist"),
+			countBaselineRestorations(restorations, "skipped"), strings.Join(names, ", "),
 		))
 	}
 	return baseline
+}
+
+func countBaselineRestorations(restorations []BaselineAliasRestoration, resolution string) int {
+	count := 0
+	for _, item := range restorations {
+		if item.Resolution == resolution {
+			count++
+		}
+	}
+	return count
 }
 
 // buildSynchronizedOfficialBaseline is the DB-free baseline builder. Names that
