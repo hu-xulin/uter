@@ -216,6 +216,7 @@ import {
   findMissingModelsInMapping,
   validateModelMappingJson,
 } from '../../lib'
+import { invalidatePricingQueries } from '../../lib/channel-actions'
 import { fetchModelsWithCurrentAddress } from '../../lib/channel-address-refresh'
 import { runChannelAutoProvision } from '../../lib/channel-auto-provision'
 import {
@@ -2669,6 +2670,12 @@ export function ChannelMutateDrawer({
         queryKey: channelsQueryKeys.detail(channelId),
       })
     }
+    // Creation returns before the async price gate writes rows. Drop both the
+    // aggregate pricing cache and every channel-model-pricing entry so an
+    // edit immediately reflects the re-verification result instead of a
+    // stale snapshot from before the save.
+    invalidatePricingQueries(queryClient)
+    queryClient.invalidateQueries({ queryKey: ['channel-model-pricing'] })
     onOpenChange(false)
     setOpen(null)
   }, [channelId, queryClient, onOpenChange, setOpen])
@@ -2795,6 +2802,10 @@ export function ChannelMutateDrawer({
             )
           } else {
             toast.success(t('Uter.api channel created'))
+            const keyWarning = (response.data?.channels ?? []).find(
+              (channel) => channel.key_warning
+            )?.key_warning
+            if (keyWarning) toast.warning(keyWarning)
           }
           if (created > 0) {
             handleSuccess()

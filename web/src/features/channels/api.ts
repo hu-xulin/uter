@@ -242,6 +242,9 @@ export type UterAPIChannelResult = {
   models?: string[]
   pricing_written?: number
   pricing_error?: string
+  keys_total?: number
+  keys_usable?: number
+  key_warning?: string
   error?: string
 }
 
@@ -1051,7 +1054,9 @@ export async function applyBailianCatalog(channelId: number) {
   const res = await api.post('/api/ratio_sync/bailian/catalog/apply', {
     channel_id: channelId,
   })
-  return res.data?.data
+  // A failed price write is reported with success:false even though metadata
+  // was applied. Callers must surface that instead of showing "Synced".
+  return requireServerSuccess(res.data).data
 }
 
 export type UterRouteUpstreamSummary = {
@@ -1099,7 +1104,7 @@ export async function getUterRouteUpstreamSnapshot(
   const res = await api.get('/api/upstream/uterroute/snapshot', {
     params: channelId ? { channel_id: channelId } : undefined,
   })
-  return res.data?.data ?? { synced: false }
+  return requireServerSuccess(res.data).data ?? { synced: false }
 }
 
 export async function syncUterRouteUpstream(

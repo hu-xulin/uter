@@ -205,6 +205,7 @@ export function BailianChannelPanel(props: BailianChannelPanelProps) {
         <div className='space-y-1.5'>
           <Label htmlFor='bailian-workspace'>{t('Workspace ID')}</Label>
           <Input
+            key={parsed.workspace}
             id='bailian-workspace'
             mono
             defaultValue={parsed.workspace}

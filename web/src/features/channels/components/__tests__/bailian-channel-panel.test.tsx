@@ -114,6 +114,25 @@ test('百炼面板从 workspace URL 解析出区域与 workspace id', async () =
   )
 })
 
+test('外部 base_url 改变后 workspace 输入框同步刷新', async () => {
+  const { rerender } = renderPanel({
+    baseUrl: 'https://ws-a.cn-beijing.maas.aliyuncs.com/api/v1',
+  })
+  expect(await screen.findByDisplayValue('ws-a')).toBeVisible()
+
+  rerender(
+    <QueryClientProvider client={client}>
+      <BailianChannelPanel
+        channelId={88}
+        baseUrl='https://ws-b.cn-shanghai.maas.aliyuncs.com/api/v1'
+        onCreateDraft={undefined}
+        onChangeBaseUrl={() => undefined}
+      />
+    </QueryClientProvider>
+  )
+  expect(await screen.findByDisplayValue('ws-b')).toBeVisible()
+})
+
 // ── 同步按钮 ────────────────────────────────────────────────────
 
 test('百炼面板 Sync channel catalog 触发 refresh 并提示成功', async () => {

@@ -149,6 +149,17 @@ describe('isMaskedSecret', () => {
     }
   })
 
+  it('keeps real credentials containing literal asterisks editable', () => {
+    for (const value of [
+      'p*ssw0rd',
+      'sk-*abc123',
+      'a*b*c*d*e',
+      'ends-with-*',
+    ]) {
+      expect(isMaskedSecret(value)).toBe(false)
+    }
+  })
+
   it('round-trips maskSecret output', () => {
     expect(isMaskedSecret(maskSecret('sk-real-secret-key-value-123456'))).toBe(
       true
