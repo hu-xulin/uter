@@ -29,6 +29,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -123,11 +124,17 @@ func GetGenericUpstreamBillingGroup(channelID int) string {
 	return strings.TrimSpace(groups[fmt.Sprintf("%d", channelID)])
 }
 
+// The group map is one shared JSON option. Concurrent channel syncs must not
+// interleave their read-modify-write cycles or one channel's group is lost.
+var genericUpstreamBillingGroupMu sync.Mutex
+
 // SetGenericUpstreamBillingGroup stores or clears the upstream group.
 func SetGenericUpstreamBillingGroup(channelID int, group string) error {
 	if channelID <= 0 {
 		return errors.New("channel id is required")
 	}
+	genericUpstreamBillingGroupMu.Lock()
+	defer genericUpstreamBillingGroupMu.Unlock()
 	groups := map[string]string{}
 	raw := strings.TrimSpace(common.GetOption(GenericUpstreamBillingGroupKey))
 	if raw != "" {
@@ -287,6 +294,17 @@ func GenericChannelPricingRecords(
 	return genericChannelPricingRecords(channelID, channelModels, entries, now, 0, true, resolveGenericProviderID(providerID))
 }
 
+// genericPricingRecordSource keeps audit labels tied to the provider that
+// actually published the quote. Uter.api and other NewAPI-compatible providers
+// share the parser but are not the generic "newapi" source.
+func genericPricingRecordSource(providerID string) string {
+	providerID = strings.TrimSpace(providerID)
+	if providerID == "" || providerID == "newapi" {
+		return "newapi:/api/pricing"
+	}
+	return providerID + ":/api/pricing"
+}
+
 // GenericChannelPricingRecordsWithMapping is the redirect-aware form used by
 // Uter.api. After a batch redirect the channel's model list holds request names
 // (aliases) while the upstream catalogue still publishes raw model names.
@@ -350,6 +368,7 @@ func GenericChannelPricingRecordsWithMapping(
 				quota = *entry.QuotaPerUnit
 			}
 			official, needsReview, reasons := genericOfficialPricing(entry, now.Unix(), quota)
+			official.Source = genericPricingRecordSource(providerID)
 			raw, err := common.Marshal(entry)
 			if err != nil {
 				continue
@@ -369,7 +388,7 @@ func GenericChannelPricingRecordsWithMapping(
 				ModelName: servedName, Currency: official.Currency,
 				OfficialPricing: string(raw), NormalizedPricing: string(normalized),
 				InternalPricing: internal,
-				Source:          "newapi:/api/pricing", FetchedAt: now.Unix(),
+				Source:          genericPricingRecordSource(providerID), FetchedAt: now.Unix(),
 			})
 		}
 	}
@@ -441,6 +460,7 @@ func genericChannelPricingRecords(
 			quota = *entry.QuotaPerUnit
 		}
 		official, needsReview, reasons := genericOfficialPricing(entry, now.Unix(), quota)
+		official.Source = genericPricingRecordSource(providerID)
 		raw, err := common.Marshal(entry)
 		if err != nil {
 			continue
@@ -456,7 +476,7 @@ func genericChannelPricingRecords(
 			ModelName: name, Currency: official.Currency,
 			OfficialPricing: string(raw), NormalizedPricing: string(normalized),
 			InternalPricing: genericExpressionInternalPricing(entry, now.Unix()),
-			Source:          "newapi:/api/pricing", FetchedAt: now.Unix(),
+			Source:          genericPricingRecordSource(providerID), FetchedAt: now.Unix(),
 		})
 	}
 	return records
@@ -1057,9 +1077,9 @@ func applyGenericGroupPurchaseCost(
 	for _, entry := range payload.Data {
 		byName[strings.TrimSpace(entry.ModelName)] = entry
 	}
-	source := fmt.Sprintf("newapi:/api/pricing#group=%s", group)
 	updatedAt := time.Now().Unix()
 	for _, record := range records {
+		source := fmt.Sprintf("%s#group=%s", genericPricingRecordSource(record.Provider), group)
 		upstreamName := record.ModelName
 		if len(mapping) > 0 {
 			if resolved, cyclic := followUterRouteModelMapping(mapping, record.ModelName); !cyclic && resolved != "" {

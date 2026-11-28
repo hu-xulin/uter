@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -454,6 +455,31 @@ func TestUterAPIOperationCacheReusesUpstreamSnapshots(t *testing.T) {
 	assert.Equal(t, []string{"model-a"}, models)
 	assert.Equal(t, int32(2), atomic.LoadInt32(&pricingCalls))
 	assert.Equal(t, int32(2), atomic.LoadInt32(&modelCalls))
+}
+
+func TestAutoVerifyCatalogUsesAuthorizedSubsetForType64Channel(t *testing.T) {
+	db := setupUterAPIFixDB(t)
+	server := newUterAPIFixServer(t,
+		map[string]string{"sk-fix": uterAPIFixPricing},
+		map[string][]string{"sk-fix": {"model-a", "model-b"}},
+	)
+	common.OptionMap[UterAPIUpstreamURLOption] = server.URL
+	channel := newUterAPIFixChannel(db, server.URL, "model-a", "Group A")
+	require.NoError(t, db.Create(&model.ChannelModelPricing{
+		ChannelId: channel.Id, Provider: "uterapi", ModelName: "model-a", Currency: "USD",
+	}).Error)
+
+	// Only Group A's model-a is in the upstream catalogue for this key; model-b
+	// exists in /v1/models but enable_groups excludes it from Group A.
+	autoVerifyChannelCatalogWithContext(context.Background(), channel.Id)
+
+	raw := common.GetOption(ChannelPricingCatalogVerifyPrefix + strconv.Itoa(channel.Id))
+	require.NotEmpty(t, raw, "type-64 Uter.api channel must persist a catalog verification report")
+	var report UpstreamParityReport
+	require.NoError(t, common.UnmarshalJsonStr(raw, &report))
+	assert.True(t, report.CatalogCompared, "report must be marked as compared against an upstream catalog")
+	assert.Equal(t, 1, report.UpstreamModelCount, "catalog must be the authorized subset, not the whole account catalogue")
+	assert.Zero(t, report.Summary[UpstreamParityModelMissing], "authorized model-a already has a pricing row")
 }
 
 func TestPreviewUterAPIPriceCatalogUsesDocumentQuotaBasis(t *testing.T) {

@@ -67,8 +67,20 @@ func UterAPIUpstreamHost() string {
 	return parsed.Hostname()
 }
 
+// UterAPIEffectiveBaseURL is the single resolution of the Uter.api discovery
+// endpoint. System Settings → Channels stores the API address per provider;
+// the legacy option remains a fallback for deployments that have not migrated.
+// Group listing, model discovery and the creation wizard must all use this
+// function or a settings-only deployment ends up with an empty group list.
+func UterAPIEffectiveBaseURL() string {
+	if value := strings.TrimSpace(SubscriptionChannelProviderCredentials().APIURL); value != "" {
+		return value
+	}
+	return UterAPIUpstreamBaseURL()
+}
+
 func uterapiPricingURL() string {
-	base := UterAPIUpstreamBaseURL()
+	base := UterAPIEffectiveBaseURL()
 	if base == "" {
 		return ""
 	}
@@ -164,7 +176,7 @@ func fetchUterAPIPricingPayload(ctx context.Context, baseURL, apiKey string) (*G
 func uterapiPricingEndpointFor(baseURL string) (string, error) {
 	base := strings.TrimSpace(baseURL)
 	if base == "" {
-		base = UterAPIUpstreamBaseURL()
+		base = UterAPIEffectiveBaseURL()
 	}
 	if base == "" {
 		return "", errors.New("Uter.api upstream endpoint is not configured")
@@ -347,6 +359,13 @@ func syncUterAPIChannelPricing(
 	if len(records) == 0 {
 		return 0, discovered, ratio, groupName, errors.New("no pricing entries matched the channel models")
 	}
+	// Persist the billing group before any billable price is written. A failed
+	// option update used to be logged and swallowed, leaving an enabled channel
+	// whose later catalog refresh, parity audit and scheduled sync all silently
+	// skipped because the group was never recorded.
+	if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
+		return 0, discovered, ratio, groupName, fmt.Errorf("persist Uter.api billing group %q: %w", group, err)
+	}
 	if ratio != 1 {
 		for i := range records {
 			applyGroupRatioToRecord(&records[i], group, ratio)
@@ -369,9 +388,6 @@ func syncUterAPIChannelPricing(
 	}
 	if len(seen) > 0 {
 		_, _, _, _ = model.ApplyChannelLifecycleSnapshot(channel.Id, seen, time.Now().Unix(), model.ChannelModelMissingDisableThreshold)
-	}
-	if err := SetGenericUpstreamBillingGroup(channel.Id, group); err != nil {
-		common.SysError(common.LogText("persist Uter.api group failed: channel_id=%d, error=%v", channel.Id, err))
 	}
 	// The purchase contract must use the same real-USD basis as the converted
 	// channel price; otherwise profit would be measured against credit dollars.
@@ -400,7 +416,11 @@ func applyGroupRatioToRecord(record *model.ChannelOfficialPricingRecord, group s
 			expr := fmt.Sprintf("(%s) * %s", strings.TrimSpace(internal.BillingExpr), strconv.FormatFloat(ratio, 'f', -1, 64))
 			if NormalizeUpstreamExpression(expr).Executable {
 				internal.BillingExpr = expr
-				internal.Source = fmt.Sprintf("newapi:/api/pricing#group=%s", group)
+				source := strings.TrimSpace(record.Source)
+				if source == "" {
+					source = "newapi:/api/pricing"
+				}
+				internal.Source = fmt.Sprintf("%s#group=%s", source, group)
 				if encoded, err := common.Marshal(internal); err == nil {
 					record.InternalPricing = string(encoded)
 				}

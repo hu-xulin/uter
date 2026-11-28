@@ -180,6 +180,33 @@ func TestGenericChannelPricingRecordsWithMappingBadJSONFallsBackToDirectNames(t 
 	assert.Equal(t, "direct", records[0].ModelName)
 }
 
+// A dedicated provider must not inherit the generic New API audit label. The
+// record source and the embedded normalized view are both shown in the pricing
+// panel, so they have to agree with the provider that published the quote.
+func TestGenericPricingRecordsUseProviderSourceLabels(t *testing.T) {
+	entries := []GenericPricingEntry{
+		{ModelName: "claude-a", BillingMode: "tiered_expr", BillingExpr: `tier("base", p * 1 + c * 2)`},
+	}
+	now := time.Unix(100, 0)
+
+	mapped := GenericChannelPricingRecordsWithMapping(
+		7, []string{"claude-a-dr"}, entries, now, 500000, true, "uterapi",
+		`{"claude-a-dr":"claude-a"}`,
+	)
+	require.Len(t, mapped, 1)
+	require.Equal(t, "uterapi:/api/pricing", mapped[0].Source)
+	var mappedView model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(mapped[0].NormalizedPricing, &mappedView))
+	require.Equal(t, "uterapi:/api/pricing", mappedView.Source)
+
+	direct := GenericOfficialPricingRecords(8, []string{"claude-a"}, entries, now, 500000, "uterapi")
+	require.Len(t, direct, 1)
+	require.Equal(t, "uterapi:/api/pricing", direct[0].Source)
+	var directView model.ChannelOfficialPricing
+	require.NoError(t, common.UnmarshalJsonStr(direct[0].NormalizedPricing, &directView))
+	require.Equal(t, "uterapi:/api/pricing", directView.Source)
+}
+
 func TestGenericChannelPricingRecordsFilterChannelModels(t *testing.T) {
 	entries := []GenericPricingEntry{
 		{ModelName: "served", QuotaType: 0, ModelRatio: 1, CompletionRatio: 2},
@@ -286,6 +313,7 @@ func TestGenericSyncFreezesGroupPurchaseCost(t *testing.T) {
 	require.NotNil(t, cost, "group selection must freeze a purchase contract")
 	assert.Contains(t, cost.Pricing.BillingExpr, "* 3.5")
 	assert.False(t, cost.Verified)
+	assert.Contains(t, cost.Source, "newapi-compatible:/api/pricing#group=")
 	assert.Contains(t, cost.Source, "Claude-稳定")
 
 	snapshot := &model.BillingPriceSnapshot{
@@ -313,6 +341,35 @@ func TestFilterModelNamesByUpstreamGroup(t *testing.T) {
 	assert.Equal(t, models, FilterModelNamesByUpstreamGroup("", models))
 	assert.Equal(t, models, FilterModelNamesByUpstreamGroup("default", models))
 	assert.Equal(t, []string{"unknown-model"}, FilterModelNamesByUpstreamGroup("Claude-max", []string{"unknown-model"}))
+}
+
+// 档位渠道绑定 default group、没有显式 upstream group，渠道名是唯一能判断
+// 模型族的线索。共享 key 的 /v1/models 或内置目录回退返回整账号目录时，
+// 必须按渠道名过滤，避免 claude-* 混入 GPT 档位、gpt-* 混入 Claude 档位。
+func TestFilterModelNamesByChannelName(t *testing.T) {
+	models := []string{
+		"claude-sonnet-5", "claude-opus-5", "gpt-6.2-sol", "gpt-image-2", "gemini-4",
+	}
+
+	assert.Equal(t,
+		[]string{"claude-sonnet-5", "claude-opus-5"},
+		FilterModelNamesByChannelName("Claude-Basic", models))
+	assert.Equal(t,
+		[]string{"claude-sonnet-5", "claude-opus-5"},
+		FilterModelNamesByChannelName("Claude-Ultra", models))
+	assert.Equal(t,
+		[]string{"gpt-6.2-sol", "gpt-image-2"},
+		FilterModelNamesByChannelName("GPT-Pro", models))
+	assert.Equal(t,
+		[]string{"gpt-6.2-sol", "gpt-image-2"},
+		FilterModelNamesByChannelName("GPT-Max", models))
+
+	// 无族名或族内无匹配时保持原样，避免误清空渠道。
+	assert.Equal(t, models, FilterModelNamesByChannelName("优特-精选", models))
+	assert.Equal(t, models, FilterModelNamesByChannelName("default", models))
+	assert.Equal(t,
+		[]string{"unknown-model"},
+		FilterModelNamesByChannelName("Claude-Pro", []string{"unknown-model"}))
 }
 
 // 价格文档是账号级目录，可能包含该密钥无法服务的模型：已有模型列表的渠道

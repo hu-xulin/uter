@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/uter-ai/uter/common"
@@ -39,6 +40,7 @@ const (
 	UterAPIEventModelDiscovered      = "MODEL_DISCOVERED"
 	UterAPIEventPriceExpired         = "PRICE_EXPIRED"
 	UterAPIEventKeyDegraded          = "KEY_DEGRADED"
+	UterAPIEventCatalogVerifyFailed  = "CATALOG_VERIFY_FAILED"
 )
 
 type UterAPIObservabilityEvent struct {
@@ -52,6 +54,11 @@ type UterAPIObservabilityEvent struct {
 	FirstSeen int64  `json:"first_seen_at"`
 	LastSeen  int64  `json:"last_seen_at"`
 }
+
+// One option holds every channel's event list. Serialize the read-modify-write
+// cycle locally; a concurrent append otherwise overwrites another channel's
+// event and loses the audit evidence.
+var uterAPIObservabilityMu sync.Mutex
 
 // AppendUterAPIObservabilityEvent records one bounded, deduplicated event.
 // Events live in an option rather than a package-level buffer so every node
@@ -73,6 +80,8 @@ func AppendUterAPIObservabilityEvent(
 	message = truncateUterAPIKeyHealthReason(message)
 	id := fmt.Sprintf("%s:%d:%s", eventType, channelID, subject)
 
+	uterAPIObservabilityMu.Lock()
+	defer uterAPIObservabilityMu.Unlock()
 	events := loadUterAPIObservabilityEvents()
 	found := false
 	for index := range events {

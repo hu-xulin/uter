@@ -33,6 +33,45 @@ import (
 	"github.com/uter-ai/uter/pkg/billingexpr"
 )
 
+func TestUterAPIGroupPriceKeepsProviderSource(t *testing.T) {
+	encoded, err := common.Marshal(model.ChannelInternalPricing{
+		Mode: model.ChannelPricingModeTieredExpr, BillingExpr: "p * 5 + c * 10",
+	})
+	require.NoError(t, err)
+	record := model.ChannelOfficialPricingRecord{
+		Source:          "uterapi:/api/pricing",
+		InternalPricing: string(encoded),
+	}
+	applyGroupRatioToRecord(&record, "vip", 0.5)
+	assert.Contains(t, record.InternalPricing, `"source":"uterapi:/api/pricing#group=vip"`)
+	assert.NotContains(t, record.InternalPricing, "newapi:")
+}
+
+func TestUterAPIEffectiveBaseURLPrefersSystemSettings(t *testing.T) {
+	common.OptionMapRWMutex.Lock()
+	previous := common.OptionMap
+	common.OptionMap = map[string]string{
+		UterAPIUpstreamURLOption:               "https://legacy-uterapi.test",
+		ChannelProviderSubscriptionAPIURLOption: "https://settings-uterapi.test",
+	}
+	common.OptionMapRWMutex.Unlock()
+	t.Cleanup(func() {
+		common.OptionMapRWMutex.Lock()
+		common.OptionMap = previous
+		common.OptionMapRWMutex.Unlock()
+	})
+
+	assert.Equal(t, "https://settings-uterapi.test", UterAPIEffectiveBaseURL())
+	assert.Equal(t, "https://settings-uterapi.test/api/pricing", uterapiPricingURL())
+
+	// Removing the explicit system-settings address must restore the legacy
+	// option so existing deployments keep working.
+	common.OptionMapRWMutex.Lock()
+	delete(common.OptionMap, ChannelProviderSubscriptionAPIURLOption)
+	common.OptionMapRWMutex.Unlock()
+	assert.Equal(t, "https://legacy-uterapi.test", UterAPIEffectiveBaseURL())
+}
+
 func uterapiPricingServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {

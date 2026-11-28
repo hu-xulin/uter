@@ -105,7 +105,20 @@ func TestIsMaskedSecret(t *testing.T) {
 		t.Fatal("plain value must not be treated as masked")
 	}
 	if !IsMaskedSecret("abcd****") {
-		t.Fatal("value containing '*' must be treated as masked")
+		t.Fatal("the exact mask shape must be treated as masked")
+	}
+	for _, shape := range []string{"****", "abcd*", "abcd****", "sk-0************wxyz", MaskSecretValue("a-real-secret-123456")} {
+		if !IsMaskedSecret(shape) {
+			t.Fatalf("mask shape %q must be recognized", shape)
+		}
+	}
+	// A literal asterisk is a legal password character. Only the exact shape
+	// this package emits may be treated as "unchanged"; otherwise saving such
+	// a password silently keeps the old value.
+	for _, real := range []string{"p*ssw0rd", "sk-*abc123", "a*b*c*d*e", "ends-with-*"} {
+		if IsMaskedSecret(real) {
+			t.Fatalf("real secret %q must not be mistaken for a mask", real)
+		}
 	}
 }
 

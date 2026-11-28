@@ -378,6 +378,10 @@ func TestCreateUterAPIChannelsNoKeyNoCreate(t *testing.T) {
 	],"group":"default"}`)
 
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	assert.Contains(
+		t, recorder.Body.String(), "no API key",
+		"a slot with no usable key must report why it was skipped",
+	)
 	all, err := model.GetAllChannels(0, 100, true, false)
 	require.NoError(t, err)
 	for _, ch := range all {

@@ -97,10 +97,61 @@ func MaskMultilineSecret(value string) string {
 	return strings.Join(lines, "\n")
 }
 
-// IsMaskedSecret 判断 value 是否形如本包生成的掩码串（含 '*'）。
+// IsMaskedSecret 判断 value 是否形如本包生成的掩码串。
 //
 // 用途：写入时识别「前端把掩码串回传」的情况——此时应视为「未修改」，
 // 保留库里原密钥，而不是用掩码覆盖真实密钥。
+//
+// 只识别本包实际会生成的三种形态（全星号 / 前4+尾随星号 / 前4+中缀星号+后4）。
+// 早前的「含任意星号即掩码」会把 p*ssw0rd 这类合法密码判为未修改，导致用户
+// 保存后仍是旧密码。星号出现在保留前缀或后缀中时一律按真实密钥处理。
 func IsMaskedSecret(value string) bool {
-	return strings.Contains(value, string(secretMaskChar))
+	runes := []rune(value)
+	length := len(runes)
+	if length == 0 {
+		return false
+	}
+	allStars := true
+	for _, r := range runes {
+		if r != secretMaskChar {
+			allStars = false
+			break
+		}
+	}
+	if allStars {
+		return true
+	}
+	if length <= secretMaskKeepHead {
+		return false
+	}
+	for _, r := range runes[:secretMaskKeepHead] {
+		if r == secretMaskChar {
+			return false
+		}
+	}
+	if length <= secretMaskKeepHead+secretMaskKeepTail {
+		stars := 0
+		for _, r := range runes[secretMaskKeepHead:] {
+			if r != secretMaskChar {
+				return false
+			}
+			stars++
+		}
+		return stars > 0
+	}
+	for _, r := range runes[length-secretMaskKeepTail:] {
+		if r == secretMaskChar {
+			return false
+		}
+	}
+	middle := runes[secretMaskKeepHead : length-secretMaskKeepTail]
+	if len(middle) < 1 || len(middle) > secretMaskMaxMiddle {
+		return false
+	}
+	for _, r := range middle {
+		if r != secretMaskChar {
+			return false
+		}
+	}
+	return true
 }

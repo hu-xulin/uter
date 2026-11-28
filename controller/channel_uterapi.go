@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -66,11 +67,24 @@ func resolveUterAPICreateSlots(
 	submitted []uterapiKeySlot,
 	credentials service.ChannelProviderCredentials,
 ) []resolvedUterapiSlot {
+	resolved, _ := resolveUterAPICreateSlotsWithSkipped(submitted, credentials)
+	return resolved
+}
+
+// resolveUterAPICreateSlotsWithSkipped also returns the slots that could not
+// produce a channel. The wizard must see a per-slot reason instead of silently
+// creating fewer channels than were submitted.
+func resolveUterAPICreateSlotsWithSkipped(
+	submitted []uterapiKeySlot,
+	credentials service.ChannelProviderCredentials,
+) ([]resolvedUterapiSlot, []uterapiKeySlot) {
 	resolved := make([]resolvedUterapiSlot, 0, len(submitted))
+	skipped := make([]uterapiKeySlot, 0)
 	for _, slot := range submitted {
 		name := strings.TrimSpace(slot.Name)
 		upstreamGroup := strings.TrimSpace(slot.Group)
 		if name == "" {
+			skipped = append(skipped, slot)
 			continue
 		}
 		keys := normalizeUterAPIKeys(slot.Keys)
@@ -86,6 +100,7 @@ func resolveUterAPICreateSlots(
 			}
 		}
 		if len(keys) == 0 {
+			skipped = append(skipped, slot)
 			continue
 		}
 		if mode == "batch" {
@@ -114,7 +129,7 @@ func resolveUterAPICreateSlots(
 			Mode: "multi_to_single", Strategy: strategy,
 		})
 	}
-	return resolved
+	return resolved, skipped
 }
 
 // uterapiBaseURLForTest lets tests point the single-group creation at a mock.
@@ -125,14 +140,10 @@ func uterapiBaseURL() string {
 		return value
 	}
 	// System Settings → Channels stores the API address separately from the
-	// console login URL. Prefer that explicit API address (the primary source
-	// for model/price discovery), then fall back to the legacy operational
-	// endpoint option for deployments that have not migrated yet. The console
-	// login URL is never used here.
-	if value := strings.TrimSpace(service.SubscriptionChannelProviderCredentials().APIURL); value != "" {
-		return value
-	}
-	return service.UterAPIUpstreamBaseURL()
+	// console login URL. Share the service-level resolver so the creation
+	// wizard, group listing and scheduled sync cannot disagree about the
+	// endpoint. The console login URL is never used here.
+	return service.UterAPIEffectiveBaseURL()
 }
 
 // CreateUterAPIChannels creates one NewAPI-compatible channel per supplied key and
@@ -168,11 +179,21 @@ func CreateUterAPIChannels(c *gin.Context) {
 	// 该槽位保存的添加模式。与通用 AddChannel 使用同一真源（subscription 组），
 	// 操作者显式填的 key 始终优先。
 	credentials := service.SubscriptionChannelProviderCredentials()
-	resolvedSlots := resolveUterAPICreateSlots(req.Slots, credentials)
+	resolvedSlots, skippedSlots := resolveUterAPICreateSlotsWithSkipped(req.Slots, credentials)
 
-	results := make([]gin.H, 0, len(resolvedSlots))
+	results := make([]gin.H, 0, len(resolvedSlots)+len(skippedSlots))
 	created := 0
 	lastErr := ""
+	for _, slot := range skippedSlots {
+		reason := "no API key available for this slot"
+		if strings.TrimSpace(slot.Name) == "" {
+			reason = "slot name is required"
+		}
+		results = append(results, gin.H{
+			"name": slot.Name, "group": slot.Group, "error": reason,
+		})
+		lastErr = reason
+	}
 	for _, slot := range resolvedSlots {
 		name := slot.Name
 		keys := slot.Keys
@@ -262,16 +283,23 @@ func CreateUterAPIChannels(c *gin.Context) {
 		// 必须显式写回 0，否则价格同步失败时渠道仍然处于可计费状态。
 		if err := model.DB.Model(&model.Channel{}).Where("id = ?", channel.Id).
 			Update("status", 0).Error; err != nil {
-			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": err.Error()})
-			lastErr = err.Error()
+			// The insert already committed with GORM's enabled default. Remove the
+			// draft instead of leaving an enabled, unbilled channel the caller
+			// cannot see (the response carries no channel_id on this path).
+			rollbackErr := rollbackUterAPIChannel(channel.Id)
+			reason := common.LogText("disable newly created channel failed: %v; rollback=%v", err, rollbackErr)
+			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": reason})
+			lastErr = reason
 			continue
 		}
 		// AddAbilities ran with GORM's status=1 default. The channel is forced
 		// disabled until prices are verified, so its abilities must be disabled
 		// too or the draft leaks into the pricing page.
 		if err := model.UpdateAbilityStatus(channel.Id, false); err != nil {
-			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": err.Error()})
-			lastErr = err.Error()
+			rollbackErr := rollbackUterAPIChannel(channel.Id)
+			reason := common.LogText("disable newly created channel abilities failed: %v; rollback=%v", err, rollbackErr)
+			results = append(results, gin.H{"name": name, "group": upstreamGroup, "error": reason})
+			lastErr = reason
 			continue
 		}
 		channel.Status = 0
@@ -297,6 +325,20 @@ func CreateUterAPIChannels(c *gin.Context) {
 			"base_url": base, "models": servedModels, "pricing_written": written,
 			"group": upstreamGroup, "group_name": groupName, "price_ratio": priceRatio,
 			"keys": len(usableKeys), "status": 0, "pricing_verified": false,
+		}
+		// A multi-key slot may succeed with a healthy subset. The operator
+		// still needs to know that some keys were dropped, otherwise the
+		// channel looks fully configured while failover capacity is missing.
+		if len(usableKeys) < len(keys) {
+			reason := strings.TrimSpace(discoveryErr)
+			if reason == "" {
+				reason = "one or more keys failed model discovery"
+			}
+			entry["keys_total"] = len(keys)
+			entry["keys_usable"] = len(usableKeys)
+			entry["key_warning"] = common.LogText(
+				"%d of %d keys were usable; %s", len(usableKeys), len(keys), reason,
+			)
 		}
 		// 价格同步成功也不等于可计费：逐个模型确认存在可计费的渠道级价格后，
 		// 才允许把渠道从禁用切到启用，并把定价模式升级为 ACTIVE。
@@ -342,6 +384,177 @@ func CreateUterAPIChannels(c *gin.Context) {
 		return
 	}
 	common.ApiSuccess(c, gin.H{"channels": results, "created": created})
+}
+
+// syncUterAPIPricingAfterGenericCreate applies the dedicated wizard's price
+// gate to a type-64 channel created through the generic POST /api/channel.
+// Previously that path inserted an enabled channel with no channel-scoped
+// price and no recorded billing group, so every request fell back to the
+// global price and scheduled refreshes silently skipped the channel.
+func syncUterAPIPricingAfterGenericCreate(parent context.Context, channelIDs []int, group string) {
+	_ = parent // request contexts are cancelled when the handler returns
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	group = strings.TrimSpace(group)
+	if group == "" {
+		group = "default"
+	}
+	for _, channelID := range channelIDs {
+		channel, err := model.GetChannelById(channelID, true)
+		if err != nil || channel == nil {
+			continue
+		}
+		if err := service.SetGenericUpstreamBillingGroup(channelID, group); err != nil {
+			common.SysError(common.LogText("Uter.api generic create group failed: channel_id=%d, error=%v", channelID, err))
+			continue
+		}
+		models := channel.GetModels()
+		written, _, _, syncErr := service.SyncUterAPIChannelPricing(ctx, channel, group)
+		reason := ""
+		switch {
+		case syncErr != nil:
+			reason = syncErr.Error()
+		case written == 0:
+			reason = "no billable channel price was derived"
+		default:
+			if missing := unbillableChannelModels(channelID, models); len(missing) > 0 {
+				reason = common.LogText("pricing verification failed for models: %s", strings.Join(missing, ","))
+			}
+		}
+		if reason != "" {
+			common.SysError(common.LogText("Uter.api channel stays disabled after generic create: channel_id=%d, reason=%s", channelID, reason))
+			continue
+		}
+		model.UpdateChannelStatus(channelID, "", common.ChannelStatusEnabled, "pricing_verified")
+		settings := channel.GetOtherSettings()
+		settings.PricingMode = dto.ChannelPricingModeScopedActive
+		if raw, marshalErr := common.Marshal(settings); marshalErr == nil {
+			if err := model.DB.Model(&model.Channel{}).Where("id = ?", channelID).
+				Update("settings", string(raw)).Error; err != nil {
+				common.SysError(common.LogText("persist active pricing mode failed: channel_id=%d, error=%v", channelID, err))
+			}
+		}
+		model.InitChannelCache()
+	}
+}
+
+// uterAPIPricingInputsChanged reports whether an edit invalidates the channel's
+// verified Uter.api price: credentials and upstream endpoint decide which key
+// and catalogue quote was authorized; served models and redirect aliases decide
+// which request names need price rows. Masked keys mean "unchanged" and must
+// not trigger a needless re-verification.
+func uterAPIPricingInputsChanged(updated *PatchChannel, origin *model.Channel, requestData map[string]any) bool {
+	if updated == nil || origin == nil {
+		return false
+	}
+	if _, ok := requestData["key"]; ok && channelKeyCredentialChanged(updated.Key, origin.Key) {
+		return true
+	}
+	if _, ok := requestData["base_url"]; ok && !equalStringPtr(updated.BaseURL, origin.BaseURL) {
+		return true
+	}
+	if _, ok := requestData["models"]; ok && updated.Models != origin.Models {
+		return true
+	}
+	if _, ok := requestData["model_mapping"]; ok && updated.GetModelMapping() != origin.GetModelMapping() {
+		return true
+	}
+	return false
+}
+
+func channelKeyCredentialChanged(next, previous string) bool {
+	if next == previous {
+		return false
+	}
+	previousKeys := make(map[string]struct{})
+	for _, line := range strings.Split(strings.Trim(previous, "\n"), "\n") {
+		if line = strings.TrimSpace(line); line != "" {
+			previousKeys[line] = struct{}{}
+		}
+	}
+	for _, line := range strings.Split(strings.Trim(next, "\n"), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || common.IsMaskedSecret(line) {
+			continue
+		}
+		if _, unchanged := previousKeys[line]; !unchanged {
+			return true
+		}
+	}
+	return false
+}
+
+// syncUterAPIPricingAfterEdit re-verifies an existing channel after its
+// credential, endpoint, served models or redirect aliases changed. The channel
+// is disabled before this runs, and is restored only when every served model
+// still has a configured channel-scoped price. No refresh re-derives a sale
+// price from the upstream document, so operator-edited prices are preserved.
+func syncUterAPIPricingAfterEdit(parent context.Context, channelID, restoreStatus int) {
+	_ = parent // request contexts are cancelled when the handler returns
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+
+	channel, err := model.GetChannelById(channelID, true)
+	if err != nil || channel == nil {
+		return
+	}
+	group := strings.TrimSpace(service.GetGenericUpstreamBillingGroup(channelID))
+	if group == "" {
+		common.SysError(common.LogText("Uter.api edit re-verification aborted: channel_id=%d, no recorded billing group", channelID))
+		return
+	}
+	created, unresolved, aliasErr := service.EnsureRedirectAliasPricing(channelID)
+	if aliasErr != nil {
+		common.SysError(common.LogText("Uter.api alias pricing after edit failed: channel_id=%d, error=%v", channelID, aliasErr))
+	} else if len(unresolved) > 0 {
+		common.SysError(common.LogText("Uter.api alias pricing after edit unresolved: channel_id=%d, aliases=%s", channelID, strings.Join(unresolved, ",")))
+	} else if created > 0 {
+		model.InitChannelCache()
+	}
+
+	written, _, _, _, syncErr := service.RefreshUterAPIChannelPricing(ctx, channel, group)
+	reason := ""
+	switch {
+	case syncErr != nil:
+		reason = syncErr.Error()
+	case written == 0:
+		reason = "no billable channel price was derived"
+	default:
+		if missing := unbillableChannelModels(channelID, channel.GetModels()); len(missing) > 0 {
+			reason = common.LogText("pricing verification failed for models: %s", strings.Join(missing, ","))
+		}
+	}
+	if reason == "" {
+		service.AutoVerifyChannelPricingWithContext(ctx, channelID)
+	}
+	settings := channel.GetOtherSettings()
+	if reason != "" {
+		settings.PricingMode = dto.ChannelPricingModeScopedPending
+		common.SysError(common.LogText("Uter.api channel stays disabled after edit: channel_id=%d, reason=%s", channelID, reason))
+	} else {
+		settings.PricingMode = dto.ChannelPricingModeScopedActive
+		if restoreStatus == common.ChannelStatusEnabled {
+			model.UpdateChannelStatus(channelID, "", common.ChannelStatusEnabled, "pricing_reverified")
+		}
+	}
+	if raw, marshalErr := common.Marshal(settings); marshalErr == nil {
+		if err := model.DB.Model(&model.Channel{}).Where("id = ?", channelID).
+			Update("settings", string(raw)).Error; err != nil {
+			common.SysError(common.LogText("persist Uter.api pricing mode after edit failed: channel_id=%d, error=%v", channelID, err))
+		}
+	}
+	model.InitChannelCache()
+}
+
+// rollbackUterAPIChannel removes a draft that failed to enter its disabled
+// state. Leaving such a row behind is unsafe: it was inserted with the enabled
+// default and has no verified channel price.
+func rollbackUterAPIChannel(channelID int) error {
+	if channelID <= 0 {
+		return nil
+	}
+	_, err := model.BatchDeleteChannels([]int{channelID})
+	return err
 }
 
 // unbillableChannelModels returns every selected model without a uniquely
