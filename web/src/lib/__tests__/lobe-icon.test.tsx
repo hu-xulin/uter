@@ -26,7 +26,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { getLobeIcon, getLobeIconNames } from '../lobe-icon'
 
 vi.mock(
-  '../../../node_modules/@lobehub/icons/es/Mistral/components/Color.mjs',
+  '../../../node_modules/@lobehub/icons/es/Mistral/Color.mjs',
   () => {
     throw new Error('Icon chunk unavailable')
   }
@@ -53,14 +53,14 @@ describe('Lobe icons', () => {
     ) as { webpackInclude: RegExp }
     const separator = root.includes('\\') ? '\\' : '/'
     const files = [
-      'OpenAI/components/Mono.mjs',
-      'Claude/components/Color.mjs',
-      'Gemini/components/Color.mjs',
-      'Gemma/components/Simple.mjs',
-      'LobeHub/components/Morden.mjs',
-      'OpenAI/index.js',
-      'OpenAI/components/Mono.d.ts',
-      'OpenAI/components/Unknown.mjs',
+      'OpenAI/Mono.mjs',
+      'Claude/Color.mjs',
+      'Gemini/Color.mjs',
+      'Gemma/Simple.mjs',
+      'LobeHub/Morden.mjs',
+      'OpenAI/index.mjs',
+      'OpenAI/Mono.d.mts',
+      'OpenAI/Unknown.mjs',
     ]
     const included = files.filter((file) =>
       webpackInclude.test(root + file.replaceAll('/', separator))
@@ -69,8 +69,8 @@ describe('Lobe icons', () => {
   })
 
   // The lazy import path is coupled to the installed package's real files.
-  // A mistaken extension change (`.mjs` -> `.js`) silently makes every icon
-  // chunk fail to load and leaves channel/provider/model/vendor logos showing
+  // A stale `components/` path segment makes every icon chunk fail to load
+  // and leaves channel/provider/model/vendor logos showing
   // only the grey initial placeholder, so assert the resolved files exist.
   it('resolves each lazy icon variant to a file shipped by the installed package', () => {
     const source = readFileSync(
@@ -78,7 +78,7 @@ describe('Lobe icons', () => {
       'utf8'
     )
     const importPath = source.match(
-      /`(\.\.\/\.\.\/node_modules\/@lobehub\/icons\/es\/\$\{baseKey\}\/components\/\$\{variant\}\.[^`]+)`/
+      /`(\.\.\/\.\.\/node_modules\/@lobehub\/icons\/es\/\$\{baseKey\}\/\$\{variant\}\.[^`]+)`/
     )
     expect(importPath).not.toBeNull()
     const template = importPath?.[1] ?? ''

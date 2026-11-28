@@ -71,9 +71,9 @@ type UpstreamProbeConfig struct {
 	UterToken   string
 	// ChannelID/Group/KeyIndex carry platform-side identity for the
 	// observability dimension (log lookups by request id).
-	ChannelID   int
+	ChannelID    int
 	ChannelGroup string
-	KeyIndex    int
+	KeyIndex     int
 }
 
 type UpstreamDimension struct {
@@ -101,16 +101,16 @@ type UpstreamProbeResult struct {
 // (only available when a probe token is configured); "Theoretical" is computed
 // from usage × billing rules without any ledger mutation.
 type BillingReconciliation struct {
-	Mode              string  `json:"mode"` // static | full_chain
-	UpstreamPrompt    int     `json:"upstream_prompt_tokens"`
-	UpstreamComplete  int     `json:"upstream_completion_tokens"`
-	TheoreticalQuota  int     `json:"theoretical_quota"`
-	UterActualQuota   int     `json:"uter_actual_quota"`
-	UterRequestID     string  `json:"uter_request_id"`
-	QuotaDelta        int     `json:"quota_delta"`
-	Match             bool    `json:"match"`
-	Notes             string  `json:"notes"`
-	InflationRatio    float64 `json:"inflation_ratio"`
+	Mode             string  `json:"mode"` // static | full_chain
+	UpstreamPrompt   int     `json:"upstream_prompt_tokens"`
+	UpstreamComplete int     `json:"upstream_completion_tokens"`
+	TheoreticalQuota int     `json:"theoretical_quota"`
+	UterActualQuota  int     `json:"uter_actual_quota"`
+	UterRequestID    string  `json:"uter_request_id"`
+	QuotaDelta       int     `json:"quota_delta"`
+	Match            bool    `json:"match"`
+	Notes            string  `json:"notes"`
+	InflationRatio   float64 `json:"inflation_ratio"`
 }
 
 type UpstreamMetrics struct {
@@ -141,27 +141,27 @@ type UpstreamMetrics struct {
 }
 
 type UpstreamMonitorResult struct {
-	Score      int                    `json:"score"`
-	Verdict    string                 `json:"verdict"`
-	Dimensions []UpstreamDimension    `json:"dimensions"`
-	Metrics    UpstreamMetrics        `json:"metrics"`
-	Probes     []UpstreamProbeResult  `json:"probes"`
-	HardGates  []string               `json:"hard_gates"`
-	Error      string                 `json:"error"`
-	FinishedAt time.Time              `json:"finished_at"`
-	Billing    BillingReconciliation  `json:"billing"`
-	AsyncTask  *AsyncTaskProbeResult  `json:"async_task,omitempty"`
+	Score      int                   `json:"score"`
+	Verdict    string                `json:"verdict"`
+	Dimensions []UpstreamDimension   `json:"dimensions"`
+	Metrics    UpstreamMetrics       `json:"metrics"`
+	Probes     []UpstreamProbeResult `json:"probes"`
+	HardGates  []string              `json:"hard_gates"`
+	Error      string                `json:"error"`
+	FinishedAt time.Time             `json:"finished_at"`
+	Billing    BillingReconciliation `json:"billing"`
+	AsyncTask  *AsyncTaskProbeResult `json:"async_task,omitempty"`
 }
 
 // AsyncTaskProbeResult is the result of the task submit → poll → artifact
 // probe for a non-chat (image/video/audio) model at full depth.
 type AsyncTaskProbeResult struct {
-	Applicable    bool   `json:"applicable"`
-	Submitted     bool   `json:"submitted"`
-	Polled        bool   `json:"polled"`
-	ArtifactListed bool  `json:"artifact_listed"`
-	Status        string `json:"status"`
-	Detail        string `json:"detail"`
+	Applicable     bool   `json:"applicable"`
+	Submitted      bool   `json:"submitted"`
+	Polled         bool   `json:"polled"`
+	ArtifactListed bool   `json:"artifact_listed"`
+	Status         string `json:"status"`
+	Detail         string `json:"detail"`
 }
 
 // UpstreamMonitorModelRun is the result for one model inside a task run.
